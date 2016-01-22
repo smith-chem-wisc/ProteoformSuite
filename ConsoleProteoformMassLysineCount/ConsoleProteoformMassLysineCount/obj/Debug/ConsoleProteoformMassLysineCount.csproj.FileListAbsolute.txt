@@ -1,0 +1,6 @@
+c:\users\michael\documents\visual studio 2015\Projects\ConsoleProteoformMassLysineCount\ConsoleProteoformMassLysineCount\bin\Debug\ConsoleProteoformMassLysineCount.exe.config
+c:\users\michael\documents\visual studio 2015\Projects\ConsoleProteoformMassLysineCount\ConsoleProteoformMassLysineCount\bin\Debug\ConsoleProteoformMassLysineCount.exe
+c:\users\michael\documents\visual studio 2015\Projects\ConsoleProteoformMassLysineCount\ConsoleProteoformMassLysineCount\bin\Debug\ConsoleProteoformMassLysineCount.pdb
+c:\users\michael\documents\visual studio 2015\Projects\ConsoleProteoformMassLysineCount\ConsoleProteoformMassLysineCount\obj\Debug\ConsoleProteoformMassLysineCount.csprojResolveAssemblyReference.cache
+c:\users\michael\documents\visual studio 2015\Projects\ConsoleProteoformMassLysineCount\ConsoleProteoformMassLysineCount\obj\Debug\ConsoleProteoformMassLysineCount.exe
+c:\users\michael\documents\visual studio 2015\Projects\ConsoleProteoformMassLysineCount\ConsoleProteoformMassLysineCount\obj\Debug\ConsoleProteoformMassLysineCount.pdb
