@@ -1,0 +1,6 @@
+c:\users\michael\documents\visual studio 2015\Projects\PTM_combos\PTM_combos\bin\Debug\PTM_combos.exe.config
+c:\users\michael\documents\visual studio 2015\Projects\PTM_combos\PTM_combos\obj\Debug\PTM_combos.csprojResolveAssemblyReference.cache
+c:\users\michael\documents\visual studio 2015\Projects\PTM_combos\PTM_combos\bin\Debug\PTM_combos.exe
+c:\users\michael\documents\visual studio 2015\Projects\PTM_combos\PTM_combos\bin\Debug\PTM_combos.pdb
+c:\users\michael\documents\visual studio 2015\Projects\PTM_combos\PTM_combos\obj\Debug\PTM_combos.exe
+c:\users\michael\documents\visual studio 2015\Projects\PTM_combos\PTM_combos\obj\Debug\PTM_combos.pdb
