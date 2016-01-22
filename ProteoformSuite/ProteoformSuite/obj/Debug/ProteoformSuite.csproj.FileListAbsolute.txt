@@ -1,0 +1,3 @@
+c:\users\anthony\documents\visual studio 2015\Projects\ProteoformSuite\ProteoformSuite\bin\Debug\ProteoformSuite.exe.config
+C:\Users\Anthony\documents\visual studio 2015\Projects\ProteoformSuite\ProteoformSuite\obj\Debug\Interop.MSFileReaderLib.dll
+C:\Users\Anthony\documents\visual studio 2015\Projects\ProteoformSuite\ProteoformSuite\obj\Debug\ProteoformSuite.csproj.ResolveComReference.cache
