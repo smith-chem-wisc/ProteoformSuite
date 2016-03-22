@@ -165,9 +165,9 @@ namespace PS_0._00
             string kI = WhichLysineIsotopeComposition(); 
             aaIsotopeMassList = AminoAcidMasses.GetAA_Masses(Convert.ToBoolean(ckbx_OxidMeth.Checked), Convert.ToBoolean(ckbx_Carbam.Checked), kI);
             
-            read_uniprot_ptmlist rup = new read_uniprot_ptmlist();
-            read_uniprot_ptmlist.oldPtmFilePath = tb_UniProtPtmList_Path.Text; // gets the exising path to PTM list into read_uniprot_ptlist class
-            Dictionary<string, modData> uniprotModificationTable = new Dictionary<string, modData>();
+            ReadUniprotPtmList rup = new ReadUniprotPtmList();
+            ReadUniprotPtmList.oldPtmFilePath = tb_UniProtPtmList_Path.Text; // gets the exising path to PTM list into read_uniprot_ptlist class
+            Dictionary<string, ModData> uniprotModificationTable = new Dictionary<string, ModData>();
             uniprotModificationTable = rup.rd_unip_ptms();
 
             int totalNumEntries = NumberOfUniProtEntrys(tb_UniProtXML_Path.Text);
@@ -193,7 +193,7 @@ namespace PS_0._00
             FillDataBaseTable(cmbx_DisplayWhichDB.SelectedItem.ToString());
         }
 
-        static void processDecoys(int numDb, string giantProtein, protein[] pRD, bool mC, int num, Dictionary<char, double> aIML, int maxPTMsPerProteoform, Dictionary<string, modData> uniprotModificationTable)
+        static void processDecoys(int numDb, string giantProtein, protein[] pRD, bool mC, int num, Dictionary<char, double> aIML, int maxPTMsPerProteoform, Dictionary<string, ModData> uniprotModificationTable)
         {
 
             for (int decoyNumber = 0; decoyNumber < numDb; decoyNumber++)
@@ -227,11 +227,11 @@ namespace PS_0._00
 
                         int kCount = LysineCount(hunk, "K");
 
-                        ptm_combos pc = new ptm_combos();
+                        PtmCombos pc = new PtmCombos();
 
-                        List<one_unique_ptm_group> aupg = new List<one_unique_ptm_group>();
+                        List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>();
 
-                        one_unique_ptm_group unmod = new one_unique_ptm_group();
+                        OneUniquePtmGroup unmod = new OneUniquePtmGroup();
                         unmod.mass = 0;
                         List<string> unmod_string = new List<string>();
                         unmod_string.Add("unmodified");
@@ -243,7 +243,7 @@ namespace PS_0._00
                             aupg.AddRange(pc.combos(maxPTMsPerProteoform, uniprotModificationTable, pRD[i].positionsAndPtms));
                         }
 
-                        foreach (one_unique_ptm_group group in aupg)
+                        foreach (OneUniquePtmGroup group in aupg)
                         {
                             List<string> ptm_list = group.unique_ptm_combinations;
                             Double ptm_mass = group.mass;
@@ -262,11 +262,11 @@ namespace PS_0._00
 
                         int kCount = LysineCount(hunk, "K");
 
-                        ptm_combos pc = new ptm_combos();
+                        PtmCombos pc = new PtmCombos();
 
-                        List<one_unique_ptm_group> aupg = new List<one_unique_ptm_group>();
+                        List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>();
 
-                        one_unique_ptm_group unmod = new one_unique_ptm_group();
+                        OneUniquePtmGroup unmod = new OneUniquePtmGroup();
                         unmod.mass = 0;
                         List<string> unmod_string = new List<string>();
                         unmod_string.Add("unmodified");
@@ -278,7 +278,7 @@ namespace PS_0._00
                             aupg.AddRange(pc.combos(maxPTMsPerProteoform, uniprotModificationTable, pRD[i].positionsAndPtms));
                         }
 
-                        foreach (one_unique_ptm_group group in aupg)
+                        foreach (OneUniquePtmGroup group in aupg)
                         {
                             List<string> ptm_list = group.unique_ptm_combinations;
                             Console.WriteLine("PTM Combinations: " + String.Join("; ", ptm_list));
@@ -295,7 +295,7 @@ namespace PS_0._00
             }
         }
 
-        static void processEntries(protein[] pRD, bool mC, int num, Dictionary<char, double> aIML, int maxPTMsPerProteoform, Dictionary<string, modData> uniprotModificationTable)
+        static void processEntries(protein[] pRD, bool mC, int num, Dictionary<char, double> aIML, int maxPTMsPerProteoform, Dictionary<string, ModData> uniprotModificationTable)
         {
             DataTable target = new DataTable("Target");//datatable name goes in parentheses.
             target.Columns.Add("Accession", typeof(string));
@@ -318,10 +318,10 @@ namespace PS_0._00
 
                     int kCount = LysineCount(pRD[i].sequence.Substring(1, (pRD[i].sequence.Length - 1)), "K");
 
-                    ptm_combos pc = new ptm_combos();
+                    PtmCombos pc = new PtmCombos();
 
-                    List<one_unique_ptm_group> aupg = new List<one_unique_ptm_group>();
-                    one_unique_ptm_group unmod = new one_unique_ptm_group();
+                    List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>();
+                    OneUniquePtmGroup unmod = new OneUniquePtmGroup();
                     unmod.mass = 0;
                     List<string> unmod_string = new List<string>();
                     unmod_string.Add("unmodified");
@@ -333,7 +333,7 @@ namespace PS_0._00
                         aupg.AddRange(pc.combos(maxPTMsPerProteoform, uniprotModificationTable, pRD[i].positionsAndPtms));
                     }
 
-                    foreach (one_unique_ptm_group group in aupg)
+                    foreach (OneUniquePtmGroup group in aupg)
                     {
                         List<string> ptm_list = group.unique_ptm_combinations;
                         Double ptm_mass = group.mass;
@@ -346,9 +346,9 @@ namespace PS_0._00
                 {
                     mass = CalculateProteoformMass(ref aIML, pRD[i].sequence);
                     int kCount = LysineCount(pRD[i].sequence, "K");
-                    ptm_combos pc = new ptm_combos();
-                    List<one_unique_ptm_group> aupg = new List<one_unique_ptm_group>();
-                    one_unique_ptm_group unmod = new one_unique_ptm_group();
+                    PtmCombos pc = new PtmCombos();
+                    List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>();
+                    OneUniquePtmGroup unmod = new OneUniquePtmGroup();
                     unmod.mass = 0;
                     List<string> unmod_string = new List<string>();
                     unmod_string.Add("unmodified");
@@ -360,7 +360,7 @@ namespace PS_0._00
                         aupg.AddRange(pc.combos(maxPTMsPerProteoform, uniprotModificationTable, pRD[i].positionsAndPtms));
                     }
 
-                    foreach (one_unique_ptm_group group in aupg)
+                    foreach (OneUniquePtmGroup group in aupg)
                     {
                         List<string> ptm_list = group.unique_ptm_combinations;
                         Double ptm_mass = group.mass;

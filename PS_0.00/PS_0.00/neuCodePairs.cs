@@ -10,14 +10,14 @@ using System.Windows.Forms;
 
 namespace PS_0._00
 {
-    public partial class neuCodePairs : Form
+    public partial class NeuCodePairs : Form
     {
-        public neuCodePairs()
+        public NeuCodePairs()
         {
             InitializeComponent();
         }
 
-        private void neuCodePairs_Load(object sender, EventArgs e)
+        private void NeuCodePairs_Load(object sender, EventArgs e)
         {
             GlobalData.rawNeuCodePairs = CreateRawNeuCodePairsDataTable();
             Dictionary<string, List<string>> fileNameScanRanges = GetSFileNameScanRangesList();

@@ -82,16 +82,16 @@
     <Compile Include="LoadDeconvolutionResults.Designer.cs">
       <DependentUpon>LoadDeconvolutionResults.cs</DependentUpon>
     </Compile>
-    <Compile Include="modData.cs" />
-    <Compile Include="neuCodePairs.cs">
+    <Compile Include="ModData.cs" />
+    <Compile Include="NeuCodePairs.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="neuCodePairs.Designer.cs">
-      <DependentUpon>neuCodePairs.cs</DependentUpon>
+    <Compile Include="NeuCodePairs.Designer.cs">
+      <DependentUpon>NeuCodePairs.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ptm_combos.cs" />
+    <Compile Include="PtmCombos.cs" />
     <Compile Include="RandomExtensions.cs" />
     <Compile Include="RawExperimentalProteoforms.cs">
       <SubType>Form</SubType>
@@ -99,7 +99,7 @@
     <Compile Include="RawExperimentalProteoforms.Designer.cs">
       <DependentUpon>RawExperimentalProteoforms.cs</DependentUpon>
     </Compile>
-    <Compile Include="read_uniprot_ptmlist.cs" />
+    <Compile Include="ReadUniprotPtmList.cs" />
     <Compile Include="TheoreticalDatabase.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -119,8 +119,8 @@
     <EmbeddedResource Include="LoadDeconvolutionResults.resx">
       <DependentUpon>LoadDeconvolutionResults.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="neuCodePairs.resx">
-      <DependentUpon>neuCodePairs.cs</DependentUpon>
+    <EmbeddedResource Include="NeuCodePairs.resx">
+      <DependentUpon>NeuCodePairs.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

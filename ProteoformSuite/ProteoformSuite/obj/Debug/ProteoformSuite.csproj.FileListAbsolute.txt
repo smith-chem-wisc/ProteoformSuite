@@ -4,3 +4,6 @@ C:\Users\Anthony\documents\visual studio 2015\Projects\ProteoformSuite\Proteofor
 C:\Users\Michael\Documents\GitClones\proteoform-suite\ProteoformSuite\ProteoformSuite\bin\Debug\ProteoformSuite.exe.config
 C:\Users\Michael\Documents\GitClones\proteoform-suite\ProteoformSuite\ProteoformSuite\obj\Debug\Interop.MSFileReaderLib.dll
 C:\Users\Michael\Documents\GitClones\proteoform-suite\ProteoformSuite\ProteoformSuite\obj\Debug\ProteoformSuite.csproj.ResolveComReference.cache
+C:\Users\Anthony\Documents\GitHub\proteoform-suite\ProteoformSuite\ProteoformSuite\bin\Debug\ProteoformSuite.exe.config
+C:\Users\Anthony\Documents\GitHub\proteoform-suite\ProteoformSuite\ProteoformSuite\obj\Debug\Interop.MSFileReaderLib.dll
+C:\Users\Anthony\Documents\GitHub\proteoform-suite\ProteoformSuite\ProteoformSuite\obj\Debug\ProteoformSuite.csproj.ResolveComReference.cache

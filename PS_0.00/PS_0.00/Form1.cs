@@ -15,7 +15,7 @@ namespace PS_0._00
         //  Initialize Forms START
         LoadDeconvolutionResults lDR;
         RawExperimentalProteoforms rEP;
-        neuCodePairs nCP;
+        NeuCodePairs nCP;
         AggregatedProteoforms aGP;
         TheoreticalDatabase tDB;
         ExperimentTheoreticalComparison eTC;
@@ -73,7 +73,7 @@ namespace PS_0._00
         {
             if (nCP == null)
             {
-                nCP = new neuCodePairs();
+                nCP = new NeuCodePairs();
 
                 //lDR.PassString = "This string from form 1";// this sends data to the lDR form.
 
