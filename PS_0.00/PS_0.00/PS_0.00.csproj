@@ -63,6 +63,12 @@
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </Compile>
     <Compile Include="AminoAcidMasses.cs" />
+    <Compile Include="ExperimentExperimentComparison.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExperimentExperimentComparison.Designer.cs">
+      <DependentUpon>ExperimentExperimentComparison.cs</DependentUpon>
+    </Compile>
     <Compile Include="ExperimentTheoreticalComparison.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -109,6 +115,9 @@
     <Compile Include="Uniprot_XSD.cs" />
     <EmbeddedResource Include="AggregatedProteoforms.resx">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExperimentExperimentComparison.resx">
+      <DependentUpon>ExperimentExperimentComparison.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ExperimentTheoreticalComparison.resx">
       <DependentUpon>ExperimentTheoreticalComparison.cs</DependentUpon>
