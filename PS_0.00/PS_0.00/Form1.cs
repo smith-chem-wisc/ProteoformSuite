@@ -19,6 +19,7 @@ namespace PS_0._00
         AggregatedProteoforms aGP;
         TheoreticalDatabase tDB;
         ExperimentTheoreticalComparison eTC;
+        ExperimentExperimentComparison eEC;
         //  Initialize Forms END
 
         // Data associated with lDR Form START
@@ -155,7 +156,23 @@ namespace PS_0._00
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("experimentExperimentComparisonToolStripMenuItem_Click");
+            if (eEC == null)
+            {
+                eEC = new ExperimentExperimentComparison();
+
+                //lDR.PassString = "This string from form 1";// this sends data to the aGP form.
+
+                eEC.MdiParent = this;
+                eEC.Show();
+                eEC.WindowState = FormWindowState.Maximized;
+                // This is where we get data back from aGP form
+            }
+            else
+            {
+                eEC.Show();
+                eEC.WindowState = FormWindowState.Maximized;
+                // This is where we get data back from aGP form
+            }
         }
 
         private void proteoformFamilyGraphsToolStripMenuItem_Click(object sender, EventArgs e)
