@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PS_0._00
 {
-    class modData
+    class ModData
     {
         private string aC, fT, pP;
         private char[] tG = new char[2];

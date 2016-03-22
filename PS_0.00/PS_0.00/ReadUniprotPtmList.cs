@@ -9,13 +9,13 @@ using System.Windows.Forms;
 
 namespace PS_0._00
 {
-    class read_uniprot_ptmlist
+    class ReadUniprotPtmList
     {
         private static Dictionary<string, char> aminoAcidCodes;
 
         public static string oldPtmFilePath;
 
-        public Dictionary<string, modData> ModTable
+        public Dictionary<string, ModData> ModTable
         {
             get
             {
@@ -27,7 +27,7 @@ namespace PS_0._00
             }
         }
 
-        public Dictionary<string, modData> rd_unip_ptms()
+        public Dictionary<string, ModData> rd_unip_ptms()
         {
 
             string ptmFilePath = GetPtmListFilePath();
@@ -36,7 +36,7 @@ namespace PS_0._00
 
             InitializeDictionaries();
 
-            Dictionary<string, modData> ModTable = new Dictionary<string, modData>();
+            Dictionary<string, ModData> ModTable = new Dictionary<string, ModData>();
 
             ModTable = LoadModificationTable(ptmFilePath, modCount);
 
@@ -51,14 +51,14 @@ namespace PS_0._00
         //    }
         //}
 
-        static Dictionary<string, modData> LoadModificationTable(string path, int numDiffMods)
+        static Dictionary<string, ModData> LoadModificationTable(string path, int numDiffMods)
         {
-            Dictionary<string, modData> mT = new Dictionary<string, modData>();
+            Dictionary<string, ModData> mT = new Dictionary<string, ModData>();
 
             using (StreamReader uniprot_mods = new StreamReader(path))
             {
 
-                modData thisMod = new modData();
+                ModData thisMod = new ModData();
 
                 string modID = null;
                 int count = 0;
@@ -72,7 +72,7 @@ namespace PS_0._00
                         switch (line.Substring(0, 2))
                         {
                             case "ID":
-                                thisMod = new modData();
+                                thisMod = new ModData();
                                 modID = line.Substring(5);
                                 //Console.WriteLine("modID: " + modID);
                                 break;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PS_0._00
 {
-    class one_unique_ptm_group
+    class OneUniquePtmGroup
     {
         private List<string> _unique_ptm_combination;
         private double _mass;
@@ -24,21 +24,21 @@ namespace PS_0._00
         }
     }
 
-    class all_unique_ptm_groups
+    class AllUniquePtmGroups
     {
-        private List<one_unique_ptm_group> _all_unique_ptm_groups;
+        private List<OneUniquePtmGroup> _all_unique_ptm_groups;
 
-        public List<one_unique_ptm_group> unique_ptm_groups
+        public List<OneUniquePtmGroup> unique_ptm_groups
         {
             get { return _all_unique_ptm_groups; }
             set { _all_unique_ptm_groups = value; }
         }
     }
 
-    class ptm_combos
+    class PtmCombos
     {
 
-        public List<one_unique_ptm_group> combos(int numPtmsNeeded, Dictionary<string, modData> uniprotModificationTable, Dictionary<int, List<string>> somePtmData)
+        public List<OneUniquePtmGroup> combos(int numPtmsNeeded, Dictionary<string, ModData> uniprotModificationTable, Dictionary<int, List<string>> somePtmData)
         {
 
             Dictionary<int, Dictionary<int, string>> sortedProteinPTMs = new Dictionary<int, Dictionary<int, string>>();
@@ -51,17 +51,17 @@ namespace PS_0._00
 
             List<int[]> uMC = UniqueMassCombinations(uPC, sortedProteinPTMs, uniprotModificationTable);
 
-            List<one_unique_ptm_group> aupg = new List<one_unique_ptm_group>();
+            List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>();
 
             aupg = GetGroups(uMC, sortedProteinPTMs, uniprotModificationTable);
 
             return aupg;
         }
 
-        static List<one_unique_ptm_group> GetGroups(List<int[]> uMC, Dictionary<int, Dictionary<int, string>> sPP, Dictionary<string, modData> uniprotModificationTable)
+        static List<OneUniquePtmGroup> GetGroups(List<int[]> uMC, Dictionary<int, Dictionary<int, string>> sPP, Dictionary<string, ModData> uniprotModificationTable)
         {
             //Console.Writeline("  CALL GetGroups:");
-            List<one_unique_ptm_group> oupg = new List<one_unique_ptm_group>();
+            List<OneUniquePtmGroup> oupg = new List<OneUniquePtmGroup>();
 
 
             //Console.Writeline("   CALL GetGroups  int[] in uMC count = "+uMC.Count);
@@ -80,7 +80,7 @@ namespace PS_0._00
                     double mass = uniprotModificationTable[ptm].MM;
                     p[i] = mass;
                 }
-                one_unique_ptm_group one = new one_unique_ptm_group();
+                OneUniquePtmGroup one = new OneUniquePtmGroup();
                 one.mass = p.Sum();
                 one.unique_ptm_combinations = ptms_in_one_combo;
                 //Console.Writeline("\t\tGetGroups--ptms_in_one_combo: " + String.Join("; ", ptms_in_one_combo));
@@ -89,7 +89,7 @@ namespace PS_0._00
 
             //Console.Writeline("   CALL GetGroups  oupg count = " + oupg.Count);
 
-            foreach (one_unique_ptm_group won in oupg)
+            foreach (OneUniquePtmGroup won in oupg)
             {
                 foreach (string item in won.unique_ptm_combinations)
                 {
@@ -100,7 +100,7 @@ namespace PS_0._00
 
             return oupg;
         }
-        static List<int[]> UniqueMassCombinations(List<int[]> uPC, Dictionary<int, Dictionary<int, string>> sPP, Dictionary<string, modData> uniprotModificationTable)
+        static List<int[]> UniqueMassCombinations(List<int[]> uPC, Dictionary<int, Dictionary<int, string>> sPP, Dictionary<string, ModData> uniprotModificationTable)
         {
             //Console.Writeline("** Call UniqueMassCombinations");
             List<int[]> uMC = new List<int[]>();
