@@ -1,6 +1,6 @@
 ﻿namespace PS_0._00
 {
-    partial class neuCodePairs
+    partial class NeuCodePairs
     {
         /// <summary>
         /// Required designer variable.
@@ -441,7 +441,7 @@
             this.Controls.Add(this.splitContainer1);
             this.Name = "neuCodePairs";
             this.Text = "neuCodePairs";
-            this.Load += new System.EventHandler(this.neuCodePairs_Load);
+            this.Load += new System.EventHandler(this.NeuCodePairs_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
