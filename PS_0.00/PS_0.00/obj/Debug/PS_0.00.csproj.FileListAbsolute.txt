@@ -11,3 +11,6 @@ C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\ob
 C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\obj\Debug\PS_0._00.RawExperimentalProteoforms.resources
 C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\bin\Debug\DocumentFormat.OpenXml.dll
 C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\bin\Debug\DocumentFormat.OpenXml.xml
+C:\Users\Michael\Documents\GitClones\proteoform-suite\PS_0.00\PS_0.00\bin\Debug\PS_0.00.exe.config
+C:\Users\Michael\Documents\GitClones\proteoform-suite\PS_0.00\PS_0.00\obj\Debug\PS_0.00.exe
+C:\Users\Michael\Documents\GitClones\proteoform-suite\PS_0.00\PS_0.00\obj\Debug\PS_0.00.pdb
