@@ -14,7 +14,6 @@ namespace PS_0._00
     {
         DataTable etPeakList = new DataTable();
 
-
         public ExperimentTheoreticalComparison()
         {
             InitializeComponent();

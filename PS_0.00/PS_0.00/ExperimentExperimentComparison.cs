@@ -105,21 +105,21 @@ namespace PS_0._00
             double graphMax = Convert.ToDouble(dgv_EE_Peak_List.Rows[clickedRow].Cells["Average Delta Mass"].Value.ToString()) + Convert.ToDouble((nUD_PeakWidthBase.Value));
             double graphMin = Convert.ToDouble(dgv_EE_Peak_List.Rows[clickedRow].Cells["Average Delta Mass"].Value.ToString()) - Convert.ToDouble((nUD_PeakWidthBase.Value));
 
-            if (graphMin >= Convert.ToDouble(xMinEE.Value))
+            if (graphMin >= 0 && graphMin < graphMax)
             {
                 ct_EE_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(graphMin);
             }
             else {
-                ct_EE_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(xMinEE.Value);
+                ct_EE_peakList.ChartAreas[0].AxisX.Minimum = 0;
             }
 
-            if (graphMax <= Convert.ToDouble(xMaxEE.Value))
+            if (graphMax <= Convert.ToDouble(nUD_EE_Upper_Bound.Value) && graphMax > graphMin)
             {
                 ct_EE_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(graphMax);
             }
             else
             {
-                ct_EE_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(xMaxEE.Value);
+                ct_EE_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(nUD_EE_Upper_Bound.Value);
             }
         }
 
