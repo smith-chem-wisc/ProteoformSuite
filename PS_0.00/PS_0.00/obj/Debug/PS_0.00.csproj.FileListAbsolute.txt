@@ -1,0 +1,16 @@
+C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\bin\Debug\PS_0.00.exe.config
+C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\bin\Debug\PS_0.00.exe
+C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\bin\Debug\PS_0.00.pdb
+C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\obj\Debug\PS_0.00.csprojResolveAssemblyReference.cache
+C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\obj\Debug\PS_0._00.Form1.resources
+C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\obj\Debug\PS_0._00.LoadDeconvolutionResults.resources
+C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\obj\Debug\PS_0._00.Properties.Resources.resources
+C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\obj\Debug\PS_0.00.csproj.GenerateResource.Cache
+C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\obj\Debug\PS_0.00.exe
+C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\obj\Debug\PS_0.00.pdb
+C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\obj\Debug\PS_0._00.RawExperimentalProteoforms.resources
+C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\bin\Debug\DocumentFormat.OpenXml.dll
+C:\Users\Michael\Documents\GitClones\MRS\Proteoform_Suite_GUI\PS_0.00\PS_0.00\bin\Debug\DocumentFormat.OpenXml.xml
+C:\Users\Michael\Documents\GitClones\proteoform-suite\PS_0.00\PS_0.00\bin\Debug\PS_0.00.exe.config
+C:\Users\Michael\Documents\GitClones\proteoform-suite\PS_0.00\PS_0.00\obj\Debug\PS_0.00.exe
+C:\Users\Michael\Documents\GitClones\proteoform-suite\PS_0.00\PS_0.00\obj\Debug\PS_0.00.pdb
