@@ -11,6 +11,18 @@ namespace PS_0._00
         private List<string> _unique_ptm_combination;
         private double _mass;
 
+        public OneUniquePtmGroup(double mass, List<string> unique_ptm_combination)
+        {
+            _mass = mass;
+            _unique_ptm_combination = unique_ptm_combination;
+
+        }
+
+        public OneUniquePtmGroup()
+        {
+
+        }
+
         public List<string> unique_ptm_combinations
         {
             get { return _unique_ptm_combination; }
@@ -42,7 +54,7 @@ namespace PS_0._00
         {
 
             Dictionary<int, Dictionary<int, string>> sortedProteinPTMs = new Dictionary<int, Dictionary<int, string>>();
-
+  
             sortedProteinPTMs = GetAnOrganizedList(somePtmData);//(index, dict(pos,ptm))
 
             List<int[]> aPC = AllPossibleCombinations(numPtmsNeeded, sortedProteinPTMs.Keys.ToArray().Max() + 1);
