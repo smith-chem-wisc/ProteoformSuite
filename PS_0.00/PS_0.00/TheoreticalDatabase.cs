@@ -19,6 +19,8 @@ namespace PS_0._00
         OpenFileDialog openFileDialog2 = new OpenFileDialog();
         OpenFileDialog openFileDialog3 = new OpenFileDialog();
         DataGridView dgv_database = new DataGridView();
+        protein[] proteinRawInfo = null;
+        int totalNumEntries = 0;
 
         struct protein
         {
@@ -50,10 +52,10 @@ namespace PS_0._00
                 String file = openFileDialog2.FileName;
                 try
                 {
-                    if (ValidateUniProtXML(file))
-                    {
-                        tb_UniProtXML_Path.Text = file;
-                    }
+                    tb_UniProtXML_Path.Text = file;
+                    totalNumEntries = NumberOfUniProtEntrys(file);
+                    proteinRawInfo = new protein[totalNumEntries];
+                    proteinRawInfo = GetProteinRawInfo(file, totalNumEntries);
                 }
                 catch (SecurityException ex)
                 {
@@ -62,23 +64,19 @@ namespace PS_0._00
                         "Error message: " + ex.Message + "\n\n" +
                         "Details (send to Support):\n\n" + ex.StackTrace
                     );
+                    tb_UniProtXML_Path.Text = "";
                 }
                 catch (Exception ex)
                 {
                     // Could not load the result file - probably related to Windows file system permissions.
                     MessageBox.Show("Cannot display the file: " + file.Substring(file.LastIndexOf('\\'))
-                        + ". You may not have permission to read the file, or " +
-                        "it may be corrupt.\n\nReported error: " + ex.Message);
+                        + ". You may not have permission to read the file, or it may be corrupt.\n\n" +
+                        "Reported error: " + ex.Message);
+                    tb_UniProtXML_Path.Text = "";
+
                 }
 
             }
-        }
-
-        private bool FirstLineOK(string fileName)
-        {
-            bool fileOK = true;
-
-            return fileOK;
         }
 
         private void TheoreticalDatabase_Load(object sender, EventArgs e)
@@ -108,8 +106,7 @@ namespace PS_0._00
         private void InitializeOpenFileDialog2()
         {
             // Set the file dialog to filter for graphics files.
-            this.openFileDialog2.Filter =
-                "UniProt XML (*.xml)|*.xml";
+            this.openFileDialog2.Filter = "UniProt XML (*.xml)|*.xml";
 
             // Allow the user to select multiple images.
             this.openFileDialog2.Multiselect = false;
@@ -119,13 +116,13 @@ namespace PS_0._00
         private void InitializeOpenFileDialog3()
         {
             // Set the file dialog to filter for graphics files.
-            this.openFileDialog3.Filter =
-                "UniProt PTM List (*.txt)|*.txt";
+            this.openFileDialog3.Filter = "UniProt PTM List (*.txt)|*.txt";
 
             // Allow the user to select multiple images.
             this.openFileDialog3.Multiselect = false;
             this.openFileDialog3.Title = "UniProt PTM List";
         }
+
         private void btn_UniPtPtmList_Click(object sender, EventArgs e)
         {
             DialogResult dr = this.openFileDialog3.ShowDialog();
@@ -134,25 +131,21 @@ namespace PS_0._00
                 String file = openFileDialog3.FileName;
                 try
                 {
-                    if (FirstLineOK(file))
-                    {
-                        tb_UniProtPtmList_Path.Text = file;
-                    }
+                    tb_UniProtPtmList_Path.Text = file;
                 }
                 catch (SecurityException ex)
                 {
                     // The user lacks appropriate permissions to read files, discover paths, etc.
                     MessageBox.Show("Security error. Please contact your administrator for details.\n\n" +
                         "Error message: " + ex.Message + "\n\n" +
-                        "Details (send to Support):\n\n" + ex.StackTrace
-                    );
+                        "Details (send to Support):\n\n" + ex.StackTrace);
                 }
                 catch (Exception ex)
                 {
                     // Could not load the result file - probably related to Windows file system permissions.
                     MessageBox.Show("Cannot display the file: " + file.Substring(file.LastIndexOf('\\'))
-                        + ". You may not have permission to read the file, or " +
-                        "it may be corrupt.\n\nReported error: " + ex.Message);
+                        + ". You may not have permission to read the file, or it may be corrupt.\n\n" +
+                        "Reported error: " + ex.Message);
                 }
 
             }
@@ -170,19 +163,14 @@ namespace PS_0._00
             Dictionary<string, ModData> uniprotModificationTable = new Dictionary<string, ModData>();
             uniprotModificationTable = rup.rd_unip_ptms();
 
-            int totalNumEntries = NumberOfUniProtEntrys(tb_UniProtXML_Path.Text);
-            string giantProtein = getOneGiantProtein(tb_UniProtXML_Path.Text, Convert.ToBoolean(ckbx_Meth_Cleaved.Checked));
-            protein[] proteinRawInfo = new protein[totalNumEntries];
-            proteinRawInfo = GetProteinRawInfo(tb_UniProtXML_Path.Text, totalNumEntries);
+            string giantProtein = GetOneGiantProtein(tb_UniProtXML_Path.Text, Convert.ToBoolean(ckbx_Meth_Cleaved.Checked));
             processEntries(proteinRawInfo, Convert.ToBoolean(ckbx_Meth_Cleaved.Checked), totalNumEntries, aaIsotopeMassList, Convert.ToInt32(nUD_MaxPTMs.Value), uniprotModificationTable);
-
             processDecoys(Convert.ToInt32(nUD_NumDecoyDBs.Value), giantProtein, proteinRawInfo, Convert.ToBoolean(ckbx_Meth_Cleaved.Checked), totalNumEntries, aaIsotopeMassList, Convert.ToInt32(nUD_MaxPTMs.Value), uniprotModificationTable);
 
             BindingList<string> bindinglist = new BindingList<string>();
             BindingSource bSource = new BindingSource();
             bSource.DataSource = bindinglist;
             cmbx_DisplayWhichDB.DataSource = bSource;
-
 
             foreach (DataTable dt in GlobalData.theoreticalAndDecoyDatabases.Tables)
             {
@@ -193,202 +181,89 @@ namespace PS_0._00
             FillDataBaseTable(cmbx_DisplayWhichDB.SelectedItem.ToString());
         }
 
-        static void processDecoys(int numDb, string giantProtein, protein[] pRD, bool mC, int num, Dictionary<char, double> aIML, int maxPTMsPerProteoform, Dictionary<string, ModData> uniprotModificationTable)
+        static DataTable GenerateProteoformDatabaseDataTable(string title)
+        {
+            DataTable dt = new DataTable(title);//datatable name goes in parentheses.
+            dt.Columns.Add("Accession", typeof(string));
+            dt.Columns.Add("Name", typeof(string));
+            dt.Columns.Add("Fragment", typeof(string));
+            dt.Columns.Add("Begin", typeof(int));
+            dt.Columns.Add("End", typeof(int));
+            dt.Columns.Add("Mass", typeof(double));
+            dt.Columns.Add("Lysine Count", typeof(int));
+            dt.Columns.Add("PTM List", typeof(string));
+            dt.Columns.Add("PTM Group Mass", typeof(double));
+            dt.Columns.Add("Proteoform Mass", typeof(double));
+            return dt;
+        }
+
+        static void processDecoys(int numDb, string giantProtein, protein[] pRD, bool mC, int num, Dictionary<char, double> aaIsotopeMassList, 
+            int maxPTMsPerProteoform, Dictionary<string, ModData> uniprotModificationTable)
         {
 
             for (int decoyNumber = 0; decoyNumber < numDb; decoyNumber++)
             {
-                string tableName = "DecoyDatabase_" + decoyNumber;
 
-                DataTable decoy = new DataTable(tableName);//datatable name goes in parentheses.
-                decoy.Columns.Add("Accession", typeof(string));
-                decoy.Columns.Add("Name", typeof(string));
-                decoy.Columns.Add("Fragment", typeof(string));
-                decoy.Columns.Add("Begin", typeof(int));
-                decoy.Columns.Add("End", typeof(int));
-                decoy.Columns.Add("Mass", typeof(double));
-                decoy.Columns.Add("Lysine Count", typeof(int));
-                decoy.Columns.Add("PTM List", typeof(string));
-                decoy.Columns.Add("PTM Group Mass", typeof(double));
-                decoy.Columns.Add("Proteoform Mass", typeof(double));
+                DataTable decoy = GenerateProteoformDatabaseDataTable("DecoyDatabase_" + decoyNumber);
 
                 new Random().Shuffle(pRD); //Randomize Order of Protein Array
 
                 for (int i = 0; i < num; i++)
                 {
-                    double mass;
-                    if (mC && pRD[i].begin == 0 && pRD[i].sequence.Substring(0, 1) == "M") // methionine cleavage of N-terminus specified
-                    {
-                        int hunkLength = pRD[i].sequence.Length - 1;
-                        string hunk = giantProtein.Substring(0, hunkLength);
-                        giantProtein.Remove(0, hunkLength);
+                    bool isMetCleaved = (mC && pRD[i].begin == 0 && pRD[i].sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
+                    int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
 
-                        mass = CalculateProteoformMass(ref aIML, hunk);
-
-                        int kCount = LysineCount(hunk, "K");
-
-                        PtmCombos pc = new PtmCombos();
-
-                        List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>();
-
-                        OneUniquePtmGroup unmod = new OneUniquePtmGroup();
-                        unmod.mass = 0;
-                        List<string> unmod_string = new List<string>();
-                        unmod_string.Add("unmodified");
-                        unmod.unique_ptm_combinations = unmod_string;
-                        aupg.Add(unmod);
-                        
-                        if (maxPTMsPerProteoform > 0 && pRD[i].positionsAndPtms.Count() > 0)
-                        {
-                            aupg.AddRange(pc.combos(maxPTMsPerProteoform, uniprotModificationTable, pRD[i].positionsAndPtms));
-                        }
-
-                        foreach (OneUniquePtmGroup group in aupg)
-                        {
-                            List<string> ptm_list = group.unique_ptm_combinations;
-                            Double ptm_mass = group.mass;
-                            Double proteoform_mass = mass + group.mass;
-                            decoy.Rows.Add(pRD[i].accession + "_DECOY_" + decoyNumber, pRD[i].name, pRD[i].fragment, pRD[i].begin + 1, pRD[i].end, mass, kCount, string.Join("; ", ptm_list), ptm_mass, proteoform_mass);
-                        }
-
-                    }
-                    else
-                    {
-                        int hunkLength = pRD[i].sequence.Length;
-                        string hunk = giantProtein.Substring(0, hunkLength);
-                        giantProtein.Remove(0, hunkLength);
-
-                        mass = CalculateProteoformMass(ref aIML, hunk);
-
-                        int kCount = LysineCount(hunk, "K");
-
-                        PtmCombos pc = new PtmCombos();
-
-                        List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>();
-
-                        OneUniquePtmGroup unmod = new OneUniquePtmGroup();
-                        unmod.mass = 0;
-                        List<string> unmod_string = new List<string>();
-                        unmod_string.Add("unmodified");
-                        unmod.unique_ptm_combinations = unmod_string;
-                        aupg.Add(unmod);
-                        
-                        if (maxPTMsPerProteoform > 0 && pRD[i].positionsAndPtms.Count() > 0)
-                        {
-                            aupg.AddRange(pc.combos(maxPTMsPerProteoform, uniprotModificationTable, pRD[i].positionsAndPtms));
-                        }
-
-                        foreach (OneUniquePtmGroup group in aupg)
-                        {
-                            List<string> ptm_list = group.unique_ptm_combinations;
-                            Console.WriteLine("PTM Combinations: " + String.Join("; ", ptm_list));
-                            Double ptm_mass = group.mass;
-                            Double proteoform_mass = mass + group.mass;
-                            decoy.Rows.Add(pRD[i].accession + "_DECOY_" + decoyNumber, pRD[i].name, pRD[i].fragment, pRD[i].begin, pRD[i].end, mass, kCount, string.Join("; ", ptm_list), ptm_mass, proteoform_mass);
-                        }
-
-                    }
-
+                    //From the concatenated proteome, cut a decoy sequence of a randomly selected length
+                    int hunkLength = pRD[i].sequence.Length - startPosAfterCleavage;
+                    string hunk = giantProtein.Substring(0, hunkLength);
+                    giantProtein.Remove(0, hunkLength);
+                    EnterTheoreticalProteformFamily(decoy, hunk, pRD[i], pRD[i].accession + "_DECOY_" + decoyNumber, maxPTMsPerProteoform, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
                 }
 
                 GlobalData.theoreticalAndDecoyDatabases.Tables.Add(decoy);
             }
         }
 
-        static void processEntries(protein[] pRD, bool mC, int num, Dictionary<char, double> aIML, int maxPTMsPerProteoform, Dictionary<string, ModData> uniprotModificationTable)
+        static void processEntries(protein[] pRD, bool mC, int num, Dictionary<char, double> aaIsotopeMassList, 
+            int maxPTMsPerProteoform, Dictionary<string, ModData> uniprotModificationTable)
         {
-            DataTable target = new DataTable("Target");//datatable name goes in parentheses.
-            target.Columns.Add("Accession", typeof(string));
-            target.Columns.Add("Name", typeof(string));
-            target.Columns.Add("Fragment", typeof(string));
-            target.Columns.Add("Begin", typeof(int));
-            target.Columns.Add("End", typeof(int));
-            target.Columns.Add("Mass", typeof(double));
-            target.Columns.Add("Lysine Count", typeof(int));
-            target.Columns.Add("PTM List", typeof(string));
-            target.Columns.Add("PTM Group Mass", typeof(double));
-            target.Columns.Add("Proteoform Mass", typeof(double));
+
+            DataTable target = GenerateProteoformDatabaseDataTable("target");
 
             for (int i = 0; i < num; i++)
             {
-                double mass;
-                if (mC && pRD[i].begin == 0 && pRD[i].sequence.Substring(0, 1) == "M") // methionine cleavage of N-terminus specified
-                {
-                    mass = CalculateProteoformMass(ref aIML, pRD[i].sequence.Substring(1, (pRD[i].sequence.Length - 1)));
-
-                    int kCount = LysineCount(pRD[i].sequence.Substring(1, (pRD[i].sequence.Length - 1)), "K");
-
-                    PtmCombos pc = new PtmCombos();
-
-                    List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>();
-                    OneUniquePtmGroup unmod = new OneUniquePtmGroup();
-                    unmod.mass = 0;
-                    List<string> unmod_string = new List<string>();
-                    unmod_string.Add("unmodified");
-                    unmod.unique_ptm_combinations = unmod_string;
-                    aupg.Add(unmod);
-
-                    if (maxPTMsPerProteoform > 0 && pRD[i].positionsAndPtms.Count() > 0)
-                    {
-                        aupg.AddRange(pc.combos(maxPTMsPerProteoform, uniprotModificationTable, pRD[i].positionsAndPtms));
-                    }
-
-                    foreach (OneUniquePtmGroup group in aupg)
-                    {
-                        List<string> ptm_list = group.unique_ptm_combinations;
-                        Double ptm_mass = group.mass;
-                        Double proteoform_mass = mass + group.mass;
-                        target.Rows.Add(pRD[i].accession, pRD[i].name, pRD[i].fragment, pRD[i].begin + 1, pRD[i].end, mass, kCount, string.Join("; ", ptm_list), ptm_mass, proteoform_mass);
-                    }
-
-                }
-                else
-                {
-                    mass = CalculateProteoformMass(ref aIML, pRD[i].sequence);
-                    int kCount = LysineCount(pRD[i].sequence, "K");
-                    PtmCombos pc = new PtmCombos();
-                    List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>();
-                    OneUniquePtmGroup unmod = new OneUniquePtmGroup();
-                    unmod.mass = 0;
-                    List<string> unmod_string = new List<string>();
-                    unmod_string.Add("unmodified");
-                    unmod.unique_ptm_combinations = unmod_string;
-                    aupg.Add(unmod);
-
-                    if (maxPTMsPerProteoform > 0 && pRD[i].positionsAndPtms.Count() > 0)
-                    {
-                        aupg.AddRange(pc.combos(maxPTMsPerProteoform, uniprotModificationTable, pRD[i].positionsAndPtms));
-                    }
-
-                    foreach (OneUniquePtmGroup group in aupg)
-                    {
-                        List<string> ptm_list = group.unique_ptm_combinations;
-                        Double ptm_mass = group.mass;
-                        Double proteoform_mass = mass + group.mass;
-                        target.Rows.Add(pRD[i].accession, pRD[i].name, pRD[i].fragment, pRD[i].begin, pRD[i].end, mass, kCount, string.Join("; ",ptm_list), ptm_mass, proteoform_mass);
-                    }
-
-                }
-
+                bool isMetCleaved = (mC && pRD[i].begin == 0 && pRD[i].sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
+                int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
+                string seq = pRD[i].sequence.Substring(startPosAfterCleavage, (pRD[i].sequence.Length - startPosAfterCleavage));
+                EnterTheoreticalProteformFamily(target, seq, pRD[i], pRD[i].accession, maxPTMsPerProteoform, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
             }
-            GlobalData.theoreticalAndDecoyDatabases.Tables.Add(target);
 
+            GlobalData.theoreticalAndDecoyDatabases.Tables.Add(target);
         }
 
-        static int LysineCount(string text, string search)
+        static void EnterTheoreticalProteformFamily(DataTable table, string seq, protein prot, string accession, int maxPTMsPerProteoform, bool isMetCleaved,
+            Dictionary<char, double> aaIsotopeMassList, Dictionary<string, ModData> uniprotModificationTable)
         {
-            int num = 0;
-            int pos = 0;
+            //Calculate the properties of this sequence
+            double mass = CalculateProteoformMass(ref aaIsotopeMassList, seq);
+            int kCount = seq.Split('K').Length - 1;
 
-            if (!string.IsNullOrEmpty(text) && !string.IsNullOrEmpty(search))
+            //Initialize a PTM combination list with "unmodified," and then add other PTMs 
+            List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>(new OneUniquePtmGroup[] { new OneUniquePtmGroup(0, new List<string>(new string[] { "unmodified" })) });
+            bool addPtmCombos = maxPTMsPerProteoform > 0 && prot.positionsAndPtms.Count() > 0;
+            if (addPtmCombos)
             {
-                while ((pos = text.IndexOf(search, pos)) > -1)
-                {
-                    num++;
-                    pos += search.Length;
-                }
+                aupg.AddRange(new PtmCombos().combos(maxPTMsPerProteoform, uniprotModificationTable, prot.positionsAndPtms));
             }
-            return num;
+
+            foreach (OneUniquePtmGroup group in aupg)
+            {
+                List<string> ptm_list = group.unique_ptm_combinations;
+                //if (!isMetCleaved) { MessageBox.Show("PTM Combinations: " + String.Join("; ", ptm_list)); }
+                Double ptm_mass = group.mass;
+                Double proteoform_mass = mass + group.mass;
+                table.Rows.Add(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, mass, kCount, string.Join("; ", ptm_list), ptm_mass, proteoform_mass);
+            }
         }
 
         static double CalculateProteoformMass(ref Dictionary<char, double> aaIsotopeMassList, string pForm)
@@ -433,7 +308,7 @@ namespace PS_0._00
                         pAP = GetPositionsPTMs(_entry); // dictionary of positions and PTMs in complete entry
 
                         pRI[count].accession = _entry.accession[0];
-                        //Console.WriteLine(_entry.accession[0]);
+                        //MessageBox.Show(_entry.accession[0]);
                         pRI[count].name = GetProteinName(_entry);
                         pRI[count].fragment = "full";
 
@@ -489,7 +364,7 @@ namespace PS_0._00
                                 {
                                     begin = begin - 1;
                                     end = end - 1;
-                                    //Console.WriteLine("parse b: " + begin + "end: " + end);
+                                    //MessageBox.Show("parse b: " + begin + "end: " + end);
                                     if ((begin < 0) || (end < 0))
                                     {
                                         realFeature = false;
@@ -712,7 +587,7 @@ namespace PS_0._00
                     {
                         case "modifiedresidue":
                             string description = proteinFeature.description.ToString();
-                            //Console.WriteLine(_ent.accession[0] + "\t" + description + "\t" + position);
+                            //MessageBox.Show(_ent.accession[0] + "\t" + description + "\t" + position);
                             if (local_pAP.ContainsKey(position))
                             {
                                 List<string> morePtms = new List<string>();
@@ -737,7 +612,7 @@ namespace PS_0._00
             return local_pAP;
         }
 
-        static string getOneGiantProtein(string inFile, bool mC)//returns sum of full length, signal peptide, chain, propetide and peptide
+        static string GetOneGiantProtein(string inFile, bool mC)//returns sum of full length, signal peptide, chain, propetide and peptide
         {
             StringBuilder giantProtein = new StringBuilder(5000000); // this set-aside is autoincremented to larger values when necessary.
 
@@ -751,24 +626,15 @@ namespace PS_0._00
                     foreach (var _entry in deserializeduniprot.entry)
                     {
                         string thisFullSequence = _entry.sequence.Value.Replace("\r", "").Replace("\n", "");
-                        //Console.WriteLine(thisFullSequence.ToString());
+                        //MessageBox.Show(thisFullSequence.ToString());
 
-                        if (mC && (thisFullSequence.Substring(0, 1) == "M"))
-                        {
-                            //Console.WriteLine("MC: " + mC);
-                            giantProtein.Append("-" + thisFullSequence.Substring(1)); // should be everything after the first character
-                        }
-                        else
-                        {
-                            Console.WriteLine("full");
-                            giantProtein.Append("-" + thisFullSequence);
-                        }
-
-
-
+                        bool isMetCleaved = mC && (thisFullSequence.Substring(0, 1) == "M");
+                        int startPosAfterMetCleavage = Convert.ToInt32(isMetCleaved);
+                        giantProtein.Append("-" + thisFullSequence.Substring(startPosAfterMetCleavage));
+                       
                         int fullSequenceLength = thisFullSequence.Length;
 
-                        foreach (var proteinFeature in _entry.feature)//process protein fragments
+                        foreach (var proteinFeature in _entry.feature) //process protein fragments
                         {
                             string type = proteinFeature.type.ToString();
 
@@ -806,7 +672,7 @@ namespace PS_0._00
                                 {
                                     begin = begin - 1;
                                     end = end - 1;
-                                    //Console.WriteLine("parse b: " + begin + "end: " + end);
+                                    //MessageBox.Show("parse b: " + begin + "end: " + end);
                                     if ((begin < 0) || (end < 0))
                                     {
                                         realFeature = false;
@@ -833,7 +699,7 @@ namespace PS_0._00
                             {
                                 if (mC && (begin == 0) && end >= 1 && (thisFullSequence.Substring(0, 1) == "M"))
                                 {
-                                    //Console.WriteLine("inside begin + 1");
+                                    //MessageBox.Show("inside begin + 1");
                                     begin = begin + 1;
                                 }
 
@@ -841,7 +707,7 @@ namespace PS_0._00
                                 {
                                     case "signalpeptide"://spaces are sometimes deleted in xml read
                                         giantProtein.Append("." + thisFullSequence.Substring(begin, (end - begin + 1)));
-                                        //Console.WriteLine(thisFullSequence.Substring(begin, (end - begin + 1)));
+                                        //MessageBox.Show(thisFullSequence.Substring(begin, (end - begin + 1)));
                                         break;
                                     case "chain":
                                         if (mC == true)
@@ -931,7 +797,7 @@ namespace PS_0._00
                                 {
                                     begin = begin - 1;
                                     end = end - 1;
-                                    //Console.WriteLine("parse b: " + begin + "end: " + end);
+                                    //MessageBox.Show("parse b: " + begin + "end: " + end);
                                     if ((begin < 0) || (end < 0))
                                     {
                                         realFeature = false;
@@ -964,7 +830,7 @@ namespace PS_0._00
                                     case "chain":
                                         if ((end - begin + 1) != fullSequenceLength)
                                         {
-                                            //Console.WriteLine("b: {0} e: {1} f: {2}", begin, end, fullSequenceLength);
+                                            //MessageBox.Show("b: {0} e: {1} f: {2}", begin, end, fullSequenceLength);
                                             nodeCount++;
                                         }
                                         break;
@@ -1005,35 +871,35 @@ namespace PS_0._00
             return kI;
         }
 
-        static bool ValidateUniProtXML(string testXmlFile)
-        {
-            bool valid = false;
-            string line1, line2;
-            try
-            {
-                using (StreamReader reader = new StreamReader(testXmlFile))
-                {
-                    line1 = reader.ReadLine();
-                    line2 = reader.ReadLine();
-                    reader.DiscardBufferedData();
-                    reader.BaseStream.Seek(0, System.IO.SeekOrigin.Begin);
+        //static bool ValidateUniProtXML(string testXmlFile)
+        //{
+        //    bool valid = false;
+        //    string line1, line2;
+        //    try
+        //    {
+        //        using (StreamReader reader = new StreamReader(testXmlFile))
+        //        {
+        //            line1 = reader.ReadLine();
+        //            line2 = reader.ReadLine();
+        //            reader.DiscardBufferedData();
+        //            reader.BaseStream.Seek(0, System.IO.SeekOrigin.Begin);
 
-                    if (line2.Contains("uniprot"))
-                    {
-                        valid = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("This is not a valid uniprot .xml file. Try again.");
-                    }
-                }
-            }
-            catch
-            {
-                Console.WriteLine("Try again.");
-            }
-            return valid;
-        }
+        //            if (line2.Contains("uniprot"))
+        //            {
+        //                valid = true;
+        //            }
+        //            else
+        //            {
+        //                MessageBox.Show("This is not a valid uniprot .xml file. Try again.");
+        //            }
+        //        }
+        //    }
+        //    catch
+        //    {
+        //        MessageBox.Show("Try again.");
+        //    }
+        //    return valid;
+        //}
 
         private void groupBox1_Enter(object sender, EventArgs e)
         {
