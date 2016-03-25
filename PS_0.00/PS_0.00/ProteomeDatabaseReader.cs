@@ -125,10 +125,19 @@ namespace PS_0._00
                 {
                     client.DownloadFile("http://www.uniprot.org/docs/ptmlist.txt", new_ptmlist_filepath);
                 }
-                File.Delete(oldPtmFilePath);
-                File.Move(new_ptmlist_filepath, oldPtmFilePath);
-            } catch { }
-
+                string old_ptmlist = File.ReadAllText(oldPtmFilePath);
+                string new_ptmlist = File.ReadAllText(new_ptmlist_filepath);
+                if (string.Equals(old_ptmlist, new_ptmlist))
+                {
+                    File.Delete(new_ptmlist_filepath);
+                }
+                else
+                {
+                    File.Delete(oldPtmFilePath);
+                    File.Move(new_ptmlist_filepath, oldPtmFilePath);
+                }
+            }
+            catch { }
             return oldPtmFilePath;
         }
     }
