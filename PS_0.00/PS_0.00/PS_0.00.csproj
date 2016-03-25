@@ -88,7 +88,7 @@
     <Compile Include="LoadDeconvolutionResults.Designer.cs">
       <DependentUpon>LoadDeconvolutionResults.cs</DependentUpon>
     </Compile>
-    <Compile Include="ModData.cs" />
+    <Compile Include="Modification.cs" />
     <Compile Include="NeuCodePairs.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -105,7 +105,7 @@
     <Compile Include="RawExperimentalProteoforms.Designer.cs">
       <DependentUpon>RawExperimentalProteoforms.cs</DependentUpon>
     </Compile>
-    <Compile Include="ReadUniprotPtmList.cs" />
+    <Compile Include="ProteoformDatabaseReader.cs" />
     <Compile Include="TheoreticalDatabase.cs">
       <SubType>Form</SubType>
     </Compile>

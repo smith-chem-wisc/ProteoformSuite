@@ -49,33 +49,28 @@ namespace PS_0._00
             DialogResult dr = this.openFileDialog2.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
-                String file = openFileDialog2.FileName;
+                String uniprotXmlFile = openFileDialog2.FileName;
                 try
                 {
-                    tb_UniProtXML_Path.Text = file;
-                    totalNumEntries = NumberOfUniProtEntrys(file);
+                    tb_UniProtXML_Path.Text = uniprotXmlFile;
+                    totalNumEntries = NumberOfUniProtEntrys(uniprotXmlFile);
                     proteinRawInfo = new protein[totalNumEntries];
-                    proteinRawInfo = GetProteinRawInfo(file, totalNumEntries);
+                    proteinRawInfo = GetProteinRawInfo(uniprotXmlFile, totalNumEntries);
                 }
                 catch (SecurityException ex)
                 {
                     // The user lacks appropriate permissions to read files, discover paths, etc.
-                    MessageBox.Show("Security error. Please contact your administrator for details.\n\n" +
-                        "Error message: " + ex.Message + "\n\n" +
-                        "Details (send to Support):\n\n" + ex.StackTrace
-                    );
+                    MessageBox.Show("Security error. Please contact your administrator for details.\n\nError message: " + ex.Message + "\n\n" +
+                        "Details (send to Support):\n\n" + ex.StackTrace);
                     tb_UniProtXML_Path.Text = "";
                 }
                 catch (Exception ex)
                 {
                     // Could not load the result file - probably related to Windows file system permissions.
-                    MessageBox.Show("Cannot display the file: " + file.Substring(file.LastIndexOf('\\'))
-                        + ". You may not have permission to read the file, or it may be corrupt.\n\n" +
-                        "Reported error: " + ex.Message);
+                    MessageBox.Show("Cannot display the file: " + uniprotXmlFile.Substring(uniprotXmlFile.LastIndexOf('\\'))
+                        + ". You may not have permission to read the file, or it may be corrupt.\n\nReported error: " + ex.Message);
                     tb_UniProtXML_Path.Text = "";
-
                 }
-
             }
         }
 
@@ -107,7 +102,6 @@ namespace PS_0._00
         {
             // Set the file dialog to filter for graphics files.
             this.openFileDialog2.Filter = "UniProt XML (*.xml)|*.xml";
-
             // Allow the user to select multiple images.
             this.openFileDialog2.Multiselect = false;
             this.openFileDialog2.Title = "UniProt XML Format Database";
@@ -117,7 +111,6 @@ namespace PS_0._00
         {
             // Set the file dialog to filter for graphics files.
             this.openFileDialog3.Filter = "UniProt PTM List (*.txt)|*.txt";
-
             // Allow the user to select multiple images.
             this.openFileDialog3.Multiselect = false;
             this.openFileDialog3.Title = "UniProt PTM List";
@@ -136,16 +129,14 @@ namespace PS_0._00
                 catch (SecurityException ex)
                 {
                     // The user lacks appropriate permissions to read files, discover paths, etc.
-                    MessageBox.Show("Security error. Please contact your administrator for details.\n\n" +
-                        "Error message: " + ex.Message + "\n\n" +
+                    MessageBox.Show("Security error. Please contact your administrator for details.\n\nError message: " + ex.Message + "\n\n" +
                         "Details (send to Support):\n\n" + ex.StackTrace);
                 }
                 catch (Exception ex)
                 {
                     // Could not load the result file - probably related to Windows file system permissions.
                     MessageBox.Show("Cannot display the file: " + file.Substring(file.LastIndexOf('\\'))
-                        + ". You may not have permission to read the file, or it may be corrupt.\n\n" +
-                        "Reported error: " + ex.Message);
+                        + ". You may not have permission to read the file, or it may be corrupt.\n\nReported error: " + ex.Message);
                 }
 
             }
@@ -158,10 +149,10 @@ namespace PS_0._00
             string kI = WhichLysineIsotopeComposition(); 
             aaIsotopeMassList = AminoAcidMasses.GetAA_Masses(Convert.ToBoolean(ckbx_OxidMeth.Checked), Convert.ToBoolean(ckbx_Carbam.Checked), kI);
             
-            ReadUniprotPtmList rup = new ReadUniprotPtmList();
-            ReadUniprotPtmList.oldPtmFilePath = tb_UniProtPtmList_Path.Text; // gets the exising path to PTM list into read_uniprot_ptlist class
-            Dictionary<string, ModData> uniprotModificationTable = new Dictionary<string, ModData>();
-            uniprotModificationTable = rup.rd_unip_ptms();
+            ProteomeDatabaseReader rup = new ProteomeDatabaseReader();
+            ProteomeDatabaseReader.oldPtmFilePath = tb_UniProtPtmList_Path.Text; // gets the exising path to PTM list into read_uniprot_ptlist class
+            Dictionary<string, Modification> uniprotModificationTable = new Dictionary<string, Modification>();
+            uniprotModificationTable = rup.ReadUniprotPtmlist();
 
             string giantProtein = GetOneGiantProtein(tb_UniProtXML_Path.Text, Convert.ToBoolean(ckbx_Meth_Cleaved.Checked));
             processEntries(proteinRawInfo, Convert.ToBoolean(ckbx_Meth_Cleaved.Checked), totalNumEntries, aaIsotopeMassList, Convert.ToInt32(nUD_MaxPTMs.Value), uniprotModificationTable);
@@ -198,7 +189,7 @@ namespace PS_0._00
         }
 
         static void processDecoys(int numDb, string giantProtein, protein[] pRD, bool mC, int num, Dictionary<char, double> aaIsotopeMassList, 
-            int maxPTMsPerProteoform, Dictionary<string, ModData> uniprotModificationTable)
+            int maxPTMsPerProteoform, Dictionary<string, Modification> uniprotModificationTable)
         {
 
             for (int decoyNumber = 0; decoyNumber < numDb; decoyNumber++)
@@ -225,7 +216,7 @@ namespace PS_0._00
         }
 
         static void processEntries(protein[] pRD, bool mC, int num, Dictionary<char, double> aaIsotopeMassList, 
-            int maxPTMsPerProteoform, Dictionary<string, ModData> uniprotModificationTable)
+            int maxPTMsPerProteoform, Dictionary<string, Modification> uniprotModificationTable)
         {
 
             DataTable target = GenerateProteoformDatabaseDataTable("target");
@@ -242,7 +233,7 @@ namespace PS_0._00
         }
 
         static void EnterTheoreticalProteformFamily(DataTable table, string seq, protein prot, string accession, int maxPTMsPerProteoform, bool isMetCleaved,
-            Dictionary<char, double> aaIsotopeMassList, Dictionary<string, ModData> uniprotModificationTable)
+            Dictionary<char, double> aaIsotopeMassList, Dictionary<string, Modification> uniprotModificationTable)
         {
             //Calculate the properties of this sequence
             double mass = CalculateProteoformMass(ref aaIsotopeMassList, seq);
@@ -269,9 +260,7 @@ namespace PS_0._00
         static double CalculateProteoformMass(ref Dictionary<char, double> aaIsotopeMassList, string pForm)
         {
             double proteoformMass = 18.010565; // start with water
-
             char[] aminoAcids = pForm.ToCharArray();
-
             for (int i = 0; i < pForm.Length; i++)
             {
                 double aMass = 0;
@@ -281,6 +270,7 @@ namespace PS_0._00
                 }
                 catch
                 {
+                    MessageBox.Show("Did not recognize amino acid " + aminoAcids[i] + " while calculating the mass.\nThis will be recorded as mass = 0.");
                     aMass = 0;
                 }
                 proteoformMass = proteoformMass + aMass;
@@ -289,11 +279,11 @@ namespace PS_0._00
             return proteoformMass;
         }
 
-        static protein[] GetProteinRawInfo(string inFile, int num)
+        static protein[] GetProteinRawInfo(string uniprotXmlFile, int num)
         {
             protein[] pRI = new protein[num];
 
-            using (FileStream xmlStream = new FileStream(inFile, FileMode.Open))
+            using (FileStream xmlStream = new FileStream(uniprotXmlFile, FileMode.Open))
             {
                 XmlReaderSettings settings = new XmlReaderSettings();
                 using (XmlReader xmlReader = XmlReader.Create(xmlStream, settings))
@@ -305,6 +295,7 @@ namespace PS_0._00
                     {
                         Dictionary<int, List<string>> pAP = new Dictionary<int, List<string>>();
 
+                        //Get the positions and descriptions of PTMs annotated for this entry; only if they are certain!
                         pAP = GetPositionsPTMs(_entry); // dictionary of positions and PTMs in complete entry
 
                         pRI[count].accession = _entry.accession[0];
@@ -338,7 +329,10 @@ namespace PS_0._00
                             int noPosition = 0;
                             try
                             {
-                                if (proteinFeature.location.ItemsElementName[0].ToString() != "position") { noPosition = 1; }
+                                if (proteinFeature.location.ItemsElementName[0].ToString() != "position")
+                                {
+                                    noPosition = 1;
+                                }
                             }
                             catch
                             {
@@ -492,20 +486,14 @@ namespace PS_0._00
             switch (proteinNameType)
             {
                 case 1: //Recommended Name
-                    {
-                        name = _ent.protein.recommendedName.fullName.Value;
-                        break;
-                    }
+                    name = _ent.protein.recommendedName.fullName.Value;
+                    break;
                 case 2: //Submitted Name
-                    {
-                        name = _ent.protein.submittedName[0].fullName.Value.ToString();
-                        break;
-                    }
+                    name = _ent.protein.submittedName[0].fullName.Value.ToString();
+                    break;
                 case 3: //Alternative Name
-                    {
-                        name = _ent.protein.alternativeName[0].fullName.Value.ToString();
-                        break;
-                    }
+                    name = _ent.protein.alternativeName[0].fullName.Value.ToString();
+                    break;
                 default:
                     name = "";
                     break;
@@ -518,6 +506,7 @@ namespace PS_0._00
         {
             Dictionary<int, List<string>> local_pAP = new Dictionary<int, List<string>>();
 
+            //Check out each feature in the list of features for this entry
             foreach (var proteinFeature in _ent.feature)//process protein ptms
             {
                 string type = proteinFeature.type.ToString();
@@ -551,7 +540,6 @@ namespace PS_0._00
                             }
                         }
                     }
-
                     if (realFeature)
                     {
                         begin = begin - 1;
@@ -561,7 +549,6 @@ namespace PS_0._00
                             realFeature = false;
                         }
                     }
-
                 }
                 else // protein only has single position location
                 {
@@ -578,7 +565,6 @@ namespace PS_0._00
                             }
                         }
                     }
-
                 }
 
                 if (realFeature)
@@ -607,8 +593,6 @@ namespace PS_0._00
                     }
                 }
             }
-
-
             return local_pAP;
         }
 

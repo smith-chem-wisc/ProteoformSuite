@@ -50,7 +50,7 @@ namespace PS_0._00
     class PtmCombos
     {
 
-        public List<OneUniquePtmGroup> combos(int numPtmsNeeded, Dictionary<string, ModData> uniprotModificationTable, Dictionary<int, List<string>> somePtmData)
+        public List<OneUniquePtmGroup> combos(int numPtmsNeeded, Dictionary<string, Modification> uniprotModificationTable, Dictionary<int, List<string>> somePtmData)
         {
 
             Dictionary<int, Dictionary<int, string>> sortedProteinPTMs = new Dictionary<int, Dictionary<int, string>>();
@@ -70,7 +70,7 @@ namespace PS_0._00
             return aupg;
         }
 
-        static List<OneUniquePtmGroup> GetGroups(List<int[]> uMC, Dictionary<int, Dictionary<int, string>> sPP, Dictionary<string, ModData> uniprotModificationTable)
+        static List<OneUniquePtmGroup> GetGroups(List<int[]> uMC, Dictionary<int, Dictionary<int, string>> sPP, Dictionary<string, Modification> uniprotModificationTable)
         {
             //Console.Writeline("  CALL GetGroups:");
             List<OneUniquePtmGroup> oupg = new List<OneUniquePtmGroup>();
@@ -89,7 +89,7 @@ namespace PS_0._00
                     Dictionary<int, string> posPTM = sPP[c[i]];
                     string ptm = posPTM[myKey];
                     ptms_in_one_combo.Add(ptm);
-                    double mass = uniprotModificationTable[ptm].MM;
+                    double mass = uniprotModificationTable[ptm].MonoisotopicMassShift;
                     p[i] = mass;
                 }
                 OneUniquePtmGroup one = new OneUniquePtmGroup();
@@ -112,7 +112,7 @@ namespace PS_0._00
 
             return oupg;
         }
-        static List<int[]> UniqueMassCombinations(List<int[]> uPC, Dictionary<int, Dictionary<int, string>> sPP, Dictionary<string, ModData> uniprotModificationTable)
+        static List<int[]> UniqueMassCombinations(List<int[]> uPC, Dictionary<int, Dictionary<int, string>> sPP, Dictionary<string, Modification> uniprotModificationTable)
         {
             //Console.Writeline("** Call UniqueMassCombinations");
             List<int[]> uMC = new List<int[]>();
@@ -137,7 +137,7 @@ namespace PS_0._00
                         one_ptm = kvp.Value;
                     }
 
-                    double one_ptm_mass = uniprotModificationTable[one_ptm].MM;
+                    double one_ptm_mass = uniprotModificationTable[one_ptm].MonoisotopicMassShift;
                     each_ptm_mass_array[i] = one_ptm_mass;
                 }
 
