@@ -97,6 +97,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Protein.cs" />
     <Compile Include="PtmCombos.cs" />
     <Compile Include="RandomExtensions.cs" />
     <Compile Include="RawExperimentalProteoforms.cs">
@@ -112,24 +113,29 @@
     <Compile Include="TheoreticalDatabase.Designer.cs">
       <DependentUpon>TheoreticalDatabase.cs</DependentUpon>
     </Compile>
-    <Compile Include="Uniprot_XSD.cs" />
     <EmbeddedResource Include="AggregatedProteoforms.resx">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ExperimentExperimentComparison.resx">
       <DependentUpon>ExperimentExperimentComparison.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ExperimentTheoreticalComparison.resx">
       <DependentUpon>ExperimentTheoreticalComparison.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="LoadDeconvolutionResults.resx">
       <DependentUpon>LoadDeconvolutionResults.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="NeuCodePairs.resx">
       <DependentUpon>NeuCodePairs.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -142,9 +148,11 @@
     </Compile>
     <EmbeddedResource Include="RawExperimentalProteoforms.resx">
       <DependentUpon>RawExperimentalProteoforms.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="TheoreticalDatabase.resx">
       <DependentUpon>TheoreticalDatabase.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
