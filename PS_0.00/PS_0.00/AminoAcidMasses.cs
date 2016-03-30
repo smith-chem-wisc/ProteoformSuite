@@ -8,7 +8,9 @@ namespace PS_0._00
 {
     class AminoAcidMasses
     {
-        public static Dictionary<char, double> GetAA_Masses(bool mOx, bool cBn, string kI)
+        public Dictionary<char, double> AA_Masses { get; set; }
+
+        public AminoAcidMasses(bool mOx, bool cBn, string kI)
         {
             var aaMasses = new Dictionary<char, double>();
             aaMasses.Add('A', 71.037114);
@@ -57,7 +59,7 @@ namespace PS_0._00
             aaMasses.Add('Y', 163.06332);
             aaMasses.Add('V', 99.068414);
 
-            return aaMasses;
+            this.AA_Masses = aaMasses;
         }
     }
 }
