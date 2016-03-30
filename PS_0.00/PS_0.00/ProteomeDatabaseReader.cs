@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml;
+using System.Xml.Linq;
 
 //Inspired by the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
 namespace PS_0._00
@@ -143,221 +143,128 @@ namespace PS_0._00
 
         public static IEnumerable<Protein> ReadUniprotXml(string uniprotXmlFile, int minPeptideLength, bool fixedMethionineCleavage)
         {
-            using (FileStream uniprotXmlStream = new FileStream(uniprotXmlFile, FileMode.Open))
+            StreamReader uniprotXmlStream = new StreamReader(uniprotXmlFile);
+            XDocument xml = XDocument.Parse(uniprotXmlStream.ReadToEnd());
+            XNamespace ns = xml.Root.Name.Namespace;
+
+            IEnumerable<XElement> entries = from node in xml.Descendants() where node.Name.LocalName == "entry" select node;
+            foreach (XElement entry in entries)
             {
-                using (XmlReader xml = XmlReader.Create(uniprotXmlStream))
+                //Used fields
+                string dataset = GetAttribute(entry, "dataset");
+                string accession = GetChild(entry, "accession").Value;
+                string name = GetChild(entry, "name").Value;
+                IEnumerable<XElement> features = from node in entry.Elements() where node.Name.LocalName == "feature" select node;
+                XElement sequence_elem = GetChild(entry, "sequence");
+                string sequence = sequence_elem.Value.Replace("\r", null).Replace("\n", null);
+                string fragment = GetAttribute(sequence_elem, "fragment");
+                int begin = 0;
+                int end = sequence.Length - 1;
+                Dictionary<int, List<string>> positionsAndPtms = new Dictionary<int, List<string>>();
+
+                //Other fields
+                //Full name follows desired order: recommendedName > submittedName > alternativeName because these appear in this order in UniProt-XMLs
+                string full_name = GetDescendant(entry, "fullName").Value; //Need to get it to loop through these
+                string organism = GetChild(GetChild(entry, "organism"), "name").Value;
+                string gene_name = GetChild(GetChild(entry, "gene"), "name").Value;
+                string protein_existence = GetAttribute(GetChild(entry, "proteinExistence"), "type"); 
+                string sequence_version = GetAttribute(sequence_elem, "version");
+
+                //Process the modified residues
+                foreach (XElement feature in features)
                 {
-                    string[] nodes = new string[6];
-
-                    string dataset = null;
-                    string accession = null;
-                    string name = null;
-                    string full_name = null;
-                    string fragment = null;
-                    string organism = null;
-                    string gene_name = null;
-                    string protein_existence = null;
-                    string sequence_version = null;
-                    string sequence = null;
-                    string feature_type = null;
-                    string feature_description = null;
-                    int feature_position = -1;
-                    string feature_position_status = null;
-                    int feature_begin = -1;
-                    string feature_begin_status = null;
-                    int feature_end = -1;
-                    string feature_end_status = null;
-
-                    int begin = 0;
-                    int end = -1;
-
-                    Dictionary<int, List<string>> positionsAndPtms = new Dictionary<int, List<string>>();
-                    List<SubsequenceVariant> subsequenceVariants = new List<SubsequenceVariant>();
-                    while (xml.Read())
+                    string feature_type = GetAttribute(feature, "type");
+                    if (feature_type == "modified residue")
                     {
-                        switch (xml.NodeType)
+                        XElement feature_position_elem = GetDescendant(feature, "position");
+                        int feature_position = ConvertPositionElem(feature_position_elem);
+                        if (feature_position >= 0)
                         {
-                            case XmlNodeType.Element: //start of an element <name>
-                                nodes[xml.Depth] = xml.Name;
-                                switch (xml.Name)
-                                {
-                                    case "entry":
-                                        dataset = xml.GetAttribute("dataset");
-                                        break;
-                                    case "accession":
-                                        if (accession == null)
-                                        {
-                                            accession = xml.ReadElementString();
-                                        }
-                                        break;
-                                    case "name":
-                                        if (xml.Depth == 2)
-                                        {
-                                            name = xml.ReadElementString();
-                                        }
-                                        else if (nodes[2] == "gene")
-                                        {
-                                            if (gene_name == null)
-                                            {
-                                                gene_name = xml.ReadElementString();
-                                            }
-                                        }
-                                        else if (nodes[2] == "organism")
-                                        {
-                                            if (organism == null)
-                                            {
-                                                organism = xml.ReadElementString();
-                                            }
-                                        }
-                                        break;
-                                    case "fullName": //recommendedName > submittedName > alternativeName; because these appear in this order in uniprotxmls, this is true
-                                        if (full_name == null)
-                                        {
-                                            full_name = xml.ReadElementString();
-                                        }
-                                        break;
-                                    case "proteinExistence":
-                                        protein_existence = xml.GetAttribute("type");
-                                        break;
-                                    case "feature":
-                                        feature_type = xml.GetAttribute("type");
-                                        feature_description = xml.GetAttribute("description");
-                                        break;
-                                    //positionType elements have default 'status' of certain
-                                    case "position":
-                                        if (xml.GetAttribute("position") != null)
-                                        {
-                                            feature_position = int.Parse(xml.GetAttribute("position")) - 1;
-                                        }
-                                        feature_position_status = xml.GetAttribute("status");
-                                        break;
-                                    case "begin":
-                                        if (xml.GetAttribute("position") != null)
-                                        {
-                                            feature_begin = int.Parse(xml.GetAttribute("position")) - 1;
-                                        }
-                                        feature_position_status = xml.GetAttribute("status");
-                                        break;
-                                    case "end":
-                                        if (xml.GetAttribute("position") != null)
-                                        {
-                                            feature_end = int.Parse(xml.GetAttribute("position")) - 1;
-                                        }
-                                        feature_position_status = xml.GetAttribute("status");
-                                        break;
-                                    case "sequence":
-                                        fragment = xml.GetAttribute("fragment");
-                                        sequence_version = xml.GetAttribute("version");
-                                        sequence = xml.ReadElementString().Replace("\r", null).Replace("\n", null);
-                                        end = sequence.Length - 1;
-                                        break;
-                                }
-                                break;
-                            case XmlNodeType.EndElement: //reached an end element </name>
-                                switch (xml.Name)
-                                {
-                                    case "feature":
-                                        switch (feature_type)
-                                        {
-                                            case "modified residue":
-                                                //Add the modification to the dictionary binned by position
-                                                List<string> modListAtPos;
-                                                feature_description = feature_description.Split(';')[0];
-                                                if (feature_position != -1)
-                                                {
-                                                    if (positionsAndPtms.TryGetValue(feature_position, out modListAtPos))
-                                                    {
-                                                        modListAtPos.Add(feature_description);
-                                                    }
-                                                    else
-                                                    {
-                                                        modListAtPos = new List<string> { feature_description };
-                                                        positionsAndPtms.Add(feature_position, modListAtPos);
-                                                    }
-                                                }
-                                                break;
-                                            case "chain":
-                                            case "signal peptide":
-                                            case "propeptide":
-                                            case "peptide":
-                                                if (feature_begin != -1 && feature_end != -1 && feature_begin_status != null && feature_end_status != null)
-                                                {
-                                                    subsequenceVariants.Add(new SubsequenceVariant(feature_type, feature_begin, feature_end));
-                                                }
-                                                break;
-                                            case "splice variant":
-                                            case "sequence variant":
-                                                break;
-                                        }
-
-                                        //reset feature values
-                                        feature_type = null;
-                                        feature_description = null;
-                                        feature_position = -1;
-                                        feature_position_status = null;
-                                        feature_begin = -1;
-                                        feature_begin_status = null;
-                                        feature_end = -1;
-                                        feature_end_status = null;
-                                        break;
-
-                                    case "entry":
-                                        yield return new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms);
-
-                                        foreach (SubsequenceVariant subseq_v in subsequenceVariants)
-                                        {
-                                            bool justMetCleavage = fixedMethionineCleavage && subseq_v.begin - 1 == begin && subseq_v.end == end;
-                                            int subseq_length = subseq_v.end - subseq_v.begin + 1;
-                                            if (!justMetCleavage && subseq_length != sequence.Length && subseq_length >= minPeptideLength)
-                                            {
-                                                yield return new Protein(accession, name, subseq_v.type, subseq_v.begin, subseq_v.end,
-                                                    sequence.Substring(subseq_v.begin, subseq_v.end - subseq_v.begin + 1),
-                                                    SegmentPtms(positionsAndPtms, subseq_v.begin, subseq_v.end));
-                                            }
-                                        }
-
-                                        //reset values
-                                        dataset = null;
-                                        accession = null;
-                                        name = null;
-                                        full_name = null;
-                                        fragment = null;
-                                        organism = null;
-                                        gene_name = null;
-                                        protein_existence = null;
-                                        sequence_version = null;
-                                        sequence = null;
-                                        feature_type = null;
-                                        feature_description = null;
-                                        feature_position = -1;
-                                        feature_position_status = null;
-                                        feature_begin = -1;
-                                        feature_begin_status = null;
-                                        feature_end = -1;
-                                        feature_end_status = null;
-                                        subsequenceVariants = new List<SubsequenceVariant>();
-                                        positionsAndPtms = new Dictionary<int, List<string>>();
-                                        break;
-                                }
-                                break;
+                            string feature_description = GetAttribute(feature, "description").Split(';')[0];
+                            List<string> modListAtPos;
+                            if (positionsAndPtms.TryGetValue(feature_position, out modListAtPos))
+                            {
+                                modListAtPos.Add(feature_description);
+                            }
+                            else
+                            {
+                                modListAtPos = new List<string> { feature_description };
+                                positionsAndPtms.Add(feature_position, modListAtPos);
+                            }
                         }
-                        uniprotXmlStream.Seek(0, SeekOrigin.Begin);
+                        else { continue; }
+                    }
+                }
+                
+                //Add the full length protein, and then add the fragments with segments of the above modification dictionary
+                yield return new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms);
+                //MessageBox.Show("added " + new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms).ToString());
+                foreach (XElement feature in features)
+                {
+                    string feature_type = GetAttribute(feature, "type");
+                    switch (feature_type)
+                    {
+                        case "chain":
+                        case "signal peptide":
+                        case "propeptide":
+                        case "peptide":
+                            XElement feature_begin_elem = GetDescendant(feature, "begin");
+                            XElement feature_end_elem = GetDescendant(feature, "end");
+                            int feature_begin = ConvertPositionElem(feature_begin_elem);
+                            int feature_end = ConvertPositionElem(feature_end_elem);
+                            if (feature_begin != -1 && feature_end != -1)
+                            {
+                                bool justMetCleavage = fixedMethionineCleavage && feature_begin - 1 == begin && feature_end == end;
+                                string subsequence = sequence.Substring(feature_begin, feature_end - feature_begin + 1);
+                                if (!justMetCleavage && 
+                                    subsequence.Length != sequence.Length && 
+                                    subsequence.Length >= minPeptideLength)
+                                {
+                                    yield return new Protein(accession, name, feature_type, feature_begin, feature_end, subsequence, 
+                                        SegmentPtms(positionsAndPtms, feature_begin, feature_end));
+                                    //MessageBox.Show("added " + new Protein(accession, name, feature_type, feature_begin, feature_end, subsequence,
+                                    //    SegmentPtms(positionsAndPtms, feature_begin, feature_end)).ToString());
+
+                                }
+                            }
+                            break;
+                        case "splice variant":
+                        case "sequence variant":
+                            break;
                     }
                 }
             }
         }
 
-        struct SubsequenceVariant
+        private static string GetAttribute(XElement element, string attribute_name)
         {
-            public string type;
-            public int begin;
-            public int end;
-            public SubsequenceVariant(string feature_type, int feature_begin, int feature_end)
+            XAttribute attribute = element.Attributes().FirstOrDefault(a => a.Name.LocalName == attribute_name);
+            return attribute == null ? "" : attribute.Value;
+        }
+
+        private static XElement GetChild(XElement element, string name)
+        {
+            XElement e = element.Elements().FirstOrDefault(elem => elem.Name.LocalName == name);
+            if (e != null) { return e; }
+            else { return new XElement("dummy_node"); }
+        }
+
+        private static XElement GetDescendant(XElement element, string name)
+        {
+            XElement e = element.Descendants().FirstOrDefault(elem => elem.Name.LocalName == name);
+            if (e != null) { return e; }
+            else { return new XElement("dummy_node"); }
+        }
+        
+        private static int ConvertPositionElem(XElement position_elem)
+        {
+            string feature_position = GetAttribute(position_elem, "position");
+            string feature_position_status = GetAttribute(position_elem, "status"); //positionType elements have default 'status' of certain
+            if (feature_position != "" && feature_position_status == "")
             {
-                type = feature_type;
-                begin = feature_begin;
-                end = feature_end;
+                return Convert.ToInt32(feature_position) - 1;
             }
+            else { return -1; }
         }
 
         static Dictionary<int, List<string>> SegmentPtms(Dictionary<int, List<string>> allPosPTMs, int begin, int end)
@@ -374,3 +281,6 @@ namespace PS_0._00
         }
     }
 }
+           
+                            
+                          

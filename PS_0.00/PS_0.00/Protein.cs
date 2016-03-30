@@ -26,5 +26,10 @@ namespace PS_0._00
             this.Sequence = sequence;
             this.PositionsAndPtms = positionsAndPtms;
         }
+        
+        public override string ToString()
+        {
+            return this.Accession + "_" + this.Name + "_" + this.Fragment;
+        }
     }
 }

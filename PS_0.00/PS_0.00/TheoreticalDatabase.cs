@@ -21,7 +21,6 @@ namespace PS_0._00
         DataGridView dgv_database = new DataGridView();
         ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
         Protein[] proteinRawInfo = null;
-        int totalNumEntries = 0;
 
         public TheoreticalDatabase()
         {
@@ -155,12 +154,13 @@ namespace PS_0._00
 
             //Read the UniProt-XML and ptmlist
             proteinRawInfo = ProteomeDatabaseReader.ReadUniprotXml(tb_UniProtXML_Path.Text, minPeptideLength, cleavedMethionine).ToArray();
+            MessageBox.Show("length of the protein array: " + Convert.ToString(proteinRawInfo.Length)); //6721 matches the number of entries...
             Dictionary<string, Modification> uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
 
             //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
             string giantProtein = GetOneGiantProtein(proteinRawInfo, cleavedMethionine);
-            processEntries(proteinRawInfo, cleavedMethionine, totalNumEntries, aaIsotopeMassList, maxPtms, uniprotModificationTable);
-            processDecoys(numDecoyDatabases, giantProtein, proteinRawInfo, cleavedMethionine, totalNumEntries, aaIsotopeMassList, maxPtms, uniprotModificationTable);
+            processEntries(proteinRawInfo, cleavedMethionine, aaIsotopeMassList, maxPtms, uniprotModificationTable);
+            processDecoys(numDecoyDatabases, giantProtein, proteinRawInfo, cleavedMethionine, aaIsotopeMassList, maxPtms, uniprotModificationTable);
 
             //Add the new proteoform databases to the bindingList, and then display
             foreach (DataTable dt in GlobalData.theoreticalAndDecoyDatabases.Tables)
@@ -187,40 +187,44 @@ namespace PS_0._00
             return dt;
         }
 
-        static void processDecoys(int numDb, string giantProtein, Protein[] pRD, bool mC, int num, Dictionary<char, double> aaIsotopeMassList, 
+        static void processEntries(Protein[] proteinRawData, bool methionineCleavage, Dictionary<char, double> aaIsotopeMassList,
+            int maxPTMsPerProteoform, Dictionary<string, Modification> uniprotModificationTable)
+        {
+
+            DataTable target = GenerateProteoformDatabaseDataTable("target");
+
+            for (int i = 0; i < proteinRawData.Length; i++)
+            {
+                bool isMetCleaved = (methionineCleavage && proteinRawData[i].Begin == 0 && proteinRawData[i].Sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
+                int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
+                string seq = proteinRawData[i].Sequence.Substring(startPosAfterCleavage, (proteinRawData[i].Sequence.Length - startPosAfterCleavage));
+                EnterTheoreticalProteformFamily(target, seq, proteinRawData[i], proteinRawData[i].Accession, maxPTMsPerProteoform, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
+            }
+            GlobalData.theoreticalAndDecoyDatabases.Tables.Add(target);
+        }
+
+        static void processDecoys(int numDb, string giantProtein, Protein[] proteinRawData, bool methionineCleavage, Dictionary<char, double> aaIsotopeMassList, 
             int maxPTMsPerProteoform, Dictionary<string, Modification> uniprotModificationTable)
         {
             for (int decoyNumber = 0; decoyNumber < numDb; decoyNumber++)
             {
+
                 DataTable decoy = GenerateProteoformDatabaseDataTable("DecoyDatabase_" + decoyNumber);
-                new Random().Shuffle(pRD); //Randomize Order of Protein Array
-                for (int i = 0; i < num; i++)
+
+                new Random().Shuffle(proteinRawData); //Randomize Order of Protein Array
+                for (int i = 0; i < proteinRawData.Length; i++)
                 {
-                    bool isMetCleaved = (mC && pRD[i].Begin == 0 && pRD[i].Sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
+                    bool isMetCleaved = (methionineCleavage && proteinRawData[i].Begin == 0 && proteinRawData[i].Sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
                     int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
 
                     //From the concatenated proteome, cut a decoy sequence of a randomly selected length
-                    int hunkLength = pRD[i].Sequence.Length - startPosAfterCleavage;
+                    int hunkLength = proteinRawData[i].Sequence.Length - startPosAfterCleavage;
                     string hunk = giantProtein.Substring(0, hunkLength);
                     giantProtein.Remove(0, hunkLength);
-                    EnterTheoreticalProteformFamily(decoy, hunk, pRD[i], pRD[i].Accession + "_DECOY_" + decoyNumber, maxPTMsPerProteoform, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
+                    EnterTheoreticalProteformFamily(decoy, hunk, proteinRawData[i], proteinRawData[i].Accession + "_DECOY_" + decoyNumber, maxPTMsPerProteoform, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
                 }
                 GlobalData.theoreticalAndDecoyDatabases.Tables.Add(decoy);
             }
-        }
-
-        static void processEntries(Protein[] pRD, bool mC, int num, Dictionary<char, double> aaIsotopeMassList, 
-            int maxPTMsPerProteoform, Dictionary<string, Modification> uniprotModificationTable)
-        {
-            DataTable target = GenerateProteoformDatabaseDataTable("target");
-            for (int i = 0; i < num; i++)
-            {
-                bool isMetCleaved = (mC && pRD[i].Begin == 0 && pRD[i].Sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
-                int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
-                string seq = pRD[i].Sequence.Substring(startPosAfterCleavage, (pRD[i].Sequence.Length - startPosAfterCleavage));
-                EnterTheoreticalProteformFamily(target, seq, pRD[i], pRD[i].Accession, maxPTMsPerProteoform, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
-            }
-            GlobalData.theoreticalAndDecoyDatabases.Tables.Add(target);
         }
 
         static void EnterTheoreticalProteformFamily(DataTable table, string seq, Protein prot, string accession, int maxPTMsPerProteoform, bool isMetCleaved,
