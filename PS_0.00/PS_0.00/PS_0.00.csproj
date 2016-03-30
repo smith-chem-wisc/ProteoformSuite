@@ -97,6 +97,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Protein.cs" />
     <Compile Include="ProteoformFamilyAssignment.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -115,7 +116,6 @@
     <Compile Include="TheoreticalDatabase.Designer.cs">
       <DependentUpon>TheoreticalDatabase.cs</DependentUpon>
     </Compile>
-    <Compile Include="Uniprot_XSD.cs" />
     <EmbeddedResource Include="AggregatedProteoforms.resx">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </EmbeddedResource>
