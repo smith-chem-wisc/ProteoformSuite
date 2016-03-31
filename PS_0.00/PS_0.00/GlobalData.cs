@@ -26,7 +26,7 @@ namespace PS_0._00
         public static DataTable experimentExperimentPairs = new DataTable();
         public static DataTable eePeakList = new DataTable();
         public static DataTable EE_Parent = new DataTable();
-        public static DataSet PF = new DataSet(); 
-        public static DataTable PF_Contents = new DataTable();
+        public static DataSet ProteoformFamilies = new DataSet(); 
+        public static DataTable ProteoformFamilyMetrics = new DataTable();
     }
 }
