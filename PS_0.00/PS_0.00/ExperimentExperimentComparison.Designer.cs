@@ -62,12 +62,12 @@
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.EE_update = new System.Windows.Forms.Button();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.EE_update = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peak_List)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
@@ -100,6 +100,7 @@
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
@@ -107,7 +108,6 @@
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
-            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -213,7 +213,7 @@
             // xMaxEE
             // 
             this.xMaxEE.DecimalPlaces = 2;
-            this.xMaxEE.Location = new System.Drawing.Point(9, 44);
+            this.xMaxEE.Location = new System.Drawing.Point(125, 44);
             this.xMaxEE.Name = "xMaxEE";
             this.xMaxEE.Size = new System.Drawing.Size(120, 20);
             this.xMaxEE.TabIndex = 11;
@@ -257,7 +257,7 @@
             // xMinEE
             // 
             this.xMinEE.DecimalPlaces = 2;
-            this.xMinEE.Location = new System.Drawing.Point(122, 44);
+            this.xMinEE.Location = new System.Drawing.Point(0, 44);
             this.xMinEE.Name = "xMinEE";
             this.xMinEE.Size = new System.Drawing.Size(120, 20);
             this.xMinEE.TabIndex = 24;
@@ -459,6 +459,28 @@
             this.splitContainer4.SplitterDistance = 214;
             this.splitContainer4.TabIndex = 18;
             // 
+            // EE_update
+            // 
+            this.EE_update.Location = new System.Drawing.Point(222, 9);
+            this.EE_update.Name = "EE_update";
+            this.EE_update.Size = new System.Drawing.Size(75, 23);
+            this.EE_update.TabIndex = 31;
+            this.EE_update.Text = "Update";
+            this.EE_update.UseMnemonic = false;
+            this.EE_update.UseVisualStyleBackColor = true;
+            this.EE_update.Click += new System.EventHandler(this.EE_update_Click);
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.nUD_EE_Upper_Bound);
+            this.groupBox4.Controls.Add(this.label10);
+            this.groupBox4.Location = new System.Drawing.Point(214, 38);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(160, 83);
+            this.groupBox4.TabIndex = 30;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "EE Histogram Boundary";
+            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.yMaxEE);
@@ -518,28 +540,6 @@
             this.splitContainer3.SplitterDistance = 379;
             this.splitContainer3.TabIndex = 17;
             // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.nUD_EE_Upper_Bound);
-            this.groupBox4.Controls.Add(this.label10);
-            this.groupBox4.Location = new System.Drawing.Point(214, 38);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(160, 83);
-            this.groupBox4.TabIndex = 30;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "EE Histogram Boundary";
-            // 
-            // EE_update
-            // 
-            this.EE_update.Location = new System.Drawing.Point(222, 9);
-            this.EE_update.Name = "EE_update";
-            this.EE_update.Size = new System.Drawing.Size(75, 23);
-            this.EE_update.TabIndex = 31;
-            this.EE_update.Text = "Update";
-            this.EE_update.UseMnemonic = false;
-            this.EE_update.UseVisualStyleBackColor = true;
-            this.EE_update.Click += new System.EventHandler(this.EE_update_Click);
-            // 
             // ExperimentExperimentComparison
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -583,6 +583,8 @@
             this.splitContainer4.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
@@ -592,8 +594,6 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
 
         }
