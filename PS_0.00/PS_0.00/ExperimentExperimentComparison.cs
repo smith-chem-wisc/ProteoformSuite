@@ -62,8 +62,6 @@ namespace PS_0._00
             this.Cursor = Cursors.Default;
         }
 
-        private DataGridViewRow clickedRow;
-
         private void dgv_EE_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
            
@@ -89,19 +87,30 @@ namespace PS_0._00
 
             ct_EE_peakList.Series["eePeakList"].XValueMember = "Delta Mass";
             ct_EE_peakList.Series["eePeakList"].YValueMembers = "Running Sum";
-            ct_EE_peakList.Series["eePeakList"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             ct_EE_peakList.DataSource = GlobalData.experimentExperimentPairs;
             ct_EE_peakList.DataBind();
             ct_EE_peakList.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
 
             ct_EE_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - Convert.ToDouble(nUD_PeakWidthBase.Value);
             ct_EE_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) + Convert.ToDouble(nUD_PeakWidthBase.Value);
-               
+            ct_EE_peakList.Series["eePeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+            ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
+            {
+                BorderColor = Color.Red,
+                IntervalOffset = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) + 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+            });
+
+            ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
+            {
+                BorderColor = Color.Red,
+                IntervalOffset = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+            });
         }
 
 
         private void EEPeakListGraphParameters(int clickedRow)
         {
+            ct_EE_Histogram.ChartAreas[0].AxisX.StripLines.Clear();
             double graphMax = Convert.ToDouble(dgv_EE_Peak_List.Rows[clickedRow].Cells["Average Delta Mass"].Value.ToString()) + Convert.ToDouble((nUD_PeakWidthBase.Value));
             double graphMin = Convert.ToDouble(dgv_EE_Peak_List.Rows[clickedRow].Cells["Average Delta Mass"].Value.ToString()) - Convert.ToDouble((nUD_PeakWidthBase.Value));
 
@@ -109,7 +118,7 @@ namespace PS_0._00
             {
                 ct_EE_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(graphMin);
             }
-            else {
+            else if (graphMin < 0){
                 ct_EE_peakList.ChartAreas[0].AxisX.Minimum = 0;
             }
 
@@ -117,10 +126,22 @@ namespace PS_0._00
             {
                 ct_EE_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(graphMax);
             }
-            else
+            else if (graphMax > Convert.ToDouble(nUD_EE_Upper_Bound.Value))
             {
                 ct_EE_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(nUD_EE_Upper_Bound.Value);
             }
+
+            ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
+                {
+                     BorderColor = Color.Red,
+                     IntervalOffset = Convert.ToDouble(dgv_EE_Peak_List.Rows[clickedRow].Cells["Average Delta Mass"].Value.ToString()) + 0.5*Convert.ToDouble((nUD_PeakWidthBase.Value)),
+                });
+
+            ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
+            {
+                BorderColor = Color.Red,
+                IntervalOffset = Convert.ToDouble(dgv_EE_Peak_List.Rows[clickedRow].Cells["Average Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+            });
         }
 
 
@@ -244,7 +265,6 @@ namespace PS_0._00
 
             ct_EE_Histogram.Series["eeHistogram"].XValueMember = "Delta Mass";
             ct_EE_Histogram.Series["eeHistogram"].YValueMembers = "Running Sum";
-            ct_EE_Histogram.Series["eeHistogram"].ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             ct_EE_Histogram.DataSource = GlobalData.experimentExperimentPairs;
             ct_EE_Histogram.DataBind();
             ct_EE_Histogram.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
@@ -445,14 +465,6 @@ namespace PS_0._00
         }
 
 
-
-        private void b_EE_Update_Click(object sender, EventArgs e)
-        {
-            RunTheGamut();
-        }
-
-
-
         private void cb_Graph_lowerThreshold_CheckedChanged(object sender, EventArgs e)
         {
             if (cb_Graph_lowerThreshold.Checked)
@@ -472,6 +484,11 @@ namespace PS_0._00
 
             }
 
+        }
+
+        private void EE_update_Click(object sender, EventArgs e)
+        {
+            RunTheGamut();
         }
     }
 
