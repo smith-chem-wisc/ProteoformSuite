@@ -241,7 +241,7 @@ namespace PS_0._00
         {
             //Create Parent Group of EE
             //DataTable dt = new DataTable();
-            MessageBox.Show("Working");
+            //MessageBox.Show("Working");
             GlobalData.EE_Parent.Columns.Add("Aggregated Mass Light", typeof(double));
             GlobalData.EE_Parent.Columns.Add("Aggregated Mass Heavy", typeof(double));
             GlobalData.EE_Parent.Columns.Add("Aggregated Intensity Light", typeof(double));
@@ -325,7 +325,7 @@ namespace PS_0._00
             GlobalData.ProteoformFamilyMetrics.Columns.Add("#_Exp", typeof(int));
             GlobalData.ProteoformFamilyMetrics.Columns.Add("Lysine Count", typeof(int));
             GlobalData.ProteoformFamilyMetrics.Columns.Add("#_IDs", typeof(int));
-            MessageBox.Show(group.ToString());
+           // MessageBox.Show(group.ToString());
             for (int i = 1; i < group + 1; i++) //Create datatable for each family
             {
                 GlobalData.ProteoformFamilies.Tables.Add(new DataTable());
@@ -349,7 +349,7 @@ namespace PS_0._00
                 GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Out of Range Decimal", typeof(bool));
                 GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Acceptable Peak", typeof(bool));
                 GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Group_#", typeof(int));
-                MessageBox.Show("1");
+                //MessageBox.Show("1");
 
                 DataRow[] dr = GlobalData.experimentTheoreticalPairs.Select("[Group_#]=" + i.ToString()); //get members of family #i
                 //fill datatable of contents
