@@ -46,7 +46,7 @@
             this.theoreticalProteoformDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.experimentTheoreticalComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.experimentExperimentComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.proteoformFamilyGraphsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.proteoformFamilyAssignmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -135,7 +135,7 @@
             this.theoreticalProteoformDatabaseToolStripMenuItem,
             this.experimentTheoreticalComparisonToolStripMenuItem,
             this.experimentExperimentComparisonToolStripMenuItem,
-            this.proteoformFamilyGraphsToolStripMenuItem});
+            this.proteoformFamilyAssignmentToolStripMenuItem});
             this.processingPhaseToolStripMenuItem.Name = "processingPhaseToolStripMenuItem";
             this.processingPhaseToolStripMenuItem.Size = new System.Drawing.Size(160, 29);
             this.processingPhaseToolStripMenuItem.Text = "Processing Phase";
@@ -191,10 +191,10 @@
             // 
             // proteoformFamilyGraphsToolStripMenuItem
             // 
-            this.proteoformFamilyGraphsToolStripMenuItem.Name = "proteoformFamilyGraphsToolStripMenuItem";
-            this.proteoformFamilyGraphsToolStripMenuItem.Size = new System.Drawing.Size(392, 30);
-            this.proteoformFamilyGraphsToolStripMenuItem.Text = "Proteoform Family Graphs";
-            this.proteoformFamilyGraphsToolStripMenuItem.Click += new System.EventHandler(this.proteoformFamilyGraphsToolStripMenuItem_Click);
+            this.proteoformFamilyAssignmentToolStripMenuItem.Name = "proteoformFamilyAssignmentToolStripMenuItem";
+            this.proteoformFamilyAssignmentToolStripMenuItem.Size = new System.Drawing.Size(392, 30);
+            this.proteoformFamilyAssignmentToolStripMenuItem.Text = "Proteoform Family Assignment";
+            this.proteoformFamilyAssignmentToolStripMenuItem.Click += new System.EventHandler(this.proteoformFamilyAssignmentToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -230,7 +230,7 @@
         private System.Windows.Forms.ToolStripMenuItem theoreticalProteoformDatabaseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem experimentTheoreticalComparisonToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem experimentExperimentComparisonToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem proteoformFamilyGraphsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem proteoformFamilyAssignmentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem printToolStripMenuItem;

@@ -194,7 +194,6 @@ namespace PS_0._00
         {
             DataTable eT = new DataTable();
             eT = GetNewET_DataTable();
-
             foreach (DataRow agRow in GlobalData.aggregatedProteoforms.Rows)
             {
                 double lowMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ET_Lower_Bound.Value);

@@ -150,15 +150,15 @@
             this.splitContainer4.SplitterDistance = 132;
             this.splitContainer4.TabIndex = 0;
             // 
-            // Form1
+            // ProteoformFamilyAssignment
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 474);
             this.Controls.Add(this.splitContainer1);
-            this.Name = "Form1";
-            this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Name = "ProteoformFamilyAssignment";
+            this.Text = "ProteoformFamilyAssignment";
+            this.Load += new System.EventHandler(this.ProteoformFamilyAssignment_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();

@@ -21,6 +21,7 @@ namespace PS_0._00
         TheoreticalDatabase tDB;
         ExperimentTheoreticalComparison eTC;
         ExperimentExperimentComparison eEC;
+        ProteoformFamilyAssignment pFA;
         //  Initialize Forms END
 
         // Data associated with lDR Form START
@@ -176,9 +177,25 @@ namespace PS_0._00
             }
         }
 
-        private void proteoformFamilyGraphsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("proteoformFamilyGraphsToolStripMenuItem_Click");
+            if (pFA == null)
+            {
+                pFA = new ProteoformFamilyAssignment();
+
+                //lDR.PassString = "This string from form 1";// this sends data to the aGP form.
+
+                pFA.MdiParent = this;
+                pFA.Show();
+                pFA.WindowState = FormWindowState.Maximized;
+                // This is where we get data back from aGP form
+            }
+            else
+            {
+                pFA.Show();
+                pFA.WindowState = FormWindowState.Maximized;
+                // This is where we get data back from aGP form
+            }
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
