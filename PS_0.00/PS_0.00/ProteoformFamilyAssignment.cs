@@ -17,111 +17,11 @@ namespace PS_0._00
         private DataGridView dataGridView1;
         private DataGridView dataGridView2;
         public static int group = 0;
+
         public ProteoformFamilyAssignment()
         {
             InitializeComponent();
-            //MessageBox.Show("Working");
-            //ProteoformFamilyAssignment_Load(object sender, EventArgs e);
         }
-        //public static DataTable EE = new DataTable();
-        //public static DataTable ET = new DataTable();
-
-
-        private void ee(object sender, EventArgs e)
-        {
-
-        }
-        //Everything has been made. Now put it in windows.
-
-
-     //   private void FillETGridView()
-   //     {
-            //BindingSource dgv_PF_BS = new BindingSource();
-          //  dgv_PF_BS.DataSource = GlobalData.ProteoformFamilyMetrics;
-        //    dgv_ET_Pairs.DataSource = dgv_PF_BS;
-      //      dgv_ET_Pairs.AutoGenerateColumns = true;
-    //        dgv_ET_Pairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-  //          dgv_ET_Pairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-//        }
-
-
-        //Find Children Function
-        private void Find_Children(double mass, int lys, EventArgs e)
-        {
-            DataTable EE_Children = new DataTable();
-            EE_Children.Columns.Add("Aggregated Mass Light", typeof(double));
-            EE_Children.Columns.Add("Aggregated Mass Heavy", typeof(double));
-            EE_Children.Columns.Add("Aggregated Intensity Light", typeof(double));
-            EE_Children.Columns.Add("Aggregated Intensity Heavy", typeof(double));
-            EE_Children.Columns.Add("Retention Time Light", typeof(double));
-            EE_Children.Columns.Add("Retention Time Heavy", typeof(double));
-            EE_Children.Columns.Add("Lysine Count", typeof(int));
-            EE_Children.Columns.Add("Delta Mass", typeof(double));
-            EE_Children.Columns.Add("Running Sum", typeof(int));
-            EE_Children.Columns.Add("Peak Center Count", typeof(int));
-            EE_Children.Columns.Add("Peak Center Mass", typeof(double));
-            EE_Children.Columns.Add("Out of Range Decimal", typeof(bool));
-            EE_Children.Columns.Add("Acceptable Peak", typeof(bool));
-            for (int a=0; a<GlobalData.experimentTheoreticalPairs.Rows.Count; a++)
-            {
-                if (GlobalData.experimentTheoreticalPairs.Rows[a]["Lysine Count"].Equals(lys) && GlobalData.experimentTheoreticalPairs.Rows[a]["Aggregated Mass"].Equals(mass))
-                {
-                    //MessageBox.Show((group.GetType()).ToString()); Still Int32 here...
-                    GlobalData.experimentTheoreticalPairs.Rows[a]["Group_#"] = group;
-                    //MessageBox.Show("Named Child!"); This worked!
-                }
-            }
-            //DataTable EE_Children = EE.Rows.Select("[Exp_Mass1] =" + mass + "AND [Lys_Ct] =" + lys);
-            //MessageBox.Show("for loop 1 works");
-            for (int a = 0; a < GlobalData.experimentExperimentPairs.Rows.Count; a++)
-            {
-                if (GlobalData.experimentExperimentPairs.Rows[a]["Lysine Count"].Equals(lys) && GlobalData.experimentExperimentPairs.Rows[a]["Aggregated Mass Light"].Equals(mass))
-                {
-                    EE_Children.Rows.Add(GlobalData.experimentExperimentPairs.Rows[a].ItemArray);
-                }
-            }
-            //MessageBox.Show("for loop 2 works");
-            //Never does the foreach loop before it fizzles
-            foreach (DataRow Child in EE_Children.Rows)
-            {
-                MessageBox.Show("Got a child");
-                //(ET.Rows.Select("[Lys_Ct] ="+ Child["Lys_Ct"]+ "AND [Exp_Mass] ="+ Child["Exp_Mass1"]))["Group_#"]=group;
-                for (int a = 0; a < GlobalData.experimentTheoreticalPairs.Rows.Count; a++)
-                {
-                    MessageBox.Show("Got an ETrow");
-                    if (GlobalData.experimentTheoreticalPairs.Rows[a]["Lysine Count"].Equals(Child["Lysine Count"]) && GlobalData.experimentTheoreticalPairs.Rows[a]["Aggregated Mass"].Equals(Child["Aggregated Mass Light"]))
-                    {
-                        MessageBox.Show("labeling the child");
-                        // Well that didn't work either. MessageBox.Show("Everything works before this point");
-                        GlobalData.experimentTheoreticalPairs.Rows[a]["Group_#"] = group;
-                        //HAD A BIG O FAT STINKY ERRA HEEA MessageBox.Show("NamedChild?");
-                       
-                    }
-                }
-                MessageBox.Show("We're gonna loop");
-                Find_Children(Convert.ToDouble(Child["Aggregated Mass Heavy"]), Convert.ToInt32(Child["Lysine Count"]), e);
-            }
-        }
-
-
-        //DataGridView3
-        private void dataGridView3_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-
-
-        //Click on PF_Contents table, see related Table in dataGridView2
-       // private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-       // {
-
-       // }
-
-     //   private void dataGridView2_CellContentClick(object sender, DataGridViewCellEventArgs e)
-      //  {
-      //
-        //}
 
         private void InitializeComponent()
         {
@@ -173,10 +73,15 @@ namespace PS_0._00
             // 
             // dataGridView1
             // 
+            this.dataGridView1.AllowUserToAddRows = false;
+            this.dataGridView1.AllowUserToDeleteRows = false;
+            this.dataGridView1.AllowUserToOrderColumns = true;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.Location = new System.Drawing.Point(0, 0);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.ReadOnly = true;
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.Size = new System.Drawing.Size(319, 230);
             this.dataGridView1.TabIndex = 0;
@@ -184,6 +89,9 @@ namespace PS_0._00
             // 
             // dataGridView2
             // 
+            this.dataGridView2.AllowUserToAddRows = false;
+            this.dataGridView2.AllowUserToDeleteRows = false;
+            this.dataGridView2.AllowUserToOrderColumns = true;
             this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView2.Location = new System.Drawing.Point(0, 0);
@@ -200,8 +108,6 @@ namespace PS_0._00
             this.ClientSize = new System.Drawing.Size(587, 456);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.Name = "ProteoformFamilyAssignment";
             this.Load += new System.EventHandler(this.ProteoformFamilyAssignment_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
@@ -217,31 +123,16 @@ namespace PS_0._00
 
         }
 
-        private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
+        private void ProteoformFamilyAssignment_Load(object sender, EventArgs e) //called in initializecomponents
         {
-            int groupnumber;
-            if (e.RowIndex >= 0)
-            {
-                DataGridViewRow row = this.dataGridView1.Rows[e.RowIndex];
-                groupnumber = Convert.ToInt32(row.Cells["Group_#"].Value);
-                dataGridView2.DataSource = GlobalData.ProteoformFamilies.Tables[groupnumber - 1];
-            }
+            Find_EE_Parents();
+            Assign_Group_Numbers(sender, e);
+            Create_Family_Metrics();
+            DGV();
         }
-
-        private void dataGridView2_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
-        {
-
-        }
-
-
-
-
-
-        private void ProteoformFamilyAssignment_Load(object sender, EventArgs e)
+        private void Find_EE_Parents()
         {
             //Create Parent Group of EE
-            //DataTable dt = new DataTable();
-            //MessageBox.Show("Working");
             GlobalData.EE_Parent.Columns.Add("Aggregated Mass Light", typeof(double));
             GlobalData.EE_Parent.Columns.Add("Aggregated Mass Heavy", typeof(double));
             GlobalData.EE_Parent.Columns.Add("Aggregated Intensity Light", typeof(double));
@@ -256,9 +147,6 @@ namespace PS_0._00
             GlobalData.EE_Parent.Columns.Add("Out of Range Decimal", typeof(bool));
             GlobalData.EE_Parent.Columns.Add("Acceptable Peak", typeof(bool));
 
-            //            EE_Parent.Columns.Add("Exp_Mass1", typeof(decimal));
-            //          EE_Parent.Columns.Add("Exp_Mass2", typeof(decimal));
-            //        EE_Parent.Columns.Add("Lys_Ct", typeof(int));
 
             for (int i = 0; i < GlobalData.experimentExperimentPairs.Rows.Count; i++) //go through each EE row
             {
@@ -274,7 +162,6 @@ namespace PS_0._00
                 {
                     GlobalData.EE_Parent.Rows.Add(GlobalData.experimentExperimentPairs.Rows[i].ItemArray); //add to dt EE_Parent
                 }
-                //MessageBox.Show(n.ToString());
             }
 
             //remove parent repeats
@@ -288,51 +175,92 @@ namespace PS_0._00
                     }
                 }
             }
+        }
+        
+        //Find Children Function
+        private void Find_Children(double mass, int lys, EventArgs e)
+        {
+            DataTable EE_Children = new DataTable();
+            EE_Children.Columns.Add("Aggregated Mass Light", typeof(double));
+            EE_Children.Columns.Add("Aggregated Mass Heavy", typeof(double));
+            EE_Children.Columns.Add("Aggregated Intensity Light", typeof(double));
+            EE_Children.Columns.Add("Aggregated Intensity Heavy", typeof(double));
+            EE_Children.Columns.Add("Retention Time Light", typeof(double));
+            EE_Children.Columns.Add("Retention Time Heavy", typeof(double));
+            EE_Children.Columns.Add("Lysine Count", typeof(int));
+            EE_Children.Columns.Add("Delta Mass", typeof(double));
+            EE_Children.Columns.Add("Running Sum", typeof(int));
+            EE_Children.Columns.Add("Peak Center Count", typeof(int));
+            EE_Children.Columns.Add("Peak Center Mass", typeof(double));
+            EE_Children.Columns.Add("Out of Range Decimal", typeof(bool));
+            EE_Children.Columns.Add("Acceptable Peak", typeof(bool));
+            for (int a = 0; a < GlobalData.experimentTheoreticalPairs.Rows.Count; a++)
+            {
+                if (GlobalData.experimentTheoreticalPairs.Rows[a]["Lysine Count"].Equals(lys) && GlobalData.experimentTheoreticalPairs.Rows[a]["Aggregated Mass"].Equals(mass))
+                {
+                    GlobalData.experimentTheoreticalPairs.Rows[a]["Group_#"] = group;
+                }
+            }
+            for (int a = 0; a < GlobalData.experimentExperimentPairs.Rows.Count; a++)
+            {
+                if (GlobalData.experimentExperimentPairs.Rows[a]["Lysine Count"].Equals(lys) && GlobalData.experimentExperimentPairs.Rows[a]["Aggregated Mass Light"].Equals(mass))
+                {
+                    EE_Children.Rows.Add(GlobalData.experimentExperimentPairs.Rows[a].ItemArray);
+                }
+            }
+            foreach (DataRow Child in EE_Children.Rows)
+            {
+                MessageBox.Show("Got a child");
+                for (int a = 0; a < GlobalData.experimentTheoreticalPairs.Rows.Count; a++)
+                {
+                    MessageBox.Show("Got an ETrow");
+                    if (GlobalData.experimentTheoreticalPairs.Rows[a]["Lysine Count"].Equals(Child["Lysine Count"]) && GlobalData.experimentTheoreticalPairs.Rows[a]["Aggregated Mass"].Equals(Child["Aggregated Mass Light"]))
+                    {
+                        MessageBox.Show("labeling the child");
+                        GlobalData.experimentTheoreticalPairs.Rows[a]["Group_#"] = group;
 
+                    }
+                }
+                MessageBox.Show("We're gonna loop");
+                Find_Children(Convert.ToDouble(Child["Aggregated Mass Heavy"]), Convert.ToInt32(Child["Lysine Count"]), e);
+            }
+        } //called in Assign_Group_Numbers()
+        private void Assign_Group_Numbers(object sender, EventArgs e)
+        {
             //Use Parent Group to assign group#s to ET
             //add group of zeroes
             GlobalData.experimentTheoreticalPairs.Columns.Add("Group_#", typeof(int)); //Add group id column to ET
-            //int group = 0;
             for (int i = 0; i < GlobalData.experimentTheoreticalPairs.Rows.Count; i++) //for each entry in ET
             {
-                //MessageBox.Show("pre row of zeroes");
                 GlobalData.experimentTheoreticalPairs.Rows[i]["Group_#"] = group; //populate group id column with zeroes
-                //MessageBox.Show("post row of zeroes");
             }
 
             //label parents in ET
             foreach (DataRow parent in GlobalData.EE_Parent.Rows)
             {
-                //MessageBox.Show(GlobalData.EE_Parent.Rows.Count.ToString());
                 group = group + 1;
-                //(ET.Rows.Select("[Lys_Ct] =" + parent["Lys_Ct"]+ "AND [Exp_Mass] =" + parent["Exp_Mass2"]))["Group_#"] = group;
                 for (int a = 0; a < GlobalData.experimentTheoreticalPairs.Rows.Count; a++)
                 {
                     if (GlobalData.experimentTheoreticalPairs.Rows[a]["Lysine Count"].Equals(parent["Lysine Count"]) && GlobalData.experimentTheoreticalPairs.Rows[a]["Aggregated Mass"].Equals(parent["Aggregated Mass Light"])) //&& ET.Rows[a]["Group_#"].Equals(0))
                     {
-                       // MessageBox.Show("Crash imminent");
                         GlobalData.experimentTheoreticalPairs.Rows[a]["Group_#"] = group;
-                       // MessageBox.Show("labeled parents");
                     }
                 }
                 Find_Children(Convert.ToDouble(parent["Aggregated Mass Heavy"]), Convert.ToInt32(parent["Lysine Count"]), e);
 
             }
+        }
 
-
+        private void Create_Family_Metrics()
+        {
             //Create dataTable of contents
             GlobalData.ProteoformFamilyMetrics.Columns.Add("Group_#", typeof(int));
             GlobalData.ProteoformFamilyMetrics.Columns.Add("#_Exp", typeof(int));
             GlobalData.ProteoformFamilyMetrics.Columns.Add("Lysine Count", typeof(int));
             GlobalData.ProteoformFamilyMetrics.Columns.Add("#_IDs", typeof(int));
-           // MessageBox.Show(group.ToString());
             for (int i = 1; i < group + 1; i++) //Create datatable for each family
             {
                 GlobalData.ProteoformFamilies.Tables.Add(new DataTable());
-                //      PF.Tables[i - 1].Columns.Add("Aggregated Mass", typeof(double));
-                //    PF.Tables[i - 1].Columns.Add("Lysine Count", typeof(int));
-                //  PF.Tables[i - 1].Columns.Add("Accession", typeof(string));
-                //DataTable dt = new DataTable();
                 GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Accession", typeof(string));
                 GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Name", typeof(string));
                 GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Fragment", typeof(string));
@@ -349,7 +277,6 @@ namespace PS_0._00
                 GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Out of Range Decimal", typeof(bool));
                 GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Acceptable Peak", typeof(bool));
                 GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Group_#", typeof(int));
-                //MessageBox.Show("1");
 
                 DataRow[] dr = GlobalData.experimentTheoreticalPairs.Select("[Group_#]=" + i.ToString()); //get members of family #i
                 //fill datatable of contents
@@ -369,9 +296,46 @@ namespace PS_0._00
                 content["#_IDs"] = distinctIds.Count;
                 GlobalData.ProteoformFamilyMetrics.Rows.Add(content);
             }
-            //MessageBox.Show("HelloWorld");
-            dataGridView1.DataSource = GlobalData.ProteoformFamilyMetrics;
+        }
+
+        private void DGV()
+        { 
+        dataGridView1.DataSource = GlobalData.ProteoformFamilyMetrics;
+            dataGridView1.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+            dataGridView1.AutoGenerateColumns = true;
+            dataGridView1.ColumnHeadersVisible = true;
+            dataGridView2.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dataGridView2.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+            dataGridView2.AutoGenerateColumns = true;
             //dataGridView3.DataSource = PF.Tables[3];
         }
+
+        //DataGridView3, Currently unused
+        private void dataGridView3_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+            int groupnumber;
+            if (e.RowIndex >= 0)
+            {
+                DataGridViewRow row = this.dataGridView1.Rows[e.RowIndex];
+                groupnumber = Convert.ToInt32(row.Cells["Group_#"].Value);
+                dataGridView2.DataSource = GlobalData.ProteoformFamilies.Tables[groupnumber - 1];
+            }
+        } //called in DGV
+
+        private void dataGridView2_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
+        {
+
+        } //called in dataGridView1_CellContentClick_1
+
+
+
+
+
     }
 }
