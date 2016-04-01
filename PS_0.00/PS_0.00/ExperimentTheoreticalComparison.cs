@@ -20,7 +20,6 @@ namespace PS_0._00
         {
             InitializeComponent();
             this.dgv_ET_Peak_List.MouseClick += new MouseEventHandler(dgv_ET_Peak_List_CellClick);
-
         }
 
         private void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
