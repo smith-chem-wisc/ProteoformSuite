@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.label4 = new System.Windows.Forms.Label();
+            this.nUD_MinPeptideLength = new System.Windows.Forms.NumericUpDown();
             this.btn_Make_Databases = new System.Windows.Forms.Button();
             this.tb_UniProtPtmList_Path = new System.Windows.Forms.TextBox();
             this.btn_UniPtPtmList = new System.Windows.Forms.Button();
@@ -48,17 +50,15 @@
             this.tb_UniProtXML_Path = new System.Windows.Forms.TextBox();
             this.btn_GetUniProtXML = new System.Windows.Forms.Button();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
-            this.label4 = new System.Windows.Forms.Label();
-            this.nUD_MinPeptideLength = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_MinPeptideLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_NumDecoyDBs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MaxPTMs)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Database)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_MinPeptideLength)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -66,7 +66,7 @@
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -97,10 +97,28 @@
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(70, 337);
+            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(123, 13);
+            this.label4.TabIndex = 16;
+            this.label4.Text = "Minimum Peptide Length";
+            // 
+            // nUD_MinPeptideLength
+            // 
+            this.nUD_MinPeptideLength.Location = new System.Drawing.Point(17, 334);
+            this.nUD_MinPeptideLength.Margin = new System.Windows.Forms.Padding(2);
+            this.nUD_MinPeptideLength.Name = "nUD_MinPeptideLength";
+            this.nUD_MinPeptideLength.Size = new System.Drawing.Size(48, 20);
+            this.nUD_MinPeptideLength.TabIndex = 15;
+            // 
             // btn_Make_Databases
             // 
             this.btn_Make_Databases.Location = new System.Drawing.Point(15, 416);
-            this.btn_Make_Databases.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btn_Make_Databases.Margin = new System.Windows.Forms.Padding(2);
             this.btn_Make_Databases.Name = "btn_Make_Databases";
             this.btn_Make_Databases.Size = new System.Drawing.Size(213, 22);
             this.btn_Make_Databases.TabIndex = 14;
@@ -111,7 +129,7 @@
             // tb_UniProtPtmList_Path
             // 
             this.tb_UniProtPtmList_Path.Location = new System.Drawing.Point(7, 75);
-            this.tb_UniProtPtmList_Path.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tb_UniProtPtmList_Path.Margin = new System.Windows.Forms.Padding(2);
             this.tb_UniProtPtmList_Path.Name = "tb_UniProtPtmList_Path";
             this.tb_UniProtPtmList_Path.Size = new System.Drawing.Size(216, 20);
             this.tb_UniProtPtmList_Path.TabIndex = 13;
@@ -119,7 +137,7 @@
             // btn_UniPtPtmList
             // 
             this.btn_UniPtPtmList.Location = new System.Drawing.Point(7, 51);
-            this.btn_UniPtPtmList.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btn_UniPtPtmList.Margin = new System.Windows.Forms.Padding(2);
             this.btn_UniPtPtmList.Name = "btn_UniPtPtmList";
             this.btn_UniPtPtmList.Size = new System.Drawing.Size(115, 20);
             this.btn_UniPtPtmList.TabIndex = 12;
@@ -141,7 +159,7 @@
             // 
             this.cmbx_DisplayWhichDB.FormattingEnabled = true;
             this.cmbx_DisplayWhichDB.Location = new System.Drawing.Point(15, 390);
-            this.cmbx_DisplayWhichDB.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cmbx_DisplayWhichDB.Margin = new System.Windows.Forms.Padding(2);
             this.cmbx_DisplayWhichDB.Name = "cmbx_DisplayWhichDB";
             this.cmbx_DisplayWhichDB.Size = new System.Drawing.Size(205, 21);
             this.cmbx_DisplayWhichDB.TabIndex = 10;
@@ -160,7 +178,7 @@
             // nUD_NumDecoyDBs
             // 
             this.nUD_NumDecoyDBs.Location = new System.Drawing.Point(17, 308);
-            this.nUD_NumDecoyDBs.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nUD_NumDecoyDBs.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_NumDecoyDBs.Name = "nUD_NumDecoyDBs";
             this.nUD_NumDecoyDBs.Size = new System.Drawing.Size(48, 20);
             this.nUD_NumDecoyDBs.TabIndex = 8;
@@ -178,7 +196,7 @@
             // nUD_MaxPTMs
             // 
             this.nUD_MaxPTMs.Location = new System.Drawing.Point(17, 283);
-            this.nUD_MaxPTMs.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nUD_MaxPTMs.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_MaxPTMs.Name = "nUD_MaxPTMs";
             this.nUD_MaxPTMs.Size = new System.Drawing.Size(48, 20);
             this.nUD_MaxPTMs.TabIndex = 6;
@@ -189,9 +207,9 @@
             this.groupBox1.Controls.Add(this.btn_NeuCode_Lt);
             this.groupBox1.Controls.Add(this.btn_NaturalIsotopes);
             this.groupBox1.Location = new System.Drawing.Point(7, 168);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(215, 105);
             this.groupBox1.TabIndex = 5;
             this.groupBox1.TabStop = false;
@@ -202,7 +220,7 @@
             // 
             this.btn_NeuCode_Hv.AutoSize = true;
             this.btn_NeuCode_Hv.Location = new System.Drawing.Point(11, 75);
-            this.btn_NeuCode_Hv.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btn_NeuCode_Hv.Margin = new System.Windows.Forms.Padding(2);
             this.btn_NeuCode_Hv.Name = "btn_NeuCode_Hv";
             this.btn_NeuCode_Hv.Size = new System.Drawing.Size(104, 17);
             this.btn_NeuCode_Hv.TabIndex = 7;
@@ -214,7 +232,7 @@
             // 
             this.btn_NeuCode_Lt.AutoSize = true;
             this.btn_NeuCode_Lt.Location = new System.Drawing.Point(11, 49);
-            this.btn_NeuCode_Lt.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btn_NeuCode_Lt.Margin = new System.Windows.Forms.Padding(2);
             this.btn_NeuCode_Lt.Name = "btn_NeuCode_Lt";
             this.btn_NeuCode_Lt.Size = new System.Drawing.Size(96, 17);
             this.btn_NeuCode_Lt.TabIndex = 6;
@@ -226,7 +244,7 @@
             // 
             this.btn_NaturalIsotopes.AutoSize = true;
             this.btn_NaturalIsotopes.Location = new System.Drawing.Point(11, 23);
-            this.btn_NaturalIsotopes.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btn_NaturalIsotopes.Margin = new System.Windows.Forms.Padding(2);
             this.btn_NaturalIsotopes.Name = "btn_NaturalIsotopes";
             this.btn_NaturalIsotopes.Size = new System.Drawing.Size(155, 17);
             this.btn_NaturalIsotopes.TabIndex = 0;
@@ -238,7 +256,7 @@
             // 
             this.ckbx_Meth_Cleaved.AutoSize = true;
             this.ckbx_Meth_Cleaved.Location = new System.Drawing.Point(17, 148);
-            this.ckbx_Meth_Cleaved.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ckbx_Meth_Cleaved.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_Meth_Cleaved.Name = "ckbx_Meth_Cleaved";
             this.ckbx_Meth_Cleaved.Size = new System.Drawing.Size(131, 17);
             this.ckbx_Meth_Cleaved.TabIndex = 4;
@@ -249,7 +267,7 @@
             // 
             this.ckbx_Carbam.AutoSize = true;
             this.ckbx_Carbam.Location = new System.Drawing.Point(17, 122);
-            this.ckbx_Carbam.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ckbx_Carbam.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_Carbam.Name = "ckbx_Carbam";
             this.ckbx_Carbam.Size = new System.Drawing.Size(129, 17);
             this.ckbx_Carbam.TabIndex = 3;
@@ -260,7 +278,7 @@
             // 
             this.ckbx_OxidMeth.AutoSize = true;
             this.ckbx_OxidMeth.Location = new System.Drawing.Point(17, 97);
-            this.ckbx_OxidMeth.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.ckbx_OxidMeth.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_OxidMeth.Name = "ckbx_OxidMeth";
             this.ckbx_OxidMeth.Size = new System.Drawing.Size(121, 17);
             this.ckbx_OxidMeth.TabIndex = 2;
@@ -270,7 +288,7 @@
             // tb_UniProtXML_Path
             // 
             this.tb_UniProtXML_Path.Location = new System.Drawing.Point(7, 31);
-            this.tb_UniProtXML_Path.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tb_UniProtXML_Path.Margin = new System.Windows.Forms.Padding(2);
             this.tb_UniProtXML_Path.Name = "tb_UniProtXML_Path";
             this.tb_UniProtXML_Path.Size = new System.Drawing.Size(216, 20);
             this.tb_UniProtXML_Path.TabIndex = 1;
@@ -278,7 +296,7 @@
             // btn_GetUniProtXML
             // 
             this.btn_GetUniProtXML.Location = new System.Drawing.Point(7, 6);
-            this.btn_GetUniProtXML.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btn_GetUniProtXML.Margin = new System.Windows.Forms.Padding(2);
             this.btn_GetUniProtXML.Name = "btn_GetUniProtXML";
             this.btn_GetUniProtXML.Size = new System.Drawing.Size(115, 20);
             this.btn_GetUniProtXML.TabIndex = 0;
@@ -294,30 +312,12 @@
             this.dgv_Database.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_Database.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_Database.Location = new System.Drawing.Point(0, 0);
-            this.dgv_Database.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgv_Database.Margin = new System.Windows.Forms.Padding(2);
             this.dgv_Database.Name = "dgv_Database";
             this.dgv_Database.ReadOnly = true;
             this.dgv_Database.RowTemplate.Height = 28;
             this.dgv_Database.Size = new System.Drawing.Size(519, 450);
             this.dgv_Database.TabIndex = 0;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(70, 337);
-            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(144, 13);
-            this.label4.TabIndex = 16;
-            this.label4.Text = "Number of Decoy Databases";
-            // 
-            // nUD_MinPeptideLength
-            // 
-            this.nUD_MinPeptideLength.Location = new System.Drawing.Point(17, 334);
-            this.nUD_MinPeptideLength.Margin = new System.Windows.Forms.Padding(2);
-            this.nUD_MinPeptideLength.Name = "nUD_MinPeptideLength";
-            this.nUD_MinPeptideLength.Size = new System.Drawing.Size(48, 20);
-            this.nUD_MinPeptideLength.TabIndex = 15;
             // 
             // TheoreticalDatabase
             // 
@@ -326,7 +326,7 @@
             this.ClientSize = new System.Drawing.Size(788, 454);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "TheoreticalDatabase";
             this.Text = "TheoreticalDatabase";
             this.Load += new System.EventHandler(this.TheoreticalDatabase_Load);
@@ -335,12 +335,12 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_MinPeptideLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_NumDecoyDBs)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MaxPTMs)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Database)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_MinPeptideLength)).EndInit();
             this.ResumeLayout(false);
 
         }
