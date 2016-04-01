@@ -110,23 +110,22 @@ namespace PS_0._00
 
         private void EEPeakListGraphParameters(int clickedRow)
         {
-            ct_EE_Histogram.ChartAreas[0].AxisX.StripLines.Clear();
+            ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
             double graphMax = Convert.ToDouble(dgv_EE_Peak_List.Rows[clickedRow].Cells["Average Delta Mass"].Value.ToString()) + Convert.ToDouble((nUD_PeakWidthBase.Value));
             double graphMin = Convert.ToDouble(dgv_EE_Peak_List.Rows[clickedRow].Cells["Average Delta Mass"].Value.ToString()) - Convert.ToDouble((nUD_PeakWidthBase.Value));
 
-            if (graphMin >= 0 && graphMin < graphMax)
+            if (graphMin < graphMax)
             {
+                ct_EE_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(graphMax);
+
                 ct_EE_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(graphMin);
             }
-            else if (graphMin < 0){
+
+            if (graphMin < 0){
                 ct_EE_peakList.ChartAreas[0].AxisX.Minimum = 0;
             }
 
-            if (graphMax <= Convert.ToDouble(nUD_EE_Upper_Bound.Value) && graphMax > graphMin)
-            {
-                ct_EE_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(graphMax);
-            }
-            else if (graphMax > Convert.ToDouble(nUD_EE_Upper_Bound.Value))
+            if (graphMax > Convert.ToDouble(nUD_EE_Upper_Bound.Value))
             {
                 ct_EE_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(nUD_EE_Upper_Bound.Value);
             }

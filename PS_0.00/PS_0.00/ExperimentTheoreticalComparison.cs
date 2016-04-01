@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
+
 
 namespace PS_0._00
 {
@@ -16,6 +18,8 @@ namespace PS_0._00
         public ExperimentTheoreticalComparison()
         {
             InitializeComponent();
+            this.dgv_ET_Peak_List.MouseClick += new MouseEventHandler(dgv_EE_Peak_List_CellClick);
+
         }
 
         private void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
@@ -28,6 +32,7 @@ namespace PS_0._00
             InitializeETPeakListTable();
             FillETPeakListTable();
             FillETGridView();
+            GraphETPeakList();
             UpdateFiguresOfMerit();
         }
 
@@ -42,6 +47,81 @@ namespace PS_0._00
         //    FillETGridView();
         //    UpdateFiguresOfMerit();
         //}
+
+        private void dgv_EE_Peak_List_CellClick(object sender, MouseEventArgs e)
+        {
+
+            if (e.Button == MouseButtons.Left)
+            {
+                int clickedRow = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
+                if (clickedRow >= 0 && clickedRow < GlobalData.etPeakList.Rows.Count)
+                {
+                    ETPeakListGraphParameters(clickedRow);
+                }
+            }
+        }
+
+        private void GraphETPeakList()
+
+        {
+            string colName = "Delta Mass";
+            string direction = "DESC";
+            DataTable dt = GlobalData.experimentTheoreticalPairs;
+            dt.DefaultView.Sort = colName + " " + direction;
+            dt = dt.DefaultView.ToTable();
+            GlobalData.experimentTheoreticalPairs = dt;
+
+            ct_ET_peakList.Series["etPeakList"].XValueMember = "Delta Mass";
+            ct_ET_peakList.Series["etPeakList"].YValueMembers = "Running Sum";
+            ct_ET_peakList.DataSource = GlobalData.experimentTheoreticalPairs;
+            ct_ET_peakList.DataBind();
+            ct_ET_peakList.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
+
+            ct_ET_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(dgv_ET_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - Convert.ToDouble(nUD_PeakWidthBase.Value);
+            ct_ET_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(dgv_ET_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) + Convert.ToDouble(nUD_PeakWidthBase.Value);
+            ct_ET_peakList.Series["etPeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+            ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
+            {
+                BorderColor = Color.Red,
+                IntervalOffset = Convert.ToDouble(dgv_ET_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) + 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+            });
+
+            ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
+            {
+                BorderColor = Color.Red,
+                IntervalOffset = Convert.ToDouble(dgv_ET_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+            });
+        }
+
+
+        private void ETPeakListGraphParameters(int clickedRow)
+        {
+            ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
+            double graphMax = Convert.ToDouble(dgv_ET_Peak_List.Rows[clickedRow].Cells["Average Delta Mass"].Value.ToString()) + Convert.ToDouble((nUD_PeakWidthBase.Value));
+            double graphMin = Convert.ToDouble(dgv_ET_Peak_List.Rows[clickedRow].Cells["Average Delta Mass"].Value.ToString()) - Convert.ToDouble((nUD_PeakWidthBase.Value));
+
+            if (graphMin < graphMax)
+            {
+                ct_ET_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(graphMin);
+                ct_ET_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(graphMax);
+            }
+
+            ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
+            {
+                BorderColor = Color.Red,
+                IntervalOffset = Convert.ToDouble(dgv_ET_Peak_List.Rows[clickedRow].Cells["Average Delta Mass"].Value.ToString()) + 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+            });
+
+            ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
+            {
+                BorderColor = Color.Red,
+                IntervalOffset = Convert.ToDouble(dgv_ET_Peak_List.Rows[clickedRow].Cells["Average Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+            });
+        }
+
+
+
+
 
         private void UpdateFiguresOfMerit()
         {
@@ -120,7 +200,7 @@ namespace PS_0._00
                 }
                 GlobalData.experimentTheoreticalPairs.AcceptChanges();
             }
-
+            GlobalData.etPeakList = etPeakList;
             BindingSource dgv_ET_Peak_List_BS = new BindingSource();
             dgv_ET_Peak_List_BS.DataSource = etPeakList;
             dgv_ET_Peak_List.DataSource = dgv_ET_Peak_List_BS;
@@ -153,6 +233,12 @@ namespace PS_0._00
 
             ct_ET_Histogram.DataSource = GlobalData.experimentTheoreticalPairs;
             ct_ET_Histogram.DataBind();
+            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine()
+    {
+        BorderColor = Color.Red,
+        IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value),
+    });
+            ct_ET_Histogram.Series["eeHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
 
         }
 
