@@ -210,18 +210,14 @@ namespace PS_0._00
             }
             foreach (DataRow Child in EE_Children.Rows)
             {
-                MessageBox.Show("Got a child");
                 for (int a = 0; a < GlobalData.experimentTheoreticalPairs.Rows.Count; a++)
                 {
-                    MessageBox.Show("Got an ETrow");
                     if (GlobalData.experimentTheoreticalPairs.Rows[a]["Lysine Count"].Equals(Child["Lysine Count"]) && GlobalData.experimentTheoreticalPairs.Rows[a]["Aggregated Mass"].Equals(Child["Aggregated Mass Light"]))
                     {
-                        MessageBox.Show("labeling the child");
                         GlobalData.experimentTheoreticalPairs.Rows[a]["Group_#"] = group;
 
                     }
                 }
-                MessageBox.Show("We're gonna loop");
                 Find_Children(Convert.ToDouble(Child["Aggregated Mass Heavy"]), Convert.ToInt32(Child["Lysine Count"]), e);
             }
         } //called in Assign_Group_Numbers()

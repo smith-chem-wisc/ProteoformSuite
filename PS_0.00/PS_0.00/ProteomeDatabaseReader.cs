@@ -153,18 +153,23 @@ namespace PS_0._00
                 //Used fields
                 string dataset = GetAttribute(entry, "dataset");
                 string accession = GetChild(entry, "accession").Value;
-                string name = GetChild(entry, "name").Value;
+                string full_name = GetDescendant(entry, "fullName").Value;
                 IEnumerable<XElement> features = from node in entry.Elements() where node.Name.LocalName == "feature" select node;
                 XElement sequence_elem = GetChild(entry, "sequence");
                 string sequence = sequence_elem.Value.Replace("\r", null).Replace("\n", null);
                 string fragment = GetAttribute(sequence_elem, "fragment");
+                if (fragment == "" || fragment == null)
+                {
+                    fragment = "Full";
+                    if (fixedMethionineCleavage) { fragment += "_MetCleaved";  }
+                }
                 int begin = 0;
                 int end = sequence.Length - 1;
                 Dictionary<int, List<string>> positionsAndPtms = new Dictionary<int, List<string>>();
 
                 //Other fields
                 //Full name follows desired order: recommendedName > submittedName > alternativeName because these appear in this order in UniProt-XMLs
-                string full_name = GetDescendant(entry, "fullName").Value; //Need to get it to loop through these
+                string name = GetChild(entry, "name").Value;
                 string organism = GetChild(GetChild(entry, "organism"), "name").Value;
                 string gene_name = GetChild(GetChild(entry, "gene"), "name").Value;
                 string protein_existence = GetAttribute(GetChild(entry, "proteinExistence"), "type"); 
@@ -197,7 +202,7 @@ namespace PS_0._00
                 }
                 
                 //Add the full length protein, and then add the fragments with segments of the above modification dictionary
-                yield return new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms);
+                yield return new Protein(accession, full_name, fragment, begin, end, sequence, positionsAndPtms);
                 //MessageBox.Show("added " + new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms).ToString());
                 foreach (XElement feature in features)
                 {
@@ -220,7 +225,7 @@ namespace PS_0._00
                                     subsequence.Length != sequence.Length && 
                                     subsequence.Length >= minPeptideLength)
                                 {
-                                    yield return new Protein(accession, name, feature_type, feature_begin, feature_end, subsequence, 
+                                    yield return new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence, 
                                         SegmentPtms(positionsAndPtms, feature_begin, feature_end));
                                     //MessageBox.Show("added " + new Protein(accession, name, feature_type, feature_begin, feature_end, subsequence,
                                     //    SegmentPtms(positionsAndPtms, feature_begin, feature_end)).ToString());
