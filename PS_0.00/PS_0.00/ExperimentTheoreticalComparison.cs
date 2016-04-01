@@ -15,10 +15,11 @@ namespace PS_0._00
     public partial class ExperimentTheoreticalComparison : Form
     {
         DataTable etPeakList = new DataTable();
+
         public ExperimentTheoreticalComparison()
         {
             InitializeComponent();
-            this.dgv_ET_Peak_List.MouseClick += new MouseEventHandler(dgv_EE_Peak_List_CellClick);
+            this.dgv_ET_Peak_List.MouseClick += new MouseEventHandler(dgv_ET_Peak_List_CellClick);
 
         }
 
@@ -48,7 +49,7 @@ namespace PS_0._00
         //    UpdateFiguresOfMerit();
         //}
 
-        private void dgv_EE_Peak_List_CellClick(object sender, MouseEventArgs e)
+        private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
 
             if (e.Button == MouseButtons.Left)
@@ -198,6 +199,7 @@ namespace PS_0._00
                     }                  
 
                 }
+
                 GlobalData.experimentTheoreticalPairs.AcceptChanges();
             }
             GlobalData.etPeakList = etPeakList;
@@ -238,7 +240,7 @@ namespace PS_0._00
         BorderColor = Color.Red,
         IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value),
     });
-            ct_ET_Histogram.Series["eeHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+            ct_ET_Histogram.Series["etHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
 
         }
 
