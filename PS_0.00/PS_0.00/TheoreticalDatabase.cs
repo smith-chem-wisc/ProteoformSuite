@@ -21,6 +21,7 @@ namespace PS_0._00
         DataGridView dgv_database = new DataGridView();
         ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
         Protein[] proteinRawInfo = null;
+        DataTableHandler dataTableHandler = new DataTableHandler();
 
         public TheoreticalDatabase()
         {
@@ -75,12 +76,11 @@ namespace PS_0._00
 
         private void FillDataBaseTable(string table)
         {
-            BindingSource dgv_DB_BS = new BindingSource();
-            dgv_DB_BS.DataSource = GlobalData.theoreticalAndDecoyDatabases.Tables[table];
-            dgv_Database.DataSource = dgv_DB_BS;
-            dgv_database.AutoGenerateColumns = true;
-            dgv_database.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_database.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+            DataTable displayTable = GlobalData.theoreticalAndDecoyDatabases.Tables[table];
+            string[] mass_column_names = new string[] { "Mass", "PTM Group Mass", "Proteoform Mass" };
+            string[] other_columns = new string[] { };
+            BindingSource dgv_DB_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_Database, displayTable,
+                other_columns, other_columns, other_columns, mass_column_names);
         }
 
         private void btn_GetUniProtXML_Click(object sender, EventArgs e)

@@ -63,6 +63,7 @@
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </Compile>
     <Compile Include="AminoAcidMasses.cs" />
+    <Compile Include="DataTableHandler.cs" />
     <Compile Include="ExperimentExperimentComparison.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -103,11 +104,11 @@
     </Compile>
     <Compile Include="PtmCombos.cs" />
     <Compile Include="RandomExtensions.cs" />
-    <Compile Include="RawExperimentalProteoforms.cs">
+    <Compile Include="RawExperimentalComponents.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="RawExperimentalProteoforms.Designer.cs">
-      <DependentUpon>RawExperimentalProteoforms.cs</DependentUpon>
+    <Compile Include="RawExperimentalComponents.Designer.cs">
+      <DependentUpon>RawExperimentalComponents.cs</DependentUpon>
     </Compile>
     <Compile Include="ProteomeDatabaseReader.cs" />
     <Compile Include="TheoreticalDatabase.cs">
@@ -146,8 +147,8 @@
     <EmbeddedResource Include="ProteoformFamilyAssignment.resx">
       <DependentUpon>ProteoformFamilyAssignment.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="RawExperimentalProteoforms.resx">
-      <DependentUpon>RawExperimentalProteoforms.cs</DependentUpon>
+    <EmbeddedResource Include="RawExperimentalComponents.resx">
+      <DependentUpon>RawExperimentalComponents.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TheoreticalDatabase.resx">
       <DependentUpon>TheoreticalDatabase.cs</DependentUpon>

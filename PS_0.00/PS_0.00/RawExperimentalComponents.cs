@@ -9,35 +9,116 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Excel = Microsoft.Office.Interop.Excel; //Right click Solution/Explorer/References. Then Add  "Reference". Assemblis/Extension/Microsoft.Office.Interop.Excel
+using Excel = Microsoft.Office.Interop.Excel; //Right click Solution/Explorer/References. Then Add  "Reference". Assemblies/Extension/Microsoft.Office.Interop.Excel
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace PS_0._00
 {
-    public partial class RawExperimentalProteoforms : Form
+    public partial class RawExperimentalComponents : Form
     {
+        DataTableHandler dataTableHandler = new DataTableHandler();
 
-        public RawExperimentalProteoforms()
+        private void RoundDoubleColumn(DataTable table, string column_name, int num_decimal_places)
+        {
+            table.AsEnumerable().ToList().ForEach(p => p.SetField<Double>(column_name, Math.Round(p.Field<Double>(column_name), num_decimal_places)));
+        }
+
+        public RawExperimentalComponents()
         {
             InitializeComponent();
         }
 
-        private void RawExperimentalProteoforms_Load(object sender, EventArgs e)
+        private void RawExperimentalComponents_Load(object sender, EventArgs e)
         {
             GlobalData.deconResultsFiles = GetDeconResults();
-            GlobalData.rawExperimentalProteoforms = GetRawProteoforms();
+            GlobalData.rawExperimentalComponents = GetRawComponents();
             GlobalData.rawExperimentalChargeStateData = GetRawChargeStates();
-
-            BindingSource dgv_rep_BS = new BindingSource();
-            dgv_rep_BS.DataSource = GlobalData.rawExperimentalProteoforms;
-            dgv_RawExpProt_MI_masses.DataSource = dgv_rep_BS;
-            dgv_RawExpProt_MI_masses.AutoGenerateColumns = true;
-            dgv_RawExpProt_MI_masses.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_RawExpProt_MI_masses.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-
             CalculateWeightedMonoisotopicMass();
+
+            //Round decimals before displaying
+            string[] rt_column_names = new string[] { "Apex RT" };
+            string[] abundance_column_names = new string[] { "Relative Abundance", "Fractional Abundance" };
+            string[] intensity_column_names = new string[] { "Sum Intensity" };
+            string[] mass_column_names = new string[] { "Monoisotopic Mass", "Delta Mass", "Weighted Monoisotopic Mass" };
+            BindingSource bs_rawExpComp_monoisotopics = dataTableHandler.DisplayWithRoundedDoubles(dgv_RawExpComp_MI_masses, GlobalData.rawExperimentalComponents,
+                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
+
+        }
+
+        private DataSet GetDeconResults()
+        {
+            DataSet ds = new DataSet();
+
+            foreach (string file in GlobalData.deconResultsFileNames)
+            {
+                DataTable dt = new DataTable();
+                dt = ReadExcelFile(file);
+                DataTable dc = dt.Clone();
+                dc.Columns[0].DataType = typeof(int);
+                foreach (DataRow row in dt.Rows)
+                {
+                    int number;
+                    bool result = int.TryParse(row[dt.Columns[0].ColumnName].ToString(), out number);
+                    if (result)
+                    {
+                        dc.ImportRow(row);
+                    }
+                    else
+                    {
+                        row[dt.Columns[0].ColumnName] = "-1";
+                        dc.ImportRow(row);
+                    }
+
+                }
+                dc.Columns.Add("Filename", typeof(string));
+
+                foreach (DataRow row in dc.Rows)
+                {
+                    row["Filename"] = Path.GetFileName(file);
+                }
+
+                ds.Tables.Add(dc);
+            }
+            return ds;
+        }
+
+        private DataTable GetRawComponents()
+        {
+            DataTable deconvolutionResults = GlobalData.deconResultsFiles.Tables[0].Clone();
+
+            deconvolutionResults.Columns[0].DataType = typeof(int);//No.
+            deconvolutionResults.Columns[1].DataType = typeof(double);//Monoisotopic Mass
+            deconvolutionResults.Columns[2].DataType = typeof(double);//Sum Intensity
+            deconvolutionResults.Columns[3].DataType = typeof(int);//Number of Charge States
+            deconvolutionResults.Columns[4].DataType = typeof(int);//Number of Detected Intervals
+            deconvolutionResults.Columns[5].DataType = typeof(double);//Delta Mass
+            deconvolutionResults.Columns[6].DataType = typeof(double);//Relative Abundance
+            deconvolutionResults.Columns[7].DataType = typeof(double);//Fractional Abundance
+            deconvolutionResults.Columns[8].DataType = typeof(string);//Scan Range
+            deconvolutionResults.Columns[9].DataType = typeof(string);//RT Range
+            deconvolutionResults.Columns[10].DataType = typeof(double);//Apex RT
+            deconvolutionResults.Columns[11].DataType = typeof(string);//filename
+
+            foreach (DataTable table in GlobalData.deconResultsFiles.Tables)
+            {
+                DataRow[] rows = table.Select("[" + table.Columns[0].ColumnName + "] > 0");
+
+                foreach (DataRow row in rows)
+                {
+                    deconvolutionResults.ImportRow(row);
+                }
+            }
+
+            deconvolutionResults.Columns.Add("Weighted Monoisotopic Mass", typeof(double));
+
+            foreach (DataRow dr in deconvolutionResults.Rows)
+            {
+
+                dr["Weighted Monoisotopic Mass"] = -1;   // this will get changed later.
+            }
+            return deconvolutionResults;
         }
 
         private void CalculateWeightedMonoisotopicMass()
@@ -56,12 +137,12 @@ namespace PS_0._00
                     entryNumber = int.Parse(row["No#"].ToString());
                     weightedMonoisotopicMass = weightedMonoisotopicMass + (double.Parse(row["intensity"].ToString())/intensitySum*(double.Parse(row["Calculated Mass"].ToString())));
                 }
-                string expression = GlobalData.rawExperimentalProteoforms.Columns[11].ColumnName + " = '"+ Filename +"'"
-                    + " AND [" + GlobalData.rawExperimentalProteoforms.Columns[0].ColumnName + "] = " + entryNumber;// you gotta have single quotes on the filename or this don't work. took me forever to figure that out.
+                string expression = GlobalData.rawExperimentalComponents.Columns[11].ColumnName + " = '"+ Filename +"'"
+                    + " AND [" + GlobalData.rawExperimentalComponents.Columns[0].ColumnName + "] = " + entryNumber;// you gotta have single quotes on the filename or this don't work. took me forever to figure that out.
 
-                DataRow[] rawProteoformRows = GlobalData.rawExperimentalProteoforms.Select(expression);
+                DataRow[] rawComponentRows = GlobalData.rawExperimentalComponents.Select(expression);
 
-                foreach (DataRow row in rawProteoformRows)
+                foreach (DataRow row in rawComponentRows)
                 {
                     row["Weighted Monoisotopic Mass"] = weightedMonoisotopicMass;
                 }
@@ -71,8 +152,7 @@ namespace PS_0._00
 
         private DataSet GetRawChargeStates()
         {
-
-            DataSet rCST = new DataSet();
+            DataSet rawChargeStateTables = new DataSet();
             
             foreach (DataTable table in GlobalData.deconResultsFiles.Tables)
             {
@@ -120,85 +200,10 @@ namespace PS_0._00
                             double.Parse(row[4].ToString())
                             );
                     }
-                    rCST.Tables.Add(csTable);
+                    rawChargeStateTables.Tables.Add(csTable);
                 }
             }
-            return rCST;
-        }
-
-
-        private DataTable GetRawProteoforms()
-        {
-            DataTable dc = GlobalData.deconResultsFiles.Tables[0].Clone();
-            
-            dc.Columns[0].DataType = typeof(int);//No.
-            dc.Columns[1].DataType = typeof(double);//Monoisotopic Mass
-            dc.Columns[2].DataType = typeof(double);//Sum Intensity
-            dc.Columns[3].DataType = typeof(int);//Number of Charge States
-            dc.Columns[4].DataType = typeof(int);//Number of Detected Intervals
-            dc.Columns[5].DataType = typeof(double);//Delta Mass
-            dc.Columns[6].DataType = typeof(double);//Relative Abundance
-            dc.Columns[7].DataType = typeof(double);//Fractional Abundance
-            dc.Columns[8].DataType = typeof(string);//Scan Range
-            dc.Columns[9].DataType = typeof(string);//RT Range
-            dc.Columns[10].DataType = typeof(double);//Apex RT
-            dc.Columns[11].DataType = typeof(string);//filename
-
-            foreach (DataTable table in GlobalData.deconResultsFiles.Tables)
-            {
-                DataRow[] rows = table.Select("[" + table.Columns[0].ColumnName + "] > 0");
-
-                foreach (DataRow row in rows)
-                {
-                    dc.ImportRow(row);
-                }
-            }
-
-            dc.Columns.Add("Weighted Monoisotopic Mass", typeof(double));
-
-            foreach (DataRow dr in dc.Rows)
-            {
-
-                dr["Weighted Monoisotopic Mass"] = -1;   // this will get changed later.
-            }
-            return dc;
-        }
-
-        private DataSet GetDeconResults()
-        {
-            DataSet ds = new DataSet();
-
-            foreach (string file in GlobalData.deconResultsFileNames)
-            {
-                DataTable dt = new DataTable();
-                dt = ReadExcelFile(file);
-                DataTable dc = dt.Clone();
-                dc.Columns[0].DataType = typeof(int);
-                foreach (DataRow row in dt.Rows)
-                {
-                    int number;
-                    bool result = int.TryParse(row[dt.Columns[0].ColumnName].ToString(), out number);
-                    if (result)
-                    {
-                        dc.ImportRow(row);
-                    }
-                    else
-                    {
-                        row[dt.Columns[0].ColumnName] = "-1";
-                        dc.ImportRow(row);
-                    }
-                    
-                }
-                dc.Columns.Add("Filename", typeof(string));
-
-                foreach (DataRow row in dc.Rows)
-                {
-                    row["Filename"] = Path.GetFileName(file);
-                }
-
-                ds.Tables.Add(dc);
-            }
-            return ds;
+            return rawChargeStateTables;
         }
 
         private DataTable ReadExcelFile(string filename)
@@ -208,22 +213,15 @@ namespace PS_0._00
 
             try
             {
-                // Use SpreadSheetDocument class of Open XML SDK to open excel file
-                using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(filename, false))
+                using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(filename, false)) // Use SpreadSheetDocument class of Open XML SDK to open excel file
                 {
-                    // Get Workbook Part of Spread Sheet Document
-                    WorkbookPart workbookPart = spreadsheetDocument.WorkbookPart;
+                    // Open Excel workbook, and get Sheet1
+                    WorkbookPart workbookPart = spreadsheetDocument.WorkbookPart; // Get Workbook Part of Spread Sheet Document
+                    IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
+                    string relationshipId = sheetcollection.First().Id.Value; // Get relationship Id
+                    WorksheetPart worksheetPart = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(relationshipId); // Get sheet1 Part of Spread Sheet Document
 
-                    // Get all sheets in spread sheet document 
-                    IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>();
-
-                    // Get relationship Id
-                    string relationshipId = sheetcollection.First().Id.Value;
-
-                    // Get sheet1 Part of Spread Sheet Document
-                    WorksheetPart worksheetPart = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(relationshipId);
-
-                    // Get Data in Excel file
+                    // Get Data in Sheet1 of Excel file
                     SheetData sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
                     IEnumerable<Row> rowcollection = sheetData.Descendants<Row>();
 
@@ -242,21 +240,17 @@ namespace PS_0._00
                     foreach (Row row in rowcollection)
                     {
                         DataRow temprow = dt.NewRow();
+
+                        //Remove empty cells from beginning of row
                         int columnIndex = 0;
                         foreach (Cell cell in row.Descendants<Cell>())
                         {
                             // Get Cell Column Index
                             int cellColumnIndex = GetColumnIndex(GetColumnName(cell.CellReference));
-
-                            if (columnIndex < cellColumnIndex)
+                            while (columnIndex < cellColumnIndex)
                             {
-                                do
-                                {
-                                    temprow[columnIndex] = string.Empty;
-                                    columnIndex++;
-                                }
-
-                                while (columnIndex < cellColumnIndex);
+                                temprow[columnIndex] = string.Empty;
+                                columnIndex++;
                             }
 
                             temprow[columnIndex] = GetValueOfCell(spreadsheetDocument, cell);
@@ -295,8 +289,6 @@ namespace PS_0._00
             }
 
             string cellValue = cell.CellValue.InnerText;
-
-            // The condition that the Cell DataType is SharedString
             if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
             {
                 return sharedString.SharedStringTable.ChildElements[int.Parse(cellValue)].InnerText;
@@ -305,6 +297,7 @@ namespace PS_0._00
             {
                 return cellValue;
             }
+           
         }
 
         /// <summary>
@@ -344,24 +337,23 @@ namespace PS_0._00
             return columnIndex;
         }
 
-        private void dgv_RawExpProt_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dgv_RawExpComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            string one;
-            string two;
+            string filename;
+            string rawComponentNum;
 
             if (e.RowIndex >= 0)
             {
-                DataGridViewRow row = this.dgv_RawExpProt_MI_masses.Rows[e.RowIndex];
-                one = row.Cells["Filename"].Value.ToString();
-                two = row.Cells[0].Value.ToString();
+                DataGridViewRow row = this.dgv_RawExpComp_MI_masses.Rows[e.RowIndex];
+                filename = row.Cells["Filename"].Value.ToString();
+                rawComponentNum = row.Cells[0].Value.ToString();
 
-                BindingSource dgv_cs_BS = new BindingSource();
-                dgv_cs_BS.DataSource = GlobalData.rawExperimentalChargeStateData.Tables[one + "_" + two];
-                dgv_RawExpProt_IndChgSts.DataSource = dgv_cs_BS;
-                dgv_RawExpProt_IndChgSts.AutoGenerateColumns = true;
-                dgv_RawExpProt_IndChgSts.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-                dgv_RawExpProt_IndChgSts.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-
+                //Round doubles before displaying
+                DataTable displayTable = GlobalData.rawExperimentalChargeStateData.Tables[filename + "_" + rawComponentNum];
+                string[] intensity_column_names = new string[] { "Intensity" };
+                string[] mass_column_names = new string[] { "Calculated Mass", "MZ Centroid" };
+                BindingSource dgv_cs_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_RawExpComp_IndChgSts, displayTable,
+                    new string[] { }, intensity_column_names, new string[] { }, mass_column_names);
             }
         }
     }

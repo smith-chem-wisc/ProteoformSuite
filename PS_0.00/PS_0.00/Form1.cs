@@ -14,14 +14,14 @@ namespace PS_0._00
     public partial class Form1 : Form
     {
         //  Initialize Forms START
-        LoadDeconvolutionResults lDR;
-        RawExperimentalProteoforms rEP;
-        NeuCodePairs nCP;
-        AggregatedProteoforms aGP;
-        TheoreticalDatabase tDB;
-        ExperimentTheoreticalComparison eTC;
-        ExperimentExperimentComparison eEC;
-        ProteoformFamilyAssignment pFA;
+        LoadDeconvolutionResults loadDeconvolutionResults;
+        RawExperimentalComponents rawExperimentalComponents;
+        NeuCodePairs neuCodePairs;
+        AggregatedProteoforms aggregatedProteoforms;
+        TheoreticalDatabase theoreticalDatabase;
+        ExperimentTheoreticalComparison experimentalTheoreticalComparison;
+        ExperimentExperimentComparison experimentExperimentComparison;
+        ProteoformFamilyAssignment proteoformFamilyAssignment;
         //  Initialize Forms END
 
         // Data associated with lDR Form START
@@ -37,163 +37,163 @@ namespace PS_0._00
         {
             
 
-            if (lDR == null)
+            if (loadDeconvolutionResults == null)
             {
-                lDR = new LoadDeconvolutionResults();
+                loadDeconvolutionResults = new LoadDeconvolutionResults();
            
                 //lDR.PassString = "This string from form 1";// this sends data to the lDR form.
 
-                lDR.MdiParent = this;
-                lDR.Show();
-                lDR.WindowState = FormWindowState.Maximized;
+                loadDeconvolutionResults.MdiParent = this;
+                loadDeconvolutionResults.Show();
+                loadDeconvolutionResults.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from lDR form
             }
             else
             {
-                lDR.Show();
-                lDR.WindowState = FormWindowState.Maximized;
+                loadDeconvolutionResults.Show();
+                loadDeconvolutionResults.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from lDR form
             }
         }
 
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rEP == null)
+            if (rawExperimentalComponents == null)
             {
-                rEP = new RawExperimentalProteoforms();
-                rEP.MdiParent = this;
-                rEP.Show();
-                rEP.WindowState = FormWindowState.Maximized;
+                rawExperimentalComponents = new RawExperimentalComponents();
+                rawExperimentalComponents.MdiParent = this;
+                rawExperimentalComponents.Show();
+                rawExperimentalComponents.WindowState = FormWindowState.Maximized;
             }
             else
             {
-                rEP.Show();
-                rEP.WindowState = FormWindowState.Maximized;
+                rawExperimentalComponents.Show();
+                rawExperimentalComponents.WindowState = FormWindowState.Maximized;
             }
         }
 
         private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (nCP == null)
+            if (neuCodePairs == null)
             {
-                nCP = new NeuCodePairs();
+                neuCodePairs = new NeuCodePairs();
 
                 //lDR.PassString = "This string from form 1";// this sends data to the lDR form.
 
-                nCP.MdiParent = this;
-                nCP.Show();
-                nCP.WindowState = FormWindowState.Maximized;
+                neuCodePairs.MdiParent = this;
+                neuCodePairs.Show();
+                neuCodePairs.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from lDR form
             }
             else
             {
-                nCP.Show();
-                nCP.WindowState = FormWindowState.Maximized;
+                neuCodePairs.Show();
+                neuCodePairs.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from lDR form
             }
         }
 
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (aGP == null)
+            if (aggregatedProteoforms == null)
             {
-                aGP = new AggregatedProteoforms();
+                aggregatedProteoforms = new AggregatedProteoforms();
 
                 //lDR.PassString = "This string from form 1";// this sends data to the aGP form.
 
-                aGP.MdiParent = this;
-                aGP.Show();
-                aGP.WindowState = FormWindowState.Maximized;
+                aggregatedProteoforms.MdiParent = this;
+                aggregatedProteoforms.Show();
+                aggregatedProteoforms.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from aGP form
             }
             else
             {
-                aGP.Show();
-                aGP.WindowState = FormWindowState.Maximized;
+                aggregatedProteoforms.Show();
+                aggregatedProteoforms.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from aGP form
             }
         }
 
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (tDB == null)
+            if (theoreticalDatabase == null)
             {
-                tDB = new TheoreticalDatabase();
+                theoreticalDatabase = new TheoreticalDatabase();
 
                 //lDR.PassString = "This string from form 1";// this sends data to the aGP form.
 
-                tDB.MdiParent = this;
-                tDB.Show();
-                tDB.WindowState = FormWindowState.Maximized;
+                theoreticalDatabase.MdiParent = this;
+                theoreticalDatabase.Show();
+                theoreticalDatabase.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from aGP form
             }
             else
             {
-                tDB.Show();
-                tDB.WindowState = FormWindowState.Maximized;
+                theoreticalDatabase.Show();
+                theoreticalDatabase.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from aGP form
             }
         }
 
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (eTC == null)
+            if (experimentalTheoreticalComparison == null)
             {
-                eTC = new ExperimentTheoreticalComparison();
+                experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
 
                 //lDR.PassString = "This string from form 1";// this sends data to the aGP form.
 
-                eTC.MdiParent = this;
-                eTC.Show();
-                eTC.WindowState = FormWindowState.Maximized;
+                experimentalTheoreticalComparison.MdiParent = this;
+                experimentalTheoreticalComparison.Show();
+                experimentalTheoreticalComparison.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from aGP form
             }
             else
             {
-                eTC.Show();
-                eTC.WindowState = FormWindowState.Maximized;
+                experimentalTheoreticalComparison.Show();
+                experimentalTheoreticalComparison.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from aGP form
             }
         }
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (eEC == null)
+            if (experimentExperimentComparison == null)
             {
-                eEC = new ExperimentExperimentComparison();
+                experimentExperimentComparison = new ExperimentExperimentComparison();
 
                 //lDR.PassString = "This string from form 1";// this sends data to the aGP form.
 
-                eEC.MdiParent = this;
-                eEC.Show();
-                eEC.WindowState = FormWindowState.Maximized;
+                experimentExperimentComparison.MdiParent = this;
+                experimentExperimentComparison.Show();
+                experimentExperimentComparison.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from aGP form
             }
             else
             {
-                eEC.Show();
-                eEC.WindowState = FormWindowState.Maximized;
+                experimentExperimentComparison.Show();
+                experimentExperimentComparison.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from aGP form
             }
         }
 
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (pFA == null)
+            if (proteoformFamilyAssignment == null)
             {
-                pFA = new ProteoformFamilyAssignment();
+                proteoformFamilyAssignment = new ProteoformFamilyAssignment();
 
                 //lDR.PassString = "This string from form 1";// this sends data to the aGP form.
 
-                pFA.MdiParent = this;
-                pFA.Show();
-                pFA.WindowState = FormWindowState.Maximized;
+                proteoformFamilyAssignment.MdiParent = this;
+                proteoformFamilyAssignment.Show();
+                proteoformFamilyAssignment.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from aGP form
             }
             else
             {
-                pFA.Show();
-                pFA.WindowState = FormWindowState.Maximized;
+                proteoformFamilyAssignment.Show();
+                proteoformFamilyAssignment.WindowState = FormWindowState.Maximized;
                 // This is where we get data back from aGP form
             }
         }
