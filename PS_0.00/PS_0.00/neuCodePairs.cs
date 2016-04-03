@@ -12,6 +12,8 @@ namespace PS_0._00
 {
     public partial class NeuCodePairs : Form
     {
+        DataTableHandler dataTableHandler = new DataTableHandler();
+
         public NeuCodePairs()
         {
             InitializeComponent();
@@ -23,18 +25,15 @@ namespace PS_0._00
             Dictionary<string, List<string>> fileNameScanRanges = GetSFileNameScanRangesList();
             FillRawNeuCodePairsDataTable(fileNameScanRanges);
             
-
-            BindingSource dgv_rawNCPairs = new BindingSource();
-            dgv_rawNCPairs.DataSource = GlobalData.rawNeuCodePairs;
-            dgv_RawExpNeuCodePairs.DataSource = dgv_rawNCPairs;
-            dgv_RawExpNeuCodePairs.AutoGenerateColumns = true;
-            dgv_RawExpNeuCodePairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_RawExpNeuCodePairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+            string[] rt_column_names = new string[] { "Apex RT" };
+            string[] intensity_column_names = new string[] { "Light Intensity", "Heavy Intensity" };
+            string[] mass_column_names = new string[] { "Light Mass", "Light Mass Corrected", "Heavy Mass", "Intensity Ratio" }; //Included Intensity Ratio here to round to 4 decimal places
+            string[] abundance_column_names = new string[] { };
+            BindingSource bs_rawNCPairs = dataTableHandler.DisplayWithRoundedDoubles(dgv_RawExpNeuCodePairs, GlobalData.rawNeuCodePairs,
+                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
 
             GraphLysineCount();
-
             GraphIntensityRatio();
-            
         }
 
         private void GraphIntensityRatio()
@@ -82,7 +81,7 @@ namespace PS_0._00
             IRatMinAcceptable.Maximum = 20;
             IRatMinAcceptable.Minimum = 0;
 
-
+            
             ct_IntensityRatio.DataSource = intensityRatioHistogram;
             ct_IntensityRatio.DataBind();
 
@@ -95,6 +94,7 @@ namespace PS_0._00
             lysCtHistogram.Columns.Add("numPairsAtThisLysCt", typeof(int));
 
             int ymax = 0;
+            double xInt = 0.2;
 
             for (int i = 0; i <= 28; i++)
             {
@@ -145,7 +145,7 @@ namespace PS_0._00
                 foreach (string scanRange in entry.Value)
                 {
                     string expression = "[Filename] = '" + fileName + "' AND [Scan Range] = '" + scanRange + "'";// square brackets are key to avoiding missing operand error
-                    DataRow[] rows = GlobalData.rawExperimentalProteoforms.Select(expression);
+                    DataRow[] rows = GlobalData.rawExperimentalComponents.Select(expression);
                     double apexRT = 0;
                     if (rows.Length > 0) { apexRT = double.Parse(rows[0]["Apex RT"].ToString()); }
                     List<double> masses = new List<double>();
@@ -155,7 +155,7 @@ namespace PS_0._00
 
                         masses.Add(double.Parse(row["Weighted Monoisotopic Mass"].ToString()));
                         //MessageBox.Show("col val: " +row[GlobalData.rawExperimentalProteoforms.Columns[0].ColumnName].ToString());
-                        entryNumber.Add(double.Parse(row["Weighted Monoisotopic Mass"].ToString()), int.Parse(row[GlobalData.rawExperimentalProteoforms.Columns[0].ColumnName].ToString()));
+                        entryNumber.Add(double.Parse(row["Weighted Monoisotopic Mass"].ToString()), int.Parse(row[GlobalData.rawExperimentalComponents.Columns[0].ColumnName].ToString()));
                     }
                     masses.Sort();
                     
@@ -271,7 +271,7 @@ namespace PS_0._00
         {
             Dictionary<string, List<string>> FileNameScanRanges = new Dictionary<string, List<string>>();
 
-            foreach (DataRow row in GlobalData.rawExperimentalProteoforms.Rows)
+            foreach (DataRow row in GlobalData.rawExperimentalComponents.Rows)
             {
                 string fileName = row["Filename"].ToString();
                 string scanRange = row["Scan Range"].ToString();

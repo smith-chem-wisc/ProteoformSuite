@@ -58,7 +58,8 @@
             this.processingPhaseToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1192, 33);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
+            this.menuStrip1.Size = new System.Drawing.Size(795, 24);
             this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -73,55 +74,55 @@
             this.saveMethodToolStripMenuItem,
             this.closeToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(50, 29);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 22);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(204, 30);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(204, 30);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(204, 30);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.saveAsToolStripMenuItem.Text = "Save As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // printToolStripMenuItem
             // 
             this.printToolStripMenuItem.Name = "printToolStripMenuItem";
-            this.printToolStripMenuItem.Size = new System.Drawing.Size(204, 30);
+            this.printToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.printToolStripMenuItem.Text = "Print";
             this.printToolStripMenuItem.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
             // 
             // loadMethodToolStripMenuItem
             // 
             this.loadMethodToolStripMenuItem.Name = "loadMethodToolStripMenuItem";
-            this.loadMethodToolStripMenuItem.Size = new System.Drawing.Size(204, 30);
+            this.loadMethodToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.loadMethodToolStripMenuItem.Text = "Load Method";
             this.loadMethodToolStripMenuItem.Click += new System.EventHandler(this.loadMethodToolStripMenuItem_Click);
             // 
             // saveMethodToolStripMenuItem
             // 
             this.saveMethodToolStripMenuItem.Name = "saveMethodToolStripMenuItem";
-            this.saveMethodToolStripMenuItem.Size = new System.Drawing.Size(204, 30);
+            this.saveMethodToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.saveMethodToolStripMenuItem.Text = "Save Method";
             this.saveMethodToolStripMenuItem.Click += new System.EventHandler(this.saveMethodToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(204, 30);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -137,76 +138,77 @@
             this.experimentExperimentComparisonToolStripMenuItem,
             this.proteoformFamilyAssignmentToolStripMenuItem});
             this.processingPhaseToolStripMenuItem.Name = "processingPhaseToolStripMenuItem";
-            this.processingPhaseToolStripMenuItem.Size = new System.Drawing.Size(160, 29);
+            this.processingPhaseToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.processingPhaseToolStripMenuItem.Text = "Processing Phase";
             // 
             // loadDeconvolutionResultsToolStripMenuItem
             // 
             this.loadDeconvolutionResultsToolStripMenuItem.Name = "loadDeconvolutionResultsToolStripMenuItem";
-            this.loadDeconvolutionResultsToolStripMenuItem.Size = new System.Drawing.Size(392, 30);
+            this.loadDeconvolutionResultsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.loadDeconvolutionResultsToolStripMenuItem.Text = "Load Deconvolution Results";
             this.loadDeconvolutionResultsToolStripMenuItem.Click += new System.EventHandler(this.loadDeconvolutionResultsToolStripMenuItem_Click);
             // 
             // rawExperimentalProteoformsToolStripMenuItem
             // 
             this.rawExperimentalProteoformsToolStripMenuItem.Name = "rawExperimentalProteoformsToolStripMenuItem";
-            this.rawExperimentalProteoformsToolStripMenuItem.Size = new System.Drawing.Size(392, 30);
-            this.rawExperimentalProteoformsToolStripMenuItem.Text = "Raw Experimental Proteoforms";
+            this.rawExperimentalProteoformsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.rawExperimentalProteoformsToolStripMenuItem.Text = "Raw Experimental Components";
             this.rawExperimentalProteoformsToolStripMenuItem.Click += new System.EventHandler(this.rawExperimentalProteoformsToolStripMenuItem_Click);
             // 
             // neuCodeProteoformPairsToolStripMenuItem
             // 
             this.neuCodeProteoformPairsToolStripMenuItem.Name = "neuCodeProteoformPairsToolStripMenuItem";
-            this.neuCodeProteoformPairsToolStripMenuItem.Size = new System.Drawing.Size(392, 30);
+            this.neuCodeProteoformPairsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.neuCodeProteoformPairsToolStripMenuItem.Text = "NeuCode Proteoform Pairs";
             this.neuCodeProteoformPairsToolStripMenuItem.Click += new System.EventHandler(this.neuCodeProteoformPairsToolStripMenuItem_Click);
             // 
             // aggregatedProteoformsToolStripMenuItem
             // 
             this.aggregatedProteoformsToolStripMenuItem.Name = "aggregatedProteoformsToolStripMenuItem";
-            this.aggregatedProteoformsToolStripMenuItem.Size = new System.Drawing.Size(392, 30);
+            this.aggregatedProteoformsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.aggregatedProteoformsToolStripMenuItem.Text = "Aggregated Proteoforms";
             this.aggregatedProteoformsToolStripMenuItem.Click += new System.EventHandler(this.aggregatedProteoformsToolStripMenuItem_Click);
             // 
             // theoreticalProteoformDatabaseToolStripMenuItem
             // 
             this.theoreticalProteoformDatabaseToolStripMenuItem.Name = "theoreticalProteoformDatabaseToolStripMenuItem";
-            this.theoreticalProteoformDatabaseToolStripMenuItem.Size = new System.Drawing.Size(392, 30);
+            this.theoreticalProteoformDatabaseToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.theoreticalProteoformDatabaseToolStripMenuItem.Text = "Theoretical Proteoform Database";
             this.theoreticalProteoformDatabaseToolStripMenuItem.Click += new System.EventHandler(this.theoreticalProteoformDatabaseToolStripMenuItem_Click);
             // 
             // experimentTheoreticalComparisonToolStripMenuItem
             // 
             this.experimentTheoreticalComparisonToolStripMenuItem.Name = "experimentTheoreticalComparisonToolStripMenuItem";
-            this.experimentTheoreticalComparisonToolStripMenuItem.Size = new System.Drawing.Size(392, 30);
+            this.experimentTheoreticalComparisonToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.experimentTheoreticalComparisonToolStripMenuItem.Text = "Experiment - Theoretical Comparison";
             this.experimentTheoreticalComparisonToolStripMenuItem.Click += new System.EventHandler(this.experimentTheoreticalComparisonToolStripMenuItem_Click);
             // 
             // experimentExperimentComparisonToolStripMenuItem
             // 
             this.experimentExperimentComparisonToolStripMenuItem.Name = "experimentExperimentComparisonToolStripMenuItem";
-            this.experimentExperimentComparisonToolStripMenuItem.Size = new System.Drawing.Size(392, 30);
+            this.experimentExperimentComparisonToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.experimentExperimentComparisonToolStripMenuItem.Text = "Experiment - Experiment Comparison";
             this.experimentExperimentComparisonToolStripMenuItem.Click += new System.EventHandler(this.experimentExperimentComparisonToolStripMenuItem_Click);
             // 
-            // proteoformFamilyGraphsToolStripMenuItem
+            // proteoformFamilyAssignmentToolStripMenuItem
             // 
             this.proteoformFamilyAssignmentToolStripMenuItem.Name = "proteoformFamilyAssignmentToolStripMenuItem";
-            this.proteoformFamilyAssignmentToolStripMenuItem.Size = new System.Drawing.Size(392, 30);
+            this.proteoformFamilyAssignmentToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.proteoformFamilyAssignmentToolStripMenuItem.Text = "Proteoform Family Assignment";
             this.proteoformFamilyAssignmentToolStripMenuItem.Click += new System.EventHandler(this.proteoformFamilyAssignmentToolStripMenuItem_Click);
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.ClientSize = new System.Drawing.Size(1192, 654);
+            this.ClientSize = new System.Drawing.Size(795, 425);
             this.Controls.Add(this.menuStrip1);
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuStrip1;
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "Form1";
             this.Text = "Proteoform Suite 0.00";
             this.menuStrip1.ResumeLayout(false);

@@ -13,11 +13,10 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace PS_0._00
 { 
-
-
     public partial class ExperimentExperimentComparison : Form
     {
         DataTable eePeakList = new DataTable();
+        DataTableHandler dataTableHandler = new DataTableHandler();
 
         public ExperimentExperimentComparison()
         {
@@ -40,7 +39,6 @@ namespace PS_0._00
             UpdateFiguresOfMerit();
             GraphEEPeakList();
             this.Cursor = Cursors.Default;
-
         }
 
         private void RunTheGamut()
@@ -55,7 +53,7 @@ namespace PS_0._00
             FillEEGridView();
             GraphEEHistogram();
             FillEEPeakListTable();
-            FillEEGridView();
+            FillEEGridView(); //Why is this here twice? -AC
             UpdateFiguresOfMerit();
             xMaxEE.Value = nUD_EE_Upper_Bound.Value;
             GraphEEPeakList();
@@ -64,7 +62,6 @@ namespace PS_0._00
 
         private void dgv_EE_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
-           
             if (e.Button == MouseButtons.Left)
             {
                 int clickedRow = dgv_EE_Peak_List.HitTest(e.X, e.Y).RowIndex;
@@ -76,7 +73,6 @@ namespace PS_0._00
         }
 
         private void GraphEEPeakList()
-
         {
             string colName = "Delta Mass";
             string direction = "DESC";
@@ -169,7 +165,6 @@ namespace PS_0._00
             }
         }
 
-
         private void ClearEEPeakListTable()
         {
             eePeakList.Clear();
@@ -233,20 +228,19 @@ namespace PS_0._00
             }
 
             GlobalData.eePeakList = eePeakList;
-            BindingSource dgv_EE_Peak_List_BS = new BindingSource();
-            dgv_EE_Peak_List_BS.DataSource = eePeakList;
-            dgv_EE_Peak_List.DataSource = dgv_EE_Peak_List_BS;
-            dgv_EE_Peak_List.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_EE_Peak_List.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-        }
 
+            //Round before displaying
+            string[] other_columns = new string[] { };
+            string[] mass_column_names = new string[] { "Average Delta Mass" };
+            BindingSource dgv_EE_Peak_List_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_EE_Peak_List, eePeakList,
+                other_columns, other_columns, other_columns, mass_column_names);
+        }
 
         private void InitializeEEPeakListTable()
         {
             eePeakList.Columns.Add("Average Delta Mass", typeof(double));
             eePeakList.Columns.Add("Peak Count", typeof(int));
             eePeakList.Columns.Add("Acceptable", typeof(bool));
-
         }
 
 
@@ -255,7 +249,6 @@ namespace PS_0._00
         {
             string colName = "Delta Mass";
             string direction = "DESC";
-
 
             DataTable dt = GlobalData.experimentExperimentPairs;
             dt.DefaultView.Sort = colName + " " + direction;
@@ -275,18 +268,19 @@ namespace PS_0._00
                 });
 
             ct_EE_Histogram.Series["eeHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
-
         }
 
         private void FillEEGridView()
         {
-            BindingSource dgv_DT_BS = new BindingSource();
-            dgv_DT_BS.DataSource = GlobalData.experimentExperimentPairs;
-            dgv_EE_Pairs.DataSource = dgv_DT_BS;
-            dgv_EE_Pairs.AutoGenerateColumns = true;
-            dgv_EE_Pairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_EE_Pairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+            DataTable displayTable = GlobalData.experimentExperimentPairs;
 
+            //Round before displaying EE pairs
+            string[] rt_column_names = new string[] { "Retention Time Light", "Retention Time Heavy" };
+            string[] intensity_column_names = new string[] { "Aggregated Intensity Light", "Aggregated Intensity Heavy" };
+            string[] abundance_column_names = new string[] { };
+            string[] mass_column_names = new string[] { "Aggregated Mass Light", "Aggregated Mass Heavy", "Delta Mass", "Peak Center Mass" };
+            BindingSource dgv_DT_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_EE_Pairs, displayTable, 
+                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
         }
 
         private DataTable GetNewEE_DataTable()
@@ -312,7 +306,6 @@ namespace PS_0._00
 
         private void FindAllEEPairs()
         {
-
             DataTable eE = new DataTable();
             eE = GetNewEE_DataTable();
 
@@ -380,7 +373,6 @@ namespace PS_0._00
                 double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                 string expression = "[Delta Mass] >= " + lower + "and [Delta Mass] <= " + upper;
                 row["Running Sum"] = GlobalData.experimentExperimentPairs.Select(expression).Length;
-
             }
         }
 
@@ -482,7 +474,6 @@ namespace PS_0._00
                 ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
 
             }
-
         }
 
         private void EE_update_Click(object sender, EventArgs e)
@@ -490,5 +481,4 @@ namespace PS_0._00
             RunTheGamut();
         }
     }
-
 }

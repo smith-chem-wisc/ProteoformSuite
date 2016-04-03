@@ -15,6 +15,7 @@ namespace PS_0._00
     public partial class ExperimentTheoreticalComparison : Form
     {
         DataTable etPeakList = new DataTable();
+        DataTableHandler dataTableHandler = new DataTableHandler();
 
         public ExperimentTheoreticalComparison()
         {
@@ -31,7 +32,7 @@ namespace PS_0._00
             GraphETHistogram();
             InitializeETPeakListTable();
             FillETPeakListTable();
-            FillETGridView();
+            FillETGridView(); //Why are there two of these? -AC
             GraphETPeakList();
             UpdateFiguresOfMerit();
         }
@@ -48,21 +49,65 @@ namespace PS_0._00
         //    UpdateFiguresOfMerit();
         //}
 
-        private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
+        private void FindAllETPairs()
         {
-
-            if (e.Button == MouseButtons.Left)
+            DataTable eT = new DataTable();
+            eT = GetNewET_DataTable();
+            foreach (DataRow agRow in GlobalData.aggregatedProteoforms.Rows)
             {
-                int clickedRow = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
-                if (clickedRow >= 0 && clickedRow < GlobalData.etPeakList.Rows.Count)
+                double lowMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ET_Lower_Bound.Value);
+                double highMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ET_Upper_Bound.Value);
+
+                string expression = "[Proteoform Mass] >= " + lowMass + " and [Proteoform Mass] <= " + highMass;
+                expression = expression + "and [Lysine Count] >= " + agRow["Lysine Count"];
+
+                DataRow[] closeTheoreticals = GlobalData.theoreticalAndDecoyDatabases.Tables["Target"].Select(expression);
+
+                foreach (DataRow row in closeTheoreticals)
                 {
-                    ETPeakListGraphParameters(clickedRow);
+                    double deltaMass = Convert.ToDouble(agRow["Aggregated Mass"]) - Convert.ToDouble(row["Proteoform Mass"]);
+                    double afterDecimal = Math.Abs(deltaMass - Math.Truncate(deltaMass));
+                    bool oOR = true;
+                    if (afterDecimal <= Convert.ToDouble(nUD_NoManLower.Value) || afterDecimal >= Convert.ToDouble(nUD_NoManUpper.Value))
+                    {
+                        oOR = false;
+                    }
+                    else
+                    {
+                        oOR = true;
+                    }
+                    eT.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], deltaMass, 0, 0, deltaMass, oOR, false);
+                    //set out of range variable
                 }
+            }
+            GlobalData.experimentTheoreticalPairs = eT;
+        }
+
+        private void CalculateRunningSums()
+        {
+            foreach (DataRow row in GlobalData.experimentTheoreticalPairs.Rows)
+            {
+                double deltaMass = Convert.ToDouble(row["Delta Mass"].ToString());
+                double lower = deltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+                double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+                string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper;
+                row["Running Sum"] = GlobalData.experimentTheoreticalPairs.Select(expression).Length;
             }
         }
 
-        private void GraphETPeakList()
+        private void FillETGridView()
+        {
+            //Round before displaying ET grid
+            string[] rt_column_names = new string[] { "Aggregated Retention Time" };
+            string[] intensity_column_names = new string[] { "Aggregated Intensity" };
+            string[] abundance_column_names = new string[] { };
+            string[] mass_column_names = new string[] { "Proteoform Mass", "Aggregated Mass", "Delta Mass", "Peak Center Mass" };
+            DataTable displayTable = GlobalData.experimentTheoreticalPairs;
+            BindingSource dgv_DT_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_ET_Pairs, displayTable,
+                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
+        }
 
+        private void GraphETPeakList()
         {
             string colName = "Delta Mass";
             string direction = "DESC";
@@ -93,6 +138,21 @@ namespace PS_0._00
             });
         }
 
+        private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
+        {
+
+            if (e.Button == MouseButtons.Left)
+            {
+                int clickedRow = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
+                if (clickedRow >= 0 && clickedRow < GlobalData.etPeakList.Rows.Count)
+                {
+                    ETPeakListGraphParameters(clickedRow);
+                }
+            }
+        }
+
+        
+
 
         private void ETPeakListGraphParameters(int clickedRow)
         {
@@ -118,10 +178,6 @@ namespace PS_0._00
                 IntervalOffset = Convert.ToDouble(dgv_ET_Peak_List.Rows[clickedRow].Cells["Average Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
             });
         }
-
-
-
-
 
         private void UpdateFiguresOfMerit()
         {
@@ -202,12 +258,12 @@ namespace PS_0._00
                 GlobalData.experimentTheoreticalPairs.AcceptChanges();
             }
             GlobalData.etPeakList = etPeakList;
-            BindingSource dgv_ET_Peak_List_BS = new BindingSource();
-            dgv_ET_Peak_List_BS.DataSource = etPeakList;
-            dgv_ET_Peak_List.DataSource = dgv_ET_Peak_List_BS;
-            dgv_ET_Peak_List.AutoGenerateColumns = true;
-            dgv_ET_Peak_List.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_ET_Peak_List.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+
+            //Round before displaying ET peak list
+            string[] other_columns = new string[] { };
+            string[] mass_column_names = new string[] { "Average Delta Mass" };
+            BindingSource dgv_ET_Peak_List_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_ET_Peak_List, etPeakList,
+                other_columns, other_columns, other_columns, mass_column_names);
         }
 
 
@@ -243,16 +299,6 @@ namespace PS_0._00
 
         }
 
-        private void FillETGridView()
-        {
-            BindingSource dgv_DT_BS = new BindingSource();
-            dgv_DT_BS.DataSource = GlobalData.experimentTheoreticalPairs;
-            dgv_ET_Pairs.DataSource = dgv_DT_BS;
-            dgv_ET_Pairs.AutoGenerateColumns = true;
-            dgv_ET_Pairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_ET_Pairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-        }
-
         private DataTable GetNewET_DataTable()
         {
             DataTable dt = new DataTable();
@@ -273,54 +319,6 @@ namespace PS_0._00
             dt.Columns.Add("Acceptable Peak", typeof(bool));
 
             return dt;
-        }
-
-        private void FindAllETPairs()
-        {
-            DataTable eT = new DataTable();
-            eT = GetNewET_DataTable();
-            foreach (DataRow agRow in GlobalData.aggregatedProteoforms.Rows)
-            {
-                double lowMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ET_Lower_Bound.Value);
-                double highMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ET_Upper_Bound.Value);
-
-                string expression = "[Proteoform Mass] >= " + lowMass + " and [Proteoform Mass] <= " + highMass;
-                expression = expression + "and [Lysine Count] >= " + agRow["Lysine Count"];
-
-                DataRow[] closeTheoreticals = GlobalData.theoreticalAndDecoyDatabases.Tables["Target"].Select(expression);
-
-                foreach (DataRow row in closeTheoreticals)
-                {
-                    double deltaMass = Convert.ToDouble(agRow["Aggregated Mass"])- Convert.ToDouble(row["Proteoform Mass"]);
-                    double afterDecimal = Math.Abs(deltaMass-Math.Truncate(deltaMass));
-                    bool oOR = true;
-                    if (afterDecimal<= Convert.ToDouble(nUD_NoManLower.Value) || afterDecimal >= Convert.ToDouble(nUD_NoManUpper.Value))
-                    {
-                        oOR = false;
-                    }
-                    else
-                    {
-                        oOR = true;
-                    }
-                    eT.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"],  deltaMass, 0, 0, deltaMass, oOR, false);
-                    //set out of range variable
-                }
-
-            }
-
-            GlobalData.experimentTheoreticalPairs = eT;
-        }
-
-        private void CalculateRunningSums()
-        {
-            foreach (DataRow row in GlobalData.experimentTheoreticalPairs.Rows)
-            {
-                double deltaMass = Convert.ToDouble(row["Delta Mass"].ToString());
-                double lower = deltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-                double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-                string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper;
-                row["Running Sum"] = GlobalData.experimentTheoreticalPairs.Select(expression).Length;
-            }
         }
 
         private void splitContainer3_Panel2_Paint(object sender, PaintEventArgs e)
