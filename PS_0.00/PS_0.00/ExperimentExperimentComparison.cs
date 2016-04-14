@@ -101,6 +101,8 @@ namespace PS_0._00
                 BorderColor = Color.Red,
                 IntervalOffset = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
             });
+            ct_EE_peakList.ChartAreas[0].AxisX.Title = "Delta m/z";
+            ct_EE_peakList.ChartAreas[0].AxisY.Title = "Peak Count";
         }
 
 
@@ -268,6 +270,8 @@ namespace PS_0._00
                 });
 
             ct_EE_Histogram.Series["eeHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+            ct_EE_Histogram.ChartAreas[0].AxisX.Title = "Delta m/z";
+            ct_EE_Histogram.ChartAreas[0].AxisY.Title = "Peak Count";
         }
 
         private void FillEEGridView()

@@ -81,7 +81,9 @@ namespace PS_0._00
             IRatMinAcceptable.Maximum = 20;
             IRatMinAcceptable.Minimum = 0;
 
-            
+            ct_IntensityRatio.ChartAreas[0].AxisX.Title = "Intensity Ratio of a Pair";
+            ct_IntensityRatio.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";
+
             ct_IntensityRatio.DataSource = intensityRatioHistogram;
             ct_IntensityRatio.DataBind();
 
@@ -131,6 +133,9 @@ namespace PS_0._00
             KMinAcceptable.Value = 1.5m;
             KMinAcceptable.Maximum = 28;
             KMinAcceptable.Minimum = 0;
+
+            ct_LysineCount.ChartAreas[0].AxisX.Title = "Lysine Count";
+            ct_LysineCount.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";
 
             ct_LysineCount.DataSource = lysCtHistogram;
             ct_LysineCount.DataBind();
