@@ -136,6 +136,8 @@ namespace PS_0._00
                 BorderColor = Color.Red,
                 IntervalOffset = Convert.ToDouble(dgv_ET_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
             });
+            ct_ET_peakList.ChartAreas[0].AxisX.Title = "Delta m/z";
+            ct_ET_peakList.ChartAreas[0].AxisY.Title = "Peak Count";
         }
 
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
@@ -296,7 +298,8 @@ namespace PS_0._00
         IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value),
     });
             ct_ET_Histogram.Series["etHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
-
+            ct_ET_Histogram.ChartAreas[0].AxisX.Title = "Delta m/z";
+            ct_ET_Histogram.ChartAreas[0].AxisY.Title = "Peak Count";
         }
 
         private DataTable GetNewET_DataTable()

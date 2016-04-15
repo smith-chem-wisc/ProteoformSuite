@@ -185,6 +185,10 @@ namespace PS_0._00
                 Its_A_Child(q, lastchildmass, (index - 1));
                 Family_Death(q);
             }
+            dataGridView1.RowsDefaultCellStyle.BackColor = Color.LightGray;
+            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
+            dataGridView2.RowsDefaultCellStyle.BackColor = Color.LightGray;
+            dataGridView2.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
             dataGridView1.DataSource = GlobalData.ProteoformFamilyMetrics;
             //dataGridView3.DataSource = PF.Tables[3];
 
