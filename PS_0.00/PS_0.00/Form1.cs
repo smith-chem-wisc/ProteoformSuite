@@ -20,6 +20,7 @@ namespace PS_0._00
         AggregatedProteoforms aggregatedProteoforms;
         TheoreticalDatabase theoreticalDatabase;
         ExperimentTheoreticalComparison experimentalTheoreticalComparison;
+        ExperimentDecoyComparison experimentDecoyComparison;
         ExperimentExperimentComparison experimentExperimentComparison;
         ProteoformFamilyAssignment proteoformFamilyAssignment;
         //  Initialize Forms END
@@ -155,6 +156,26 @@ namespace PS_0._00
                 // This is where we get data back from aGP form
             }
         }
+        
+        private void experimentDecoyComparisonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (experimentDecoyComparison == null)
+            {
+                experimentDecoyComparison = new ExperimentDecoyComparison();
+
+                experimentDecoyComparison.MdiParent = this;
+                experimentDecoyComparison.Show();
+                experimentDecoyComparison.WindowState = FormWindowState.Maximized;
+            }
+            else
+            {
+                experimentDecoyComparison.Show();
+                experimentDecoyComparison.WindowState = FormWindowState.Maximized;
+                // This is where we get data back from aGP form
+            }
+
+        }
+
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {

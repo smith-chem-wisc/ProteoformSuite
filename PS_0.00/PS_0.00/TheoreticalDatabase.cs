@@ -144,6 +144,7 @@ namespace PS_0._00
             bool cleavedMethionine = Convert.ToBoolean(ckbx_Meth_Cleaved.Checked);
             int maxPtms = Convert.ToInt32(nUD_MaxPTMs.Value);
             int numDecoyDatabases = Convert.ToInt32(nUD_NumDecoyDBs.Value);
+            GlobalData.numDecoyDatabases = numDecoyDatabases;
             int minPeptideLength = Convert.ToInt32(nUD_MinPeptideLength.Value);
             Dictionary<char, double> aaIsotopeMassList = new AminoAcidMasses(oxidizedMethionine, carbam, WhichLysineIsotopeComposition()).AA_Masses;
 
