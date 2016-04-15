@@ -22,8 +22,12 @@ namespace PS_0._00
         public static DataTable acceptableNeuCodeLightProteoforms = new DataTable();
         public static DataTable aggregatedProteoforms = new DataTable();
         public static DataSet theoreticalAndDecoyDatabases = new DataSet();
+        public static int numDecoyDatabases;
         public static DataTable experimentTheoreticalPairs = new DataTable();
         public static DataTable etPeakList = new DataTable();
+        public static DataSet experimentDecoyPairs = new DataSet();
+        //public static DataTable experimentDecoyPairs = new DataTable();
+        public static DataTable edList = new DataTable();
         public static DataTable experimentExperimentPairs = new DataTable();
         public static DataTable eePeakList = new DataTable();
         public static DataTable EE_Parent = new DataTable();

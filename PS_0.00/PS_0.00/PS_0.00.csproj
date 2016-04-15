@@ -82,6 +82,12 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="ExperimentDecoyComparison.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ExperimentDecoyComparison.Designer.cs">
+      <DependentUpon>ExperimentDecoyComparison.cs</DependentUpon>
+    </Compile>
     <Compile Include="GlobalData.cs" />
     <Compile Include="LoadDeconvolutionResults.cs">
       <SubType>Form</SubType>
@@ -119,6 +125,9 @@
     </Compile>
     <EmbeddedResource Include="AggregatedProteoforms.resx">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ExperimentDecoyComparison.resx">
+      <DependentUpon>ExperimentDecoyComparison.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ExperimentExperimentComparison.resx">
       <DependentUpon>ExperimentExperimentComparison.cs</DependentUpon>
