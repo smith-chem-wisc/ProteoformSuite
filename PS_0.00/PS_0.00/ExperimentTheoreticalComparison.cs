@@ -102,9 +102,10 @@ namespace PS_0._00
             string[] intensity_column_names = new string[] { "Aggregated Intensity" };
             string[] abundance_column_names = new string[] { };
             string[] mass_column_names = new string[] { "Proteoform Mass", "Aggregated Mass", "Delta Mass", "Peak Center Mass" };
+            //string[] dec_mass_column_names = new string[] { };
             DataTable displayTable = GlobalData.experimentTheoreticalPairs;
             BindingSource dgv_DT_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_ET_Pairs, displayTable,
-                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
+                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names, new string[] { });
         }
 
         private void GraphETPeakList()
@@ -262,8 +263,9 @@ namespace PS_0._00
             //Round before displaying ET peak list
             string[] other_columns = new string[] { };
             string[] mass_column_names = new string[] { "Average Delta Mass" };
+            //string[] dec_mass_column_names = new string[] { };
             BindingSource dgv_ET_Peak_List_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_ET_Peak_List, etPeakList,
-                other_columns, other_columns, other_columns, mass_column_names);
+                other_columns, other_columns, other_columns, mass_column_names, new string[] { });
         }
 
 
