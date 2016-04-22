@@ -234,8 +234,9 @@ namespace PS_0._00
             //Round before displaying
             string[] other_columns = new string[] { };
             string[] mass_column_names = new string[] { "Average Delta Mass" };
+            //string[] dec_mass_column_names = new string[] { };
             BindingSource dgv_EE_Peak_List_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_EE_Peak_List, eePeakList,
-                other_columns, other_columns, other_columns, mass_column_names);
+                other_columns, other_columns, other_columns, mass_column_names, new string[] { });
         }
 
         private void InitializeEEPeakListTable()
@@ -283,8 +284,9 @@ namespace PS_0._00
             string[] intensity_column_names = new string[] { "Aggregated Intensity Light", "Aggregated Intensity Heavy" };
             string[] abundance_column_names = new string[] { };
             string[] mass_column_names = new string[] { "Aggregated Mass Light", "Aggregated Mass Heavy", "Delta Mass", "Peak Center Mass" };
+            //string[] dec_mass_column_names = new string[] { };
             BindingSource dgv_DT_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_EE_Pairs, displayTable, 
-                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
+                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names, new string[] { });
         }
 
         private DataTable GetNewEE_DataTable()
