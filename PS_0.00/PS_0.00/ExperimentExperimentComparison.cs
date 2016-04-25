@@ -101,6 +101,8 @@ namespace PS_0._00
                 BorderColor = Color.Red,
                 IntervalOffset = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
             });
+            ct_EE_peakList.ChartAreas[0].AxisX.Title = "Delta m/z";
+            ct_EE_peakList.ChartAreas[0].AxisY.Title = "Peak Count";
         }
 
 
@@ -232,8 +234,9 @@ namespace PS_0._00
             //Round before displaying
             string[] other_columns = new string[] { };
             string[] mass_column_names = new string[] { "Average Delta Mass" };
+            //string[] dec_mass_column_names = new string[] { };
             BindingSource dgv_EE_Peak_List_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_EE_Peak_List, eePeakList,
-                other_columns, other_columns, other_columns, mass_column_names);
+                other_columns, other_columns, other_columns, mass_column_names, new string[] { });
         }
 
         private void InitializeEEPeakListTable()
@@ -268,6 +271,8 @@ namespace PS_0._00
                 });
 
             ct_EE_Histogram.Series["eeHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+            ct_EE_Histogram.ChartAreas[0].AxisX.Title = "Delta m/z";
+            ct_EE_Histogram.ChartAreas[0].AxisY.Title = "Peak Count";
         }
 
         private void FillEEGridView()
@@ -279,8 +284,9 @@ namespace PS_0._00
             string[] intensity_column_names = new string[] { "Aggregated Intensity Light", "Aggregated Intensity Heavy" };
             string[] abundance_column_names = new string[] { };
             string[] mass_column_names = new string[] { "Aggregated Mass Light", "Aggregated Mass Heavy", "Delta Mass", "Peak Center Mass" };
+            //string[] dec_mass_column_names = new string[] { };
             BindingSource dgv_DT_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_EE_Pairs, displayTable, 
-                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
+                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names, new string[] { });
         }
 
         private DataTable GetNewEE_DataTable()

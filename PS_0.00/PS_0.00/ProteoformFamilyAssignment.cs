@@ -16,7 +16,14 @@ namespace PS_0._00
         private SplitContainer splitContainer2;
         private DataGridView dataGridView1;
         private DataGridView dataGridView2;
-        public static int group = 0;
+        public static DataSet ET_Groups = new DataSet(); //4/5/16
+        public static DataSet EE_Groups = new DataSet(); //4/5/16
+        public static int PF_Group_Num = 0;
+        public static int Num_Exp_Mass = 0;
+        public static int EE_Checkpoint = 0;
+        DataRow[] foundRowsSingle;
+
+
 
         public ProteoformFamilyAssignment()
         {
@@ -125,187 +132,207 @@ namespace PS_0._00
 
         private void ProteoformFamilyAssignment_Load(object sender, EventArgs e) //called in initializecomponents
         {
-            Find_EE_Parents();
-            Assign_Group_Numbers(sender, e);
-            Create_Family_Metrics();
-            DGV();
-        }
-        private void Find_EE_Parents()
-        {
-            //Create Parent Group of EE
-            GlobalData.EE_Parent.Columns.Add("Aggregated Mass Light", typeof(double));
-            GlobalData.EE_Parent.Columns.Add("Aggregated Mass Heavy", typeof(double));
-            GlobalData.EE_Parent.Columns.Add("Aggregated Intensity Light", typeof(double));
-            GlobalData.EE_Parent.Columns.Add("Aggregated Intensity Heavy", typeof(double));
-            GlobalData.EE_Parent.Columns.Add("Retention Time Light", typeof(double));
-            GlobalData.EE_Parent.Columns.Add("Retention Time Heavy", typeof(double));
-            GlobalData.EE_Parent.Columns.Add("Lysine Count", typeof(int));
-            GlobalData.EE_Parent.Columns.Add("Delta Mass", typeof(double));
-            GlobalData.EE_Parent.Columns.Add("Running Sum", typeof(int));
-            GlobalData.EE_Parent.Columns.Add("Peak Center Count", typeof(int));
-            GlobalData.EE_Parent.Columns.Add("Peak Center Mass", typeof(double));
-            GlobalData.EE_Parent.Columns.Add("Out of Range Decimal", typeof(bool));
-            GlobalData.EE_Parent.Columns.Add("Acceptable Peak", typeof(bool));
+            Group_ET();
+            Group_EE();
+            //alrighty, here's the meat of the module, good luck
+            GlobalData.ProteoformFamilyMetrics.Columns.Add("Group Number", typeof(Int32));
+            GlobalData.ProteoformFamilyMetrics.Columns.Add("Parent Mass", typeof(double));
+            GlobalData.ProteoformFamilyMetrics.Columns.Add("Lysine Count", typeof(Int32));
+            GlobalData.ProteoformFamilyMetrics.Columns.Add("Number of Experimental Masses", typeof(Int32));
+            GlobalData.ProteoformFamilyMetrics.Columns.Add("Number of IDs", typeof(Int32));
 
 
-            for (int i = 0; i < GlobalData.experimentExperimentPairs.Rows.Count; i++) //go through each EE row
-            {
-                int n = 0; //counter
-                for (int j = 0; j < GlobalData.experimentExperimentPairs.Rows.Count; j++) //for each EE row, compare with each EE row
+            for (int q = 2; q < 27; q++) //4/5/16 for each unique lysine count
+            { //put a sweet message box here to track relative progress (state q)
+                //MessageBox.Show(Convert.ToString(q));
+
+                if (Convert.ToInt32(EE_Groups.Tables[(q - 2)].Rows.Count).Equals(0)) //if nothing with that lysine count, then ignore it. Only 25 iterations
                 {
-                    if (GlobalData.experimentExperimentPairs.Rows[i]["Aggregated Mass Light"].Equals(GlobalData.experimentExperimentPairs.Rows[j]["Aggregated Mass Heavy"]) && GlobalData.experimentExperimentPairs.Rows[i]["Lysine Count"].Equals(GlobalData.experimentExperimentPairs.Rows[j]["Lysine Count"])) //not a parent if its light mass found in the heavy of another (thus it's a child)
+                    continue;
+                }
+                else //somethin there!
+                {
+                    EE_Checkpoint = 0;        
+                    double firstmass = Convert.ToDouble(EE_Groups.Tables[(q - 2)].Rows[0]["Aggregated Mass Light"]);
+                    Its_A_Parent(q, firstmass, 0);
+                    for (int i = 1; i < EE_Groups.Tables[(q - 2)].Rows.Count; i++)//gonna have to go through each one to determine parent or child, some more painful than others
                     {
-                        n = n + 1; //add to counter if i is child of a row j
+                        if (EE_Groups.Tables[(q - 2)].Rows[i]["Aggregated Mass Light"].Equals(EE_Groups.Tables[(q - 2)].Rows[(i - 1)]["Aggregated Mass Light"])) //Gotta see if the next one is a parent or child. If it has the same mass1, we know it's a repeat, and we can ignore it.
+                        {
+                            continue; //not a parent and nothing new, but maybe the next row is?
+                        }
+                        else //potentially a parent
+                        {
+                            //Never satisfying this if statement's criteria?
+                            if (EE_Groups.Tables[(q - 2)].Rows[i]["Aggregated Mass Light"].Equals(EE_Groups.Tables[(q - 2)].Rows[EE_Checkpoint]["Aggregated Mass Heavy"])) //if child
+                            {
+                                double childmass = Convert.ToDouble(EE_Groups.Tables[(q - 2)].Rows[i]["Aggregated Mass Light"]);
+                                Its_A_Child(q, childmass, i);
+                            }
+                            else //it's a parent. Gotta go save that previous child without a lowmass, tho
+                            {
+                                double childmass = Convert.ToDouble(EE_Groups.Tables[(q - 2)].Rows[i - 1]["Aggregated Mass Heavy"]);
+                                Its_A_Child(q, childmass, i);
+                                Family_Death(q);
+                                double parentmass = Convert.ToDouble(EE_Groups.Tables[(q - 2)].Rows[i]["Aggregated Mass Light"]);
+                                Its_A_Parent(q, parentmass, i);
+                            }
+                        }
                     }
                 }
-                if (n.Equals(0)) // && (EE_Parent.Rows.Select("[Lys_Ct] =" EE.Rows[i]["Lys_Ct"])).Equals(0)) //if parent
-                {
-                    GlobalData.EE_Parent.Rows.Add(GlobalData.experimentExperimentPairs.Rows[i].ItemArray); //add to dt EE_Parent
-                }
+                int index = EE_Groups.Tables[(q - 2)].Rows.Count;
+                double lastchildmass = Convert.ToDouble(EE_Groups.Tables[(q - 2)].Rows[index - 1]["Aggregated Mass Heavy"]);
+                Its_A_Child(q, lastchildmass, (index - 1));
+                Family_Death(q);
             }
-
-            //remove parent repeats
-            for (int i = 0; i < GlobalData.EE_Parent.Rows.Count; i++) //for each row of parents
-            {
-                for (int j = i + 1; j < GlobalData.EE_Parent.Rows.Count; j++) //compare against all other rows of parents excluding those already compared against
-                {
-                    if (GlobalData.EE_Parent.Rows[i]["Lysine Count"].Equals(GlobalData.EE_Parent.Rows[j]["Lysine Count"]) && GlobalData.EE_Parent.Rows[i]["Aggregated Mass Light"].Equals(GlobalData.EE_Parent.Rows[j]["Aggregated Mass Light"])) //if identical parent mass and lys
-                    {
-                        GlobalData.EE_Parent.Rows[j].Delete(); //delete the repeat, we're only interested in the light Mass to determine the parent.
-                    }
-                }
-            }
-        }
-        
-        //Find Children Function
-        private void Find_Children(double mass, int lys, EventArgs e)
-        {
-            DataTable EE_Children = new DataTable();
-            EE_Children.Columns.Add("Aggregated Mass Light", typeof(double));
-            EE_Children.Columns.Add("Aggregated Mass Heavy", typeof(double));
-            EE_Children.Columns.Add("Aggregated Intensity Light", typeof(double));
-            EE_Children.Columns.Add("Aggregated Intensity Heavy", typeof(double));
-            EE_Children.Columns.Add("Retention Time Light", typeof(double));
-            EE_Children.Columns.Add("Retention Time Heavy", typeof(double));
-            EE_Children.Columns.Add("Lysine Count", typeof(int));
-            EE_Children.Columns.Add("Delta Mass", typeof(double));
-            EE_Children.Columns.Add("Running Sum", typeof(int));
-            EE_Children.Columns.Add("Peak Center Count", typeof(int));
-            EE_Children.Columns.Add("Peak Center Mass", typeof(double));
-            EE_Children.Columns.Add("Out of Range Decimal", typeof(bool));
-            EE_Children.Columns.Add("Acceptable Peak", typeof(bool));
-            for (int a = 0; a < GlobalData.experimentTheoreticalPairs.Rows.Count; a++)
-            {
-                if (GlobalData.experimentTheoreticalPairs.Rows[a]["Lysine Count"].Equals(lys) && GlobalData.experimentTheoreticalPairs.Rows[a]["Aggregated Mass"].Equals(mass))
-                {
-                    GlobalData.experimentTheoreticalPairs.Rows[a]["Group_#"] = group;
-                }
-            }
-            for (int a = 0; a < GlobalData.experimentExperimentPairs.Rows.Count; a++)
-            {
-                if (GlobalData.experimentExperimentPairs.Rows[a]["Lysine Count"].Equals(lys) && GlobalData.experimentExperimentPairs.Rows[a]["Aggregated Mass Light"].Equals(mass))
-                {
-                    EE_Children.Rows.Add(GlobalData.experimentExperimentPairs.Rows[a].ItemArray);
-                }
-            }
-            foreach (DataRow Child in EE_Children.Rows)
-            {
-                for (int a = 0; a < GlobalData.experimentTheoreticalPairs.Rows.Count; a++)
-                {
-                    if (GlobalData.experimentTheoreticalPairs.Rows[a]["Lysine Count"].Equals(Child["Lysine Count"]) && GlobalData.experimentTheoreticalPairs.Rows[a]["Aggregated Mass"].Equals(Child["Aggregated Mass Light"]))
-                    {
-                        GlobalData.experimentTheoreticalPairs.Rows[a]["Group_#"] = group;
-
-                    }
-                }
-                Find_Children(Convert.ToDouble(Child["Aggregated Mass Heavy"]), Convert.ToInt32(Child["Lysine Count"]), e);
-            }
-        } //called in Assign_Group_Numbers()
-        private void Assign_Group_Numbers(object sender, EventArgs e)
-        {
-            //Use Parent Group to assign group#s to ET
-            //add group of zeroes
-            GlobalData.experimentTheoreticalPairs.Columns.Add("Group_#", typeof(int)); //Add group id column to ET
-            for (int i = 0; i < GlobalData.experimentTheoreticalPairs.Rows.Count; i++) //for each entry in ET
-            {
-                GlobalData.experimentTheoreticalPairs.Rows[i]["Group_#"] = group; //populate group id column with zeroes
-            }
-
-            //label parents in ET
-            foreach (DataRow parent in GlobalData.EE_Parent.Rows)
-            {
-                group = group + 1;
-                for (int a = 0; a < GlobalData.experimentTheoreticalPairs.Rows.Count; a++)
-                {
-                    if (GlobalData.experimentTheoreticalPairs.Rows[a]["Lysine Count"].Equals(parent["Lysine Count"]) && GlobalData.experimentTheoreticalPairs.Rows[a]["Aggregated Mass"].Equals(parent["Aggregated Mass Light"])) //&& ET.Rows[a]["Group_#"].Equals(0))
-                    {
-                        GlobalData.experimentTheoreticalPairs.Rows[a]["Group_#"] = group;
-                    }
-                }
-                Find_Children(Convert.ToDouble(parent["Aggregated Mass Heavy"]), Convert.ToInt32(parent["Lysine Count"]), e);
-
-            }
-        }
-
-        private void Create_Family_Metrics()
-        {
-            //Create dataTable of contents
-            GlobalData.ProteoformFamilyMetrics.Columns.Add("Group_#", typeof(int));
-            GlobalData.ProteoformFamilyMetrics.Columns.Add("#_Exp", typeof(int));
-            GlobalData.ProteoformFamilyMetrics.Columns.Add("Lysine Count", typeof(int));
-            GlobalData.ProteoformFamilyMetrics.Columns.Add("#_IDs", typeof(int));
-            for (int i = 1; i < group + 1; i++) //Create datatable for each family
-            {
-                GlobalData.ProteoformFamilies.Tables.Add(new DataTable());
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Accession", typeof(string));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Name", typeof(string));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Fragment", typeof(string));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("PTM List", typeof(string));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Proteoform Mass", typeof(double));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Aggregated Mass", typeof(double));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Aggregated Intensity", typeof(double));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Aggregated Retention Time", typeof(double));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Lysine Count", typeof(int));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Delta Mass", typeof(double));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Running Sum", typeof(int));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Peak Center Count", typeof(int));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Peak Center Mass", typeof(double));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Out of Range Decimal", typeof(bool));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Acceptable Peak", typeof(bool));
-                GlobalData.ProteoformFamilies.Tables[i - 1].Columns.Add("Group_#", typeof(int));
-
-                DataRow[] dr = GlobalData.experimentTheoreticalPairs.Select("[Group_#]=" + i.ToString()); //get members of family #i
-                //fill datatable of contents
-                DataRow content = GlobalData.ProteoformFamilyMetrics.NewRow();
-                content["Group_#"] = Convert.ToInt32(i);
-                content["#_Exp"] = dr.Count();
-                content["Lysine Count"] = dr[0]["Lysine Count"];
-                foreach (DataRow dr2 in dr)
-                {
-                    GlobalData.ProteoformFamilies.Tables[i - 1].Rows.Add(dr2.ItemArray); //fill datatable with all members of family //ARG HERE BE THE SOURCE OF THEE ERRER
-                }
-                var distinctIds = dr.AsEnumerable()
-                    .Select(s => new {
-                        id = s.Field<string>("Accession"),
-                    })
-                    .Distinct().ToList();
-                content["#_IDs"] = distinctIds.Count;
-                GlobalData.ProteoformFamilyMetrics.Rows.Add(content);
-            }
-        }
-
-        private void DGV()
-        { 
-        dataGridView1.DataSource = GlobalData.ProteoformFamilyMetrics;
-            dataGridView1.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-            dataGridView1.AutoGenerateColumns = true;
-            dataGridView1.ColumnHeadersVisible = true;
-            dataGridView2.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dataGridView2.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-            dataGridView2.AutoGenerateColumns = true;
+            dataGridView1.RowsDefaultCellStyle.BackColor = Color.LightGray;
+            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
+            dataGridView2.RowsDefaultCellStyle.BackColor = Color.LightGray;
+            dataGridView2.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
+            dataGridView1.DataSource = GlobalData.ProteoformFamilyMetrics;
             //dataGridView3.DataSource = PF.Tables[3];
+
+            //Everything has been made. Now put it in windows.
         }
+
+        private void Group_ET()
+        {
+            for (int q = 2; q < 27; q++) //4/5/16
+            {
+                ET_Groups.Tables.Add(new DataTable());
+   //             ET_Groups.Tables[(q - 2)].Columns.Add("Exp_Mass", typeof(decimal));
+     //           ET_Groups.Tables[(q - 2)].Columns.Add("Lys_Ct", typeof(int));
+       //         ET_Groups.Tables[(q - 2)].Columns.Add("Access_Num", typeof(string));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Accession", typeof(string));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Name", typeof(string));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Fragment", typeof(string));
+                ET_Groups.Tables[(q - 2)].Columns.Add("PTM List", typeof(string));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Proteoform Mass", typeof(double));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Aggregated Mass", typeof(double));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Aggregated Intensity", typeof(double));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Aggregated Retention Time", typeof(double));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Lysine Count", typeof(int));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Delta Mass", typeof(double));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Running Sum", typeof(int));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Peak Center Count", typeof(int));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Peak Center Mass", typeof(double));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Out of Range Decimal", typeof(bool));
+                ET_Groups.Tables[(q - 2)].Columns.Add("Acceptable Peak", typeof(bool));
+
+                DataRow[] foundRows;
+                foundRows = GlobalData.experimentTheoreticalPairs.Select("[" +"Lysine Count"+ "]=" + q); 
+                for (int i = 0; i < foundRows.Length; i++)
+                {
+                    ET_Groups.Tables[(q - 2)].Rows.Add(foundRows[i].ItemArray);
+                }
+                ET_Groups.Tables[(q - 2)].Columns.Add("Group_#", typeof(Int32));
+                for (int i = 0; i < foundRows.Length; i++)
+                {
+                    ET_Groups.Tables[(q - 2)].Rows[i]["Group_#"] = 0;
+                }
+            }
+        }   
+
+        private void Group_EE()
+        {
+            for (int q = 2; q < 27; q++) //4/5/16
+            {
+                EE_Groups.Tables.Add(new DataTable());
+ //               EE_Groups.Tables[(q - 2)].Columns.Add("Aggregated Mass Light", typeof(decimal));
+   //             EE_Groups.Tables[(q - 2)].Columns.Add("Aggregated Mass Heavy", typeof(decimal));
+     //           EE_Groups.Tables[(q - 2)].Columns.Add("Lys_Ct", typeof(int));
+                EE_Groups.Tables[(q - 2)].Columns.Add("Aggregated Mass Light", typeof(double));
+                EE_Groups.Tables[(q - 2)].Columns.Add("Aggregated Mass Heavy", typeof(double));
+                EE_Groups.Tables[(q - 2)].Columns.Add("Aggregated Intensity Light", typeof(double));
+                EE_Groups.Tables[(q - 2)].Columns.Add("Aggregated Intensity Heavy", typeof(double));
+                EE_Groups.Tables[(q - 2)].Columns.Add("Retention Time Light", typeof(double));
+                EE_Groups.Tables[(q - 2)].Columns.Add("Retention Time Heavy", typeof(double));
+                EE_Groups.Tables[(q - 2)].Columns.Add("Lysine Count", typeof(int));
+                EE_Groups.Tables[(q - 2)].Columns.Add("Delta Mass", typeof(double));
+                EE_Groups.Tables[(q - 2)].Columns.Add("Running Sum", typeof(int));
+                EE_Groups.Tables[(q - 2)].Columns.Add("Peak Center Count", typeof(int));
+                EE_Groups.Tables[(q - 2)].Columns.Add("Peak Center Mass", typeof(double));
+                EE_Groups.Tables[(q - 2)].Columns.Add("Out of Range Decimal", typeof(bool));
+                EE_Groups.Tables[(q - 2)].Columns.Add("Acceptable Peak", typeof(bool));
+                DataRow[] foundRows;
+                foundRows = GlobalData.experimentExperimentPairs.Select("[" + "Lysine Count" + "]=" + q, "Aggregated Mass Light ASC, Aggregated Mass Heavy ASC");
+  //              DataView view = new DataView(foundRows);
+
+                // Sort by State and ZipCode column in descending order
+//                view.Sort = "State ASC, ZipCode ASC";
+
+               // Console.WriteLine("\nRows in sorted order\n State \t\t ZipCode");
+             //   foreach (DataRowView row in view)
+           //     {
+                    for (int i = 0; i < foundRows.Length; i++)
+                {
+                    EE_Groups.Tables[(q - 2)].Rows.Add(foundRows[i].ItemArray);
+                }
+            }
+        }
+
+        private void Its_A_Parent(int lys, double mass, int checkpoint)
+        {
+            PF_Group_Num++;
+            GlobalData.ProteoformFamilies.Tables.Add(new DataTable()); //add new table for the fam
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Accession", typeof(string));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Name", typeof(string));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Fragment", typeof(string));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("PTM List", typeof(string));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Proteoform Mass", typeof(double));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Mass", typeof(double));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Intensity", typeof(double));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Retention Time", typeof(double));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Lysine Count", typeof(int));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Delta Mass", typeof(double));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Running Sum", typeof(int));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Count", typeof(int));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Mass", typeof(double));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Out of Range Decimal", typeof(bool));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Acceptable Peak", typeof(bool));
+            GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Columns.Add("Group_#", typeof(Int32));
+
+
+
+            foundRowsSingle = ET_Groups.Tables[lys - 2].Select("[" +"Aggregated Mass" + "]=" + mass, "Proteoform Mass"); //make it org by theo mass later
+            foreach (DataRow row in foundRowsSingle)
+            {
+                row["Group_#"] = PF_Group_Num;
+                GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Rows.Add(row.ItemArray);
+            }
+            Num_Exp_Mass = 1;
+            EE_Checkpoint = checkpoint;
+        }
+
+        private void Its_A_Child(int lys, double mass, int checkpoint)
+        {
+            foundRowsSingle = ET_Groups.Tables[lys - 2].Select("[" + "Aggregated Mass" + "]=" + mass, "Proteoform Mass"); //make it org by theo mass later
+            foreach (DataRow row in foundRowsSingle)
+            {
+                row["Group_#"] = PF_Group_Num;
+                GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Rows.Add(row.ItemArray);
+            }
+            Num_Exp_Mass++;
+            EE_Checkpoint = checkpoint;
+        }
+
+        private void Family_Death(int lys)
+        {
+            if ((GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Rows.Count).Equals(0)) //this statement catches families that do not have any theoretical matches
+            {
+                double parentmass = Convert.ToDouble(EE_Groups.Tables[(lys - 2)].Rows[EE_Checkpoint]["Aggregated Mass Light"]);
+                GlobalData.ProteoformFamilyMetrics.Rows.Add(PF_Group_Num, parentmass, lys, Num_Exp_Mass, 0);
+            }
+            else
+            {
+                var distinctIds = GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].AsEnumerable().Select(s => new { id = s.Field<double>("Proteoform Mass"), }).Distinct().ToList();
+                int ID_Count = distinctIds.Count;
+                double parentmass = Convert.ToDouble(GlobalData.ProteoformFamilies.Tables[(PF_Group_Num - 1)].Rows[0]["Aggregated Mass"]);
+                GlobalData.ProteoformFamilyMetrics.Rows.Add(PF_Group_Num, parentmass, lys, Num_Exp_Mass, ID_Count); //group#, #exp, lys, #id  ID is the most time consuming, must run through entire list. Most feasible to achieve everytime ET is accessed.
+            }
+        }
+
+      
 
         //DataGridView3, Currently unused
         private void dataGridView3_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -319,8 +346,8 @@ namespace PS_0._00
             if (e.RowIndex >= 0)
             {
                 DataGridViewRow row = this.dataGridView1.Rows[e.RowIndex];
-                groupnumber = Convert.ToInt32(row.Cells["Group_#"].Value);
-                dataGridView2.DataSource = GlobalData.ProteoformFamilies.Tables[groupnumber - 1];
+                groupnumber = Convert.ToInt32(row.Cells["Group Number"].Value);
+                dataGridView2.DataSource = GlobalData.ProteoformFamilies.Tables[(groupnumber - 1)];
             }
         } //called in DGV
 
@@ -328,9 +355,6 @@ namespace PS_0._00
         {
 
         } //called in dataGridView1_CellContentClick_1
-
-
-
 
 
     }
