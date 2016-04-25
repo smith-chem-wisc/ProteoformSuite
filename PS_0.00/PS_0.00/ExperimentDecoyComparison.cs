@@ -28,12 +28,10 @@ namespace PS_0._00
             InitializeParameterSet();
             FindAllEDPairs();
             CalculateRunningSums();
-            //FillEDGridView();
+            FillEDGridView("DecoyDatabase_0");
             GraphEDHistogram();
-            CalculateMedianDecoyCount();
             InitializeEDListTable();
             FillEDListTable();
-            //FillEDGridView(); //Why are there two of these? -AC
             GraphETPeakList();
             GraphEDList();
             UpdateFiguresOfMerit();
@@ -55,7 +53,10 @@ namespace PS_0._00
         {
             for (int i = 0; i < GlobalData.numDecoyDatabases; i++)
             {
-                DataTable eD = GetNewED_DataTable("DecoyDatabase_" + i);
+                string tableName = "DecoyDatabase_" + i;
+                DataTable eD = GetNewED_DataTable(tableName);
+                GlobalData.experimentDecoyPairs.Tables.Add(eD);
+
                 foreach (DataRow agRow in GlobalData.aggregatedProteoforms.Rows)
                 {
                     double lowMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ED_Lower_Bound.Value);
@@ -65,7 +66,7 @@ namespace PS_0._00
                     expression = expression + "and [Lysine Count] >= " + agRow["Lysine Count"];
 
                     
-                    DataRow[] closeDecoys = GlobalData.theoreticalAndDecoyDatabases.Tables["DecoyDatabase_" + i].Select(expression);
+                    DataRow[] closeDecoys = GlobalData.theoreticalAndDecoyDatabases.Tables[tableName].Select(expression);
 
                     foreach (DataRow row in closeDecoys)
                     {
@@ -86,36 +87,26 @@ namespace PS_0._00
 
                 }
 
-                    GlobalData.experimentDecoyPairs.Tables.Add(eD);
+                
             }
-
-            // GlobalData.experimentDecoyPairs = eD;
         }
 
         private void CalculateRunningSums()
         {
-            int i = (int)nud_Decoy_Database.Value - 1;
-            foreach (DataRow row in GlobalData.experimentDecoyPairs.Tables["DecoyDatabase_" + i].Rows)
+            for (int i = 0; i < GlobalData.numDecoyDatabases; i++)
             {
-                double deltaMass = Convert.ToDouble(row["Delta Mass"].ToString());
-                double lower = deltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-                double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-                string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper;
-                row["Running Sum"] = GlobalData.experimentDecoyPairs.Tables["DecoyDatabase_" + i].Select(expression).Length;
+                string tableName = "DecoyDatabase_" + i;
+
+                foreach (DataRow row in GlobalData.experimentDecoyPairs.Tables[tableName].Rows)
+                {
+                    double deltaMass = Convert.ToDouble(row["Delta Mass"].ToString());
+                    double lower = deltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+                    double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+                    string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper;
+                    row["Running Sum"] = GlobalData.experimentDecoyPairs.Tables[tableName].Select(expression).Length;
+                }
             }
         }
-
-        //private void FillEDGridView()
-        //{
-        //    //Round before displaying ET grid
-        //    string[] rt_column_names = new string[] { "Aggregated Retention Time" };
-        //    string[] intensity_column_names = new string[] { "Aggregated Intensity" };
-        //    string[] abundance_column_names = new string[] { };
-        //    string[] mass_column_names = new string[] { "Proteoform Mass", "Aggregated Mass", "Delta Mass", "Peak Center Mass" };
-        //    DataTable displayTable = GlobalData.experimentTheoreticalPairs;
-        //    BindingSource dgv_DT_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_ET_Pairs, displayTable,
-        //        rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
-        //}
 
         private void GraphETPeakList()
         {
@@ -130,24 +121,17 @@ namespace PS_0._00
             {
                 ct_ED_peakList.Series["etPeakList"].Points.AddXY(row["Delta Mass"], row["Running Sum"]);
             }
-            // ct_ED_peakList.DataSource = GlobalData.experimentTheoreticalPairs;
-            //ct_ED_peakList.DataBind();
         }
 
         private void GraphEDList()
         {
-            int i = (int)nud_Decoy_Database.Value - 1;
+            int i =  (int)nud_Decoy_Database.Value - 1;
             string colNameED = "Delta Mass";
             string directionED = "DESC";
-            DataTable ed = GlobalData.experimentDecoyPairs.Tables["DecoyDatabase_" + i];
+            string tableName = "DecoyDatabase_" + i;
+            DataTable ed = GlobalData.experimentDecoyPairs.Tables[tableName];
             ed.DefaultView.Sort = colNameED + " " + directionED;
             ed = ed.DefaultView.ToTable();
-            //GlobalData.experimentDecoyPairs.Tables["DecoyDatabase_" + i] = ed;
-
-            //ct_ED_peakList.Series["edPeakList"].XValueMember = colNameED;
-            //ct_ED_peakList.Series["edPeakList"].YValueMembers = "Running Sum";
-            //ct_ED_peakList.DataSource = GlobalData.experimentDecoyPairs;
-            //ct_ED_peakList.DataBind();
             foreach (DataRow row in ed.Rows)
             {
                 ct_ED_peakList.Series["edPeakList"].Points.AddXY(row["Delta Mass"], row["Running Sum"]);
@@ -239,11 +223,6 @@ namespace PS_0._00
         //    InitializeETPeakListTable();
         //}
 
-        private void CalculateMedianDecoyCount()
-        {
-
-        }
-
 
         private void FillEDListTable()
         {
@@ -255,32 +234,30 @@ namespace PS_0._00
 
                 double deltaMass = Convert.ToDouble(row["Average Delta Mass"].ToString());
                 int peakCount = Convert.ToInt16(row["Peak Count"].ToString());
-                //peakwidthbase/2???
                 double lower = deltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                 double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                 string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper;
 
-                for (int i = 0; i < GlobalData.numDecoyDatabases; i++)
+              for (int i = 0; i < GlobalData.numDecoyDatabases; i++)
                 {
                     string colName = "Running Sum";
                     string direction = "DESC";
-                    DataTable dt = GlobalData.experimentDecoyPairs.Tables["DecoyDatabase_" + i];
+                    string tableName = "DecoyDatabase_" + i;
+                    DataTable dt = GlobalData.experimentDecoyPairs.Tables[tableName];
                     dt.DefaultView.Sort = colName + " " + direction;
                     dt = dt.DefaultView.ToTable();
                     //if (Convert.ToBoolean(row["Out of Range Decimal"].ToString()) == false && Convert.ToBoolean(row["Acceptable Peak"].ToString()) == false)
                     DataRow[] decoyHits = dt.Select(expression);
-
-
                     decoyTotals.Rows.Add(decoyHits.Length);
                 }
 
+
+                //calculate median of decoy hits.
                 string colName2 = "Decoy Hits";
                 decoyTotals.DefaultView.Sort = colName2 + " " + "ASC";
                 decoyTotals = decoyTotals.DefaultView.ToTable();
-                
                 int indexMedian = (decoyTotals.Rows.Count)/ 2;
                 int median = Convert.ToInt16(decoyTotals.Rows[indexMedian][0]);
-            
                 edList.Rows.Add(deltaMass, peakCount, median);
 
         }
@@ -303,21 +280,35 @@ namespace PS_0._00
         edList.Columns.Add("ED count", typeof(int));
     }
 
-    private void GraphEDHistogram()
+
+
+        private void FillEDGridView(string table)
+        {
+            DataTable displayTable = GlobalData.experimentDecoyPairs.Tables[table];
+
+            string[] rt_column_names = new string[] { "Aggregated Retention Time" };
+            string[] intensity_column_names = new string[] { "Aggregated Intensity" };
+            string[] abundance_column_names = new string[] { };
+            string[] mass_column_names = new string[] { "Proteoform Mass", "Aggregated Mass", "Delta Mass", "Peak Center Mass" };
+    
+            BindingSource dgv_DT_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_ED_Pairs, displayTable,
+               rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
+        }
+
+        private void GraphEDHistogram()
     {
-       int i = (int)nud_Decoy_Database.Value - 1;
+        int i = (int)nud_Decoy_Database.Value - 1;
+            string tableName = "DecoyDatabase_" + i;
         string colName = "Delta Mass";
         string direction = "DESC";
-        DataTable dt = GlobalData.experimentDecoyPairs.Tables["DecoyDatabase_" + i];
+        DataTable dt = GlobalData.experimentDecoyPairs.Tables[tableName];
         dt.DefaultView.Sort = colName + " " + direction;
         dt = dt.DefaultView.ToTable();
-        //GlobalData.experimentDecoyPairs.Tables["DecoyDatabase_" + i] = dt;
-      //  GlobalData.experimentDecoyPairs = dt;
+
 
         ct_ED_Histogram.Series["edHistogram"].XValueMember = "Delta Mass";
         ct_ED_Histogram.Series["edHistogram"].YValueMembers = "Running Sum";
 
-            // ct_ED_Histogram.DataSource = GlobalData.experimentDecoyPairs;
         ct_ED_Histogram.DataSource = dt;
         ct_ED_Histogram.DataBind();
 
@@ -392,7 +383,7 @@ namespace PS_0._00
         nud_Decoy_Database.Value = 1;
     }
 
-    private void label5_Click(object sender, EventArgs e)
+        private void label5_Click(object sender, EventArgs e)
     {
 
     }
@@ -422,7 +413,12 @@ namespace PS_0._00
 
         private void nud_Decoy_Database_ValueChanged(object sender, EventArgs e)
         {
+            ct_ED_peakList.Series["edPeakList"].Points.Clear();
+            int i = (int)nud_Decoy_Database.Value - 1;
+            string table = "DecoyDatabase_" + i;
+            FillEDGridView(table);
             GraphEDHistogram();
+            GraphEDList();
         }
     }
 }
