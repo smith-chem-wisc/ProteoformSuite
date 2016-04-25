@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.Odbc;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -292,7 +293,8 @@ namespace PS_0._00
             string[] mass_column_names = new string[] { "Proteoform Mass", "Aggregated Mass", "Delta Mass", "Peak Center Mass" };
     
             BindingSource dgv_DT_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_ED_Pairs, displayTable,
-               rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
+               rt_column_names, intensity_column_names, abundance_column_names, mass_column_names, new string[] { });
+           
         }
 
         private void GraphEDHistogram()

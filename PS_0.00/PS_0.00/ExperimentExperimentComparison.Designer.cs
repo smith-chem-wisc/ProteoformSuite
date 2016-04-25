@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.dgv_EE_Peak_List = new System.Windows.Forms.DataGridView();
@@ -131,7 +131,7 @@
             this.dgv_EE_Peak_List.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_EE_Peak_List.Location = new System.Drawing.Point(0, 0);
             this.dgv_EE_Peak_List.Name = "dgv_EE_Peak_List";
-            this.dgv_EE_Peak_List.Size = new System.Drawing.Size(210, 341);
+            this.dgv_EE_Peak_List.Size = new System.Drawing.Size(210, 308);
             this.dgv_EE_Peak_List.TabIndex = 1;
             // 
             // nUD_EE_Upper_Bound
@@ -335,17 +335,17 @@
             // 
             // ct_EE_Histogram
             // 
-            chartArea1.Name = "ChartArea1";
-            this.ct_EE_Histogram.ChartAreas.Add(chartArea1);
+            chartArea3.Name = "ChartArea1";
+            this.ct_EE_Histogram.ChartAreas.Add(chartArea3);
             this.ct_EE_Histogram.Cursor = System.Windows.Forms.Cursors.Default;
             this.ct_EE_Histogram.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_EE_Histogram.Location = new System.Drawing.Point(0, 0);
             this.ct_EE_Histogram.Name = "ct_EE_Histogram";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Legend = "Legend1";
-            series1.Name = "eeHistogram";
-            this.ct_EE_Histogram.Series.Add(series1);
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Legend = "Legend1";
+            series3.Name = "eeHistogram";
+            this.ct_EE_Histogram.Series.Add(series3);
             this.ct_EE_Histogram.Size = new System.Drawing.Size(464, 273);
             this.ct_EE_Histogram.TabIndex = 16;
             this.ct_EE_Histogram.TabStop = false;
@@ -363,18 +363,18 @@
             // 
             // ct_EE_peakList
             // 
-            chartArea2.Name = "ChartArea1";
-            this.ct_EE_peakList.ChartAreas.Add(chartArea2);
+            chartArea4.Name = "ChartArea1";
+            this.ct_EE_peakList.ChartAreas.Add(chartArea4);
             this.ct_EE_peakList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_EE_peakList.Enabled = false;
             this.ct_EE_peakList.Location = new System.Drawing.Point(0, 0);
             this.ct_EE_peakList.Name = "ct_EE_peakList";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series2.Legend = "Legend1";
-            series2.Name = "eePeakList";
-            this.ct_EE_peakList.Series.Add(series2);
-            this.ct_EE_peakList.Size = new System.Drawing.Size(235, 341);
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series4.Legend = "Legend1";
+            series4.Name = "eePeakList";
+            this.ct_EE_peakList.Series.Add(series4);
+            this.ct_EE_peakList.Size = new System.Drawing.Size(235, 308);
             this.ct_EE_peakList.TabIndex = 2;
             this.ct_EE_peakList.TabStop = false;
             this.ct_EE_peakList.Text = "eePeakList";
@@ -438,7 +438,7 @@
             this.splitContainer5.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox1);
             this.splitContainer5.Size = new System.Drawing.Size(457, 622);
-            this.splitContainer5.SplitterDistance = 345;
+            this.splitContainer5.SplitterDistance = 312;
             this.splitContainer5.TabIndex = 2;
             // 
             // splitContainer4
@@ -455,15 +455,16 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.ct_EE_peakList);
-            this.splitContainer4.Size = new System.Drawing.Size(457, 345);
+            this.splitContainer4.Size = new System.Drawing.Size(457, 312);
             this.splitContainer4.SplitterDistance = 214;
             this.splitContainer4.TabIndex = 18;
             // 
             // EE_update
             // 
-            this.EE_update.Location = new System.Drawing.Point(222, 9);
+            this.EE_update.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.EE_update.Location = new System.Drawing.Point(0, 279);
             this.EE_update.Name = "EE_update";
-            this.EE_update.Size = new System.Drawing.Size(75, 23);
+            this.EE_update.Size = new System.Drawing.Size(453, 23);
             this.EE_update.TabIndex = 31;
             this.EE_update.Text = "Update";
             this.EE_update.UseMnemonic = false;

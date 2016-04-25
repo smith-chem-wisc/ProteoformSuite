@@ -37,17 +37,46 @@ namespace PS_0._00
             UpdateFiguresOfMerit();
         }
 
-        //private void RunTheGamut()
-        //{
-        //    FindAllETPairs();
-        //    CalculateRunningSums();
-        //    FillETGridView();
-        //    GraphETHistogram();
-        //    InitializeETPeakListTable();
-        //    FillETPeakListTable();
-        //    FillETGridView();
-        //    UpdateFiguresOfMerit();
-        //}
+
+        private void RunTheGamut()
+        {
+            this.Cursor = Cursors.WaitCursor;
+            ClearETGridView();
+            ZeroETPairsTableValues();
+            ClearETPeakListTable();
+            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+            ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
+            FindAllETPairs();
+            CalculateRunningSums();
+            FillETGridView();
+            GraphETHistogram();
+            FillETPeakListTable();
+            UpdateFiguresOfMerit();
+            xMaxET.Value = nUD_ET_Upper_Bound.Value;
+            xMinET.Value = nUD_ET_Lower_Bound.Value;
+            GraphETPeakList();
+            this.Cursor = Cursors.Default;
+        }
+
+
+        private void ZeroETPairsTableValues()
+        {
+            foreach (DataRow row in GlobalData.experimentTheoreticalPairs.Rows)
+            {
+                row["Acceptable Peak"] = false;
+                row["Peak Center Count"] = 0;
+            }
+        }
+
+        private void ClearETPeakListTable()
+        {
+            etPeakList.Clear();
+        }
+
+        private void ClearETGridView()
+        {
+            GlobalData.experimentTheoreticalPairs.Clear();
+        }
 
         private void FindAllETPairs()
         {
@@ -363,7 +392,7 @@ namespace PS_0._00
 
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
         {
-            //RunTheGamut();
+           // RunTheGamut();
         }
 
         private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
@@ -388,7 +417,7 @@ namespace PS_0._00
         {
             nUD_ET_Lower_Bound.Minimum = -500;
             nUD_ET_Lower_Bound.Maximum = 0;
-            nUD_ET_Lower_Bound.Value = -250;
+           nUD_ET_Lower_Bound.Value = -250;
 
             nUD_ET_Upper_Bound.Minimum = 0;
             nUD_ET_Upper_Bound.Maximum = 500;
@@ -425,6 +454,11 @@ namespace PS_0._00
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
             nUD_PeakCountMinThreshold.Value = 10;
+        }
+
+        private void ET_Update_Click(object sender, EventArgs e)
+        {
+            RunTheGamut();
         }
     }
 }

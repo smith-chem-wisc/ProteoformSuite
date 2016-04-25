@@ -48,6 +48,7 @@ namespace PS_0._00
             ZeroEEPairsTableValues();
             ClearEEPeakListTable();
             ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+            ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
             FindAllEEPairs();
             CalculateRunningSums();
             FillEEGridView();
