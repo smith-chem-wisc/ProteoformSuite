@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
+
 
 namespace PS_0._00
 {
@@ -17,6 +19,9 @@ namespace PS_0._00
         public NeuCodePairs()
         {
             InitializeComponent();
+            this.ct_IntensityRatio.MouseMove += new MouseEventHandler(ct_IntensityRatio_MouseMove);
+            this.ct_LysineCount.MouseMove += new MouseEventHandler(ct_LysineCount_MouseMove);
+
         }
 
         private void NeuCodePairs_Load(object sender, EventArgs e)
@@ -35,6 +40,76 @@ namespace PS_0._00
 
             GraphLysineCount();
             GraphIntensityRatio();
+        }
+
+
+
+        Point? prevPosition = null;
+        ToolTip tooltip = new ToolTip();
+
+        void ct_IntensityRatio_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = e.Location;
+            if (prevPosition.HasValue && pos == prevPosition.Value)
+                return;
+            tooltip.RemoveAll();
+            prevPosition = pos;
+            var results = ct_IntensityRatio.HitTest(pos.X, pos.Y, false,
+                                            ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
+                          //  Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            tooltip.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_IntensityRatio,
+                                            pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
+        }
+
+        Point? prevPosition2 = null;
+        ToolTip tooltip2 = new ToolTip();
+
+        void ct_LysineCount_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = e.Location;
+            if (prevPosition2.HasValue && pos == prevPosition2.Value)
+                return;
+            tooltip2.RemoveAll();
+            prevPosition2 = pos;
+            var results = ct_LysineCount.HitTest(pos.X, pos.Y, false,
+                                            ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
+                           // Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            tooltip2.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_LysineCount,
+                                            pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
         }
 
         private void GraphIntensityRatio()
