@@ -253,13 +253,22 @@ namespace PS_0._00
                 }
 
 
-                //calculate median of decoy hits.
-                string colName2 = "Decoy Hits";
-                decoyTotals.DefaultView.Sort = colName2 + " " + "ASC";
-                decoyTotals = decoyTotals.DefaultView.ToTable();
-                int indexMedian = (decoyTotals.Rows.Count)/ 2;
-                int median = Convert.ToInt16(decoyTotals.Rows[indexMedian][0]);
-                edList.Rows.Add(deltaMass, peakCount, median);
+                //calculate average of decoy hits
+                int sum = 0;
+              for (int i = 0; i < decoyTotals.Rows.Count; i ++)
+                {
+                    sum = sum + Convert.ToInt16(decoyTotals.Rows[i]["Decoy Hits"]);
+                }
+                decimal average = sum / (decoyTotals.Rows.Count);
+                edList.Rows.Add(deltaMass, peakCount, average);
+
+                ////calculate median of decoy hits.
+                //string colName2 = "Decoy Hits";
+                //decoyTotals.DefaultView.Sort = colName2 + " " + "ASC";
+                //decoyTotals = decoyTotals.DefaultView.ToTable();
+                //int indexMedian = (decoyTotals.Rows.Count)/ 2;
+                //int median = Convert.ToInt16(decoyTotals.Rows[indexMedian][0]);
+                //edList.Rows.Add(deltaMass, peakCount, median);
 
         }
 
