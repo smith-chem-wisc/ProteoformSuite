@@ -14,8 +14,9 @@ namespace PS_0._00
 {
     public partial class ExperimentTheoreticalComparison : Form
     {
-        DataTable etPeakList = new DataTable();
-        DataTableHandler dataTableHandler = new DataTableHandler();
+        DataTable etPeakList = new DataTable();  // These are the aggregated peaks that are integrated from the histogram of the individual ET pairs.
+        BindingSource etPeakList_BS = new BindingSource();
+        BindingSource etPairsList_BS = new BindingSource();
 
         public ExperimentTheoreticalComparison()
         {
@@ -34,7 +35,6 @@ namespace PS_0._00
             GraphETHistogram();
             InitializeETPeakListTable();
             FillETPeakListTable();
-            FillETGridView(); //Why are there two of these? -AC
             GraphETPeakList();
             UpdateFiguresOfMerit();
         }
@@ -176,7 +176,7 @@ namespace PS_0._00
                         oOR = true;
                     }
                     eT.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], deltaMass, 0, 0, deltaMass, oOR, false);
-                    //set out of range variable
+
                 }
             }
             GlobalData.experimentTheoreticalPairs = eT;
@@ -196,15 +196,16 @@ namespace PS_0._00
 
         private void FillETGridView()
         {
-            //Round before displaying ET grid
-            string[] rt_column_names = new string[] { "Aggregated Retention Time" };
-            string[] intensity_column_names = new string[] { "Aggregated Intensity" };
-            string[] abundance_column_names = new string[] { };
-            string[] mass_column_names = new string[] { "Proteoform Mass", "Aggregated Mass", "Delta Mass", "Peak Center Mass" };
-            //string[] dec_mass_column_names = new string[] { };
-            DataTable displayTable = GlobalData.experimentTheoreticalPairs;
-            BindingSource dgv_DT_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_ET_Pairs, displayTable,
-                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names, new string[] { });
+            etPairsList_BS.DataSource = GlobalData.experimentTheoreticalPairs;
+            dgv_ET_Pairs.DataSource = etPairsList_BS;
+            dgv_ET_Pairs.ReadOnly = true;
+            dgv_ET_Pairs.Columns["Acceptable Peak"].ReadOnly = false;
+            dgv_ET_Pairs.Columns["Aggregated Retention Time"].DefaultCellStyle.Format = "0.##";
+            dgv_ET_Pairs.Columns["Proteoform Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_ET_Pairs.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_ET_Pairs.Columns["Delta Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_ET_Pairs.Columns["Peak Center Mass"].DefaultCellStyle.Format = "0.#####";
+
         }
 
         private void GraphETPeakList()
@@ -295,21 +296,6 @@ namespace PS_0._00
             tb_TotalPeaks.Text = peakCount.ToString();
         }
 
-        //private void ZeroETPairsTableValues()
-        //{
-        //    foreach (DataRow row in GlobalData.experimentTheoreticalPairs.Rows)
-        //    {
-        //        row["Acceptable Peak"] = false;
-        //        row["Peak Center Count"] = 0;
-        //    }
-        //}
-
-        //private void ClearETPeakListTable()
-        //{
-        //    etPeakList.Clear();
-        //    InitializeETPeakListTable();
-        //}
-
         private void FillETPeakListTable()
         {
             string colName = "Running Sum";
@@ -361,12 +347,12 @@ namespace PS_0._00
             }
             GlobalData.etPeakList = etPeakList;
 
-            //Round before displaying ET peak list
-            string[] other_columns = new string[] { };
-            string[] mass_column_names = new string[] { "Average Delta Mass" };
-            //string[] dec_mass_column_names = new string[] { };
-            BindingSource dgv_ET_Peak_List_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_ET_Peak_List, etPeakList,
-                other_columns, other_columns, other_columns, mass_column_names, new string[] { });
+            etPeakList_BS.DataSource = etPeakList;
+            dgv_ET_Peak_List.DataSource = etPeakList_BS;
+            dgv_ET_Peak_List.ReadOnly = true;
+            dgv_ET_Peak_List.Columns["Acceptable"].ReadOnly = false;
+            dgv_ET_Peak_List.Columns["Average Delta Mass"].DefaultCellStyle.Format = "0.#####";
+
         }
 
 
