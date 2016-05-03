@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
@@ -290,25 +290,24 @@
             // 
             // ct_ET_peakList
             // 
-            chartArea1.Name = "ChartArea1";
-            this.ct_ET_peakList.ChartAreas.Add(chartArea1);
+            chartArea3.Name = "ChartArea1";
+            this.ct_ET_peakList.ChartAreas.Add(chartArea3);
             this.ct_ET_peakList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_ET_peakList.Location = new System.Drawing.Point(0, 0);
             this.ct_ET_peakList.Name = "ct_ET_peakList";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Name = "etPeakList";
-            this.ct_ET_peakList.Series.Add(series1);
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Name = "etPeakList";
+            this.ct_ET_peakList.Series.Add(series3);
             this.ct_ET_peakList.Size = new System.Drawing.Size(264, 307);
             this.ct_ET_peakList.TabIndex = 1;
             this.ct_ET_peakList.Text = "chart1";
             // 
             // ET_Update
             // 
-            this.ET_Update.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.ET_Update.Location = new System.Drawing.Point(0, 202);
+            this.ET_Update.Location = new System.Drawing.Point(407, 5);
             this.ET_Update.Name = "ET_Update";
-            this.ET_Update.Size = new System.Drawing.Size(497, 23);
+            this.ET_Update.Size = new System.Drawing.Size(80, 21);
             this.ET_Update.TabIndex = 16;
             this.ET_Update.Text = "Update";
             this.ET_Update.UseVisualStyleBackColor = true;
@@ -321,7 +320,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(33, 19);
+            this.groupBox4.Location = new System.Drawing.Point(2, 50);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -390,7 +389,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(265, 19);
+            this.groupBox3.Location = new System.Drawing.Point(234, 50);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -463,7 +462,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(265, 106);
+            this.groupBox2.Location = new System.Drawing.Point(234, 137);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -531,7 +530,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(33, 106);
+            this.groupBox1.Location = new System.Drawing.Point(2, 137);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -649,16 +648,16 @@
             // 
             // ct_ET_Histogram
             // 
-            chartArea2.Name = "ChartArea1";
-            this.ct_ET_Histogram.ChartAreas.Add(chartArea2);
+            chartArea4.Name = "ChartArea1";
+            this.ct_ET_Histogram.ChartAreas.Add(chartArea4);
             this.ct_ET_Histogram.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_ET_Histogram.Location = new System.Drawing.Point(0, 0);
             this.ct_ET_Histogram.Margin = new System.Windows.Forms.Padding(2);
             this.ct_ET_Histogram.Name = "ct_ET_Histogram";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series2.Name = "etHistogram";
-            this.ct_ET_Histogram.Series.Add(series2);
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series4.Name = "etHistogram";
+            this.ct_ET_Histogram.Series.Add(series4);
             this.ct_ET_Histogram.Size = new System.Drawing.Size(422, 247);
             this.ct_ET_Histogram.TabIndex = 0;
             this.ct_ET_Histogram.Text = "chart1";
