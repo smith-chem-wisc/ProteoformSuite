@@ -23,7 +23,7 @@ namespace PS_0._00
             this.MassDecimals = 4;
         }
         
-        public BindingSource DisplayWithRoundedDoubles(DataGridView dataGridView, DataTable table, string[] rt_column_names, string[] intensity_column_names, string[] abundance_column_names, string[] mass_column_names, string[] dec_mass_column_names)
+        public BindingSource DisplayWithRoundedDoubles(DataGridView dataGridView, DataTable table, string[] rt_column_names, string[] intensity_column_names, string[] abundance_column_names, string[] mass_column_names)
         {
             DataTable displayTable = new DataTable();
             displayTable = table;
@@ -31,18 +31,12 @@ namespace PS_0._00
             foreach (string intensity_column_name in intensity_column_names) { RoundDoubleColumn(displayTable, intensity_column_name, this.IntensityDecimals); }
             foreach (string abundance_column_name in abundance_column_names) { RoundDoubleColumn(displayTable, abundance_column_name, this.AbundanceDecimals); }
             foreach (string mass_column_name in mass_column_names) { RoundDoubleColumn(displayTable, mass_column_name, this.MassDecimals); }
-            foreach (string dec_mass_column_name in dec_mass_column_names) { RoundDecimalColumn(displayTable, dec_mass_column_name, MassDecimals); }
             return this.Display(dataGridView, displayTable);
         }
 
         private static void RoundDoubleColumn(DataTable table, string column_name, int num_decimal_places)
         {
-            table.AsEnumerable().ToList().ForEach(p => p.SetField(column_name, Math.Round(p.Field<Double>(column_name), num_decimal_places)));
-        }
-
-        private static void RoundDecimalColumn(DataTable table, string column_name, int num_decimal_places)
-        {
-            table.AsEnumerable().ToList().ForEach(p => p.SetField<Decimal>(column_name, Math.Round(p.Field<Decimal>(column_name), num_decimal_places)));
+            table.AsEnumerable().ToList().ForEach(p => p.SetField<Double>(column_name, Math.Round(p.Field<Double>(column_name), num_decimal_places)));
         }
 
         public BindingSource Display(DataGridView dataGridView, DataTable displayTable)

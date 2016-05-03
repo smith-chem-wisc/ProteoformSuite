@@ -28,25 +28,37 @@ namespace PS_0._00
         public RawExperimentalComponents()
         {
             InitializeComponent();
+            Form1 instance = new Form1();
+            //instance.LoadDeconvolutionResults_Load(GlobalData.repeatsender, GlobalData.repeate);
+            if (GlobalData.repeat == true)
+            {
+                instance.loadDeconvolutionResultsToolStripMenuItem_Click(GlobalData.repeatsender, GlobalData.repeate);
+            }
         }
 
-        private void RawExperimentalComponents_Load(object sender, EventArgs e)
+        public void RawExperimentalComponents_Load(object sender, EventArgs e)
         {
+            if (GlobalData.deconResultsFileNames.Count().Equals(0))
+            {
+                MessageBox.Show("Oops! We didn't find any data... Did you forget to load your Deconvolution Results?");
+                GlobalData.repeat = true;
+                GlobalData.repeatsender = sender;
+                GlobalData.repeate = e;
+                GlobalData.repeat = true;
+                return;
+            }
             GlobalData.deconResultsFiles = GetDeconResults();
             GlobalData.rawExperimentalComponents = GetRawComponents();
             GlobalData.rawExperimentalChargeStateData = GetRawChargeStates();
             CalculateWeightedMonoisotopicMass();
 
-            //MessageBox.Show("RawExperimentalComponents_Load");
-
             //Round decimals before displaying
             string[] rt_column_names = new string[] { "Apex RT" };
             string[] abundance_column_names = new string[] { "Relative Abundance", "Fractional Abundance" };
             string[] intensity_column_names = new string[] { "Sum Intensity" };
-            string[] mass_column_names = new string[] { "Monoisotopic Mass", "Delta Mass" };
-            string[] dec_mass_column_names = new string[] { "Weighted Monoisotopic Mass" };
+            string[] mass_column_names = new string[] { "Monoisotopic Mass", "Delta Mass", "Weighted Monoisotopic Mass" };
             BindingSource bs_rawExpComp_monoisotopics = dataTableHandler.DisplayWithRoundedDoubles(dgv_RawExpComp_MI_masses, GlobalData.rawExperimentalComponents,
-                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names, dec_mass_column_names);
+                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
 
         }
 
@@ -114,7 +126,7 @@ namespace PS_0._00
                 }
             }
 
-            deconvolutionResults.Columns.Add("Weighted Monoisotopic Mass", typeof(decimal));
+            deconvolutionResults.Columns.Add("Weighted Monoisotopic Mass", typeof(double));
 
             foreach (DataRow dr in deconvolutionResults.Rows)
             {
@@ -132,13 +144,13 @@ namespace PS_0._00
                 int entryNumber = 0;
                 object sumObject; 
                 sumObject = table.Compute("Sum(Intensity)", "");
-                decimal intensitySum = Convert.ToDecimal(sumObject);
-                decimal weightedMonoisotopicMass = 0;
+                double intensitySum = Convert.ToDouble(sumObject);
+                double weightedMonoisotopicMass = 0;
                 foreach (DataRow row in table.Rows)
                 {
                     Filename = row["Filename"].ToString();
                     entryNumber = int.Parse(row["No#"].ToString());
-                    weightedMonoisotopicMass = weightedMonoisotopicMass + (decimal.Parse(row["intensity"].ToString())/intensitySum*(decimal.Parse(row["Calculated Mass"].ToString())));
+                    weightedMonoisotopicMass = weightedMonoisotopicMass + (double.Parse(row["intensity"].ToString())/intensitySum*(double.Parse(row["Calculated Mass"].ToString())));
                 }
                 string expression = GlobalData.rawExperimentalComponents.Columns[11].ColumnName + " = '"+ Filename +"'"
                     + " AND [" + GlobalData.rawExperimentalComponents.Columns[0].ColumnName + "] = " + entryNumber;// you gotta have single quotes on the filename or this don't work. took me forever to figure that out.
@@ -351,15 +363,12 @@ namespace PS_0._00
                 filename = row.Cells["Filename"].Value.ToString();
                 rawComponentNum = row.Cells[0].Value.ToString();
 
-                //MessageBox.Show("dgv_RawExpComp_MI_masses_CellContentClick");
-
                 //Round doubles before displaying
                 DataTable displayTable = GlobalData.rawExperimentalChargeStateData.Tables[filename + "_" + rawComponentNum];
                 string[] intensity_column_names = new string[] { "Intensity" };
                 string[] mass_column_names = new string[] { "Calculated Mass", "MZ Centroid" };
-                //string[] dec_mass_column_names = new string[] { };
                 BindingSource dgv_cs_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_RawExpComp_IndChgSts, displayTable,
-                    new string[] { }, intensity_column_names, new string[] { }, mass_column_names, new string[] { });
+                    new string[] { }, intensity_column_names, new string[] { }, mass_column_names);
             }
         }
     }

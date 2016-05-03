@@ -26,6 +26,7 @@ namespace PS_0._00
         public static DataTable experimentTheoreticalPairs = new DataTable();
         public static DataTable etPeakList = new DataTable();
         public static DataSet experimentDecoyPairs = new DataSet();
+        //public static DataTable experimentDecoyPairs = new DataTable();
         public static DataTable edList = new DataTable();
         public static DataTable experimentExperimentPairs = new DataTable();
         public static DataTable eePeakList = new DataTable();
@@ -33,5 +34,8 @@ namespace PS_0._00
         public static DataSet ProteoformFamiliesET = new DataSet();
         public static DataSet ProteoformFamiliesEE = new DataSet();
         public static DataTable ProteoformFamilyMetrics = new DataTable();
+        public static bool repeat = false;
+        public static object repeatsender;
+        public static EventArgs repeate;
     }
 }

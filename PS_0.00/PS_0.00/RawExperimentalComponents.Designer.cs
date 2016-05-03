@@ -100,7 +100,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_RawExpComp_MI_masses)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_RawExpComp_IndChgSts)).EndInit();
             this.ResumeLayout(false);
-
         }
 
         #endregion
