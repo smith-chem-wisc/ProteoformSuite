@@ -14,13 +14,16 @@ namespace PS_0._00
 {
     public partial class ExperimentTheoreticalComparison : Form
     {
-        DataTable etPeakList = new DataTable();
-        DataTableHandler dataTableHandler = new DataTableHandler();
+        DataTable etPeakList = new DataTable();  // These are the aggregated peaks that are integrated from the histogram of the individual ET pairs.
+        BindingSource etPeakList_BS = new BindingSource();
+        BindingSource etPairsList_BS = new BindingSource();
 
         public ExperimentTheoreticalComparison()
         {
             InitializeComponent();
             this.dgv_ET_Peak_List.MouseClick += new MouseEventHandler(dgv_ET_Peak_List_CellClick);
+            this.ct_ET_Histogram.MouseMove += new MouseEventHandler(ct_ET_Histogram_MouseMove);
+            this.ct_ET_peakList.MouseMove += new MouseEventHandler(ct_ET_peakList_MouseMove);
         }
 
         private void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
@@ -32,22 +35,118 @@ namespace PS_0._00
             GraphETHistogram();
             InitializeETPeakListTable();
             FillETPeakListTable();
-            FillETGridView(); //Why are there two of these? -AC
             GraphETPeakList();
             UpdateFiguresOfMerit();
         }
 
-        //private void RunTheGamut()
-        //{
-        //    FindAllETPairs();
-        //    CalculateRunningSums();
-        //    FillETGridView();
-        //    GraphETHistogram();
-        //    InitializeETPeakListTable();
-        //    FillETPeakListTable();
-        //    FillETGridView();
-        //    UpdateFiguresOfMerit();
-        //}
+
+        private void RunTheGamut()
+        {
+            this.Cursor = Cursors.WaitCursor;
+            ClearETGridView();
+            ZeroETPairsTableValues();
+            ClearETPeakListTable();
+            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+            ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
+            FindAllETPairs();
+            CalculateRunningSums();
+            FillETGridView();
+            GraphETHistogram();
+            FillETPeakListTable();
+            UpdateFiguresOfMerit();
+            xMaxET.Value = nUD_ET_Upper_Bound.Value;
+            xMinET.Value = nUD_ET_Lower_Bound.Value;
+            GraphETPeakList();
+            this.Cursor = Cursors.Default;
+        }
+
+        Point? prevPosition = null;
+        ToolTip tooltip = new ToolTip();
+
+        void ct_ET_Histogram_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = e.Location;
+            if (prevPosition.HasValue && pos == prevPosition.Value)
+                return;
+            tooltip.RemoveAll();
+            prevPosition = pos;
+            var results = ct_ET_Histogram.HitTest(pos.X, pos.Y, false,
+                                            ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
+                           // Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            tooltip.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_ET_Histogram,
+                                            pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
+        }
+
+        Point? prevPosition2 = null;
+        ToolTip tooltip2 = new ToolTip();
+
+        void ct_ET_peakList_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = e.Location;
+            if (prevPosition2.HasValue && pos == prevPosition2.Value)
+                return;
+            tooltip2.RemoveAll();
+            prevPosition2 = pos;
+            var results = ct_ET_peakList.HitTest(pos.X, pos.Y, false,
+                                            ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
+                                                               // Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            tooltip2.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_ET_peakList,
+                                            pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        private void ZeroETPairsTableValues()
+        {
+            foreach (DataRow row in GlobalData.experimentTheoreticalPairs.Rows)
+            {
+                row["Acceptable Peak"] = false;
+                row["Peak Center Count"] = 0;
+            }
+        }
+
+        private void ClearETPeakListTable()
+        {
+            etPeakList.Clear();
+        }
+
+        private void ClearETGridView()
+        {
+            GlobalData.experimentTheoreticalPairs.Clear();
+        }
 
         private void FindAllETPairs()
         {
@@ -77,7 +176,7 @@ namespace PS_0._00
                         oOR = true;
                     }
                     eT.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], deltaMass, 0, 0, deltaMass, oOR, false);
-                    //set out of range variable
+
                 }
             }
             GlobalData.experimentTheoreticalPairs = eT;
@@ -97,14 +196,16 @@ namespace PS_0._00
 
         private void FillETGridView()
         {
-            //Round before displaying ET grid
-            string[] rt_column_names = new string[] { "Aggregated Retention Time" };
-            string[] intensity_column_names = new string[] { "Aggregated Intensity" };
-            string[] abundance_column_names = new string[] { };
-            string[] mass_column_names = new string[] { "Proteoform Mass", "Aggregated Mass", "Delta Mass", "Peak Center Mass" };
-            DataTable displayTable = GlobalData.experimentTheoreticalPairs;
-            BindingSource dgv_DT_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_ET_Pairs, displayTable,
-                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
+            etPairsList_BS.DataSource = GlobalData.experimentTheoreticalPairs;
+            dgv_ET_Pairs.DataSource = etPairsList_BS;
+            dgv_ET_Pairs.ReadOnly = true;
+            dgv_ET_Pairs.Columns["Acceptable Peak"].ReadOnly = false;
+            dgv_ET_Pairs.Columns["Aggregated Retention Time"].DefaultCellStyle.Format = "0.##";
+            dgv_ET_Pairs.Columns["Proteoform Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_ET_Pairs.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_ET_Pairs.Columns["Delta Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_ET_Pairs.Columns["Peak Center Mass"].DefaultCellStyle.Format = "0.#####";
+
         }
 
         private void GraphETPeakList()
@@ -124,7 +225,7 @@ namespace PS_0._00
 
             ct_ET_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(dgv_ET_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - Convert.ToDouble(nUD_PeakWidthBase.Value);
             ct_ET_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(dgv_ET_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) + Convert.ToDouble(nUD_PeakWidthBase.Value);
-            ct_ET_peakList.Series["etPeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+           // ct_ET_peakList.Series["etPeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
             ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
             {
                 BorderColor = Color.Red,
@@ -195,21 +296,6 @@ namespace PS_0._00
             tb_TotalPeaks.Text = peakCount.ToString();
         }
 
-        //private void ZeroETPairsTableValues()
-        //{
-        //    foreach (DataRow row in GlobalData.experimentTheoreticalPairs.Rows)
-        //    {
-        //        row["Acceptable Peak"] = false;
-        //        row["Peak Center Count"] = 0;
-        //    }
-        //}
-
-        //private void ClearETPeakListTable()
-        //{
-        //    etPeakList.Clear();
-        //    InitializeETPeakListTable();
-        //}
-
         private void FillETPeakListTable()
         {
             string colName = "Running Sum";
@@ -261,11 +347,12 @@ namespace PS_0._00
             }
             GlobalData.etPeakList = etPeakList;
 
-            //Round before displaying ET peak list
-            string[] other_columns = new string[] { };
-            string[] mass_column_names = new string[] { "Average Delta Mass" };
-            BindingSource dgv_ET_Peak_List_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_ET_Peak_List, etPeakList,
-                other_columns, other_columns, other_columns, mass_column_names);
+            etPeakList_BS.DataSource = etPeakList;
+            dgv_ET_Peak_List.DataSource = etPeakList_BS;
+            dgv_ET_Peak_List.ReadOnly = true;
+            dgv_ET_Peak_List.Columns["Acceptable"].ReadOnly = false;
+            dgv_ET_Peak_List.Columns["Average Delta Mass"].DefaultCellStyle.Format = "0.#####";
+
         }
 
 
@@ -297,7 +384,7 @@ namespace PS_0._00
         BorderColor = Color.Red,
         IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value),
     });
-            ct_ET_Histogram.Series["etHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+          //  ct_ET_Histogram.Series["etHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
             ct_ET_Histogram.ChartAreas[0].AxisX.Title = "Delta m/z";
             ct_ET_Histogram.ChartAreas[0].AxisY.Title = "Peak Count";
         }
@@ -361,7 +448,7 @@ namespace PS_0._00
 
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
         {
-            //RunTheGamut();
+           // RunTheGamut();
         }
 
         private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
@@ -386,7 +473,7 @@ namespace PS_0._00
         {
             nUD_ET_Lower_Bound.Minimum = -500;
             nUD_ET_Lower_Bound.Maximum = 0;
-            nUD_ET_Lower_Bound.Value = -250;
+           nUD_ET_Lower_Bound.Value = -250;
 
             nUD_ET_Upper_Bound.Minimum = 0;
             nUD_ET_Upper_Bound.Maximum = 500;
@@ -423,6 +510,11 @@ namespace PS_0._00
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
             nUD_PeakCountMinThreshold.Value = 10;
+        }
+
+        private void ET_Update_Click(object sender, EventArgs e)
+        {
+            RunTheGamut();
         }
     }
 }
