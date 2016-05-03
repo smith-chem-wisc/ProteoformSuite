@@ -24,8 +24,9 @@ namespace PS_0._00
         {
             InitializeComponent();
         }
-        public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
-        {            
+
+        private void LoadDeconvolutionResults_Load(object sender, EventArgs e)
+        {
             if (GlobalData.repeat == true)
             {
                 repeat = true;
@@ -37,7 +38,7 @@ namespace PS_0._00
             lbDeconResults.Sorted = true;
             lbDeconResults.SelectionMode = SelectionMode.MultiExtended;
             lbDeconResults.DataSource = GlobalData.deconResultsFileNames;
-            if (repeat==true)
+            if (repeat == true)
             {
                 repeat = false;
                 GlobalData.repeat = true;

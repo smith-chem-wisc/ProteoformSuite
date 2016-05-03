@@ -7,9 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Excel = Microsoft.Office.Interop.Excel;
-using System.Data;
-using System.Data.OleDb;
 
 
 namespace PS_0._00
@@ -192,70 +189,6 @@ namespace PS_0._00
             dataGridView3.RowsDefaultCellStyle.BackColor = Color.LightGray;
             dataGridView3.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
             dataGridView1.DataSource = GlobalData.ProteoformFamilyMetrics;
-
-
-
-            //Creae an Excel application instance
-            Excel.Application excelApp = new Excel.Application();
-
-            //Create an Excel workbook instance and open it from the predefined location
-            Excel.Workbook excelWorkBook = excelApp.Workbooks.Open(@"C:\Users\Zach Rolfs\Desktop\BIGtestEE.xlsx");
-
-            foreach (DataTable table in GlobalData.ProteoformFamiliesEE.Tables)
-            {
-                //Add a new worksheet to workbook with the Datatable name
-                Excel.Worksheet excelWorkSheet = excelWorkBook.Sheets.Add();
-                excelWorkSheet.Name = table.TableName;
-
-                for (int i = 1; i < table.Columns.Count + 1; i++)
-                {
-                    excelWorkSheet.Cells[1, i] = table.Columns[i - 1].ColumnName;
-                }
-
-                for (int j = 0; j < table.Rows.Count; j++)
-                {
-                    for (int k = 0; k < table.Columns.Count; k++)
-                    {
-                        excelWorkSheet.Cells[j + 2, k + 1] = table.Rows[j].ItemArray[k].ToString();
-                    }
-                }
-            }
-
-            excelWorkBook.Save();
-            excelWorkBook.Close();
-            excelApp.Quit();
-
-            //Creae an Excel application instance
-            excelApp = new Excel.Application();
-
-            //Create an Excel workbook instance and open it from the predefined location
-            excelWorkBook = excelApp.Workbooks.Open(@"C:\Users\Zach Rolfs\Desktop\BIGtestET.xlsx");
-
-            foreach (DataTable table in GlobalData.ProteoformFamiliesET.Tables)
-            {
-                //Add a new worksheet to workbook with the Datatable name
-                Excel.Worksheet excelWorkSheet = excelWorkBook.Sheets.Add();
-                excelWorkSheet.Name = table.TableName;
-
-                for (int i = 1; i < table.Columns.Count + 1; i++)
-                {
-                    excelWorkSheet.Cells[1, i] = table.Columns[i - 1].ColumnName;
-                }
-
-                for (int j = 0; j < table.Rows.Count; j++)
-                {
-                    for (int k = 0; k < table.Columns.Count; k++)
-                    {
-                        excelWorkSheet.Cells[j + 2, k + 1] = table.Rows[j].ItemArray[k].ToString();
-                    }
-                }
-            }
-
-            excelWorkBook.Save();
-            excelWorkBook.Close();
-            excelApp.Quit();
-
-
         }
         private void SingleLysineIteration(int q) //called in initializecomponents
         {
