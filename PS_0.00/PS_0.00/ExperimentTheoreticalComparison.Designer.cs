@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
@@ -44,9 +44,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
-            this.dgv_ET_Peak_List = new System.Windows.Forms.DataGridView();
             this.ct_ET_peakList = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.ET_Update = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -70,6 +68,7 @@
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dgv_ET_Pairs = new System.Windows.Forms.DataGridView();
             this.ct_ET_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.dgv_ET_Peak_List = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -86,7 +85,6 @@
             this.splitContainer5.Panel1.SuspendLayout();
             this.splitContainer5.Panel2.SuspendLayout();
             this.splitContainer5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Peak_List)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_peakList)).BeginInit();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakWidthBase)).BeginInit();
@@ -108,6 +106,7 @@
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Pairs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Peak_List)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -143,14 +142,13 @@
             // 
             // splitContainer3.Panel2
             // 
-            this.splitContainer3.Panel2.Controls.Add(this.ET_Update);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox4);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox3);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox1);
             this.splitContainer3.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer3_Panel2_Paint);
             this.splitContainer3.Size = new System.Drawing.Size(497, 660);
-            this.splitContainer3.SplitterDistance = 432;
+            this.splitContainer3.SplitterDistance = 318;
             this.splitContainer3.SplitterWidth = 3;
             this.splitContainer3.TabIndex = 0;
             // 
@@ -176,8 +174,8 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.splitContainer5);
-            this.splitContainer4.Size = new System.Drawing.Size(497, 432);
-            this.splitContainer4.SplitterDistance = 122;
+            this.splitContainer4.Size = new System.Drawing.Size(497, 318);
+            this.splitContainer4.SplitterDistance = 90;
             this.splitContainer4.SplitterWidth = 3;
             this.splitContainer4.TabIndex = 0;
             // 
@@ -270,49 +268,24 @@
             // splitContainer5.Panel2
             // 
             this.splitContainer5.Panel2.Controls.Add(this.ct_ET_peakList);
-            this.splitContainer5.Size = new System.Drawing.Size(497, 307);
+            this.splitContainer5.Size = new System.Drawing.Size(497, 225);
             this.splitContainer5.SplitterDistance = 229;
             this.splitContainer5.TabIndex = 16;
             // 
-            // dgv_ET_Peak_List
-            // 
-            this.dgv_ET_Peak_List.AllowUserToAddRows = false;
-            this.dgv_ET_Peak_List.AllowUserToDeleteRows = false;
-            this.dgv_ET_Peak_List.AllowUserToOrderColumns = true;
-            this.dgv_ET_Peak_List.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_ET_Peak_List.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_ET_Peak_List.Location = new System.Drawing.Point(0, 0);
-            this.dgv_ET_Peak_List.Margin = new System.Windows.Forms.Padding(2);
-            this.dgv_ET_Peak_List.Name = "dgv_ET_Peak_List";
-            this.dgv_ET_Peak_List.RowTemplate.Height = 28;
-            this.dgv_ET_Peak_List.Size = new System.Drawing.Size(229, 307);
-            this.dgv_ET_Peak_List.TabIndex = 0;
-            // 
             // ct_ET_peakList
             // 
-            chartArea1.Name = "ChartArea1";
-            this.ct_ET_peakList.ChartAreas.Add(chartArea1);
+            chartArea5.Name = "ChartArea1";
+            this.ct_ET_peakList.ChartAreas.Add(chartArea5);
             this.ct_ET_peakList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_ET_peakList.Location = new System.Drawing.Point(0, 0);
             this.ct_ET_peakList.Name = "ct_ET_peakList";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Name = "etPeakList";
-            this.ct_ET_peakList.Series.Add(series1);
-            this.ct_ET_peakList.Size = new System.Drawing.Size(264, 307);
+            series5.ChartArea = "ChartArea1";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series5.Name = "etPeakList";
+            this.ct_ET_peakList.Series.Add(series5);
+            this.ct_ET_peakList.Size = new System.Drawing.Size(264, 225);
             this.ct_ET_peakList.TabIndex = 1;
             this.ct_ET_peakList.Text = "chart1";
-            // 
-            // ET_Update
-            // 
-            this.ET_Update.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.ET_Update.Location = new System.Drawing.Point(0, 202);
-            this.ET_Update.Name = "ET_Update";
-            this.ET_Update.Size = new System.Drawing.Size(497, 23);
-            this.ET_Update.TabIndex = 16;
-            this.ET_Update.Text = "Update";
-            this.ET_Update.UseVisualStyleBackColor = true;
-            this.ET_Update.Click += new System.EventHandler(this.ET_Update_Click);
             // 
             // groupBox4
             // 
@@ -321,7 +294,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(33, 19);
+            this.groupBox4.Location = new System.Drawing.Point(15, 150);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -390,7 +363,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(265, 19);
+            this.groupBox3.Location = new System.Drawing.Point(247, 150);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -463,7 +436,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(265, 106);
+            this.groupBox2.Location = new System.Drawing.Point(247, 237);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -531,7 +504,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(33, 106);
+            this.groupBox1.Location = new System.Drawing.Point(15, 237);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -649,19 +622,33 @@
             // 
             // ct_ET_Histogram
             // 
-            chartArea2.Name = "ChartArea1";
-            this.ct_ET_Histogram.ChartAreas.Add(chartArea2);
+            chartArea6.Name = "ChartArea1";
+            this.ct_ET_Histogram.ChartAreas.Add(chartArea6);
             this.ct_ET_Histogram.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_ET_Histogram.Location = new System.Drawing.Point(0, 0);
             this.ct_ET_Histogram.Margin = new System.Windows.Forms.Padding(2);
             this.ct_ET_Histogram.Name = "ct_ET_Histogram";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series2.Name = "etHistogram";
-            this.ct_ET_Histogram.Series.Add(series2);
+            series6.ChartArea = "ChartArea1";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series6.Name = "etHistogram";
+            this.ct_ET_Histogram.Series.Add(series6);
             this.ct_ET_Histogram.Size = new System.Drawing.Size(422, 247);
             this.ct_ET_Histogram.TabIndex = 0;
             this.ct_ET_Histogram.Text = "chart1";
+            // 
+            // dgv_ET_Peak_List
+            // 
+            this.dgv_ET_Peak_List.AllowUserToAddRows = false;
+            this.dgv_ET_Peak_List.AllowUserToDeleteRows = false;
+            this.dgv_ET_Peak_List.AllowUserToOrderColumns = true;
+            this.dgv_ET_Peak_List.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_ET_Peak_List.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_ET_Peak_List.Location = new System.Drawing.Point(0, 0);
+            this.dgv_ET_Peak_List.Margin = new System.Windows.Forms.Padding(2);
+            this.dgv_ET_Peak_List.Name = "dgv_ET_Peak_List";
+            this.dgv_ET_Peak_List.RowTemplate.Height = 28;
+            this.dgv_ET_Peak_List.Size = new System.Drawing.Size(229, 225);
+            this.dgv_ET_Peak_List.TabIndex = 0;
             // 
             // ExperimentTheoreticalComparison
             // 
@@ -691,7 +678,6 @@
             this.splitContainer5.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).EndInit();
             this.splitContainer5.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Peak_List)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_peakList)).EndInit();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
@@ -716,6 +702,7 @@
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Pairs)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Peak_List)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -759,6 +746,5 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart ct_ET_peakList;
         private System.Windows.Forms.SplitContainer splitContainer5;
         private System.Windows.Forms.DataGridView dgv_ET_Peak_List;
-        private System.Windows.Forms.Button ET_Update;
     }
 }

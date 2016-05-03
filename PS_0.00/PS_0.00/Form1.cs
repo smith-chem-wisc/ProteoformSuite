@@ -34,10 +34,8 @@ namespace PS_0._00
             InitializeComponent();
         }
 
-        private void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
-
             if (loadDeconvolutionResults == null)
             {
                 loadDeconvolutionResults = new LoadDeconvolutionResults();
@@ -68,6 +66,11 @@ namespace PS_0._00
             }
             else
             {
+                if (GlobalData.repeat == true)
+                {
+                    GlobalData.repeat = false;
+                    rawExperimentalComponents.RawExperimentalComponents_Load(GlobalData.repeatsender, GlobalData.repeate);
+                }
                 rawExperimentalComponents.Show();
                 rawExperimentalComponents.WindowState = FormWindowState.Maximized;
             }

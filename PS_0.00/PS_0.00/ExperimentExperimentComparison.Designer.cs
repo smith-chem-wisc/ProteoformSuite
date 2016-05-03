@@ -131,7 +131,7 @@
             this.dgv_EE_Peak_List.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_EE_Peak_List.Location = new System.Drawing.Point(0, 0);
             this.dgv_EE_Peak_List.Name = "dgv_EE_Peak_List";
-            this.dgv_EE_Peak_List.Size = new System.Drawing.Size(210, 319);
+            this.dgv_EE_Peak_List.Size = new System.Drawing.Size(210, 341);
             this.dgv_EE_Peak_List.TabIndex = 1;
             // 
             // nUD_EE_Upper_Bound
@@ -374,7 +374,7 @@
             series2.Legend = "Legend1";
             series2.Name = "eePeakList";
             this.ct_EE_peakList.Series.Add(series2);
-            this.ct_EE_peakList.Size = new System.Drawing.Size(235, 319);
+            this.ct_EE_peakList.Size = new System.Drawing.Size(235, 341);
             this.ct_EE_peakList.TabIndex = 2;
             this.ct_EE_peakList.TabStop = false;
             this.ct_EE_peakList.Text = "eePeakList";
@@ -438,7 +438,7 @@
             this.splitContainer5.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox1);
             this.splitContainer5.Size = new System.Drawing.Size(457, 622);
-            this.splitContainer5.SplitterDistance = 323;
+            this.splitContainer5.SplitterDistance = 345;
             this.splitContainer5.TabIndex = 2;
             // 
             // splitContainer4
@@ -455,16 +455,15 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.ct_EE_peakList);
-            this.splitContainer4.Size = new System.Drawing.Size(457, 323);
+            this.splitContainer4.Size = new System.Drawing.Size(457, 345);
             this.splitContainer4.SplitterDistance = 214;
             this.splitContainer4.TabIndex = 18;
             // 
             // EE_update
             // 
-            this.EE_update.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.EE_update.Location = new System.Drawing.Point(0, 268);
+            this.EE_update.Location = new System.Drawing.Point(222, 9);
             this.EE_update.Name = "EE_update";
-            this.EE_update.Size = new System.Drawing.Size(453, 23);
+            this.EE_update.Size = new System.Drawing.Size(75, 23);
             this.EE_update.TabIndex = 31;
             this.EE_update.Text = "Update";
             this.EE_update.UseMnemonic = false;
@@ -475,7 +474,7 @@
             // 
             this.groupBox4.Controls.Add(this.nUD_EE_Upper_Bound);
             this.groupBox4.Controls.Add(this.label10);
-            this.groupBox4.Location = new System.Drawing.Point(216, 60);
+            this.groupBox4.Location = new System.Drawing.Point(214, 38);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(160, 83);
             this.groupBox4.TabIndex = 30;
@@ -488,7 +487,7 @@
             this.groupBox3.Controls.Add(this.xMinEE);
             this.groupBox3.Controls.Add(this.xMaxEE);
             this.groupBox3.Controls.Add(this.yMinEE);
-            this.groupBox3.Location = new System.Drawing.Point(196, 160);
+            this.groupBox3.Location = new System.Drawing.Point(194, 138);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(245, 106);
             this.groupBox3.TabIndex = 29;
@@ -501,7 +500,7 @@
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.nUD_NoManLower);
             this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Location = new System.Drawing.Point(10, 160);
+            this.groupBox2.Location = new System.Drawing.Point(8, 138);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(180, 106);
             this.groupBox2.TabIndex = 0;
@@ -515,7 +514,7 @@
             this.groupBox1.Controls.Add(this.cb_Graph_lowerThreshold);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.nUD_PeakWidthBase);
-            this.groupBox1.Location = new System.Drawing.Point(10, 31);
+            this.groupBox1.Location = new System.Drawing.Point(8, 9);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(200, 123);
             this.groupBox1.TabIndex = 28;
