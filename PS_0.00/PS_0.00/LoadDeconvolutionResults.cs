@@ -17,19 +17,31 @@ namespace PS_0._00
     public partial class LoadDeconvolutionResults : Form
     {
         OpenFileDialog openFileDialog1 = new OpenFileDialog();
+        public static bool repeat = false;
         //private BindingList<string> deconResultsFiles = new BindingList<string>(); 
 
         public LoadDeconvolutionResults()
         {
             InitializeComponent();
+        }
+        public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
+        {            
+            if (GlobalData.repeat == true)
+            {
+                repeat = true;
+                GlobalData.repeat = false;
+                LoadDeconvolutionResults_Load(sender, e);
+                return;
+            }
+            InitializeOpenFileDialog();
             lbDeconResults.Sorted = true;
             lbDeconResults.SelectionMode = SelectionMode.MultiExtended;
             lbDeconResults.DataSource = GlobalData.deconResultsFileNames;
-        }
-
-        private void LoadDeconvolutionResults_Load(object sender, EventArgs e)
-        {
-            InitializeOpenFileDialog();
+            if (repeat==true)
+            {
+                repeat = false;
+                GlobalData.repeat = true;
+            }
         }
 
         private void btnDeconResultsAdd_Click(object sender, EventArgs e)
@@ -68,6 +80,7 @@ namespace PS_0._00
 
             }
         }
+
         private void btnDeconResultsRemove_Click(object sender, EventArgs e)
         {
             for (int i = 0; i < lbDeconResults.SelectedItems.Count; i++)
