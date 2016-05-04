@@ -313,16 +313,23 @@ namespace PS_0._00
 
         private void UpdateFiguresOfMerit()
         {
-            int peakSum = 0;
-            int peakCount = 0;
-            DataRow[] bigPeaks = etPeaksList.Select("[Peak Count] >= " + nUD_PeakCountMinThreshold.Value);
-            foreach (DataRow row in bigPeaks)
+            try
             {
-                peakSum = peakSum + Convert.ToInt32(row["Peak Count"]);
-                peakCount++;
+                int peakSum = 0;
+                int peakCount = 0;
+                DataRow[] bigPeaks = etPeaksList.Select("[Peak Count] >= " + nUD_PeakCountMinThreshold.Value);
+                foreach (DataRow row in bigPeaks)
+                {
+                    peakSum = peakSum + Convert.ToInt32(row["Peak Count"]);
+                    peakCount++;
+                }
+                tb_IdentifiedProteoforms.Text = peakSum.ToString();
+                tb_TotalPeaks.Text = peakCount.ToString();
             }
-            tb_IdentifiedProteoforms.Text = peakSum.ToString();
-            tb_TotalPeaks.Text = peakCount.ToString();
+            catch
+            {
+
+            }
         }
 
         private void FillETPeakListTable()
@@ -505,7 +512,7 @@ namespace PS_0._00
         {
             MarkETPairsForProteoformFamilies();
             MarkETPeaksAsAcceptable();
-            //UpdateFiguresOfMerit();
+            UpdateFiguresOfMerit();
         }
 
         private void InitializeParameterSet()
