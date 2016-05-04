@@ -42,22 +42,22 @@ namespace PS_0._00
 
         private void RunTheGamut()
         {
-            this.Cursor = Cursors.WaitCursor;
-            ClearETGridView();
-            ZeroETPairsTableValues();
-            ClearETPeakListTable();
-            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
-            ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
-            FindAllETPairs();
-            CalculateRunningSums();       
-            GraphETHistogram();
-            FillETPeakListTable();
-            FillETPairsGridView();
-            UpdateFiguresOfMerit();
-            xMaxET.Value = nUD_ET_Upper_Bound.Value;
-            xMinET.Value = nUD_ET_Lower_Bound.Value;
-            GraphETPeakList();
-            this.Cursor = Cursors.Default;
+            //this.Cursor = Cursors.WaitCursor;
+            //ClearETGridView();
+            //ZeroETPairsTableValues();
+            //ClearETPeakListTable();
+            //ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+            //ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
+            //FindAllETPairs();
+            //CalculateRunningSums();       
+            //GraphETHistogram();
+            //FillETPeakListTable();
+            //FillETPairsGridView();
+            //UpdateFiguresOfMerit();
+            //xMaxET.Value = nUD_ET_Upper_Bound.Value;
+            //xMinET.Value = nUD_ET_Lower_Bound.Value;
+            //GraphETPeakList();
+            //this.Cursor = Cursors.Default;
         }
 
         Point? prevPosition = null;
@@ -128,6 +128,41 @@ namespace PS_0._00
             }
         }
 
+        private void MarkETPairsForProteoformFamilies()
+        {
+            foreach (DataRow row in etPairsList.Rows)
+            {
+                if (Convert.ToInt32(row["Peak Center Count"].ToString()) >= nUD_PeakCountMinThreshold.Value)
+                {
+                    row["Proteoform Family"] = true;
+                }
+                else
+                {
+                    row["Proteoform Family"] = false;
+                }
+            }
+            etPairsList.AcceptChanges();
+            GlobalData.experimentTheoreticalPairs = etPairsList;
+            dgv_ET_Pairs.Update();
+        }
+
+        private void MarkETPeaksAsAcceptable()
+        {
+            foreach (DataRow row in etPeaksList.Rows)
+            {
+                if (Convert.ToInt32(row["Peak Count"].ToString()) >= nUD_PeakCountMinThreshold.Value)
+                {
+                    row["Acceptable"] = true;
+                }
+                else
+                {
+                    row["Acceptable"] = false;
+                }
+            }
+            etPeaksList.AcceptChanges();
+            GlobalData.etPeakList = etPeaksList;
+            dgv_ET_Peak_List.Update();
+        }
 
         private void ZeroETPairsTableValues()
         {
@@ -136,11 +171,6 @@ namespace PS_0._00
                 row["Acceptable Peak"] = false;
                 row["Peak Center Count"] = 0;
             }
-        }
-
-        private void ClearETPeakListTable()
-        {
-            etPeaksList.Clear();
         }
 
         private void ClearETGridView()
@@ -363,8 +393,6 @@ namespace PS_0._00
 
         }
 
-
-
         private DataTable InitializeETPeakListTable()
         {
             DataTable dt = new DataTable();
@@ -475,9 +503,8 @@ namespace PS_0._00
 
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
         {
-            //ClearETPeakListTable();
-            //ZeroETPairsTableValues();
-            //FillETPeakListTable();
+            MarkETPairsForProteoformFamilies();
+            MarkETPeaksAsAcceptable();
             //UpdateFiguresOfMerit();
         }
 
@@ -485,7 +512,7 @@ namespace PS_0._00
         {
             nUD_ET_Lower_Bound.Minimum = -500;
             nUD_ET_Lower_Bound.Maximum = 0;
-           nUD_ET_Lower_Bound.Value = -250;
+            nUD_ET_Lower_Bound.Value = -250;
 
             nUD_ET_Upper_Bound.Minimum = 0;
             nUD_ET_Upper_Bound.Maximum = 500;
