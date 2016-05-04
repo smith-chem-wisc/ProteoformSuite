@@ -15,8 +15,10 @@ namespace PS_0._00
     public partial class ExperimentTheoreticalComparison : Form
     {
         DataTable etPeakList = new DataTable();  // These are the aggregated peaks that are integrated from the histogram of the individual ET pairs.
-        BindingSource etPeakList_BS = new BindingSource();
-        BindingSource etPairsList_BS = new BindingSource();
+        DataTable etPairsList = new DataTable();
+
+        //BindingSource etPeakList_BS = new BindingSource();
+        //BindingSource etPairsList_BS = new BindingSource();
 
         public ExperimentTheoreticalComparison()
         {
@@ -29,9 +31,10 @@ namespace PS_0._00
         private void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
         {
             InitializeParameterSet();
+            etPairsList = CreateETPairsDataTable();
             FindAllETPairs();
             CalculateRunningSums();
-            FillETGridView();
+            FillETPairsGridView();
             GraphETHistogram();
             InitializeETPeakListTable();
             FillETPeakListTable();
@@ -50,7 +53,7 @@ namespace PS_0._00
             ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
             FindAllETPairs();
             CalculateRunningSums();
-            FillETGridView();
+            FillETPairsGridView();
             GraphETHistogram();
             FillETPeakListTable();
             UpdateFiguresOfMerit();
@@ -150,8 +153,7 @@ namespace PS_0._00
 
         private void FindAllETPairs()
         {
-            DataTable eT = new DataTable();
-            eT = GetNewET_DataTable();
+
             foreach (DataRow agRow in GlobalData.aggregatedProteoforms.Rows)
             {
                 double lowMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ET_Lower_Bound.Value);
@@ -175,29 +177,31 @@ namespace PS_0._00
                     {
                         oOR = true;
                     }
-                    eT.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], deltaMass, 0, 0, deltaMass, oOR, false);
+                    etPairsList.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], deltaMass, 0, 0, deltaMass, oOR, false);
 
                 }
             }
-            GlobalData.experimentTheoreticalPairs = eT;
+            etPairsList.AcceptChanges();
+            GlobalData.experimentTheoreticalPairs = etPairsList;
         }
 
         private void CalculateRunningSums()
         {
-            foreach (DataRow row in GlobalData.experimentTheoreticalPairs.Rows)
+            foreach (DataRow row in etPairsList.Rows)
             {
                 double deltaMass = Convert.ToDouble(row["Delta Mass"].ToString());
                 double lower = deltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                 double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                 string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper;
-                row["Running Sum"] = GlobalData.experimentTheoreticalPairs.Select(expression).Length;
+                row["Running Sum"] = etPairsList.Select(expression).Length;
             }
+            etPairsList.AcceptChanges();
+            GlobalData.experimentTheoreticalPairs = etPairsList;
         }
 
-        private void FillETGridView()
+        private void FillETPairsGridView()
         {
-            etPairsList_BS.DataSource = GlobalData.experimentTheoreticalPairs;
-            dgv_ET_Pairs.DataSource = etPairsList_BS;
+            dgv_ET_Pairs.DataSource = etPairsList;
             dgv_ET_Pairs.ReadOnly = true;
             dgv_ET_Pairs.Columns["Acceptable Peak"].ReadOnly = false;
             dgv_ET_Pairs.Columns["Aggregated Retention Time"].DefaultCellStyle.Format = "0.##";
@@ -347,8 +351,8 @@ namespace PS_0._00
             }
             GlobalData.etPeakList = etPeakList;
 
-            etPeakList_BS.DataSource = etPeakList;
-            dgv_ET_Peak_List.DataSource = etPeakList_BS;
+
+            dgv_ET_Peak_List.DataSource = etPeakList;
             dgv_ET_Peak_List.ReadOnly = true;
             dgv_ET_Peak_List.Columns["Acceptable"].ReadOnly = false;
             dgv_ET_Peak_List.Columns["Average Delta Mass"].DefaultCellStyle.Format = "0.#####";
@@ -389,7 +393,7 @@ namespace PS_0._00
             ct_ET_Histogram.ChartAreas[0].AxisY.Title = "Peak Count";
         }
 
-        private DataTable GetNewET_DataTable()
+        private DataTable CreateETPairsDataTable()
         {
             DataTable dt = new DataTable();
             dt.Columns.Add("Accession", typeof(string));
