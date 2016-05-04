@@ -394,9 +394,12 @@ namespace PS_0._00
 
 
             dgv_ET_Peak_List.DataSource = etPeaksList;
-            dgv_ET_Peak_List.ReadOnly = true;
-            dgv_ET_Peak_List.Columns["Acceptable"].ReadOnly = false;
+            //dgv_ET_Peak_List.ReadOnly = true;
+            dgv_ET_Peak_List.Columns["Average Delta Mass"].ReadOnly = true;
+            dgv_ET_Peak_List.Columns["Peak Count"].ReadOnly = true;
             dgv_ET_Peak_List.Columns["Average Delta Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_ET_Peak_List.EndEdit();
+            dgv_ET_Peak_List.Refresh();
 
         }
 
