@@ -30,11 +30,11 @@ namespace PS_0._00
             InitializeParameterSet();
             etPairsList = CreateETPairsDataTable();
             FindAllETPairs();
-            CalculateRunningSums();
-            FillETPairsGridView();
+            CalculateRunningSums();         
             GraphETHistogram();
             etPeaksList = InitializeETPeakListTable();
             FillETPeakListTable();
+            FillETPairsGridView();
             GraphETPeakList();
             UpdateFiguresOfMerit();
         }
@@ -49,10 +49,10 @@ namespace PS_0._00
             ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
             FindAllETPairs();
-            CalculateRunningSums();
-            FillETPairsGridView();
+            CalculateRunningSums();       
             GraphETHistogram();
             FillETPeakListTable();
+            FillETPairsGridView();
             UpdateFiguresOfMerit();
             xMaxET.Value = nUD_ET_Upper_Bound.Value;
             xMinET.Value = nUD_ET_Lower_Bound.Value;
@@ -174,7 +174,7 @@ namespace PS_0._00
                     {
                         oOR = true;
                     }
-                    etPairsList.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], deltaMass, 0, 0, deltaMass, oOR, false);
+                    etPairsList.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], deltaMass, 0, 0, deltaMass, oOR, false, false);
 
                 }
             }
@@ -328,6 +328,15 @@ namespace PS_0._00
                         rutrow["Peak Center Mass"] = secondAverage;
                         rutrow["Acceptable Peak"] = true;
 
+                        if(secondSet.Length >= Convert.ToInt32(nUD_PeakCountMinThreshold.Value))
+                        {
+                            rutrow["Proteoform Family"] = true;
+                        }
+                        else
+                        {
+                            rutrow["Proteoform Family"] = false;
+                        }
+                        
                         rutrow.EndEdit();
                     }
 
@@ -408,7 +417,8 @@ namespace PS_0._00
             dt.Columns.Add("Peak Center Count", typeof(int));
             dt.Columns.Add("Peak Center Mass", typeof(double));
             dt.Columns.Add("Out of Range Decimal", typeof(bool));
-            dt.Columns.Add("Acceptable Peak", typeof(bool));
+            dt.Columns.Add("Acceptable Peak", typeof(bool)); //place holder really for pairs that get included in what will eventually be ET Peaks. Kind of meaningless to show user
+            dt.Columns.Add("Proteoform Family", typeof(bool)); //true for pairs that should be used in the constructionof proteoform families
 
             return dt;
         }
