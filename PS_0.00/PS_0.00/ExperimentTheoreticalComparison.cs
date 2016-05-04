@@ -412,27 +412,42 @@ namespace PS_0._00
 
         private void GraphETHistogram()
         {
-            string colName = "Delta Mass";
-            string direction = "DESC";
 
-            DataTable dt = etPairsList;
-            dt.DefaultView.Sort = colName + " " + direction;
-            dt = dt.DefaultView.ToTable();
-            etPairsList = dt;
+            try
+            {
+                string colName = "Delta Mass";
+                string direction = "DESC";
 
-            ct_ET_Histogram.Series["etHistogram"].XValueMember = "Delta Mass";
-            ct_ET_Histogram.Series["etHistogram"].YValueMembers = "Running Sum";
+                DataTable dt = etPairsList;
+                dt.DefaultView.Sort = colName + " " + direction;
+                dt = dt.DefaultView.ToTable();
+                etPairsList = dt;
 
-            ct_ET_Histogram.DataSource = etPairsList;
-            ct_ET_Histogram.DataBind();
-            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine()
-    {
-        BorderColor = Color.Red,
-        IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value),
-    });
-          //  ct_ET_Histogram.Series["etHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
-            ct_ET_Histogram.ChartAreas[0].AxisX.Title = "Delta m/z";
-            ct_ET_Histogram.ChartAreas[0].AxisY.Title = "Peak Count";
+                ct_ET_Histogram.Series["etHistogram"].XValueMember = "Delta Mass";
+                ct_ET_Histogram.Series["etHistogram"].YValueMembers = "Running Sum";
+
+                ct_ET_Histogram.DataSource = etPairsList;
+                ct_ET_Histogram.DataBind();
+
+                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+
+                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine()
+                {
+                    BorderColor = Color.Red,
+                    IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value),
+                });
+
+
+                //  ct_ET_Histogram.Series["etHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+                ct_ET_Histogram.ChartAreas[0].AxisX.Title = "Delta m/z";
+                ct_ET_Histogram.ChartAreas[0].AxisY.Title = "Peak Count";
+            }
+            catch
+            {
+
+            }
+
+            
         }
 
         private DataTable CreateETPairsDataTable()
@@ -512,6 +527,7 @@ namespace PS_0._00
         {
             MarkETPairsForProteoformFamilies();
             MarkETPeaksAsAcceptable();
+            GraphETHistogram(); //we do this hear because the redline threshold needs to be redrawn
             UpdateFiguresOfMerit();
         }
 
