@@ -14,11 +14,8 @@ namespace PS_0._00
 {
     public partial class ExperimentTheoreticalComparison : Form
     {
-        DataTable etPeakList = new DataTable();  // These are the aggregated peaks that are integrated from the histogram of the individual ET pairs.
-        DataTable etPairsList = new DataTable();
-
-        //BindingSource etPeakList_BS = new BindingSource();
-        //BindingSource etPairsList_BS = new BindingSource();
+        DataTable etPeaksList = new DataTable();  // These are the aggregated peaks that are integrated from the histogram of the individual ET pairs.
+        DataTable etPairsList = new DataTable(); // These are the individual experiment to theoretical pairs with delta mass less than the threshold
 
         public ExperimentTheoreticalComparison()
         {
@@ -36,7 +33,7 @@ namespace PS_0._00
             CalculateRunningSums();
             FillETPairsGridView();
             GraphETHistogram();
-            InitializeETPeakListTable();
+            etPeaksList = InitializeETPeakListTable();
             FillETPeakListTable();
             GraphETPeakList();
             UpdateFiguresOfMerit();
@@ -143,7 +140,7 @@ namespace PS_0._00
 
         private void ClearETPeakListTable()
         {
-            etPeakList.Clear();
+            etPeaksList.Clear();
         }
 
         private void ClearETGridView()
@@ -258,8 +255,6 @@ namespace PS_0._00
             }
         }
 
-        
-
 
         private void ETPeakListGraphParameters(int clickedRow)
         {
@@ -290,7 +285,7 @@ namespace PS_0._00
         {
             int peakSum = 0;
             int peakCount = 0;
-            DataRow[] bigPeaks = etPeakList.Select("[Peak Count] >= " + nUD_PeakCountMinThreshold.Value);
+            DataRow[] bigPeaks = etPeaksList.Select("[Peak Count] >= " + nUD_PeakCountMinThreshold.Value);
             foreach (DataRow row in bigPeaks)
             {
                 peakSum = peakSum + Convert.ToInt32(row["Peak Count"]);
@@ -305,12 +300,12 @@ namespace PS_0._00
             string colName = "Running Sum";
             string direction = "DESC";
 
-            DataTable dt = GlobalData.experimentTheoreticalPairs;
+            DataTable dt = etPairsList;
             dt.DefaultView.Sort = colName + " " + direction;
             dt = dt.DefaultView.ToTable();
-            GlobalData.experimentTheoreticalPairs = dt;
+            etPairsList = dt;
 
-            foreach (DataRow row in GlobalData.experimentTheoreticalPairs.Rows)
+            foreach (DataRow row in etPairsList.Rows)
             {
                 if (Convert.ToBoolean(row["Out of Range Decimal"].ToString())==false && Convert.ToBoolean(row["Acceptable Peak"].ToString()) == false)
                 {
@@ -318,13 +313,13 @@ namespace PS_0._00
                     double lower = deltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper + " and [Acceptable Peak] = false";
-                    DataRow[] firstSet = GlobalData.experimentTheoreticalPairs.Select(expression);
+                    DataRow[] firstSet = etPairsList.Select(expression);
                     var firstAverage = firstSet.Average(fsRow => fsRow.Field<double>("Delta Mass"));
 
                     lower = firstAverage - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     upper = firstAverage + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper + " and [Acceptable Peak] = false";
-                    DataRow[] secondSet = GlobalData.experimentTheoreticalPairs.Select(expression);
+                    DataRow[] secondSet = etPairsList.Select(expression);
                     var secondAverage = secondSet.Average(ssRow => ssRow.Field<double>("Delta Mass"));
 
                     foreach (DataRow rutrow in secondSet)
@@ -338,21 +333,21 @@ namespace PS_0._00
 
                     if (secondSet.Length >= nUD_PeakCountMinThreshold.Value)
                     {
-                        etPeakList.Rows.Add(secondAverage, secondSet.Length, true);
+                        etPeaksList.Rows.Add(secondAverage, secondSet.Length, true);
                     }
                     else
                     {
-                        etPeakList.Rows.Add(secondAverage, secondSet.Length, false);
+                        etPeaksList.Rows.Add(secondAverage, secondSet.Length, false);
                     }                  
 
                 }
-
-                GlobalData.experimentTheoreticalPairs.AcceptChanges();
+                etPairsList.AcceptChanges();
+                GlobalData.experimentTheoreticalPairs = etPairsList;
             }
-            GlobalData.etPeakList = etPeakList;
+            GlobalData.etPeakList = etPeaksList;
 
 
-            dgv_ET_Peak_List.DataSource = etPeakList;
+            dgv_ET_Peak_List.DataSource = etPeaksList;
             dgv_ET_Peak_List.ReadOnly = true;
             dgv_ET_Peak_List.Columns["Acceptable"].ReadOnly = false;
             dgv_ET_Peak_List.Columns["Average Delta Mass"].DefaultCellStyle.Format = "0.#####";
@@ -361,11 +356,14 @@ namespace PS_0._00
 
 
 
-        private void InitializeETPeakListTable()
+        private DataTable InitializeETPeakListTable()
         {
-            etPeakList.Columns.Add("Average Delta Mass", typeof(double));
-            etPeakList.Columns.Add("Peak Count", typeof(int));
-            etPeakList.Columns.Add("Acceptable", typeof(bool));
+            DataTable dt = new DataTable();
+            dt.Columns.Add("Average Delta Mass", typeof(double));
+            dt.Columns.Add("Peak Count", typeof(int));
+            dt.Columns.Add("Acceptable", typeof(bool));
+
+            return dt;
         }
 
         private void GraphETHistogram()
@@ -373,15 +371,15 @@ namespace PS_0._00
             string colName = "Delta Mass";
             string direction = "DESC";
 
-            DataTable dt = GlobalData.experimentTheoreticalPairs;
+            DataTable dt = etPairsList;
             dt.DefaultView.Sort = colName + " " + direction;
             dt = dt.DefaultView.ToTable();
-            GlobalData.experimentTheoreticalPairs = dt;
+            etPairsList = dt;
 
             ct_ET_Histogram.Series["etHistogram"].XValueMember = "Delta Mass";
             ct_ET_Histogram.Series["etHistogram"].YValueMembers = "Running Sum";
 
-            ct_ET_Histogram.DataSource = GlobalData.experimentTheoreticalPairs;
+            ct_ET_Histogram.DataSource = etPairsList;
             ct_ET_Histogram.DataBind();
             ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine()
     {
