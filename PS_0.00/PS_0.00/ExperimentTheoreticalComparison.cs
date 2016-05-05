@@ -16,6 +16,7 @@ namespace PS_0._00
     {
         DataTable etPeaksList = new DataTable();  // These are the aggregated peaks that are integrated from the histogram of the individual ET pairs.
         DataTable etPairsList = new DataTable(); // These are the individual experiment to theoretical pairs with delta mass less than the threshold
+        Boolean formLoadEvent;
 
         public ExperimentTheoreticalComparison()
         {
@@ -29,8 +30,9 @@ namespace PS_0._00
 
         private void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
         {
+            formLoadEvent = true;
             InitializeParameterSet();
-            etPairsList = CreateETPairsDataTable();
+            //etPairsList = CreateETPairsDataTable();
             FindAllETPairs();
             CalculateRunningSums();         
             GraphETHistogram();
@@ -39,27 +41,27 @@ namespace PS_0._00
             FillETPairsGridView();
             GraphETPeakList();
             UpdateFiguresOfMerit();
+            formLoadEvent = false;
         }
 
 
         private void RunTheGamut()
         {
-            //this.Cursor = Cursors.WaitCursor;
-            //ClearETGridView();
-            //ZeroETPairsTableValues();
-            //ClearETPeakListTable();
-            //ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
-            //ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
-            //FindAllETPairs();
-            //CalculateRunningSums();       
-            //GraphETHistogram();
-            //FillETPeakListTable();
-            //FillETPairsGridView();
-            //UpdateFiguresOfMerit();
-            //xMaxET.Value = nUD_ET_Upper_Bound.Value;
-            //xMinET.Value = nUD_ET_Lower_Bound.Value;
-            //GraphETPeakList();
-            //this.Cursor = Cursors.Default;
+            this.Cursor = Cursors.WaitCursor;
+            //ClearAllETPairs();
+            //etPairsList = CreateETPairsDataTable();
+            //ClearAllETPeaks();
+            //etPeaksList = InitializeETPeakListTable();
+            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+            ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
+            FindAllETPairs();
+            CalculateRunningSums();       
+            GraphETHistogram();
+            FillETPeakListTable();
+            FillETPairsGridView();
+            GraphETPeakList();
+            UpdateFiguresOfMerit();
+            this.Cursor = Cursors.Default;
         }
 
         Point? prevPosition = null;
@@ -166,22 +168,24 @@ namespace PS_0._00
             dgv_ET_Peak_List.Update();
         }
 
-        private void ZeroETPairsTableValues()
-        {
-            foreach (DataRow row in GlobalData.experimentTheoreticalPairs.Rows)
-            {
-                row["Acceptable Peak"] = false;
-                row["Peak Center Count"] = 0;
-            }
-        }
-
-        private void ClearETGridView()
+        private void ClearAllETPairs()
         {
             GlobalData.experimentTheoreticalPairs.Clear();
+            etPairsList.Clear();
+        }
+
+        private void ClearAllETPeaks()
+        {
+            GlobalData.etPeakList.Clear();
+            etPeaksList.Clear();
         }
 
         private void FindAllETPairs()
         {
+
+            etPairsList.Clear();
+            etPairsList = CreateETPairsDataTable();
+            GlobalData.experimentTheoreticalPairs.Clear();
 
             foreach (DataRow agRow in GlobalData.aggregatedProteoforms.Rows)
             {
@@ -206,6 +210,7 @@ namespace PS_0._00
                     {
                         oOR = true;
                     }
+
                     etPairsList.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], deltaMass, 0, 0, deltaMass, oOR, false, false);
 
                 }
@@ -336,6 +341,9 @@ namespace PS_0._00
 
         private void FillETPeakListTable()
         {
+            etPeaksList.Clear();
+            GlobalData.etPeakList.Clear();
+
             string colName = "Running Sum";
             string direction = "DESC";
 
@@ -500,7 +508,6 @@ namespace PS_0._00
             {
 
             }
-
             
         }
 
@@ -532,100 +539,138 @@ namespace PS_0._00
 
         }
 
-        private void nUD_ET_Lower_Bound_ValueChanged(object sender, EventArgs e)
+        private void nUD_ET_Lower_Bound_ValueChanged(object sender, EventArgs e) // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
         {
-            //RunTheGamut();
+            if (!formLoadEvent)
+            {
+                RunTheGamut();
+            }
+            
         }
 
-        private void nUD_ET_Upper_Bound_ValueChanged(object sender, EventArgs e)
+        private void nUD_ET_Upper_Bound_ValueChanged(object sender, EventArgs e) // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
         {
-            //RunTheGamut();
+            if (!formLoadEvent)
+            {
+                RunTheGamut();
+            }
         }
 
-        private void yMaxET_ValueChanged(object sender, EventArgs e)
+        private void yMaxET_ValueChanged(object sender, EventArgs e) // scaling for y-axis of displayed ET Histogram of all ET pairs
         {
-            ct_ET_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxET.Value.ToString());
+
+            if (!formLoadEvent)
+            {
+                ct_ET_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxET.Value.ToString());
+            }
+
         }
 
-        private void yMinET_ValueChanged(object sender, EventArgs e)
+        private void yMinET_ValueChanged(object sender, EventArgs e) // scaling for y-axis of displayed ET Histogram of all ET pairs
         {
-            ct_ET_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinET.Value.ToString());
+            if (!formLoadEvent)
+            {
+                ct_ET_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinET.Value.ToString());
+            }         
         }
 
-        private void xMinET_ValueChanged(object sender, EventArgs e)
+        private void xMinET_ValueChanged(object sender, EventArgs e) // scaling for x-axis of displayed ET Histogram of all ET pairs
         {
-            ct_ET_Histogram.ChartAreas[0].AxisX.Minimum = double.Parse(xMinET.Value.ToString());
+            if (!formLoadEvent)
+            {
+                ct_ET_Histogram.ChartAreas[0].AxisX.Minimum = double.Parse(xMinET.Value.ToString());
+            }
+            
         }
 
-        private void xMaxET_ValueChanged(object sender, EventArgs e)
+        private void xMaxET_ValueChanged(object sender, EventArgs e) // scaling for x-axis of displayed ET Histogram of all ET pairs
         {
-            ct_ET_Histogram.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxET.Value.ToString());
+            if (!formLoadEvent)
+            {
+                ct_ET_Histogram.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxET.Value.ToString());
+            }
+            
         }
 
-        private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
+        private void nUD_NoManLower_ValueChanged(object sender, EventArgs e) // lower bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
         {
-           // RunTheGamut();
+
+            if (!formLoadEvent)
+            {
+                RunTheGamut();
+            }
         }
 
-        private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
+        private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)// upper bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
         {
-            //RunTheGamut();
+            if (!formLoadEvent)
+            {
+                RunTheGamut();
+            }
         }
 
-        private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e)
+        private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e) // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
         {
-            //RunTheGamut();
+            if (!formLoadEvent)
+            {
+                RunTheGamut();
+            }
         }
 
-        private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
+        private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e) // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
         {
-            MarkETPairsForProteoformFamilies();
-            MarkETPeaksAsAcceptable();
-            GraphETHistogram(); //we do this hear because the redline threshold needs to be redrawn
-            UpdateFiguresOfMerit();
+
+            if (!formLoadEvent)
+            {
+                MarkETPairsForProteoformFamilies();
+                MarkETPeaksAsAcceptable();
+                GraphETHistogram(); //we do this hear because the redline threshold needs to be redrawn
+                UpdateFiguresOfMerit();
+            }
+            
         }
 
         private void InitializeParameterSet()
         {
             nUD_ET_Lower_Bound.Minimum = -500;
             nUD_ET_Lower_Bound.Maximum = 0;
-            nUD_ET_Lower_Bound.Value = -250;
+            nUD_ET_Lower_Bound.Value = -250; // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
 
             nUD_ET_Upper_Bound.Minimum = 0;
             nUD_ET_Upper_Bound.Maximum = 500;
-            nUD_ET_Upper_Bound.Value = 250;
+            nUD_ET_Upper_Bound.Value = 250; // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
 
             yMaxET.Minimum = 0;
             yMaxET.Maximum = 1000;
-            yMaxET.Value = 100;
+            yMaxET.Value = 100; // scaling for y-axis of displayed ET Histogram of all ET pairs
 
             yMinET.Minimum = -100;
             yMinET.Maximum = yMaxET.Maximum;
-            yMinET.Value = 0;
+            yMinET.Value = 0; // scaling for y-axis of displayed ET Histogram of all ET pairs
 
             xMinET.Minimum = nUD_ET_Lower_Bound.Value;
             xMinET.Maximum = xMaxET.Value;
-            xMinET.Value = nUD_ET_Lower_Bound.Value;
+            xMinET.Value = nUD_ET_Lower_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
             xMaxET.Minimum = xMinET.Value;
             xMaxET.Maximum = nUD_ET_Upper_Bound.Value;
-            xMaxET.Value = nUD_ET_Upper_Bound.Value;
+            xMaxET.Value = nUD_ET_Upper_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
             nUD_NoManLower.Minimum = 00m;
             nUD_NoManLower.Maximum = 0.49m;
-            nUD_NoManLower.Value = 0.22m;//add the m suffix to treat the double as decimal
+            nUD_NoManLower.Value = 0.22m; // lower bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
 
             nUD_NoManUpper.Minimum = 0.50m;
             nUD_NoManUpper.Maximum = 1.00m;
-            nUD_NoManUpper.Value = 0.88m;
+            nUD_NoManUpper.Value = 0.88m; // upper bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
 
             nUD_PeakWidthBase.Minimum = 0.001m;
             nUD_PeakWidthBase.Maximum = 0.5000m;
-            nUD_PeakWidthBase.Value = 0.0150m;
+            nUD_PeakWidthBase.Value = 0.0150m; // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
 
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
-            nUD_PeakCountMinThreshold.Value = 10;
+            nUD_PeakCountMinThreshold.Value = 10; // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
         }
 
         private void ET_Update_Click(object sender, EventArgs e)
