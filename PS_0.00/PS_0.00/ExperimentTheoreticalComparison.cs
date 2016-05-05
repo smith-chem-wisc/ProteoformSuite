@@ -23,6 +23,8 @@ namespace PS_0._00
             this.dgv_ET_Peak_List.MouseClick += new MouseEventHandler(dgv_ET_Peak_List_CellClick);
             this.ct_ET_Histogram.MouseMove += new MouseEventHandler(ct_ET_Histogram_MouseMove);
             this.ct_ET_peakList.MouseMove += new MouseEventHandler(ct_ET_peakList_MouseMove);
+            dgv_ET_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(peakListSpecificPeakAcceptanceChanged); //makes the change immediate and automatic
+            dgv_ET_Peak_List.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
         }
 
         private void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
@@ -317,7 +319,7 @@ namespace PS_0._00
             {
                 int peakSum = 0;
                 int peakCount = 0;
-                DataRow[] bigPeaks = etPeaksList.Select("[Peak Count] >= " + nUD_PeakCountMinThreshold.Value);
+                DataRow[] bigPeaks = etPeaksList.Select("[Acceptable] = true");
                 foreach (DataRow row in bigPeaks)
                 {
                     peakSum = peakSum + Convert.ToInt32(row["Peak Count"]);
@@ -351,13 +353,13 @@ namespace PS_0._00
                     double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper + " and [Acceptable Peak] = false";
                     DataRow[] firstSet = etPairsList.Select(expression);
-                    var firstAverage = firstSet.Average(fsRow => fsRow.Field<double>("Delta Mass"));
+                    double firstAverage = firstSet.Average(fsRow => fsRow.Field<double>("Delta Mass"));
 
                     lower = firstAverage - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     upper = firstAverage + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper + " and [Acceptable Peak] = false";
                     DataRow[] secondSet = etPairsList.Select(expression);
-                    var secondAverage = secondSet.Average(ssRow => ssRow.Field<double>("Delta Mass"));
+                    double secondAverage = secondSet.Average(ssRow => ssRow.Field<double>("Delta Mass"));
 
                     foreach (DataRow rutrow in secondSet)
                     {
@@ -401,6 +403,55 @@ namespace PS_0._00
             dgv_ET_Peak_List.EndEdit();
             dgv_ET_Peak_List.Refresh();
 
+        }
+
+        private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
+        {
+            double averageDeltaMass = Convert.ToDouble(dgv_ET_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 2].Value);
+            int peakCount = Convert.ToInt32(dgv_ET_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Value);
+            dgv_ET_Peak_List.EndEdit();
+            dgv_ET_Peak_List.Update();
+
+            double lowMass = averageDeltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+            double highMass = averageDeltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+
+            string expression = "[Average Delta Mass] > " + lowMass + " and [Average Delta Mass] < " + highMass;
+            DataRow[] selectedPeaks = etPeaksList.Select(expression);
+
+            foreach (DataRow row in selectedPeaks)
+            {
+                row["Acceptable"] = Convert.ToBoolean(dgv_ET_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
+            }
+            etPeaksList.AcceptChanges();
+            GlobalData.etPeakList = etPeaksList;
+            dgv_ET_Peak_List.Update();
+            dgv_ET_Peak_List.Refresh();
+
+            expression = "[Peak Center Mass] > " + lowMass + " and [Peak Center Mass] < " + highMass;
+
+            selectedPeaks = etPairsList.Select(expression);
+
+            foreach (DataRow row in selectedPeaks)
+            {
+                row["Proteoform Family"] = Convert.ToBoolean(dgv_ET_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
+            }
+            etPairsList.AcceptChanges();
+
+            GlobalData.experimentTheoreticalPairs = etPairsList;
+            dgv_ET_Pairs.Update();
+            dgv_ET_Pairs.Refresh();
+
+            UpdateFiguresOfMerit();
+            
+        }
+
+        private void peakListSpecificPeakAcceptanceChanged(object sender, EventArgs e)
+        {
+            if (dgv_ET_Peak_List.IsCurrentCellDirty)
+            {                
+                dgv_ET_Peak_List.EndEdit();
+                dgv_ET_Peak_List.Update();
+            }
         }
 
         private DataTable InitializeETPeakListTable()
