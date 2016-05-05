@@ -48,10 +48,6 @@ namespace PS_0._00
         private void RunTheGamut()
         {
             this.Cursor = Cursors.WaitCursor;
-            //ClearAllETPairs();
-            //etPairsList = CreateETPairsDataTable();
-            //ClearAllETPeaks();
-            //etPeaksList = InitializeETPeakListTable();
             ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
             FindAllETPairs();
