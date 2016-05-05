@@ -32,14 +32,13 @@ namespace PS_0._00
         {
             formLoadEvent = true;
             InitializeParameterSet();
-            //etPairsList = CreateETPairsDataTable();
             FindAllETPairs();
             CalculateRunningSums();         
             GraphETHistogram();
             etPeaksList = InitializeETPeakListTable();
             FillETPeakListTable();
             FillETPairsGridView();
-            GraphETPeakList();
+            GraphETPairsList();
             UpdateFiguresOfMerit();
             formLoadEvent = false;
         }
@@ -55,7 +54,7 @@ namespace PS_0._00
             GraphETHistogram();
             FillETPeakListTable();
             FillETPairsGridView();
-            GraphETPeakList();
+            GraphETPairsList();
             UpdateFiguresOfMerit();
             this.Cursor = Cursors.Default;
         }
@@ -242,7 +241,7 @@ namespace PS_0._00
 
         }
 
-        private void GraphETPeakList()
+        private void GraphETPairsList()
         {
             string colName = "Delta Mass";
             string direction = "DESC";
