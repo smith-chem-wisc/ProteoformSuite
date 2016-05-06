@@ -104,6 +104,7 @@ namespace PS_0._00
         {
             dgv_RawExpNeuCodePairs.DataSource = GlobalData.rawNeuCodePairs;
             dgv_RawExpNeuCodePairs.ReadOnly = true;
+            dgv_RawExpNeuCodePairs.Columns["Acceptable"].ReadOnly = false;
             dgv_RawExpNeuCodePairs.Columns["Light Mass"].DefaultCellStyle.Format = "0.####";
             dgv_RawExpNeuCodePairs.Columns["Light Mass Corrected"].DefaultCellStyle.Format = "0.####";
             dgv_RawExpNeuCodePairs.Columns["Heavy Mass"].DefaultCellStyle.Format = "0.####";
@@ -263,48 +264,48 @@ namespace PS_0._00
                     //masses.Sort();
                     
 
-                        for (int low = 0; low <= (rows.Count()-2); low++)
+                    for (int low = 0; low <= (rows.Count()-2); low++)
+                    {
+                        for (int high = (low + 1); high <= (rows.Count()-1); high++)
                         {
-                            for (int high = (low + 1); high <= (rows.Count()-1); high++)
+                            decimal difference = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) - Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]);
+                            //MessageBox.Show("mass difference" + difference);
+                            if (difference < 6)
                             {
-                                decimal difference = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) - Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]);
-                                //MessageBox.Show("mass difference" + difference);
-                                if (difference < 6)
+                                List<int> oLC = GetOverLappingChargeStates(fileName, Convert.ToInt32(rows[low][0]), Convert.ToInt32(rows[high][0]));
+                                double low_int = 0;
+                                double high_int = 0;
+                                if (oLC.Count() > 0)
                                 {
-                                    List<int> oLC = GetOverLappingChargeStates(fileName, Convert.ToInt32(rows[low][0]), Convert.ToInt32(rows[high][0]));
-                                    double low_int = 0;
-                                    double high_int = 0;
-                                    if (oLC.Count() > 0)
-                                    {
-                                        low_int = GetCSIntensitySum(fileName, Convert.ToInt32(rows[low][0]), oLC);
-                                        high_int = GetCSIntensitySum(fileName, Convert.ToInt32(rows[high][0]), oLC);
-                                    }
-
-                                    if(low_int>0 && high_int > 0)
-                                    {
-                                        int diff_int = Convert.ToInt32(Math.Round(difference / 1.0015m - 0.5m, 0, MidpointRounding.AwayFromZero));
-                                        if (low_int > high_int)//lower mass is neucode light
-                                        {
-                                            decimal firstCorrection = Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]) + diff_int * 1.0015m;
-                                            int lysine_count = Math.Abs(Convert.ToInt32(Math.Round((Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) - firstCorrection) / 0.036015372m, 0, MidpointRounding.AwayFromZero)));
-                                            double intensityRatio = low_int / high_int;
-                                            decimal lt_corrected_mass = Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]) + Math.Round((lysine_count * 0.1667m - 0.4m), 0, MidpointRounding.AwayFromZero) * 1.0015m;
-                                            AddOneRawNeuCodePair(fileName, Convert.ToInt32(rows[low][0]), Convert.ToDouble(Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"])), Convert.ToDouble(lt_corrected_mass), low_int, fileName, Convert.ToInt32(rows[high][0]), Convert.ToDouble(Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"])), high_int, oLC, apexRT, intensityRatio, lysine_count, true);
-                                        }
-                                        else //higher mass is neucode light
-                                        {
-                                            decimal firstCorrection = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) - (diff_int + 1) * 1.0015m;
-                                            int lysine_count = Math.Abs(Convert.ToInt32(Math.Round((Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]) - firstCorrection) / 0.036015372m, 0, MidpointRounding.AwayFromZero)));
-                                            double intensityRatio = high_int / low_int;
-                                            decimal lt_corrected_mass = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) + Math.Round((lysine_count * 0.1667m - 0.4m), 0, MidpointRounding.AwayFromZero) * 1.0015m;
-                                            AddOneRawNeuCodePair(fileName, Convert.ToInt32(rows[high][0]), Convert.ToDouble(Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"])), Convert.ToDouble(lt_corrected_mass), high_int, fileName, Convert.ToInt32(rows[low][0]), Convert.ToDouble(Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"])), low_int, oLC, apexRT, intensityRatio, lysine_count, true);
-                                        }                                      
-                                        
-                                    }
-
+                                    low_int = GetCSIntensitySum(fileName, Convert.ToInt32(rows[low][0]), oLC);
+                                    high_int = GetCSIntensitySum(fileName, Convert.ToInt32(rows[high][0]), oLC);
                                 }
+
+                                if(low_int>0 && high_int > 0)
+                                {
+                                    int diff_int = Convert.ToInt32(Math.Round(difference / 1.0015m - 0.5m, 0, MidpointRounding.AwayFromZero));
+                                    if (low_int > high_int)//lower mass is neucode light
+                                    {
+                                        decimal firstCorrection = Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]) + diff_int * 1.0015m;
+                                        int lysine_count = Math.Abs(Convert.ToInt32(Math.Round((Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) - firstCorrection) / 0.036015372m, 0, MidpointRounding.AwayFromZero)));
+                                        double intensityRatio = low_int / high_int;
+                                        decimal lt_corrected_mass = Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]) + Math.Round((lysine_count * 0.1667m - 0.4m), 0, MidpointRounding.AwayFromZero) * 1.0015m;
+                                        AddOneRawNeuCodePair(fileName, Convert.ToInt32(rows[low][0]), Convert.ToDouble(Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"])), Convert.ToDouble(lt_corrected_mass), low_int, fileName, Convert.ToInt32(rows[high][0]), Convert.ToDouble(Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"])), high_int, oLC, apexRT, intensityRatio, lysine_count, true);
+                                    }
+                                    else //higher mass is neucode light
+                                    {
+                                        decimal firstCorrection = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) - (diff_int + 1) * 1.0015m;
+                                        int lysine_count = Math.Abs(Convert.ToInt32(Math.Round((Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]) - firstCorrection) / 0.036015372m, 0, MidpointRounding.AwayFromZero)));
+                                        double intensityRatio = high_int / low_int;
+                                        decimal lt_corrected_mass = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) + Math.Round((lysine_count * 0.1667m - 0.4m), 0, MidpointRounding.AwayFromZero) * 1.0015m;
+                                        AddOneRawNeuCodePair(fileName, Convert.ToInt32(rows[high][0]), Convert.ToDouble(Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"])), Convert.ToDouble(lt_corrected_mass), high_int, fileName, Convert.ToInt32(rows[low][0]), Convert.ToDouble(Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"])), low_int, oLC, apexRT, intensityRatio, lysine_count, true);
+                                    }                                      
+                                        
+                                }
+
                             }
                         }
+                     }
                     
                 }
             }
