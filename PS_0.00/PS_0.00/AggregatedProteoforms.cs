@@ -78,7 +78,7 @@ namespace PS_0._00
             //MessageBox.Show("Filling ltNCProteoforms table.");
             DataTable acceptableLtProteoforms = new DataTable();
             acceptableLtProteoforms.Columns.Add("Light Filename", typeof(string));
-            acceptableLtProteoforms.Columns.Add("Light No#", typeof(int));
+            acceptableLtProteoforms.Columns.Add("Light No.", typeof(int));
             acceptableLtProteoforms.Columns.Add("Light Mass", typeof(double));
             acceptableLtProteoforms.Columns.Add("Light Mass Corrected", typeof(double));
             acceptableLtProteoforms.Columns.Add("Light Intensity", typeof(double));
@@ -93,7 +93,7 @@ namespace PS_0._00
                 if (bool.Parse(row["Acceptable"].ToString()))
                 {
                     string lightFilename = row["Light Filename"].ToString();
-                    int lightNumber = int.Parse(row["Light No#"].ToString());
+                    int lightNumber = int.Parse(row["Light No."].ToString());
                     double ltMass = double.Parse(row["Light Mass"].ToString());
                     double ltMassCorrected = double.Parse(row["Light Mass Corrected"].ToString());
                     double ltIntensity = double.Parse(row["Light Intensity"].ToString());
