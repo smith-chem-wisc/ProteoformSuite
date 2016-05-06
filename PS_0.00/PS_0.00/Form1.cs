@@ -36,8 +36,6 @@ namespace PS_0._00
 
         public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
-
             if (loadDeconvolutionResults == null)
             {
                 loadDeconvolutionResults = new LoadDeconvolutionResults();
