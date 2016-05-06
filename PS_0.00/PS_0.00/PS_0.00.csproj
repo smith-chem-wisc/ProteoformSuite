@@ -63,7 +63,6 @@
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </Compile>
     <Compile Include="AminoAcidMasses.cs" />
-    <Compile Include="DataTableHandler.cs" />
     <Compile Include="ExperimentExperimentComparison.cs">
       <SubType>Form</SubType>
     </Compile>

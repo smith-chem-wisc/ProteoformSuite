@@ -18,8 +18,6 @@ namespace PS_0._00
 {
     public partial class RawExperimentalComponents : Form
     {
-        DataTableHandler dataTableHandler = new DataTableHandler();
-
         private void RoundDoubleColumn(DataTable table, string column_name, int num_decimal_places)
         {
             table.AsEnumerable().ToList().ForEach(p => p.SetField<Double>(column_name, Math.Round(p.Field<Double>(column_name), num_decimal_places)));
@@ -52,14 +50,23 @@ namespace PS_0._00
             GlobalData.rawExperimentalChargeStateData = GetRawChargeStates();
             CalculateWeightedMonoisotopicMass();
 
-            //Round decimals before displaying
-            string[] rt_column_names = new string[] { "Apex RT" };
-            string[] abundance_column_names = new string[] { "Relative Abundance", "Fractional Abundance" };
-            string[] intensity_column_names = new string[] { "Sum Intensity" };
-            string[] mass_column_names = new string[] { "Monoisotopic Mass", "Delta Mass", "Weighted Monoisotopic Mass" };
-            BindingSource bs_rawExpComp_monoisotopics = dataTableHandler.DisplayWithRoundedDoubles(dgv_RawExpComp_MI_masses, GlobalData.rawExperimentalComponents,
-                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
+            FillRawExpComponentsTable();
 
+        }
+
+        private void FillRawExpComponentsTable()
+        {
+            dgv_RawExpComp_MI_masses.DataSource = GlobalData.rawExperimentalComponents;
+            dgv_RawExpComp_MI_masses.ReadOnly = true;
+            dgv_RawExpComp_MI_masses.Columns["Monoisotopic Mass"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpComp_MI_masses.Columns["Delta Mass"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpComp_MI_masses.Columns["Weighted Monoisotopic Mass"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpComp_MI_masses.Columns["Apex RT"].DefaultCellStyle.Format = "0.##";
+            dgv_RawExpComp_MI_masses.Columns["Relative Abundance"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpComp_MI_masses.Columns["Fractional Abundance"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpComp_MI_masses.Columns["Sum Intensity"].DefaultCellStyle.Format = "0";
+            dgv_RawExpComp_MI_masses.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_RawExpComp_MI_masses.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
 
         private DataSet GetDeconResults()
@@ -365,10 +372,13 @@ namespace PS_0._00
 
                 //Round doubles before displaying
                 DataTable displayTable = GlobalData.rawExperimentalChargeStateData.Tables[filename + "_" + rawComponentNum];
-                string[] intensity_column_names = new string[] { "Intensity" };
-                string[] mass_column_names = new string[] { "Calculated Mass", "MZ Centroid" };
-                BindingSource dgv_cs_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_RawExpComp_IndChgSts, displayTable,
-                    new string[] { }, intensity_column_names, new string[] { }, mass_column_names);
+                dgv_RawExpComp_IndChgSts.DataSource = displayTable;
+                dgv_RawExpComp_IndChgSts.ReadOnly = true;
+                dgv_RawExpComp_IndChgSts.Columns["MZ Centroid"].DefaultCellStyle.Format = "0.####";
+                dgv_RawExpComp_IndChgSts.Columns["Calculated Mass"].DefaultCellStyle.Format = "0.####";
+                dgv_RawExpComp_IndChgSts.Columns["Intensity"].DefaultCellStyle.Format = "0";
+                dgv_RawExpComp_IndChgSts.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+                dgv_RawExpComp_IndChgSts.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
             }
         }
     }
