@@ -26,7 +26,6 @@ namespace PS_0._00
         public static DataTable experimentTheoreticalPairs = new DataTable();
         public static DataTable etPeakList = new DataTable();
         public static DataSet experimentDecoyPairs = new DataSet();
-        //public static DataTable experimentDecoyPairs = new DataTable();
         public static DataTable edList = new DataTable();
         public static DataTable experimentExperimentPairs = new DataTable();
         public static DataTable eePeakList = new DataTable();

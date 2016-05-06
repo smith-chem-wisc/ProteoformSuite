@@ -49,7 +49,7 @@ namespace PS_0._00
 
             nUD_NumDecoyDBs.Minimum = 0;
             nUD_NumDecoyDBs.Maximum = 50;
-            nUD_NumDecoyDBs.Value = 0;
+            nUD_NumDecoyDBs.Value = 1;
 
             nUD_MinPeptideLength.Minimum = 0;
             nUD_MinPeptideLength.Maximum = 20;
@@ -79,8 +79,9 @@ namespace PS_0._00
             DataTable displayTable = GlobalData.theoreticalAndDecoyDatabases.Tables[table];
             string[] mass_column_names = new string[] { "Mass", "PTM Group Mass", "Proteoform Mass" };
             string[] other_columns = new string[] { };
+            //string[] dec_mass_column_names = new string[] { };
             BindingSource dgv_DB_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_Database, displayTable,
-                other_columns, other_columns, other_columns, mass_column_names);
+                other_columns, other_columns, other_columns, mass_column_names, new string[] { });
         }
 
         private void btn_GetUniProtXML_Click(object sender, EventArgs e)

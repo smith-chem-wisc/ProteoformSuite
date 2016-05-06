@@ -34,8 +34,9 @@ namespace PS_0._00
             string[] intensity_column_names = new string[] { "Aggregated Intensity" };
             string[] mass_column_names = new string[] { "Aggregated Mass" };
             string[] abundance_column_names = new string[] { };
+            //string[] dec_mass_column_names = new string[] { };
             BindingSource bs_aggregatedProteoforms = dataTableHandler.DisplayWithRoundedDoubles(dgv_AggregatedProteoforms, GlobalData.aggregatedProteoforms, 
-                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
+                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names, new string[] { });
         }
 
         private void RoundDoubleColumn(DataTable table, string column_name, int num_decimal_places)
@@ -80,7 +81,7 @@ namespace PS_0._00
             //MessageBox.Show("Filling ltNCProteoforms table.");
             DataTable acceptableLtProteoforms = new DataTable();
             acceptableLtProteoforms.Columns.Add("Light Filename", typeof(string));
-            acceptableLtProteoforms.Columns.Add("Light No#", typeof(int));
+            acceptableLtProteoforms.Columns.Add("Light No.", typeof(int));
             acceptableLtProteoforms.Columns.Add("Light Mass", typeof(double));
             acceptableLtProteoforms.Columns.Add("Light Mass Corrected", typeof(double));
             acceptableLtProteoforms.Columns.Add("Light Intensity", typeof(double));
@@ -95,7 +96,7 @@ namespace PS_0._00
                 if (bool.Parse(row["Acceptable"].ToString()))
                 {
                     string lightFilename = row["Light Filename"].ToString();
-                    int lightNumber = int.Parse(row["Light No#"].ToString());
+                    int lightNumber = int.Parse(row["Light No."].ToString());
                     double ltMass = double.Parse(row["Light Mass"].ToString());
                     double ltMassCorrected = double.Parse(row["Light Mass Corrected"].ToString());
                     double ltIntensity = double.Parse(row["Light Intensity"].ToString());
@@ -235,9 +236,10 @@ namespace PS_0._00
                 //Round decimals before displaying
                 string[] rt_column_names = new string[] { "Aggregated Retention Time", "Light Retention Time" };
                 string[] intensity_column_names = new string[] { "Aggregated Intensity", "Light Intensity" };
-                string[] mass_column_names = new string[] { "Aggregated Mass", "Light Mass Corrected", "Light Mass" };
+                string[] mass_column_names = new string[] { "Aggregated Mass", "Light Mass", "Light Mass Corrected" };
+                //string[] dec_mass_column_names = new string[] {  };
                 dataTableHandler.DisplayWithRoundedDoubles(dgv_AcceptNeuCdLtProteoforms, dtClone,
-                    rt_column_names, intensity_column_names, new string[] { }, mass_column_names);
+                    rt_column_names, intensity_column_names, new string[] { }, mass_column_names, new string[] { });
             }
         }
 

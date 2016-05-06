@@ -21,7 +21,13 @@ namespace PS_0._00
         public ExperimentExperimentComparison()
         {
             InitializeComponent();
+
+
             this.dgv_EE_Peak_List.MouseClick += new MouseEventHandler(dgv_EE_Peak_List_CellClick);
+            this.ct_EE_Histogram.MouseMove += new MouseEventHandler(ct_EE_Histogram_MouseMove);
+            this.ct_EE_peakList.MouseMove += new MouseEventHandler(ct_EE_peakList_MouseMove);
+
+
         }
 
         private void ExperimentExperimentComparison_Load(object sender, EventArgs e)
@@ -48,6 +54,7 @@ namespace PS_0._00
             ZeroEEPairsTableValues();
             ClearEEPeakListTable();
             ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+            ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
             FindAllEEPairs();
             CalculateRunningSums();
             FillEEGridView();
@@ -59,6 +66,75 @@ namespace PS_0._00
             GraphEEPeakList();
             this.Cursor = Cursors.Default;
         }
+
+        Point? prevPosition = null;
+        ToolTip tooltip = new ToolTip();
+
+        void ct_EE_Histogram_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = e.Location;
+            if (prevPosition.HasValue && pos == prevPosition.Value)
+                return;
+            tooltip.RemoveAll();
+            prevPosition = pos;
+            var results = ct_EE_Histogram.HitTest(pos.X, pos.Y, false,
+                                            ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) // &&
+                            //Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            tooltip.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_EE_Histogram,
+                                            pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
+        }
+
+        Point? prevPosition2 = null;
+        ToolTip tooltip2 = new ToolTip();
+
+        void ct_EE_peakList_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = e.Location;
+            if (prevPosition2.HasValue && pos == prevPosition2.Value)
+                return;
+            tooltip2.RemoveAll();
+            prevPosition2 = pos;
+            var results = ct_EE_peakList.HitTest(pos.X, pos.Y, false,
+                                            ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2)// &&
+                            //Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            tooltip2.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_EE_peakList,
+                                            pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
+        }
+
 
         private void dgv_EE_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
@@ -89,7 +165,7 @@ namespace PS_0._00
 
             ct_EE_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - Convert.ToDouble(nUD_PeakWidthBase.Value);
             ct_EE_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) + Convert.ToDouble(nUD_PeakWidthBase.Value);
-            ct_EE_peakList.Series["eePeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+           // ct_EE_peakList.Series["eePeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
             ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
             {
                 BorderColor = Color.Red,
@@ -234,8 +310,9 @@ namespace PS_0._00
             //Round before displaying
             string[] other_columns = new string[] { };
             string[] mass_column_names = new string[] { "Average Delta Mass" };
+            //string[] dec_mass_column_names = new string[] { };
             BindingSource dgv_EE_Peak_List_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_EE_Peak_List, eePeakList,
-                other_columns, other_columns, other_columns, mass_column_names);
+                other_columns, other_columns, other_columns, mass_column_names, new string[] { });
         }
 
         private void InitializeEEPeakListTable()
@@ -269,7 +346,7 @@ namespace PS_0._00
                     IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value),
                 });
 
-            ct_EE_Histogram.Series["eeHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+           // ct_EE_Histogram.Series["eeHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
             ct_EE_Histogram.ChartAreas[0].AxisX.Title = "Delta m/z";
             ct_EE_Histogram.ChartAreas[0].AxisY.Title = "Peak Count";
         }
@@ -283,8 +360,9 @@ namespace PS_0._00
             string[] intensity_column_names = new string[] { "Aggregated Intensity Light", "Aggregated Intensity Heavy" };
             string[] abundance_column_names = new string[] { };
             string[] mass_column_names = new string[] { "Aggregated Mass Light", "Aggregated Mass Heavy", "Delta Mass", "Peak Center Mass" };
+            //string[] dec_mass_column_names = new string[] { };
             BindingSource dgv_DT_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_EE_Pairs, displayTable, 
-                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
+                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names, new string[] { });
         }
 
         private DataTable GetNewEE_DataTable()
