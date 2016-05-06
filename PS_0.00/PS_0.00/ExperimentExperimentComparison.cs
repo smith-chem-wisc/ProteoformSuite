@@ -202,7 +202,7 @@ namespace PS_0._00
             }
             catch
             {
-
+                MessageBox.Show("catch in update figures of merit");
             }
          
         }
@@ -265,6 +265,15 @@ namespace PS_0._00
                         rutrow["Peak Center Count"] = secondSet.Length;
                         rutrow["Peak Center Mass"] = secondAverage;
                         rutrow["Acceptable Peak"] = true;
+
+                        if (secondSet.Length >= Convert.ToInt32(nUD_PeakCountMinThreshold.Value))
+                        {
+                            rutrow["Proteoform Family"] = true;
+                        }
+                        else
+                        {
+                            rutrow["Proteoform Family"] = false;
+                        }
 
                         rutrow.EndEdit();
                     }
@@ -473,48 +482,50 @@ namespace PS_0._00
 
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
-            //    nUD_PeakCountMinThreshold.Value = 10;
+            nUD_PeakCountMinThreshold.Value = 10;
         }
 
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
         {
-            MessageBox.Show("hubba");
 
-            //double averageDeltaMass = Convert.ToDouble(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 2].Value);
-            //int peakCount = Convert.ToInt32(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Value);
-            //dgv_EE_Peak_List.EndEdit();
-            //dgv_EE_Peak_List.Update();
+            double averageDeltaMass = Convert.ToDouble(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 2].Value);
+            int peakCount = Convert.ToInt32(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Value);
+            dgv_EE_Peak_List.EndEdit();
+            dgv_EE_Peak_List.Update();
 
-            //double lowMass = averageDeltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-            //double highMass = averageDeltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+            double lowMass = averageDeltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+            double highMass = averageDeltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
 
-            //string expression = "[Average Delta Mass] > " + lowMass + " and [Average Delta Mass] < " + highMass;
-            //DataRow[] selectedPeaks = eePeakList.Select(expression);
+            string expression = "[Average Delta Mass] > " + lowMass + " and [Average Delta Mass] < " + highMass;
 
-            //foreach (DataRow row in selectedPeaks)
-            //{
-            //    row["Acceptable"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
-            //}
-            //eePeakList.AcceptChanges();
-            //GlobalData.etPeakList = eePeakList;
-            //dgv_EE_Peak_List.Update();
-            //dgv_EE_Peak_List.Refresh();
+            DataRow[] selectedPeaks = eePeakList.Select(expression);
 
-            //expression = "[Peak Center Mass] > " + lowMass + " and [Peak Center Mass] < " + highMass;
+            foreach (DataRow row in selectedPeaks)
+            {
+                row["Acceptable"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
+            }
+            eePeakList.AcceptChanges();
+            GlobalData.etPeakList = eePeakList;
+            dgv_EE_Peak_List.Update();
+            dgv_EE_Peak_List.Refresh();
 
-            //selectedPeaks = eePairsList.Select(expression);
+            expression = "[Peak Center Mass] > " + lowMass + " and [Peak Center Mass] < " + highMass;
 
-            //foreach (DataRow row in selectedPeaks)
-            //{
-            //    row["Proteoform Family"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
-            //}
-            //eePairsList.AcceptChanges();
+            selectedPeaks = eePairsList.Select(expression);
 
-            //GlobalData.experimentExperimentPairs = eePairsList;
-            //dgv_EE_Pairs.Update();
-            //dgv_EE_Pairs.Refresh();
+            foreach (DataRow row in selectedPeaks)
+            {
 
-            //UpdateFiguresOfMerit();
+                row["Proteoform Family"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
+
+            }
+            eePairsList.AcceptChanges();
+
+            GlobalData.experimentExperimentPairs = eePairsList;
+            dgv_EE_Pairs.DataSource = null;
+            FillEEPairsGridView();
+
+            UpdateFiguresOfMerit();
 
         }
 
