@@ -79,9 +79,8 @@ namespace PS_0._00
             DataTable displayTable = GlobalData.theoreticalAndDecoyDatabases.Tables[table];
             string[] mass_column_names = new string[] { "Mass", "PTM Group Mass", "Proteoform Mass" };
             string[] other_columns = new string[] { };
-            //string[] dec_mass_column_names = new string[] { };
             BindingSource dgv_DB_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_Database, displayTable,
-                other_columns, other_columns, other_columns, mass_column_names, new string[] { });
+                other_columns, other_columns, other_columns, mass_column_names);
         }
 
         private void btn_GetUniProtXML_Click(object sender, EventArgs e)
