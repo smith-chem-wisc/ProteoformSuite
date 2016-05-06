@@ -238,6 +238,8 @@ namespace PS_0._00
             dgv_ET_Pairs.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.#####";
             dgv_ET_Pairs.Columns["Delta Mass"].DefaultCellStyle.Format = "0.#####";
             dgv_ET_Pairs.Columns["Peak Center Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_ET_Pairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_ET_Pairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
 
         }
 
@@ -418,6 +420,8 @@ namespace PS_0._00
             dgv_ET_Peak_List.Columns["Average Delta Mass"].ReadOnly = true;
             dgv_ET_Peak_List.Columns["Peak Count"].ReadOnly = true;
             dgv_ET_Peak_List.Columns["Average Delta Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_ET_Peak_List.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_ET_Peak_List.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
             dgv_ET_Peak_List.EndEdit();
             dgv_ET_Peak_List.Refresh();
 
