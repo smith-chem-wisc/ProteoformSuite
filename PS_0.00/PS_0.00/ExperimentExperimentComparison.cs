@@ -15,8 +15,10 @@ namespace PS_0._00
 { 
     public partial class ExperimentExperimentComparison : Form
     {
-        DataTable eePeakList = new DataTable();
-        DataTableHandler dataTableHandler = new DataTableHandler();
+        DataTable eePairsList = new DataTable(); // this is a list of all individual EE pairs with mass difference smaller than the threshold
+        DataTable eePeakList = new DataTable(); // these are the aggregated peaks coming from groups of individual EE pairs.
+        //DataTableHandler dataTableHandler = new DataTableHandler();
+        Boolean formLoadEvent; // this is needed to prevent firing of ParameterSet events from firing on form load and let them fire only when the values are actually changed
 
         public ExperimentExperimentComparison()
         {
@@ -34,37 +36,41 @@ namespace PS_0._00
 
         {
             this.Cursor = Cursors.WaitCursor;
+            formLoadEvent = true;
             InitializeParameterSet();
             FindAllEEPairs();
             CalculateRunningSums();
-            FillEEGridView();
             GraphEEHistogram();
-            InitializeEEPeakListTable();
+            eePeakList = InitializeEEPeakListTable();
             FillEEPeakListTable();
-            FillEEGridView();
+            FillEEPairsGridView();
+            GraphEEPairsList();
+
+
             UpdateFiguresOfMerit();
-            GraphEEPeakList();
+            
+            formLoadEvent = false;
             this.Cursor = Cursors.Default;
         }
 
         private void RunTheGamut()
         {
-            this.Cursor = Cursors.WaitCursor;
-            ClearEEGridView();
-            ZeroEEPairsTableValues();
-            ClearEEPeakListTable();
-            ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
-            ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
-            FindAllEEPairs();
-            CalculateRunningSums();
-            FillEEGridView();
-            GraphEEHistogram();
-            FillEEPeakListTable();
-            FillEEGridView(); //Why is this here twice? -AC
-            UpdateFiguresOfMerit();
-            xMaxEE.Value = nUD_EE_Upper_Bound.Value;
-            GraphEEPeakList();
-            this.Cursor = Cursors.Default;
+            //this.Cursor = Cursors.WaitCursor;
+            //ClearEEGridView();
+            //ZeroEEPairsTableValues();
+            //ClearEEPeakListTable();
+            //ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+            //ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
+            //FindAllEEPairs();
+            //CalculateRunningSums();
+            //FillEEPairsGridView();
+            //GraphEEHistogram();
+            //FillEEPeakListTable();
+
+            //UpdateFiguresOfMerit();
+            //xMaxEE.Value = nUD_EE_Upper_Bound.Value;
+            //GraphEEPeakList();
+            //this.Cursor = Cursors.Default;
         }
 
         Point? prevPosition = null;
@@ -148,18 +154,18 @@ namespace PS_0._00
             }
         }
 
-        private void GraphEEPeakList()
+        private void GraphEEPairsList()
         {
             string colName = "Delta Mass";
             string direction = "DESC";
-            DataTable dt = GlobalData.experimentExperimentPairs;
+            DataTable dt = eePairsList;
             dt.DefaultView.Sort = colName + " " + direction;
             dt = dt.DefaultView.ToTable();
-            GlobalData.experimentExperimentPairs = dt;
+            eePairsList = dt;
 
             ct_EE_peakList.Series["eePeakList"].XValueMember = "Delta Mass";
             ct_EE_peakList.Series["eePeakList"].YValueMembers = "Running Sum";
-            ct_EE_peakList.DataSource = GlobalData.experimentExperimentPairs;
+            ct_EE_peakList.DataSource = eePairsList;
             ct_EE_peakList.DataBind();
             ct_EE_peakList.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
 
@@ -220,18 +226,27 @@ namespace PS_0._00
 
         private void UpdateFiguresOfMerit()
         {
-            int peakSum = 0;
-            int peakCount = 0;
-            DataRow[] bigPeaks = eePeakList.Select("[Peak Count] >= " +
-                nUD_PeakCountMinThreshold.Value);
-            foreach (DataRow row in bigPeaks)
+            try
             {
-                peakSum = peakSum + Convert.ToInt32(row["Peak Count"]);
-                peakCount++;
+                int peakSum = 0;
+                int peakCount = 0;
+                DataRow[] bigPeaks = eePeakList.Select("[Acceptable] = true" +
+                    nUD_PeakCountMinThreshold.Value);
+                foreach (DataRow row in bigPeaks)
+                {
+                    peakSum = peakSum + Convert.ToInt32(row["Peak Count"]);
+                    peakCount++;
+                }
+
+                tb_TotalPeaks.Text = peakCount.ToString();
+                tb_IdentifiedProteoforms.Text = peakSum.ToString();
+            }
+            catch
+            {
+
             }
 
-            tb_TotalPeaks.Text = peakCount.ToString();
-            tb_IdentifiedProteoforms.Text = peakSum.ToString();
+            
         }
 
         private void ZeroEEPairsTableValues()
@@ -255,15 +270,18 @@ namespace PS_0._00
 
         private void FillEEPeakListTable()
         {
+            eePeakList.Clear();
+            GlobalData.eePeakList.Clear();
+
             string colName = "Running Sum";
             string direction = "DESC";
 
-            DataTable dt = GlobalData.experimentExperimentPairs;
+            DataTable dt = eePairsList;
             dt.DefaultView.Sort = colName + " " + direction;
             dt = dt.DefaultView.ToTable();
-            GlobalData.experimentExperimentPairs = dt;
+            eePairsList = dt;
 
-            foreach (DataRow row in GlobalData.experimentExperimentPairs.Rows)
+            foreach (DataRow row in eePairsList.Rows)
             {
                 if (
                     Convert.ToBoolean(row["Out of Range Decimal"].ToString()) == false &&
@@ -274,14 +292,14 @@ namespace PS_0._00
                     double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <=" + upper +
                         "and [Acceptable Peak] = false";
-                    DataRow[] firstSet = GlobalData.experimentExperimentPairs.Select(expression);
+                    DataRow[] firstSet = eePairsList.Select(expression);
                     var firstAverage = firstSet.Average(fsRow => fsRow.Field<double>("Delta Mass"));
 
                     lower = firstAverage - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     upper = firstAverage + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper +
                         "and [Acceptable Peak] = false";
-                    DataRow[] secondSet = GlobalData.experimentExperimentPairs.Select(expression);
+                    DataRow[] secondSet = eePairsList.Select(expression);
                     var secondAverage = secondSet.Average(ssRow => ssRow.Field<double>("Delta Mass"));
 
                     foreach (DataRow rutrow in secondSet)
@@ -302,70 +320,83 @@ namespace PS_0._00
                         eePeakList.Rows.Add(secondAverage, secondSet.Length, false);
                     }
                 }
-                GlobalData.experimentExperimentPairs.AcceptChanges();
+                eePairsList.AcceptChanges();
+                GlobalData.experimentExperimentPairs = eePairsList;
             }
 
             GlobalData.eePeakList = eePeakList;
 
-            //Round before displaying
-            string[] other_columns = new string[] { };
-            string[] mass_column_names = new string[] { "Average Delta Mass" };
-            //string[] dec_mass_column_names = new string[] { };
-            BindingSource dgv_EE_Peak_List_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_EE_Peak_List, eePeakList,
-                other_columns, other_columns, other_columns, mass_column_names, new string[] { });
+            dgv_EE_Peak_List.DataSource = eePeakList;
+            dgv_EE_Peak_List.Columns["Average Delta Mass"].ReadOnly = true;
+            dgv_EE_Peak_List.Columns["Peak Count"].ReadOnly = true;
+            dgv_EE_Peak_List.Columns["Average Delta Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_EE_Peak_List.EndEdit();
+            dgv_EE_Peak_List.Refresh();
+
         }
 
-        private void InitializeEEPeakListTable()
+        private DataTable InitializeEEPeakListTable()
         {
-            eePeakList.Columns.Add("Average Delta Mass", typeof(double));
-            eePeakList.Columns.Add("Peak Count", typeof(int));
-            eePeakList.Columns.Add("Acceptable", typeof(bool));
+            DataTable dt = new DataTable();
+            dt.Columns.Add("Average Delta Mass", typeof(double));
+            dt.Columns.Add("Peak Count", typeof(int));
+            dt.Columns.Add("Acceptable", typeof(bool));
+
+            return dt;
         }
 
 
         private void GraphEEHistogram()
 
         {
-            string colName = "Delta Mass";
-            string direction = "DESC";
+            try
+            {
+                string colName = "Delta Mass";
+                string direction = "DESC";
 
-            DataTable dt = GlobalData.experimentExperimentPairs;
-            dt.DefaultView.Sort = colName + " " + direction;
-            dt = dt.DefaultView.ToTable();
-            GlobalData.experimentExperimentPairs = dt;
+                DataTable dt = eePairsList;
+                dt.DefaultView.Sort = colName + " " + direction;
+                dt = dt.DefaultView.ToTable();
+                eePairsList = dt;
 
-            ct_EE_Histogram.Series["eeHistogram"].XValueMember = "Delta Mass";
-            ct_EE_Histogram.Series["eeHistogram"].YValueMembers = "Running Sum";
-            ct_EE_Histogram.DataSource = GlobalData.experimentExperimentPairs;
-            ct_EE_Histogram.DataBind();
-            ct_EE_Histogram.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
-            ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(
-                new StripLine()
-                {
-                    BorderColor = Color.Red,
-                    IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value),
-                });
+                ct_EE_Histogram.Series["eeHistogram"].XValueMember = "Delta Mass";
+                ct_EE_Histogram.Series["eeHistogram"].YValueMembers = "Running Sum";
+                ct_EE_Histogram.DataSource = eePairsList;
+                ct_EE_Histogram.DataBind();
+                ct_EE_Histogram.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
+                ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(
+                    new StripLine()
+                    {
+                        BorderColor = Color.Red,
+                        IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value),
+                    });
 
-           // ct_EE_Histogram.Series["eeHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
-            ct_EE_Histogram.ChartAreas[0].AxisX.Title = "Delta m/z";
-            ct_EE_Histogram.ChartAreas[0].AxisY.Title = "Peak Count";
+                // ct_EE_Histogram.Series["eeHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+                ct_EE_Histogram.ChartAreas[0].AxisX.Title = "Delta m/z";
+                ct_EE_Histogram.ChartAreas[0].AxisY.Title = "Peak Count";
+            }
+            catch
+            {
+
+            }
+
+            
         }
 
-        private void FillEEGridView()
+        private void FillEEPairsGridView()
         {
-            DataTable displayTable = GlobalData.experimentExperimentPairs;
-
-            //Round before displaying EE pairs
-            string[] rt_column_names = new string[] { "Retention Time Light", "Retention Time Heavy" };
-            string[] intensity_column_names = new string[] { "Aggregated Intensity Light", "Aggregated Intensity Heavy" };
-            string[] abundance_column_names = new string[] { };
-            string[] mass_column_names = new string[] { "Aggregated Mass Light", "Aggregated Mass Heavy", "Delta Mass", "Peak Center Mass" };
-            //string[] dec_mass_column_names = new string[] { };
-            BindingSource dgv_DT_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_EE_Pairs, displayTable, 
-                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names, new string[] { });
+            dgv_EE_Pairs.DataSource = eePairsList;
+            dgv_EE_Pairs.ReadOnly = true;
+            dgv_EE_Pairs.Columns["Acceptable Peak"].ReadOnly = false;
+            dgv_EE_Pairs.Columns["Aggregated Mass Light"].DefaultCellStyle.Format = "0.#####";
+            dgv_EE_Pairs.Columns["Aggregated Mass Heavy"].DefaultCellStyle.Format = "0.#####";
+            dgv_EE_Pairs.Columns["Retention Time Light"].DefaultCellStyle.Format = "0.##";
+            dgv_EE_Pairs.Columns["Retention Time Heavy"].DefaultCellStyle.Format = "0.##";
+            dgv_EE_Pairs.Columns["Delta Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_EE_Pairs.Columns["Peak Center Mass"].DefaultCellStyle.Format = "0.#####";
         }
 
-        private DataTable GetNewEE_DataTable()
+        private DataTable CreateEEPairsDataTable()
         {
             DataTable dt = new DataTable();
             dt.Columns.Add("Aggregated Mass Light", typeof(double));
@@ -388,8 +419,9 @@ namespace PS_0._00
 
         private void FindAllEEPairs()
         {
-            DataTable eE = new DataTable();
-            eE = GetNewEE_DataTable();
+            eePairsList.Clear();
+            eePairsList = CreateEEPairsDataTable();
+            GlobalData.experimentExperimentPairs.Clear();
 
             int numRows = GlobalData.aggregatedProteoforms.Rows.Count;
 
@@ -419,7 +451,7 @@ namespace PS_0._00
                                     oOR = false;
                                 }
 
-                                DataRow resultRow = eE.NewRow();
+                                DataRow resultRow = eePairsList.NewRow();
 
                                 resultRow["Aggregated Mass Light"] = massLight;
                                 resultRow["Aggregated Mass Heavy"] = massHeavy;
@@ -435,7 +467,7 @@ namespace PS_0._00
                                 resultRow["Out of Range Decimal"] = oOR;
                                 resultRow["Running Sum"] = 0;
 
-                                eE.Rows.Add(resultRow);
+                                eePairsList.Rows.Add(resultRow);
 
                             }
                         }
@@ -443,19 +475,21 @@ namespace PS_0._00
                 }
             }
 
-            GlobalData.experimentExperimentPairs = eE;
+            GlobalData.experimentExperimentPairs = eePairsList;
         }
 
         private void CalculateRunningSums()
         {
-            foreach (DataRow row in GlobalData.experimentExperimentPairs.Rows)
+            foreach (DataRow row in eePairsList.Rows)
             {
                 double deltaMass = Convert.ToDouble(row["Delta Mass"].ToString());
                 double lower = deltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                 double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                 string expression = "[Delta Mass] >= " + lower + "and [Delta Mass] <= " + upper;
-                row["Running Sum"] = GlobalData.experimentExperimentPairs.Select(expression).Length;
+                row["Running Sum"] = eePairsList.Select(expression).Length;
             }
+            eePairsList.AcceptChanges();
+            GlobalData.experimentExperimentPairs = eePairsList;
         }
 
 
@@ -463,23 +497,23 @@ namespace PS_0._00
         {
             nUD_EE_Upper_Bound.Minimum = 0;
             nUD_EE_Upper_Bound.Maximum = 500;
-            //nUD_EE_Upper_Bound.Value = 500;
+            //nUD_EE_Upper_Bound.Value = 500; // maximum mass difference in Da allowed between experimental pairs
 
             yMaxEE.Minimum = 0;
             yMaxEE.Maximum = 1000;
-            yMaxEE.Value = 100;
+            yMaxEE.Value = 100; // scaling for y-axis maximum in the histogram of all EE pairs
 
             yMinEE.Minimum = -100;
             yMinEE.Maximum = yMaxEE.Maximum;
-            yMinEE.Value = 0;
+            yMinEE.Value = 0; // scaling for y-axis minimum in the histogram of all EE pairs
 
             xMaxEE.Minimum = xMinEE.Value;
             xMaxEE.Maximum = nUD_EE_Upper_Bound.Value;
-            xMaxEE.Value = nUD_EE_Upper_Bound.Value;
+            xMaxEE.Value = nUD_EE_Upper_Bound.Value; // scaling for x-axis maximum in the histogram of all EE pairs
 
             xMinEE.Minimum = 0;
             xMinEE.Maximum = xMaxEE.Value;
-            xMinEE.Value = 0;
+            xMinEE.Value = 0; // scaling for x-axis minimum in the histogram of all EE pairs
 
             nUD_NoManLower.Minimum = 00m;
             nUD_NoManLower.Maximum = 0.49m;
@@ -501,61 +535,75 @@ namespace PS_0._00
         }
 
 
-        private void xMaxEE_ValueChanged(object sender, EventArgs e)
+        private void xMaxEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
         {
-            double newXMaxEE = double.Parse(xMaxEE.Value.ToString());
-            if (newXMaxEE > double.Parse(xMinEE.Value.ToString()))
+            if (!formLoadEvent)
             {
-                ct_EE_Histogram.ChartAreas[0].AxisX.Maximum = newXMaxEE;
-            }
+                double newXMaxEE = double.Parse(xMaxEE.Value.ToString());
+                if (newXMaxEE > double.Parse(xMinEE.Value.ToString()))
+                {
+                    ct_EE_Histogram.ChartAreas[0].AxisX.Maximum = newXMaxEE;
+                }
+            }          
         }
 
-        private void yMaxEE_ValueChanged(object sender, EventArgs e)
+        private void yMaxEE_ValueChanged(object sender, EventArgs e) // scaling for y-axis maximum in the histogram of all EE pairs
         {
-            double newYMaxEE = double.Parse(yMaxEE.Value.ToString());
-            if (newYMaxEE > double.Parse(yMinEE.Value.ToString()))
+            if (!formLoadEvent)
             {
-                ct_EE_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxEE.Value.ToString());
-            }
+                double newYMaxEE = double.Parse(yMaxEE.Value.ToString());
+                if (newYMaxEE > double.Parse(yMinEE.Value.ToString()))
+                {
+                    ct_EE_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxEE.Value.ToString());
+                }
+            }           
         }
 
-        private void yMinEE_ValueChanged(object sender, EventArgs e)
+        private void yMinEE_ValueChanged(object sender, EventArgs e) // scaling for y-axis minimum in the histogram of all EE pairs
         {
-            double newYMinEE = double.Parse(yMinEE.Value.ToString());
-            if (newYMinEE < double.Parse(yMaxEE.Value.ToString()))
+            if (!formLoadEvent)
             {
-                ct_EE_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinEE.Value.ToString());
-            }
+                double newYMinEE = double.Parse(yMinEE.Value.ToString());
+                if (newYMinEE < double.Parse(yMaxEE.Value.ToString()))
+                {
+                    ct_EE_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinEE.Value.ToString());
+                }
+            }           
         }
 
-        private void xMinEE_ValueChanged(object sender, EventArgs e)
+        private void xMinEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
         {
-            double newXMinEE = double.Parse(xMinEE.Value.ToString());
-            if (newXMinEE < double.Parse(xMaxEE.Value.ToString()))
+            if (!formLoadEvent)
             {
-                ct_EE_Histogram.ChartAreas[0].AxisX.Minimum = newXMinEE;
-            }
+                double newXMinEE = double.Parse(xMinEE.Value.ToString());
+                if (newXMinEE < double.Parse(xMaxEE.Value.ToString()))
+                {
+                    ct_EE_Histogram.ChartAreas[0].AxisX.Minimum = newXMinEE;
+                }
+            }           
         }
 
 
         private void cb_Graph_lowerThreshold_CheckedChanged(object sender, EventArgs e)
         {
-            if (cb_Graph_lowerThreshold.Checked)
+            if (!formLoadEvent)
             {
-                ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(
-              new StripLine()
-              {
-                BorderColor = Color.Red,
-             IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value),
-                });
+                if (cb_Graph_lowerThreshold.Checked)
+                {
+                    ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(
+                  new StripLine()
+                  {
+                      BorderColor = Color.Red,
+                      IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value),
+                  });
+                }
 
-            }
+                else if (!cb_Graph_lowerThreshold.Checked)
+                {
+                    ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
 
-            else if (!cb_Graph_lowerThreshold.Checked)
-            {
-                ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
-
-            }
+                }
+            }         
         }
 
         private void EE_update_Click(object sender, EventArgs e)
