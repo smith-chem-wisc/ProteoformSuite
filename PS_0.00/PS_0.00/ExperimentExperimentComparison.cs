@@ -24,6 +24,8 @@ namespace PS_0._00
         {
             InitializeComponent();
             this.dgv_EE_Peak_List.MouseClick += new MouseEventHandler(dgv_EE_Peak_List_CellClick);
+            dgv_EE_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(peakListSpecificPeakAcceptanceChanged); //makes the change immediate and automatic
+            dgv_EE_Peak_List.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
         }
 
         private void ExperimentExperimentComparison_Load(object sender, EventArgs e)
@@ -39,10 +41,7 @@ namespace PS_0._00
             FillEEPeakListTable();
             FillEEPairsGridView();
             GraphEEPairsList();
-
-
             UpdateFiguresOfMerit();
-            
             formLoadEvent = false;
             this.Cursor = Cursors.Default;
         }
@@ -148,6 +147,41 @@ namespace PS_0._00
             });
         }
 
+        //private void MarkEEPairsForProteoformFamilies()
+        //{
+        //    foreach (DataRow row in eePairsList.Rows)
+        //    {
+        //        if (Convert.ToInt32(row["Peak Center Count"].ToString()) >= nUD_PeakCountMinThreshold.Value)
+        //        {
+        //            row["Proteoform Family"] = true;
+        //        }
+        //        else
+        //        {
+        //            row["Proteoform Family"] = false;
+        //        }
+        //    }
+        //    eePairsList.AcceptChanges();
+        //    GlobalData.experimentExperimentPairs = eePairsList;
+        //    dgv_EE_Pairs.Update();
+        //}
+
+        //private void MarkEEPeaksAsAcceptable()
+        //{
+        //    foreach (DataRow row in eePeakList.Rows)
+        //    {
+        //        if (Convert.ToInt32(row["Peak Count"].ToString()) >= nUD_PeakCountMinThreshold.Value)
+        //        {
+        //            row["Acceptable"] = true;
+        //        }
+        //        else
+        //        {
+        //            row["Acceptable"] = false;
+        //        }
+        //    }
+        //    eePeakList.AcceptChanges();
+        //    GlobalData.eePeakList = eePeakList;
+        //    dgv_EE_Peak_List.Update();
+        //}
 
         private void UpdateFiguresOfMerit()
         {
@@ -170,8 +204,7 @@ namespace PS_0._00
             {
 
             }
-
-            
+         
         }
 
         private void ZeroEEPairsTableValues()
@@ -304,7 +337,6 @@ namespace PS_0._00
             {
 
             }
-
             
         }
 
@@ -337,6 +369,7 @@ namespace PS_0._00
             dt.Columns.Add("Peak Center Mass", typeof(double));
             dt.Columns.Add("Out of Range Decimal", typeof(bool));
             dt.Columns.Add("Acceptable Peak", typeof(bool));
+            dt.Columns.Add("Proteoform Family", typeof(bool));
 
             return dt;
         }
@@ -376,23 +409,7 @@ namespace PS_0._00
                                     oOR = false;
                                 }
 
-                                DataRow resultRow = eePairsList.NewRow();
-
-                                resultRow["Aggregated Mass Light"] = massLight;
-                                resultRow["Aggregated Mass Heavy"] = massHeavy;
-                                resultRow["Delta Mass"] = deltaMass;
-                                resultRow["Lysine Count"] = lysineLight;
-                                resultRow["Aggregated Intensity Light"] = GlobalData.aggregatedProteoforms.Rows[index1]["Aggregated Intensity"];
-                                resultRow["Aggregated Intensity Heavy"] = GlobalData.aggregatedProteoforms.Rows[index2]["Aggregated Intensity"];
-                                resultRow["Retention Time Light"] = GlobalData.aggregatedProteoforms.Rows[index1]["Aggregated Retention Time"];
-                                resultRow["Retention Time Heavy"] = GlobalData.aggregatedProteoforms.Rows[index2]["Aggregated Retention Time"];
-                                resultRow["Acceptable Peak"] = false;
-                                resultRow["Peak Center Count"] = 0;
-                                resultRow["Peak Center Mass"] = deltaMass;
-                                resultRow["Out of Range Decimal"] = oOR;
-                                resultRow["Running Sum"] = 0;
-
-                                eePairsList.Rows.Add(resultRow);
+                                eePairsList.Rows.Add(massLight, massHeavy, GlobalData.aggregatedProteoforms.Rows[index1]["Aggregated Intensity"], GlobalData.aggregatedProteoforms.Rows[index2]["Aggregated Intensity"], GlobalData.aggregatedProteoforms.Rows[index1]["Aggregated Retention Time"], GlobalData.aggregatedProteoforms.Rows[index2]["Aggregated Retention Time"], lysineLight, deltaMass, 0, 0, deltaMass, oOR, false, false);
 
                             }
                         }
@@ -459,6 +476,56 @@ namespace PS_0._00
             //    nUD_PeakCountMinThreshold.Value = 10;
         }
 
+        private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
+        {
+            MessageBox.Show("hubba");
+
+            //double averageDeltaMass = Convert.ToDouble(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 2].Value);
+            //int peakCount = Convert.ToInt32(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Value);
+            //dgv_EE_Peak_List.EndEdit();
+            //dgv_EE_Peak_List.Update();
+
+            //double lowMass = averageDeltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+            //double highMass = averageDeltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+
+            //string expression = "[Average Delta Mass] > " + lowMass + " and [Average Delta Mass] < " + highMass;
+            //DataRow[] selectedPeaks = eePeakList.Select(expression);
+
+            //foreach (DataRow row in selectedPeaks)
+            //{
+            //    row["Acceptable"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
+            //}
+            //eePeakList.AcceptChanges();
+            //GlobalData.etPeakList = eePeakList;
+            //dgv_EE_Peak_List.Update();
+            //dgv_EE_Peak_List.Refresh();
+
+            //expression = "[Peak Center Mass] > " + lowMass + " and [Peak Center Mass] < " + highMass;
+
+            //selectedPeaks = eePairsList.Select(expression);
+
+            //foreach (DataRow row in selectedPeaks)
+            //{
+            //    row["Proteoform Family"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
+            //}
+            //eePairsList.AcceptChanges();
+
+            //GlobalData.experimentExperimentPairs = eePairsList;
+            //dgv_EE_Pairs.Update();
+            //dgv_EE_Pairs.Refresh();
+
+            //UpdateFiguresOfMerit();
+
+        }
+
+        private void peakListSpecificPeakAcceptanceChanged(object sender, EventArgs e)
+        {
+            if (dgv_EE_Peak_List.IsCurrentCellDirty)
+            {
+                dgv_EE_Peak_List.EndEdit();
+                dgv_EE_Peak_List.Update();
+            }
+        }
 
         private void xMaxEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
         {
