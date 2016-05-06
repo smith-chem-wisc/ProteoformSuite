@@ -48,22 +48,18 @@ namespace PS_0._00
 
         private void RunTheGamut()
         {
-            //this.Cursor = Cursors.WaitCursor;
-            //ClearEEGridView();
-            //ZeroEEPairsTableValues();
-            //ClearEEPeakListTable();
-            //ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
-            //ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
-            //FindAllEEPairs();
-            //CalculateRunningSums();
-            //FillEEPairsGridView();
-            //GraphEEHistogram();
-            //FillEEPeakListTable();
-
-            //UpdateFiguresOfMerit();
-            //xMaxEE.Value = nUD_EE_Upper_Bound.Value;
-            //GraphEEPeakList();
-            //this.Cursor = Cursors.Default;
+            this.Cursor = Cursors.WaitCursor;
+            ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+            ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
+            FindAllEEPairs();
+            CalculateRunningSums();
+            GraphEEHistogram();
+            FillEEPeakListTable();
+            FillEEPairsGridView();
+            GraphEEPairsList();
+            UpdateFiguresOfMerit();
+            xMaxEE.Value = nUD_EE_Upper_Bound.Value;
+            this.Cursor = Cursors.Default;
         }
 
         private void dgv_EE_Peak_List_CellClick(object sender, MouseEventArgs e)
@@ -189,8 +185,7 @@ namespace PS_0._00
             {
                 int peakSum = 0;
                 int peakCount = 0;
-                DataRow[] bigPeaks = eePeakList.Select("[Acceptable] = true" +
-                    nUD_PeakCountMinThreshold.Value);
+                DataRow[] bigPeaks = eePeakList.Select("[Acceptable] = true");
                 foreach (DataRow row in bigPeaks)
                 {
                     peakSum = peakSum + Convert.ToInt32(row["Peak Count"]);
@@ -204,7 +199,7 @@ namespace PS_0._00
             {
                 MessageBox.Show("catch in update figures of merit");
             }
-         
+
         }
 
         private void ZeroEEPairsTableValues()
