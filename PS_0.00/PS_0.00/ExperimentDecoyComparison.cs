@@ -15,7 +15,6 @@ namespace PS_0._00
     public partial class ExperimentDecoyComparison : Form
     {
         DataTable edList = new DataTable();
-        DataTableHandler dataTableHandler = new DataTableHandler();
 
         public ExperimentDecoyComparison()
         {
@@ -153,19 +152,19 @@ namespace PS_0._00
             ct_ED_peakList.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
 
 
-            ct_ED_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ET Delta Mass"].Value.ToString()) - Convert.ToDouble(nUD_PeakWidthBase.Value);
-            ct_ED_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ET Delta Mass"].Value.ToString()) + Convert.ToDouble(nUD_PeakWidthBase.Value);
+            ct_ED_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ED Delta Mass"].Value.ToString()) - Convert.ToDouble(nUD_PeakWidthBase.Value);
+            ct_ED_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ED Delta Mass"].Value.ToString()) + Convert.ToDouble(nUD_PeakWidthBase.Value);
             ct_ED_peakList.Series["edPeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
             ct_ED_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
             {
                 BorderColor = Color.Red,
-                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ET Delta Mass"].Value.ToString()) + 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ED Delta Mass"].Value.ToString()) + 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
             });
 
             ct_ED_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
             {
                 BorderColor = Color.Red,
-                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ET Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ED Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
             });
         }
 
@@ -188,8 +187,8 @@ namespace PS_0._00
         private void EDListGraphParameters(int clickedRow)
         {
             ct_ED_peakList.ChartAreas[0].AxisX.StripLines.Clear();
-            double graphMax = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["ET Delta Mass"].Value.ToString()) + Convert.ToDouble((nUD_PeakWidthBase.Value));
-            double graphMin = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["ET Delta Mass"].Value.ToString()) - Convert.ToDouble((nUD_PeakWidthBase.Value));
+            double graphMax = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["ED Delta Mass"].Value.ToString()) + Convert.ToDouble((nUD_PeakWidthBase.Value));
+            double graphMin = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["ED Delta Mass"].Value.ToString()) - Convert.ToDouble((nUD_PeakWidthBase.Value));
 
             if (graphMin < graphMax)
             {
@@ -200,13 +199,13 @@ namespace PS_0._00
             ct_ED_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
             {
                 BorderColor = Color.Red,
-                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["ET Delta Mass"].Value.ToString()) + 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["ED Delta Mass"].Value.ToString()) + 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
             });
 
             ct_ED_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
             {
                 BorderColor = Color.Red,
-                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["ET Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["ED Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
             });
         }
 
@@ -284,19 +283,20 @@ namespace PS_0._00
 
         GlobalData.edList = edList;
 
-            //Round before displaying ET peak list
-            string[] other_columns = new string[] { };
-        string[] mass_column_names = new string[] { "ET Delta Mass" };
-        BindingSource dgv_ED_Peak_List_BS = dataTableHandler.DisplayWithRoundedDoubles(dgv_ED_Peak_List, edList,
-            other_columns, other_columns, other_columns, mass_column_names);
+        //Round before displaying ET peak list
+        dgv_ED_Peak_List.DataSource = edList;
+        dgv_ED_Peak_List.ReadOnly = true;
+        dgv_ED_Peak_List.Columns["ED Delta Mass"].DefaultCellStyle.Format = "0.####";
+        dgv_ED_Peak_List.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+        dgv_ED_Peak_List.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
     }
 
 
 
     private void InitializeEDListTable()
     {
-        edList.Columns.Add("ET Delta Mass", typeof(double));
-        edList.Columns.Add("ET Peak Count", typeof(int));
+        edList.Columns.Add("ED Delta Mass", typeof(double)); //I changed this from ET Delta Mass -AC
+        edList.Columns.Add("ED Peak Count", typeof(int)); //I changed this from ET Peak Count -AC
         edList.Columns.Add("ED count", typeof(int));
     }
 
