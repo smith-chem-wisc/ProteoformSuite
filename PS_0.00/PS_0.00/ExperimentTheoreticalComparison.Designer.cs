@@ -286,16 +286,16 @@
             this.ct_ET_peakList.Size = new System.Drawing.Size(264, 307);
             this.ct_ET_peakList.TabIndex = 1;
             this.ct_ET_peakList.Text = "chart1";
-            // 
-            // ET_Update
-            // 
-            this.ET_Update.Location = new System.Drawing.Point(407, 5);
-            this.ET_Update.Name = "ET_Update";
-            this.ET_Update.Size = new System.Drawing.Size(80, 21);
-            this.ET_Update.TabIndex = 16;
-            this.ET_Update.Text = "Update";
-            this.ET_Update.UseVisualStyleBackColor = true;
-            this.ET_Update.Click += new System.EventHandler(this.ET_Update_Click);
+            //// 
+            //// ET_Update
+            //// 
+            //this.ET_Update.Location = new System.Drawing.Point(407, 5);
+            //this.ET_Update.Name = "ET_Update";
+            //this.ET_Update.Size = new System.Drawing.Size(80, 21);
+            //this.ET_Update.TabIndex = 16;
+            //this.ET_Update.Text = "Update";
+            //this.ET_Update.UseVisualStyleBackColor = true;
+            //this.ET_Update.Click += new System.EventHandler(this.ET_Update_Click);
             // 
             // groupBox4
             // 
