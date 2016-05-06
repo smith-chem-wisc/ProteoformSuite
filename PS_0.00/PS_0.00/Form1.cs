@@ -185,8 +185,6 @@ namespace PS_0._00
             {
                 MessageBox.Show("Create at least 1 decoy database in Theoretical Proteoform Database in order to view Experiment - Decoy Comparison.");
             }
-
-
         }
 
 
@@ -231,6 +229,15 @@ namespace PS_0._00
                 // This is where we get data back from aGP form
             }
         }
+        private void generateMethodToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("generateMethodToolStripMenuItem_Click");
+        }
+
+        private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("loadRunToolStripMenuItem_Click");
+        }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -266,5 +273,7 @@ namespace PS_0._00
         {
             Close();
         }
+
+        
     }
 }

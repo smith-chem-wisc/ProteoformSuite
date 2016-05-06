@@ -14,8 +14,6 @@ namespace PS_0._00
 {
     public partial class NeuCodePairs : Form
     {
-        DataTableHandler dataTableHandler = new DataTableHandler();
-
         public NeuCodePairs()
         {
             InitializeComponent();
@@ -29,20 +27,10 @@ namespace PS_0._00
             GlobalData.rawNeuCodePairs = CreateRawNeuCodePairsDataTable();
             Dictionary<string, List<string>> fileNameScanRanges = GetSFileNameScanRangesList();
             FillRawNeuCodePairsDataTable(fileNameScanRanges);
-            
-            string[] rt_column_names = new string[] { "Apex RT" };
-            string[] intensity_column_names = new string[] { "Light Intensity", "Heavy Intensity" };
-            string[] mass_column_names = new string[] { "Light Mass", "Heavy Mass", "Intensity Ratio", "Light Mass Corrected" }; //Included Intensity Ratio here to round to 4 decimal places
-            string[] abundance_column_names = new string[] { };
-            //string[] dec_mass_column_names = new string[] {  };
-            BindingSource bs_rawNCPairs = dataTableHandler.DisplayWithRoundedDoubles(dgv_RawExpNeuCodePairs, GlobalData.rawNeuCodePairs,
-                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names, new string[] { });
-
+            FillNeuCodePairsDGV();
             GraphLysineCount();
             GraphIntensityRatio();
         }
-
-
 
         Point? prevPosition = null;
         ToolTip tooltip = new ToolTip();
@@ -102,7 +90,7 @@ namespace PS_0._00
 
                         // check if the cursor is really close to the point (2 pixels around the point)
                         if (Math.Abs(pos.X - pointXPixel) < 2) //&&
-                           // Math.Abs(pos.Y - pointYPixel) < 2)
+                                                               // Math.Abs(pos.Y - pointYPixel) < 2)
                         {
                             tooltip2.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_LysineCount,
                                             pos.X, pos.Y - 15);
@@ -110,6 +98,21 @@ namespace PS_0._00
                     }
                 }
             }
+        }
+
+        private void FillNeuCodePairsDGV()
+        {
+            dgv_RawExpNeuCodePairs.DataSource = GlobalData.rawNeuCodePairs;
+            dgv_RawExpNeuCodePairs.ReadOnly = true;
+            dgv_RawExpNeuCodePairs.Columns["Light Mass"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpNeuCodePairs.Columns["Light Mass Corrected"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpNeuCodePairs.Columns["Heavy Mass"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpNeuCodePairs.Columns["Intensity Ratio"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpNeuCodePairs.Columns["Apex RT"].DefaultCellStyle.Format = "0.##";
+            dgv_RawExpNeuCodePairs.Columns["Light Intensity"].DefaultCellStyle.Format = "0";
+            dgv_RawExpNeuCodePairs.Columns["Heavy Intensity"].DefaultCellStyle.Format = "0";
+            dgv_RawExpNeuCodePairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_RawExpNeuCodePairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
 
         private void GraphIntensityRatio()
