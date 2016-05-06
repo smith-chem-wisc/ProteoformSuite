@@ -17,7 +17,6 @@ namespace PS_0._00
     {
         DataTable eePairsList = new DataTable(); // this is a list of all individual EE pairs with mass difference smaller than the threshold
         DataTable eePeakList = new DataTable(); // these are the aggregated peaks coming from groups of individual EE pairs.
-        //DataTableHandler dataTableHandler = new DataTableHandler();
         Boolean formLoadEvent; // this is needed to prevent firing of ParameterSet events from firing on form load and let them fire only when the values are actually changed
 
         public ExperimentExperimentComparison()
@@ -255,6 +254,8 @@ namespace PS_0._00
             dgv_EE_Peak_List.Columns["Average Delta Mass"].ReadOnly = true;
             dgv_EE_Peak_List.Columns["Peak Count"].ReadOnly = true;
             dgv_EE_Peak_List.Columns["Average Delta Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_EE_Peak_List.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_EE_Peak_List.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
             dgv_EE_Peak_List.EndEdit();
             dgv_EE_Peak_List.Refresh();
 
@@ -319,6 +320,8 @@ namespace PS_0._00
             dgv_EE_Pairs.Columns["Retention Time Heavy"].DefaultCellStyle.Format = "0.##";
             dgv_EE_Pairs.Columns["Delta Mass"].DefaultCellStyle.Format = "0.#####";
             dgv_EE_Pairs.Columns["Peak Center Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_EE_Pairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_EE_Pairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
 
         private DataTable CreateEEPairsDataTable()
