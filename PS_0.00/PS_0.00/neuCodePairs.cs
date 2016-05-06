@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
+
 
 namespace PS_0._00
 {
@@ -15,6 +17,9 @@ namespace PS_0._00
         public NeuCodePairs()
         {
             InitializeComponent();
+            this.ct_IntensityRatio.MouseMove += new MouseEventHandler(ct_IntensityRatio_MouseMove);
+            this.ct_LysineCount.MouseMove += new MouseEventHandler(ct_LysineCount_MouseMove);
+
         }
 
         private void NeuCodePairs_Load(object sender, EventArgs e)
@@ -27,10 +32,79 @@ namespace PS_0._00
             GraphIntensityRatio();
         }
 
+        Point? prevPosition = null;
+        ToolTip tooltip = new ToolTip();
+
+        void ct_IntensityRatio_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = e.Location;
+            if (prevPosition.HasValue && pos == prevPosition.Value)
+                return;
+            tooltip.RemoveAll();
+            prevPosition = pos;
+            var results = ct_IntensityRatio.HitTest(pos.X, pos.Y, false,
+                                            ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
+                          //  Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            tooltip.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_IntensityRatio,
+                                            pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
+        }
+
+        Point? prevPosition2 = null;
+        ToolTip tooltip2 = new ToolTip();
+
+        void ct_LysineCount_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = e.Location;
+            if (prevPosition2.HasValue && pos == prevPosition2.Value)
+                return;
+            tooltip2.RemoveAll();
+            prevPosition2 = pos;
+            var results = ct_LysineCount.HitTest(pos.X, pos.Y, false,
+                                            ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
+                                                               // Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            tooltip2.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_LysineCount,
+                                            pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
+        }
+
         private void FillNeuCodePairsDGV()
         {
             dgv_RawExpNeuCodePairs.DataSource = GlobalData.rawNeuCodePairs;
             dgv_RawExpNeuCodePairs.ReadOnly = true;
+            dgv_RawExpNeuCodePairs.Columns["Acceptable"].ReadOnly = false;
             dgv_RawExpNeuCodePairs.Columns["Light Mass"].DefaultCellStyle.Format = "0.####";
             dgv_RawExpNeuCodePairs.Columns["Light Mass Corrected"].DefaultCellStyle.Format = "0.####";
             dgv_RawExpNeuCodePairs.Columns["Heavy Mass"].DefaultCellStyle.Format = "0.####";
@@ -102,7 +176,7 @@ namespace PS_0._00
             lysCtHistogram.Columns.Add("numPairsAtThisLysCt", typeof(int));
 
             int ymax = 0;
-            double xInt = 0.2;
+            //double xInt = 0.2;
 
             for (int i = 0; i <= 28; i++)
             {
@@ -156,65 +230,83 @@ namespace PS_0._00
                 foreach (string scanRange in entry.Value)
                 {
                     string expression = "[Filename] = '" + fileName + "' AND [Scan Range] = '" + scanRange + "'";// square brackets are key to avoiding missing operand error
-                    DataRow[] rows = GlobalData.rawExperimentalComponents.Select(expression);
+                    string sortOrder = "Weighted Monoisotopic Mass ASC";
+                    DataRow[] rows = GlobalData.rawExperimentalComponents.Select(expression, sortOrder);
+                    //DataRow[] sortedRows = new DataRow[] { };
+
+                    //IEnumerable<DataRow> sortedRows;
                     double apexRT = 0;
-                    if (rows.Length > 0) { apexRT = double.Parse(rows[0]["Apex RT"].ToString()); }
-                    List<double> masses = new List<double>();
-                    Dictionary<double, int> entryNumber = new Dictionary<double, int>();
-                    foreach (DataRow row in rows)
-                    {
 
-                        masses.Add(double.Parse(row["Weighted Monoisotopic Mass"].ToString()));
-                        //MessageBox.Show("col val: " +row[GlobalData.rawExperimentalProteoforms.Columns[0].ColumnName].ToString());
-                        entryNumber.Add(double.Parse(row["Weighted Monoisotopic Mass"].ToString()), int.Parse(row[GlobalData.rawExperimentalComponents.Columns[0].ColumnName].ToString()));
+                    if (rows.Count() > 0)
+                    {
+                        //sortedRows = rows.OrderBy(row => Convert.ToDecimal(row["Weighted Monoisotopic Mass"]));
+                        apexRT = double.Parse(rows[0]["Apex RT"].ToString());
+
                     }
-                    masses.Sort();
+
+                    //if (rows.Length > 0) { apexRT = double.Parse(rows[0]["Apex RT"].ToString()); }
+                    //List<decimal> masses = new List<decimal>();
+                    //<decimal, int> entryNumber = new Dictionary<decimal, int>();
+                    //foreach (DataRow row in rows)
+                    //{
+
+                    //    masses.Add(decimal.Parse(row["Weighted Monoisotopic Mass"].ToString()));
+                    //    //MessageBox.Show("col val: " +row[GlobalData.rawExperimentalComponents.Columns[0].ColumnName].ToString());
+                    //    try
+                    //    {
+                    //        entryNumber.Add(decimal.Parse(row["Weighted Monoisotopic Mass"].ToString()), int.Parse(row[GlobalData.rawExperimentalComponents.Columns[0].ColumnName].ToString()));
+                    //    }
+                    //    catch
+                    //    {
+                    //        MessageBox.Show("Expression: " + expression + "     apex: " + apexRT + "     WMM: " + decimal.Parse(row["Weighted Monoisotopic Mass"].ToString()) + "     row: " + int.Parse(row[GlobalData.rawExperimentalComponents.Columns[0].ColumnName].ToString()));
+                    //    }
+                    //}
+                    //masses.Sort();
                     
-                    if (masses.Count() > 1)
+
+                    for (int low = 0; low <= (rows.Count()-2); low++)
                     {
-                        for (int low = 0; low <= (masses.Count()-2); low++)
+                        for (int high = (low + 1); high <= (rows.Count()-1); high++)
                         {
-                            for (int high = (low + 1); high <= (masses.Count()-1); high++)
+                            decimal difference = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) - Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]);
+                            //MessageBox.Show("mass difference" + difference);
+                            if (difference < 6)
                             {
-                                double difference = masses[high] - masses[low];
-                                //MessageBox.Show("mass difference" + difference);
-                                if (difference < 6)
+                                List<int> oLC = GetOverLappingChargeStates(fileName, Convert.ToInt32(rows[low][0]), Convert.ToInt32(rows[high][0]));
+                                double low_int = 0;
+                                double high_int = 0;
+                                if (oLC.Count() > 0)
                                 {
-                                    List<int> oLC = GetOverLappingChargeStates(fileName, entryNumber[masses[low]],entryNumber[masses[high]]);
-                                    double low_int = 0;
-                                    double high_int = 0;
-                                    if (oLC.Count() > 0)
-                                    {
-                                        low_int = GetCSIntensitySum(fileName, entryNumber[masses[low]], oLC);
-                                        high_int = GetCSIntensitySum(fileName, entryNumber[masses[high]], oLC);
-                                    }
-
-                                    if(low_int>0 && high_int > 0)
-                                    {
-                                        int diff_int = Convert.ToInt32(Math.Round(difference / 1.0015 - 0.5, 0, MidpointRounding.AwayFromZero));
-                                        if (low_int > high_int)//lower mass is neucode light
-                                        {
-                                            double firstCorrection = masses[low] + diff_int * 1.0015;
-                                            int lysine_count = Math.Abs(Convert.ToInt32(Math.Round((masses[high]-firstCorrection) / 0.036015372, 0, MidpointRounding.AwayFromZero)));
-                                            double intensityRatio = low_int / high_int;
-                                            double lt_corrected_mass = masses[low] + Math.Round((lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * 1.0015;
-                                            AddOneRawNeuCodePair(fileName, entryNumber[masses[low]], masses[low], lt_corrected_mass, low_int, fileName, entryNumber[masses[high]], masses[high], high_int, oLC, apexRT, intensityRatio, lysine_count, true);
-                                        }
-                                        else //higher mass is neucode light
-                                        {
-                                            double firstCorrection = masses[high] - (diff_int + 1) * 1.0015;
-                                            int lysine_count = Math.Abs(Convert.ToInt32(Math.Round((masses[low] - firstCorrection) / 0.036015372, 0, MidpointRounding.AwayFromZero)));
-                                            double intensityRatio = high_int / low_int;
-                                            double lt_corrected_mass = masses[high] + Math.Round((lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * 1.0015;
-                                            AddOneRawNeuCodePair(fileName, entryNumber[masses[high]], masses[high], lt_corrected_mass, high_int, fileName, entryNumber[masses[low]], masses[low], low_int, oLC, apexRT, intensityRatio, lysine_count, true);
-                                        }                                      
-                                        
-                                    }
-
+                                    low_int = GetCSIntensitySum(fileName, Convert.ToInt32(rows[low][0]), oLC);
+                                    high_int = GetCSIntensitySum(fileName, Convert.ToInt32(rows[high][0]), oLC);
                                 }
+
+                                if(low_int>0 && high_int > 0)
+                                {
+                                    int diff_int = Convert.ToInt32(Math.Round(difference / 1.0015m - 0.5m, 0, MidpointRounding.AwayFromZero));
+                                    if (low_int > high_int)//lower mass is neucode light
+                                    {
+                                        decimal firstCorrection = Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]) + diff_int * 1.0015m;
+                                        int lysine_count = Math.Abs(Convert.ToInt32(Math.Round((Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) - firstCorrection) / 0.036015372m, 0, MidpointRounding.AwayFromZero)));
+                                        double intensityRatio = low_int / high_int;
+                                        decimal lt_corrected_mass = Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]) + Math.Round((lysine_count * 0.1667m - 0.4m), 0, MidpointRounding.AwayFromZero) * 1.0015m;
+                                        AddOneRawNeuCodePair(fileName, Convert.ToInt32(rows[low][0]), Convert.ToDouble(Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"])), Convert.ToDouble(lt_corrected_mass), low_int, fileName, Convert.ToInt32(rows[high][0]), Convert.ToDouble(Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"])), high_int, oLC, apexRT, intensityRatio, lysine_count, true);
+                                    }
+                                    else //higher mass is neucode light
+                                    {
+                                        decimal firstCorrection = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) - (diff_int + 1) * 1.0015m;
+                                        int lysine_count = Math.Abs(Convert.ToInt32(Math.Round((Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]) - firstCorrection) / 0.036015372m, 0, MidpointRounding.AwayFromZero)));
+                                        double intensityRatio = high_int / low_int;
+                                        decimal lt_corrected_mass = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) + Math.Round((lysine_count * 0.1667m - 0.4m), 0, MidpointRounding.AwayFromZero) * 1.0015m;
+                                        AddOneRawNeuCodePair(fileName, Convert.ToInt32(rows[high][0]), Convert.ToDouble(Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"])), Convert.ToDouble(lt_corrected_mass), high_int, fileName, Convert.ToInt32(rows[low][0]), Convert.ToDouble(Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"])), low_int, oLC, apexRT, intensityRatio, lysine_count, true);
+                                    }                                      
+                                        
+                                }
+
                             }
                         }
-                    }
+                     }
+                    
                 }
             }
         }
@@ -309,12 +401,12 @@ namespace PS_0._00
             DataTable dt = new DataTable();
 
             dt.Columns.Add("Light Filename", typeof(string));
-            dt.Columns.Add("Light No#", typeof(int));
+            dt.Columns.Add("Light No.", typeof(int));
             dt.Columns.Add("Light Mass", typeof(double));
             dt.Columns.Add("Light Mass Corrected", typeof(double));
             dt.Columns.Add("Light Intensity", typeof(double));
             dt.Columns.Add("Heavy Filename", typeof(string));
-            dt.Columns.Add("Heavy No#", typeof(int));
+            dt.Columns.Add("Heavy No.", typeof(int));
             dt.Columns.Add("Heavy Mass", typeof(double));
             dt.Columns.Add("Heavy Intensity", typeof(double));
             dt.Columns.Add("Matching Charge States", typeof(List<int>));

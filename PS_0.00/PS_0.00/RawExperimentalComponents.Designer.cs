@@ -1,4 +1,6 @@
-﻿namespace PS_0._00
+﻿using System.Windows.Forms;
+
+namespace PS_0._00
 {
     partial class RawExperimentalComponents
     {
@@ -100,6 +102,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_RawExpComp_MI_masses)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_RawExpComp_IndChgSts)).EndInit();
             this.ResumeLayout(false);
+
+            if (GlobalData.repeat==true)
+            {
+                LoadDeconvolutionResults instance = new LoadDeconvolutionResults();
+                instance.Show();
+            }
         }
 
         #endregion

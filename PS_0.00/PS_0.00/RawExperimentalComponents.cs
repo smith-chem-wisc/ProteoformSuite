@@ -34,11 +34,12 @@ namespace PS_0._00
             }
         }
 
+
         public void RawExperimentalComponents_Load(object sender, EventArgs e)
         {
             if (GlobalData.deconResultsFileNames.Count().Equals(0))
             {
-                MessageBox.Show("Oops! We didn't find any data... Did you forget to load your Deconvolution Results?");
+                MessageBox.Show("Oops! We didn't find any data... Did you forget to load your Deconvolution Results?");  
                 GlobalData.repeat = true;
                 GlobalData.repeatsender = sender;
                 GlobalData.repeate = e;
@@ -49,9 +50,7 @@ namespace PS_0._00
             GlobalData.rawExperimentalComponents = GetRawComponents();
             GlobalData.rawExperimentalChargeStateData = GetRawChargeStates();
             CalculateWeightedMonoisotopicMass();
-
             FillRawExpComponentsTable();
-
         }
 
         private void FillRawExpComponentsTable()
@@ -72,7 +71,6 @@ namespace PS_0._00
         private DataSet GetDeconResults()
         {
             DataSet ds = new DataSet();
-
             foreach (string file in GlobalData.deconResultsFileNames)
             {
                 DataTable dt = new DataTable();
@@ -133,7 +131,7 @@ namespace PS_0._00
                 }
             }
 
-            deconvolutionResults.Columns.Add("Weighted Monoisotopic Mass", typeof(double));
+            deconvolutionResults.Columns.Add("Weighted Monoisotopic Mass", typeof(decimal));
 
             foreach (DataRow dr in deconvolutionResults.Rows)
             {
@@ -151,13 +149,13 @@ namespace PS_0._00
                 int entryNumber = 0;
                 object sumObject; 
                 sumObject = table.Compute("Sum(Intensity)", "");
-                double intensitySum = Convert.ToDouble(sumObject);
-                double weightedMonoisotopicMass = 0;
+                decimal intensitySum = Convert.ToDecimal(sumObject);
+                decimal weightedMonoisotopicMass = 0;
                 foreach (DataRow row in table.Rows)
                 {
                     Filename = row["Filename"].ToString();
                     entryNumber = int.Parse(row["No#"].ToString());
-                    weightedMonoisotopicMass = weightedMonoisotopicMass + (double.Parse(row["intensity"].ToString())/intensitySum*(double.Parse(row["Calculated Mass"].ToString())));
+                    weightedMonoisotopicMass = weightedMonoisotopicMass + (decimal.Parse(row["intensity"].ToString())/intensitySum*(decimal.Parse(row["Calculated Mass"].ToString())));
                 }
                 string expression = GlobalData.rawExperimentalComponents.Columns[11].ColumnName + " = '"+ Filename +"'"
                     + " AND [" + GlobalData.rawExperimentalComponents.Columns[0].ColumnName + "] = " + entryNumber;// you gotta have single quotes on the filename or this don't work. took me forever to figure that out.
@@ -369,6 +367,8 @@ namespace PS_0._00
                 DataGridViewRow row = this.dgv_RawExpComp_MI_masses.Rows[e.RowIndex];
                 filename = row.Cells["Filename"].Value.ToString();
                 rawComponentNum = row.Cells[0].Value.ToString();
+
+                //MessageBox.Show("dgv_RawExpComp_MI_masses_CellContentClick");
 
                 //Round doubles before displaying
                 DataTable displayTable = GlobalData.rawExperimentalChargeStateData.Tables[filename + "_" + rawComponentNum];
