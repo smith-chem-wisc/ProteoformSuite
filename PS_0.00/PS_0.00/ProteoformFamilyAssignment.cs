@@ -267,6 +267,7 @@ namespace PS_0._00
             ET_Groups.Columns.Add("Peak Center Mass", typeof(double));
             ET_Groups.Columns.Add("Out of Range Decimal", typeof(bool));
             ET_Groups.Columns.Add("Acceptable Peak", typeof(bool));
+            ET_Groups.Columns.Add("Proteoform Family", typeof(bool));
             ET_Groups.Columns.Add("Group_#", typeof(Int32));
 
 
@@ -299,7 +300,7 @@ namespace PS_0._00
             ET_Groups.Clear();       
 
             DataRow[] foundRows;
-            foundRows = GlobalData.experimentTheoreticalPairs.Select("[" +"Lysine Count"+ "]=" + q + "AND" + "[" + "Acceptable Peak" + "]=" + true); 
+            foundRows = GlobalData.experimentTheoreticalPairs.Select("[" +"Lysine Count"+ "]=" + q + "AND" + "[Proteoform Family]=" + true); 
             for (int a = 0; a < foundRows.Length; a++)
             {
                 ET_Groups.Rows.Add(foundRows[a].ItemArray);
@@ -342,6 +343,7 @@ namespace PS_0._00
             GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Mass", typeof(double));
             GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Out of Range Decimal", typeof(bool));
             GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Acceptable Peak", typeof(bool));
+            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Proteoform Family", typeof(bool));
             GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Group_#", typeof(Int32));
 
             foundRowsSingle = ET_Groups.Select("[" + "Aggregated Mass" + "]=" + lightmass, "Proteoform Mass"); //make it org by theo mass later
