@@ -25,18 +25,16 @@ namespace PS_0._00
 
         private void ExperimentDecoyComparison_Load(object sender, EventArgs e)
         {
-          
-                InitializeParameterSet();
-                FindAllEDPairs();
-                CalculateRunningSums();
-                FillEDGridView("DecoyDatabase_0");
-                GraphEDHistogram();
-                InitializeEDListTable();
-                FillEDListTable();
-                GraphETPeakList();
-                GraphEDList();
-                UpdateFiguresOfMerit();
-
+            InitializeParameterSet();
+            FindAllEDPairs();
+            CalculateRunningSums();
+            //FillEDGridView("DecoyDatabase_0");
+            GraphEDHistogram();
+            InitializeEDListTable();
+            FillEDListTable();
+            GraphETPeakList();
+            GraphEDList();
+            UpdateFiguresOfMerit();
         }
 
         //private void RunTheGamut()
@@ -64,7 +62,6 @@ namespace PS_0._00
                     string expression = "[Proteoform Mass] >= " + lowMass + " and [Proteoform Mass] <= " + highMass;
                     expression = expression + "and [Lysine Count] >= " + agRow["Lysine Count"];
 
-                    
                     DataRow[] closeDecoys = GlobalData.theoreticalAndDecoyDatabases.Tables["DecoyDatabase_" + i].Select(expression);
 
                     foreach (DataRow row in closeDecoys)
