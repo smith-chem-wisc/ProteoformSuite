@@ -49,7 +49,7 @@ namespace PS_0._00
 
             nUD_NumDecoyDBs.Minimum = 0;
             nUD_NumDecoyDBs.Maximum = 50;
-            nUD_NumDecoyDBs.Value = 0;
+            nUD_NumDecoyDBs.Value = 1;
 
             nUD_MinPeptideLength.Minimum = 0;
             nUD_MinPeptideLength.Maximum = 20;

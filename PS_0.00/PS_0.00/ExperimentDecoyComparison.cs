@@ -25,18 +25,18 @@ namespace PS_0._00
 
         private void ExperimentDecoyComparison_Load(object sender, EventArgs e)
         {
-            InitializeParameterSet();
-            FindAllEDPairs();
-            CalculateRunningSums();
-            //FillEDGridView();
-            GraphEDHistogram();
-            CalculateMedianDecoyCount();
-            InitializeEDListTable();
-            FillEDListTable();
-            //FillEDGridView(); //Why are there two of these? -AC
-            GraphETPeakList();
-            GraphEDList();
-            UpdateFiguresOfMerit();
+          
+                InitializeParameterSet();
+                FindAllEDPairs();
+                CalculateRunningSums();
+                FillEDGridView("DecoyDatabase_0");
+                GraphEDHistogram();
+                InitializeEDListTable();
+                FillEDListTable();
+                GraphETPeakList();
+                GraphEDList();
+                UpdateFiguresOfMerit();
+
         }
 
         //private void RunTheGamut()
