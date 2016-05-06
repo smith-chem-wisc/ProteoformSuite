@@ -162,20 +162,30 @@ namespace PS_0._00
         
         private void experimentDecoyComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (experimentDecoyComparison == null)
+            if (GlobalData.numDecoyDatabases > 0)
             {
-                experimentDecoyComparison = new ExperimentDecoyComparison();
+                if (experimentDecoyComparison == null)
+                {
 
-                experimentDecoyComparison.MdiParent = this;
-                experimentDecoyComparison.Show();
-                experimentDecoyComparison.WindowState = FormWindowState.Maximized;
+                    experimentDecoyComparison = new ExperimentDecoyComparison();
+
+                    experimentDecoyComparison.MdiParent = this;
+                    experimentDecoyComparison.Show();
+                    experimentDecoyComparison.WindowState = FormWindowState.Maximized;
+                }
+                else
+                {
+                    experimentDecoyComparison.Show();
+                    experimentDecoyComparison.WindowState = FormWindowState.Maximized;
+                    // This is where we get data back from aGP form
+                }
             }
+
             else
             {
-                experimentDecoyComparison.Show();
-                experimentDecoyComparison.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from aGP form
+                MessageBox.Show("Create at least 1 decoy database in Theoretical Proteoform Database in order to view Experiment - Decoy Comparison.");
             }
+
 
         }
 
