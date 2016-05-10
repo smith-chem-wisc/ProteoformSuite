@@ -26,17 +26,17 @@ namespace PS_0._00
         public RawExperimentalComponents()
         {
             InitializeComponent();
+        }
+
+        public void RawExperimentalComponents_Load(object sender, EventArgs e)
+        {
             Form1 instance = new Form1();
             //instance.LoadDeconvolutionResults_Load(GlobalData.repeatsender, GlobalData.repeate);
             if (GlobalData.repeat == true)
             {
                 instance.loadDeconvolutionResultsToolStripMenuItem_Click(GlobalData.repeatsender, GlobalData.repeate);
             }
-        }
 
-
-        public void RawExperimentalComponents_Load(object sender, EventArgs e)
-        {
             if (GlobalData.deconResultsFileNames.Count().Equals(0))
             {
                 MessageBox.Show("Oops! We didn't find any data... Did you forget to load your Deconvolution Results?");  
@@ -380,6 +380,11 @@ namespace PS_0._00
                 dgv_RawExpComp_IndChgSts.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
                 dgv_RawExpComp_IndChgSts.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
             }
+        }
+
+        public override string ToString()
+        {
+            return "RawExperimentalComponents|";
         }
     }
 }

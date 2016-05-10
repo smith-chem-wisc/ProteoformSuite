@@ -280,5 +280,15 @@ namespace PS_0._00
                 AggregateNeuCodeLightProteoforms();
             }
         }
+
+        public override string ToString()
+        {
+            string s = "";
+            s += String.Join("\t", new string[] { "AggregatedProteoforms|nUP_mass_tolerance.Value", nUP_mass_tolerance.Value.ToString() });
+            s += String.Join("\t", new string[] { "AggregatedProteoforms|nUD_RetTimeToleranace.Value", nUD_RetTimeToleranace.Value.ToString() });
+            s += String.Join("\t", new string[] { "AggregatedProteoforms|nUD_Missed_Monos.Value", nUD_Missed_Monos.Value.ToString() });
+            s += String.Join("\t", new string[] { "AggregatedProteoforms|nUD_Missed_Ks.Value", nUD_Missed_Ks.Value.ToString() });
+            return s;
+        }
     }
 }

@@ -449,5 +449,20 @@ namespace PS_0._00
         {
 
         }//called in dataGridView1_CellContentClick_1
+
+        public override string ToString()
+        {
+            return "ProteoformFamilyAssignment|";
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "":
+                    break;
+            }
+        }
     }
 }

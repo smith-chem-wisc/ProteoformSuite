@@ -327,5 +327,26 @@ namespace PS_0._00
         {
             FillDataBaseTable(cmbx_DisplayWhichDB.SelectedItem.ToString());
         }
+
+        public override string ToString()
+        {
+            string s = "";
+            s += String.Join("\t", new string[] { "TheoreticalDatabase|tb_UniProtXML_Path.Text", tb_UniProtXML_Path.Text });
+            s += String.Join("\t", new string[] { "TheoreticalDatabase|tb_UniProtPtmList_Path.Text", tb_UniProtPtmList_Path.Text });
+
+            s += String.Join("\t", new string[] { "TheoreticalDatabase|ckbx_OxidMeth.Checked", ckbx_OxidMeth.Checked.ToString() });
+            s += String.Join("\t", new string[] { "TheoreticalDatabase|ckbx_Carbam.Checked", ckbx_Carbam.Checked.ToString() });
+            s += String.Join("\t", new string[] { "TheoreticalDatabase|ckbx_Meth_Cleaved.Checked", ckbx_Meth_Cleaved.Checked.ToString() });
+
+            s += String.Join("\t", new string[] { "TheoreticalDatabase|btn_NeuCode_Lt.Checked", btn_NeuCode_Lt.Checked.ToString() });
+            s += String.Join("\t", new string[] { "TheoreticalDatabase|btn_NeuCode_Hv.Checked", btn_NeuCode_Hv.Checked.ToString() });
+            s += String.Join("\t", new string[] { "TheoreticalDatabase|btn_NaturalIsotopes.Checked", btn_NaturalIsotopes.Checked.ToString() });
+
+            s += String.Join("\t", new string[] { "TheoreticalDatabase|nUD_MaxPTMs.Value", nUD_MaxPTMs.Value.ToString() });
+            s += String.Join("\t", new string[] { "TheoreticalDatabase|nUD_NumDecoyDBs.Value", nUD_NumDecoyDBs.Value.ToString() });
+            s += String.Join("\t", new string[] { "TheoreticalDatabase|nUD_MinPeptideLength.Value", nUD_MinPeptideLength.Value.ToString() });
+
+            return s;
+        }
     }
 }

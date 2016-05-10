@@ -691,5 +691,15 @@ namespace PS_0._00
         {
             RunTheGamut();
         }
+
+        public override string ToString()
+        {
+            return String.Join(System.Environment.NewLine, new string[] {
+                "ExperimentTheoreticalComparison|nUD_NoManLower.Value\t" + nUD_NoManLower.Value.ToString(),
+                "ExperimentTheoreticalComparison|nUD_NoManUpper.Value\t" + nUD_NoManUpper.Value.ToString(),
+                "ExperimentTheoreticalComparison|nUD_PeakWidthBase.Value\t" + nUD_PeakWidthBase.Value.ToString(),
+                "ExperimentTheoreticalComparison|nUD_PeakCountMinThreshold.Value\t" + nUD_PeakCountMinThreshold.Value.ToString()
+            });
+        }
     }
 }
