@@ -20,7 +20,7 @@ namespace PS_0._00
         public void AggregatedProteoforms_Load(object sender, EventArgs e)
         {
             InitializeSettings();
-            if (!GlobalData.aggregatedProteoforms.Columns.Contains("Aggregated Mass"))
+            if (GlobalData.aggregatedProteoforms.Columns.Count == 0)
             {
                 aggregate_proteoforms();
             }

@@ -174,7 +174,7 @@ namespace PS_0._00
 
         public void ProteoformFamilyAssignment_Load(object sender, EventArgs e) //called in initializecomponents
         {
-            if (!ET_Groups.Columns.Contains("Accession"))
+            if (ET_Groups.Columns.Count == 0)
             {
                 AssignColumns();
             }

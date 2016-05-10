@@ -25,11 +25,10 @@ namespace PS_0._00
 
         public void ExperimentDecoyComparison_Load(object sender, EventArgs e)
         {
-            //this was causing as exception to be thrown, will look into later -LVS
-           // if (!GlobalData.experimentTheoreticalPairs.Columns.Contains("Acceptable Peak"))
-            //{
+           if (GlobalData.experimentDecoyPairs.Tables.Count == 0)
+           {
                 run_comparison();
-           // }
+            }
             GraphEDHistogram();
             FillEDListTable();
             FillEDGridView("DecoyDatabase_0");
@@ -112,10 +111,7 @@ namespace PS_0._00
                     string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper;
                     row["Running Sum"] = GlobalData.experimentDecoyPairs.Tables[tableName].Select(expression).Length;
                 }
-
             }
-
-           
         }
 
         private void GraphETPeakList()
@@ -130,8 +126,7 @@ namespace PS_0._00
             foreach (DataRow row in GlobalData.experimentTheoreticalPairs.Rows)
             {
                 ct_ED_peakList.Series["etPeakList"].Points.AddXY(row["Delta Mass"], row["Running Sum"]);
-            }
-           
+            }           
         }
 
         private void GraphEDList()
@@ -151,8 +146,6 @@ namespace PS_0._00
             }
 
             ct_ED_peakList.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
-
-
             ct_ED_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ED Delta Mass"].Value.ToString()) - Convert.ToDouble(nUD_PeakWidthBase.Value);
             ct_ED_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ED Delta Mass"].Value.ToString()) + Convert.ToDouble(nUD_PeakWidthBase.Value);
             ct_ED_peakList.Series["edPeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
@@ -259,7 +252,6 @@ namespace PS_0._00
                     //if (Convert.ToBoolean(row["Out of Range Decimal"].ToString()) == false && Convert.ToBoolean(row["Acceptable Peak"].ToString()) == false)
                     DataRow[] decoyHits = dt.Select(expression);
 
-
                     decoyTotals.Rows.Add(decoyHits.Length);
                 }
 
@@ -272,7 +264,6 @@ namespace PS_0._00
 
                 decimal average = sum / (decoyTotals.Rows.Count);
                 edList.Rows.Add(deltaMass, peakCount, average);
-
 
                 //calculate median of decoy hits for given protein
                 //string colName2 = "Decoy Hits";
@@ -360,7 +351,6 @@ namespace PS_0._00
             dt.Columns.Add("Peak Center Mass", typeof(double));
             dt.Columns.Add("Out of Range Decimal", typeof(bool));
             dt.Columns.Add("Acceptable Peak", typeof(bool));
-
             return dt;
         }
 

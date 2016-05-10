@@ -30,7 +30,7 @@ namespace PS_0._00
 
         public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
         {
-            if (!GlobalData.experimentTheoreticalPairs.Columns.Contains("Acceptable Peak"))
+            if (GlobalData.experimentTheoreticalPairs.Columns.Count == 0)
             {
                 run_comparison();
             }
