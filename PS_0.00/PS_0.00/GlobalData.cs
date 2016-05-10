@@ -13,7 +13,6 @@ namespace PS_0._00
 {
     public class GlobalData
     {
-
         public static BindingList<string> deconResultsFileNames = new BindingList<string>();
         public static DataSet deconResultsFiles = new DataSet();
         public static DataTable rawExperimentalComponents = new DataTable();

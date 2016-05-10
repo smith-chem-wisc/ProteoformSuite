@@ -22,17 +22,25 @@ namespace PS_0._00
             this.dgv_ED_Peak_List.MouseClick += new MouseEventHandler(dgv_ED_Peak_List_CellClick);
         }
 
-        private void ExperimentDecoyComparison_Load(object sender, EventArgs e)
+        public void ExperimentDecoyComparison_Load(object sender, EventArgs e)
+        {
+            if (!GlobalData.experimentTheoreticalPairs.Columns.Contains("Acceptable Peak"))
+            {
+                run_comparison();
+            }
+            GraphEDHistogram();
+            FillEDListTable();
+            //FillEDGridView("DecoyDatabase_0");
+            GraphETPeakList();
+            GraphEDList();
+        }
+
+        public void run_comparison()
         {
             InitializeParameterSet();
             FindAllEDPairs();
             CalculateRunningSums();
-            //FillEDGridView("DecoyDatabase_0");
-            GraphEDHistogram();
             InitializeEDListTable();
-            FillEDListTable();
-            GraphETPeakList();
-            GraphEDList();
             UpdateFiguresOfMerit();
         }
 
@@ -181,9 +189,6 @@ namespace PS_0._00
             }
         }
 
-
-
-
         private void EDListGraphParameters(int clickedRow)
         {
             ct_ED_peakList.ChartAreas[0].AxisX.StripLines.Clear();
@@ -278,148 +283,175 @@ namespace PS_0._00
                 int median = Convert.ToInt16(decoyTotals.Rows[indexMedian][0]);
             
                 edList.Rows.Add(deltaMass, peakCount, median);
+            }
+
+            GlobalData.edList = edList;
+
+            //Round before displaying ET peak list
+            dgv_ED_Peak_List.DataSource = edList;
+            dgv_ED_Peak_List.ReadOnly = true;
+            dgv_ED_Peak_List.Columns["ED Delta Mass"].DefaultCellStyle.Format = "0.####";
+            dgv_ED_Peak_List.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_ED_Peak_List.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+        }   
+
+
+
+        private void InitializeEDListTable()
+        {
+            edList.Columns.Add("ED Delta Mass", typeof(double)); //I changed this from ET Delta Mass -AC
+            edList.Columns.Add("ED Peak Count", typeof(int)); //I changed this from ET Peak Count -AC
+            edList.Columns.Add("ED count", typeof(int));
+        }
+
+        private void GraphEDHistogram()
+        {
+            int i = (int)nud_Decoy_Database.Value - 1;
+            string colName = "Delta Mass";
+            string direction = "DESC";
+            DataTable dt = GlobalData.experimentDecoyPairs.Tables["DecoyDatabase_" + i];
+            dt.DefaultView.Sort = colName + " " + direction;
+            dt = dt.DefaultView.ToTable();
+            //GlobalData.experimentDecoyPairs.Tables["DecoyDatabase_" + i] = dt;
+          //  GlobalData.experimentDecoyPairs = dt;
+
+            ct_ED_Histogram.Series["edHistogram"].XValueMember = "Delta Mass";
+            ct_ED_Histogram.Series["edHistogram"].YValueMembers = "Running Sum";
+
+                // ct_ED_Histogram.DataSource = GlobalData.experimentDecoyPairs;
+            ct_ED_Histogram.DataSource = dt;
+            ct_ED_Histogram.DataBind();
+
+            ct_ED_Histogram.Series["edHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
 
         }
 
-        GlobalData.edList = edList;
+        private DataTable GetNewED_DataTable(String title)
+        {
+            DataTable dt = new DataTable(title);
+            dt.Columns.Add("Accession", typeof(string));
+            dt.Columns.Add("Name", typeof(string));
+            dt.Columns.Add("Fragment", typeof(string));
+            dt.Columns.Add("PTM List", typeof(string));
+            dt.Columns.Add("Proteoform Mass", typeof(double));
+            dt.Columns.Add("Aggregated Mass", typeof(double));
+            dt.Columns.Add("Aggregated Intensity", typeof(double));
+            dt.Columns.Add("Aggregated Retention Time", typeof(double));
+            dt.Columns.Add("Lysine Count", typeof(int));
+            dt.Columns.Add("Delta Mass", typeof(double));
+            dt.Columns.Add("Running Sum", typeof(int));
+            dt.Columns.Add("Peak Center Count", typeof(int));
+            dt.Columns.Add("Peak Center Mass", typeof(double));
+            dt.Columns.Add("Out of Range Decimal", typeof(bool));
+            dt.Columns.Add("Acceptable Peak", typeof(bool));
 
-        //Round before displaying ET peak list
-        dgv_ED_Peak_List.DataSource = edList;
-        dgv_ED_Peak_List.ReadOnly = true;
-        dgv_ED_Peak_List.Columns["ED Delta Mass"].DefaultCellStyle.Format = "0.####";
-        dgv_ED_Peak_List.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-        dgv_ED_Peak_List.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-    }
+            return dt;
+        }
 
+        private void InitializeParameterSet()
+        {
+            nUD_ED_Lower_Bound.Minimum = -500;
+            nUD_ED_Lower_Bound.Maximum = 0;
+            nUD_ED_Lower_Bound.Value = -250;
 
+            nUD_ED_Upper_Bound.Minimum = 0;
+            nUD_ED_Upper_Bound.Maximum = 500;
+            nUD_ED_Upper_Bound.Value = 250;
 
-    private void InitializeEDListTable()
-    {
-        edList.Columns.Add("ED Delta Mass", typeof(double)); //I changed this from ET Delta Mass -AC
-        edList.Columns.Add("ED Peak Count", typeof(int)); //I changed this from ET Peak Count -AC
-        edList.Columns.Add("ED count", typeof(int));
-    }
+            yMaxED.Minimum = 0;
+            yMaxED.Maximum = 1000;
+            yMaxED.Value = 100;
 
-    private void GraphEDHistogram()
-    {
-       int i = (int)nud_Decoy_Database.Value - 1;
-        string colName = "Delta Mass";
-        string direction = "DESC";
-        DataTable dt = GlobalData.experimentDecoyPairs.Tables["DecoyDatabase_" + i];
-        dt.DefaultView.Sort = colName + " " + direction;
-        dt = dt.DefaultView.ToTable();
-        //GlobalData.experimentDecoyPairs.Tables["DecoyDatabase_" + i] = dt;
-      //  GlobalData.experimentDecoyPairs = dt;
+            yMinED.Minimum = -100;
+            yMinED.Maximum = xMaxED.Value;
+            yMinED.Value = 0;
 
-        ct_ED_Histogram.Series["edHistogram"].XValueMember = "Delta Mass";
-        ct_ED_Histogram.Series["edHistogram"].YValueMembers = "Running Sum";
+            xMinED.Minimum = nUD_ED_Lower_Bound.Value;
+            xMinED.Maximum = xMaxED.Value;
+            xMinED.Value = nUD_ED_Lower_Bound.Value;
 
-            // ct_ED_Histogram.DataSource = GlobalData.experimentDecoyPairs;
-        ct_ED_Histogram.DataSource = dt;
-        ct_ED_Histogram.DataBind();
+            xMaxED.Minimum = xMinED.Value;
+            xMaxED.Maximum = nUD_ED_Upper_Bound.Value;
+            xMaxED.Value = nUD_ED_Upper_Bound.Value;
 
-        ct_ED_Histogram.Series["edHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+            nUD_NoManLower.Minimum = 00m;
+            nUD_NoManLower.Maximum = 0.49m;
+            nUD_NoManLower.Value = 0.22m;//add the m suffix to treat the double as decimal
 
-    }
+            nUD_NoManUpper.Minimum = 0.50m;
+            nUD_NoManUpper.Maximum = 1.00m;
+            nUD_NoManUpper.Value = 0.88m;
 
-    private DataTable GetNewED_DataTable(String title)
-    {
-        DataTable dt = new DataTable(title);
-        dt.Columns.Add("Accession", typeof(string));
-        dt.Columns.Add("Name", typeof(string));
-        dt.Columns.Add("Fragment", typeof(string));
-        dt.Columns.Add("PTM List", typeof(string));
-        dt.Columns.Add("Proteoform Mass", typeof(double));
-        dt.Columns.Add("Aggregated Mass", typeof(double));
-        dt.Columns.Add("Aggregated Intensity", typeof(double));
-        dt.Columns.Add("Aggregated Retention Time", typeof(double));
-        dt.Columns.Add("Lysine Count", typeof(int));
-        dt.Columns.Add("Delta Mass", typeof(double));
-        dt.Columns.Add("Running Sum", typeof(int));
-        dt.Columns.Add("Peak Center Count", typeof(int));
-        dt.Columns.Add("Peak Center Mass", typeof(double));
-        dt.Columns.Add("Out of Range Decimal", typeof(bool));
-        dt.Columns.Add("Acceptable Peak", typeof(bool));
+            nUD_PeakWidthBase.Minimum = 0.001m;
+            nUD_PeakWidthBase.Maximum = 0.5000m;
+            nUD_PeakWidthBase.Value = 0.0150m;
 
-        return dt;
-    }
+            nud_Decoy_Database.Minimum = 1;
+            nud_Decoy_Database.Maximum = GlobalData.numDecoyDatabases;
+            nud_Decoy_Database.Value = 1;
+        }
 
+        private void label5_Click(object sender, EventArgs e)
+        {
 
-    private void InitializeParameterSet()
-    {
-        nUD_ED_Lower_Bound.Minimum = -500;
-        nUD_ED_Lower_Bound.Maximum = 0;
-        nUD_ED_Lower_Bound.Value = -250;
+        }
 
-        nUD_ED_Upper_Bound.Minimum = 0;
-        nUD_ED_Upper_Bound.Maximum = 500;
-        nUD_ED_Upper_Bound.Value = 250;
+        private void yMaxED_ValueChanged(object sender, EventArgs e)
+        {
+            ct_ED_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxED.Value.ToString());
+        }
 
-        nUD_NoManLower.Minimum = 00m;
-        nUD_NoManLower.Maximum = 0.49m;
-        nUD_NoManLower.Value = 0.22m;//add the m suffix to treat the double as decimal
+        private void yMinED_ValueChanged(object sender, EventArgs e)
+        {
+            ct_ED_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinED.Value.ToString());
 
-        nUD_NoManUpper.Minimum = 0.50m;
-        nUD_NoManUpper.Maximum = 1.00m;
-        nUD_NoManUpper.Value = 0.88m;
+        }
 
-        nUD_PeakWidthBase.Minimum = 0.001m;
-        nUD_PeakWidthBase.Maximum = 0.5000m;
-        nUD_PeakWidthBase.Value = 0.0150m;
+        private void xMinED_ValueChanged(object sender, EventArgs e)
+        {
+            ct_ED_Histogram.ChartAreas[0].AxisX.Minimum = double.Parse(xMinED.Value.ToString());
 
+        }
 
-        yMaxED.Minimum = 0;
-        yMaxED.Maximum = 1000;
-        yMaxED.Value = 100;
+        private void xMaxED_ValueChanged(object sender, EventArgs e)
+        {
+            ct_ED_Histogram.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxED.Value.ToString());
 
-        yMinED.Minimum = -100;
-        yMinED.Maximum = xMaxED.Value;
-        yMinED.Value = 0;
-
-        xMinED.Minimum = nUD_ED_Lower_Bound.Value;
-        xMinED.Maximum = xMaxED.Value;
-        xMinED.Value = nUD_ED_Lower_Bound.Value;
-
-        xMaxED.Minimum = xMinED.Value;
-        xMaxED.Maximum = nUD_ED_Upper_Bound.Value;
-        xMaxED.Value = nUD_ED_Upper_Bound.Value;
-
-        nud_Decoy_Database.Minimum = 1;
-        nud_Decoy_Database.Maximum = GlobalData.numDecoyDatabases;
-        nud_Decoy_Database.Value = 1;
-    }
-
-    private void label5_Click(object sender, EventArgs e)
-    {
-
-    }
-
-    private void yMaxED_ValueChanged(object sender, EventArgs e)
-    {
-        ct_ED_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxED.Value.ToString());
-    }
-
-    private void yMinED_ValueChanged(object sender, EventArgs e)
-    {
-        ct_ED_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinED.Value.ToString());
-
-    }
-
-    private void xMinED_ValueChanged(object sender, EventArgs e)
-    {
-        ct_ED_Histogram.ChartAreas[0].AxisX.Minimum = double.Parse(xMinED.Value.ToString());
-
-    }
-
-    private void xMaxED_ValueChanged(object sender, EventArgs e)
-    {
-        ct_ED_Histogram.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxED.Value.ToString());
-
-    }
+        }
 
         private void nud_Decoy_Database_ValueChanged(object sender, EventArgs e)
         {
             GraphEDHistogram();
+        }
+
+        public override string ToString()
+        {
+            return String.Join(System.Environment.NewLine, new string[] {
+                    "ExperimentDecoyComparison|nUD_NoManLower.Value\t" + nUD_NoManLower.Value.ToString(),
+                    "ExperimentDecoyComparison|nUD_NoManUpper.Value\t" + nUD_NoManUpper.Value.ToString(),
+                    "ExperimentDecoyComparison|nUD_PeakWidthBase.Value\t" + nUD_PeakWidthBase.Value.ToString(),
+                    "ExperimentDecoyComparison|nud_Decoy_Database.Value\t" + nud_Decoy_Database.Value.ToString()
+            });
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "nUD_NoManLower.Value":
+                    nUD_NoManLower.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_NoManUpper.Value":
+                    nUD_NoManUpper.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_PeakWidthBase.Value":
+                    nUD_PeakWidthBase.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nud_Decoy_Database.Value":
+                    nud_Decoy_Database.Value = Convert.ToDecimal(fields[1]);
+                    break;
+            }
         }
     }
 }

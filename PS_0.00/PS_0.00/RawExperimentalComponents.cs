@@ -26,17 +26,17 @@ namespace PS_0._00
         public RawExperimentalComponents()
         {
             InitializeComponent();
+        }
+
+        public void RawExperimentalComponents_Load(object sender, EventArgs e)
+        {
             Form1 instance = new Form1();
             //instance.LoadDeconvolutionResults_Load(GlobalData.repeatsender, GlobalData.repeate);
             if (GlobalData.repeat == true)
             {
                 instance.loadDeconvolutionResultsToolStripMenuItem_Click(GlobalData.repeatsender, GlobalData.repeate);
             }
-        }
 
-
-        public void RawExperimentalComponents_Load(object sender, EventArgs e)
-        {
             if (GlobalData.deconResultsFileNames.Count().Equals(0))
             {
                 MessageBox.Show("Oops! We didn't find any data... Did you forget to load your Deconvolution Results?");  
@@ -46,11 +46,20 @@ namespace PS_0._00
                 GlobalData.repeat = true;
                 return;
             }
+
+            if (!GlobalData.rawExperimentalComponents.Columns.Contains("Monoisotopic Mass"))
+            {
+                pull_raw_experimental_components();
+            }
+            FillRawExpComponentsTable();
+        }
+
+        public void pull_raw_experimental_components()
+        {
             GlobalData.deconResultsFiles = GetDeconResults();
             GlobalData.rawExperimentalComponents = GetRawComponents();
             GlobalData.rawExperimentalChargeStateData = GetRawChargeStates();
             CalculateWeightedMonoisotopicMass();
-            FillRawExpComponentsTable();
         }
 
         private void FillRawExpComponentsTable()
@@ -379,6 +388,21 @@ namespace PS_0._00
                 dgv_RawExpComp_IndChgSts.Columns["Intensity"].DefaultCellStyle.Format = "0";
                 dgv_RawExpComp_IndChgSts.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
                 dgv_RawExpComp_IndChgSts.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+            }
+        }
+
+        public override string ToString()
+        {
+            return "RawExperimentalComponents|";
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "":
+                    break;
             }
         }
     }

@@ -27,7 +27,7 @@ namespace PS_0._00
             InitializeComponent();
         }
 
-        private void TheoreticalDatabase_Load(object sender, EventArgs e)
+        public void TheoreticalDatabase_Load(object sender, EventArgs e)
         {
             InitializeOpenFileDialog2();
             InitializeOpenFileDialog3();
@@ -139,6 +139,11 @@ namespace PS_0._00
         }
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)
+        {
+            make_databases();
+        }
+
+        public void make_databases()
         {
             ProteomeDatabaseReader.oldPtmlistFilePath = tb_UniProtPtmList_Path.Text;
             bool oxidizedMethionine = Convert.ToBoolean(ckbx_OxidMeth.Checked);
@@ -326,6 +331,64 @@ namespace PS_0._00
         private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)
         {
             FillDataBaseTable(cmbx_DisplayWhichDB.SelectedItem.ToString());
+        }
+
+        public override string ToString()
+        {
+            return String.Join(System.Environment.NewLine, new string[] {
+                "TheoreticalDatabase|tb_UniProtXML_Path.Text\t" + tb_UniProtXML_Path.Text,
+                "TheoreticalDatabase|tb_UniProtPtmList_Path.Text\t" + tb_UniProtPtmList_Path.Text,
+                "TheoreticalDatabase|ckbx_OxidMeth.Checked\t" + ckbx_OxidMeth.Checked.ToString(),
+                "TheoreticalDatabase|ckbx_Carbam.Checked\t" + ckbx_Carbam.Checked.ToString(),
+                "TheoreticalDatabase|ckbx_Meth_Cleaved.Checked\t" + ckbx_Meth_Cleaved.Checked.ToString(),
+                "TheoreticalDatabase|btn_NeuCode_Lt.Checked\t" + btn_NeuCode_Lt.Checked.ToString(),
+                "TheoreticalDatabase|btn_NeuCode_Hv.Checked\t" + btn_NeuCode_Hv.Checked.ToString(),
+                "TheoreticalDatabase|btn_NaturalIsotopes.Checked\t" + btn_NaturalIsotopes.Checked.ToString(),
+                "TheoreticalDatabase|nUD_MaxPTMs.Value\t" + nUD_MaxPTMs.Value.ToString(),
+                "TheoreticalDatabase|nUD_NumDecoyDBs.Value\t" + nUD_NumDecoyDBs.Value.ToString(),
+                "TheoreticalDatabase|nUD_MinPeptideLength.Value\t" + nUD_MinPeptideLength.Value.ToString()
+            });
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "tb_UniProtXML_Path.Text":
+                    tb_UniProtXML_Path.Text = fields[1];
+                    break;
+                case "tb_UniProtPtmList_Path.Text":
+                    tb_UniProtPtmList_Path.Text = fields[1];
+                    break;
+                case "ckbx_OxidMeth.Checked":
+                    ckbx_OxidMeth.Checked = Convert.ToBoolean(fields[1]);
+                    break;
+                case "ckbx_Carbam.Checked":
+                    ckbx_Carbam.Checked = Convert.ToBoolean(fields[1]);
+                    break;
+                case "ckbx_Meth_Cleaved.Checked":
+                    ckbx_Meth_Cleaved.Checked = Convert.ToBoolean(fields[1]);
+                    break;
+                case "btn_NeuCode_Lt.Checked":
+                    btn_NeuCode_Lt.Checked = Convert.ToBoolean(fields[1]);
+                    break;
+                case "btn_NeuCode_Hv.Checked":
+                    btn_NeuCode_Hv.Checked = Convert.ToBoolean(fields[1]);
+                    break;
+                case "btn_NaturalIsotopes.Checked":
+                    btn_NaturalIsotopes.Checked = Convert.ToBoolean(fields[1]);
+                    break;
+                case "nUD_MaxPTMs.Value":
+                    nUD_MaxPTMs.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_NumDecoyDBs.Value":
+                    nUD_NumDecoyDBs.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_MinPeptideLength.Value":
+                    nUD_MinPeptideLength.Value = Convert.ToDecimal(fields[1]);
+                    break;
+            }
         }
     }
 }

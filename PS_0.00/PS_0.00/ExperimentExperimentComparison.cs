@@ -22,26 +22,31 @@ namespace PS_0._00
         public ExperimentExperimentComparison()
         {
             InitializeComponent();
-
-
             this.dgv_EE_Peak_List.MouseClick += new MouseEventHandler(dgv_EE_Peak_List_CellClick);
             dgv_EE_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(peakListSpecificPeakAcceptanceChanged); //makes the change immediate and automatic
             dgv_EE_Peak_List.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
         }
 
-        private void ExperimentExperimentComparison_Load(object sender, EventArgs e)
+        public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
+        {
+            if (!GlobalData.experimentTheoreticalPairs.Columns.Contains("Acceptable Peak"))
+            {
+                run_comparison();
+            }
+            GraphEEHistogram();
+            FillEEPeakListTable();
+            FillEEPairsGridView();
+            GraphEEPairsList();
+        }
 
+        public void run_comparison()
         {
             this.Cursor = Cursors.WaitCursor;
             formLoadEvent = true;
             InitializeParameterSet();
             FindAllEEPairs();
             CalculateRunningSums();
-            GraphEEHistogram();
             eePeakList = InitializeEEPeakListTable();
-            FillEEPeakListTable();
-            FillEEPairsGridView();
-            GraphEEPairsList();
             UpdateFiguresOfMerit();
             formLoadEvent = false;
             this.Cursor = Cursors.Default;
@@ -539,11 +544,9 @@ namespace PS_0._00
             nUD_NoManLower.Maximum = 0.49m;
             //  nUD_NoManLower.Value = 0.22m;
 
-
             nUD_NoManUpper.Minimum = 0.50m;
             nUD_NoManUpper.Maximum = 1.00m;
             //   nUD_NoManUpper.Value = 0.88m;
-
 
             nUD_PeakWidthBase.Minimum = 0.001m;
             nUD_PeakWidthBase.Maximum = 0.5000m;
@@ -681,6 +684,36 @@ namespace PS_0._00
         private void EE_update_Click(object sender, EventArgs e)
         {
             RunTheGamut();
+        }
+
+        public override string ToString()
+        {
+            return String.Join(System.Environment.NewLine, new string[] {
+                "ExperimentExperimentComparison|nUD_NoManLower.Value\t" + nUD_NoManLower.Value.ToString(),
+                "ExperimentExperimentComparison|nUD_NoManUpper.Value\t" + nUD_NoManUpper.Value.ToString(),
+                "ExperimentExperimentComparison|nUD_PeakWidthBase.Value\t" + nUD_PeakWidthBase.Value.ToString(),
+                "ExperimentExperimentComparison|nUD_PeakCountMinThreshold.Value\t" + nUD_PeakCountMinThreshold.Value.ToString()
+            });
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "nUD_NoManLower.Value":
+                    nUD_NoManLower.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_NoManUpper.Value":
+                    nUD_NoManUpper.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_PeakWidthBase.Value":
+                    nUD_PeakWidthBase.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_PeakCountMinThreshold.Value":
+                    nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(fields[1]);
+                    break;
+            }
         }
     }
 }
