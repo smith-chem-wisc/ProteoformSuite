@@ -23,7 +23,8 @@ namespace PS_0._00
 
         public void NeuCodePairs_Load(object sender, EventArgs e)
         {
-            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Lysine Count")) {
+            if (GlobalData.rawNeuCodePairs.Columns.Count == 0)
+            {
                 GlobalData.rawNeuCodePairs = CreateRawNeuCodePairsDataTable();
             }
             Dictionary<string, List<string>> fileNameScanRanges = GetSFileNameScanRangesList();
