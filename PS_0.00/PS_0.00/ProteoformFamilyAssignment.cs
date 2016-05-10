@@ -289,6 +289,7 @@ namespace PS_0._00
             EE_Groups.Columns.Add("Peak Center Mass", typeof(double));
             EE_Groups.Columns.Add("Out of Range Decimal", typeof(bool));
             EE_Groups.Columns.Add("Acceptable Peak", typeof(bool));
+            EE_Groups.Columns.Add("Proteoform Family", typeof(bool));
             EE_Groups.Columns.Add("Group_#", typeof(Int32));
 
             GlobalData.ProteoformFamilyMetrics.Columns.Add("Group Number", typeof(Int32));
@@ -304,7 +305,8 @@ namespace PS_0._00
             ET_Groups.Clear();       
 
             DataRow[] foundRows;
-            foundRows = GlobalData.experimentTheoreticalPairs.Select("[" +"Lysine Count"+ "]=" + q + "AND" + "[Proteoform Family]=" + true); 
+            string expression = "[" + "Lysine Count" +"] = " + q + " AND " + "[Proteoform Family] = true";
+            foundRows = GlobalData.experimentTheoreticalPairs.Select(expression); 
             for (int a = 0; a < foundRows.Length; a++)
             {
                 ET_Groups.Rows.Add(foundRows[a].ItemArray);
@@ -317,7 +319,7 @@ namespace PS_0._00
             EE_Groups.Clear();
 
             DataRow[] foundRows;
-            foundRows = GlobalData.experimentExperimentPairs.Select("[" + "Lysine Count" + "]=" + q + "AND" + "[" + "Acceptable Peak" + "]=" + true, "Aggregated Mass Light ASC, Aggregated Mass Heavy ASC");
+            foundRows = GlobalData.experimentExperimentPairs.Select("[Lysine Count]=" + q + "AND" + "[Proteoform Family] = " + true, "Aggregated Mass Light ASC, Aggregated Mass Heavy ASC");
 
             for (int a = 0; a < foundRows.Length; a++)
             {
@@ -371,6 +373,7 @@ namespace PS_0._00
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Mass", typeof(double));
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Out of Range Decimal", typeof(bool));
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Acceptable Peak", typeof(bool));
+            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Proteoform Family", typeof(bool));
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Group_#", typeof(Int32));
 
             DataRow EErow = EE_Groups.Rows[EEIndex]; //make it org by theo mass later
@@ -381,7 +384,7 @@ namespace PS_0._00
         private void Its_A_Child(int lys, double mass, int EEIndex)//, int checkpoint)
         {
 
-            foundRowsSingle = ET_Groups.Select("[" + "Aggregated Mass" + "]=" + mass, "Proteoform Mass"); //make it org by theo mass later
+            foundRowsSingle = ET_Groups.Select("[Aggregated Mass]=" + mass, "Proteoform Mass"); //make it org by theo mass later
             foreach (DataRow row in foundRowsSingle)
             {
                 row["Group_#"] = PF_Group_Num;

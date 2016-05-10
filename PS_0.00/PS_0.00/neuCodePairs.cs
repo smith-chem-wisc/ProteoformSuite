@@ -224,9 +224,9 @@ namespace PS_0._00
             
         }
 
-        private void FillRawNeuCodePairsDataTable(Dictionary<string,List<string>> fNSR)
+        private void FillRawNeuCodePairsDataTable(Dictionary<string, List<string>> fNSR)
         {
-            foreach (KeyValuePair<string,List<string>> entry in fNSR)
+            foreach (KeyValuePair<string, List<string>> entry in fNSR)
             {
                 string fileName = entry.Key;
                 foreach (string scanRange in entry.Value)
@@ -246,29 +246,9 @@ namespace PS_0._00
 
                     }
 
-                    //if (rows.Length > 0) { apexRT = double.Parse(rows[0]["Apex RT"].ToString()); }
-                    //List<decimal> masses = new List<decimal>();
-                    //<decimal, int> entryNumber = new Dictionary<decimal, int>();
-                    //foreach (DataRow row in rows)
-                    //{
-
-                    //    masses.Add(decimal.Parse(row["Weighted Monoisotopic Mass"].ToString()));
-                    //    //MessageBox.Show("col val: " +row[GlobalData.rawExperimentalComponents.Columns[0].ColumnName].ToString());
-                    //    try
-                    //    {
-                    //        entryNumber.Add(decimal.Parse(row["Weighted Monoisotopic Mass"].ToString()), int.Parse(row[GlobalData.rawExperimentalComponents.Columns[0].ColumnName].ToString()));
-                    //    }
-                    //    catch
-                    //    {
-                    //        MessageBox.Show("Expression: " + expression + "     apex: " + apexRT + "     WMM: " + decimal.Parse(row["Weighted Monoisotopic Mass"].ToString()) + "     row: " + int.Parse(row[GlobalData.rawExperimentalComponents.Columns[0].ColumnName].ToString()));
-                    //    }
-                    //}
-                    //masses.Sort();
-                    
-
-                    for (int low = 0; low <= (rows.Count()-2); low++)
+                    for (int low = 0; low <= (rows.Count() - 2); low++)
                     {
-                        for (int high = (low + 1); high <= (rows.Count()-1); high++)
+                        for (int high = (low + 1); high <= (rows.Count() - 1); high++)
                         {
                             decimal difference = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) - Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]);
                             //MessageBox.Show("mass difference" + difference);
@@ -283,7 +263,7 @@ namespace PS_0._00
                                     high_int = GetCSIntensitySum(fileName, Convert.ToInt32(rows[high][0]), oLC);
                                 }
 
-                                if(low_int>0 && high_int > 0)
+                                if (low_int > 0 && high_int > 0)
                                 {
                                     int diff_int = Convert.ToInt32(Math.Round(difference / 1.0015m - 0.5m, 0, MidpointRounding.AwayFromZero));
                                     if (low_int > high_int)//lower mass is neucode light
@@ -301,17 +281,18 @@ namespace PS_0._00
                                         double intensityRatio = high_int / low_int;
                                         decimal lt_corrected_mass = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) + Math.Round((lysine_count * 0.1667m - 0.4m), 0, MidpointRounding.AwayFromZero) * 1.0015m;
                                         AddOneRawNeuCodePair(fileName, Convert.ToInt32(rows[high][0]), Convert.ToDouble(Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"])), Convert.ToDouble(lt_corrected_mass), high_int, fileName, Convert.ToInt32(rows[low][0]), Convert.ToDouble(Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"])), low_int, oLC, apexRT, intensityRatio, lysine_count, true);
-                                    }                                      
-                                        
+                                    }
+
                                 }
 
                             }
                         }
-                     }
-                    
+                    }
+
                 }
             }
         }
+
 
         private void AddOneRawNeuCodePair(string lt_fn, int lt_ent_num, double lt_mass, double lt_mass_corrected,
                 double lt_int, string hv_fn, int hv_ent_num, double hv_mass, double hv_int, List<int> CS, double apexRT,
