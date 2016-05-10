@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.ct_ED_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.dgv_ED_Peak_List = new System.Windows.Forms.DataGridView();
             this.nUD_ED_Upper_Bound = new System.Windows.Forms.NumericUpDown();
@@ -54,16 +54,16 @@
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.dgv_ED_Pairs = new System.Windows.Forms.DataGridView();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label4 = new System.Windows.Forms.Label();
             this.nud_Decoy_Database = new System.Windows.Forms.NumericUpDown();
-            this.yMinED = new System.Windows.Forms.NumericUpDown();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.yMaxED = new System.Windows.Forms.NumericUpDown();
+            this.yMinED = new System.Windows.Forms.NumericUpDown();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.label7 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ED_Histogram)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ED_Peak_List)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_ED_Upper_Bound)).BeginInit();
@@ -91,30 +91,30 @@
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Decoy_Database)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.yMinED)).BeginInit();
+            this.groupBox3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yMaxED)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yMinED)).BeginInit();
+            this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).BeginInit();
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // ct_ED_Histogram
             // 
-            chartArea3.Name = "ChartArea1";
-            this.ct_ED_Histogram.ChartAreas.Add(chartArea3);
+            chartArea1.Name = "ChartArea1";
+            this.ct_ED_Histogram.ChartAreas.Add(chartArea1);
             this.ct_ED_Histogram.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_ED_Histogram.Location = new System.Drawing.Point(0, 0);
             this.ct_ED_Histogram.Name = "ct_ED_Histogram";
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series4.Name = "edHistogram";
-            this.ct_ED_Histogram.Series.Add(series4);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.Name = "edHistogram";
+            this.ct_ED_Histogram.Series.Add(series1);
             this.ct_ED_Histogram.Size = new System.Drawing.Size(336, 269);
             this.ct_ED_Histogram.TabIndex = 0;
             this.ct_ED_Histogram.Text = "chart1";
@@ -179,19 +179,19 @@
             // 
             // ct_ED_peakList
             // 
-            chartArea4.Name = "ChartArea1";
-            this.ct_ED_peakList.ChartAreas.Add(chartArea4);
+            chartArea2.Name = "ChartArea1";
+            this.ct_ED_peakList.ChartAreas.Add(chartArea2);
             this.ct_ED_peakList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_ED_peakList.Location = new System.Drawing.Point(0, 0);
             this.ct_ED_peakList.Name = "ct_ED_peakList";
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series5.Name = "edPeakList";
-            series6.ChartArea = "ChartArea1";
-            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series6.Name = "etPeakList";
-            this.ct_ED_peakList.Series.Add(series5);
-            this.ct_ED_peakList.Series.Add(series6);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series2.Name = "edPeakList";
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Name = "etPeakList";
+            this.ct_ED_peakList.Series.Add(series2);
+            this.ct_ED_peakList.Series.Add(series3);
             this.ct_ED_peakList.Size = new System.Drawing.Size(265, 272);
             this.ct_ED_peakList.TabIndex = 8;
             this.ct_ED_peakList.Text = "chart1";
@@ -341,9 +341,38 @@
             this.splitContainer3.SplitterDistance = 490;
             this.splitContainer3.TabIndex = 19;
             // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.label4);
+            this.groupBox4.Controls.Add(this.nud_Decoy_Database);
+            this.groupBox4.Controls.Add(this.label2);
+            this.groupBox4.Controls.Add(this.label1);
+            this.groupBox4.Controls.Add(this.nUD_ED_Upper_Bound);
+            this.groupBox4.Controls.Add(this.nUD_ED_Lower_Bound);
+            this.groupBox4.Location = new System.Drawing.Point(225, 8);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(263, 133);
+            this.groupBox4.TabIndex = 26;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "ED Histogram Boundaries";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(5, 34);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(123, 13);
+            this.label4.TabIndex = 22;
+            this.label4.Text = "Display decoy database:";
+            // 
             // nud_Decoy_Database
             // 
             this.nud_Decoy_Database.Location = new System.Drawing.Point(134, 32);
+            this.nud_Decoy_Database.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.nud_Decoy_Database.Name = "nud_Decoy_Database";
             this.nud_Decoy_Database.Size = new System.Drawing.Size(120, 20);
             this.nud_Decoy_Database.TabIndex = 21;
@@ -354,13 +383,29 @@
             0});
             this.nud_Decoy_Database.ValueChanged += new System.EventHandler(this.nud_Decoy_Database_ValueChanged);
             // 
-            // yMinED
+            // groupBox3
             // 
-            this.yMinED.Location = new System.Drawing.Point(53, 70);
-            this.yMinED.Name = "yMinED";
-            this.yMinED.Size = new System.Drawing.Size(120, 20);
-            this.yMinED.TabIndex = 20;
-            this.yMinED.ValueChanged += new System.EventHandler(this.yMinED_ValueChanged);
+            this.groupBox3.Controls.Add(this.nUD_PeakWidthBase);
+            this.groupBox3.Controls.Add(this.label3);
+            this.groupBox3.Location = new System.Drawing.Point(6, 12);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(218, 64);
+            this.groupBox3.TabIndex = 25;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "ED List Parameters";
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.xMinED);
+            this.groupBox2.Controls.Add(this.xMaxED);
+            this.groupBox2.Controls.Add(this.yMaxED);
+            this.groupBox2.Controls.Add(this.yMinED);
+            this.groupBox2.Location = new System.Drawing.Point(235, 150);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(253, 103);
+            this.groupBox2.TabIndex = 24;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "ED Histogram Scaling";
             // 
             // yMaxED
             // 
@@ -369,6 +414,27 @@
             this.yMaxED.Size = new System.Drawing.Size(120, 20);
             this.yMaxED.TabIndex = 19;
             this.yMaxED.ValueChanged += new System.EventHandler(this.yMaxED_ValueChanged);
+            // 
+            // yMinED
+            // 
+            this.yMinED.Location = new System.Drawing.Point(53, 70);
+            this.yMinED.Name = "yMinED";
+            this.yMinED.Size = new System.Drawing.Size(120, 20);
+            this.yMinED.TabIndex = 20;
+            this.yMinED.ValueChanged += new System.EventHandler(this.yMinED_ValueChanged);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.nUD_NoManUpper);
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.nUD_NoManLower);
+            this.groupBox1.Controls.Add(this.label5);
+            this.groupBox1.Location = new System.Drawing.Point(6, 150);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(223, 118);
+            this.groupBox1.TabIndex = 23;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "No Man\'s Land";
             // 
             // splitContainer4
             // 
@@ -397,67 +463,6 @@
             this.label7.Size = new System.Drawing.Size(84, 13);
             this.label7.TabIndex = 2;
             this.label7.Text = "Total ED counts";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(5, 34);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(123, 13);
-            this.label4.TabIndex = 22;
-            this.label4.Text = "Display decoy database:";
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.nUD_NoManUpper);
-            this.groupBox1.Controls.Add(this.label6);
-            this.groupBox1.Controls.Add(this.nUD_NoManLower);
-            this.groupBox1.Controls.Add(this.label5);
-            this.groupBox1.Location = new System.Drawing.Point(6, 150);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(223, 118);
-            this.groupBox1.TabIndex = 23;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "No Man\'s Land";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.xMinED);
-            this.groupBox2.Controls.Add(this.xMaxED);
-            this.groupBox2.Controls.Add(this.yMaxED);
-            this.groupBox2.Controls.Add(this.yMinED);
-            this.groupBox2.Location = new System.Drawing.Point(235, 150);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(253, 103);
-            this.groupBox2.TabIndex = 24;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "ED Histogram Scaling";
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.nUD_PeakWidthBase);
-            this.groupBox3.Controls.Add(this.label3);
-            this.groupBox3.Location = new System.Drawing.Point(6, 12);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(218, 64);
-            this.groupBox3.TabIndex = 25;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "ED List Parameters";
-            // 
-            // groupBox4
-            // 
-            this.groupBox4.Controls.Add(this.label4);
-            this.groupBox4.Controls.Add(this.nud_Decoy_Database);
-            this.groupBox4.Controls.Add(this.label2);
-            this.groupBox4.Controls.Add(this.label1);
-            this.groupBox4.Controls.Add(this.nUD_ED_Upper_Bound);
-            this.groupBox4.Controls.Add(this.nUD_ED_Lower_Bound);
-            this.groupBox4.Location = new System.Drawing.Point(225, 8);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(263, 133);
-            this.groupBox4.TabIndex = 26;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "ED Histogram Boundaries";
             // 
             // ExperimentDecoyComparison
             // 
@@ -495,21 +500,21 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Decoy_Database)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.yMinED)).EndInit();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.yMaxED)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.yMinED)).EndInit();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.splitContainer4.Panel1.ResumeLayout(false);
             this.splitContainer4.Panel1.PerformLayout();
             this.splitContainer4.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
 
         }
