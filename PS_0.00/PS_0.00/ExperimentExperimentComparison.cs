@@ -27,19 +27,26 @@ namespace PS_0._00
             dgv_EE_Peak_List.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
         }
 
-        private void ExperimentExperimentComparison_Load(object sender, EventArgs e)
+        public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
+        {
+            if (!GlobalData.experimentTheoreticalPairs.Columns.Contains("Acceptable Peak"))
+            {
+                run_comparison();
+            }
+            GraphEEHistogram();
+            FillEEPeakListTable();
+            FillEEPairsGridView();
+            GraphEEPairsList();
+        }
 
+        public void run_comparison()
         {
             this.Cursor = Cursors.WaitCursor;
             formLoadEvent = true;
             InitializeParameterSet();
             FindAllEEPairs();
             CalculateRunningSums();
-            GraphEEHistogram();
             eePeakList = InitializeEEPeakListTable();
-            FillEEPeakListTable();
-            FillEEPairsGridView();
-            GraphEEPairsList();
             UpdateFiguresOfMerit();
             formLoadEvent = false;
             this.Cursor = Cursors.Default;
@@ -681,12 +688,32 @@ namespace PS_0._00
 
         public override string ToString()
         {
-            string s = "";
-            s += String.Join("\t", new string[] { "ExperimentExperimentComparison|nUD_NoManLower.Value", nUD_NoManLower.Value.ToString() });
-            s += String.Join("\t", new string[] { "ExperimentExperimentComparison|nUD_NoManUpper.Value", nUD_NoManUpper.Value.ToString() });
-            s += String.Join("\t", new string[] { "ExperimentExperimentComparison|nUD_PeakWidthBase.Value", nUD_PeakWidthBase.Value.ToString() });
-            s += String.Join("\t", new string[] { "ExperimentExperimentComparison|nUD_PeakCountMinThreshold.Value", nUD_PeakCountMinThreshold.Value.ToString() });
-            return s;
+            return String.Join(System.Environment.NewLine, new string[] {
+                "ExperimentExperimentComparison|nUD_NoManLower.Value\t" + nUD_NoManLower.Value.ToString(),
+                "ExperimentExperimentComparison|nUD_NoManUpper.Value\t" + nUD_NoManUpper.Value.ToString(),
+                "ExperimentExperimentComparison|nUD_PeakWidthBase.Value\t" + nUD_PeakWidthBase.Value.ToString(),
+                "ExperimentExperimentComparison|nUD_PeakCountMinThreshold.Value\t" + nUD_PeakCountMinThreshold.Value.ToString()
+            });
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "nUD_NoManLower.Value":
+                    nUD_NoManLower.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_NoManUpper.Value":
+                    nUD_NoManUpper.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_PeakWidthBase.Value":
+                    nUD_PeakWidthBase.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_PeakCountMinThreshold.Value":
+                    nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(fields[1]);
+                    break;
+            }
         }
     }
 }
