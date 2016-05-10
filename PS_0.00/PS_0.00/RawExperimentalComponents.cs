@@ -47,7 +47,7 @@ namespace PS_0._00
                 return;
             }
 
-            if (!GlobalData.rawExperimentalComponents.Columns.Contains("Monoisotopic Mass"))
+            if (GlobalData.rawExperimentalComponents.Columns.Count == 0)
             {
                 pull_raw_experimental_components();
             }
