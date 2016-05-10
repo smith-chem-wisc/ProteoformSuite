@@ -213,12 +213,15 @@ namespace PS_0._00
         static void processDecoys(int numDb, string giantProtein, Protein[] proteinRawData, bool methionineCleavage, Dictionary<char, double> aaIsotopeMassList, 
             int maxPTMsPerProteoform, Dictionary<string, Modification> uniprotModificationTable)
         {
+            Random rng = new Random();
             for (int decoyNumber = 0; decoyNumber < numDb; decoyNumber++)
             {
-
                 DataTable decoy = GenerateProteoformDatabaseDataTable("DecoyDatabase_" + decoyNumber);
 
                 new Random().Shuffle(proteinRawData); //Randomize Order of Protein Array
+
+
+                int prevLength = 0;
                 for (int i = 0; i < proteinRawData.Length; i++)
                 {
                     bool isMetCleaved = (methionineCleavage && proteinRawData[i].Begin == 0 && proteinRawData[i].Sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
@@ -226,9 +229,11 @@ namespace PS_0._00
 
                     //From the concatenated proteome, cut a decoy sequence of a randomly selected length
                     int hunkLength = proteinRawData[i].Sequence.Length - startPosAfterCleavage;
-                    string hunk = giantProtein.Substring(0, hunkLength);
-                    giantProtein.Remove(0, hunkLength);
-                    EnterTheoreticalProteformFamily(decoy, hunk, proteinRawData[i], proteinRawData[i].Accession + "_DECOY_" + decoyNumber, maxPTMsPerProteoform, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
+                    string hunk = giantProtein.Substring(prevLength, hunkLength);
+                    prevLength += hunkLength;
+
+                    EnterTheoreticalProteformFamily(decoy, hunk, proteinRawData[i], proteinRawData[i].Accession +
+                        "_DECOY_" + decoyNumber, maxPTMsPerProteoform, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
                 }
                 GlobalData.theoreticalAndDecoyDatabases.Tables.Add(decoy);
             }
