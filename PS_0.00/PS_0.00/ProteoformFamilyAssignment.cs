@@ -39,6 +39,7 @@ namespace PS_0._00
         //OpenFileDialog openFileDialog1 = new OpenFileDialog();
         FolderBrowserDialog FolderBrowserDialog1 = new FolderBrowserDialog();
 
+
         public ProteoformFamilyAssignment()
         {
             InitializeComponent();
@@ -245,14 +246,13 @@ namespace PS_0._00
 
         }
 
-        private void ProteoformFamilyAssignment_Load(object sender, EventArgs e) //called in initializecomponents
+        public void ProteoformFamilyAssignment_Load(object sender, EventArgs e) //called in initializecomponents
         {
-            AssignColumns();
-
-            for (int q=2; q<27; q++)
+            if (ET_Groups.Columns.Count == 0)
             {
-                SingleLysineIteration(q);
+                AssignColumns();
             }
+            assign_families();
             dataGridView1.RowsDefaultCellStyle.BackColor = Color.LightGray;
             dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
             dataGridView2.RowsDefaultCellStyle.BackColor = Color.LightGray;
@@ -262,6 +262,15 @@ namespace PS_0._00
             dataGridView1.DataSource = GlobalData.ProteoformFamilyMetrics;
             ExportProteoformFamilies();
         }
+
+        public void assign_families()
+        {
+            for (int q = 2; q < 27; q++)
+            {
+                SingleLysineIteration(q);
+            }
+        }    
+
         private void SingleLysineIteration(int q) //called in initializecomponents
         {
             Group_ET(q);
@@ -342,8 +351,6 @@ namespace PS_0._00
             ET_Groups.Columns.Add("Proteoform Family", typeof(bool));
             ET_Groups.Columns.Add("Group_#", typeof(Int32));
 
-
-
             EE_Groups.Columns.Add("Aggregated Mass Light", typeof(double));
             EE_Groups.Columns.Add("Aggregated Mass Heavy", typeof(double));
             EE_Groups.Columns.Add("Aggregated Intensity Light", typeof(double));
@@ -357,6 +364,7 @@ namespace PS_0._00
             EE_Groups.Columns.Add("Peak Center Mass", typeof(double));
             EE_Groups.Columns.Add("Out of Range Decimal", typeof(bool));
             EE_Groups.Columns.Add("Acceptable Peak", typeof(bool));
+            EE_Groups.Columns.Add("Proteoform Family", typeof(bool));
             EE_Groups.Columns.Add("Group_#", typeof(Int32));
 
             GlobalData.ProteoformFamilyMetrics.Columns.Add("Group Number", typeof(Int32));
@@ -372,7 +380,8 @@ namespace PS_0._00
             ET_Groups.Clear();       
 
             DataRow[] foundRows;
-            foundRows = GlobalData.experimentTheoreticalPairs.Select("[" +"Lysine Count"+ "]=" + q + "AND" + "[Proteoform Family]=" + true); 
+            string expression = "[" + "Lysine Count" +"] = " + q + " AND " + "[Proteoform Family] = true";
+            foundRows = GlobalData.experimentTheoreticalPairs.Select(expression); 
             for (int a = 0; a < foundRows.Length; a++)
             {
                 ET_Groups.Rows.Add(foundRows[a].ItemArray);
@@ -385,7 +394,7 @@ namespace PS_0._00
             EE_Groups.Clear();
 
             DataRow[] foundRows;
-            foundRows = GlobalData.experimentExperimentPairs.Select("[" + "Lysine Count" + "]=" + q + "AND" + "[" + "Acceptable Peak" + "]=" + true, "Aggregated Mass Light ASC, Aggregated Mass Heavy ASC");
+            foundRows = GlobalData.experimentExperimentPairs.Select("[Lysine Count]=" + q + "AND" + "[Proteoform Family] = " + true, "Aggregated Mass Light ASC, Aggregated Mass Heavy ASC");
 
             for (int a = 0; a < foundRows.Length; a++)
             {
@@ -396,7 +405,6 @@ namespace PS_0._00
 
         private void Its_A_Parent(int lys, double lightmass, double heavymass, List<double> ChildrenList, int EEIndex)//, int checkpoint)
         {
-
             parentmass = lightmass; //static because of this
             PF_Group_Num++;
             GlobalData.ProteoformFamiliesET.Tables.Add(new DataTable()); //add new table for the fam
@@ -440,6 +448,7 @@ namespace PS_0._00
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Mass", typeof(double));
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Out of Range Decimal", typeof(bool));
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Acceptable Peak", typeof(bool));
+            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Proteoform Family", typeof(bool));
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Group_#", typeof(Int32));
 
             DataRow EErow = EE_Groups.Rows[EEIndex]; //make it org by theo mass later
@@ -450,7 +459,7 @@ namespace PS_0._00
         private void Its_A_Child(int lys, double mass, int EEIndex)//, int checkpoint)
         {
 
-            foundRowsSingle = ET_Groups.Select("[" + "Aggregated Mass" + "]=" + mass, "Proteoform Mass"); //make it org by theo mass later
+            foundRowsSingle = ET_Groups.Select("[Aggregated Mass]=" + mass, "Proteoform Mass"); //make it org by theo mass later
             foreach (DataRow row in foundRowsSingle)
             {
                 row["Group_#"] = PF_Group_Num;
@@ -617,6 +626,19 @@ namespace PS_0._00
         private void FileName_TextChanged(object sender, EventArgs e)
         {
             filename = this.textBox2.Text.ToString();
+        public override string ToString()
+        {
+            return "ProteoformFamilyAssignment|";
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "":
+                    break;
+            }
         }
     }
 }

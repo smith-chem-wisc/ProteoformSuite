@@ -17,9 +17,18 @@ namespace PS_0._00
             InitializeComponent();
         }
 
-        private void AggregatedProteoforms_Load(object sender, EventArgs e)
+        public void AggregatedProteoforms_Load(object sender, EventArgs e)
         {
             InitializeSettings();
+            if (GlobalData.aggregatedProteoforms.Columns.Count == 0)
+            {
+                aggregate_proteoforms();
+            }
+            FillAggregatesTable();
+        }
+
+        public void aggregate_proteoforms()
+        {
             GlobalData.acceptableNeuCodeLightProteoforms = FillAcceptableNeuCodeLightProteoformsDataTable();
             GlobalData.aggregatedProteoforms = CreateAggregatedProteoformsDataTable();
             AggregateNeuCodeLightProteoforms();
@@ -212,8 +221,6 @@ namespace PS_0._00
             FillAggregatesTable();
         }
 
-        
-
         private void dgv_AggregatedProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             double mass;
@@ -278,6 +285,36 @@ namespace PS_0._00
             {
                 ZeroAggregateMasses();
                 AggregateNeuCodeLightProteoforms();
+            }
+        }
+
+        public override string ToString()
+        {
+            return String.Join(System.Environment.NewLine, new string[] {
+                "AggregatedProteoforms|nUP_mass_tolerance.Value\t" + nUP_mass_tolerance.Value.ToString(),
+                "AggregatedProteoforms|nUD_RetTimeToleranace.Value\t" + nUD_RetTimeToleranace.Value.ToString(),
+                "AggregatedProteoforms|nUD_Missed_Monos.Value\t" + nUD_Missed_Monos.Value.ToString(),
+                "AggregatedProteoforms|nUD_Missed_Ks.Value\t" + nUD_Missed_Ks.Value.ToString(),
+            });
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "nUP_mass_tolerance.Value":
+                    nUP_mass_tolerance.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_RetTimeToleranace.Value":
+                    nUD_RetTimeToleranace.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_Missed_Monos.Value":
+                    nUD_Missed_Monos.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_Missed_Ks.Value":
+                    nUD_Missed_Ks.Value = Convert.ToDecimal(fields[1]);
+                    break;
             }
         }
     }
