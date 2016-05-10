@@ -10,12 +10,13 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Excel = Microsoft.Office.Interop.Excel; //Right click Solution/Explorer/References. Then Add  "Reference". Assemblis/Extension/Microsoft.Office.Interop.Excel
+using Excel = Microsoft.Office.Interop.Excel; //Right click Solution/Explorer/References. Then Add  "Reference". Assemblies/Extension/Microsoft.Office.Interop.Excel
 
 namespace PS_0._00
 {
     public partial class LoadDeconvolutionResults : Form
     {
+        public static BindingList<string> deconResultsFileNames = new BindingList<string>();
         OpenFileDialog openFileDialog1 = new OpenFileDialog();
         public static bool repeat = false;
         //private BindingList<string> deconResultsFiles = new BindingList<string>(); 
@@ -24,6 +25,7 @@ namespace PS_0._00
         {
             InitializeComponent();
         }
+
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
         {            
             if (GlobalData.repeat == true)
@@ -116,6 +118,26 @@ namespace PS_0._00
         private void lbDeconResults_SelectedIndexChanged(object sender, EventArgs e)
         {
             
+        }
+
+        public override string ToString()
+        {
+            return "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("\t", GlobalData.deconResultsFileNames.ToArray<string>());
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "deconvolution_file_names":
+                    foreach (string filename in fields)
+                    {
+                        if (filename == "LoadDeconvolutionResults|deconvolution_file_names") { continue; }
+                        GlobalData.deconResultsFileNames.Add(filename);
+                    }
+                    break;
+            }
         }
     }
 }
