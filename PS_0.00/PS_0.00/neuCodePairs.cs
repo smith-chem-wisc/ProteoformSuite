@@ -19,7 +19,6 @@ namespace PS_0._00
             InitializeComponent();
             this.ct_IntensityRatio.MouseMove += new MouseEventHandler(ct_IntensityRatio_MouseMove);
             this.ct_LysineCount.MouseMove += new MouseEventHandler(ct_LysineCount_MouseMove);
-
         }
 
         private void NeuCodePairs_Load(object sender, EventArgs e)
@@ -499,6 +498,16 @@ namespace PS_0._00
                 row["Acceptable"] = false;
             }
             dgv_RawExpNeuCodePairs.Refresh();
+        }
+
+        public override string ToString()
+        {
+            return String.Join(System.Environment.NewLine, new string[] {
+                "NeuCodePairs|KMaxAcceptable.Value\t" + KMaxAcceptable.Value.ToString(),
+                "NeuCodePairs|KMinAcceptable.Value\t" + KMinAcceptable.Value.ToString(),
+                "NeuCodePairs|IRatMaxAcceptable.Value\t" + IRatMaxAcceptable.Value.ToString(),
+                "NeuCodePairs|IRatMinAcceptable.Value\t" + IRatMinAcceptable.Value.ToString()
+            });
         }
     }
 }

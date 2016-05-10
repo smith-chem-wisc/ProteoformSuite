@@ -16,6 +16,7 @@ namespace PS_0._00
 {
     public partial class LoadDeconvolutionResults : Form
     {
+        public static BindingList<string> deconResultsFileNames = new BindingList<string>();
         OpenFileDialog openFileDialog1 = new OpenFileDialog();
         public static bool repeat = false;
         //private BindingList<string> deconResultsFiles = new BindingList<string>(); 
@@ -24,6 +25,7 @@ namespace PS_0._00
         {
             InitializeComponent();
         }
+
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
         {            
             if (GlobalData.repeat == true)
@@ -116,6 +118,11 @@ namespace PS_0._00
         private void lbDeconResults_SelectedIndexChanged(object sender, EventArgs e)
         {
             
+        }
+
+        public override string ToString()
+        {
+            return "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("\t", GlobalData.deconResultsFileNames.ToArray<string>());
         }
     }
 }

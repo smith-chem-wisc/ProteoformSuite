@@ -22,8 +22,6 @@ namespace PS_0._00
         public ExperimentExperimentComparison()
         {
             InitializeComponent();
-
-
             this.dgv_EE_Peak_List.MouseClick += new MouseEventHandler(dgv_EE_Peak_List_CellClick);
             dgv_EE_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(peakListSpecificPeakAcceptanceChanged); //makes the change immediate and automatic
             dgv_EE_Peak_List.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
@@ -539,11 +537,9 @@ namespace PS_0._00
             nUD_NoManLower.Maximum = 0.49m;
             //  nUD_NoManLower.Value = 0.22m;
 
-
             nUD_NoManUpper.Minimum = 0.50m;
             nUD_NoManUpper.Maximum = 1.00m;
             //   nUD_NoManUpper.Value = 0.88m;
-
 
             nUD_PeakWidthBase.Minimum = 0.001m;
             nUD_PeakWidthBase.Maximum = 0.5000m;
@@ -681,6 +677,16 @@ namespace PS_0._00
         private void EE_update_Click(object sender, EventArgs e)
         {
             RunTheGamut();
+        }
+
+        public override string ToString()
+        {
+            string s = "";
+            s += String.Join("\t", new string[] { "ExperimentExperimentComparison|nUD_NoManLower.Value", nUD_NoManLower.Value.ToString() });
+            s += String.Join("\t", new string[] { "ExperimentExperimentComparison|nUD_NoManUpper.Value", nUD_NoManUpper.Value.ToString() });
+            s += String.Join("\t", new string[] { "ExperimentExperimentComparison|nUD_PeakWidthBase.Value", nUD_PeakWidthBase.Value.ToString() });
+            s += String.Join("\t", new string[] { "ExperimentExperimentComparison|nUD_PeakCountMinThreshold.Value", nUD_PeakCountMinThreshold.Value.ToString() });
+            return s;
         }
     }
 }
