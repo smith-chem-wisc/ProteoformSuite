@@ -16,7 +16,7 @@ namespace PS_0._00
     {
         DataTable etPeaksList = new DataTable();  // These are the aggregated peaks that are integrated from the histogram of the individual ET pairs.
         DataTable etPairsList = new DataTable(); // These are the individual experiment to theoretical pairs with delta mass less than the threshold
-        Boolean formLoadEvent;
+        Boolean formLoadEvent = true;
 
         public ExperimentTheoreticalComparison()
         {
@@ -28,21 +28,28 @@ namespace PS_0._00
             dgv_ET_Peak_List.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
         }
 
-        private void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
+        public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
+        {
+            if (!GlobalData.experimentTheoreticalPairs.Columns.Contains("Acceptable Peak"))
+            {
+                run_comparison();
+            }
+            GraphETHistogram();
+            FillETPeakListTable();
+            FillETPairsGridView();
+            GraphETPairsList();
+        }
+
+        public void run_comparison()
         {
             formLoadEvent = true;
             InitializeParameterSet();
             FindAllETPairs();
-            CalculateRunningSums();         
-            GraphETHistogram();
+            CalculateRunningSums();
             etPeaksList = InitializeETPeakListTable();
-            FillETPeakListTable();
-            FillETPairsGridView();
-            GraphETPairsList();
             UpdateFiguresOfMerit();
             formLoadEvent = false;
         }
-
 
         private void RunTheGamut()
         {
@@ -238,6 +245,8 @@ namespace PS_0._00
             dgv_ET_Pairs.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.#####";
             dgv_ET_Pairs.Columns["Delta Mass"].DefaultCellStyle.Format = "0.#####";
             dgv_ET_Pairs.Columns["Peak Center Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_ET_Pairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_ET_Pairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
 
         }
 
@@ -258,7 +267,7 @@ namespace PS_0._00
 
             ct_ET_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(dgv_ET_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - Convert.ToDouble(nUD_PeakWidthBase.Value);
             ct_ET_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(dgv_ET_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) + Convert.ToDouble(nUD_PeakWidthBase.Value);
-            ct_ET_peakList.Series["etPeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+           // ct_ET_peakList.Series["etPeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
             ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
             {
                 BorderColor = Color.Red,
@@ -418,6 +427,8 @@ namespace PS_0._00
             dgv_ET_Peak_List.Columns["Average Delta Mass"].ReadOnly = true;
             dgv_ET_Peak_List.Columns["Peak Count"].ReadOnly = true;
             dgv_ET_Peak_List.Columns["Average Delta Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_ET_Peak_List.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_ET_Peak_List.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
             dgv_ET_Peak_List.EndEdit();
             dgv_ET_Peak_List.Refresh();
 
@@ -604,7 +615,6 @@ namespace PS_0._00
 
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e) // lower bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
         {
-
             if (!formLoadEvent)
             {
                 RunTheGamut();
@@ -681,6 +691,41 @@ namespace PS_0._00
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
             nUD_PeakCountMinThreshold.Value = 10; // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
+        }
+
+        private void ET_Update_Click(object sender, EventArgs e)
+        {
+            RunTheGamut();
+        }
+
+        public override string ToString()
+        {
+            return String.Join(System.Environment.NewLine, new string[] {
+                "ExperimentTheoreticalComparison|nUD_NoManLower.Value\t" + nUD_NoManLower.Value.ToString(),
+                "ExperimentTheoreticalComparison|nUD_NoManUpper.Value\t" + nUD_NoManUpper.Value.ToString(),
+                "ExperimentTheoreticalComparison|nUD_PeakWidthBase.Value\t" + nUD_PeakWidthBase.Value.ToString(),
+                "ExperimentTheoreticalComparison|nUD_PeakCountMinThreshold.Value\t" + nUD_PeakCountMinThreshold.Value.ToString()
+            });
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "nUD_NoManLower.Value":
+                    nUD_NoManLower.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_NoManUpper.Value":
+                    nUD_NoManUpper.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_PeakWidthBase.Value":
+                    nUD_PeakWidthBase.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_PeakCountMinThreshold.Value":
+                    nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(fields[1]);
+                    break;
+            }
         }
     }
 }

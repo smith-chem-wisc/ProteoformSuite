@@ -5,8 +5,9 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows.Forms;
+using System.IO;
 
 
 namespace PS_0._00
@@ -14,221 +15,184 @@ namespace PS_0._00
     public partial class Form1 : Form
     {
         //  Initialize Forms START
-        LoadDeconvolutionResults loadDeconvolutionResults;
-        RawExperimentalComponents rawExperimentalComponents;
-        NeuCodePairs neuCodePairs;
-        AggregatedProteoforms aggregatedProteoforms;
-        TheoreticalDatabase theoreticalDatabase;
-        ExperimentTheoreticalComparison experimentalTheoreticalComparison;
-        ExperimentDecoyComparison experimentDecoyComparison;
-        ExperimentExperimentComparison experimentExperimentComparison;
-        ProteoformFamilyAssignment proteoformFamilyAssignment;
+        LoadDeconvolutionResults loadDeconvolutionResults = new LoadDeconvolutionResults();
+        RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
+        NeuCodePairs neuCodePairs = new NeuCodePairs();
+        AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms();
+        TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase();
+        ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
+        ExperimentDecoyComparison experimentDecoyComparison = new ExperimentDecoyComparison();
+        ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
+        ProteoformFamilyAssignment proteoformFamilyAssignment = new ProteoformFamilyAssignment();
+        List<Form> forms;
         //  Initialize Forms END
 
-        // Data associated with lDR Form START
-
-        // Data associated with lDR Form END
+        OpenFileDialog methodFileOpen = new OpenFileDialog();
+        SaveFileDialog methodFileSave = new SaveFileDialog();
 
         public Form1()
         {
             InitializeComponent();
+            InitializeForms();
+        }
+
+        public void InitializeForms()
+        {
+            forms = new List<Form>(new Form[] {
+                loadDeconvolutionResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
+                theoreticalDatabase, experimentalTheoreticalComparison, experimentDecoyComparison, experimentExperimentComparison,
+                proteoformFamilyAssignment
+            });
+        }
+
+        private void showForm(Form form)
+        {
+            form.MdiParent = this;
+            form.Show();
+            form.WindowState = FormWindowState.Maximized;
         }
 
         public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (loadDeconvolutionResults == null)
-            {
-                loadDeconvolutionResults = new LoadDeconvolutionResults();
-           
-                //lDR.PassString = "This string from form 1";// this sends data to the lDR form.
-
-                loadDeconvolutionResults.MdiParent = this;
-                loadDeconvolutionResults.Show();
-                loadDeconvolutionResults.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from lDR form
-            }
-            else
-            {
-                loadDeconvolutionResults.Show();
-                loadDeconvolutionResults.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from lDR form
-            }
+            showForm(loadDeconvolutionResults);
         }
 
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (rawExperimentalComponents == null)
-            {
-                rawExperimentalComponents = new RawExperimentalComponents();
-                rawExperimentalComponents.MdiParent = this;
-                rawExperimentalComponents.Show();
-                rawExperimentalComponents.WindowState = FormWindowState.Maximized;
-            }
-            else
-            {
-                if (GlobalData.repeat == true)
-                {
-                    GlobalData.repeat = false;
-                    rawExperimentalComponents.RawExperimentalComponents_Load(GlobalData.repeatsender, GlobalData.repeate);
-                }
-                rawExperimentalComponents.Show();
-                rawExperimentalComponents.WindowState = FormWindowState.Maximized;
-            }
+            showForm(rawExperimentalComponents);
         }
 
         private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (neuCodePairs == null)
-            {
-                neuCodePairs = new NeuCodePairs();
-
-                //lDR.PassString = "This string from form 1";// this sends data to the lDR form.
-
-                neuCodePairs.MdiParent = this;
-                neuCodePairs.Show();
-                neuCodePairs.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from lDR form
-            }
-            else
-            {
-                neuCodePairs.Show();
-                neuCodePairs.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from lDR form
-            }
+            showForm(neuCodePairs);
         }
 
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (aggregatedProteoforms == null)
-            {
-                aggregatedProteoforms = new AggregatedProteoforms();
-
-                //lDR.PassString = "This string from form 1";// this sends data to the aGP form.
-
-                aggregatedProteoforms.MdiParent = this;
-                aggregatedProteoforms.Show();
-                aggregatedProteoforms.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from aGP form
-            }
-            else
-            {
-                aggregatedProteoforms.Show();
-                aggregatedProteoforms.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from aGP form
-            }
+            showForm(aggregatedProteoforms);
         }
 
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (theoreticalDatabase == null)
-            {
-                theoreticalDatabase = new TheoreticalDatabase();
-
-                //lDR.PassString = "This string from form 1";// this sends data to the aGP form.
-
-                theoreticalDatabase.MdiParent = this;
-                theoreticalDatabase.Show();
-                theoreticalDatabase.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from aGP form
-            }
-            else
-            {
-                theoreticalDatabase.Show();
-                theoreticalDatabase.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from aGP form
-            }
+            showForm(theoreticalDatabase);
         }
 
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (experimentalTheoreticalComparison == null)
-            {
-                experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
-
-                //lDR.PassString = "This string from form 1";// this sends data to the aGP form.
-
-                experimentalTheoreticalComparison.MdiParent = this;
-                experimentalTheoreticalComparison.Show();
-                experimentalTheoreticalComparison.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from aGP form
-            }
-            else
-            {
-                experimentalTheoreticalComparison.Show();
-                experimentalTheoreticalComparison.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from aGP form
-            }
+            showForm(experimentalTheoreticalComparison);
         }
         
         private void experimentDecoyComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (GlobalData.numDecoyDatabases > 0)
             {
-                if (experimentDecoyComparison == null)
-                {
-
-                    experimentDecoyComparison = new ExperimentDecoyComparison();
-
-                    experimentDecoyComparison.MdiParent = this;
-                    experimentDecoyComparison.Show();
-                    experimentDecoyComparison.WindowState = FormWindowState.Maximized;
-                }
-                else
-                {
-                    experimentDecoyComparison.Show();
-                    experimentDecoyComparison.WindowState = FormWindowState.Maximized;
-                    // This is where we get data back from aGP form
-                }
+                showForm(experimentDecoyComparison);
             }
-
             else
             {
                 MessageBox.Show("Create at least 1 decoy database in Theoretical Proteoform Database in order to view Experiment - Decoy Comparison.");
             }
-
-
         }
-
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (experimentExperimentComparison == null)
-            {
-                experimentExperimentComparison = new ExperimentExperimentComparison();
-
-                //lDR.PassString = "This string from form 1";// this sends data to the aGP form.
-
-                experimentExperimentComparison.MdiParent = this;
-                experimentExperimentComparison.Show();
-                experimentExperimentComparison.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from aGP form
-            }
-            else
-            {
-                experimentExperimentComparison.Show();
-                experimentExperimentComparison.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from aGP form
-            }
+            showForm(experimentExperimentComparison);
         }
 
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (proteoformFamilyAssignment == null)
+            showForm(proteoformFamilyAssignment);
+        }
+
+        private void saveMethod()
+        {
+            DialogResult dr = this.methodFileSave.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
             {
-                proteoformFamilyAssignment = new ProteoformFamilyAssignment();
-
-                //lDR.PassString = "This string from form 1";// this sends data to the aGP form.
-
-                proteoformFamilyAssignment.MdiParent = this;
-                proteoformFamilyAssignment.Show();
-                proteoformFamilyAssignment.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from aGP form
+                String filename = methodFileSave.FileName;
+                using (StreamWriter file = new StreamWriter(filename))
+                {
+                    foreach (Form form in forms)
+                    {
+                        file.WriteLine(form.ToString());
+                    }
+                }
             }
-            else
+        }
+
+        private void generateMethodToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var response = MessageBox.Show("This option does a dry run of the program.\n\nIt allows you to select input files and parameters to generate a method file.\n\nThen, select Load & Run from the Method drop-down menu to then perform the full run of ProteoformSuite.", "Generate Method", MessageBoxButtons.OKCancel);
+            //if (response == DialogResult.OK)
+            //{
+            //    foreach (Form form in forms)
+            //    {
+            //        Show(Form);
+            //        Thread t2 = new Thread(wait_message);
+            //        t2.Start();
+            //        t2.Join();
+            //    }
+            //}
+        }
+
+        //private void wait_message() { MessageBox.Show("Click OK when you are satisfied with the settings."); }
+
+        private void saveMethodToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            saveMethod();
+        }
+
+        private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = this.methodFileOpen.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
             {
-                proteoformFamilyAssignment.Show();
-                proteoformFamilyAssignment.WindowState = FormWindowState.Maximized;
-                // This is where we get data back from aGP form
+                String filename = methodFileOpen.FileName;
+                string[] lines = File.ReadAllLines(filename);
+                foreach (string line in lines)
+                {
+                    string setting_specs = line.Trim();
+                    string[] fields = line.Split('\t');
+                    switch (fields[0].Split('|')[0])
+                    {
+                        case "AggregatedProteoforms":
+                            aggregatedProteoforms.loadSetting(setting_specs);
+                            break;
+                        case "LoadDeconvolutionResults":
+                            loadDeconvolutionResults.loadSetting(setting_specs);
+                            break;
+                        case "RawExperimentalComponents":
+                            rawExperimentalComponents.loadSetting(setting_specs);
+                            break;
+                        case "NeuCodePairs":
+                            neuCodePairs.loadSetting(setting_specs);
+                            break;
+                        case "ProteoformFamilyAssignment":
+                            proteoformFamilyAssignment.loadSetting(setting_specs);
+                            break;
+                        case "ExperimentExperimentComparison":
+                            experimentExperimentComparison.loadSetting(setting_specs);
+                            break;
+                        case "ExperimentTheoreticalComparison":
+                            experimentalTheoreticalComparison.loadSetting(setting_specs);
+                            break;
+                        case "ExperimentDecoyComparison":
+                            experimentDecoyComparison.loadSetting(setting_specs);
+                            break;
+                        case "TheoreticalDatabase":
+                            theoreticalDatabase.loadSetting(setting_specs);
+                            break;
+                    }
+                }
+                MessageBox.Show("Successfully loaded method. Will run the method now. (Will show as non-responsive).");
+                rawExperimentalComponents.pull_raw_experimental_components();
+                neuCodePairs.NeuCodePairs_Load(neuCodePairs, null);
+                aggregatedProteoforms.AggregatedProteoforms_Load(aggregatedProteoforms, null);
+                theoreticalDatabase.make_databases();
+                experimentalTheoreticalComparison.run_comparison();
+                experimentDecoyComparison.run_comparison();
+                experimentExperimentComparison.run_comparison();
+                proteoformFamilyAssignment.ProteoformFamilyAssignment_Load(proteoformFamilyAssignment, null);
             }
         }
 
@@ -250,16 +214,6 @@ namespace PS_0._00
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("printToolStripMenuItem_Click");
-        }
-
-        private void loadMethodToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("loadMethodToolStripMenuItem_Click");
-        }
-
-        private void saveMethodToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("saveMethodToolStripMenuItem_Click");
         }
 
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)

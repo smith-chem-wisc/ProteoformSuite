@@ -7,33 +7,114 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
+
 
 namespace PS_0._00
 {
     public partial class NeuCodePairs : Form
     {
-        DataTableHandler dataTableHandler = new DataTableHandler();
-
         public NeuCodePairs()
         {
             InitializeComponent();
+            this.ct_IntensityRatio.MouseMove += new MouseEventHandler(ct_IntensityRatio_MouseMove);
+            this.ct_LysineCount.MouseMove += new MouseEventHandler(ct_LysineCount_MouseMove);
         }
 
-        private void NeuCodePairs_Load(object sender, EventArgs e)
+        public void NeuCodePairs_Load(object sender, EventArgs e)
         {
-            GlobalData.rawNeuCodePairs = CreateRawNeuCodePairsDataTable();
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Lysine Count")) {
+                GlobalData.rawNeuCodePairs = CreateRawNeuCodePairsDataTable();
+            }
             Dictionary<string, List<string>> fileNameScanRanges = GetSFileNameScanRangesList();
             FillRawNeuCodePairsDataTable(fileNameScanRanges);
-            
-            string[] rt_column_names = new string[] { "Apex RT" };
-            string[] intensity_column_names = new string[] { "Light Intensity", "Heavy Intensity" };
-            string[] mass_column_names = new string[] { "Light Mass", "Light Mass Corrected", "Heavy Mass", "Intensity Ratio" }; //Included Intensity Ratio here to round to 4 decimal places
-            string[] abundance_column_names = new string[] { };
-            BindingSource bs_rawNCPairs = dataTableHandler.DisplayWithRoundedDoubles(dgv_RawExpNeuCodePairs, GlobalData.rawNeuCodePairs,
-                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
-
+            FillNeuCodePairsDGV();
             GraphLysineCount();
             GraphIntensityRatio();
+        }
+
+        Point? prevPosition = null;
+        ToolTip tooltip = new ToolTip();
+
+        void ct_IntensityRatio_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = e.Location;
+            if (prevPosition.HasValue && pos == prevPosition.Value)
+                return;
+            tooltip.RemoveAll();
+            prevPosition = pos;
+            var results = ct_IntensityRatio.HitTest(pos.X, pos.Y, false,
+                                            ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
+                          //  Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            tooltip.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_IntensityRatio,
+                                            pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
+        }
+
+        Point? prevPosition2 = null;
+        ToolTip tooltip2 = new ToolTip();
+
+        void ct_LysineCount_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = e.Location;
+            if (prevPosition2.HasValue && pos == prevPosition2.Value)
+                return;
+            tooltip2.RemoveAll();
+            prevPosition2 = pos;
+            var results = ct_LysineCount.HitTest(pos.X, pos.Y, false,
+                                            ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
+                                                               // Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            tooltip2.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_LysineCount,
+                                            pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void FillNeuCodePairsDGV()
+        {
+            dgv_RawExpNeuCodePairs.DataSource = GlobalData.rawNeuCodePairs;
+            dgv_RawExpNeuCodePairs.ReadOnly = true;
+            dgv_RawExpNeuCodePairs.Columns["Acceptable"].ReadOnly = false;
+            dgv_RawExpNeuCodePairs.Columns["Light Mass"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpNeuCodePairs.Columns["Light Mass Corrected"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpNeuCodePairs.Columns["Heavy Mass"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpNeuCodePairs.Columns["Intensity Ratio"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpNeuCodePairs.Columns["Apex RT"].DefaultCellStyle.Format = "0.##";
+            dgv_RawExpNeuCodePairs.Columns["Light Intensity"].DefaultCellStyle.Format = "0";
+            dgv_RawExpNeuCodePairs.Columns["Heavy Intensity"].DefaultCellStyle.Format = "0";
+            dgv_RawExpNeuCodePairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_RawExpNeuCodePairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
 
         private void GraphIntensityRatio()
@@ -96,7 +177,7 @@ namespace PS_0._00
             lysCtHistogram.Columns.Add("numPairsAtThisLysCt", typeof(int));
 
             int ymax = 0;
-            double xInt = 0.2;
+            //double xInt = 0.2;
 
             for (int i = 0; i <= 28; i++)
             {
@@ -142,7 +223,7 @@ namespace PS_0._00
             
         }
 
-        private void FillRawNeuCodePairsDataTable(Dictionary<string,List<string>> fNSR)
+        private void FillRawNeuCodePairsDataTable(Dictionary<string, List<string>> fNSR)
         {
             foreach (KeyValuePair<string, List<string>> entry in fNSR)
             {
@@ -152,12 +233,14 @@ namespace PS_0._00
                     string expression = "[Filename] = '" + fileName + "' AND [Scan Range] = '" + scanRange + "'";// square brackets are key to avoiding missing operand error
                     string sortOrder = "Weighted Monoisotopic Mass ASC";
                     DataRow[] rows = GlobalData.rawExperimentalComponents.Select(expression, sortOrder);
+                    //DataRow[] sortedRows = new DataRow[] { };
 
+                    //IEnumerable<DataRow> sortedRows;
                     double apexRT = 0;
 
                     if (rows.Count() > 0)
                     {
-
+                        //sortedRows = rows.OrderBy(row => Convert.ToDecimal(row["Weighted Monoisotopic Mass"]));
                         apexRT = double.Parse(rows[0]["Apex RT"].ToString());
 
                     }
@@ -208,7 +291,7 @@ namespace PS_0._00
                 }
             }
         }
-        
+
 
         private void AddOneRawNeuCodePair(string lt_fn, int lt_ent_num, double lt_mass, double lt_mass_corrected,
                 double lt_int, string hv_fn, int hv_ent_num, double hv_mass, double hv_int, List<int> CS, double apexRT,
@@ -300,12 +383,12 @@ namespace PS_0._00
             DataTable dt = new DataTable();
 
             dt.Columns.Add("Light Filename", typeof(string));
-            dt.Columns.Add("Light No#", typeof(int));
+            dt.Columns.Add("Light No.", typeof(int));
             dt.Columns.Add("Light Mass", typeof(double));
             dt.Columns.Add("Light Mass Corrected", typeof(double));
             dt.Columns.Add("Light Intensity", typeof(double));
             dt.Columns.Add("Heavy Filename", typeof(string));
-            dt.Columns.Add("Heavy No#", typeof(int));
+            dt.Columns.Add("Heavy No.", typeof(int));
             dt.Columns.Add("Heavy Mass", typeof(double));
             dt.Columns.Add("Heavy Intensity", typeof(double));
             dt.Columns.Add("Matching Charge States", typeof(List<int>));
@@ -357,47 +440,80 @@ namespace PS_0._00
             ct_IntensityRatio.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxIRat.Value.ToString());
         }
 
-        private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
+        private void parse_neucode_param_change(string expression)
         {
-            string expression = "[Lysine Count] < " + double.Parse(KMinAcceptable.Value.ToString());
             DataRow[] rows = GlobalData.rawNeuCodePairs.Select(expression);
             foreach (DataRow row in rows)
             {
                 row["Acceptable"] = false;
             }
             dgv_RawExpNeuCodePairs.Refresh();
+        }
+
+        private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
+        {
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Lysine Count")) { }
+            else {
+                string expression = "[Lysine Count] < " + double.Parse(KMinAcceptable.Value.ToString());
+                parse_neucode_param_change(expression);
+            }
         }
 
         private void KMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            string expression = "[Lysine Count] > " + double.Parse(KMaxAcceptable.Value.ToString());
-            DataRow[] rows = GlobalData.rawNeuCodePairs.Select(expression);
-            foreach (DataRow row in rows)
-            {
-                row["Acceptable"] = false;
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Lysine Count")) { }
+            else {
+                string expression = "[Lysine Count] > " + double.Parse(KMaxAcceptable.Value.ToString());
+                parse_neucode_param_change(expression);
             }
-            dgv_RawExpNeuCodePairs.Refresh();
         }
+
         private void IRatMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            string expression = "[Intensity Ratio] < " + double.Parse(IRatMinAcceptable.Value.ToString());
-            DataRow[] rows = GlobalData.rawNeuCodePairs.Select(expression);
-            foreach (DataRow row in rows)
-            {
-                row["Acceptable"] = false;
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Intensity Ratio")) { }
+            else {
+                string expression = "[Intensity Ratio] < " + double.Parse(IRatMinAcceptable.Value.ToString());
+                parse_neucode_param_change(expression);
             }
-            dgv_RawExpNeuCodePairs.Refresh();
         }
 
         private void IRatMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            string expression = "[Intensity Ratio] > " + double.Parse(IRatMaxAcceptable.Value.ToString());
-            DataRow[] rows = GlobalData.rawNeuCodePairs.Select(expression);
-            foreach (DataRow row in rows)
-            {
-                row["Acceptable"] = false;
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Intensity Ratio")) { }
+            else {
+                string expression = "[Intensity Ratio] > " + double.Parse(IRatMaxAcceptable.Value.ToString());
+                parse_neucode_param_change(expression);
             }
-            dgv_RawExpNeuCodePairs.Refresh();
+        }
+
+        public override string ToString()
+        {
+            return String.Join(System.Environment.NewLine, new string[] {
+                "NeuCodePairs|KMaxAcceptable.Value\t" + KMaxAcceptable.Value.ToString(),
+                "NeuCodePairs|KMinAcceptable.Value\t" + KMinAcceptable.Value.ToString(),
+                "NeuCodePairs|IRatMaxAcceptable.Value\t" + IRatMaxAcceptable.Value.ToString(),
+                "NeuCodePairs|IRatMinAcceptable.Value\t" + IRatMinAcceptable.Value.ToString()
+            });
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "KMaxAcceptable.Value":
+                    KMaxAcceptable.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "KMinAcceptable.Value":
+                    KMinAcceptable.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "IRatMaxAcceptable.Value":
+                    IRatMaxAcceptable.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "IRatMinAcceptable.Value":
+                    IRatMinAcceptable.Value = Convert.ToDecimal(fields[1]);
+                    break;
+            }
         }
     }
 }
