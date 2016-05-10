@@ -12,17 +12,23 @@ namespace PS_0._00
 {
     public partial class AggregatedProteoforms : Form
     {
-        DataTableHandler dataTableHandler = new DataTableHandler();
-
         public AggregatedProteoforms()
         {
             InitializeComponent();
         }
 
-        private void AggregatedProteoforms_Load(object sender, EventArgs e)
+        public void AggregatedProteoforms_Load(object sender, EventArgs e)
         {
             InitializeSettings();
-            dataTableHandler.MassDecimals = 8; //Round to 8 decimal places for mass in this form
+            if (!GlobalData.aggregatedProteoforms.Columns.Contains("Aggregated Mass"))
+            {
+                aggregate_proteoforms();
+            }
+            FillAggregatesTable();
+        }
+
+        public void aggregate_proteoforms()
+        {
             GlobalData.acceptableNeuCodeLightProteoforms = FillAcceptableNeuCodeLightProteoformsDataTable();
             GlobalData.aggregatedProteoforms = CreateAggregatedProteoformsDataTable();
             AggregateNeuCodeLightProteoforms();
@@ -30,12 +36,13 @@ namespace PS_0._00
 
         private void FillAggregatesTable()
         {
-            string[] rt_column_names = new string[] { "Aggregated Retention Time" };
-            string[] intensity_column_names = new string[] { "Aggregated Intensity" };
-            string[] mass_column_names = new string[] { "Aggregated Mass" };
-            string[] abundance_column_names = new string[] { };
-            BindingSource bs_aggregatedProteoforms = dataTableHandler.DisplayWithRoundedDoubles(dgv_AggregatedProteoforms, GlobalData.aggregatedProteoforms, 
-                rt_column_names, intensity_column_names, abundance_column_names, mass_column_names);
+            dgv_AggregatedProteoforms.DataSource = GlobalData.aggregatedProteoforms;
+            dgv_AggregatedProteoforms.ReadOnly = true;
+            dgv_AggregatedProteoforms.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.####";
+            dgv_AggregatedProteoforms.Columns["Aggregated Retention Time"].DefaultCellStyle.Format = "0.##";
+            dgv_AggregatedProteoforms.Columns["Aggregated Intensity"].DefaultCellStyle.Format = "0";
+            dgv_AggregatedProteoforms.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_AggregatedProteoforms.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
 
         private void RoundDoubleColumn(DataTable table, string column_name, int num_decimal_places)
@@ -80,7 +87,7 @@ namespace PS_0._00
             //MessageBox.Show("Filling ltNCProteoforms table.");
             DataTable acceptableLtProteoforms = new DataTable();
             acceptableLtProteoforms.Columns.Add("Light Filename", typeof(string));
-            acceptableLtProteoforms.Columns.Add("Light No#", typeof(int));
+            acceptableLtProteoforms.Columns.Add("Light No.", typeof(int));
             acceptableLtProteoforms.Columns.Add("Light Mass", typeof(double));
             acceptableLtProteoforms.Columns.Add("Light Mass Corrected", typeof(double));
             acceptableLtProteoforms.Columns.Add("Light Intensity", typeof(double));
@@ -95,7 +102,7 @@ namespace PS_0._00
                 if (bool.Parse(row["Acceptable"].ToString()))
                 {
                     string lightFilename = row["Light Filename"].ToString();
-                    int lightNumber = int.Parse(row["Light No#"].ToString());
+                    int lightNumber = int.Parse(row["Light No."].ToString());
                     double ltMass = double.Parse(row["Light Mass"].ToString());
                     double ltMassCorrected = double.Parse(row["Light Mass Corrected"].ToString());
                     double ltIntensity = double.Parse(row["Light Intensity"].ToString());
@@ -214,8 +221,6 @@ namespace PS_0._00
             FillAggregatesTable();
         }
 
-        
-
         private void dgv_AggregatedProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             double mass;
@@ -233,11 +238,17 @@ namespace PS_0._00
                 }
 
                 //Round decimals before displaying
-                string[] rt_column_names = new string[] { "Aggregated Retention Time", "Light Retention Time" };
-                string[] intensity_column_names = new string[] { "Aggregated Intensity", "Light Intensity" };
-                string[] mass_column_names = new string[] { "Aggregated Mass", "Light Mass Corrected", "Light Mass" };
-                dataTableHandler.DisplayWithRoundedDoubles(dgv_AcceptNeuCdLtProteoforms, dtClone,
-                    rt_column_names, intensity_column_names, new string[] { }, mass_column_names);
+                dgv_AcceptNeuCdLtProteoforms.DataSource = dtClone;
+                dgv_AcceptNeuCdLtProteoforms.ReadOnly = true;
+                dgv_AcceptNeuCdLtProteoforms.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.####";
+                dgv_AcceptNeuCdLtProteoforms.Columns["Light Mass"].DefaultCellStyle.Format = "0.####";
+                dgv_AcceptNeuCdLtProteoforms.Columns["Light Mass Corrected"].DefaultCellStyle.Format = "0.####";
+                dgv_AcceptNeuCdLtProteoforms.Columns["Aggregated Retention Time"].DefaultCellStyle.Format = "0.##";
+                dgv_AcceptNeuCdLtProteoforms.Columns["Light Retention Time"].DefaultCellStyle.Format = "0.##";
+                dgv_AcceptNeuCdLtProteoforms.Columns["Aggregated Intensity"].DefaultCellStyle.Format = "0";
+                dgv_AcceptNeuCdLtProteoforms.Columns["Light Retention Time"].DefaultCellStyle.Format = "0";
+                dgv_AcceptNeuCdLtProteoforms.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+                dgv_AcceptNeuCdLtProteoforms.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
             }
         }
 
@@ -274,6 +285,36 @@ namespace PS_0._00
             {
                 ZeroAggregateMasses();
                 AggregateNeuCodeLightProteoforms();
+            }
+        }
+
+        public override string ToString()
+        {
+            return String.Join(System.Environment.NewLine, new string[] {
+                "AggregatedProteoforms|nUP_mass_tolerance.Value\t" + nUP_mass_tolerance.Value.ToString(),
+                "AggregatedProteoforms|nUD_RetTimeToleranace.Value\t" + nUD_RetTimeToleranace.Value.ToString(),
+                "AggregatedProteoforms|nUD_Missed_Monos.Value\t" + nUD_Missed_Monos.Value.ToString(),
+                "AggregatedProteoforms|nUD_Missed_Ks.Value\t" + nUD_Missed_Ks.Value.ToString(),
+            });
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "nUP_mass_tolerance.Value":
+                    nUP_mass_tolerance.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_RetTimeToleranace.Value":
+                    nUD_RetTimeToleranace.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_Missed_Monos.Value":
+                    nUD_Missed_Monos.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_Missed_Ks.Value":
+                    nUD_Missed_Ks.Value = Convert.ToDecimal(fields[1]);
+                    break;
             }
         }
     }

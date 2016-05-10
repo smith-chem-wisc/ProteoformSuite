@@ -17,7 +17,6 @@ namespace PS_0._00
     {
         DataTable eePairsList = new DataTable(); // this is a list of all individual EE pairs with mass difference smaller than the threshold
         DataTable eePeakList = new DataTable(); // these are the aggregated peaks coming from groups of individual EE pairs.
-        //DataTableHandler dataTableHandler = new DataTableHandler();
         Boolean formLoadEvent; // this is needed to prevent firing of ParameterSet events from firing on form load and let them fire only when the values are actually changed
 
         public ExperimentExperimentComparison()
@@ -28,19 +27,26 @@ namespace PS_0._00
             dgv_EE_Peak_List.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
         }
 
-        private void ExperimentExperimentComparison_Load(object sender, EventArgs e)
+        public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
+        {
+            if (!GlobalData.experimentTheoreticalPairs.Columns.Contains("Acceptable Peak"))
+            {
+                run_comparison();
+            }
+            GraphEEHistogram();
+            FillEEPeakListTable();
+            FillEEPairsGridView();
+            GraphEEPairsList();
+        }
 
+        public void run_comparison()
         {
             this.Cursor = Cursors.WaitCursor;
             formLoadEvent = true;
             InitializeParameterSet();
             FindAllEEPairs();
             CalculateRunningSums();
-            GraphEEHistogram();
             eePeakList = InitializeEEPeakListTable();
-            FillEEPeakListTable();
-            FillEEPairsGridView();
-            GraphEEPairsList();
             UpdateFiguresOfMerit();
             formLoadEvent = false;
             this.Cursor = Cursors.Default;
@@ -61,6 +67,75 @@ namespace PS_0._00
             xMaxEE.Value = nUD_EE_Upper_Bound.Value;
             this.Cursor = Cursors.Default;
         }
+
+        Point? prevPosition = null;
+        ToolTip tooltip = new ToolTip();
+
+        void ct_EE_Histogram_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = e.Location;
+            if (prevPosition.HasValue && pos == prevPosition.Value)
+                return;
+            tooltip.RemoveAll();
+            prevPosition = pos;
+            var results = ct_EE_Histogram.HitTest(pos.X, pos.Y, false,
+                                            ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) // &&
+                            //Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            tooltip.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_EE_Histogram,
+                                            pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
+        }
+
+        Point? prevPosition2 = null;
+        ToolTip tooltip2 = new ToolTip();
+
+        void ct_EE_peakList_MouseMove(object sender, MouseEventArgs e)
+        {
+            var pos = e.Location;
+            if (prevPosition2.HasValue && pos == prevPosition2.Value)
+                return;
+            tooltip2.RemoveAll();
+            prevPosition2 = pos;
+            var results = ct_EE_peakList.HitTest(pos.X, pos.Y, false,
+                                            ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2)// &&
+                            //Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            tooltip2.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_EE_peakList,
+                                            pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
+        }
+
 
         private void dgv_EE_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
@@ -91,7 +166,7 @@ namespace PS_0._00
 
             ct_EE_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - Convert.ToDouble(nUD_PeakWidthBase.Value);
             ct_EE_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) + Convert.ToDouble(nUD_PeakWidthBase.Value);
-            ct_EE_peakList.Series["eePeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+           // ct_EE_peakList.Series["eePeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
             ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
             {
                 BorderColor = Color.Red,
@@ -292,6 +367,8 @@ namespace PS_0._00
             dgv_EE_Peak_List.Columns["Average Delta Mass"].ReadOnly = true;
             dgv_EE_Peak_List.Columns["Peak Count"].ReadOnly = true;
             dgv_EE_Peak_List.Columns["Average Delta Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_EE_Peak_List.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_EE_Peak_List.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
             dgv_EE_Peak_List.EndEdit();
             dgv_EE_Peak_List.Refresh();
 
@@ -355,6 +432,8 @@ namespace PS_0._00
             dgv_EE_Pairs.Columns["Retention Time Heavy"].DefaultCellStyle.Format = "0.##";
             dgv_EE_Pairs.Columns["Delta Mass"].DefaultCellStyle.Format = "0.#####";
             dgv_EE_Pairs.Columns["Peak Center Mass"].DefaultCellStyle.Format = "0.#####";
+            dgv_EE_Pairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_EE_Pairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
 
         private DataTable CreateEEPairsDataTable()
@@ -465,11 +544,9 @@ namespace PS_0._00
             nUD_NoManLower.Maximum = 0.49m;
             //  nUD_NoManLower.Value = 0.22m;
 
-
             nUD_NoManUpper.Minimum = 0.50m;
             nUD_NoManUpper.Maximum = 1.00m;
             //   nUD_NoManUpper.Value = 0.88m;
-
 
             nUD_PeakWidthBase.Minimum = 0.001m;
             nUD_PeakWidthBase.Maximum = 0.5000m;
@@ -607,6 +684,36 @@ namespace PS_0._00
         private void EE_update_Click(object sender, EventArgs e)
         {
             RunTheGamut();
+        }
+
+        public override string ToString()
+        {
+            return String.Join(System.Environment.NewLine, new string[] {
+                "ExperimentExperimentComparison|nUD_NoManLower.Value\t" + nUD_NoManLower.Value.ToString(),
+                "ExperimentExperimentComparison|nUD_NoManUpper.Value\t" + nUD_NoManUpper.Value.ToString(),
+                "ExperimentExperimentComparison|nUD_PeakWidthBase.Value\t" + nUD_PeakWidthBase.Value.ToString(),
+                "ExperimentExperimentComparison|nUD_PeakCountMinThreshold.Value\t" + nUD_PeakCountMinThreshold.Value.ToString()
+            });
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "nUD_NoManLower.Value":
+                    nUD_NoManLower.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_NoManUpper.Value":
+                    nUD_NoManUpper.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_PeakWidthBase.Value":
+                    nUD_PeakWidthBase.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_PeakCountMinThreshold.Value":
+                    nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(fields[1]);
+                    break;
+            }
         }
     }
 }

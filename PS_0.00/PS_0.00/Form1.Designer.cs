@@ -35,8 +35,6 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.processingPhaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadDeconvolutionResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,6 +46,10 @@
             this.experimentDecoyComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.experimentExperimentComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.proteoformFamilyAssignmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.runMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.generateMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -56,7 +58,8 @@
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.processingPhaseToolStripMenuItem});
+            this.processingPhaseToolStripMenuItem,
+            this.runMethodToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
@@ -71,8 +74,6 @@
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem,
             this.printToolStripMenuItem,
-            this.loadMethodToolStripMenuItem,
-            this.saveMethodToolStripMenuItem,
             this.closeToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 22);
@@ -81,49 +82,35 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.saveAsToolStripMenuItem.Text = "Save As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
             // printToolStripMenuItem
             // 
             this.printToolStripMenuItem.Name = "printToolStripMenuItem";
-            this.printToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.printToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.printToolStripMenuItem.Text = "Print";
             this.printToolStripMenuItem.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
-            // 
-            // loadMethodToolStripMenuItem
-            // 
-            this.loadMethodToolStripMenuItem.Name = "loadMethodToolStripMenuItem";
-            this.loadMethodToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
-            this.loadMethodToolStripMenuItem.Text = "Load Method";
-            this.loadMethodToolStripMenuItem.Click += new System.EventHandler(this.loadMethodToolStripMenuItem_Click);
-            // 
-            // saveMethodToolStripMenuItem
-            // 
-            this.saveMethodToolStripMenuItem.Name = "saveMethodToolStripMenuItem";
-            this.saveMethodToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
-            this.saveMethodToolStripMenuItem.Text = "Save Method";
-            this.saveMethodToolStripMenuItem.Click += new System.EventHandler(this.saveMethodToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -206,6 +193,38 @@
             this.proteoformFamilyAssignmentToolStripMenuItem.Text = "Proteoform Family Assignment";
             this.proteoformFamilyAssignmentToolStripMenuItem.Click += new System.EventHandler(this.proteoformFamilyAssignmentToolStripMenuItem_Click);
             // 
+            // runMethodToolStripMenuItem
+            // 
+            this.runMethodToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.generateMethodToolStripMenuItem,
+            this.saveMethodToolStripMenuItem1,
+            this.loadRunToolStripMenuItem});
+            this.runMethodToolStripMenuItem.Name = "runMethodToolStripMenuItem";
+            this.runMethodToolStripMenuItem.Size = new System.Drawing.Size(61, 22);
+            this.runMethodToolStripMenuItem.Text = "Method";
+            // 
+            // generateMethodToolStripMenuItem
+            // 
+            this.generateMethodToolStripMenuItem.Enabled = false;
+            this.generateMethodToolStripMenuItem.Name = "generateMethodToolStripMenuItem";
+            this.generateMethodToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.generateMethodToolStripMenuItem.Text = "Generate Method";
+            this.generateMethodToolStripMenuItem.Click += new System.EventHandler(this.generateMethodToolStripMenuItem_Click);
+            // 
+            // saveMethodToolStripMenuItem1
+            // 
+            this.saveMethodToolStripMenuItem1.Name = "saveMethodToolStripMenuItem1";
+            this.saveMethodToolStripMenuItem1.Size = new System.Drawing.Size(166, 22);
+            this.saveMethodToolStripMenuItem1.Text = "Save Method";
+            this.saveMethodToolStripMenuItem1.Click += new System.EventHandler(this.saveMethodToolStripMenuItem1_Click);
+            // 
+            // loadRunToolStripMenuItem
+            // 
+            this.loadRunToolStripMenuItem.Name = "loadRunToolStripMenuItem";
+            this.loadRunToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.loadRunToolStripMenuItem.Text = "Load && Run";
+            this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -246,8 +265,10 @@
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem printToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadMethodToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveMethodToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem runMethodToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem generateMethodToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadRunToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveMethodToolStripMenuItem1;
     }
 }
 
