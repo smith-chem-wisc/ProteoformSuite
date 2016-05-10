@@ -164,6 +164,16 @@ namespace PS_0._00
             proteinRawInfo = ProteomeDatabaseReader.ReadUniprotXml(tb_UniProtXML_Path.Text, minPeptideLength, cleavedMethionine).ToArray();
             Dictionary<string, Modification> uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
 
+
+            //consolodate proteins that have identical sequencs into protein groups. this also aggregates ptms
+            
+            List<string> sequences = new List<string>();
+            sequences = ProteinSequenceGroups.uniqueProteinSequences(proteinRawInfo);
+            ProteinSequenceGroups[] psgs = new ProteinSequenceGroups[sequences.Count];
+            psgs = ProteinSequenceGroups.consolidateProteins(proteinRawInfo, sequences);
+
+            //ProteinSequenceGroups.printProteinGroupArray(psgs);
+
             //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
             string giantProtein = GetOneGiantProtein(proteinRawInfo, cleavedMethionine);
             processEntries(proteinRawInfo, cleavedMethionine, aaIsotopeMassList, maxPtms, uniprotModificationTable);
