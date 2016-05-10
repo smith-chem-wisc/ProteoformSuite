@@ -16,7 +16,7 @@ namespace PS_0._00
     {
         DataTable etPeaksList = new DataTable();  // These are the aggregated peaks that are integrated from the histogram of the individual ET pairs.
         DataTable etPairsList = new DataTable(); // These are the individual experiment to theoretical pairs with delta mass less than the threshold
-        Boolean formLoadEvent;
+        Boolean formLoadEvent = true;
 
         public ExperimentTheoreticalComparison()
         {
@@ -28,21 +28,28 @@ namespace PS_0._00
             dgv_ET_Peak_List.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
         }
 
-        private void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
+        public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
+        {
+            if (!GlobalData.experimentTheoreticalPairs.Columns.Contains("Acceptable Peak"))
+            {
+                run_comparison();
+            }
+            GraphETHistogram();
+            FillETPeakListTable();
+            FillETPairsGridView();
+            GraphETPairsList();
+        }
+
+        public void run_comparison()
         {
             formLoadEvent = true;
             InitializeParameterSet();
             FindAllETPairs();
-            CalculateRunningSums();         
-            GraphETHistogram();
+            CalculateRunningSums();
             etPeaksList = InitializeETPeakListTable();
-            FillETPeakListTable();
-            FillETPairsGridView();
-            GraphETPairsList();
             UpdateFiguresOfMerit();
             formLoadEvent = false;
         }
-
 
         private void RunTheGamut()
         {
@@ -608,7 +615,6 @@ namespace PS_0._00
 
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e) // lower bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
         {
-
             if (!formLoadEvent)
             {
                 RunTheGamut();
@@ -700,6 +706,26 @@ namespace PS_0._00
                 "ExperimentTheoreticalComparison|nUD_PeakWidthBase.Value\t" + nUD_PeakWidthBase.Value.ToString(),
                 "ExperimentTheoreticalComparison|nUD_PeakCountMinThreshold.Value\t" + nUD_PeakCountMinThreshold.Value.ToString()
             });
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "nUD_NoManLower.Value":
+                    nUD_NoManLower.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_NoManUpper.Value":
+                    nUD_NoManUpper.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_PeakWidthBase.Value":
+                    nUD_PeakWidthBase.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_PeakCountMinThreshold.Value":
+                    nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(fields[1]);
+                    break;
+            }
         }
     }
 }

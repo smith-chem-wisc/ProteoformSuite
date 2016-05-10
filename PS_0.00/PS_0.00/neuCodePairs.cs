@@ -21,9 +21,11 @@ namespace PS_0._00
             this.ct_LysineCount.MouseMove += new MouseEventHandler(ct_LysineCount_MouseMove);
         }
 
-        private void NeuCodePairs_Load(object sender, EventArgs e)
+        public void NeuCodePairs_Load(object sender, EventArgs e)
         {
-            GlobalData.rawNeuCodePairs = CreateRawNeuCodePairsDataTable();
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Lysine Count")) {
+                GlobalData.rawNeuCodePairs = CreateRawNeuCodePairsDataTable();
+            }
             Dictionary<string, List<string>> fileNameScanRanges = GetSFileNameScanRangesList();
             FillRawNeuCodePairsDataTable(fileNameScanRanges);
             FillNeuCodePairsDGV();
@@ -457,47 +459,50 @@ namespace PS_0._00
             ct_IntensityRatio.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxIRat.Value.ToString());
         }
 
-        private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
+        private void parse_neucode_param_change(string expression)
         {
-            string expression = "[Lysine Count] < " + double.Parse(KMinAcceptable.Value.ToString());
             DataRow[] rows = GlobalData.rawNeuCodePairs.Select(expression);
             foreach (DataRow row in rows)
             {
                 row["Acceptable"] = false;
             }
             dgv_RawExpNeuCodePairs.Refresh();
+        }
+
+        private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
+        {
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Lysine Count")) { }
+            else {
+                string expression = "[Lysine Count] < " + double.Parse(KMinAcceptable.Value.ToString());
+                parse_neucode_param_change(expression);
+            }
         }
 
         private void KMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            string expression = "[Lysine Count] > " + double.Parse(KMaxAcceptable.Value.ToString());
-            DataRow[] rows = GlobalData.rawNeuCodePairs.Select(expression);
-            foreach (DataRow row in rows)
-            {
-                row["Acceptable"] = false;
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Lysine Count")) { }
+            else {
+                string expression = "[Lysine Count] > " + double.Parse(KMaxAcceptable.Value.ToString());
+                parse_neucode_param_change(expression);
             }
-            dgv_RawExpNeuCodePairs.Refresh();
         }
+
         private void IRatMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            string expression = "[Intensity Ratio] < " + double.Parse(IRatMinAcceptable.Value.ToString());
-            DataRow[] rows = GlobalData.rawNeuCodePairs.Select(expression);
-            foreach (DataRow row in rows)
-            {
-                row["Acceptable"] = false;
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Intensity Ratio")) { }
+            else {
+                string expression = "[Intensity Ratio] < " + double.Parse(IRatMinAcceptable.Value.ToString());
+                parse_neucode_param_change(expression);
             }
-            dgv_RawExpNeuCodePairs.Refresh();
         }
 
         private void IRatMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            string expression = "[Intensity Ratio] > " + double.Parse(IRatMaxAcceptable.Value.ToString());
-            DataRow[] rows = GlobalData.rawNeuCodePairs.Select(expression);
-            foreach (DataRow row in rows)
-            {
-                row["Acceptable"] = false;
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Intensity Ratio")) { }
+            else {
+                string expression = "[Intensity Ratio] > " + double.Parse(IRatMaxAcceptable.Value.ToString());
+                parse_neucode_param_change(expression);
             }
-            dgv_RawExpNeuCodePairs.Refresh();
         }
 
         public override string ToString()
@@ -508,6 +513,26 @@ namespace PS_0._00
                 "NeuCodePairs|IRatMaxAcceptable.Value\t" + IRatMaxAcceptable.Value.ToString(),
                 "NeuCodePairs|IRatMinAcceptable.Value\t" + IRatMinAcceptable.Value.ToString()
             });
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "KMaxAcceptable.Value":
+                    KMaxAcceptable.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "KMinAcceptable.Value":
+                    KMinAcceptable.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "IRatMaxAcceptable.Value":
+                    IRatMaxAcceptable.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "IRatMinAcceptable.Value":
+                    IRatMinAcceptable.Value = Convert.ToDecimal(fields[1]);
+                    break;
+            }
         }
     }
 }

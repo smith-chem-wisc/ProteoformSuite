@@ -22,17 +22,25 @@ namespace PS_0._00
             this.dgv_ED_Peak_List.MouseClick += new MouseEventHandler(dgv_ED_Peak_List_CellClick);
         }
 
-        private void ExperimentDecoyComparison_Load(object sender, EventArgs e)
+        public void ExperimentDecoyComparison_Load(object sender, EventArgs e)
+        {
+            if (!GlobalData.experimentTheoreticalPairs.Columns.Contains("Acceptable Peak"))
+            {
+                run_comparison();
+            }
+            GraphEDHistogram();
+            FillEDListTable();
+            //FillEDGridView("DecoyDatabase_0");
+            GraphETPeakList();
+            GraphEDList();
+        }
+
+        public void run_comparison()
         {
             InitializeParameterSet();
             FindAllEDPairs();
             CalculateRunningSums();
-            //FillEDGridView("DecoyDatabase_0");
-            GraphEDHistogram();
             InitializeEDListTable();
-            FillEDListTable();
-            GraphETPeakList();
-            GraphEDList();
             UpdateFiguresOfMerit();
         }
 
@@ -181,9 +189,6 @@ namespace PS_0._00
             }
         }
 
-
-
-
         private void EDListGraphParameters(int clickedRow)
         {
             ct_ED_peakList.ChartAreas[0].AxisX.StripLines.Clear();
@@ -301,7 +306,7 @@ namespace PS_0._00
 
         private void GraphEDHistogram()
         {
-           int i = (int)nud_Decoy_Database.Value - 1;
+            int i = (int)nud_Decoy_Database.Value - 1;
             string colName = "Delta Mass";
             string direction = "DESC";
             DataTable dt = GlobalData.experimentDecoyPairs.Tables["DecoyDatabase_" + i];
@@ -342,7 +347,6 @@ namespace PS_0._00
 
             return dt;
         }
-
 
         private void InitializeParameterSet()
         {
@@ -422,12 +426,32 @@ namespace PS_0._00
 
         public override string ToString()
         {
-            string s = "";
-            s += String.Join("\t", new string[] { "ExperimentDecoyComparison|nUD_NoManLower.Value", nUD_NoManLower.Value.ToString() });
-            s += String.Join("\t", new string[] { "ExperimentDecoyComparison|nUD_NoManUpper.Value", nUD_NoManUpper.Value.ToString() });
-            s += String.Join("\t", new string[] { "ExperimentDecoyComparison|nUD_PeakWidthBase.Value", nUD_PeakWidthBase.Value.ToString() });
-            s += String.Join("\t", new string[] { "ExperimentDecoyComparison|nud_Decoy_Database.Value", nud_Decoy_Database.Value.ToString() });
-            return s;
+            return String.Join(System.Environment.NewLine, new string[] {
+                    "ExperimentDecoyComparison|nUD_NoManLower.Value\t" + nUD_NoManLower.Value.ToString(),
+                    "ExperimentDecoyComparison|nUD_NoManUpper.Value\t" + nUD_NoManUpper.Value.ToString(),
+                    "ExperimentDecoyComparison|nUD_PeakWidthBase.Value\t" + nUD_PeakWidthBase.Value.ToString(),
+                    "ExperimentDecoyComparison|nud_Decoy_Database.Value\t" + nud_Decoy_Database.Value.ToString()
+            });
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "nUD_NoManLower.Value":
+                    nUD_NoManLower.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_NoManUpper.Value":
+                    nUD_NoManUpper.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_PeakWidthBase.Value":
+                    nUD_PeakWidthBase.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nud_Decoy_Database.Value":
+                    nud_Decoy_Database.Value = Convert.ToDecimal(fields[1]);
+                    break;
+            }
         }
     }
 }

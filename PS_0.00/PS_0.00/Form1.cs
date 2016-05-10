@@ -88,13 +88,11 @@ namespace PS_0._00
             {
                 showForm(experimentDecoyComparison);
             }
-
             else
             {
                 MessageBox.Show("Create at least 1 decoy database in Theoretical Proteoform Database in order to view Experiment - Decoy Comparison.");
             }
         }
-
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -105,23 +103,6 @@ namespace PS_0._00
         {
             showForm(proteoformFamilyAssignment);
         }
-
-        private void generateMethodToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var response = MessageBox.Show("This option does a dry run of the program.\n\nIt allows you to select input files and parameters to generate a method file.\n\nThen, select Load & Run from the Method drop-down menu to then perform the full run of ProteoformSuite.", "Generate Method", MessageBoxButtons.OKCancel);
-            if (response == DialogResult.OK)
-            {
-                foreach (Form form in forms)
-                {
-                    ThreadPool.QueueUserWorkItem(o => showForm(form));
-                    Thread t2 = new Thread(wait_message);
-                    t2.Start();
-                    t2.Join();
-                }
-            }
-        }
-
-        private void wait_message() { MessageBox.Show("Click OK when you are satisfied with the settings."); }
 
         private void saveMethod()
         {
@@ -139,14 +120,80 @@ namespace PS_0._00
             }
         }
 
+        private void generateMethodToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var response = MessageBox.Show("This option does a dry run of the program.\n\nIt allows you to select input files and parameters to generate a method file.\n\nThen, select Load & Run from the Method drop-down menu to then perform the full run of ProteoformSuite.", "Generate Method", MessageBoxButtons.OKCancel);
+            //if (response == DialogResult.OK)
+            //{
+            //    foreach (Form form in forms)
+            //    {
+            //        Show(Form);
+            //        Thread t2 = new Thread(wait_message);
+            //        t2.Start();
+            //        t2.Join();
+            //    }
+            //}
+        }
+
+        //private void wait_message() { MessageBox.Show("Click OK when you are satisfied with the settings."); }
+
         private void saveMethodToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("saveMethodToolStripMenuItem1_Click");
+            saveMethod();
         }
 
         private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("loadRunToolStripMenuItem_Click");
+            DialogResult dr = this.methodFileOpen.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                String filename = methodFileOpen.FileName;
+                string[] lines = File.ReadAllLines(filename);
+                foreach (string line in lines)
+                {
+                    string setting_specs = line.Trim();
+                    string[] fields = line.Split('\t');
+                    switch (fields[0].Split('|')[0])
+                    {
+                        case "AggregatedProteoforms":
+                            aggregatedProteoforms.loadSetting(setting_specs);
+                            break;
+                        case "LoadDeconvolutionResults":
+                            loadDeconvolutionResults.loadSetting(setting_specs);
+                            break;
+                        case "RawExperimentalComponents":
+                            rawExperimentalComponents.loadSetting(setting_specs);
+                            break;
+                        case "NeuCodePairs":
+                            neuCodePairs.loadSetting(setting_specs);
+                            break;
+                        case "ProteoformFamilyAssignment":
+                            proteoformFamilyAssignment.loadSetting(setting_specs);
+                            break;
+                        case "ExperimentExperimentComparison":
+                            experimentExperimentComparison.loadSetting(setting_specs);
+                            break;
+                        case "ExperimentTheoreticalComparison":
+                            experimentalTheoreticalComparison.loadSetting(setting_specs);
+                            break;
+                        case "ExperimentDecoyComparison":
+                            experimentDecoyComparison.loadSetting(setting_specs);
+                            break;
+                        case "TheoreticalDatabase":
+                            theoreticalDatabase.loadSetting(setting_specs);
+                            break;
+                    }
+                }
+                MessageBox.Show("Successfully loaded method. Will run the method now. (Will show as non-responsive).");
+                rawExperimentalComponents.pull_raw_experimental_components();
+                neuCodePairs.NeuCodePairs_Load(neuCodePairs, null);
+                aggregatedProteoforms.AggregatedProteoforms_Load(aggregatedProteoforms, null);
+                theoreticalDatabase.make_databases();
+                experimentalTheoreticalComparison.run_comparison();
+                experimentDecoyComparison.run_comparison();
+                experimentExperimentComparison.run_comparison();
+                proteoformFamilyAssignment.ProteoformFamilyAssignment_Load(proteoformFamilyAssignment, null);
+            }
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)

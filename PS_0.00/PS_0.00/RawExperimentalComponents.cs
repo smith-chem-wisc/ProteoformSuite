@@ -46,11 +46,20 @@ namespace PS_0._00
                 GlobalData.repeat = true;
                 return;
             }
+
+            if (!GlobalData.rawExperimentalComponents.Columns.Contains("Monoisotopic Mass"))
+            {
+                pull_raw_experimental_components();
+            }
+            FillRawExpComponentsTable();
+        }
+
+        public void pull_raw_experimental_components()
+        {
             GlobalData.deconResultsFiles = GetDeconResults();
             GlobalData.rawExperimentalComponents = GetRawComponents();
             GlobalData.rawExperimentalChargeStateData = GetRawChargeStates();
             CalculateWeightedMonoisotopicMass();
-            FillRawExpComponentsTable();
         }
 
         private void FillRawExpComponentsTable()
@@ -385,6 +394,16 @@ namespace PS_0._00
         public override string ToString()
         {
             return "RawExperimentalComponents|";
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "":
+                    break;
+            }
         }
     }
 }
