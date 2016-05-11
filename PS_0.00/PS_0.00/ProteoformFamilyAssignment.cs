@@ -538,14 +538,28 @@ namespace PS_0._00
             {
                 foreach (DataRow row in dt.Rows)
                 {
-                    ExportDataTable.Rows.Add((row["Accession"].ToString() + "_K=" + row["Lysine Count"].ToString()),
+                    if (row["PTM List"].Equals("unmodified"))
+                    {
+                        ExportDataTable.Rows.Add((row["Accession"].ToString() + "_K=" + row["Lysine Count"].ToString()),
+                            (row["Aggregated Mass"].ToString() + "_n=" //+ row["Running Sum"].ToString() 
+                            + "_K=" + row["Lysine Count"].ToString()),
+                            row["Delta Mass"],
+                            "Theoretical",
+                            "Experimental",
+                            10000000,
+                            row["Aggregated Intensity"]);
+                    }
+                    else
+                    {
+                        ExportDataTable.Rows.Add((row["Accession"].ToString() +row["PTM List"].ToString()+ "_K=" + row["Lysine Count"].ToString()),
                         (row["Aggregated Mass"].ToString() + "_n=" //+ row["Running Sum"].ToString() 
                         + "_K=" + row["Lysine Count"].ToString()),
                         row["Delta Mass"],
-                        "Theoretical",
+                        "TheoreticalWithPTM",
                         "Experimental",
                         10000000,
                         row["Aggregated Intensity"]);
+                    }
                 }
             }
         }
