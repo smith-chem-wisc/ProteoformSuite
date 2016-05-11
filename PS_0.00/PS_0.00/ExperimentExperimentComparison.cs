@@ -31,7 +31,7 @@ namespace PS_0._00
 
         public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
         {
-            if (GlobalData.experimentTheoreticalPairs.Columns.Count == 0)
+            if (GlobalData.experimentExperimentPairs.Columns.Count == 0)
             {
                 run_comparison();
             }
