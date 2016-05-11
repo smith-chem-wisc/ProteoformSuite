@@ -515,6 +515,7 @@ namespace PS_0._00
                 ExportDataTable.Columns.Add("Intensity #1", typeof(double));
                 ExportDataTable.Columns.Add("Intensity #2", typeof(double));
             }
+
             foreach (DataTable dt in GlobalData.ProteoformFamiliesEE.Tables)
             {
 
@@ -605,7 +606,9 @@ namespace PS_0._00
             }
 
             //Exporting to CSV.
-            File.WriteAllText(folderPath +"\\"+ filename, csv);
+
+            File.WriteAllText(folderPath + "\\" + filename, csv);
+
             MessageBox.Show("Export Successful!");
         }
 
