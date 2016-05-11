@@ -220,7 +220,7 @@ namespace PS_0._00
             int maxPTMsPerProteoform, Dictionary<string, Modification> uniprotModificationTable)
         {
 
-            DataTable target = GenerateProteoformDatabaseDataTable("target");
+            DataTable target = GenerateProteoformDatabaseDataTable("Target");
 
             for (int i = 0; i < proteinRawData.Length; i++)
             {
@@ -236,7 +236,7 @@ namespace PS_0._00
             int maxPTMsPerProteoform, Dictionary<string, Modification> uniprotModificationTable)
         {
 
-            DataTable target = GenerateProteoformDatabaseDataTable("target");
+            DataTable target = GenerateProteoformDatabaseDataTable("Target");
 
             for (int i = 0; i < psgs.Length; i++)
             {
