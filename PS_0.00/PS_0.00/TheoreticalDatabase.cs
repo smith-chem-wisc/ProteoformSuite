@@ -213,7 +213,6 @@ namespace PS_0._00
         static void processDecoys(int numDb, string giantProtein, Protein[] proteinRawData, bool methionineCleavage, Dictionary<char, double> aaIsotopeMassList, 
             int maxPTMsPerProteoform, Dictionary<string, Modification> uniprotModificationTable)
         {
-            Random rng = new Random();
             for (int decoyNumber = 0; decoyNumber < numDb; decoyNumber++)
             {
                 DataTable decoy = GenerateProteoformDatabaseDataTable("DecoyDatabase_" + decoyNumber);
