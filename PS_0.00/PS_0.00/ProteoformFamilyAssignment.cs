@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,6 +26,17 @@ namespace PS_0._00
         private SplitContainer splitContainer3;
         private DataGridView dataGridView3;
         DataRow[] foundRowsSingle;
+        private Button button1;
+        private Button button2;
+        private TextBox textBox1;
+        private TextBox textBox2;
+        private Label label1;
+        public static string filename = "";
+        public static string csv = "";
+        public static DataTable ExportDataTable = new DataTable();
+        public static string folderPath = "";
+        //OpenFileDialog openFileDialog1 = new OpenFileDialog();
+        FolderBrowserDialog FolderBrowserDialog1 = new FolderBrowserDialog();
 
         public ProteoformFamilyAssignment()
         {
@@ -39,6 +51,11 @@ namespace PS_0._00
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -50,6 +67,7 @@ namespace PS_0._00
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
+            this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
@@ -127,6 +145,14 @@ namespace PS_0._00
             this.splitContainer3.Name = "splitContainer3";
             this.splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
+            // splitContainer3.Panel1
+            // 
+            this.splitContainer3.Panel1.Controls.Add(this.label1);
+            this.splitContainer3.Panel1.Controls.Add(this.textBox2);
+            this.splitContainer3.Panel1.Controls.Add(this.textBox1);
+            this.splitContainer3.Panel1.Controls.Add(this.button2);
+            this.splitContainer3.Panel1.Controls.Add(this.button1);
+            // 
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.dataGridView3);
@@ -144,6 +170,51 @@ namespace PS_0._00
             this.dataGridView3.Size = new System.Drawing.Size(264, 222);
             this.dataGridView3.TabIndex = 0;
             this.dataGridView3.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView3_CellContentClick_1);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(19, 22);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(127, 33);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "Select Directory:\r\n";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(19, 112);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(127, 33);
+            this.button2.TabIndex = 1;
+            this.button2.Text = "Export CSV\r\n\r\n";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(152, 27);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 22);
+            this.textBox1.TabIndex = 2;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(152, 74);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(100, 22);
+            this.textBox2.TabIndex = 3;
+            this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(47, 74);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(75, 17);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "File Name:\r\n";
             // 
             // ProteoformFamilyAssignment
             // 
@@ -164,6 +235,8 @@ namespace PS_0._00
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.splitContainer3.Panel1.ResumeLayout(false);
+            this.splitContainer3.Panel1.PerformLayout();
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
@@ -429,6 +502,66 @@ namespace PS_0._00
             }
         }
 
+        private void ExportProteoformFamilies()
+        {
+            if (ExportDataTable.Columns.Count == 0)
+            {
+                ExportDataTable.Columns.Add("Mass #1", typeof(string));
+                ExportDataTable.Columns.Add("Mass #2", typeof(string));
+                ExportDataTable.Columns.Add("Delta Mass", typeof(double));
+                ExportDataTable.Columns.Add("Type #1", typeof(string));
+                ExportDataTable.Columns.Add("Type #2", typeof(string));
+                ExportDataTable.Columns.Add("Intensity #1", typeof(double));
+                ExportDataTable.Columns.Add("Intensity #2", typeof(double));
+            }
+
+            foreach (DataTable dt in GlobalData.ProteoformFamiliesEE.Tables)
+            {
+
+                foreach (DataRow row in dt.Rows)
+                {
+
+                    ExportDataTable.Rows.Add((row["Aggregated Mass Light"].ToString() //+ "_n=" + row["Running Sum"].ToString() 
+                        + "_K=" + row["Lysine Count"].ToString()),
+                        (row["Aggregated Mass Heavy"].ToString() //+ "_n=" + row["Running Sum"].ToString() + "_K=" 
+                        + row["Lysine Count"].ToString()),
+                        row["Delta Mass"],
+                        "Experimental",
+                        "Experimental",
+                        row["Aggregated Intensity Light"],
+                        row["Aggregated Intensity Heavy"]);
+                }
+            }
+            foreach (DataTable dt in GlobalData.ProteoformFamiliesET.Tables)
+            {
+                foreach (DataRow row in dt.Rows)
+                {
+                    if (row["PTM List"].Equals("unmodified"))
+                    {
+                        ExportDataTable.Rows.Add((row["Accession"].ToString() + "_K=" + row["Lysine Count"].ToString()),
+                            (row["Aggregated Mass"].ToString() + "_n=" //+ row["Running Sum"].ToString() 
+                            + "_K=" + row["Lysine Count"].ToString()),
+                            row["Delta Mass"],
+                            "Theoretical",
+                            "Experimental",
+                            10000000,
+                            row["Aggregated Intensity"]);
+                    }
+                    else
+                    {
+                        ExportDataTable.Rows.Add((row["Accession"].ToString() +row["PTM List"].ToString()+ "_K=" + row["Lysine Count"].ToString()),
+                        (row["Aggregated Mass"].ToString() + "_n=" //+ row["Running Sum"].ToString() 
+                        + "_K=" + row["Lysine Count"].ToString()),
+                        row["Delta Mass"],
+                        "TheoreticalWithPTM",
+                        "Experimental",
+                        10000000,
+                        row["Aggregated Intensity"]);
+                    }
+                }
+            }
+        }
+
         private void dataGridView3_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
@@ -456,6 +589,7 @@ namespace PS_0._00
 
         }//called in dataGridView1_CellContentClick_1
 
+
         public override string ToString()
         {
             return "ProteoformFamilyAssignment|";
@@ -469,6 +603,65 @@ namespace PS_0._00
                 case "":
                     break;
             }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            textBox2_TextChanged(sender, e);
+
+            //Build the CSV file data as a Comma separated string.
+            csv = "";
+
+            //Add the Header row for CSV file.
+            foreach (DataColumn column in ExportDataTable.Columns)
+            {
+                csv += column.ColumnName + '\t';
+            }
+
+            //Add new line.
+            csv += "\r\n";
+
+            //Adding the Rows
+            foreach (DataRow row in ExportDataTable.Rows)
+            {
+                for (int i = 0; i < ExportDataTable.Columns.Count; i++)
+                {
+                    //Add the Data rows.
+                    csv += row[i].ToString() + '\t';
+                }
+
+                //Add new line.
+                csv += "\r\n";
+            }
+
+            //Exporting to CSV.
+            File.WriteAllText(folderPath + "\\" + filename, csv);
+            MessageBox.Show("Export Successful!");
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            filename = this.textBox2.Text.ToString();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = this.FolderBrowserDialog1.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                folderPath = FolderBrowserDialog1.SelectedPath;
+            }
+            //this.openFileDialog1.Filter = "Folder (*.00)|*.00";
+            //folderPath = openFileDialog1.FileName.ToString();
+            //DialogResult dr = this.openFileDialog1.ShowDialog();
+            //folderPath = dr.ToString();
+            textBox1.Text = folderPath;
+            //folderPath = textBox1.ToString();
         }
     }
 }

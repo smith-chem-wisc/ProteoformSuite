@@ -317,5 +317,10 @@ namespace PS_0._00
                     break;
             }
         }
+
+        private void dgv_AcceptNeuCdLtProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
     }
 }
