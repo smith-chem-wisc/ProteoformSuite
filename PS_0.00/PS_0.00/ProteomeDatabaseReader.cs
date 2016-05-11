@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -143,99 +144,113 @@ namespace PS_0._00
 
         public static IEnumerable<Protein> ReadUniprotXml(string uniprotXmlFile, int minPeptideLength, bool fixedMethionineCleavage)
         {
-            StreamReader uniprotXmlStream = new StreamReader(uniprotXmlFile);
-            XDocument xml = XDocument.Parse(uniprotXmlStream.ReadToEnd());
-            XNamespace ns = xml.Root.Name.Namespace;
-
-            IEnumerable<XElement> entries = from node in xml.Descendants() where node.Name.LocalName == "entry" select node;
-            foreach (XElement entry in entries)
+            StreamReader uniprotXmlStream;
+            using (var stream = new FileStream(uniprotXmlFile, FileMode.Open))
             {
-                //Used fields
-                string dataset = GetAttribute(entry, "dataset");
-                string accession = GetChild(entry, "accession").Value;
-                string full_name = GetDescendant(entry, "fullName").Value;
-                IEnumerable<XElement> features = from node in entry.Elements() where node.Name.LocalName == "feature" select node;
-                XElement sequence_elem = GetChild(entry, "sequence");
-                string sequence = sequence_elem.Value.Replace("\r", null).Replace("\n", null);
-                string fragment = GetAttribute(sequence_elem, "fragment");
-                if (fragment == "" || fragment == null)
+                Stream uniprotXmlFileStream;
+                if (uniprotXmlFile.EndsWith(".gz"))
                 {
-                    fragment = "Full";
-                    if (fixedMethionineCleavage) { fragment += "_MetCleaved";  }
+                    uniprotXmlFileStream = new GZipStream(stream, CompressionMode.Decompress);
                 }
-                int begin = 0;
-                int end = sequence.Length - 1;
-                Dictionary<int, List<string>> positionsAndPtms = new Dictionary<int, List<string>>();
-
-                //Other fields
-                //Full name follows desired order: recommendedName > submittedName > alternativeName because these appear in this order in UniProt-XMLs
-                string name = GetChild(entry, "name").Value;
-                string organism = GetChild(GetChild(entry, "organism"), "name").Value;
-                string gene_name = GetChild(GetChild(entry, "gene"), "name").Value;
-                string protein_existence = GetAttribute(GetChild(entry, "proteinExistence"), "type"); 
-                string sequence_version = GetAttribute(sequence_elem, "version");
-
-                //Process the modified residues
-                foreach (XElement feature in features)
+                else
                 {
-                    string feature_type = GetAttribute(feature, "type");
-                    if (feature_type == "modified residue")
+                    uniprotXmlFileStream = stream;
+                }
+                uniprotXmlStream = new StreamReader(uniprotXmlFileStream);
+
+                XDocument xml = XDocument.Parse(uniprotXmlStream.ReadToEnd());
+                XNamespace ns = xml.Root.Name.Namespace;
+
+                IEnumerable<XElement> entries = from node in xml.Descendants() where node.Name.LocalName == "entry" select node;
+                foreach (XElement entry in entries)
+                {
+                    //Used fields
+                    string dataset = GetAttribute(entry, "dataset");
+                    string accession = GetChild(entry, "accession").Value;
+                    string full_name = GetDescendant(entry, "fullName").Value;
+                    IEnumerable<XElement> features = from node in entry.Elements() where node.Name.LocalName == "feature" select node;
+                    XElement sequence_elem = GetChild(entry, "sequence");
+                    string sequence = sequence_elem.Value.Replace("\r", null).Replace("\n", null);
+                    string fragment = GetAttribute(sequence_elem, "fragment");
+                    if (fragment == "" || fragment == null)
                     {
-                        XElement feature_position_elem = GetDescendant(feature, "position");
-                        int feature_position = ConvertPositionElem(feature_position_elem);
-                        if (feature_position >= 0)
-                        {
-                            string feature_description = GetAttribute(feature, "description").Split(';')[0];
-                            List<string> modListAtPos;
-                            if (positionsAndPtms.TryGetValue(feature_position, out modListAtPos))
-                            {
-                                modListAtPos.Add(feature_description);
-                            }
-                            else
-                            {
-                                modListAtPos = new List<string> { feature_description };
-                                positionsAndPtms.Add(feature_position, modListAtPos);
-                            }
-                        }
-                        else { continue; }
+                        fragment = "Full";
+                        if (fixedMethionineCleavage) { fragment += "_MetCleaved"; }
                     }
-                }
-                
-                //Add the full length protein, and then add the fragments with segments of the above modification dictionary
-                yield return new Protein(accession, full_name, fragment, begin, end, sequence, positionsAndPtms);
-                //MessageBox.Show("added " + new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms).ToString());
-                foreach (XElement feature in features)
-                {
-                    string feature_type = GetAttribute(feature, "type");
-                    switch (feature_type)
-                    {
-                        case "chain":
-                        case "signal peptide":
-                        case "propeptide":
-                        case "peptide":
-                            XElement feature_begin_elem = GetDescendant(feature, "begin");
-                            XElement feature_end_elem = GetDescendant(feature, "end");
-                            int feature_begin = ConvertPositionElem(feature_begin_elem);
-                            int feature_end = ConvertPositionElem(feature_end_elem);
-                            if (feature_begin != -1 && feature_end != -1)
-                            {
-                                bool justMetCleavage = fixedMethionineCleavage && feature_begin - 1 == begin && feature_end == end;
-                                string subsequence = sequence.Substring(feature_begin, feature_end - feature_begin + 1);
-                                if (!justMetCleavage && 
-                                    subsequence.Length != sequence.Length && 
-                                    subsequence.Length >= minPeptideLength)
-                                {
-                                    yield return new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence, 
-                                        SegmentPtms(positionsAndPtms, feature_begin, feature_end));
-                                    //MessageBox.Show("added " + new Protein(accession, name, feature_type, feature_begin, feature_end, subsequence,
-                                    //    SegmentPtms(positionsAndPtms, feature_begin, feature_end)).ToString());
+                    int begin = 0;
+                    int end = sequence.Length - 1;
+                    Dictionary<int, List<string>> positionsAndPtms = new Dictionary<int, List<string>>();
 
+                    //Other fields
+                    //Full name follows desired order: recommendedName > submittedName > alternativeName because these appear in this order in UniProt-XMLs
+                    string name = GetChild(entry, "name").Value;
+                    string organism = GetChild(GetChild(entry, "organism"), "name").Value;
+                    string gene_name = GetChild(GetChild(entry, "gene"), "name").Value;
+                    string protein_existence = GetAttribute(GetChild(entry, "proteinExistence"), "type");
+                    string sequence_version = GetAttribute(sequence_elem, "version");
+
+                    //Process the modified residues
+                    foreach (XElement feature in features)
+                    {
+                        string feature_type = GetAttribute(feature, "type");
+                        if (feature_type == "modified residue")
+                        {
+                            XElement feature_position_elem = GetDescendant(feature, "position");
+                            int feature_position = ConvertPositionElem(feature_position_elem);
+                            if (feature_position >= 0)
+                            {
+                                string feature_description = GetAttribute(feature, "description").Split(';')[0];
+                                List<string> modListAtPos;
+                                if (positionsAndPtms.TryGetValue(feature_position, out modListAtPos))
+                                {
+                                    modListAtPos.Add(feature_description);
+                                }
+                                else
+                                {
+                                    modListAtPos = new List<string> { feature_description };
+                                    positionsAndPtms.Add(feature_position, modListAtPos);
                                 }
                             }
-                            break;
-                        case "splice variant":
-                        case "sequence variant":
-                            break;
+                            else { continue; }
+                        }
+                    }
+
+                    //Add the full length protein, and then add the fragments with segments of the above modification dictionary
+                    yield return new Protein(accession, full_name, fragment, begin, end, sequence, positionsAndPtms);
+                    //MessageBox.Show("added " + new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms).ToString());
+                    foreach (XElement feature in features)
+                    {
+                        string feature_type = GetAttribute(feature, "type");
+                        switch (feature_type)
+                        {
+                            case "chain":
+                            case "signal peptide":
+                            case "propeptide":
+                            case "peptide":
+                                XElement feature_begin_elem = GetDescendant(feature, "begin");
+                                XElement feature_end_elem = GetDescendant(feature, "end");
+                                int feature_begin = ConvertPositionElem(feature_begin_elem);
+                                int feature_end = ConvertPositionElem(feature_end_elem);
+                                if (feature_begin != -1 && feature_end != -1)
+                                {
+                                    bool justMetCleavage = fixedMethionineCleavage && feature_begin - 1 == begin && feature_end == end;
+                                    string subsequence = sequence.Substring(feature_begin, feature_end - feature_begin + 1);
+                                    if (!justMetCleavage &&
+                                        subsequence.Length != sequence.Length &&
+                                        subsequence.Length >= minPeptideLength)
+                                    {
+                                        yield return new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence,
+                                            SegmentPtms(positionsAndPtms, feature_begin, feature_end));
+                                        //MessageBox.Show("added " + new Protein(accession, name, feature_type, feature_begin, feature_end, subsequence,
+                                        //    SegmentPtms(positionsAndPtms, feature_begin, feature_end)).ToString());
+
+                                    }
+                                }
+                                break;
+                            case "splice variant":
+                            case "sequence variant":
+                                break;
+                        }
                     }
                 }
             }
