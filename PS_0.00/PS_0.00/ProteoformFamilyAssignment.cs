@@ -575,20 +575,6 @@ namespace PS_0._00
 
         }//called in dataGridView1_CellContentClick_1
 
-        public override string ToString()
-        {
-            return "ProteoformFamilyAssignment|";
-        }
-
-        public void loadSetting(string setting_specs)
-        {
-            string[] fields = setting_specs.Split('\t');
-            switch (fields[0].Split('|')[1])
-            {
-                case "":
-                    break;
-            }
-        }
         private void ExportCSV_Click(object sender, EventArgs e)
         {
             FileName_TextChanged(sender, e);
@@ -641,6 +627,21 @@ namespace PS_0._00
         private void FileName_TextChanged(object sender, EventArgs e)
         {
             filename = this.textBox2.Text.ToString();
+
+        }
+        public override string ToString()
+        {
+            return "ProteoformFamilyAssignment|";
+        }
+
+        public void loadSetting(string setting_specs)
+        {
+            string[] fields = setting_specs.Split('\t');
+            switch (fields[0].Split('|')[1])
+            {
+                case "":
+                    break;
+            }
         }
     }
 }
