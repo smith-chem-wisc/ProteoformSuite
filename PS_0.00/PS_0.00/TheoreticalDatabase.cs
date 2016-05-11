@@ -60,7 +60,7 @@ namespace PS_0._00
         private void InitializeOpenFileDialog2()
         {
             // Set the file dialog to filter for graphics files.
-            this.openFileDialog2.Filter = "UniProt XML (*.xml)|*.xml";
+            this.openFileDialog2.Filter = "UniProt XML (*.xml, *.xml.gz)|*.xml;*.xml.gz";
             // Allow the user to select multiple images.
             this.openFileDialog2.Multiselect = false;
             this.openFileDialog2.Title = "UniProt XML Format Database";
