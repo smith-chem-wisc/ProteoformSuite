@@ -53,6 +53,8 @@ namespace PS_0._00
             nUD_MinPeptideLength.Minimum = 0;
             nUD_MinPeptideLength.Maximum = 20;
             nUD_MinPeptideLength.Value = 7;
+
+            ckbx_aggregateProteoforms.Checked = true;
         }
 
         private void InitializeOpenFileDialog2()
@@ -163,21 +165,30 @@ namespace PS_0._00
             //Read the UniProt-XML and ptmlist
             proteinRawInfo = ProteomeDatabaseReader.ReadUniprotXml(tb_UniProtXML_Path.Text, minPeptideLength, cleavedMethionine).ToArray();
             Dictionary<string, Modification> uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
+        
 
+            if (ckbx_aggregateProteoforms.Checked) //used aggregated proteoforms in the creation of the theoretical database
+            {
+                //consolodate proteins that have identical sequencs into protein groups. this also aggregates ptms
 
-            //consolodate proteins that have identical sequencs into protein groups. this also aggregates ptms
+                List<string> sequences = new List<string>();
+                sequences = ProteinSequenceGroups.uniqueProteinSequences(proteinRawInfo);
+                ProteinSequenceGroups[] psgs = new ProteinSequenceGroups[sequences.Count];
+                psgs = ProteinSequenceGroups.consolidateProteins(proteinRawInfo, sequences);
+
+                //Concatenate a giant protein out of all aggregated proteins and construct target and decoy proteoform databases
+                string giantProtein = GetOneGiantProtein(psgs, cleavedMethionine);
+                processAggregatedEntries(psgs, cleavedMethionine, aaIsotopeMassList, maxPtms, uniprotModificationTable);
+                processAggregatedDecoys(numDecoyDatabases, giantProtein, psgs, cleavedMethionine, aaIsotopeMassList, maxPtms, uniprotModificationTable);
+            }
+            else // use all proteins in the creation of the theoretical database
+            {
+                //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
+                string giantProtein = GetOneGiantProtein(proteinRawInfo, cleavedMethionine);
+                processEntries(proteinRawInfo, cleavedMethionine, aaIsotopeMassList, maxPtms, uniprotModificationTable);
+                processDecoys(numDecoyDatabases, giantProtein, proteinRawInfo, cleavedMethionine, aaIsotopeMassList, maxPtms, uniprotModificationTable);
+            }
             
-            List<string> sequences = new List<string>();
-            sequences = ProteinSequenceGroups.uniqueProteinSequences(proteinRawInfo);
-            ProteinSequenceGroups[] psgs = new ProteinSequenceGroups[sequences.Count];
-            psgs = ProteinSequenceGroups.consolidateProteins(proteinRawInfo, sequences);
-
-            //ProteinSequenceGroups.printProteinGroupArray(psgs);
-
-            //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
-            string giantProtein = GetOneGiantProtein(proteinRawInfo, cleavedMethionine);
-            processEntries(proteinRawInfo, cleavedMethionine, aaIsotopeMassList, maxPtms, uniprotModificationTable);
-            processDecoys(numDecoyDatabases, giantProtein, proteinRawInfo, cleavedMethionine, aaIsotopeMassList, maxPtms, uniprotModificationTable);
 
             //Add the new proteoform databases to the bindingList, and then display
             foreach (DataTable dt in GlobalData.theoreticalAndDecoyDatabases.Tables)
@@ -185,6 +196,7 @@ namespace PS_0._00
                 bindinglist.Add(dt.TableName);
                 //cmbx_DisplayWhichDB.Items.Add(dt.TableName[0].ToString());
             }
+
             FillDataBaseTable(cmbx_DisplayWhichDB.SelectedItem.ToString());
         }
 
@@ -220,6 +232,22 @@ namespace PS_0._00
             GlobalData.theoreticalAndDecoyDatabases.Tables.Add(target);
         }
 
+        static void processAggregatedEntries(ProteinSequenceGroups[] psgs, bool methionineCleavage, Dictionary<char, double> aaIsotopeMassList,
+            int maxPTMsPerProteoform, Dictionary<string, Modification> uniprotModificationTable)
+        {
+
+            DataTable target = GenerateProteoformDatabaseDataTable("target");
+
+            for (int i = 0; i < psgs.Length; i++)
+            {
+                bool isMetCleaved = (methionineCleavage && psgs[i].Begin == 0 && psgs[i].Sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
+                int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
+                string seq = psgs[i].Sequence.Substring(startPosAfterCleavage, (psgs[i].Sequence.Length - startPosAfterCleavage));
+                EnterAggregatedTheoreticalProteformFamily(target, seq, psgs[i], psgs[i].Accession, maxPTMsPerProteoform, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
+            }
+            GlobalData.theoreticalAndDecoyDatabases.Tables.Add(target);
+        }
+
         static void processDecoys(int numDb, string giantProtein, Protein[] proteinRawData, bool methionineCleavage, Dictionary<char, double> aaIsotopeMassList, 
             int maxPTMsPerProteoform, Dictionary<string, Modification> uniprotModificationTable)
         {
@@ -249,7 +277,56 @@ namespace PS_0._00
             }
         }
 
+        static void processAggregatedDecoys(int numDb, string giantProtein, ProteinSequenceGroups[] psgs, bool methionineCleavage, Dictionary<char, double> aaIsotopeMassList,
+            int maxPTMsPerProteoform, Dictionary<string, Modification> uniprotModificationTable)
+        {
+            for (int decoyNumber = 0; decoyNumber < numDb; decoyNumber++)
+            {
+
+                DataTable decoy = GenerateProteoformDatabaseDataTable("DecoyDatabase_" + decoyNumber);
+
+                new Random().Shuffle(psgs); //Randomize Order of Protein Array
+                for (int i = 0; i < psgs.Length; i++)
+                {
+                    bool isMetCleaved = (methionineCleavage && psgs[i].Begin == 0 && psgs[i].Sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
+                    int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
+
+                    //From the concatenated proteome, cut a decoy sequence of a randomly selected length
+                    int hunkLength = psgs[i].Sequence.Length - startPosAfterCleavage;
+                    string hunk = giantProtein.Substring(0, hunkLength);
+                    giantProtein.Remove(0, hunkLength);
+                    EnterAggregatedTheoreticalProteformFamily(decoy, hunk, psgs[i], psgs[i].Accession + "_DECOY_" + decoyNumber, maxPTMsPerProteoform, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
+                }
+                GlobalData.theoreticalAndDecoyDatabases.Tables.Add(decoy);
+            }
+        }
+
         static void EnterTheoreticalProteformFamily(DataTable table, string seq, Protein prot, string accession, int maxPTMsPerProteoform, bool isMetCleaved,
+            Dictionary<char, double> aaIsotopeMassList, Dictionary<string, Modification> uniprotModificationTable)
+        {
+            //Calculate the properties of this sequence
+            double mass = CalculateProteoformMass(ref aaIsotopeMassList, seq);
+            int kCount = seq.Split('K').Length - 1;
+
+            //Initialize a PTM combination list with "unmodified," and then add other PTMs 
+            List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>(new OneUniquePtmGroup[] { new OneUniquePtmGroup(0, new List<string>(new string[] { "unmodified" })) });
+            bool addPtmCombos = maxPTMsPerProteoform > 0 && prot.PositionsAndPtms.Count() > 0;
+            if (addPtmCombos)
+            {
+                aupg.AddRange(new PtmCombos().combos(maxPTMsPerProteoform, uniprotModificationTable, prot.PositionsAndPtms));
+            }
+
+            foreach (OneUniquePtmGroup group in aupg)
+            {
+                List<string> ptm_list = group.unique_ptm_combinations;
+                //if (!isMetCleaved) { MessageBox.Show("PTM Combinations: " + String.Join("; ", ptm_list)); }
+                Double ptm_mass = group.mass;
+                Double proteoform_mass = mass + group.mass;
+                table.Rows.Add(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, mass, kCount, string.Join("; ", ptm_list), ptm_mass, proteoform_mass);
+            }
+        }
+
+        static void EnterAggregatedTheoreticalProteformFamily(DataTable table, string seq, ProteinSequenceGroups prot, string accession, int maxPTMsPerProteoform, bool isMetCleaved,
             Dictionary<char, double> aaIsotopeMassList, Dictionary<string, Modification> uniprotModificationTable)
         {
             //Calculate the properties of this sequence
@@ -320,6 +397,31 @@ namespace PS_0._00
             return giantProtein.ToString();
         }
 
+        static string GetOneGiantAggregatedProtein(ProteinSequenceGroups[] proteins, bool mC)
+        {
+            StringBuilder giantProtein = new StringBuilder(5000000); // this set-aside is autoincremented to larger values when necessary.
+            foreach (Protein protein in proteins)
+            {
+                string sequence = protein.Sequence;
+                bool isMetCleaved = mC && (sequence.Substring(0, 1) == "M");
+                int startPosAfterMetCleavage = Convert.ToInt32(isMetCleaved);
+                switch (protein.Fragment)
+                {
+                    case "chain":
+                    case "signal peptide":
+                    case "propeptide":
+                    case "peptide":
+                        giantProtein.Append(".");
+                        break;
+                    default:
+                        giantProtein.Append("-");
+                        break;
+                }
+                giantProtein.Append(sequence.Substring(startPosAfterMetCleavage));
+            }
+            return giantProtein.ToString();
+        }
+
         private string WhichLysineIsotopeComposition()
         {
             string kI;
@@ -346,6 +448,12 @@ namespace PS_0._00
         private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)
         {
             FillDataBaseTable(cmbx_DisplayWhichDB.SelectedItem.ToString());
+        }
+
+
+        private void ckbx_aggregateProteoforms_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
 
         public override string ToString()
@@ -405,5 +513,7 @@ namespace PS_0._00
                     break;
             }
         }
+
+        
     }
 }
