@@ -626,6 +626,7 @@ namespace PS_0._00
         private void FileName_TextChanged(object sender, EventArgs e)
         {
             filename = this.textBox2.Text.ToString();
+        }
         public override string ToString()
         {
             return "ProteoformFamilyAssignment|";
