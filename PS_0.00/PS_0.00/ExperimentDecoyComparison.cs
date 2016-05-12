@@ -15,7 +15,7 @@ namespace PS_0._00
 {
     public partial class ExperimentDecoyComparison : Form
     {
-        DataTable edList = new DataTable();
+        DataTable edList; 
 
         public ExperimentDecoyComparison()
         {
@@ -38,6 +38,7 @@ namespace PS_0._00
 
         public void run_comparison()
         {
+            edList = new DataTable();
             InitializeParameterSet();
             FindAllEDPairs();
             CalculateRunningSums();
@@ -91,10 +92,8 @@ namespace PS_0._00
                         eD.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], deltaMass, 0, 0, deltaMass, oOR, false);
                         //set out of range variable
                     }
-
                 }
             }
-
             // GlobalData.experimentDecoyPairs = eD;
         }
 
