@@ -259,6 +259,7 @@ namespace PS_0._00
             dataGridView3.RowsDefaultCellStyle.BackColor = Color.LightGray;
             dataGridView3.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
             dataGridView1.DataSource = GlobalData.ProteoformFamilyMetrics;
+            ExportProteoformFamilies();
         }
 
         public void assign_families()
@@ -276,8 +277,8 @@ namespace PS_0._00
             //alrighty, here's the meat of the module, good luck
 
 
-             // for each unique lysine count
-             //put a sweet message box here to track relative progress (state q)
+            // for each unique lysine count
+            //put a sweet message box here to track relative progress (state q)
             if (Convert.ToInt32(EE_Groups.Rows.Count).Equals(0)) //if nothing with that lysine count, then ignore it. Only 25 iterations
             {
                     
@@ -340,6 +341,7 @@ namespace PS_0._00
             ET_Groups.Columns.Add("Aggregated Intensity", typeof(double));
             ET_Groups.Columns.Add("Aggregated Retention Time", typeof(double));
             ET_Groups.Columns.Add("Lysine Count", typeof(int));
+            ET_Groups.Columns.Add("Number of Observations", typeof(int));
             ET_Groups.Columns.Add("Delta Mass", typeof(double));
             ET_Groups.Columns.Add("Running Sum", typeof(int));
             ET_Groups.Columns.Add("Peak Center Count", typeof(int));
@@ -356,6 +358,8 @@ namespace PS_0._00
             EE_Groups.Columns.Add("Retention Time Light", typeof(double));
             EE_Groups.Columns.Add("Retention Time Heavy", typeof(double));
             EE_Groups.Columns.Add("Lysine Count", typeof(int));
+            EE_Groups.Columns.Add("Number of Observations Light", typeof(int));
+            EE_Groups.Columns.Add("Number of Observations Heavy", typeof(int));
             EE_Groups.Columns.Add("Delta Mass", typeof(double));
             EE_Groups.Columns.Add("Running Sum", typeof(int));
             EE_Groups.Columns.Add("Peak Center Count", typeof(int));
@@ -365,12 +369,13 @@ namespace PS_0._00
             EE_Groups.Columns.Add("Proteoform Family", typeof(bool));
             EE_Groups.Columns.Add("Group_#", typeof(Int32));
 
+
             GlobalData.ProteoformFamilyMetrics.Columns.Add("Group Number", typeof(Int32));
             GlobalData.ProteoformFamilyMetrics.Columns.Add("Parent Mass", typeof(double));
             GlobalData.ProteoformFamilyMetrics.Columns.Add("Lysine Count", typeof(Int32));
             GlobalData.ProteoformFamilyMetrics.Columns.Add("Number of Experimental Masses", typeof(Int32));
             GlobalData.ProteoformFamilyMetrics.Columns.Add("Number of IDs", typeof(Int32));
-            GlobalData.ProteoformFamilyMetrics.Columns.Add("Number of Nodes", typeof(Int32));
+            GlobalData.ProteoformFamilyMetrics.Columns.Add("Number of Edges", typeof(Int32));
         }
 
         private void Group_ET(int q)
@@ -379,7 +384,8 @@ namespace PS_0._00
 
             DataRow[] foundRows;
             string expression = "[" + "Lysine Count" +"] = " + q + " AND " + "[Proteoform Family] = true";
-            foundRows = GlobalData.experimentTheoreticalPairs.Select(expression); 
+            foundRows = GlobalData.experimentTheoreticalPairs.Select(expression);
+
             for (int a = 0; a < foundRows.Length; a++)
             {
                 ET_Groups.Rows.Add(foundRows[a].ItemArray);
@@ -393,7 +399,6 @@ namespace PS_0._00
 
             DataRow[] foundRows;
             foundRows = GlobalData.experimentExperimentPairs.Select("[Lysine Count]=" + q + "AND" + "[Proteoform Family] = " + true, "Aggregated Mass Light ASC, Aggregated Mass Heavy ASC");
-
             for (int a = 0; a < foundRows.Length; a++)
             {
                 EE_Groups.Rows.Add(foundRows[a].ItemArray);
@@ -415,6 +420,7 @@ namespace PS_0._00
             GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Intensity", typeof(double));
             GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Retention Time", typeof(double));
             GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Lysine Count", typeof(int));
+            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Number of Observations", typeof(int));
             GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Delta Mass", typeof(double));
             GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Running Sum", typeof(int));
             GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Count", typeof(int));
@@ -440,6 +446,8 @@ namespace PS_0._00
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Retention Time Light", typeof(double));
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Retention Time Heavy", typeof(double));
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Lysine Count", typeof(int));
+            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Number of Observations Light", typeof(int));
+            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Number of Observations Heavy", typeof(int));
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Delta Mass", typeof(double));
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Running Sum", typeof(int));
             GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Count", typeof(int));
@@ -472,16 +480,16 @@ namespace PS_0._00
         {
 
             int Num_Exp_Mass = ChildrenList.Count() + 1;
-            int Num_Nodes = GlobalData.ProteoformFamiliesEE.Tables[PF_Group_Num - 1].Rows.Count;
+            int Num_Edges = GlobalData.ProteoformFamiliesEE.Tables[PF_Group_Num - 1].Rows.Count;
             if ((GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Rows.Count).Equals(0)) //this statement catches families that do not have any theoretical matches
             {
-                GlobalData.ProteoformFamilyMetrics.Rows.Add(PF_Group_Num, parentmass, lys, Num_Exp_Mass, 0, Num_Nodes);
+                GlobalData.ProteoformFamilyMetrics.Rows.Add(PF_Group_Num, parentmass, lys, Num_Exp_Mass, 0, Num_Edges);
             }
             else
             {
                 var distinctIds = GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].AsEnumerable().Select(s => new { id = s.Field<double>("Proteoform Mass"), }).Distinct().ToList();
                 int ID_Count = distinctIds.Count;
-                GlobalData.ProteoformFamilyMetrics.Rows.Add(PF_Group_Num, parentmass, lys, Num_Exp_Mass, ID_Count, Num_Nodes); //group#, #exp, lys, #id  ID is the most time consuming, must run through entire list. Most feasible to achieve everytime ET is accessed.
+                GlobalData.ProteoformFamilyMetrics.Rows.Add(PF_Group_Num, parentmass, lys, Num_Exp_Mass, ID_Count, Num_Edges); //group#, #exp, lys, #id  ID is the most time consuming, must run through entire list. Most feasible to achieve everytime ET is accessed.
             }
         }
 
@@ -517,21 +525,20 @@ namespace PS_0._00
 
             foreach (DataTable dt in GlobalData.ProteoformFamiliesEE.Tables)
             {
-
                 foreach (DataRow row in dt.Rows)
                 {
-
-                    ExportDataTable.Rows.Add((row["Aggregated Mass Light"].ToString() //+ "_n=" + row["Running Sum"].ToString() 
-                        + "_K=" + row["Lysine Count"].ToString()),
-                        (row["Aggregated Mass Heavy"].ToString() //+ "_n=" + row["Running Sum"].ToString() + "_K=" 
-                        + row["Lysine Count"].ToString()),
-                        row["Delta Mass"],
-                        "Experimental",
-                        "Experimental",
-                        row["Aggregated Intensity Light"],
-                        row["Aggregated Intensity Heavy"]);
+                    ExportDataTable.Rows.Add((row["Aggregated Mass Light"].ToString() + "_n=" + row["Number of Observations Light"].ToString() 
+                                    + "_K=" + row["Lysine Count"].ToString()),
+                                    (row["Aggregated Mass Heavy"].ToString() + "_n=" + row["Number of Observations Heavy"].ToString() + "_K=" 
+                                    + row["Lysine Count"].ToString()),
+                                    row["Delta Mass"],
+                                    "Experimental",
+                                    "Experimental",
+                                    row["Aggregated Intensity Light"],
+                                    row["Aggregated Intensity Heavy"]);
                 }
             }
+            
             foreach (DataTable dt in GlobalData.ProteoformFamiliesET.Tables)
             {
                 foreach (DataRow row in dt.Rows)
@@ -539,7 +546,7 @@ namespace PS_0._00
                     if (row["PTM List"].Equals("unmodified"))
                     {
                         ExportDataTable.Rows.Add((row["Accession"].ToString() + "_K=" + row["Lysine Count"].ToString()),
-                            (row["Aggregated Mass"].ToString() + "_n=" //+ row["Running Sum"].ToString() 
+                            (row["Aggregated Mass"].ToString() + "_n=" + row["Number of Observations"].ToString() 
                             + "_K=" + row["Lysine Count"].ToString()),
                             row["Delta Mass"],
                             "Theoretical",
@@ -550,7 +557,7 @@ namespace PS_0._00
                     else
                     {
                         ExportDataTable.Rows.Add((row["Accession"].ToString() +row["PTM List"].ToString()+ "_K=" + row["Lysine Count"].ToString()),
-                        (row["Aggregated Mass"].ToString() + "_n=" //+ row["Running Sum"].ToString() 
+                        (row["Aggregated Mass"].ToString() + "_n=" + row["Number of Observations"].ToString() 
                         + "_K=" + row["Lysine Count"].ToString()),
                         row["Delta Mass"],
                         "TheoreticalWithPTM",
