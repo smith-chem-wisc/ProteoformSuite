@@ -448,6 +448,8 @@ namespace PS_0._00
             dt.Columns.Add("Retention Time Light", typeof(double));
             dt.Columns.Add("Retention Time Heavy", typeof(double));
             dt.Columns.Add("Lysine Count", typeof(int));
+            dt.Columns.Add("Number of Observations Light", typeof(int));
+            dt.Columns.Add("Number of Observations Heavy", typeof(int));
             dt.Columns.Add("Delta Mass", typeof(double));
             dt.Columns.Add("Running Sum", typeof(int));
             dt.Columns.Add("Peak Center Count", typeof(int));
@@ -494,7 +496,7 @@ namespace PS_0._00
                                     oOR = false;
                                 }
 
-                                eePairsList.Rows.Add(massLight, massHeavy, GlobalData.aggregatedProteoforms.Rows[index1]["Aggregated Intensity"], GlobalData.aggregatedProteoforms.Rows[index2]["Aggregated Intensity"], GlobalData.aggregatedProteoforms.Rows[index1]["Aggregated Retention Time"], GlobalData.aggregatedProteoforms.Rows[index2]["Aggregated Retention Time"], lysineLight, deltaMass, 0, 0, deltaMass, oOR, false, false);
+                                eePairsList.Rows.Add(massLight, massHeavy, GlobalData.aggregatedProteoforms.Rows[index1]["Aggregated Intensity"], GlobalData.aggregatedProteoforms.Rows[index2]["Aggregated Intensity"], GlobalData.aggregatedProteoforms.Rows[index1]["Aggregated Retention Time"], GlobalData.aggregatedProteoforms.Rows[index2]["Aggregated Retention Time"], lysineLight, GlobalData.aggregatedProteoforms.Rows[index1]["Number of Observations"], GlobalData.aggregatedProteoforms.Rows[index2]["Number of Observations"], deltaMass, 0, 0, deltaMass, oOR, false, false);
 
                             }
                         }
