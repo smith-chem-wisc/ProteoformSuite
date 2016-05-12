@@ -147,7 +147,14 @@ namespace PS_0._00
 
         public void make_databases()
         {
-            GlobalData.theoreticalAndDecoyDatabases.Tables.Clear();
+            //Clear out data from potential previous runs
+            GlobalData.theoreticalAndDecoyDatabases = new DataSet();
+            GlobalData.experimentTheoreticalPairs = new DataTable();
+            GlobalData.experimentDecoyPairs = new DataSet();
+            GlobalData.experimentExperimentPairs = new DataTable();
+            GlobalData.ProteoformFamiliesEE = new DataSet();
+            GlobalData.ProteoformFamiliesET = new DataSet();
+
             ProteomeDatabaseReader.oldPtmlistFilePath = tb_UniProtPtmList_Path.Text;
             bool oxidizedMethionine = Convert.ToBoolean(ckbx_OxidMeth.Checked);
             bool carbam = Convert.ToBoolean(ckbx_Carbam.Checked);

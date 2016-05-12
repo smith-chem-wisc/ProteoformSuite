@@ -34,6 +34,8 @@ namespace PS_0._00
         {
             InitializeComponent();
             InitializeForms();
+            this.WindowState = FormWindowState.Maximized;
+            this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
         }
 
         public void InitializeForms()
@@ -192,7 +194,7 @@ namespace PS_0._00
                             break;
                     }
                 }
-                MessageBox.Show("Successfully loaded method. Will run the method now. (Will show as non-responsive).");
+                MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
                 rawExperimentalComponents.pull_raw_experimental_components();
                 neuCodePairs.NeuCodePairs_Load(neuCodePairs, null);
                 aggregatedProteoforms.AggregatedProteoforms_Load(aggregatedProteoforms, null);
@@ -201,6 +203,7 @@ namespace PS_0._00
                 experimentDecoyComparison.run_comparison();
                 experimentExperimentComparison.run_comparison();
                 proteoformFamilyAssignment.ProteoformFamilyAssignment_Load(proteoformFamilyAssignment, null);
+                MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
             }
         }
 

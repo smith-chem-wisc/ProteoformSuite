@@ -161,6 +161,7 @@
             this.splitContainer3.Panel2.Controls.Add(this.xMaxKCt);
             this.splitContainer3.Panel2.Controls.Add(this.yMinKCt);
             this.splitContainer3.Panel2.Controls.Add(this.xMinKCt);
+            this.splitContainer3.Panel2MinSize = 75;
             this.splitContainer3.Size = new System.Drawing.Size(577, 367);
             this.splitContainer3.SplitterDistance = 231;
             this.splitContainer3.TabIndex = 0;
@@ -203,6 +204,7 @@
             this.splitContainer4.Panel2.Controls.Add(this.xMaxIRat);
             this.splitContainer4.Panel2.Controls.Add(this.yMinIRat);
             this.splitContainer4.Panel2.Controls.Add(this.xMinIRat);
+            this.splitContainer4.Panel2MinSize = 75;
             this.splitContainer4.Size = new System.Drawing.Size(657, 367);
             this.splitContainer4.SplitterDistance = 233;
             this.splitContainer4.TabIndex = 0;
