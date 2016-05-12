@@ -393,7 +393,8 @@ namespace PS_0._00
                 "TheoreticalDatabase|btn_NaturalIsotopes.Checked\t" + btn_NaturalIsotopes.Checked.ToString(),
                 "TheoreticalDatabase|nUD_MaxPTMs.Value\t" + nUD_MaxPTMs.Value.ToString(),
                 "TheoreticalDatabase|nUD_NumDecoyDBs.Value\t" + nUD_NumDecoyDBs.Value.ToString(),
-                "TheoreticalDatabase|nUD_MinPeptideLength.Value\t" + nUD_MinPeptideLength.Value.ToString()
+                "TheoreticalDatabase|nUD_MinPeptideLength.Value\t" + nUD_MinPeptideLength.Value.ToString(),
+                "TheoreticalDatabase|ckbx_aggregateProteoforms.Checked\t" + ckbx_aggregateProteoforms.Checked.ToString()
             });
         }
 
@@ -425,6 +426,9 @@ namespace PS_0._00
                     break;
                 case "btn_NaturalIsotopes.Checked":
                     btn_NaturalIsotopes.Checked = Convert.ToBoolean(fields[1]);
+                    break;
+                case "ckbx_aggregateProteoforms.Checked":
+                    ckbx_aggregateProteoforms.Checked = Convert.ToBoolean(fields[1]);
                     break;
                 case "nUD_MaxPTMs.Value":
                     nUD_MaxPTMs.Value = Convert.ToDecimal(fields[1]);
