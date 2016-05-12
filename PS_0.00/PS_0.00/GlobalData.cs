@@ -32,6 +32,7 @@ namespace PS_0._00
         public static DataSet ProteoformFamiliesET = new DataSet();
         public static DataSet ProteoformFamiliesEE = new DataSet();
         public static DataTable ProteoformFamilyMetrics = new DataTable();
-
+        public static int Location = 0;
+        public static string[] ModuleList = new string[4];
     }
 }
