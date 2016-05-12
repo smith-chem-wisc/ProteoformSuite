@@ -30,28 +30,31 @@ namespace PS_0._00
 
         public void RawExperimentalComponents_Load(object sender, EventArgs e)
         {
-            Form1 instance = new Form1();
+            //Form1 instance = new Form1();
             //instance.LoadDeconvolutionResults_Load(GlobalData.repeatsender, GlobalData.repeate);
-            if (GlobalData.repeat == true)
-            {
-                instance.loadDeconvolutionResultsToolStripMenuItem_Click(GlobalData.repeatsender, GlobalData.repeate);
-            }
+  //          if (GlobalData.repeat == true)
+    //        {
+      //          instance.loadDeconvolutionResultsToolStripMenuItem_Click(GlobalData.repeatsender, GlobalData.repeate);
+        //    }
 
-            if (GlobalData.deconResultsFileNames.Count().Equals(0))
-            {
-                MessageBox.Show("Oops! We didn't find any data... Did you forget to load your Deconvolution Results?");  
-                GlobalData.repeat = true;
-                GlobalData.repeatsender = sender;
-                GlobalData.repeate = e;
-                GlobalData.repeat = true;
-                return;
-            }
+ //           if (GlobalData.deconResultsFileNames.Count().Equals(0))
+   //         {
+     //           MessageBox.Show("Oops! We didn't find any data... Did you forget to load your Deconvolution Results?");  
+       //         GlobalData.repeat = true;
+         //       GlobalData.repeatsender = sender;
+           //     GlobalData.repeate = e;
+             //   GlobalData.repeat = true;
+               // return;
+            //}
 
             if (GlobalData.rawExperimentalComponents.Columns.Count == 0)
             {
                 pull_raw_experimental_components();
             }
+
             FillRawExpComponentsTable();
+            //dgv_RawExpComp_MI_masses.DataSource = GlobalData.rawExperimentalComponents;
+
         }
 
         public void pull_raw_experimental_components()

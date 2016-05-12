@@ -28,22 +28,12 @@ namespace PS_0._00
 
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
         {            
-            if (GlobalData.repeat == true)
-            {
-                repeat = true;
-                GlobalData.repeat = false;
-                LoadDeconvolutionResults_Load(sender, e);
-                return;
-            }
+
             InitializeOpenFileDialog();
             lbDeconResults.Sorted = true;
             lbDeconResults.SelectionMode = SelectionMode.MultiExtended;
             lbDeconResults.DataSource = GlobalData.deconResultsFileNames;
-            if (repeat==true)
-            {
-                repeat = false;
-                GlobalData.repeat = true;
-            }
+
         }
 
         private void btnDeconResultsAdd_Click(object sender, EventArgs e)

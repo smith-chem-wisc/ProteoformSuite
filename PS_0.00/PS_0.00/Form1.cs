@@ -61,6 +61,12 @@ namespace PS_0._00
 
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (GlobalData.deconResultsFileNames.Count().Equals(0))
+            {
+                MessageBox.Show("Oops! We didn't find any data... Did you forget to load your Deconvolution Results?");
+                return;
+            }
+
             showForm(rawExperimentalComponents);
         }
 
