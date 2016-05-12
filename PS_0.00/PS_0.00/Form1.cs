@@ -78,54 +78,24 @@ namespace PS_0._00
 
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-            if (GlobalData.Location < 1)
-            {
-                MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + GlobalData.ModuleList[GlobalData.Location] + "' and try again.");
-                return;
-            }
-
             if (GlobalData.deconResultsFileNames.Count().Equals(0))
             {
-                MessageBox.Show("Oops! We didn't find any data... Did you forget to load your Deconvolution Results?");
+                MessageBox.Show("Oops! We weren't able to read your data... Please check your Deconvolution Results and try again.");
                 return;
             }
-
-            if (GlobalData.Location == 1)
-            {
-                GlobalData.Location++;
-            }
-
+            LocationCheck(1);
             showForm(rawExperimentalComponents);
         }
 
         private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (GlobalData.Location < 2)
-            {
-                MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + GlobalData.ModuleList[GlobalData.Location] + "' and try again.");
-                return;
-            }
-
-            if (GlobalData.Location == 2)
-            {
-                GlobalData.Location++;
-            }
+            LocationCheck(2);
             showForm(neuCodePairs);
         }
 
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (GlobalData.Location < 3)
-            {
-                MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + GlobalData.ModuleList[GlobalData.Location] + "' and try again.");
-                return;
-            }
-
-            if (GlobalData.Location == 3)
-            {
-                GlobalData.Location++;
-            }
+            LocationCheck(3);
             showForm(aggregatedProteoforms);
         }
 
@@ -144,48 +114,13 @@ namespace PS_0._00
 
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (GlobalData.theoreticalAndDecoyDatabases.Tables["Target"].Rows.Count == 0)
-                {
-                    MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
-                    return;
-                }
-            }
-            catch
-            {
-                    MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
-                    return;
-            }
-            if (GlobalData.Location < 5)
-            {
-                MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + GlobalData.ModuleList[GlobalData.Location] + "' and try again.");
-                return;
-            }
-
+            LocationCheckAndDatabase();
             showForm(experimentalTheoreticalComparison);
         }
         
         private void experimentDecoyComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (GlobalData.theoreticalAndDecoyDatabases.Tables["DecoyDatabase_0"].Rows.Count == 0)
-                {
-                    MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
-                    return;
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
-                return;
-            }
-            if (GlobalData.Location < 5)
-            {
-                MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + GlobalData.ModuleList[GlobalData.Location] + "' and try again.");
-                return;
-            }
+            LocationCheckAndDatabase();
             if (GlobalData.numDecoyDatabases > 0)
             {
                 showForm(experimentDecoyComparison);
@@ -198,47 +133,13 @@ namespace PS_0._00
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (GlobalData.theoreticalAndDecoyDatabases.Tables["Target"].Rows.Count == 0)
-                {
-                    MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
-                    return;
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
-                return;
-            }
-            if (GlobalData.Location < 5)
-            {
-                MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + GlobalData.ModuleList[GlobalData.Location] + "' and try again.");
-                return;
-            }
+            LocationCheckAndDatabase();
             showForm(experimentExperimentComparison);
         }
 
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (GlobalData.theoreticalAndDecoyDatabases.Tables["Target"].Rows.Count == 0)
-                {
-                    MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
-                    return;
-                }
-            }
-            catch
-            {
-                MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
-                return;
-            }
-            if (GlobalData.Location < 5)
-            {
-                MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + GlobalData.ModuleList[GlobalData.Location] + "' and try again.");
-                return;
-            }
+            LocationCheckAndDatabase();
             if (GlobalData.experimentTheoreticalPairs.Rows.Count == 0)
             {
                 MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + "Experiment - Theoretical Comparison" + "' and try again.");
@@ -284,6 +185,7 @@ namespace PS_0._00
         }
 
         //private void wait_message() { MessageBox.Show("Click OK when you are satisfied with the settings."); }
+
 
         private void saveMethodToolStripMenuItem1_Click(object sender, EventArgs e)
         {
@@ -376,6 +278,40 @@ namespace PS_0._00
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
+        }
+        private void LocationCheck(int step)
+        {
+            if (GlobalData.Location < step)
+            {
+                MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + GlobalData.ModuleList[GlobalData.Location] + "' and try again.");
+                return;
+            }
+
+            if (GlobalData.Location == step)
+            {
+                GlobalData.Location++;
+            }
+        }
+        private void LocationCheckAndDatabase()
+        {
+            try
+            {
+                if (GlobalData.theoreticalAndDecoyDatabases.Tables["Target"].Rows.Count == 0)
+                {
+                    MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
+                    return;
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
+                return;
+            }
+            if (GlobalData.Location < 5)
+            {
+                MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + GlobalData.ModuleList[GlobalData.Location] + "' and try again.");
+                return;
+            }
         }
     }
 }
