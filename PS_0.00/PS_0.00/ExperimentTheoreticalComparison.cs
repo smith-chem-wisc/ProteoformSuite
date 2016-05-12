@@ -296,7 +296,6 @@ namespace PS_0._00
             }
         }
 
-
         private void ETPeakListGraphParameters(int clickedRow)
         {
             ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
