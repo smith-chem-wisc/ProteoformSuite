@@ -213,7 +213,7 @@ namespace PS_0._00
                         oOR = true;
                     }
 
-                    etPairsList.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], deltaMass, 0, 0, deltaMass, oOR, false, false);
+                    etPairsList.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], agRow["Number of Observations"], deltaMass, 0, 0, deltaMass, oOR, false, false);
 
                 }
             }
@@ -543,6 +543,7 @@ namespace PS_0._00
             dt.Columns.Add("Aggregated Intensity", typeof(double));
             dt.Columns.Add("Aggregated Retention Time", typeof(double));
             dt.Columns.Add("Lysine Count", typeof(int));
+            dt.Columns.Add("Number of Observations", typeof(int));
             dt.Columns.Add("Delta Mass", typeof(double));
             dt.Columns.Add("Running Sum", typeof(int));
             dt.Columns.Add("Peak Center Count", typeof(int));
