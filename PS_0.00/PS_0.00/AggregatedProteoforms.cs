@@ -25,7 +25,6 @@ namespace PS_0._00
                 aggregate_proteoforms();
             }
             FillAggregatesTable();
-            PopulateNumberObservations();
         }
 
         public void aggregate_proteoforms()
@@ -33,6 +32,7 @@ namespace PS_0._00
             GlobalData.acceptableNeuCodeLightProteoforms = FillAcceptableNeuCodeLightProteoformsDataTable();
             GlobalData.aggregatedProteoforms = CreateAggregatedProteoformsDataTable();
             AggregateNeuCodeLightProteoforms();
+            CountObservations();
         }
 
         private void FillAggregatesTable()
@@ -79,6 +79,7 @@ namespace PS_0._00
             dt.Columns.Add("Aggregated Intensity", typeof(double));
             dt.Columns.Add("Aggregated Retention Time", typeof(double));
             dt.Columns.Add("Lysine Count", typeof(int));
+            dt.Columns.Add("Number of Observations", typeof(int));
 
             return dt;
         }
@@ -119,6 +120,16 @@ namespace PS_0._00
                 }
             }
             return acceptableLtProteoforms;
+        }
+
+        private void CountObservations()
+        {
+            foreach (DataRow row in GlobalData.aggregatedProteoforms.Rows)
+            {
+                double mass = Convert.ToDouble(row["Aggregated Mass"]);
+                int numObs = GlobalData.acceptableNeuCodeLightProteoforms.Select("[Aggregated Mass] > " + (mass - .001) + " and [Aggregated Mass] < " + (mass + .001)).Length;
+                row["Number of Observations"] = numObs;
+            }
         }
 
         private void ZeroAggregateMasses()
@@ -318,18 +329,7 @@ namespace PS_0._00
                     break;
             }
         }
-        
-        private void PopulateNumberObservations()
-        {
-            GlobalData.aggregatedProteoforms.Columns.Add("Number of Observations", typeof(int));
-            foreach (DataRow row in GlobalData.aggregatedProteoforms.Rows)
-            {
-                DataRow[] numObs;
-                double mass = Convert.ToDouble(row["Aggregated Mass"]);
-                numObs = GlobalData.acceptableNeuCodeLightProteoforms.Select("[Aggregated Mass] > " + (mass - .001) + " and [Aggregated Mass] < " + (mass + .001));
-                row["Number of Observations"] = numObs.Count();
-            }
-        }
+
         private void dgv_AcceptNeuCdLtProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
