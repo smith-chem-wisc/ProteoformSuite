@@ -131,14 +131,18 @@ namespace PS_0._00
 
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (GlobalData.Location == 4)
-            {
-                GlobalData.Location++;
-                if (GlobalData.theoreticalAndDecoyDatabases.Tables["Target"].Rows.Count != 0)
-                {
-                    GlobalData.Location++;
-                }
-            }
+  //          if (GlobalData.Location == 4)
+    //        {
+      //          GlobalData.Location++;
+ //               try
+   //             {
+     //               if (GlobalData.theoreticalAndDecoyDatabases.Tables["Target"].Rows.Count != 0)
+       //             {
+         //               GlobalData.Location++;
+           //         }
+             //   }
+               // catch { }
+       //     }
             showForm(theoreticalDatabase);
         }
 
@@ -157,7 +161,7 @@ namespace PS_0._00
                     MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
                     return;
             }
-            if (GlobalData.Location < 5)
+            if (GlobalData.Location < 4)
             {
                 MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + GlobalData.ModuleList[GlobalData.Location] + "' and try again.");
                 return;
@@ -181,7 +185,7 @@ namespace PS_0._00
                 MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
                 return;
             }
-            if (GlobalData.Location < 5)
+            if (GlobalData.Location < 4)
             {
                 MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + GlobalData.ModuleList[GlobalData.Location] + "' and try again.");
                 return;
@@ -211,7 +215,7 @@ namespace PS_0._00
                 MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
                 return;
             }
-            if (GlobalData.Location < 5)
+            if (GlobalData.Location < 4)
             {
                 MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + GlobalData.ModuleList[GlobalData.Location] + "' and try again.");
                 return;
@@ -234,7 +238,7 @@ namespace PS_0._00
                 MessageBox.Show("Oops! Looks like you missed a step! Please go back to 'Theoretical Proteoform Database' and try again.");
                 return;
             }
-            if (GlobalData.Location < 5)
+            if (GlobalData.Location < 4)
             {
                 MessageBox.Show("Oops! Looks like you missed a step! Please go back to '" + GlobalData.ModuleList[GlobalData.Location] + "' and try again.");
                 return;
