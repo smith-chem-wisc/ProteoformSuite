@@ -262,59 +262,22 @@ namespace PS_0._00
         {
             Group_ET(q);
             Group_EE(q);
-            //alrighty, here's the meat of the module, good luck
-
-
-            // for each unique lysine count
-            //put a sweet message box here to track relative progress (state q)
             if (Convert.ToInt32(EE_Groups.Rows.Count).Equals(0)) //if nothing with that lysine count, then ignore it. Only 25 iterations
             {
-                    
-            }
-            else //somethin there!
-            {
-                double lightmass = Convert.ToDouble(EE_Groups.Rows[0]["Aggregated Mass Light"]);
-                double heavymass = Convert.ToDouble(EE_Groups.Rows[0]["Aggregated Mass Heavy"]);
-                parentmass = lightmass;
-                List<double> ChildrenList = new List<double>();
-                Its_A_Parent(q, lightmass, heavymass, ChildrenList, 0);
-                for (int i = 1; i < EE_Groups.Rows.Count; i++)//gonna have to go through each one to determine child or not, some more painful than others
+                if (Convert.ToInt32(ET_Groups.Rows.Count).Equals(0)) { }
+                else
                 {
-                    if (EE_Groups.Rows[i]["Aggregated Mass Light"].Equals(EE_Groups.Rows[(i - 1)]["Aggregated Mass Light"])) //Gotta see if the next one is a parent or child. If it has the same mass1, we know it's in the family
-                    {
-                        FamilyMember(ChildrenList, q, i);
-                    }
-                    else //potentially a parent or child
-                    {
-                        if (ChildrenList.Contains(Convert.ToDouble(EE_Groups.Rows[i]["Aggregated Mass Light"]))==true)//if it's a child //.Equals(EE_Groups.Tables[(q - 2)].Rows[EE_Checkpoint]["Aggregated Mass Heavy"])) //if child
-                        {
-                            FamilyMember(ChildrenList, q, i);
-                        }
-                        else //it's a parent. We can save this parent, but we gotta keep moving for right now to find the rest of the current family
-                        {
-                            if (EE_Checkpoint==0) //if not zero, there's already a checkpoint we don't want to overwrite
-                            {
-                                EE_Checkpoint = i;
-                            }
-                        }
-                    }
-
-                    double newmass = Convert.ToDouble(EE_Groups.Rows[i]["Aggregated Mass Light"]);
-                    double oldmass = ChildrenList.OfType<double>().Max();
-                    if (newmass > oldmass) //are we at the end of a family?
-                    {
-                        Family_Death(q, ChildrenList, parentmass);
-                        i = EE_Checkpoint; //jump to the last new family. This is a potential problem
-                        ChildrenList.Clear(); //remove old children
-                        double newlightmass = Convert.ToDouble(EE_Groups.Rows[i]["Aggregated Mass Light"]);
-                        double newheavymass = Convert.ToDouble(EE_Groups.Rows[i]["Aggregated Mass Heavy"]);
-                        Its_A_Parent(q, newlightmass, newheavymass, ChildrenList, i);//start first entry in childrenlist
-                        EE_Checkpoint = 0;
-                    }
+                    FindFamiliesWithET(q);
                 }
-
-                Family_Death(q, ChildrenList, parentmass);
-                
+            }
+            else 
+            {
+                FindFamiliesWithEE(q);
+                if (Convert.ToInt32(ET_Groups.Rows.Count).Equals(0)) { }
+                else
+                {
+                    FindFamiliesWithET(q);
+                }
             }
         }
 
@@ -400,6 +363,54 @@ namespace PS_0._00
             }
         }
 
+        private void FindFamiliesWithEE(int q)
+        {
+            double lightmass = Convert.ToDouble(EE_Groups.Rows[0]["Aggregated Mass Light"]);
+            double heavymass = Convert.ToDouble(EE_Groups.Rows[0]["Aggregated Mass Heavy"]);
+            parentmass = lightmass;
+            List<double> ChildrenList = new List<double>();
+            Its_A_Parent(q, lightmass, heavymass, ChildrenList, 0);
+            for (int i = 1; i < EE_Groups.Rows.Count; i++)//gonna have to go through each one to determine child or not, some more painful than others
+            {
+                if (EE_Groups.Rows[i]["Aggregated Mass Light"].Equals(EE_Groups.Rows[(i - 1)]["Aggregated Mass Light"])) //Gotta see if the next one is a parent or child. If it has the same mass1, we know it's in the family
+                {
+                    FamilyMember(ChildrenList, q, i);
+                }
+                else //potentially a parent or child
+                {
+                    if (ChildrenList.Contains(Convert.ToDouble(EE_Groups.Rows[i]["Aggregated Mass Light"])) == true)//if it's a child //.Equals(EE_Groups.Tables[(q - 2)].Rows[EE_Checkpoint]["Aggregated Mass Heavy"])) //if child
+                    {
+                        FamilyMember(ChildrenList, q, i);
+                    }
+                    else //it's a parent. We can save this parent, but we gotta keep moving for right now to find the rest of the current family
+                    {
+                        if (EE_Checkpoint == 0) //if not zero, there's already a checkpoint we don't want to overwrite
+                        {
+                            EE_Checkpoint = i;
+                        }
+                    }
+                }
+
+                double newmass = Convert.ToDouble(EE_Groups.Rows[i]["Aggregated Mass Light"]);
+                double oldmass = ChildrenList.OfType<double>().Max();
+                if (newmass > oldmass) //are we at the end of a family?
+                {
+                    Family_Death(q, ChildrenList, parentmass);
+                    i = EE_Checkpoint; //jump to the last new family. This is a potential problem
+                    ChildrenList.Clear(); //remove old children
+                    double newlightmass = Convert.ToDouble(EE_Groups.Rows[i]["Aggregated Mass Light"]);
+                    double newheavymass = Convert.ToDouble(EE_Groups.Rows[i]["Aggregated Mass Heavy"]);
+                    Its_A_Parent(q, newlightmass, newheavymass, ChildrenList, i);//start first entry in childrenlist
+                    EE_Checkpoint = 0;
+                }
+            }
+
+            Family_Death(q, ChildrenList, parentmass);
+        }
+        private void FindFamiliesWithET(int q)
+        {
+
+        }
         private void Its_A_Parent(int lys, double lightmass, double heavymass, List<double> ChildrenList, int EEIndex)//, int checkpoint)
         {
             parentmass = lightmass; //static because of this
