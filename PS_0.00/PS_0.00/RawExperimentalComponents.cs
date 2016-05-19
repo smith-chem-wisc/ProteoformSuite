@@ -44,8 +44,6 @@ namespace PS_0._00
         {
             GlobalData.deconResultsFiles = GetDeconResults();
             GlobalData.rawExperimentalComponents = GetRawComponents();
-            GlobalData.rawExperimentalChargeStateData = GetRawChargeStates();
-            CalculateWeightedMonoisotopicMass();
         }
 
         private void FillRawExpComponentsTable()
@@ -99,70 +97,52 @@ namespace PS_0._00
             return ds;
         }
 
-        private DataTable GetRawComponents()
+        private BindingList<Component> GetRawComponents()
         {
-            DataTable deconvolutionResults = GlobalData.deconResultsFiles.Tables[0].Clone();
-
-            deconvolutionResults.Columns[0].DataType = typeof(int);//No.
-            deconvolutionResults.Columns[1].DataType = typeof(double);//Monoisotopic Mass
-            deconvolutionResults.Columns[2].DataType = typeof(double);//Sum Intensity
-            deconvolutionResults.Columns[3].DataType = typeof(int);//Number of Charge States
-            deconvolutionResults.Columns[4].DataType = typeof(int);//Number of Detected Intervals
-            deconvolutionResults.Columns[5].DataType = typeof(double);//Delta Mass
-            deconvolutionResults.Columns[6].DataType = typeof(double);//Relative Abundance
-            deconvolutionResults.Columns[7].DataType = typeof(double);//Fractional Abundance
-            deconvolutionResults.Columns[8].DataType = typeof(string);//Scan Range
-            deconvolutionResults.Columns[9].DataType = typeof(string);//RT Range
-            deconvolutionResults.Columns[10].DataType = typeof(double);//Apex RT
-            deconvolutionResults.Columns[11].DataType = typeof(string);//filename
+            BindingList<Component> raw_components = new BindingList<Component>();
 
             foreach (DataTable table in GlobalData.deconResultsFiles.Tables)
             {
-                DataRow[] rows = table.Select("[" + table.Columns[0].ColumnName + "] > 0");
+                DataRow[] rows = table.Select("[" + table.Columns[0].ColumnName + "] > 0"); //Checking that it's a component row, not a charge state one
 
-                foreach (DataRow row in rows)
+                foreach (DataRow component_row in rows)
                 {
-                    deconvolutionResults.ImportRow(row);
+                    int id = component_row.Field<int>(0);
+                    double monoisotopic_mass = component_row.Field<double>(1);
+                    double sum_intensity = component_row.Field<double>(2);
+                    int num_charge_states = component_row.Field<int>(3);
+                    int num_detected_intervals = component_row.Field<int>(4);
+                    double delta_mass = component_row.Field<double>(5);
+                    double relative_abundance = component_row.Field<double>(6);
+                    double fract_abundance = component_row.Field<double>(7);
+                    string scan_range = component_row.Field<string>(8);
+                    string rt_range = component_row.Field<string>(9);
+                    double rt_apex = component_row.Field<double>(10);
+                    string filename = component_row.Field<string>(11);
+
+                    Component raw_component = new Component(id, monoisotopic_mass, sum_intensity, num_charge_states,
+                        num_detected_intervals, delta_mass, relative_abundance, fract_abundance, scan_range,
+                        rt_range, rt_apex, filename);
+
+                    string charge_states_for_this_id = "[" + table.Columns[5].ColumnName
+                        + "] is null AND [" + table.Columns[0].ColumnName + "] = " + id
+                        + " AND [" + table.Columns[1].ColumnName + "] <> 'Charge State'";
+                    DataRow[] charge_rows = table.Select(charge_states_for_this_id);
+                    foreach (DataRow charge_row in charge_rows)
+                    {
+                        int charge_state = charge_row.Field<int>(1);
+                        double intensity = charge_row.Field<double>(2);
+                        double mz_centroid = charge_row.Field<double>(3);
+                        double calculated_mass = charge_row.Field<double>(4);
+                        raw_component.add_charge_state(charge_state, intensity, mz_centroid, calculated_mass);
+                    }
+                    raw_component.calculate_sum_intensity();
+                    raw_component.calculate_weighted_monoisotopic_mass();
+
+                    raw_components.Add(raw_component);
                 }
             }
-
-            deconvolutionResults.Columns.Add("Weighted Monoisotopic Mass", typeof(decimal));
-
-            foreach (DataRow dr in deconvolutionResults.Rows)
-            {
-
-                dr["Weighted Monoisotopic Mass"] = -1;   // this will get changed later.
-            }
-            return deconvolutionResults;
-        }
-
-        private void CalculateWeightedMonoisotopicMass()
-        {
-            foreach (DataTable table in GlobalData.rawExperimentalChargeStateData.Tables)
-            {
-                string Filename = "";
-                int entryNumber = 0;
-                object sumObject; 
-                sumObject = table.Compute("Sum(Intensity)", "");
-                decimal intensitySum = Convert.ToDecimal(sumObject);
-                decimal weightedMonoisotopicMass = 0;
-                foreach (DataRow row in table.Rows)
-                {
-                    Filename = row["Filename"].ToString();
-                    entryNumber = int.Parse(row["No#"].ToString());
-                    weightedMonoisotopicMass = weightedMonoisotopicMass + (decimal.Parse(row["intensity"].ToString())/intensitySum*(decimal.Parse(row["Calculated Mass"].ToString())));
-                }
-                string expression = GlobalData.rawExperimentalComponents.Columns[11].ColumnName + " = '"+ Filename +"'"
-                    + " AND [" + GlobalData.rawExperimentalComponents.Columns[0].ColumnName + "] = " + entryNumber;// you gotta have single quotes on the filename or this don't work. took me forever to figure that out.
-
-                DataRow[] rawComponentRows = GlobalData.rawExperimentalComponents.Select(expression);
-
-                foreach (DataRow row in rawComponentRows)
-                {
-                    row["Weighted Monoisotopic Mass"] = weightedMonoisotopicMass;
-                }
-
-            }
+            return raw_components;
         }
 
         private DataSet GetRawChargeStates()

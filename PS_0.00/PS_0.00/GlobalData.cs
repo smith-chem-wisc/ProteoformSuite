@@ -15,8 +15,7 @@ namespace PS_0._00
     {
         public static BindingList<string> deconResultsFileNames = new BindingList<string>();
         public static DataSet deconResultsFiles = new DataSet();
-        public static DataTable rawExperimentalComponents = new DataTable();
-        public static DataSet rawExperimentalChargeStateData = new DataSet();
+        public static BindingList<Component> rawExperimentalComponents = new BindingList<Component>();
         public static DataTable rawNeuCodePairs = new DataTable();
         public static DataTable acceptableNeuCodeLightProteoforms = new DataTable();
         public static DataTable aggregatedProteoforms = new DataTable();
