@@ -22,6 +22,7 @@ namespace PS_0._00
         TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase();
         ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
         ExperimentDecoyComparison experimentDecoyComparison = new ExperimentDecoyComparison();
+        DecoyDecoyComparison decoyDecoyComparison = new DecoyDecoyComparison();
         ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
         ProteoformFamilyAssignment proteoformFamilyAssignment = new ProteoformFamilyAssignment();
         List<Form> forms;
@@ -43,7 +44,7 @@ namespace PS_0._00
             forms = new List<Form>(new Form[] {
                 loadDeconvolutionResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
                 theoreticalDatabase, experimentalTheoreticalComparison, experimentDecoyComparison, experimentExperimentComparison,
-                proteoformFamilyAssignment
+                decoyDecoyComparison, proteoformFamilyAssignment
             });
         }
 
@@ -93,6 +94,18 @@ namespace PS_0._00
             else
             {
                 MessageBox.Show("Create at least 1 decoy database in Theoretical Proteoform Database in order to view Experiment - Decoy Comparison.");
+            }
+        }
+
+        private void decoyDecoyComparisonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (GlobalData.numDecoyDatabases > 0)
+            {
+                showForm(decoyDecoyComparison);
+            }
+            else
+            {
+                MessageBox.Show("Create at least 1 decoy database in Theoretical Proteoform Database in order to view Decoy - Decoy Comparison.");
             }
         }
 
@@ -189,6 +202,9 @@ namespace PS_0._00
                         case "ExperimentDecoyComparison":
                             experimentDecoyComparison.loadSetting(setting_specs);
                             break;
+                        case "DecoyDecoyComparison":
+                            decoyDecoyComparison.loadSetting(setting_specs);
+                            break;
                         case "TheoreticalDatabase":
                             theoreticalDatabase.loadSetting(setting_specs);
                             break;
@@ -202,6 +218,7 @@ namespace PS_0._00
                 experimentalTheoreticalComparison.run_comparison();
                 experimentDecoyComparison.run_comparison();
                 experimentExperimentComparison.run_comparison();
+                decoyDecoyComparison.run_comparison();
                 proteoformFamilyAssignment.ProteoformFamilyAssignment_Load(proteoformFamilyAssignment, null);
                 MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
             }
