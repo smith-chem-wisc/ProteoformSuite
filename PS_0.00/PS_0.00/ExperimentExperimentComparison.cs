@@ -220,23 +220,23 @@ namespace PS_0._00
             });
         }
 
-        //private void MarkEEPairsForProteoformFamilies()
-        //{
-        //    foreach (DataRow row in eePairsList.Rows)
-        //    {
-        //        if (Convert.ToInt32(row["Peak Center Count"].ToString()) >= nUD_PeakCountMinThreshold.Value)
-        //        {
-        //            row["Proteoform Family"] = true;
-        //        }
-        //        else
-        //        {
-        //            row["Proteoform Family"] = false;
-        //        }
-        //    }
-        //    eePairsList.AcceptChanges();
-        //    GlobalData.experimentExperimentPairs = eePairsList;
-        //    dgv_EE_Pairs.Update();
-        //}
+        private void MarkEEPairsForProteoformFamilies()
+        {
+            foreach (DataRow row in eePairsList.Rows)
+            {
+                if (Convert.ToInt32(row["Peak Center Count"].ToString()) >= nUD_PeakCountMinThreshold.Value)
+                {
+                    row["Proteoform Family"] = true;
+                }
+                else
+                {
+                    row["Proteoform Family"] = false;
+                }
+            }
+            eePairsList.AcceptChanges();
+            GlobalData.experimentExperimentPairs = eePairsList;
+            dgv_EE_Pairs.Update();
+        }
 
         //private void MarkEEPeaksAsAcceptable()
         //{
