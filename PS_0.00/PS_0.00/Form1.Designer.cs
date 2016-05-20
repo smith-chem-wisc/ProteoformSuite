@@ -45,12 +45,13 @@
             this.experimentTheoreticalComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.experimentDecoyComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.experimentExperimentComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.decoyDecoyComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.proteoformFamilyAssignmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generateMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.decoyDecoyComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resultsSummaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -127,7 +128,8 @@
             this.experimentDecoyComparisonToolStripMenuItem,
             this.experimentExperimentComparisonToolStripMenuItem,
             this.decoyDecoyComparisonToolStripMenuItem,
-            this.proteoformFamilyAssignmentToolStripMenuItem});
+            this.proteoformFamilyAssignmentToolStripMenuItem,
+            this.resultsSummaryToolStripMenuItem});
             this.processingPhaseToolStripMenuItem.Name = "processingPhaseToolStripMenuItem";
             this.processingPhaseToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
             this.processingPhaseToolStripMenuItem.Text = "Processing Phase";
@@ -188,6 +190,13 @@
             this.experimentExperimentComparisonToolStripMenuItem.Text = "Experiment - Experiment Comparison";
             this.experimentExperimentComparisonToolStripMenuItem.Click += new System.EventHandler(this.experimentExperimentComparisonToolStripMenuItem_Click);
             // 
+            // decoyDecoyComparisonToolStripMenuItem
+            // 
+            this.decoyDecoyComparisonToolStripMenuItem.Name = "decoyDecoyComparisonToolStripMenuItem";
+            this.decoyDecoyComparisonToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.decoyDecoyComparisonToolStripMenuItem.Text = "Decoy - Decoy Comparison";
+            this.decoyDecoyComparisonToolStripMenuItem.Click += new System.EventHandler(this.decoyDecoyComparisonToolStripMenuItem_Click);
+            // 
             // proteoformFamilyAssignmentToolStripMenuItem
             // 
             this.proteoformFamilyAssignmentToolStripMenuItem.Name = "proteoformFamilyAssignmentToolStripMenuItem";
@@ -227,12 +236,13 @@
             this.loadRunToolStripMenuItem.Text = "Load && Run";
             this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
             // 
-            // decoyDecoyComparisonToolStripMenuItem
+            // resultsSummaryToolStripMenuItem
             // 
-            this.decoyDecoyComparisonToolStripMenuItem.Name = "decoyDecoyComparisonToolStripMenuItem";
-            this.decoyDecoyComparisonToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.decoyDecoyComparisonToolStripMenuItem.Text = "Decoy - Decoy Comparison";
-            this.decoyDecoyComparisonToolStripMenuItem.Click += new System.EventHandler(this.decoyDecoyComparisonToolStripMenuItem_Click);
+            this.resultsSummaryToolStripMenuItem.Name = "resultsSummaryToolStripMenuItem";
+            this.resultsSummaryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.resultsSummaryToolStripMenuItem.Text = "Results Summary";
+            this.resultsSummaryToolStripMenuItem.Click += new System.EventHandler(this.resultsSummaryToolStripMenuItem_Click);
+
             // 
             // Form1
             // 
@@ -279,6 +289,7 @@
         private System.Windows.Forms.ToolStripMenuItem loadRunToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveMethodToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem decoyDecoyComparisonToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resultsSummaryToolStripMenuItem;
     }
 }
 

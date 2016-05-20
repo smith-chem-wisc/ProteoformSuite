@@ -93,6 +93,8 @@ namespace PS_0._00
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
                 String uniprotXmlFile = openFileDialog2.FileName;
+                GlobalData.uniprotXmlFile = uniprotXmlFile;
+
                 try
                 {
                     tb_UniProtXML_Path.Text = uniprotXmlFile;
