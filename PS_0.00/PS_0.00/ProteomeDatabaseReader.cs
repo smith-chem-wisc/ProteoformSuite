@@ -142,7 +142,7 @@ namespace PS_0._00
             return oldPtmlistFilePath;
         }
 
-        public static List<Protein> ReadUniprotXml(string uniprotXmlFile, int minPeptideLength, bool fixedMethionineCleavage)
+        public static Protein[] ReadUniprotXml(string uniprotXmlFile, int minPeptideLength, bool fixedMethionineCleavage)
         {
             StreamReader uniprotXmlStream;
             List<Protein> protein_list = new List<Protein>();
@@ -212,7 +212,6 @@ namespace PS_0._00
                                     positionsAndPtms.Add(feature_position, modListAtPos);
                                 }
                             }
-                            else { continue; }
                         }
                     });
 
@@ -255,6 +254,7 @@ namespace PS_0._00
                     });
                 });
             }
+            return protein_list.ToArray();
         }
 
         private static string GetAttribute(XElement element, string attribute_name)

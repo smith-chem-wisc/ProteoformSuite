@@ -27,15 +27,11 @@ namespace PS_0._00
         {
 
             if (Lollipop.rawExperimentalComponents.Count == 0)
-                pull_raw_experimental_components();
-
+            {
+                Lollipop.GetDeconResults();
+                Lollipop.GetRawComponents();
+            }
             FillRawExpComponentsTable();
-        }
-
-        public void pull_raw_experimental_components()
-        {
-            Lollipop.GetDeconResults();
-            Lollipop.GetRawComponents();
         }
 
         private void FillRawExpComponentsTable()
@@ -71,21 +67,6 @@ namespace PS_0._00
                 //dgv_RawExpComp_IndChgSts.Columns["Intensity"].DefaultCellStyle.Format = "0";
                 dgv_RawExpComp_IndChgSts.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
                 dgv_RawExpComp_IndChgSts.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-            }
-        }
-
-        public override string ToString()
-        {
-            return "RawExperimentalComponents|";
-        }
-
-        public void loadSetting(string setting_specs)
-        {
-            string[] fields = setting_specs.Split('\t');
-            switch (fields[0].Split('|')[1])
-            {
-                case "":
-                    break;
             }
         }
     }

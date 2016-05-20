@@ -106,21 +106,7 @@ namespace PS_0._00
             showForm(proteoformFamilyAssignment);
         }
 
-        private void saveMethod()
-        {
-            DialogResult dr = this.methodFileSave.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                String filename = methodFileSave.FileName;
-                using (StreamWriter file = new StreamWriter(filename))
-                {
-                    foreach (Form form in forms)
-                    {
-                        file.WriteLine(form.ToString());
-                    }
-                }
-            }
-        }
+
 
         private void generateMethodToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -144,6 +130,19 @@ namespace PS_0._00
             saveMethod();
         }
 
+        private void saveMethod()
+        {
+            DialogResult dr = this.methodFileSave.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                String filename = methodFileSave.FileName;
+                using (StreamWriter file = new StreamWriter(filename))
+                {
+                    file.WriteLine(Lollipop.method_toString());
+                }
+            }
+        }
+
         private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DialogResult dr = this.methodFileOpen.ShowDialog();
@@ -153,52 +152,28 @@ namespace PS_0._00
                 string[] lines = File.ReadAllLines(filename);
                 foreach (string line in lines)
                 {
-                    string setting_specs = line.Trim();
+                    string setting_spec = line.Trim();
                     string[] fields = line.Split('\t');
-                    switch (fields[0].Split('|')[0])
+                    if (fields[0].Split('|')[0] == "LoadDeconvolutionResults")
                     {
-                        case "AggregatedProteoforms":
-                            aggregatedProteoforms.loadSetting(setting_specs);
-                            break;
-                        case "LoadDeconvolutionResults":
-                            if (Lollipop.deconResultsFileNames.Count > 0)
-                            {
-                                var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?",
-                                    "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
-                                if (response == DialogResult.Yes) { break; }
-                                if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); }
-                                if (response == DialogResult.Cancel) { return; }
-                            }
-                            loadDeconvolutionResults.loadSetting(setting_specs);
-                            break;
-                        case "RawExperimentalComponents":
-                            rawExperimentalComponents.loadSetting(setting_specs);
-                            break;
-                        case "NeuCodePairs":
-                            neuCodePairs.loadSetting(setting_specs);
-                            break;
-                        case "ProteoformFamilyAssignment":
-                            proteoformFamilyAssignment.loadSetting(setting_specs);
-                            break;
-                        case "ExperimentExperimentComparison":
-                            experimentExperimentComparison.loadSetting(setting_specs);
-                            break;
-                        case "ExperimentTheoreticalComparison":
-                            experimentalTheoreticalComparison.loadSetting(setting_specs);
-                            break;
-                        case "ExperimentDecoyComparison":
-                            experimentDecoyComparison.loadSetting(setting_specs);
-                            break;
-                        case "TheoreticalDatabase":
-                            theoreticalDatabase.loadSetting(setting_specs);
-                            break;
+                        if (Lollipop.deconResultsFileNames.Count > 0)
+                        {
+                            var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?",
+                                "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
+                            if (response == DialogResult.Yes) { break; }
+                            if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); }
+                            if (response == DialogResult.Cancel) { return; }
+                        }
+                        loadDeconvolutionResults.loadSetting(setting_spec);
                     }
+                    else Lollipop.load_setting(setting_spec);
                 }
                 MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
-                rawExperimentalComponents.pull_raw_experimental_components();
-                neuCodePairs.NeuCodePairs_Load(neuCodePairs, null);
-                aggregatedProteoforms.AggregateNeuCodeLightProteoforms();
-                theoreticalDatabase.make_databases();
+                Lollipop.GetDeconResults();
+                Lollipop.GetRawComponents();
+                Lollipop.FillRawNeuCodePairsDataTable();
+                Lollipop.AggregateNeuCodeLightProteoforms();
+                Lollipop.make_databases();
                 experimentalTheoreticalComparison.run_comparison();
                 experimentDecoyComparison.run_comparison();
                 experimentExperimentComparison.run_comparison();

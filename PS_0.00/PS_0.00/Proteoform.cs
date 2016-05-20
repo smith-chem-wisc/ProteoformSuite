@@ -46,32 +46,18 @@ namespace PS_0._00
 
         public double calculate_sum_intensity()
         {
-            this.intensity_sum = 0;
-            Parallel.ForEach<ChargeState>(this.charge_states, cs => 
-            {
-                this.intensity_sum += cs.intensity;
-            });
+            this.intensity_sum = this.charge_states.Select(charge_state => charge_state.intensity).Sum();
             return this.intensity_sum;
         }
 
         public double calculate_sum_intensity(List<int> charges_to_sum)
         {
-            double intensity_sum = 0;
-            Parallel.ForEach<ChargeState>(this.charge_states, cs =>
-            {
-                if (charges_to_sum.Contains(cs.charge_count))
-                    intensity_sum += cs.intensity;
-            });
-            return intensity_sum;
+            return this.charge_states.Where(cs => charges_to_sum.Contains(cs.charge_count)).Select(charge_state => charge_state.intensity).Sum();
         }
 
         public void calculate_weighted_monoisotopic_mass()
         {
-            this.weighted_monoisotopic_mass = 0;
-            Parallel.ForEach<ChargeState>(this.charge_states, cs =>
-            {
-                this.weighted_monoisotopic_mass += cs.intensity / this.intensity_sum * cs.calculated_mass;
-            });
+            this.weighted_monoisotopic_mass = this.charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum();
         }
 
         public void add_charge_state(DataRow charge_row)
@@ -110,7 +96,7 @@ namespace PS_0._00
         }
     }
 
-    public class Proteoform 
+    public class NeuCodePair 
     {
         Component neuCodeLight;
         Component neuCodeHeavy;
@@ -147,7 +133,7 @@ namespace PS_0._00
         public int lysine_count { get; set; }
         public bool accepted { get; set; }
 
-        public Proteoform(Component lower_rawNeuCode, Component higher_rawNeuCode)
+        public NeuCodePair(Component lower_rawNeuCode, Component higher_rawNeuCode)
         {
             double mass_difference = higher_rawNeuCode.weighted_monoisotopic_mass - lower_rawNeuCode.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
             int diff_integer = Convert.ToInt32(Math.Round(mass_difference / 1.0015 - 0.5, 0, MidpointRounding.AwayFromZero));
@@ -188,9 +174,14 @@ namespace PS_0._00
         }
     }
 
-    public class AggregatedProteoform
+    public class Proteoform
     {
-        public List<Proteoform> proteoforms;
+
+    }
+
+    public class ExperimentalProteoform : Proteoform
+    {
+        public List<NeuCodePair> proteoforms;
         public double agg_mass { get; set; } = 0;
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
@@ -200,18 +191,21 @@ namespace PS_0._00
             get { return proteoforms.Count; }
         }
 
-        public AggregatedProteoform(List<Proteoform> pf_to_aggregate)
+        public ExperimentalProteoform(List<NeuCodePair> pf_to_aggregate)
         {
             proteoforms = pf_to_aggregate;
-            Proteoform root = pf_to_aggregate[0];
+            NeuCodePair root = pf_to_aggregate[0];
             this.lysine_count = root.lysine_count;
-            Parallel.ForEach<Proteoform>(pf_to_aggregate, p => { this.agg_intensity += p.light_intensity; });
-            Parallel.ForEach<Proteoform>(pf_to_aggregate, p =>
-            {
-                double massShift = Math.Round((root.light_corrected_mass - p.light_corrected_mass), 0) * 1.0015;
-                this.agg_mass += (p.light_corrected_mass + massShift) * p.light_intensity / this.agg_intensity;
-                this.agg_rt += p.light_apexRt * p.light_intensity / this.agg_intensity;
-            }); //intensity-normalized mass and retention time
+            this.agg_intensity = pf_to_aggregate.Select(p => p.light_intensity).Sum();
+            this.agg_rt = pf_to_aggregate.Select(p => p.light_apexRt * p.light_intensity / this.agg_intensity).Sum();
+            this.agg_mass = pf_to_aggregate.Select(p => 
+                (p.light_corrected_mass + Math.Round((root.light_corrected_mass - p.light_corrected_mass), 0) * 1.0015) //mass + mass shift
+                * p.light_intensity / this.agg_intensity).Sum();
         }
+    }
+
+    public class TheoreticalProteoform : Proteoform
+    {
+
     }
 }

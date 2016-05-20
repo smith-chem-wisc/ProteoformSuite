@@ -60,7 +60,7 @@ namespace PS_0._00
             for (double i = 0; i <= 20; i = i + 0.05)
             {
                 string expression = "[Intensity Ratio] >= " + (i - .025) + "AND [Intensity Ratio] < " + (i + .025);
-                List<Proteoform> proteoforms_by_intensityRatio = Lollipop.rawNeuCodePairs.Where(p => p.intensity_ratio >= i - 0.025 && p.intensity_ratio < i + 0.025).ToList();
+                List<NeuCodePair> proteoforms_by_intensityRatio = Lollipop.rawNeuCodePairs.Where(p => p.intensity_ratio >= i - 0.025 && p.intensity_ratio < i + 0.025).ToList();
                 if (proteoforms_by_intensityRatio.Count > ymax)
                     ymax = proteoforms_by_intensityRatio.Count;
                 intensityRatioHistogram.Rows.Add(i, proteoforms_by_intensityRatio.Count);
@@ -113,7 +113,7 @@ namespace PS_0._00
 
             for (int i = 0; i <= 28; i++)
             {
-                List<Proteoform> pf_by_lysCt = Lollipop.rawNeuCodePairs.Where(p => p.lysine_count == i).ToList();
+                List<NeuCodePair> pf_by_lysCt = Lollipop.rawNeuCodePairs.Where(p => p.lysine_count == i).ToList();
                 if (pf_by_lysCt.Count > ymax)
                     ymax = pf_by_lysCt.Count;
                 lysCtHistogram.Rows.Add(i, pf_by_lysCt.Count);
@@ -238,68 +238,36 @@ namespace PS_0._00
             ct_IntensityRatio.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxIRat.Value.ToString());
         }
 
-        private void parse_neucode_param_change(List<Proteoform> selected_pf)
-        {
-            Parallel.ForEach(selected_pf, p => { p.accepted = false; });
-            dgv_RawExpNeuCodePairs.Refresh();
-        }
-
         private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            List<Proteoform> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.lysine_count < double.Parse(KMinAcceptable.Value.ToString())).ToList();
+            Lollipop.min_lysine_ct = KMinAcceptable.Value;
+            List<NeuCodePair> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.lysine_count < double.Parse(KMinAcceptable.Value.ToString())).ToList();
             Parallel.ForEach(selected_pf, p => { p.accepted = false; });
             dgv_RawExpNeuCodePairs.Refresh();
         }
 
         private void KMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            List<Proteoform> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.lysine_count > double.Parse(KMaxAcceptable.Value.ToString())).ToList();
+            Lollipop.max_lysine_ct = KMaxAcceptable.Value;
+            List<NeuCodePair> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.lysine_count > double.Parse(KMaxAcceptable.Value.ToString())).ToList();
             Parallel.ForEach(selected_pf, p => { p.accepted = false; });
             dgv_RawExpNeuCodePairs.Refresh();
         }
 
         private void IRatMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            List<Proteoform> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.intensity_ratio < double.Parse(IRatMinAcceptable.Value.ToString())).ToList();
+            Lollipop.min_intensity_ratio = IRatMinAcceptable.Value;
+            List<NeuCodePair> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.intensity_ratio < double.Parse(IRatMinAcceptable.Value.ToString())).ToList();
             Parallel.ForEach(selected_pf, p => { p.accepted = false; });
             dgv_RawExpNeuCodePairs.Refresh();
         }
 
         private void IRatMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            List<Proteoform> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.intensity_ratio > double.Parse(IRatMaxAcceptable.Value.ToString())).ToList();
+            Lollipop.max_intensity_ratio = IRatMaxAcceptable.Value;
+            List<NeuCodePair> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.intensity_ratio > double.Parse(IRatMaxAcceptable.Value.ToString())).ToList();
             Parallel.ForEach(selected_pf, p => { p.accepted = false; });
             dgv_RawExpNeuCodePairs.Refresh();
-        }
-
-        public override string ToString()
-        {
-            return String.Join(System.Environment.NewLine, new string[] {
-                "NeuCodePairs|KMaxAcceptable.Value\t" + KMaxAcceptable.Value.ToString(),
-                "NeuCodePairs|KMinAcceptable.Value\t" + KMinAcceptable.Value.ToString(),
-                "NeuCodePairs|IRatMaxAcceptable.Value\t" + IRatMaxAcceptable.Value.ToString(),
-                "NeuCodePairs|IRatMinAcceptable.Value\t" + IRatMinAcceptable.Value.ToString()
-            });
-        }
-
-        public void loadSetting(string setting_specs)
-        {
-            string[] fields = setting_specs.Split('\t');
-            switch (fields[0].Split('|')[1])
-            {
-                case "KMaxAcceptable.Value":
-                    KMaxAcceptable.Value = Convert.ToDecimal(fields[1]);
-                    break;
-                case "KMinAcceptable.Value":
-                    KMinAcceptable.Value = Convert.ToDecimal(fields[1]);
-                    break;
-                case "IRatMaxAcceptable.Value":
-                    IRatMaxAcceptable.Value = Convert.ToDecimal(fields[1]);
-                    break;
-                case "IRatMinAcceptable.Value":
-                    IRatMinAcceptable.Value = Convert.ToDecimal(fields[1]);
-                    break;
-            }
         }
     }
 }

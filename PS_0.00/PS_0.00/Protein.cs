@@ -72,26 +72,23 @@ namespace PS_0._00
             return conPAP;
         }
 
-        public static List<string> uniqueProteinSequences(Protein[] proteins) // this finds all unique proteins sequences in the protein[]
+        public static List<string> uniqueProteinSequences(IEnumerable<Protein> proteins) // this finds all unique proteins sequences in the protein[]
         {
             List<string> uniqueSequences = new List<string>();
 
-            foreach (Protein protein in proteins)
+            Parallel.ForEach<Protein>(proteins, protein =>
             {
                 if (!uniqueSequences.Contains(protein.Sequence))
-                {
                     uniqueSequences.Add(protein.Sequence);
-                }
-            }
-
+            });
             return uniqueSequences;
         }
 
-        public static ProteinSequenceGroups[] consolidateProteins(Protein[] proteins, List<string> sequences) // this creates the proteinsequencegorup[] which adds the accesion list field and changes the accesion name.
+        public static ProteinSequenceGroups[] consolidateProteins(IEnumerable<Protein> proteins, List<string> sequences) // this creates the proteinsequencegorup[] which adds the accesion list field and changes the accesion name.
         {
             ProteinSequenceGroups[] psgs = new ProteinSequenceGroups[sequences.Count];
             int counter = 0;
-            foreach (string sequence in sequences)
+            Parallel.ForEach<string>(sequences, sequence =>
             {
                 List<string> accessionList = new List<string>();
                 //ProteinSequenceGroups psg = new ProteinSequenceGroups();
@@ -105,21 +102,13 @@ namespace PS_0._00
 
                 ProteinSequenceGroups psg = new ProteinSequenceGroups(accession, name, fragment, begin, end, "", conPAP);
 
-                foreach (Protein protein in proteins)
+                Parallel.ForEach<Protein>(proteins, protein =>
                 {
                     if (protein.Sequence == sequence)
                     {
                         accessionList.Add(protein.Accession);
                         conPAP = psg.consolodatePositionsAndPtms(conPAP, protein.PositionsAndPtms);
-                        if (accessionList.Count() == 1)
-                        {
-                            accession = protein.Accession;
-                            name = protein.Name;
-                            fragment = protein.Fragment;
-                            begin = protein.Begin;
-                            end = protein.End;
-                        }
-                        else if (string.Compare(protein.Accession, accession) < 1)
+                        if (accessionList.Count() == 1 || string.Compare(protein.Accession, accession) < 1)
                         {
                             accession = protein.Accession;
                             name = protein.Name;
@@ -128,7 +117,8 @@ namespace PS_0._00
                             end = protein.End;
                         }
                     }
-                }
+                });
+
                 accessionList.Sort();
 
                 psg.AccessionList = accessionList;
@@ -144,7 +134,7 @@ namespace PS_0._00
                 psgs[counter] = psg;
 
                 counter++;
-            }
+            });
 
             return psgs;
         }
