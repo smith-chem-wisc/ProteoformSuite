@@ -31,7 +31,7 @@ namespace PS_0._00
         public void RawExperimentalComponents_Load(object sender, EventArgs e)
         {
 
-            if (GlobalData.rawExperimentalComponents.Columns.Count == 0)
+            if (GlobalData.rawExperimentalComponents.Count == 0)
             {
                 pull_raw_experimental_components();
             }
@@ -46,28 +46,13 @@ namespace PS_0._00
             GlobalData.rawExperimentalComponents = GetRawComponents();
         }
 
-        private void FillRawExpComponentsTable()
+        private List<DataTable> GetDeconResults()
         {
-            dgv_RawExpComp_MI_masses.DataSource = GlobalData.rawExperimentalComponents;
-            dgv_RawExpComp_MI_masses.ReadOnly = true;
-            dgv_RawExpComp_MI_masses.Columns["Monoisotopic Mass"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpComp_MI_masses.Columns["Delta Mass"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpComp_MI_masses.Columns["Weighted Monoisotopic Mass"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpComp_MI_masses.Columns["Apex RT"].DefaultCellStyle.Format = "0.##";
-            dgv_RawExpComp_MI_masses.Columns["Relative Abundance"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpComp_MI_masses.Columns["Fractional Abundance"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpComp_MI_masses.Columns["Sum Intensity"].DefaultCellStyle.Format = "0";
-            dgv_RawExpComp_MI_masses.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_RawExpComp_MI_masses.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-        }
+            List<DataTable> decon_results = new List<DataTable>();
 
-        private DataSet GetDeconResults()
-        {
-            DataSet ds = new DataSet();
-            foreach (string file in GlobalData.deconResultsFileNames)
+            Parallel.ForEach<string>(GlobalData.deconResultsFileNames, filename =>
             {
-                DataTable dt = new DataTable();
-                dt = ReadExcelFile(file);
+                DataTable dt = ReadExcelFile(filename);
                 DataTable dc = dt.Clone();
                 dc.Columns[0].DataType = typeof(int);
                 foreach (DataRow row in dt.Rows)
@@ -89,116 +74,97 @@ namespace PS_0._00
 
                 foreach (DataRow row in dc.Rows)
                 {
-                    row["Filename"] = Path.GetFileName(file);
+                    row["Filename"] = Path.GetFileName(filename);
                 }
 
-                ds.Tables.Add(dc);
-            }
-            return ds;
+                decon_results.Add(dc);
+            });
+
+            return decon_results;
         }
 
         private BindingList<Component> GetRawComponents()
         {
             BindingList<Component> raw_components = new BindingList<Component>();
 
-            foreach (DataTable table in GlobalData.deconResultsFiles.Tables)
+            foreach (DataTable table in GlobalData.deconResultsFiles)
             {
-                DataRow[] rows = table.Select("[" + table.Columns[0].ColumnName + "] > 0"); //Checking that it's a component row, not a charge state one
+                DataRow[] component_rows = table.Select("[" + table.Columns[0].ColumnName + "] > 0"); //Checking that it's a component row, not a charge state one
 
-                foreach (DataRow component_row in rows)
-                {
-                    int id = component_row.Field<int>(0);
-                    double monoisotopic_mass = component_row.Field<double>(1);
-                    double sum_intensity = component_row.Field<double>(2);
-                    int num_charge_states = component_row.Field<int>(3);
-                    int num_detected_intervals = component_row.Field<int>(4);
-                    double delta_mass = component_row.Field<double>(5);
-                    double relative_abundance = component_row.Field<double>(6);
-                    double fract_abundance = component_row.Field<double>(7);
-                    string scan_range = component_row.Field<string>(8);
-                    string rt_range = component_row.Field<string>(9);
-                    double rt_apex = component_row.Field<double>(10);
-                    string filename = component_row.Field<string>(11);
+                Parallel.ForEach<DataRow>(component_rows, component_row =>
+               {
+                   int id = component_row.Field<int>(0);
+                   double monoisotopic_mass = component_row.Field<double>(1);
+                   double sum_intensity = component_row.Field<double>(2);
+                   int num_charge_states = component_row.Field<int>(3);
+                   int num_detected_intervals = component_row.Field<int>(4);
+                   double delta_mass = component_row.Field<double>(5);
+                   double relative_abundance = component_row.Field<double>(6);
+                   double fract_abundance = component_row.Field<double>(7);
+                   string scan_range = component_row.Field<string>(8);
+                   string rt_range = component_row.Field<string>(9);
+                   double rt_apex = component_row.Field<double>(10);
+                   string filename = component_row.Field<string>(11);
 
-                    Component raw_component = new Component(id, monoisotopic_mass, sum_intensity, num_charge_states,
-                        num_detected_intervals, delta_mass, relative_abundance, fract_abundance, scan_range,
-                        rt_range, rt_apex, filename);
+                   Component raw_component = new Component(id, monoisotopic_mass, sum_intensity, num_charge_states,
+                       num_detected_intervals, delta_mass, relative_abundance, fract_abundance, scan_range,
+                       rt_range, rt_apex, filename);
 
-                    string charge_states_for_this_id = "[" + table.Columns[5].ColumnName
-                        + "] is null AND [" + table.Columns[0].ColumnName + "] = " + id
-                        + " AND [" + table.Columns[1].ColumnName + "] <> 'Charge State'";
-                    DataRow[] charge_rows = table.Select(charge_states_for_this_id);
-                    foreach (DataRow charge_row in charge_rows)
-                    {
-                        int charge_state = charge_row.Field<int>(1);
-                        double intensity = charge_row.Field<double>(2);
-                        double mz_centroid = charge_row.Field<double>(3);
-                        double calculated_mass = charge_row.Field<double>(4);
-                        raw_component.add_charge_state(charge_state, intensity, mz_centroid, calculated_mass);
-                    }
-                    raw_component.calculate_sum_intensity();
-                    raw_component.calculate_weighted_monoisotopic_mass();
+                   string charge_states_for_this_id = "[" + table.Columns[5].ColumnName
+                       + "] is null AND [" + table.Columns[0].ColumnName + "] = " + id
+                       + " AND [" + table.Columns[1].ColumnName + "] <> 'Charge State'";
+                   DataRow[] charge_rows = table.Select(charge_states_for_this_id);
+                   foreach (DataRow charge_row in charge_rows)
+                   {
+                       int charge_state = charge_row.Field<int>(1);
+                       double intensity = charge_row.Field<double>(2);
+                       double mz_centroid = charge_row.Field<double>(3);
+                       double calculated_mass = charge_row.Field<double>(4);
+                       raw_component.add_charge_state(charge_state, intensity, mz_centroid, calculated_mass);
+                   }
+                   raw_component.calculate_sum_intensity();
+                   raw_component.calculate_weighted_monoisotopic_mass();
 
-                    raw_components.Add(raw_component);
-                }
+                   raw_components.Add(raw_component);
+               });
             }
             return raw_components;
         }
 
-        private DataSet GetRawChargeStates()
+        private void FillRawExpComponentsTable()
         {
-            DataSet rawChargeStateTables = new DataSet();
-            
-            foreach (DataTable table in GlobalData.deconResultsFiles.Tables)
+            BindingSource bs = new BindingSource();
+            bs.DataSource = GlobalData.rawExperimentalComponents;
+            dgv_RawExpComp_MI_masses.DataSource = bs;
+            dgv_RawExpComp_MI_masses.ReadOnly = true;
+            //dgv_RawExpComp_MI_masses.Columns["Monoisotopic Mass"].DefaultCellStyle.Format = "0.####";
+            //dgv_RawExpComp_MI_masses.Columns["Delta Mass"].DefaultCellStyle.Format = "0.####";
+            //dgv_RawExpComp_MI_masses.Columns["Weighted Monoisotopic Mass"].DefaultCellStyle.Format = "0.####";
+            //dgv_RawExpComp_MI_masses.Columns["Apex RT"].DefaultCellStyle.Format = "0.##";
+            //dgv_RawExpComp_MI_masses.Columns["Relative Abundance"].DefaultCellStyle.Format = "0.####";
+            //dgv_RawExpComp_MI_masses.Columns["Fractional Abundance"].DefaultCellStyle.Format = "0.####";
+            //dgv_RawExpComp_MI_masses.Columns["Sum Intensity"].DefaultCellStyle.Format = "0";
+            dgv_RawExpComp_MI_masses.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_RawExpComp_MI_masses.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+        }
+
+        private void dgv_RawExpComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex >= 0)
             {
-                int entryNumber = 0;
-                int maxEntry = 0;
-                foreach (DataRow row in table.Rows)
-                {
-                    bool result = int.TryParse(row[0].ToString(), out entryNumber);
-                    if (entryNumber > maxEntry)
-                    {
-                        maxEntry = entryNumber;
-                    }
-                    else
-                    {
-                        row[0] = maxEntry;
-                    }
-                }
+                Component c = (Component)this.dgv_RawExpComp_MI_masses.Rows[e.RowIndex].DataBoundItem;
 
-                for (int i = 1; i <= maxEntry; i++)
-                {
-
-                    string expression = "[" + table.Columns[5].ColumnName
-                        + "] is null AND [" + table.Columns[0].ColumnName + "] = " + i
-                        + " AND [" + table.Columns[1].ColumnName + "] <> 'Charge State'";
-
-                    DataRow[] chargeStates = table.Select(expression);
-
-                    string tableName = chargeStates[0]["Filename"].ToString() + "_" + i.ToString();
-                    DataTable csTable = new DataTable(tableName);
-                    csTable.Columns.Add("Filename", typeof(string));
-                    csTable.Columns.Add("No#", typeof(int));
-                    csTable.Columns.Add("Charge State", typeof(int));
-                    csTable.Columns.Add("Intensity", typeof(double));
-                    csTable.Columns.Add("MZ Centroid", typeof(double));
-                    csTable.Columns.Add("Calculated Mass", typeof(double));
-
-                    foreach (DataRow row in chargeStates)
-                    {
-                        csTable.Rows.Add(
-                            row[11].ToString(),
-                            int.Parse(row[0].ToString()),
-                            int.Parse(row[1].ToString()),
-                            double.Parse(row[2].ToString()),
-                            double.Parse(row[3].ToString()),
-                            double.Parse(row[4].ToString())
-                            );
-                    }
-                    rawChargeStateTables.Tables.Add(csTable);
-                }
+                //Round doubles before displaying
+                BindingSource bs = new BindingSource();
+                bs.DataSource = c.get_chargestates();
+                dgv_RawExpComp_IndChgSts.DataSource = bs;
+                dgv_RawExpComp_IndChgSts.ReadOnly = true;
+                //dgv_RawExpComp_IndChgSts.Columns["MZ Centroid"].DefaultCellStyle.Format = "0.####";
+                //dgv_RawExpComp_IndChgSts.Columns["Calculated Mass"].DefaultCellStyle.Format = "0.####";
+                //dgv_RawExpComp_IndChgSts.Columns["Intensity"].DefaultCellStyle.Format = "0";
+                dgv_RawExpComp_IndChgSts.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+                dgv_RawExpComp_IndChgSts.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
             }
-            return rawChargeStateTables;
         }
 
         private DataTable ReadExcelFile(string filename)
@@ -330,31 +296,6 @@ namespace PS_0._00
             }
 
             return columnIndex;
-        }
-
-        private void dgv_RawExpComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            string filename;
-            string rawComponentNum;
-
-            if (e.RowIndex >= 0)
-            {
-                DataGridViewRow row = this.dgv_RawExpComp_MI_masses.Rows[e.RowIndex];
-                filename = row.Cells["Filename"].Value.ToString();
-                rawComponentNum = row.Cells[0].Value.ToString();
-
-                //MessageBox.Show("dgv_RawExpComp_MI_masses_CellContentClick");
-
-                //Round doubles before displaying
-                DataTable displayTable = GlobalData.rawExperimentalChargeStateData.Tables[filename + "_" + rawComponentNum];
-                dgv_RawExpComp_IndChgSts.DataSource = displayTable;
-                dgv_RawExpComp_IndChgSts.ReadOnly = true;
-                dgv_RawExpComp_IndChgSts.Columns["MZ Centroid"].DefaultCellStyle.Format = "0.####";
-                dgv_RawExpComp_IndChgSts.Columns["Calculated Mass"].DefaultCellStyle.Format = "0.####";
-                dgv_RawExpComp_IndChgSts.Columns["Intensity"].DefaultCellStyle.Format = "0";
-                dgv_RawExpComp_IndChgSts.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-                dgv_RawExpComp_IndChgSts.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-            }
         }
 
         public override string ToString()

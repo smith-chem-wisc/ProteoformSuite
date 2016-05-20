@@ -13,16 +13,14 @@ namespace PS_0._00
         public int id { get; set; }
         public double monoisotopic_mass { get; set; }
         public double intensity_sum { get; set; }
-        public List<ChargeState> charge_states { get; set; }
         public double delta_mass { get; set; }
         public double relative_abundance { get; set; }
         public double fract_abundance { get; set; }
-        public int scan_start { get; set; }
-        public int scan_end { get; set; }
-        public double rt_start { get; set; }
-        public double rt_end { get; set; }
+        public string scan_range { get; set; }
+        public string rt_range { get; set; }
         public double rt_apex { get; set; }
         public double weighted_monoisotopic_mass { get; set; }
+        private List<ChargeState> charge_states { get; set; }
 
         public Component(int id, double monoisotopic_mass, double sum_intensity, int num_charge_states,
                         int num_detected_intervals, double delta_mass, double relative_abundance, double fract_abundance, string scan_range,
@@ -34,11 +32,11 @@ namespace PS_0._00
             this.delta_mass = delta_mass;
             this.relative_abundance = relative_abundance;
             this.fract_abundance = fract_abundance;
+            this.scan_range = scan_range;
+            this.rt_range = rt_range;
+            this.rt_apex = rt_apex;
             this.file_origin = filename;
             this.charge_states = new List<ChargeState>();
-
-            this.calculate_sum_intensity();
-            this.calculate_weighted_monoisotopic_mass();
         }
 
         public int get_num_charge_states()
@@ -46,22 +44,35 @@ namespace PS_0._00
             return this.charge_states.Count;
         }
 
-        public void calculate_sum_intensity()
+        public double calculate_sum_intensity()
         {
             this.intensity_sum = 0;
-            foreach (ChargeState cs in this.charge_states)
+            Parallel.ForEach<ChargeState>(this.charge_states, cs => 
             {
                 this.intensity_sum += cs.intensity;
-            }
+            });
+            return this.intensity_sum;
+        }
+       
+
+        public double calculate_sum_intensity(List<int> charges_to_sum)
+        {
+            double intensity_sum = 0;
+            Parallel.ForEach<ChargeState>(this.charge_states, cs =>
+            {
+                if (charges_to_sum.Contains(cs.charge_count))
+                    intensity_sum += cs.intensity;
+            });
+            return intensity_sum;
         }
 
         public void calculate_weighted_monoisotopic_mass()
         {
             this.weighted_monoisotopic_mass = 0;
-            foreach (ChargeState cs in this.charge_states)
+            Parallel.ForEach<ChargeState>(this.charge_states, cs =>
             {
                 this.weighted_monoisotopic_mass += cs.intensity / this.intensity_sum * cs.calculated_mass;
-            }
+            });
         }
 
         public void add_charge_state(int charge_state, double intensity, double mz_centroid, double calculated_mass)
@@ -74,14 +85,9 @@ namespace PS_0._00
             return false;
         }
 
-        //public DataRow get_component_datarow()
-        //{
-
-        //}
-
-        public DataTable get_chargestate_datatable()
+        public List<ChargeState> get_chargestates()
         {
-            return new DataTable();
+            return charge_states;
         }
     }
 
@@ -103,10 +109,106 @@ namespace PS_0._00
 
     public class Proteoform 
     {
-
-        public DataTable getNeuCodeLightTable()
+        Component neuCodeLight;
+        Component neuCodeHeavy;
+        public string file_origin
         {
-            return new DataTable();
-        } 
+            get { return neuCodeLight.file_origin; }
+        }
+        public int light_id
+        {
+            get { return neuCodeLight.id; }
+        }
+        public double light_weighted_monoisotopic_mass
+        {
+            get { return neuCodeLight.weighted_monoisotopic_mass; }
+        }
+        public double light_corrected_mass { get; set; }
+        public double light_intensity { get; set; }
+        public double light_apexRt
+        {
+            get { return neuCodeLight.rt_apex; }
+        }
+        public int heavy_id
+        {
+            get { return neuCodeHeavy.id; }
+        }
+        public double heavy_weighted_monoisotopic_mass
+        {
+            get { return neuCodeHeavy.weighted_monoisotopic_mass; }
+        }
+        public double heavy_intensity { get; set; }
+        public List<int> overlapping_charge_states { get; set; }
+        
+        public double intensity_ratio { get; set; }
+        public int lysine_count { get; set; }
+        public bool accepted { get; set; }
+
+        public Proteoform(Component lower_rawNeuCode, Component higher_rawNeuCode)
+        {
+            double mass_difference = higher_rawNeuCode.weighted_monoisotopic_mass - lower_rawNeuCode.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
+            int diff_integer = Convert.ToInt32(Math.Round(mass_difference / 1.0015 - 0.5, 0, MidpointRounding.AwayFromZero));
+            List<int> lower_charges = lower_rawNeuCode.get_chargestates().Select(charge_state => charge_state.charge_count).ToList<int>();
+            List<int> higher_charges = higher_rawNeuCode.get_chargestates().Select(charge_states => charge_states.charge_count).ToList<int>();
+            this.overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
+            double lower_intensity = lower_rawNeuCode.calculate_sum_intensity(this.overlapping_charge_states);
+            double higher_intensity = lower_rawNeuCode.calculate_sum_intensity(this.overlapping_charge_states);
+
+            if (lower_intensity <= 0 || higher_intensity <= 0)
+            {
+                this.accepted = false;
+                return;
+            }
+            else
+            {
+                this.accepted = true;
+                if (lower_intensity > higher_intensity) //lower mass is neucode light
+                {
+                    neuCodeLight = lower_rawNeuCode;
+                    this.light_intensity = lower_intensity;
+                    neuCodeHeavy = higher_rawNeuCode;
+                    this.heavy_intensity = higher_intensity;
+                }
+                else //higher mass is neucode light
+                {
+                    neuCodeLight = higher_rawNeuCode;
+                    this.light_intensity = higher_intensity;
+                    neuCodeHeavy = lower_rawNeuCode;
+                    this.heavy_intensity = lower_intensity;
+                }
+
+                double firstCorrection = neuCodeLight.weighted_monoisotopic_mass + diff_integer * 1.0015;
+                this.lysine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.weighted_monoisotopic_mass - firstCorrection) / 0.036015372, 0, MidpointRounding.AwayFromZero)));
+                this.intensity_ratio = this.light_intensity / this.heavy_intensity;
+                this.light_corrected_mass = neuCodeLight.weighted_monoisotopic_mass + Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * 1.0015;
+            }
+        }
+    }
+
+    public class AggregatedProteoform
+    {
+        public List<Proteoform> proteoforms;
+        public double agg_mass { get; set; } = 0;
+        public double agg_intensity { get; set; } = 0;
+        public double agg_rt { get; set; } = 0;
+        public int lysine_count { get; set; }
+        public int observation_count
+        {
+            get { return proteoforms.Count; }
+        }
+
+        public AggregatedProteoform(List<Proteoform> pf_to_aggregate)
+        {
+            proteoforms = pf_to_aggregate;
+            Proteoform root = pf_to_aggregate[0];
+            this.lysine_count = root.lysine_count;
+            Parallel.ForEach<Proteoform>(pf_to_aggregate, p => { this.agg_intensity += p.light_intensity; });
+            Parallel.ForEach<Proteoform>(pf_to_aggregate, p =>
+            {
+                double massShift = Math.Round((root.light_corrected_mass - p.light_corrected_mass), 0) * 1.0015;
+                this.agg_mass += (p.light_corrected_mass + massShift) * p.light_intensity / this.agg_intensity;
+                this.agg_rt += p.light_apexRt * p.light_intensity / this.agg_intensity;
+            }); //intensity-normalized mass and retention time
+        }
     }
 }

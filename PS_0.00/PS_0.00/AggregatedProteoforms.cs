@@ -20,28 +20,18 @@ namespace PS_0._00
         public void AggregatedProteoforms_Load(object sender, EventArgs e)
         {
             InitializeSettings();
-            if (GlobalData.aggregatedProteoforms.Columns.Count == 0)
-            {
-                aggregate_proteoforms();
-            }
-            FillAggregatesTable();
-        }
-
-        public void aggregate_proteoforms()
-        {
-            GlobalData.acceptableNeuCodeLightProteoforms = FillAcceptableNeuCodeLightProteoformsDataTable();
-            GlobalData.aggregatedProteoforms = CreateAggregatedProteoformsDataTable();
-            AggregateNeuCodeLightProteoforms();
-            CountObservations();
+            if (GlobalData.aggregatedProteoforms.Count == 0) AggregateNeuCodeLightProteoforms();
         }
 
         private void FillAggregatesTable()
         {
-            dgv_AggregatedProteoforms.DataSource = GlobalData.aggregatedProteoforms;
+            BindingSource bs = new BindingSource();
+            bs.DataSource = GlobalData.aggregatedProteoforms;
+            dgv_AggregatedProteoforms.DataSource = bs;
             dgv_AggregatedProteoforms.ReadOnly = true;
-            dgv_AggregatedProteoforms.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.####";
-            dgv_AggregatedProteoforms.Columns["Aggregated Retention Time"].DefaultCellStyle.Format = "0.##";
-            dgv_AggregatedProteoforms.Columns["Aggregated Intensity"].DefaultCellStyle.Format = "0";
+            //dgv_AggregatedProteoforms.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.####";
+            //dgv_AggregatedProteoforms.Columns["Aggregated Retention Time"].DefaultCellStyle.Format = "0.##";
+            //dgv_AggregatedProteoforms.Columns["Aggregated Intensity"].DefaultCellStyle.Format = "0";
             dgv_AggregatedProteoforms.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
             dgv_AggregatedProteoforms.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
@@ -71,194 +61,82 @@ namespace PS_0._00
 
         }
 
-        private DataTable CreateAggregatedProteoformsDataTable()
+        public void AggregateNeuCodeLightProteoforms()
         {
-            DataTable dt = new DataTable();
+            if (GlobalData.aggregatedProteoforms.Count > 0) GlobalData.aggregatedProteoforms.Clear();
 
-            dt.Columns.Add("Aggregated Mass", typeof(double));
-            dt.Columns.Add("Aggregated Intensity", typeof(double));
-            dt.Columns.Add("Aggregated Retention Time", typeof(double));
-            dt.Columns.Add("Lysine Count", typeof(int));
-            dt.Columns.Add("Number of Observations", typeof(int));
+            List<Proteoform> remaining_acceptableProteoforms = GlobalData.rawNeuCodePairs.Where(p => p.accepted).ToList().
+                OrderByDescending(p => p.light_intensity).ToList(); 
+            //ordered list, so that the proteoform with max intensity is always chosen first
 
-            return dt;
-        }
-
-        private DataTable FillAcceptableNeuCodeLightProteoformsDataTable()
-        {
-            //MessageBox.Show("Filling ltNCProteoforms table.");
-            DataTable acceptableLtProteoforms = new DataTable();
-            acceptableLtProteoforms.Columns.Add("Light Filename", typeof(string));
-            acceptableLtProteoforms.Columns.Add("Light No.", typeof(int));
-            acceptableLtProteoforms.Columns.Add("Light Mass", typeof(double));
-            acceptableLtProteoforms.Columns.Add("Light Mass Corrected", typeof(double));
-            acceptableLtProteoforms.Columns.Add("Light Intensity", typeof(double));
-            acceptableLtProteoforms.Columns.Add("Light Retention Time", typeof(double));
-            acceptableLtProteoforms.Columns.Add("Lysine Count", typeof(int));
-            acceptableLtProteoforms.Columns.Add("Aggregated Mass", typeof(double));
-            acceptableLtProteoforms.Columns.Add("Aggregated Intensity", typeof(double));
-            acceptableLtProteoforms.Columns.Add("Aggregated Retention Time", typeof(double));
-
-            foreach (DataRow row in GlobalData.rawNeuCodePairs.Rows)
+            while (remaining_acceptableProteoforms.Count > 0)
             {
-                if (bool.Parse(row["Acceptable"].ToString()))
+                Proteoform root = remaining_acceptableProteoforms[0];
+                remaining_acceptableProteoforms.Remove(root);
+                List<Proteoform> pf_to_aggregate = new List<Proteoform>() { root };
+
+                Parallel.ForEach<Proteoform>(remaining_acceptableProteoforms, p =>
                 {
-                    string lightFilename = row["Light Filename"].ToString();
-                    int lightNumber = int.Parse(row["Light No."].ToString());
-                    double ltMass = double.Parse(row["Light Mass"].ToString());
-                    double ltMassCorrected = double.Parse(row["Light Mass Corrected"].ToString());
-                    double ltIntensity = double.Parse(row["Light Intensity"].ToString());
-                    double ltRetentionTime = double.Parse(row["Apex RT"].ToString());
-                    int lysineCount = int.Parse(row["Lysine Count"].ToString());
-
-                    double aggregatedMass = 0;
-                    double aggregatedIntensity = 0;
-                    double aggreagedRetentionTime = 0;
-
-                    acceptableLtProteoforms.Rows.Add(lightFilename, lightNumber, ltMass, ltMassCorrected, ltIntensity, ltRetentionTime, lysineCount, 
-                        aggregatedMass, aggregatedIntensity, aggreagedRetentionTime);
-                }
-            }
-            return acceptableLtProteoforms;
-        }
-
-        private void CountObservations()
-        {
-            foreach (DataRow row in GlobalData.aggregatedProteoforms.Rows)
-            {
-                double mass = Convert.ToDouble(row["Aggregated Mass"]);
-                int numObs = GlobalData.acceptableNeuCodeLightProteoforms.Select("[Aggregated Mass] > " + (mass - .001) + " and [Aggregated Mass] < " + (mass + .001)).Length;
-                row["Number of Observations"] = numObs;
-            }
-        }
-
-        private void ZeroAggregateMasses()
-        {
-            foreach (DataRow row in GlobalData.acceptableNeuCodeLightProteoforms.Rows)
-            {
-                row["Aggregated Mass"] = 0;
-            }
-        }
-
-        private void AggregateNeuCodeLightProteoforms()
-        {
-            if (GlobalData.aggregatedProteoforms.Rows.Count > 0) { GlobalData.aggregatedProteoforms.Clear(); }
-            while (GlobalData.acceptableNeuCodeLightProteoforms.Select("[Aggregated Mass] = 0").Length > 0)
-            {
-                DataRow[] zeros = GlobalData.acceptableNeuCodeLightProteoforms.Select("[Aggregated Mass] = 0");
-                DataRow maxRow = zeros[0];
-
-                foreach (DataRow row in zeros)
+                    if (tolerable_rt(root, p) && tolerable_lysCt(root, p) && tolerable_mass(root, p))
+                        pf_to_aggregate.Add(p);
+                });
+                foreach(Proteoform p in pf_to_aggregate)
                 {
-                    bool isMaxIntensity = double.Parse(row["Light Intensity"].ToString()) > double.Parse(maxRow["Light Intensity"].ToString());
-                    if (isMaxIntensity) { maxRow = row; }
+                    remaining_acceptableProteoforms.Remove(p);
                 }
 
-                double mass = double.Parse(maxRow["Light Mass Corrected"].ToString());
-                double retTime = double.Parse(maxRow["Light Retention Time"].ToString());
-                int lysineCount = int.Parse(maxRow["Lysine Count"].ToString());
-
-                //The section below allows for missed monoisotopics to be aggregated
-                string expression = "(";
-                for (int shiftNum = -(Convert.ToInt32(nUD_Missed_Monos.Value)); shiftNum <= (Convert.ToInt32(nUD_Missed_Monos.Value)); shiftNum++)
-                {
-                    double shift = shiftNum * 1.0015;
-                    double low = mass + shift - (mass + shift) / 1000000 * Convert.ToInt32(nUP_mass_tolerance.Value);
-                    double high = mass + shift + (mass + shift) / 1000000 * Convert.ToInt32(nUP_mass_tolerance.Value);
-                    expression = expression + "[Light Mass Corrected] >= " + low +
-                    " and [Light Mass Corrected] <= " + high;
-                    if (shiftNum < (Convert.ToInt32(nUD_Missed_Monos.Value)))
-                    {
-                        expression = expression + " or ";
-                    }
-                    else
-                    {
-                        expression = expression + ") and ";
-                    }
-                }
-
-                //The section below allows for missed lysine counts to be aggregated
-                expression = expression + "(";
-                for (int shiftNum = -(Convert.ToInt32(nUD_Missed_Ks.Value)); shiftNum <= (Convert.ToInt32(nUD_Missed_Ks.Value)); shiftNum++)
-                {
-                    int K_to_Add = lysineCount + shiftNum;
-                    expression = expression + "[Lysine Count] = " + K_to_Add;
-                    if (shiftNum < (Convert.ToInt32(nUD_Missed_Ks.Value)))
-                    {
-                        expression = expression + " or ";
-                    }
-                    else
-                    {
-                        expression = expression + ") and ";
-                    }
-                }
-
-                expression = expression + "[Light Retention Time] >= " + (retTime - Convert.ToDouble(nUD_RetTimeToleranace.Value)) +
-                    " and [Light Retention Time] <= " + (retTime + Convert.ToDouble(nUD_RetTimeToleranace.Value));
-
-                DataRow[] aggTheseRows = GlobalData.acceptableNeuCodeLightProteoforms.Select(expression);
-                
-                double aggIntSum = 0;
-
-                foreach (DataRow row in aggTheseRows)
-                {
-                    //aggMassSum = aggMassSum + double.Parse(row["Light Mass Corrected"].ToString());
-                    aggIntSum = aggIntSum + double.Parse(row["Light Intensity"].ToString());
-                    //aggRTSum + double.Parse(row["Light Retention Time"].ToString());
-                }
-
-                double aggMass = 0;
-                //double aggInt = 0;
-                double aggRT = 0;
-
-                foreach (DataRow row in aggTheseRows)
-                {
-                    double massShift = Math.Round((mass - double.Parse(row["Light Mass Corrected"].ToString())), 0) * 1.0015;
-                    aggMass = aggMass + (double.Parse(row["Light Mass Corrected"].ToString())+massShift)*(double.Parse(row["Light Intensity"].ToString())/aggIntSum);
-                    //aggInt = aggInt + double.Parse(row["Light Intensity"].ToString()) * (double.Parse(row["Light Intensity"].ToString()) / aggIntSum);
-                    aggRT = aggRT + double.Parse(row["Light Retention Time"].ToString()) * (double.Parse(row["Light Intensity"].ToString()) / aggIntSum);
-                }
-
-                foreach (DataRow row in aggTheseRows)
-                {
-                    //MessageBox.Show("supposed to be updating table");
-                    row["Aggregated Mass"] = aggMass;
-                    row["Aggregated Intensity"] = aggIntSum;
-                    row["Aggregated Retention Time"] = aggRT;
-                }
-
-                GlobalData.aggregatedProteoforms.Rows.Add(aggMass, aggIntSum, aggRT, lysineCount);
-                //MessageBox.Show("agg proteoforms row added I think");
+                if (pf_to_aggregate.Count > 0)
+                    GlobalData.aggregatedProteoforms.Add(new AggregatedProteoform(pf_to_aggregate));
             }
             FillAggregatesTable();
         }
 
+        private bool tolerable_rt(Proteoform root, Proteoform candidate)
+        {
+            return candidate.light_apexRt >= root.light_apexRt - Convert.ToDouble(nUD_RetTimeToleranace.Value) &&
+                candidate.light_apexRt <= root.light_apexRt + Convert.ToDouble(nUD_RetTimeToleranace.Value);
+        }
+
+        private bool tolerable_lysCt(Proteoform root, Proteoform candidate)
+        {
+            int max_missed_lysines = Convert.ToInt32(nUD_Missed_Ks.Value);
+            List<int> acceptable_lysineCts = Enumerable.Range(root.lysine_count - max_missed_lysines, root.lysine_count + max_missed_lysines).ToList();
+            return acceptable_lysineCts.Contains(candidate.lysine_count);
+        }
+
+        private bool tolerable_mass(Proteoform root, Proteoform candidate)
+        {
+            int max_missed_monoisotopics = Convert.ToInt32(nUD_Missed_Monos.Value);
+            List<int> missed_monoisotopics = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics).ToList();
+            foreach(int m in missed_monoisotopics)
+            {
+                double shift = m * 1.0015;
+                double mass_tolerance = (root.light_corrected_mass + shift) / 1000000 * Convert.ToInt32(nUP_mass_tolerance.Value);
+                double low = root.light_corrected_mass + shift - mass_tolerance;
+                double high = root.light_corrected_mass + shift + mass_tolerance;
+                bool tolerable_mass = candidate.light_corrected_mass >= low && candidate.light_corrected_mass <= high;
+                if (tolerable_mass) return true; //Return a true result immediately; acts as an OR between these conditions
+            }
+            return false;
+        }
+
         private void dgv_AggregatedProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            double mass;
-
             if(e.RowIndex >= 0)
             {
-                DataGridViewRow row = this.dgv_AggregatedProteoforms.Rows[e.RowIndex];
-                mass = Convert.ToDouble(row.Cells["Aggregated Mass"].Value.ToString());
+                AggregatedProteoform selected_pf = (AggregatedProteoform)this.dgv_AggregatedProteoforms.Rows[e.RowIndex].DataBoundItem;
 
-                DataTable dtClone = GlobalData.acceptableNeuCodeLightProteoforms.Clone();
-                foreach (DataRow aRow in GlobalData.acceptableNeuCodeLightProteoforms.Select(
-                    "[Aggregated Mass] > " + (mass-.001) + " and [Aggregated Mass] < " + (mass + .001)))
-                {
-                    dtClone.ImportRow(aRow);
-                }
-
-                //Round decimals before displaying
-                dgv_AcceptNeuCdLtProteoforms.DataSource = dtClone;
+                BindingSource bs = new BindingSource();
+                bs.DataSource = selected_pf.proteoforms;
+                dgv_AcceptNeuCdLtProteoforms.DataSource = bs;
                 dgv_AcceptNeuCdLtProteoforms.ReadOnly = true;
-                dgv_AcceptNeuCdLtProteoforms.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.####";
-                dgv_AcceptNeuCdLtProteoforms.Columns["Light Mass"].DefaultCellStyle.Format = "0.####";
-                dgv_AcceptNeuCdLtProteoforms.Columns["Light Mass Corrected"].DefaultCellStyle.Format = "0.####";
-                dgv_AcceptNeuCdLtProteoforms.Columns["Aggregated Retention Time"].DefaultCellStyle.Format = "0.##";
-                dgv_AcceptNeuCdLtProteoforms.Columns["Light Retention Time"].DefaultCellStyle.Format = "0.##";
-                dgv_AcceptNeuCdLtProteoforms.Columns["Aggregated Intensity"].DefaultCellStyle.Format = "0";
-                dgv_AcceptNeuCdLtProteoforms.Columns["Light Retention Time"].DefaultCellStyle.Format = "0";
+                //dgv_AcceptNeuCdLtProteoforms.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.####";
+                //dgv_AcceptNeuCdLtProteoforms.Columns["Light Mass"].DefaultCellStyle.Format = "0.####";
+                //dgv_AcceptNeuCdLtProteoforms.Columns["Light Mass Corrected"].DefaultCellStyle.Format = "0.####";
+                //dgv_AcceptNeuCdLtProteoforms.Columns["Aggregated Retention Time"].DefaultCellStyle.Format = "0.##";
+                //dgv_AcceptNeuCdLtProteoforms.Columns["Light Retention Time"].DefaultCellStyle.Format = "0.##";
+                //dgv_AcceptNeuCdLtProteoforms.Columns["Aggregated Intensity"].DefaultCellStyle.Format = "0";
+                //dgv_AcceptNeuCdLtProteoforms.Columns["Light Retention Time"].DefaultCellStyle.Format = "0";
                 dgv_AcceptNeuCdLtProteoforms.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
                 dgv_AcceptNeuCdLtProteoforms.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
             }
@@ -266,38 +144,22 @@ namespace PS_0._00
 
         private void nUP_mass_tolerance_ValueChanged(object sender, EventArgs e)
         {
-            if (GlobalData.acceptableNeuCodeLightProteoforms.Rows.Count > 0)
-            {
-                ZeroAggregateMasses();
-                AggregateNeuCodeLightProteoforms();
-            }
+            AggregateNeuCodeLightProteoforms();
         }
 
         private void nUD_RetTimeToleranace_ValueChanged(object sender, EventArgs e)
         {
-            if (GlobalData.acceptableNeuCodeLightProteoforms.Rows.Count > 0)
-            {
-                ZeroAggregateMasses();
-                AggregateNeuCodeLightProteoforms();
-            }
+            AggregateNeuCodeLightProteoforms();
         }
 
         private void nUD_Missed_Monos_ValueChanged(object sender, EventArgs e)
         {
-            if (GlobalData.acceptableNeuCodeLightProteoforms.Rows.Count > 0)
-            {
-                ZeroAggregateMasses();
-                AggregateNeuCodeLightProteoforms();
-            }
+            AggregateNeuCodeLightProteoforms();
         }
 
         private void nUD_Missed_Ks_ValueChanged(object sender, EventArgs e)
         {
-            if (GlobalData.acceptableNeuCodeLightProteoforms.Rows.Count > 0)
-            {
-                ZeroAggregateMasses();
-                AggregateNeuCodeLightProteoforms();
-            }
+            AggregateNeuCodeLightProteoforms();
         }
 
         public override string ToString()

@@ -23,99 +23,111 @@ namespace PS_0._00
 
         public void NeuCodePairs_Load(object sender, EventArgs e)
         {
-            if (GlobalData.rawNeuCodePairs.Columns.Count == 0)
+            if (GlobalData.rawNeuCodePairs.Count == 0)
             {
-                GlobalData.rawNeuCodePairs = CreateRawNeuCodePairsDataTable();
+                Dictionary<string, HashSet<string>> filename_scanRanges = get_scanranges_by_filename();
+                FillRawNeuCodePairsDataTable(filename_scanRanges);
+                FillNeuCodePairsDGV(); //Filling DGV part of the working logic, now, since it seems to take a while
             }
-            Dictionary<string, List<string>> fileNameScanRanges = GetSFileNameScanRangesList();
-            FillRawNeuCodePairsDataTable(fileNameScanRanges);
-            FillNeuCodePairsDGV();
             GraphLysineCount();
             GraphIntensityRatio();
         }
 
-        Point? prevPosition = null;
-        ToolTip tooltip = new ToolTip();
-
-        void ct_IntensityRatio_MouseMove(object sender, MouseEventArgs e)
-        {
-            var pos = e.Location;
-            if (prevPosition.HasValue && pos == prevPosition.Value)
-                return;
-            tooltip.RemoveAll();
-            prevPosition = pos;
-            var results = ct_IntensityRatio.HitTest(pos.X, pos.Y, false,
-                                            ChartElementType.DataPoint);
-            foreach (var result in results)
-            {
-                if (result.ChartElementType == ChartElementType.DataPoint)
-                {
-                    var prop = result.Object as DataPoint;
-                    if (prop != null)
-                    {
-                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
-                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
-
-                        // check if the cursor is really close to the point (2 pixels around the point)
-                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
-                          //  Math.Abs(pos.Y - pointYPixel) < 2)
-                        {
-                            tooltip.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_IntensityRatio,
-                                            pos.X, pos.Y - 15);
-                        }
-                    }
-                }
-            }
-        }
-
-        Point? prevPosition2 = null;
-        ToolTip tooltip2 = new ToolTip();
-
-        void ct_LysineCount_MouseMove(object sender, MouseEventArgs e)
-        {
-            var pos = e.Location;
-            if (prevPosition2.HasValue && pos == prevPosition2.Value)
-                return;
-            tooltip2.RemoveAll();
-            prevPosition2 = pos;
-            var results = ct_LysineCount.HitTest(pos.X, pos.Y, false,
-                                            ChartElementType.DataPoint);
-            foreach (var result in results)
-            {
-                if (result.ChartElementType == ChartElementType.DataPoint)
-                {
-                    var prop = result.Object as DataPoint;
-                    if (prop != null)
-                    {
-                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
-                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
-
-                        // check if the cursor is really close to the point (2 pixels around the point)
-                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
-                                                               // Math.Abs(pos.Y - pointYPixel) < 2)
-                        {
-                            tooltip2.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_LysineCount,
-                                            pos.X, pos.Y - 15);
-                        }
-                    }
-                }
-            }
-        }
-
         private void FillNeuCodePairsDGV()
         {
-            dgv_RawExpNeuCodePairs.DataSource = GlobalData.rawNeuCodePairs;
+            BindingSource bs = new BindingSource();
+            bs.DataSource = GlobalData.rawNeuCodePairs;
+            dgv_RawExpNeuCodePairs.DataSource = bs;
             dgv_RawExpNeuCodePairs.ReadOnly = true;
-            dgv_RawExpNeuCodePairs.Columns["Acceptable"].ReadOnly = false;
-            dgv_RawExpNeuCodePairs.Columns["Light Mass"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpNeuCodePairs.Columns["Light Mass Corrected"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpNeuCodePairs.Columns["Heavy Mass"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpNeuCodePairs.Columns["Intensity Ratio"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpNeuCodePairs.Columns["Apex RT"].DefaultCellStyle.Format = "0.##";
-            dgv_RawExpNeuCodePairs.Columns["Light Intensity"].DefaultCellStyle.Format = "0";
-            dgv_RawExpNeuCodePairs.Columns["Heavy Intensity"].DefaultCellStyle.Format = "0";
+            //dgv_RawExpNeuCodePairs.Columns["Acceptable"].ReadOnly = false;
+            //dgv_RawExpNeuCodePairs.Columns["Light Mass"].DefaultCellStyle.Format = "0.####";
+            //dgv_RawExpNeuCodePairs.Columns["Light Mass Corrected"].DefaultCellStyle.Format = "0.####";
+            //dgv_RawExpNeuCodePairs.Columns["Heavy Mass"].DefaultCellStyle.Format = "0.####";
+            //dgv_RawExpNeuCodePairs.Columns["Intensity Ratio"].DefaultCellStyle.Format = "0.####";
+            //dgv_RawExpNeuCodePairs.Columns["Apex RT"].DefaultCellStyle.Format = "0.##";
+            //dgv_RawExpNeuCodePairs.Columns["Light Intensity"].DefaultCellStyle.Format = "0";
+            //dgv_RawExpNeuCodePairs.Columns["Heavy Intensity"].DefaultCellStyle.Format = "0";
             dgv_RawExpNeuCodePairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
             dgv_RawExpNeuCodePairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+        }
+        
+        private void FillRawNeuCodePairsDataTable(Dictionary<string, HashSet<string>> filename_scanRange)
+        {
+            Parallel.ForEach<KeyValuePair<string, HashSet<string>>>(filename_scanRange, entry =>
+            {
+                string filename = entry.Key;
+                Parallel.ForEach<string>(entry.Value, scanRange =>
+               {
+                   List<Component> components_in_file_scanrange = new List<Component>();
+
+                   //select all components in file and this particular scanrange
+                   Parallel.ForEach<Component>(GlobalData.rawExperimentalComponents, c =>
+                   {
+                       if (c.file_origin == filename && c.scan_range == scanRange)
+                           components_in_file_scanrange.Add(c);
+                   });
+
+                   components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass);
+
+                   //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
+                   int lower_mass_index = 0;
+                   Parallel.For(lower_mass_index, components_in_file_scanrange.Count - 2, lower_index =>
+                   {
+                       Component lower_component = components_in_file_scanrange[lower_index];
+                       int higher_mass_index = lower_mass_index + 1;
+                       double apexRT = lower_component.rt_apex;
+
+                       Parallel.For(higher_mass_index, components_in_file_scanrange.Count - 1, higher_index =>
+                       {
+                           Component higher_component = components_in_file_scanrange[higher_index];
+                           double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
+                           if (mass_difference < 6)
+                           {
+                               Proteoform p = new Proteoform(lower_component, higher_component);
+                               if (p.accepted) { GlobalData.rawNeuCodePairs.Add(p); }
+                           }
+                       });
+                   });
+               });
+            });
+        }
+
+        private Dictionary<string, HashSet<string>> get_scanranges_by_filename()
+        {
+            Dictionary<string, HashSet<string>> filename_scanRanges = new Dictionary<string, HashSet<string>>();
+            Parallel.ForEach<string>(GlobalData.deconResultsFileNames, filename =>
+            {
+                if (!filename_scanRanges.ContainsKey(filename))
+                    filename_scanRanges.Add(filename, new HashSet<string>());
+            });
+
+            Parallel.ForEach<Component>(GlobalData.rawExperimentalComponents, c =>
+            {
+                filename_scanRanges[c.file_origin].Add(c.scan_range);
+            });
+            return filename_scanRanges;
+        }
+
+        private DataTable CreateRawNeuCodePairsDataTable()
+        {
+            DataTable dt = new DataTable();
+
+            dt.Columns.Add("Light Filename", typeof(string));
+            dt.Columns.Add("Light No.", typeof(int));
+            dt.Columns.Add("Light Mass", typeof(double));
+            dt.Columns.Add("Light Mass Corrected", typeof(double));
+            dt.Columns.Add("Light Intensity", typeof(double));
+            dt.Columns.Add("Heavy Filename", typeof(string));
+            dt.Columns.Add("Heavy No.", typeof(int));
+            dt.Columns.Add("Heavy Mass", typeof(double));
+            dt.Columns.Add("Heavy Intensity", typeof(double));
+            dt.Columns.Add("Matching Charge States", typeof(List<int>));
+            dt.Columns.Add("Apex RT", typeof(double));
+            dt.Columns.Add("Intensity Ratio", typeof(double));
+            dt.Columns.Add("Lysine Count", typeof(int));
+            dt.Columns.Add("Acceptable", typeof(bool));
+
+            return dt;
         }
 
         private void GraphIntensityRatio()
@@ -125,14 +137,13 @@ namespace PS_0._00
             intensityRatioHistogram.Columns.Add("numPairsAtThisIntRatio", typeof(int));
 
             int ymax = 0;
-
-            for (double i = 0; i <= 20; i=i+0.05)
+            for (double i = 0; i <= 20; i = i + 0.05)
             {
-                string expression = "[Intensity Ratio] >= " + (i-.025) + "AND [Intensity Ratio] < " + (i + .025);
-                DataRow[] rows = GlobalData.rawNeuCodePairs.Select(expression);
-                int iRCt = rows.Count();
-                if (iRCt > ymax) { ymax = iRCt; }
-                intensityRatioHistogram.Rows.Add(i, iRCt);
+                string expression = "[Intensity Ratio] >= " + (i - .025) + "AND [Intensity Ratio] < " + (i + .025);
+                List<Proteoform> proteoforms_by_intensityRatio = GlobalData.rawNeuCodePairs.Where(p => p.intensity_ratio >= i - 0.025 && p.intensity_ratio < i + 0.025).ToList();
+                if (proteoforms_by_intensityRatio.Count > ymax)
+                    ymax = proteoforms_by_intensityRatio.Count;
+                intensityRatioHistogram.Rows.Add(i, proteoforms_by_intensityRatio.Count);
             }
 
             ct_IntensityRatio.Series["intensityRatio"].XValueMember = "intRatio";
@@ -182,11 +193,10 @@ namespace PS_0._00
 
             for (int i = 0; i <= 28; i++)
             {
-                string expression = "[Lysine Count] = " + i;
-                DataRow[] rows = GlobalData.rawNeuCodePairs.Select(expression);
-                int kCt = rows.Count();
-                if (kCt > ymax) { ymax = kCt; }
-                lysCtHistogram.Rows.Add(i, kCt);
+                List<Proteoform> pf_by_lysCt = GlobalData.rawNeuCodePairs.Where(p => p.lysine_count == i).ToList();
+                if (pf_by_lysCt.Count > ymax)
+                    ymax = pf_by_lysCt.Count;
+                lysCtHistogram.Rows.Add(i, pf_by_lysCt.Count);
             }
 
             ct_LysineCount.Series["lysineCount"].XValueMember = "numLysines";
@@ -221,184 +231,51 @@ namespace PS_0._00
 
             ct_LysineCount.DataSource = lysCtHistogram;
             ct_LysineCount.DataBind();
-            
+
         }
 
-        private void FillRawNeuCodePairsDataTable(Dictionary<string, List<string>> fNSR)
+        Point? ct_intensityRatio_prevPosition = null;
+        ToolTip ct_intensityRatio_tt = new ToolTip();
+
+        void ct_IntensityRatio_MouseMove(object sender, MouseEventArgs e)
         {
-            foreach (KeyValuePair<string, List<string>> entry in fNSR)
+            tooltip_graph_display(ct_intensityRatio_tt, e, ct_IntensityRatio, ct_intensityRatio_prevPosition);
+        }
+
+        Point? ct_LysineCount_prevPosition = null;
+        ToolTip ct_LysineCount_tt = new ToolTip();
+
+        void ct_LysineCount_MouseMove(object sender, MouseEventArgs e)
+        {
+            tooltip_graph_display(ct_LysineCount_tt, e, ct_LysineCount, ct_LysineCount_prevPosition);
+        }
+
+        private void tooltip_graph_display(ToolTip t, MouseEventArgs e, Chart c, Point? p)
+        {
+            var pos = e.Location;
+            if (p.HasValue && pos == p.Value) return;
+            t.RemoveAll();
+            p = pos;
+            var results = c.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);
+            foreach (var result in results)
             {
-                string fileName = entry.Key;
-                foreach (string scanRange in entry.Value)
+                if (result.ChartElementType == ChartElementType.DataPoint)
                 {
-                    string expression = "[Filename] = '" + fileName + "' AND [Scan Range] = '" + scanRange + "'";// square brackets are key to avoiding missing operand error
-                    string sortOrder = "Weighted Monoisotopic Mass ASC";
-                    DataRow[] rows = GlobalData.rawExperimentalComponents.Select(expression, sortOrder);
-                    //DataRow[] sortedRows = new DataRow[] { };
-
-                    //IEnumerable<DataRow> sortedRows;
-                    double apexRT = 0;
-
-                    if (rows.Count() > 0)
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
                     {
-                        //sortedRows = rows.OrderBy(row => Convert.ToDecimal(row["Weighted Monoisotopic Mass"]));
-                        apexRT = double.Parse(rows[0]["Apex RT"].ToString());
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
 
-                    }
-
-                    for (int low = 0; low <= (rows.Count() - 2); low++)
-                    {
-                        for (int high = (low + 1); high <= (rows.Count() - 1); high++)
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
+                                                               // Math.Abs(pos.Y - pointYPixel) < 2)
                         {
-                            decimal difference = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) - Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]);
-                            //MessageBox.Show("mass difference" + difference);
-                            if (difference < 6)
-                            {
-                                List<int> oLC = GetOverLappingChargeStates(fileName, Convert.ToInt32(rows[low][0]), Convert.ToInt32(rows[high][0]));
-                                double low_int = 0;
-                                double high_int = 0;
-                                if (oLC.Count() > 0)
-                                {
-                                    low_int = GetCSIntensitySum(fileName, Convert.ToInt32(rows[low][0]), oLC);
-                                    high_int = GetCSIntensitySum(fileName, Convert.ToInt32(rows[high][0]), oLC);
-                                }
-
-                                if (low_int > 0 && high_int > 0)
-                                {
-                                    int diff_int = Convert.ToInt32(Math.Round(difference / 1.0015m - 0.5m, 0, MidpointRounding.AwayFromZero));
-                                    if (low_int > high_int)//lower mass is neucode light
-                                    {
-                                        decimal firstCorrection = Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]) + diff_int * 1.0015m;
-                                        int lysine_count = Math.Abs(Convert.ToInt32(Math.Round((Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) - firstCorrection) / 0.036015372m, 0, MidpointRounding.AwayFromZero)));
-                                        double intensityRatio = low_int / high_int;
-                                        decimal lt_corrected_mass = Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]) + Math.Round((lysine_count * 0.1667m - 0.4m), 0, MidpointRounding.AwayFromZero) * 1.0015m;
-                                        AddOneRawNeuCodePair(fileName, Convert.ToInt32(rows[low][0]), Convert.ToDouble(Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"])), Convert.ToDouble(lt_corrected_mass), low_int, fileName, Convert.ToInt32(rows[high][0]), Convert.ToDouble(Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"])), high_int, oLC, apexRT, intensityRatio, lysine_count, true);
-                                    }
-                                    else //higher mass is neucode light
-                                    {
-                                        decimal firstCorrection = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) - (diff_int + 1) * 1.0015m;
-                                        int lysine_count = Math.Abs(Convert.ToInt32(Math.Round((Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"]) - firstCorrection) / 0.036015372m, 0, MidpointRounding.AwayFromZero)));
-                                        double intensityRatio = high_int / low_int;
-                                        decimal lt_corrected_mass = Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"]) + Math.Round((lysine_count * 0.1667m - 0.4m), 0, MidpointRounding.AwayFromZero) * 1.0015m;
-                                        AddOneRawNeuCodePair(fileName, Convert.ToInt32(rows[high][0]), Convert.ToDouble(Convert.ToDecimal(rows[high]["Weighted Monoisotopic Mass"])), Convert.ToDouble(lt_corrected_mass), high_int, fileName, Convert.ToInt32(rows[low][0]), Convert.ToDouble(Convert.ToDecimal(rows[low]["Weighted Monoisotopic Mass"])), low_int, oLC, apexRT, intensityRatio, lysine_count, true);
-                                    }
-
-                                }
-
-                            }
+                            t.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], c, pos.X, pos.Y - 15);
                         }
                     }
-
                 }
             }
-        }
-
-
-        private void AddOneRawNeuCodePair(string lt_fn, int lt_ent_num, double lt_mass, double lt_mass_corrected,
-                double lt_int, string hv_fn, int hv_ent_num, double hv_mass, double hv_int, List<int> CS, double apexRT,
-                double int_ratio, int lys_ct, bool acceptable)
-        {
-            //MessageBox.Show("pair added");
-            GlobalData.rawNeuCodePairs.Rows.Add(lt_fn, lt_ent_num, lt_mass, lt_mass_corrected,
-                 lt_int, hv_fn, hv_ent_num, hv_mass, hv_int, CS, apexRT, int_ratio, lys_ct, acceptable);
-        }
-
-        private double GetCSIntensitySum(string fileName, int entryNumber, List<int> oLC)
-        {
-            DataTable dt = GlobalData.rawExperimentalChargeStateData.Tables[fileName + "_" + entryNumber];
-
-            double intensitySum = 0;
-
-            foreach(int cs in oLC)
-            {
-                string expression = "[Charge State] = " + cs;
-                DataRow[] rows = dt.Select(expression);
-                foreach (DataRow row in rows)
-                {
-                    intensitySum = intensitySum + double.Parse(row["Intensity"].ToString());
-                }
-            }
-
-            return intensitySum;
-        }
-
-        private List<int> GetOverLappingChargeStates(string fileName, double low_number, double high_number)
-        {
-            //MessageBox.Show("trying to get a list of overlapping CS");
-            //MessageBox.Show("filename: " + fileName + " low number: " + low_number + " high number: " + high_number);
-            List<int> lowMassCS = new List<int>();
-            List<int> highMassCS = new List<int>();
-            List<int> oCS = new List<int>();
-
-            DataTable dlow = GlobalData.rawExperimentalChargeStateData.Tables[fileName+"_"+low_number];
-            DataTable dhigh = GlobalData.rawExperimentalChargeStateData.Tables[fileName + "_" + low_number];
-
-            foreach (DataRow row in dlow.Rows)
-            {
-                lowMassCS.Add(int.Parse(row["Charge State"].ToString()));
-            }
-            foreach (DataRow row in dhigh.Rows)
-            {
-                highMassCS.Add(int.Parse(row["Charge State"].ToString()));
-            }
-
-            foreach (int CS in lowMassCS)
-            {
-                if (highMassCS.Contains(CS))
-                {
-                    oCS.Add(CS);
-                }
-            }
-
-            return oCS;
-        }
-
-        private Dictionary<string,List<string>> GetSFileNameScanRangesList()
-        {
-            Dictionary<string, List<string>> FileNameScanRanges = new Dictionary<string, List<string>>();
-
-            foreach (DataRow row in GlobalData.rawExperimentalComponents.Rows)
-            {
-                string fileName = row["Filename"].ToString();
-                string scanRange = row["Scan Range"].ToString();
-                if (FileNameScanRanges.ContainsKey(fileName))
-                {
-                    if (!FileNameScanRanges[fileName].Contains(scanRange))
-                    {
-                        FileNameScanRanges[fileName].Add(scanRange);
-                    }
-                }
-                else
-                {
-                    List<string> scanRangeList = new List<string>();
-                    scanRangeList.Add(scanRange);
-                    FileNameScanRanges.Add(fileName, scanRangeList);
-                }
-            }
-
-            return FileNameScanRanges;
-        }
-
-        private DataTable CreateRawNeuCodePairsDataTable()
-        {
-            DataTable dt = new DataTable();
-
-            dt.Columns.Add("Light Filename", typeof(string));
-            dt.Columns.Add("Light No.", typeof(int));
-            dt.Columns.Add("Light Mass", typeof(double));
-            dt.Columns.Add("Light Mass Corrected", typeof(double));
-            dt.Columns.Add("Light Intensity", typeof(double));
-            dt.Columns.Add("Heavy Filename", typeof(string));
-            dt.Columns.Add("Heavy No.", typeof(int));
-            dt.Columns.Add("Heavy Mass", typeof(double));
-            dt.Columns.Add("Heavy Intensity", typeof(double));
-            dt.Columns.Add("Matching Charge States", typeof(List<int>));
-            dt.Columns.Add("Apex RT", typeof(double));
-            dt.Columns.Add("Intensity Ratio", typeof(double));
-            dt.Columns.Add("Lysine Count", typeof(int));
-            dt.Columns.Add("Acceptable", typeof(bool));
-
-            return dt;
         }
 
         private void yMaxKCt_ValueChanged(object sender, EventArgs e)
@@ -441,50 +318,38 @@ namespace PS_0._00
             ct_IntensityRatio.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxIRat.Value.ToString());
         }
 
-        private void parse_neucode_param_change(string expression)
+        private void parse_neucode_param_change(List<Proteoform> selected_pf)
         {
-            DataRow[] rows = GlobalData.rawNeuCodePairs.Select(expression);
-            foreach (DataRow row in rows)
-            {
-                row["Acceptable"] = false;
-            }
+            Parallel.ForEach(selected_pf, p => { p.accepted = false; });
             dgv_RawExpNeuCodePairs.Refresh();
         }
 
         private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Lysine Count")) { }
-            else {
-                string expression = "[Lysine Count] < " + double.Parse(KMinAcceptable.Value.ToString());
-                parse_neucode_param_change(expression);
-            }
+            List<Proteoform> selected_pf = GlobalData.rawNeuCodePairs.Where(p => p.lysine_count < double.Parse(KMinAcceptable.Value.ToString())).ToList();
+            Parallel.ForEach(selected_pf, p => { p.accepted = false; });
+            dgv_RawExpNeuCodePairs.Refresh();
         }
 
         private void KMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Lysine Count")) { }
-            else {
-                string expression = "[Lysine Count] > " + double.Parse(KMaxAcceptable.Value.ToString());
-                parse_neucode_param_change(expression);
-            }
+            List<Proteoform> selected_pf = GlobalData.rawNeuCodePairs.Where(p => p.lysine_count > double.Parse(KMaxAcceptable.Value.ToString())).ToList();
+            Parallel.ForEach(selected_pf, p => { p.accepted = false; });
+            dgv_RawExpNeuCodePairs.Refresh();
         }
 
         private void IRatMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Intensity Ratio")) { }
-            else {
-                string expression = "[Intensity Ratio] < " + double.Parse(IRatMinAcceptable.Value.ToString());
-                parse_neucode_param_change(expression);
-            }
+            List<Proteoform> selected_pf = GlobalData.rawNeuCodePairs.Where(p => p.intensity_ratio < double.Parse(IRatMinAcceptable.Value.ToString())).ToList();
+            Parallel.ForEach(selected_pf, p => { p.accepted = false; });
+            dgv_RawExpNeuCodePairs.Refresh();
         }
 
         private void IRatMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Intensity Ratio")) { }
-            else {
-                string expression = "[Intensity Ratio] > " + double.Parse(IRatMaxAcceptable.Value.ToString());
-                parse_neucode_param_change(expression);
-            }
+            List<Proteoform> selected_pf = GlobalData.rawNeuCodePairs.Where(p => p.intensity_ratio > double.Parse(IRatMaxAcceptable.Value.ToString())).ToList();
+            Parallel.ForEach(selected_pf, p => { p.accepted = false; });
+            dgv_RawExpNeuCodePairs.Refresh();
         }
 
         public override string ToString()

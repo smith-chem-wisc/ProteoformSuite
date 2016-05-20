@@ -14,11 +14,10 @@ namespace PS_0._00
     public class GlobalData
     {
         public static BindingList<string> deconResultsFileNames = new BindingList<string>();
-        public static DataSet deconResultsFiles = new DataSet();
+        public static List<DataTable> deconResultsFiles = new List<DataTable>();
         public static BindingList<Component> rawExperimentalComponents = new BindingList<Component>();
-        public static DataTable rawNeuCodePairs = new DataTable();
-        public static DataTable acceptableNeuCodeLightProteoforms = new DataTable();
-        public static DataTable aggregatedProteoforms = new DataTable();
+        public static List<Proteoform> rawNeuCodePairs = new List<Proteoform>();
+        public static List<AggregatedProteoform> aggregatedProteoforms = new List<AggregatedProteoform>();
         public static DataSet theoreticalAndDecoyDatabases = new DataSet();
         public static int numDecoyDatabases;
         public static DataTable experimentTheoreticalPairs = new DataTable();

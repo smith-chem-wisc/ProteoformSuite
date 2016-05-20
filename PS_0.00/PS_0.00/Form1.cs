@@ -197,7 +197,7 @@ namespace PS_0._00
                 MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
                 rawExperimentalComponents.pull_raw_experimental_components();
                 neuCodePairs.NeuCodePairs_Load(neuCodePairs, null);
-                aggregatedProteoforms.AggregatedProteoforms_Load(aggregatedProteoforms, null);
+                aggregatedProteoforms.AggregateNeuCodeLightProteoforms();
                 theoreticalDatabase.make_databases();
                 experimentalTheoreticalComparison.run_comparison();
                 experimentDecoyComparison.run_comparison();
