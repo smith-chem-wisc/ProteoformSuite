@@ -50,6 +50,7 @@
             this.generateMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.decoyDecoyComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -125,6 +126,7 @@
             this.experimentTheoreticalComparisonToolStripMenuItem,
             this.experimentDecoyComparisonToolStripMenuItem,
             this.experimentExperimentComparisonToolStripMenuItem,
+            this.decoyDecoyComparisonToolStripMenuItem,
             this.proteoformFamilyAssignmentToolStripMenuItem});
             this.processingPhaseToolStripMenuItem.Name = "processingPhaseToolStripMenuItem";
             this.processingPhaseToolStripMenuItem.Size = new System.Drawing.Size(110, 22);
@@ -225,6 +227,13 @@
             this.loadRunToolStripMenuItem.Text = "Load && Run";
             this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
             // 
+            // decoyDecoyComparisonToolStripMenuItem
+            // 
+            this.decoyDecoyComparisonToolStripMenuItem.Name = "decoyDecoyComparisonToolStripMenuItem";
+            this.decoyDecoyComparisonToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.decoyDecoyComparisonToolStripMenuItem.Text = "Decoy - Decoy Comparison";
+            this.decoyDecoyComparisonToolStripMenuItem.Click += new System.EventHandler(this.decoyDecoyComparisonToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -269,6 +278,7 @@
         private System.Windows.Forms.ToolStripMenuItem generateMethodToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadRunToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveMethodToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem decoyDecoyComparisonToolStripMenuItem;
     }
 }
 

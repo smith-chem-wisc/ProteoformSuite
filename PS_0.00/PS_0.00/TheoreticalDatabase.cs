@@ -263,7 +263,6 @@ namespace PS_0._00
             //Calculate the properties of this sequence
             double mass = CalculateProteoformMass(ref aaIsotopeMassList, seq);
             int kCount = prot.Sequence.Split('K').Length - 1;
-            //int kCount = seq.Split('K').Length - 1;
 
             //Initialize a PTM combination list with "unmodified," and then add other PTMs 
             List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>(new OneUniquePtmGroup[] { new OneUniquePtmGroup(0, new List<string>(new string[] { "unmodified" })) });

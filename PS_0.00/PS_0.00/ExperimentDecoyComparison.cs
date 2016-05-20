@@ -15,7 +15,9 @@ namespace PS_0._00
 {
     public partial class ExperimentDecoyComparison : Form
     {
-        DataTable edList; 
+        DataTable edList;
+        Boolean formLoadEvent;
+
 
         public ExperimentDecoyComparison()
         {
@@ -38,12 +40,15 @@ namespace PS_0._00
 
         public void run_comparison()
         {
+            formLoadEvent = true;
             edList = new DataTable();
             InitializeParameterSet();
             FindAllEDPairs();
             CalculateRunningSums();
             InitializeEDListTable();
             UpdateFiguresOfMerit();
+            formLoadEvent = false;
+
         }
 
         //private void RunTheGamut()
@@ -64,7 +69,6 @@ namespace PS_0._00
             {
                 string tableName = "DecoyDatabase_" + i;
                 DataTable eD = GetNewED_DataTable(tableName);
-                GlobalData.experimentDecoyPairs.Tables.Add(eD);
 
                 foreach (DataRow agRow in GlobalData.aggregatedProteoforms.Rows)
                 {
@@ -89,12 +93,16 @@ namespace PS_0._00
                         {
                             oOR = true;
                         }
-                        eD.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], deltaMass, 0, 0, deltaMass, oOR, false);
-                        //set out of range variable
+
+                        eD.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], deltaMass, 0, 0, oOR);
                     }
                 }
+
+                GlobalData.experimentDecoyPairs.Tables.Add(eD);
+
+
             }
-            // GlobalData.experimentDecoyPairs = eD;
+
         }
 
         private void CalculateRunningSums()
@@ -145,19 +153,19 @@ namespace PS_0._00
             }
 
             ct_ED_peakList.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
-            ct_ED_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ED Delta Mass"].Value.ToString()) - Convert.ToDouble(nUD_PeakWidthBase.Value);
-            ct_ED_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ED Delta Mass"].Value.ToString()) + Convert.ToDouble(nUD_PeakWidthBase.Value);
+            ct_ED_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["Delta Mass"].Value.ToString()) - Convert.ToDouble(nUD_PeakWidthBase.Value);
+            ct_ED_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["Delta Mass"].Value.ToString()) + Convert.ToDouble(nUD_PeakWidthBase.Value);
             ct_ED_peakList.Series["edPeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
             ct_ED_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
             {
                 BorderColor = Color.Red,
-                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ED Delta Mass"].Value.ToString()) + 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["Delta Mass"].Value.ToString()) + 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
             });
 
             ct_ED_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
             {
                 BorderColor = Color.Red,
-                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["ED Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[0].Cells["Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
             });
         }
 
@@ -177,8 +185,8 @@ namespace PS_0._00
         private void EDListGraphParameters(int clickedRow)
         {
             ct_ED_peakList.ChartAreas[0].AxisX.StripLines.Clear();
-            double graphMax = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["ED Delta Mass"].Value.ToString()) + Convert.ToDouble((nUD_PeakWidthBase.Value));
-            double graphMin = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["ED Delta Mass"].Value.ToString()) - Convert.ToDouble((nUD_PeakWidthBase.Value));
+            double graphMax = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["Delta Mass"].Value.ToString()) + Convert.ToDouble((nUD_PeakWidthBase.Value));
+            double graphMin = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["Delta Mass"].Value.ToString()) - Convert.ToDouble((nUD_PeakWidthBase.Value));
 
             if (graphMin < graphMax)
             {
@@ -189,13 +197,13 @@ namespace PS_0._00
             ct_ED_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
             {
                 BorderColor = Color.Red,
-                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["ED Delta Mass"].Value.ToString()) + 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["Delta Mass"].Value.ToString()) + 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
             });
 
             ct_ED_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
             {
                 BorderColor = Color.Red,
-                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["ED Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+                IntervalOffset = Convert.ToDouble(dgv_ED_Peak_List.Rows[clickedRow].Cells["Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
             });
         }
 
@@ -238,6 +246,7 @@ namespace PS_0._00
 
                 double lower = deltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                 double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+
                 string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper;
 
                 for (int i = 0; i < GlobalData.numDecoyDatabases; i++)
@@ -245,14 +254,27 @@ namespace PS_0._00
                     string colName = "Running Sum";
                     string direction = "DESC";
                     string tableName = "DecoyDatabase_" + i;
-                    DataTable dt = GlobalData.experimentDecoyPairs.Tables[tableName];
+                    DataTable dt = new DataTable(tableName);
+                    dt = GlobalData.experimentDecoyPairs.Tables[tableName];
                     dt.DefaultView.Sort = colName + " " + direction;
                     dt = dt.DefaultView.ToTable();
-                    //if (Convert.ToBoolean(row["Out of Range Decimal"].ToString()) == false && Convert.ToBoolean(row["Acceptable Peak"].ToString()) == false)
-                    DataRow[] decoyHits = dt.Select(expression);
 
-                    decoyTotals.Rows.Add(decoyHits.Length);
-                }
+                        //not sure if we'll need this for ED.  -LVS
+                        //if (Convert.ToBoolean(row["Out of Range Decimal"].ToString()) == false && Convert.ToBoolean(row["Acceptable Peak"].ToString()) == false)
+
+                            DataRow[] decoyHits = dt.Select(expression);
+                            decoyTotals.Rows.Add(decoyHits.Length);
+
+                            foreach (DataRow rutrow in decoyHits)
+                            {
+                                rutrow["Decoy Hits Count"] = decoyHits.Length;
+
+                            }
+
+                        GlobalData.experimentDecoyPairs.Tables.Remove(tableName);
+                        GlobalData.experimentDecoyPairs.Tables.Add(dt);
+                    }
+                
 
                 //calculate average of decoy hits for given protein
                 int sum = 0;
@@ -264,14 +286,12 @@ namespace PS_0._00
                 decimal average = sum / (decoyTotals.Rows.Count);
                 edList.Rows.Add(deltaMass, peakCount, average);
 
-                //calculate median of decoy hits for given protein
+                //calculate median of decoy hits for given protein... not sure which we want to do.
                 //string colName2 = "Decoy Hits";
                 //decoyTotals.DefaultView.Sort = colName2 + " " + "ASC";
-                //decoyTotals = decoyTotals.DefaultView.ToTable();
-                
+                //decoyTotals = decoyTotals.DefaultView.ToTable(); 
                 //int indexMedian = (decoyTotals.Rows.Count)/ 2;
                 //int median = Convert.ToInt16(decoyTotals.Rows[indexMedian][0]);
-            
                 //edList.Rows.Add(deltaMass, peakCount, median);
             }
 
@@ -280,7 +300,7 @@ namespace PS_0._00
             //Round before displaying ED peak list
             dgv_ED_Peak_List.DataSource = edList;
             dgv_ED_Peak_List.ReadOnly = true;
-            dgv_ED_Peak_List.Columns["ED Delta Mass"].DefaultCellStyle.Format = "0.####";
+            dgv_ED_Peak_List.Columns["Delta Mass"].DefaultCellStyle.Format = "0.####";
             dgv_ED_Peak_List.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
             dgv_ED_Peak_List.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }   
@@ -289,8 +309,8 @@ namespace PS_0._00
 
         private void InitializeEDListTable()
         {
-            edList.Columns.Add("ED Delta Mass", typeof(double)); //I changed this from ET Delta Mass -AC
-            edList.Columns.Add("ED Peak Count", typeof(int)); //I changed this from ET Peak Count -AC
+            edList.Columns.Add("Delta Mass", typeof(double)); 
+            edList.Columns.Add("ET Peak Count", typeof(int)); //comparing ET peaks to ED counts for each delta mass 
             edList.Columns.Add("ED count", typeof(int));
         }
 
@@ -300,12 +320,12 @@ namespace PS_0._00
 
             dgv_ED_Pairs.DataSource = displayTable;
             dgv_ED_Pairs.ReadOnly = true;
-            dgv_ED_Pairs.Columns["Acceptable Peak"].ReadOnly = false;
+            //dgv_ED_Pairs.Columns["Acceptable Peak"].ReadOnly = false;
             dgv_ED_Pairs.Columns["Aggregated Retention Time"].DefaultCellStyle.Format = "0.##";
             dgv_ED_Pairs.Columns["Proteoform Mass"].DefaultCellStyle.Format = "0.#####";
             dgv_ED_Pairs.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.#####";
             dgv_ED_Pairs.Columns["Delta Mass"].DefaultCellStyle.Format = "0.#####";
-            dgv_ED_Pairs.Columns["Peak Center Mass"].DefaultCellStyle.Format = "0.#####";
+            //dgv_ED_Pairs.Columns["Peak Center Mass"].DefaultCellStyle.Format = "0.#####";
             dgv_ED_Pairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
             dgv_ED_Pairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
@@ -346,10 +366,10 @@ namespace PS_0._00
             dt.Columns.Add("Lysine Count", typeof(int));
             dt.Columns.Add("Delta Mass", typeof(double));
             dt.Columns.Add("Running Sum", typeof(int));
-            dt.Columns.Add("Peak Center Count", typeof(int));
-            dt.Columns.Add("Peak Center Mass", typeof(double));
+            dt.Columns.Add("Decoy Hits Count", typeof(int));
+           //dt.Columns.Add("Peak Center Mass", typeof(double));
             dt.Columns.Add("Out of Range Decimal", typeof(bool));
-            dt.Columns.Add("Acceptable Peak", typeof(bool));
+           //dt.Columns.Add("Acceptable Peak", typeof(bool));
             return dt;
         }
 
