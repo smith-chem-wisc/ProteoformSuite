@@ -66,7 +66,9 @@ namespace PS_0._00
         private DataSet GetDeconResults()
         {
             DataSet ds = new DataSet();
-            foreach (string file in GlobalData.deconResultsFileNames)
+            List<DataTable> dtL = new List<DataTable>();
+
+            Parallel.ForEach(GlobalData.deconResultsFileNames, (file) =>
             {
                 DataTable dt = new DataTable();
                 dt = ReadExcelFile(file);
@@ -94,8 +96,17 @@ namespace PS_0._00
                     row["Filename"] = Path.GetFileName(file);
                 }
 
-                ds.Tables.Add(dc);
+                dtL.Add(dc);
+
+            });
+
+            foreach (DataTable tbl in dtL)
+            {
+                ds.Tables.Add(tbl);
             }
+
+            dtL.Clear();
+
             return ds;
         }
 
@@ -168,8 +179,16 @@ namespace PS_0._00
         private DataSet GetRawChargeStates()
         {
             DataSet rawChargeStateTables = new DataSet();
-            
+            List<DataTable> rCSTL = new List<DataTable>();
+
+            List<DataTable> bigTables = new List<DataTable>();
+
             foreach (DataTable table in GlobalData.deconResultsFiles.Tables)
+            {
+                bigTables.Add(table);
+            }
+
+            Parallel.ForEach(bigTables, (table) =>        
             {
                 int entryNumber = 0;
                 int maxEntry = 0;
@@ -186,14 +205,16 @@ namespace PS_0._00
                     }
                 }
 
-                for (int i = 1; i <= maxEntry; i++)
+                DataTable tableCopy = table.Copy();
+
+                Parallel.For(1, maxEntry, i =>
                 {
 
-                    string expression = "[" + table.Columns[5].ColumnName
-                        + "] is null AND [" + table.Columns[0].ColumnName + "] = " + i
-                        + " AND [" + table.Columns[1].ColumnName + "] <> 'Charge State'";
+                    string expression = "[" + tableCopy.Columns[5].ColumnName
+                        + "] is null AND [" + tableCopy.Columns[0].ColumnName + "] = " + i
+                        + " AND [" + tableCopy.Columns[1].ColumnName + "] <> 'Charge State'";
 
-                    DataRow[] chargeStates = table.Select(expression);
+                    DataRow[] chargeStates = tableCopy.Select(expression);
 
                     string tableName = chargeStates[0]["Filename"].ToString() + "_" + i.ToString();
                     DataTable csTable = new DataTable(tableName);
@@ -215,9 +236,19 @@ namespace PS_0._00
                             double.Parse(row[4].ToString())
                             );
                     }
-                    rawChargeStateTables.Tables.Add(csTable);
-                }
+                    rCSTL.Add(csTable);
+                });
+                tableCopy.Clear();
+            });
+
+            foreach (DataTable tbl in rCSTL)
+            {
+                rawChargeStateTables.Tables.Add(tbl);
             }
+
+            rCSTL.Clear();
+            bigTables.Clear();
+
             return rawChargeStateTables;
         }
 
