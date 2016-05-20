@@ -142,9 +142,10 @@ namespace PS_0._00
             return oldPtmlistFilePath;
         }
 
-        public static IEnumerable<Protein> ReadUniprotXml(string uniprotXmlFile, int minPeptideLength, bool fixedMethionineCleavage)
+        public static List<Protein> ReadUniprotXml(string uniprotXmlFile, int minPeptideLength, bool fixedMethionineCleavage)
         {
             StreamReader uniprotXmlStream;
+            List<Protein> protein_list = new List<Protein>();
             using (var stream = new FileStream(uniprotXmlFile, FileMode.Open))
             {
                 Stream uniprotXmlFileStream;
@@ -162,7 +163,7 @@ namespace PS_0._00
                 XNamespace ns = xml.Root.Name.Namespace;
 
                 IEnumerable<XElement> entries = from node in xml.Descendants() where node.Name.LocalName == "entry" select node;
-                foreach (XElement entry in entries)
+                Parallel.ForEach<XElement>(entries, entry =>
                 {
                     //Used fields
                     string dataset = GetAttribute(entry, "dataset");
@@ -190,7 +191,7 @@ namespace PS_0._00
                     string sequence_version = GetAttribute(sequence_elem, "version");
 
                     //Process the modified residues
-                    foreach (XElement feature in features)
+                    Parallel.ForEach<XElement>(features, feature =>
                     {
                         string feature_type = GetAttribute(feature, "type");
                         if (feature_type == "modified residue")
@@ -213,12 +214,12 @@ namespace PS_0._00
                             }
                             else { continue; }
                         }
-                    }
+                    });
 
                     //Add the full length protein, and then add the fragments with segments of the above modification dictionary
-                    yield return new Protein(accession, full_name, fragment, begin, end, sequence, positionsAndPtms);
+                    protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, positionsAndPtms));
                     //MessageBox.Show("added " + new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms).ToString());
-                    foreach (XElement feature in features)
+                    Parallel.ForEach<XElement>(features, feature =>
                     {
                         string feature_type = GetAttribute(feature, "type");
                         switch (feature_type)
@@ -239,8 +240,8 @@ namespace PS_0._00
                                         subsequence.Length != sequence.Length &&
                                         subsequence.Length >= minPeptideLength)
                                     {
-                                        yield return new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence,
-                                            SegmentPtms(positionsAndPtms, feature_begin, feature_end));
+                                        protein_list.Add(new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence,
+                                            SegmentPtms(positionsAndPtms, feature_begin, feature_end)));
                                         //MessageBox.Show("added " + new Protein(accession, name, feature_type, feature_begin, feature_end, subsequence,
                                         //    SegmentPtms(positionsAndPtms, feature_begin, feature_end)).ToString());
 
@@ -251,8 +252,8 @@ namespace PS_0._00
                             case "sequence variant":
                                 break;
                         }
-                    }
-                }
+                    });
+                });
             }
         }
 
@@ -265,15 +266,15 @@ namespace PS_0._00
         private static XElement GetChild(XElement element, string name)
         {
             XElement e = element.Elements().FirstOrDefault(elem => elem.Name.LocalName == name);
-            if (e != null) { return e; }
-            else { return new XElement("dummy_node"); }
+            if (e != null) return e;
+            else return new XElement("dummy_node");
         }
 
         private static XElement GetDescendant(XElement element, string name)
         {
             XElement e = element.Descendants().FirstOrDefault(elem => elem.Name.LocalName == name);
-            if (e != null) { return e; }
-            else { return new XElement("dummy_node"); }
+            if (e != null) return e; 
+            else return new XElement("dummy_node");
         }
         
         private static int ConvertPositionElem(XElement position_elem)
@@ -281,22 +282,19 @@ namespace PS_0._00
             string feature_position = GetAttribute(position_elem, "position");
             string feature_position_status = GetAttribute(position_elem, "status"); //positionType elements have default 'status' of certain
             if (feature_position != "" && feature_position_status == "")
-            {
                 return Convert.ToInt32(feature_position) - 1;
-            }
-            else { return -1; }
+            else
+                return -1;
         }
 
         static Dictionary<int, List<string>> SegmentPtms(Dictionary<int, List<string>> allPosPTMs, int begin, int end)
         {
             Dictionary<int, List<string>> segPosPTMs = new Dictionary<int, List<string>>();
-            foreach (int position in allPosPTMs.Keys)
+            Parallel.ForEach<int>(allPosPTMs.Keys, position =>
             {
                 if (position >= begin && position <= end)
-                {
                     segPosPTMs.Add(position, allPosPTMs[position]);
-                }
-            }
+            });
             return segPosPTMs;// the int is the amino acid position and the string[] are the different ptms at that position
         }
     }
