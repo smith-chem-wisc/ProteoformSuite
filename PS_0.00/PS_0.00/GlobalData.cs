@@ -20,6 +20,7 @@ namespace PS_0._00
         public static DataTable rawNeuCodePairs = new DataTable();
         public static DataTable acceptableNeuCodeLightProteoforms = new DataTable();
         public static DataTable aggregatedProteoforms = new DataTable();
+        public static string uniprotXmlFile; 
         public static DataSet theoreticalAndDecoyDatabases = new DataSet();
         public static int numDecoyDatabases;
         public static DataTable experimentTheoreticalPairs = new DataTable();
