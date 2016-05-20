@@ -66,6 +66,7 @@
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </Compile>
     <Compile Include="AminoAcidMasses.cs" />
+    <Compile Include="ExcelReader.cs" />
     <Compile Include="Proteoform.cs" />
     <Compile Include="ExperimentExperimentComparison.cs">
       <SubType>Form</SubType>
@@ -91,7 +92,7 @@
     <Compile Include="ExperimentDecoyComparison.Designer.cs">
       <DependentUpon>ExperimentDecoyComparison.cs</DependentUpon>
     </Compile>
-    <Compile Include="GlobalData.cs" />
+    <Compile Include="Lollipop.cs" />
     <Compile Include="LoadDeconvolutionResults.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -30,7 +30,7 @@ namespace PS_0._00
 
         public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
         {
-            if (GlobalData.experimentTheoreticalPairs.Columns.Count == 0)
+            if (Lollipop.experimentTheoreticalPairs.Columns.Count == 0)
             {
                 run_comparison();
             }
@@ -66,74 +66,6 @@ namespace PS_0._00
             this.Cursor = Cursors.Default;
         }
 
-        Point? prevPosition = null;
-        ToolTip tooltip = new ToolTip();
-
-        void ct_ET_Histogram_MouseMove(object sender, MouseEventArgs e)
-        {
-            var pos = e.Location;
-            if (prevPosition.HasValue && pos == prevPosition.Value)
-                return;
-            tooltip.RemoveAll();
-            prevPosition = pos;
-            var results = ct_ET_Histogram.HitTest(pos.X, pos.Y, false,
-                                            ChartElementType.DataPoint);
-            foreach (var result in results)
-            {
-                if (result.ChartElementType == ChartElementType.DataPoint)
-                {
-                    var prop = result.Object as DataPoint;
-                    if (prop != null)
-                    {
-                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
-                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
-
-                        // check if the cursor is really close to the point (2 pixels around the point)
-                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
-                           // Math.Abs(pos.Y - pointYPixel) < 2)
-                        {
-                            tooltip.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_ET_Histogram,
-                                            pos.X, pos.Y - 15);
-                        }
-                    }
-                }
-            }
-        }
-
-        Point? prevPosition2 = null;
-        ToolTip tooltip2 = new ToolTip();
-
-        void ct_ET_peakList_MouseMove(object sender, MouseEventArgs e)
-        {
-            var pos = e.Location;
-            if (prevPosition2.HasValue && pos == prevPosition2.Value)
-                return;
-            tooltip2.RemoveAll();
-            prevPosition2 = pos;
-            var results = ct_ET_peakList.HitTest(pos.X, pos.Y, false,
-                                            ChartElementType.DataPoint);
-            foreach (var result in results)
-            {
-                if (result.ChartElementType == ChartElementType.DataPoint)
-                {
-                    var prop = result.Object as DataPoint;
-                    if (prop != null)
-                    {
-                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
-                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
-
-                        // check if the cursor is really close to the point (2 pixels around the point)
-                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
-                                                               // Math.Abs(pos.Y - pointYPixel) < 2)
-                        {
-                            tooltip2.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_ET_peakList,
-                                            pos.X, pos.Y - 15);
-                        }
-                    }
-                }
-            }
-        }
-
         private void MarkETPairsForProteoformFamilies()
         {
             foreach (DataRow row in etPairsList.Rows)
@@ -148,7 +80,7 @@ namespace PS_0._00
                 }
             }
             etPairsList.AcceptChanges();
-            GlobalData.experimentTheoreticalPairs = etPairsList;
+            Lollipop.experimentTheoreticalPairs = etPairsList;
             dgv_ET_Pairs.Update();
         }
 
@@ -166,19 +98,19 @@ namespace PS_0._00
                 }
             }
             etPeaksList.AcceptChanges();
-            GlobalData.etPeakList = etPeaksList;
+            Lollipop.etPeakList = etPeaksList;
             dgv_ET_Peak_List.Update();
         }
 
         private void ClearAllETPairs()
         {
-            GlobalData.experimentTheoreticalPairs.Clear();
+            Lollipop.experimentTheoreticalPairs.Clear();
             etPairsList.Clear();
         }
 
         private void ClearAllETPeaks()
         {
-            GlobalData.etPeakList.Clear();
+            Lollipop.etPeakList.Clear();
             etPeaksList.Clear();
         }
 
@@ -187,9 +119,9 @@ namespace PS_0._00
 
             etPairsList.Clear();
             etPairsList = CreateETPairsDataTable();
-            GlobalData.experimentTheoreticalPairs.Clear();
+            Lollipop.experimentTheoreticalPairs.Clear();
 
-            foreach (DataRow agRow in GlobalData.aggregatedProteoforms.Rows)
+            foreach (DataRow agRow in Lollipop.aggregatedProteoforms.Rows)
             {
                 double lowMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ET_Lower_Bound.Value);
                 double highMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ET_Upper_Bound.Value);
@@ -197,7 +129,7 @@ namespace PS_0._00
                 string expression = "[Proteoform Mass] >= " + lowMass + " and [Proteoform Mass] <= " + highMass;
                 expression = expression + "and [Lysine Count] >= " + agRow["Lysine Count"];
 
-                DataRow[] closeTheoreticals = GlobalData.theoreticalAndDecoyDatabases.Tables["Target"].Select(expression);
+                DataRow[] closeTheoreticals = Lollipop.theoreticalAndDecoyDatabases.Tables["Target"].Select(expression);
 
                 foreach (DataRow row in closeTheoreticals)
                 {
@@ -218,7 +150,7 @@ namespace PS_0._00
                 }
             }
             etPairsList.AcceptChanges();
-            GlobalData.experimentTheoreticalPairs = etPairsList;
+            Lollipop.experimentTheoreticalPairs = etPairsList;
         }
 
         private void CalculateRunningSums()
@@ -232,7 +164,7 @@ namespace PS_0._00
                 row["Running Sum"] = etPairsList.Select(expression).Length;
             }
             etPairsList.AcceptChanges();
-            GlobalData.experimentTheoreticalPairs = etPairsList;
+            Lollipop.experimentTheoreticalPairs = etPairsList;
         }
 
         private void FillETPairsGridView()
@@ -254,14 +186,14 @@ namespace PS_0._00
         {
             string colName = "Delta Mass";
             string direction = "DESC";
-            DataTable dt = GlobalData.experimentTheoreticalPairs;
+            DataTable dt = Lollipop.experimentTheoreticalPairs;
             dt.DefaultView.Sort = colName + " " + direction;
             dt = dt.DefaultView.ToTable();
-            GlobalData.experimentTheoreticalPairs = dt;
+            Lollipop.experimentTheoreticalPairs = dt;
 
             ct_ET_peakList.Series["etPeakList"].XValueMember = "Delta Mass";
             ct_ET_peakList.Series["etPeakList"].YValueMembers = "Running Sum";
-            ct_ET_peakList.DataSource = GlobalData.experimentTheoreticalPairs;
+            ct_ET_peakList.DataSource = Lollipop.experimentTheoreticalPairs;
             ct_ET_peakList.DataBind();
             ct_ET_peakList.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
 
@@ -289,7 +221,7 @@ namespace PS_0._00
             if (e.Button == MouseButtons.Left)
             {
                 int clickedRow = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
-                if (clickedRow >= 0 && clickedRow < GlobalData.etPeakList.Rows.Count)
+                if (clickedRow >= 0 && clickedRow < Lollipop.etPeakList.Rows.Count)
                 {
                     ETPeakListGraphParameters(clickedRow);
                 }
@@ -360,7 +292,7 @@ namespace PS_0._00
         private void FillETPeakListTable()
         {
             etPeaksList.Clear();
-            GlobalData.etPeakList.Clear();
+            Lollipop.etPeakList.Clear();
 
             string colName = "Running Sum";
             string direction = "DESC";
@@ -416,9 +348,9 @@ namespace PS_0._00
 
                 }
                 etPairsList.AcceptChanges();
-                GlobalData.experimentTheoreticalPairs = etPairsList;
+                Lollipop.experimentTheoreticalPairs = etPairsList;
             }
-            GlobalData.etPeakList = etPeaksList;
+            Lollipop.etPeakList = etPeaksList;
 
 
             dgv_ET_Peak_List.DataSource = etPeaksList;
@@ -451,7 +383,7 @@ namespace PS_0._00
                 row["Acceptable"] = Convert.ToBoolean(dgv_ET_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
             }
             etPeaksList.AcceptChanges();
-            GlobalData.etPeakList = etPeaksList;
+            Lollipop.etPeakList = etPeaksList;
             dgv_ET_Peak_List.Update();
             dgv_ET_Peak_List.Refresh();
 
@@ -465,7 +397,7 @@ namespace PS_0._00
             }
             etPairsList.AcceptChanges();
 
-            GlobalData.experimentTheoreticalPairs = etPairsList;
+            Lollipop.experimentTheoreticalPairs = etPairsList;
             dgv_ET_Pairs.Update();
             dgv_ET_Pairs.Refresh();
 
@@ -562,84 +494,55 @@ namespace PS_0._00
 
         private void nUD_ET_Lower_Bound_ValueChanged(object sender, EventArgs e) // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
         {
-            if (!formLoadEvent)
-            {
-                RunTheGamut();
-            }
-            
+            if (!formLoadEvent) RunTheGamut();            
         }
 
         private void nUD_ET_Upper_Bound_ValueChanged(object sender, EventArgs e) // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
         {
-            if (!formLoadEvent)
-            {
-                RunTheGamut();
-            }
+            if (!formLoadEvent) RunTheGamut();
         }
 
         private void yMaxET_ValueChanged(object sender, EventArgs e) // scaling for y-axis of displayed ET Histogram of all ET pairs
         {
-
             if (!formLoadEvent)
-            {
                 ct_ET_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxET.Value.ToString());
-            }
-
         }
 
         private void yMinET_ValueChanged(object sender, EventArgs e) // scaling for y-axis of displayed ET Histogram of all ET pairs
         {
             if (!formLoadEvent)
-            {
                 ct_ET_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinET.Value.ToString());
-            }         
         }
 
         private void xMinET_ValueChanged(object sender, EventArgs e) // scaling for x-axis of displayed ET Histogram of all ET pairs
         {
             if (!formLoadEvent)
-            {
-                ct_ET_Histogram.ChartAreas[0].AxisX.Minimum = double.Parse(xMinET.Value.ToString());
-            }
-            
+                ct_ET_Histogram.ChartAreas[0].AxisX.Minimum = double.Parse(xMinET.Value.ToString());            
         }
 
         private void xMaxET_ValueChanged(object sender, EventArgs e) // scaling for x-axis of displayed ET Histogram of all ET pairs
         {
             if (!formLoadEvent)
-            {
-                ct_ET_Histogram.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxET.Value.ToString());
-            }
-            
+                ct_ET_Histogram.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxET.Value.ToString());            
         }
 
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e) // lower bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
         {
-            if (!formLoadEvent)
-            {
-                RunTheGamut();
-            }
+            if (!formLoadEvent) RunTheGamut();
         }
 
         private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)// upper bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
         {
-            if (!formLoadEvent)
-            {
-                RunTheGamut();
-            }
+            if (!formLoadEvent) RunTheGamut();
         }
 
         private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e) // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
         {
-            if (!formLoadEvent)
-            {
-                RunTheGamut();
-            }
+            if (!formLoadEvent) RunTheGamut();
         }
 
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e) // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
         {
-
             if (!formLoadEvent)
             {
                 MarkETPairsForProteoformFamilies();
@@ -647,7 +550,50 @@ namespace PS_0._00
                 GraphETHistogram(); //we do this hear because the redline threshold needs to be redrawn
                 UpdateFiguresOfMerit();
             }
-            
+        }
+
+        Point? ct_ET_Histogram_prevPosition = null;
+        ToolTip ct_ET_Histogram_tt = new ToolTip();
+
+        void ct_ET_Histogram_MouseMove(object sender, MouseEventArgs e)
+        {
+            tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_Histogram, ct_ET_Histogram_prevPosition);
+        }
+
+        Point? ct_ET_peakList_prevPosition = null;
+        ToolTip ct_ET_peakList_tt = new ToolTip();
+
+        void ct_ET_peakList_MouseMove(object sender, MouseEventArgs e)
+        {
+            tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_peakList, ct_ET_peakList_prevPosition);
+        }
+
+        private void tooltip_graph_display(ToolTip t, MouseEventArgs e, Chart c, Point? p)
+        {
+            var pos = e.Location;
+            if (p.HasValue && pos == p.Value) return;
+            t.RemoveAll();
+            p = pos;
+            var results = c.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
+                                                               // Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            t.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], c, pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
         }
 
         private void InitializeParameterSet()

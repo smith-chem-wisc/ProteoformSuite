@@ -258,7 +258,7 @@ namespace PS_0._00
             dataGridView2.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
             dataGridView3.RowsDefaultCellStyle.BackColor = Color.LightGray;
             dataGridView3.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
-            dataGridView1.DataSource = GlobalData.ProteoformFamilyMetrics;
+            dataGridView1.DataSource = Lollipop.ProteoformFamilyMetrics;
             ExportProteoformFamilies();
         }
 
@@ -370,12 +370,12 @@ namespace PS_0._00
             EE_Groups.Columns.Add("Group_#", typeof(Int32));
 
 
-            GlobalData.ProteoformFamilyMetrics.Columns.Add("Group Number", typeof(Int32));
-            GlobalData.ProteoformFamilyMetrics.Columns.Add("Parent Mass", typeof(double));
-            GlobalData.ProteoformFamilyMetrics.Columns.Add("Lysine Count", typeof(Int32));
-            GlobalData.ProteoformFamilyMetrics.Columns.Add("Number of Experimental Masses", typeof(Int32));
-            GlobalData.ProteoformFamilyMetrics.Columns.Add("Number of IDs", typeof(Int32));
-            GlobalData.ProteoformFamilyMetrics.Columns.Add("Number of Edges", typeof(Int32));
+            Lollipop.ProteoformFamilyMetrics.Columns.Add("Group Number", typeof(Int32));
+            Lollipop.ProteoformFamilyMetrics.Columns.Add("Parent Mass", typeof(double));
+            Lollipop.ProteoformFamilyMetrics.Columns.Add("Lysine Count", typeof(Int32));
+            Lollipop.ProteoformFamilyMetrics.Columns.Add("Number of Experimental Masses", typeof(Int32));
+            Lollipop.ProteoformFamilyMetrics.Columns.Add("Number of IDs", typeof(Int32));
+            Lollipop.ProteoformFamilyMetrics.Columns.Add("Number of Edges", typeof(Int32));
         }
 
         private void Group_ET(int q)
@@ -384,7 +384,7 @@ namespace PS_0._00
 
             DataRow[] foundRows;
             string expression = "[" + "Lysine Count" +"] = " + q + " AND " + "[Proteoform Family] = true";
-            foundRows = GlobalData.experimentTheoreticalPairs.Select(expression);
+            foundRows = Lollipop.experimentTheoreticalPairs.Select(expression);
 
             for (int a = 0; a < foundRows.Length; a++)
             {
@@ -398,7 +398,7 @@ namespace PS_0._00
             EE_Groups.Clear();
 
             DataRow[] foundRows;
-            foundRows = GlobalData.experimentExperimentPairs.Select("[Lysine Count]=" + q + "AND" + "[Proteoform Family] = " + true, "Aggregated Mass Light ASC, Aggregated Mass Heavy ASC");
+            foundRows = Lollipop.experimentExperimentPairs.Select("[Lysine Count]=" + q + "AND" + "[Proteoform Family] = " + true, "Aggregated Mass Light ASC, Aggregated Mass Heavy ASC");
             for (int a = 0; a < foundRows.Length; a++)
             {
                 EE_Groups.Rows.Add(foundRows[a].ItemArray);
@@ -410,56 +410,56 @@ namespace PS_0._00
         {
             parentmass = lightmass; //static because of this
             PF_Group_Num++;
-            GlobalData.ProteoformFamiliesET.Tables.Add(new DataTable()); //add new table for the fam
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Accession", typeof(string));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Name", typeof(string));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Fragment", typeof(string));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("PTM List", typeof(string));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Proteoform Mass", typeof(double));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Mass", typeof(double));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Intensity", typeof(double));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Retention Time", typeof(double));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Lysine Count", typeof(int));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Number of Observations", typeof(int));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Delta Mass", typeof(double));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Running Sum", typeof(int));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Count", typeof(int));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Mass", typeof(double));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Out of Range Decimal", typeof(bool));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Acceptable Peak", typeof(bool));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Proteoform Family", typeof(bool));
-            GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Group_#", typeof(Int32));
+            Lollipop.ProteoformFamiliesET.Tables.Add(new DataTable()); //add new table for the fam
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Accession", typeof(string));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Name", typeof(string));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Fragment", typeof(string));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("PTM List", typeof(string));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Proteoform Mass", typeof(double));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Mass", typeof(double));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Intensity", typeof(double));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Retention Time", typeof(double));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Lysine Count", typeof(int));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Number of Observations", typeof(int));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Delta Mass", typeof(double));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Running Sum", typeof(int));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Count", typeof(int));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Mass", typeof(double));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Out of Range Decimal", typeof(bool));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Acceptable Peak", typeof(bool));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Proteoform Family", typeof(bool));
+            Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Columns.Add("Group_#", typeof(Int32));
 
             foundRowsSingle = ET_Groups.Select("[" + "Aggregated Mass" + "]=" + lightmass, "Proteoform Mass"); //make it org by theo mass later
             foreach (DataRow row in foundRowsSingle)
             {
                 row["Group_#"] = PF_Group_Num;
-                GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Rows.Add(row.ItemArray);
+                Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Rows.Add(row.ItemArray);
             }
             ChildrenList.Add(heavymass);
 
-            GlobalData.ProteoformFamiliesEE.Tables.Add(new DataTable()); //add new table for the fam
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Mass Light", typeof(double));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Mass Heavy", typeof(double));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Intensity Light", typeof(double));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Intensity Heavy", typeof(double));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Retention Time Light", typeof(double));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Retention Time Heavy", typeof(double));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Lysine Count", typeof(int));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Number of Observations Light", typeof(int));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Number of Observations Heavy", typeof(int));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Delta Mass", typeof(double));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Running Sum", typeof(int));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Count", typeof(int));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Mass", typeof(double));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Out of Range Decimal", typeof(bool));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Acceptable Peak", typeof(bool));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Proteoform Family", typeof(bool));
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Group_#", typeof(Int32));
+            Lollipop.ProteoformFamiliesEE.Tables.Add(new DataTable()); //add new table for the fam
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Mass Light", typeof(double));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Mass Heavy", typeof(double));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Intensity Light", typeof(double));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Aggregated Intensity Heavy", typeof(double));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Retention Time Light", typeof(double));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Retention Time Heavy", typeof(double));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Lysine Count", typeof(int));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Number of Observations Light", typeof(int));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Number of Observations Heavy", typeof(int));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Delta Mass", typeof(double));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Running Sum", typeof(int));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Count", typeof(int));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Peak Center Mass", typeof(double));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Out of Range Decimal", typeof(bool));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Acceptable Peak", typeof(bool));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Proteoform Family", typeof(bool));
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Columns.Add("Group_#", typeof(Int32));
 
             DataRow EErow = EE_Groups.Rows[EEIndex]; //make it org by theo mass later
             EErow["Group_#"] = PF_Group_Num;
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Rows.Add(EErow.ItemArray);
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Rows.Add(EErow.ItemArray);
         }
 
         private void Its_A_Child(int lys, double mass, int EEIndex)//, int checkpoint)
@@ -469,27 +469,27 @@ namespace PS_0._00
             foreach (DataRow row in foundRowsSingle)
             {
                 row["Group_#"] = PF_Group_Num;
-                GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Rows.Add(row.ItemArray);
+                Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Rows.Add(row.ItemArray);
             }
             DataRow EErow = EE_Groups.Rows[EEIndex];
             EErow["Group_#"] = PF_Group_Num;
-            GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Rows.Add(EErow.ItemArray);
+            Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Rows.Add(EErow.ItemArray);
         }
 
         private void Family_Death(int lys, List<double> ChildrenList, double parentmass)
         {
 
             int Num_Exp_Mass = ChildrenList.Count() + 1;
-            int Num_Edges = GlobalData.ProteoformFamiliesEE.Tables[PF_Group_Num - 1].Rows.Count;
-            if ((GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Rows.Count).Equals(0)) //this statement catches families that do not have any theoretical matches
+            int Num_Edges = Lollipop.ProteoformFamiliesEE.Tables[PF_Group_Num - 1].Rows.Count;
+            if ((Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].Rows.Count).Equals(0)) //this statement catches families that do not have any theoretical matches
             {
-                GlobalData.ProteoformFamilyMetrics.Rows.Add(PF_Group_Num, parentmass, lys, Num_Exp_Mass, 0, Num_Edges);
+                Lollipop.ProteoformFamilyMetrics.Rows.Add(PF_Group_Num, parentmass, lys, Num_Exp_Mass, 0, Num_Edges);
             }
             else
             {
-                var distinctIds = GlobalData.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].AsEnumerable().Select(s => new { id = s.Field<double>("Proteoform Mass"), }).Distinct().ToList();
+                var distinctIds = Lollipop.ProteoformFamiliesET.Tables[(PF_Group_Num - 1)].AsEnumerable().Select(s => new { id = s.Field<double>("Proteoform Mass"), }).Distinct().ToList();
                 int ID_Count = distinctIds.Count;
-                GlobalData.ProteoformFamilyMetrics.Rows.Add(PF_Group_Num, parentmass, lys, Num_Exp_Mass, ID_Count, Num_Edges); //group#, #exp, lys, #id  ID is the most time consuming, must run through entire list. Most feasible to achieve everytime ET is accessed.
+                Lollipop.ProteoformFamilyMetrics.Rows.Add(PF_Group_Num, parentmass, lys, Num_Exp_Mass, ID_Count, Num_Edges); //group#, #exp, lys, #id  ID is the most time consuming, must run through entire list. Most feasible to achieve everytime ET is accessed.
             }
         }
 
@@ -500,7 +500,7 @@ namespace PS_0._00
             {
                 DataRow EErow = EE_Groups.Rows[i];
                 EErow["Group_#"] = PF_Group_Num;
-                GlobalData.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Rows.Add(EErow.ItemArray);
+                Lollipop.ProteoformFamiliesEE.Tables[(PF_Group_Num - 1)].Rows.Add(EErow.ItemArray);
             }
             else //it's a new child and we gotta save it
             {
@@ -523,7 +523,7 @@ namespace PS_0._00
                 ExportDataTable.Columns.Add("Intensity #2", typeof(double));
             }
 
-            foreach (DataTable dt in GlobalData.ProteoformFamiliesEE.Tables)
+            foreach (DataTable dt in Lollipop.ProteoformFamiliesEE.Tables)
             {
                 foreach (DataRow row in dt.Rows)
                 {
@@ -539,7 +539,7 @@ namespace PS_0._00
                 }
             }
             
-            foreach (DataTable dt in GlobalData.ProteoformFamiliesET.Tables)
+            foreach (DataTable dt in Lollipop.ProteoformFamiliesET.Tables)
             {
                 foreach (DataRow row in dt.Rows)
                 {
@@ -581,8 +581,8 @@ namespace PS_0._00
             {
                 DataGridViewRow row = this.dataGridView1.Rows[e.RowIndex];
                 groupnumber = Convert.ToInt32(row.Cells["Group Number"].Value);
-                dataGridView2.DataSource = GlobalData.ProteoformFamiliesET.Tables[(groupnumber - 1)];
-                dataGridView3.DataSource = GlobalData.ProteoformFamiliesEE.Tables[(groupnumber - 1)];
+                dataGridView2.DataSource = Lollipop.ProteoformFamiliesET.Tables[(groupnumber - 1)];
+                dataGridView3.DataSource = Lollipop.ProteoformFamiliesEE.Tables[(groupnumber - 1)];
             }
         } //called in DGV
 

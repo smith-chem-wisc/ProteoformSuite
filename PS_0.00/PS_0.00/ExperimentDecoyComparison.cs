@@ -25,7 +25,7 @@ namespace PS_0._00
 
         public void ExperimentDecoyComparison_Load(object sender, EventArgs e)
         {
-           if (GlobalData.experimentDecoyPairs.Tables.Count == 0)
+           if (Lollipop.experimentDecoyPairs.Tables.Count == 0)
            {
                 run_comparison();
             }
@@ -60,13 +60,13 @@ namespace PS_0._00
 
         private void FindAllEDPairs()
         {
-            for (int i = 0; i < GlobalData.numDecoyDatabases; i++)
+            for (int i = 0; i < Lollipop.decoy_databases; i++)
             {
                 string tableName = "DecoyDatabase_" + i;
                 DataTable eD = GetNewED_DataTable(tableName);
-                GlobalData.experimentDecoyPairs.Tables.Add(eD);
+                Lollipop.experimentDecoyPairs.Tables.Add(eD);
 
-                foreach (DataRow agRow in GlobalData.aggregatedProteoforms.Rows)
+                foreach (DataRow agRow in Lollipop.aggregatedProteoforms.Rows)
                 {
                     double lowMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ED_Lower_Bound.Value);
                     double highMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ED_Upper_Bound.Value);
@@ -74,7 +74,7 @@ namespace PS_0._00
                     string expression = "[Proteoform Mass] >= " + lowMass + " and [Proteoform Mass] <= " + highMass;
                     expression = expression + "and [Lysine Count] >= " + agRow["Lysine Count"];
 
-                    DataRow[] closeDecoys = GlobalData.theoreticalAndDecoyDatabases.Tables[tableName].Select(expression);
+                    DataRow[] closeDecoys = Lollipop.theoreticalAndDecoyDatabases.Tables[tableName].Select(expression);
 
                     foreach (DataRow row in closeDecoys)
                     {
@@ -99,16 +99,16 @@ namespace PS_0._00
 
         private void CalculateRunningSums()
         {
-            for (int i = 0; i < GlobalData.numDecoyDatabases; i++)
+            for (int i = 0; i < Lollipop.decoy_databases; i++)
             {
                 string tableName = "DecoyDatabase_" + i;
-                foreach (DataRow row in GlobalData.experimentDecoyPairs.Tables[tableName].Rows)
+                foreach (DataRow row in Lollipop.experimentDecoyPairs.Tables[tableName].Rows)
                 {
                     double deltaMass = Convert.ToDouble(row["Delta Mass"].ToString());
                     double lower = deltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper;
-                    row["Running Sum"] = GlobalData.experimentDecoyPairs.Tables[tableName].Select(expression).Length;
+                    row["Running Sum"] = Lollipop.experimentDecoyPairs.Tables[tableName].Select(expression).Length;
                 }
             }
         }
@@ -117,12 +117,12 @@ namespace PS_0._00
         {
             string colNameET = "Delta Mass";
             string directionET = "DESC";
-            DataTable et = GlobalData.experimentTheoreticalPairs;
+            DataTable et = Lollipop.experimentTheoreticalPairs;
             et.DefaultView.Sort = colNameET + " " + directionET;
             et = et.DefaultView.ToTable();
-            GlobalData.experimentTheoreticalPairs = et;
+            Lollipop.experimentTheoreticalPairs = et;
 
-            foreach (DataRow row in GlobalData.experimentTheoreticalPairs.Rows)
+            foreach (DataRow row in Lollipop.experimentTheoreticalPairs.Rows)
             {
                 ct_ED_peakList.Series["etPeakList"].Points.AddXY(row["Delta Mass"], row["Running Sum"]);
             }           
@@ -135,7 +135,7 @@ namespace PS_0._00
             string directionED = "DESC";
             string tableName = "DecoyDatabase_" + i;
 
-            DataTable ed = GlobalData.experimentDecoyPairs.Tables[tableName];
+            DataTable ed = Lollipop.experimentDecoyPairs.Tables[tableName];
             ed.DefaultView.Sort = colNameED + " " + directionED;
             ed = ed.DefaultView.ToTable();
 
@@ -167,7 +167,7 @@ namespace PS_0._00
             if (e.Button == MouseButtons.Left)
             {
                 int clickedRow = dgv_ED_Peak_List.HitTest(e.X, e.Y).RowIndex;
-                if (clickedRow >= 0 && clickedRow < GlobalData.edList.Rows.Count)
+                if (clickedRow >= 0 && clickedRow < Lollipop.edList.Rows.Count)
                 {
                     EDListGraphParameters(clickedRow);
                 }
@@ -228,7 +228,7 @@ namespace PS_0._00
         private void FillEDListTable()
         {
           
-            foreach (DataRow row in GlobalData.etPeakList.Rows)
+            foreach (DataRow row in Lollipop.etPeakList.Rows)
             {
                 DataTable decoyTotals = new DataTable();
                 decoyTotals.Columns.Add("Decoy Hits", typeof(int));
@@ -240,12 +240,12 @@ namespace PS_0._00
                 double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                 string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper;
 
-                for (int i = 0; i < GlobalData.numDecoyDatabases; i++)
+                for (int i = 0; i < Lollipop.decoy_databases; i++)
                 {
                     string colName = "Running Sum";
                     string direction = "DESC";
                     string tableName = "DecoyDatabase_" + i;
-                    DataTable dt = GlobalData.experimentDecoyPairs.Tables[tableName];
+                    DataTable dt = Lollipop.experimentDecoyPairs.Tables[tableName];
                     dt.DefaultView.Sort = colName + " " + direction;
                     dt = dt.DefaultView.ToTable();
                     //if (Convert.ToBoolean(row["Out of Range Decimal"].ToString()) == false && Convert.ToBoolean(row["Acceptable Peak"].ToString()) == false)
@@ -275,7 +275,7 @@ namespace PS_0._00
                 //edList.Rows.Add(deltaMass, peakCount, median);
             }
 
-            GlobalData.edList = edList;
+            Lollipop.edList = edList;
 
             //Round before displaying ED peak list
             dgv_ED_Peak_List.DataSource = edList;
@@ -296,7 +296,7 @@ namespace PS_0._00
 
         private void FillEDGridView(string table)
         {
-            DataTable displayTable = GlobalData.experimentDecoyPairs.Tables[table];
+            DataTable displayTable = Lollipop.experimentDecoyPairs.Tables[table];
 
             dgv_ED_Pairs.DataSource = displayTable;
             dgv_ED_Pairs.ReadOnly = true;
@@ -316,7 +316,7 @@ namespace PS_0._00
             string tableName = "DecoyDatabase_" + i;
             string colName = "Delta Mass";
             string direction = "DESC";
-            DataTable dt = GlobalData.experimentDecoyPairs.Tables[tableName];
+            DataTable dt = Lollipop.experimentDecoyPairs.Tables[tableName];
 
             dt.DefaultView.Sort = colName + " " + direction;
             dt = dt.DefaultView.ToTable();
@@ -392,7 +392,7 @@ namespace PS_0._00
             nUD_PeakWidthBase.Value = 0.0150m;
 
             nud_Decoy_Database.Minimum = 1;
-            nud_Decoy_Database.Maximum = GlobalData.numDecoyDatabases;
+            nud_Decoy_Database.Maximum = Lollipop.decoy_databases;
             nud_Decoy_Database.Value = 1;
         }
 

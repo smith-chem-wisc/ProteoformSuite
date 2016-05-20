@@ -23,10 +23,9 @@ namespace PS_0._00
 
         public void NeuCodePairs_Load(object sender, EventArgs e)
         {
-            if (GlobalData.rawNeuCodePairs.Count == 0)
+            if (Lollipop.rawNeuCodePairs.Count == 0)
             {
-                Dictionary<string, HashSet<string>> filename_scanRanges = get_scanranges_by_filename();
-                FillRawNeuCodePairsDataTable(filename_scanRanges);
+                Lollipop.FillRawNeuCodePairsDataTable();
                 FillNeuCodePairsDGV(); //Filling DGV part of the working logic, now, since it seems to take a while
             }
             GraphLysineCount();
@@ -36,7 +35,7 @@ namespace PS_0._00
         private void FillNeuCodePairsDGV()
         {
             BindingSource bs = new BindingSource();
-            bs.DataSource = GlobalData.rawNeuCodePairs;
+            bs.DataSource = Lollipop.rawNeuCodePairs;
             dgv_RawExpNeuCodePairs.DataSource = bs;
             dgv_RawExpNeuCodePairs.ReadOnly = true;
             //dgv_RawExpNeuCodePairs.Columns["Acceptable"].ReadOnly = false;
@@ -51,85 +50,6 @@ namespace PS_0._00
             dgv_RawExpNeuCodePairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
         
-        private void FillRawNeuCodePairsDataTable(Dictionary<string, HashSet<string>> filename_scanRange)
-        {
-            Parallel.ForEach<KeyValuePair<string, HashSet<string>>>(filename_scanRange, entry =>
-            {
-                string filename = entry.Key;
-                Parallel.ForEach<string>(entry.Value, scanRange =>
-               {
-                   List<Component> components_in_file_scanrange = new List<Component>();
-
-                   //select all components in file and this particular scanrange
-                   Parallel.ForEach<Component>(GlobalData.rawExperimentalComponents, c =>
-                   {
-                       if (c.file_origin == filename && c.scan_range == scanRange)
-                           components_in_file_scanrange.Add(c);
-                   });
-
-                   components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass);
-
-                   //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
-                   int lower_mass_index = 0;
-                   Parallel.For(lower_mass_index, components_in_file_scanrange.Count - 2, lower_index =>
-                   {
-                       Component lower_component = components_in_file_scanrange[lower_index];
-                       int higher_mass_index = lower_mass_index + 1;
-                       double apexRT = lower_component.rt_apex;
-
-                       Parallel.For(higher_mass_index, components_in_file_scanrange.Count - 1, higher_index =>
-                       {
-                           Component higher_component = components_in_file_scanrange[higher_index];
-                           double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
-                           if (mass_difference < 6)
-                           {
-                               Proteoform p = new Proteoform(lower_component, higher_component);
-                               if (p.accepted) { GlobalData.rawNeuCodePairs.Add(p); }
-                           }
-                       });
-                   });
-               });
-            });
-        }
-
-        private Dictionary<string, HashSet<string>> get_scanranges_by_filename()
-        {
-            Dictionary<string, HashSet<string>> filename_scanRanges = new Dictionary<string, HashSet<string>>();
-            Parallel.ForEach<string>(GlobalData.deconResultsFileNames, filename =>
-            {
-                if (!filename_scanRanges.ContainsKey(filename))
-                    filename_scanRanges.Add(filename, new HashSet<string>());
-            });
-
-            Parallel.ForEach<Component>(GlobalData.rawExperimentalComponents, c =>
-            {
-                filename_scanRanges[c.file_origin].Add(c.scan_range);
-            });
-            return filename_scanRanges;
-        }
-
-        private DataTable CreateRawNeuCodePairsDataTable()
-        {
-            DataTable dt = new DataTable();
-
-            dt.Columns.Add("Light Filename", typeof(string));
-            dt.Columns.Add("Light No.", typeof(int));
-            dt.Columns.Add("Light Mass", typeof(double));
-            dt.Columns.Add("Light Mass Corrected", typeof(double));
-            dt.Columns.Add("Light Intensity", typeof(double));
-            dt.Columns.Add("Heavy Filename", typeof(string));
-            dt.Columns.Add("Heavy No.", typeof(int));
-            dt.Columns.Add("Heavy Mass", typeof(double));
-            dt.Columns.Add("Heavy Intensity", typeof(double));
-            dt.Columns.Add("Matching Charge States", typeof(List<int>));
-            dt.Columns.Add("Apex RT", typeof(double));
-            dt.Columns.Add("Intensity Ratio", typeof(double));
-            dt.Columns.Add("Lysine Count", typeof(int));
-            dt.Columns.Add("Acceptable", typeof(bool));
-
-            return dt;
-        }
-
         private void GraphIntensityRatio()
         {
             DataTable intensityRatioHistogram = new DataTable();
@@ -140,7 +60,7 @@ namespace PS_0._00
             for (double i = 0; i <= 20; i = i + 0.05)
             {
                 string expression = "[Intensity Ratio] >= " + (i - .025) + "AND [Intensity Ratio] < " + (i + .025);
-                List<Proteoform> proteoforms_by_intensityRatio = GlobalData.rawNeuCodePairs.Where(p => p.intensity_ratio >= i - 0.025 && p.intensity_ratio < i + 0.025).ToList();
+                List<Proteoform> proteoforms_by_intensityRatio = Lollipop.rawNeuCodePairs.Where(p => p.intensity_ratio >= i - 0.025 && p.intensity_ratio < i + 0.025).ToList();
                 if (proteoforms_by_intensityRatio.Count > ymax)
                     ymax = proteoforms_by_intensityRatio.Count;
                 intensityRatioHistogram.Rows.Add(i, proteoforms_by_intensityRatio.Count);
@@ -166,11 +86,11 @@ namespace PS_0._00
             xMaxIRat.Value = 20;
             xMinIRat.Value = 0;
 
-            IRatMaxAcceptable.Value = 6;
+            IRatMaxAcceptable.Value = Lollipop.max_intensity_ratio;
             IRatMinAcceptable.Maximum = 20;
             IRatMinAcceptable.Minimum = 0;
 
-            IRatMinAcceptable.Value = 1.4m;
+            IRatMinAcceptable.Value = Lollipop.min_intensity_ratio;
             IRatMinAcceptable.Maximum = 20;
             IRatMinAcceptable.Minimum = 0;
 
@@ -193,7 +113,7 @@ namespace PS_0._00
 
             for (int i = 0; i <= 28; i++)
             {
-                List<Proteoform> pf_by_lysCt = GlobalData.rawNeuCodePairs.Where(p => p.lysine_count == i).ToList();
+                List<Proteoform> pf_by_lysCt = Lollipop.rawNeuCodePairs.Where(p => p.lysine_count == i).ToList();
                 if (pf_by_lysCt.Count > ymax)
                     ymax = pf_by_lysCt.Count;
                 lysCtHistogram.Rows.Add(i, pf_by_lysCt.Count);
@@ -219,10 +139,10 @@ namespace PS_0._00
             xMaxKCt.Value = 28;
             xMinKCt.Value = 0;
 
-            KMaxAcceptable.Value = 26.2m;
+            KMaxAcceptable.Value = Lollipop.max_lysine_ct;
             KMaxAcceptable.Maximum = 28;
             KMaxAcceptable.Minimum = 0;
-            KMinAcceptable.Value = 1.5m;
+            KMinAcceptable.Value = Lollipop.min_lysine_ct;
             KMinAcceptable.Maximum = 28;
             KMinAcceptable.Minimum = 0;
 
@@ -326,28 +246,28 @@ namespace PS_0._00
 
         private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            List<Proteoform> selected_pf = GlobalData.rawNeuCodePairs.Where(p => p.lysine_count < double.Parse(KMinAcceptable.Value.ToString())).ToList();
+            List<Proteoform> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.lysine_count < double.Parse(KMinAcceptable.Value.ToString())).ToList();
             Parallel.ForEach(selected_pf, p => { p.accepted = false; });
             dgv_RawExpNeuCodePairs.Refresh();
         }
 
         private void KMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            List<Proteoform> selected_pf = GlobalData.rawNeuCodePairs.Where(p => p.lysine_count > double.Parse(KMaxAcceptable.Value.ToString())).ToList();
+            List<Proteoform> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.lysine_count > double.Parse(KMaxAcceptable.Value.ToString())).ToList();
             Parallel.ForEach(selected_pf, p => { p.accepted = false; });
             dgv_RawExpNeuCodePairs.Refresh();
         }
 
         private void IRatMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            List<Proteoform> selected_pf = GlobalData.rawNeuCodePairs.Where(p => p.intensity_ratio < double.Parse(IRatMinAcceptable.Value.ToString())).ToList();
+            List<Proteoform> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.intensity_ratio < double.Parse(IRatMinAcceptable.Value.ToString())).ToList();
             Parallel.ForEach(selected_pf, p => { p.accepted = false; });
             dgv_RawExpNeuCodePairs.Refresh();
         }
 
         private void IRatMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            List<Proteoform> selected_pf = GlobalData.rawNeuCodePairs.Where(p => p.intensity_ratio > double.Parse(IRatMaxAcceptable.Value.ToString())).ToList();
+            List<Proteoform> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.intensity_ratio > double.Parse(IRatMaxAcceptable.Value.ToString())).ToList();
             Parallel.ForEach(selected_pf, p => { p.accepted = false; });
             dgv_RawExpNeuCodePairs.Refresh();
         }

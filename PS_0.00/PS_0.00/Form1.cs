@@ -86,7 +86,7 @@ namespace PS_0._00
         
         private void experimentDecoyComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (GlobalData.numDecoyDatabases > 0)
+            if (Lollipop.decoy_databases > 0)
             {
                 showForm(experimentDecoyComparison);
             }
@@ -161,12 +161,12 @@ namespace PS_0._00
                             aggregatedProteoforms.loadSetting(setting_specs);
                             break;
                         case "LoadDeconvolutionResults":
-                            if (GlobalData.deconResultsFileNames.Count > 0)
+                            if (Lollipop.deconResultsFileNames.Count > 0)
                             {
                                 var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?",
                                     "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
                                 if (response == DialogResult.Yes) { break; }
-                                if (response == DialogResult.No) { GlobalData.deconResultsFileNames.Clear(); }
+                                if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); }
                                 if (response == DialogResult.Cancel) { return; }
                             }
                             loadDeconvolutionResults.loadSetting(setting_specs);

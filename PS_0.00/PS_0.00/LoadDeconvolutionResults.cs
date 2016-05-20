@@ -28,21 +28,21 @@ namespace PS_0._00
 
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
         {            
-            if (GlobalData.repeat == true)
+            if (Lollipop.repeat == true)
             {
                 repeat = true;
-                GlobalData.repeat = false;
+                Lollipop.repeat = false;
                 LoadDeconvolutionResults_Load(sender, e);
                 return;
             }
             InitializeOpenFileDialog();
             lbDeconResults.Sorted = true;
             lbDeconResults.SelectionMode = SelectionMode.MultiExtended;
-            lbDeconResults.DataSource = GlobalData.deconResultsFileNames;
+            lbDeconResults.DataSource = Lollipop.deconResultsFileNames;
             if (repeat==true)
             {
                 repeat = false;
-                GlobalData.repeat = true;
+                Lollipop.repeat = true;
             }
         }
 
@@ -56,9 +56,9 @@ namespace PS_0._00
                 {
                     try
                     {
-                        if (!GlobalData.deconResultsFileNames.Contains(file) && FirstLineOK(file))
+                        if (!Lollipop.deconResultsFileNames.Contains(file) && FirstLineOK(file))
                         {
-                            GlobalData.deconResultsFileNames.Add(file);
+                            Lollipop.deconResultsFileNames.Add(file);
                             //MessageBox.Show("Added File: " + file +" Count: " + GlobalData.deconResultsFileNames.Count);
                             
                         }
@@ -87,14 +87,14 @@ namespace PS_0._00
         {
             for (int i = 0; i < lbDeconResults.SelectedItems.Count; i++)
             {
-                GlobalData.deconResultsFileNames.Remove(lbDeconResults.SelectedItems[i].ToString());
+                Lollipop.deconResultsFileNames.Remove(lbDeconResults.SelectedItems[i].ToString());
             }
 
         }
 
         private void btnDeconResultsClear_Click(object sender, EventArgs e)
         {
-            GlobalData.deconResultsFileNames.Clear();
+            Lollipop.deconResultsFileNames.Clear();
         }
 
         private void InitializeOpenFileDialog()
@@ -122,7 +122,7 @@ namespace PS_0._00
 
         public override string ToString()
         {
-            return "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("\t", GlobalData.deconResultsFileNames.ToArray<string>());
+            return "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("\t", Lollipop.deconResultsFileNames.ToArray<string>());
         }
 
         public void loadSetting(string setting_specs)
@@ -134,7 +134,7 @@ namespace PS_0._00
                     foreach (string filename in fields)
                     {
                         if (filename == "LoadDeconvolutionResults|deconvolution_file_names") { continue; }
-                        GlobalData.deconResultsFileNames.Add(filename);
+                        Lollipop.deconResultsFileNames.Add(filename);
                     }
                     break;
             }

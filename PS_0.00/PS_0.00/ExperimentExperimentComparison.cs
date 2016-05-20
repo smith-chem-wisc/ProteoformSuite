@@ -31,7 +31,7 @@ namespace PS_0._00
 
         public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
         {
-            if (GlobalData.experimentExperimentPairs.Columns.Count == 0)
+            if (Lollipop.experimentExperimentPairs.Columns.Count == 0)
             {
                 run_comparison();
             }
@@ -144,7 +144,7 @@ namespace PS_0._00
             if (e.Button == MouseButtons.Left)
             {
                 int clickedRow = dgv_EE_Peak_List.HitTest(e.X, e.Y).RowIndex;
-                if (clickedRow >= 0 && clickedRow < GlobalData.eePeakList.Rows.Count)
+                if (clickedRow >= 0 && clickedRow < Lollipop.eePeakList.Rows.Count)
                 {
                     EEPeakListGraphParameters(clickedRow);
                 }
@@ -281,7 +281,7 @@ namespace PS_0._00
 
         private void ZeroEEPairsTableValues()
         {
-            foreach (DataRow row in GlobalData.experimentExperimentPairs.Rows)
+            foreach (DataRow row in Lollipop.experimentExperimentPairs.Rows)
             {
                 row["Acceptable Peak"] = false;
                 row["Peak Center Count"] = 0;
@@ -295,13 +295,13 @@ namespace PS_0._00
 
         private void ClearEEGridView()
         {
-            GlobalData.experimentExperimentPairs.Clear();
+            Lollipop.experimentExperimentPairs.Clear();
         }
 
         private void FillEEPeakListTable()
         {
             eePeakList.Clear();
-            GlobalData.eePeakList.Clear();
+            Lollipop.eePeakList.Clear();
 
             string colName = "Running Sum";
             string direction = "DESC";
@@ -360,10 +360,10 @@ namespace PS_0._00
                     }
                 }
                 eePairsList.AcceptChanges();
-                GlobalData.experimentExperimentPairs = eePairsList;
+                Lollipop.experimentExperimentPairs = eePairsList;
             }
 
-            GlobalData.eePeakList = eePeakList;
+            Lollipop.eePeakList = eePeakList;
 
             dgv_EE_Peak_List.DataSource = eePeakList;
             dgv_EE_Peak_List.Columns["Average Delta Mass"].ReadOnly = true;
@@ -466,19 +466,19 @@ namespace PS_0._00
         {
             eePairsList.Clear();
             eePairsList = CreateEEPairsDataTable();
-            GlobalData.experimentExperimentPairs.Clear();
+            Lollipop.experimentExperimentPairs.Clear();
 
-            int numRows = GlobalData.aggregatedProteoforms.Rows.Count;
+            int numRows = Lollipop.aggregatedProteoforms.Rows.Count;
 
             for (int index1 = 0; index1 < numRows; index1++)
             {
                 for (int index2 = 0; index2 < numRows; index2++)
                 {
 
-                    double massLight = Convert.ToDouble(GlobalData.aggregatedProteoforms.Rows[index1]["Aggregated Mass"]);
-                    double massHeavy = Convert.ToDouble(GlobalData.aggregatedProteoforms.Rows[index2]["Aggregated Mass"]);
-                    int lysineLight = Convert.ToInt16(GlobalData.aggregatedProteoforms.Rows[index1]["Lysine Count"]);
-                    int lysineHeavy = Convert.ToInt16(GlobalData.aggregatedProteoforms.Rows[index2]["Lysine Count"]);
+                    double massLight = Convert.ToDouble(Lollipop.aggregatedProteoforms.Rows[index1]["Aggregated Mass"]);
+                    double massHeavy = Convert.ToDouble(Lollipop.aggregatedProteoforms.Rows[index2]["Aggregated Mass"]);
+                    int lysineLight = Convert.ToInt16(Lollipop.aggregatedProteoforms.Rows[index1]["Lysine Count"]);
+                    int lysineHeavy = Convert.ToInt16(Lollipop.aggregatedProteoforms.Rows[index2]["Lysine Count"]);
 
                     if (massHeavy > massLight)
                     {
@@ -496,7 +496,7 @@ namespace PS_0._00
                                     oOR = false;
                                 }
 
-                                eePairsList.Rows.Add(massLight, massHeavy, GlobalData.aggregatedProteoforms.Rows[index1]["Aggregated Intensity"], GlobalData.aggregatedProteoforms.Rows[index2]["Aggregated Intensity"], GlobalData.aggregatedProteoforms.Rows[index1]["Aggregated Retention Time"], GlobalData.aggregatedProteoforms.Rows[index2]["Aggregated Retention Time"], lysineLight, GlobalData.aggregatedProteoforms.Rows[index1]["Number of Observations"], GlobalData.aggregatedProteoforms.Rows[index2]["Number of Observations"], deltaMass, 0, 0, deltaMass, oOR, false, false);
+                                eePairsList.Rows.Add(massLight, massHeavy, Lollipop.aggregatedProteoforms.Rows[index1]["Aggregated Intensity"], Lollipop.aggregatedProteoforms.Rows[index2]["Aggregated Intensity"], Lollipop.aggregatedProteoforms.Rows[index1]["Aggregated Retention Time"], Lollipop.aggregatedProteoforms.Rows[index2]["Aggregated Retention Time"], lysineLight, Lollipop.aggregatedProteoforms.Rows[index1]["Number of Observations"], Lollipop.aggregatedProteoforms.Rows[index2]["Number of Observations"], deltaMass, 0, 0, deltaMass, oOR, false, false);
 
                             }
                         }
@@ -504,7 +504,7 @@ namespace PS_0._00
                 }
             }
 
-            GlobalData.experimentExperimentPairs = eePairsList;
+            Lollipop.experimentExperimentPairs = eePairsList;
         }
 
         private void CalculateRunningSums()
@@ -518,7 +518,7 @@ namespace PS_0._00
                 row["Running Sum"] = eePairsList.Select(expression).Length;
             }
             eePairsList.AcceptChanges();
-            GlobalData.experimentExperimentPairs = eePairsList;
+            Lollipop.experimentExperimentPairs = eePairsList;
         }
 
 
@@ -581,7 +581,7 @@ namespace PS_0._00
                 row["Acceptable"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
             }
             eePeakList.AcceptChanges();
-            GlobalData.etPeakList = eePeakList;
+            Lollipop.etPeakList = eePeakList;
             dgv_EE_Peak_List.Update();
             dgv_EE_Peak_List.Refresh();
 
@@ -597,7 +597,7 @@ namespace PS_0._00
             }
             eePairsList.AcceptChanges();
 
-            GlobalData.experimentExperimentPairs = eePairsList;
+            Lollipop.experimentExperimentPairs = eePairsList;
             dgv_EE_Pairs.DataSource = null;
             FillEEPairsGridView();
 

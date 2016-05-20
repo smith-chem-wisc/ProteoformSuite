@@ -20,28 +20,28 @@ namespace PS_0._00
         public string rt_range { get; set; }
         public double rt_apex { get; set; }
         public double weighted_monoisotopic_mass { get; set; }
-        private List<ChargeState> charge_states { get; set; }
-
-        public Component(int id, double monoisotopic_mass, double sum_intensity, int num_charge_states,
-                        int num_detected_intervals, double delta_mass, double relative_abundance, double fract_abundance, string scan_range,
-                        string rt_range, double rt_apex, string filename)
+        private List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
+        public int num_charge_states
         {
-            this.id = id;
-            this.monoisotopic_mass = monoisotopic_mass;
-            this.intensity_sum = sum_intensity;
-            this.delta_mass = delta_mass;
-            this.relative_abundance = relative_abundance;
-            this.fract_abundance = fract_abundance;
-            this.scan_range = scan_range;
-            this.rt_range = rt_range;
-            this.rt_apex = rt_apex;
-            this.file_origin = filename;
-            this.charge_states = new List<ChargeState>();
+            get { return this.charge_states.Count; }
         }
+        private int num_detected_intervals { get; set; }
+        private int num_charge_states_fromFile { get; set; }
 
-        public int get_num_charge_states()
+        public Component(DataRow component_row)
         {
-            return this.charge_states.Count;
+            this.id = component_row.Field<int>(0);
+            this.monoisotopic_mass = component_row.Field<double>(1);
+            this.intensity_sum = component_row.Field<double>(2);
+            this.num_charge_states_fromFile = component_row.Field<int>(3);
+            this.num_detected_intervals = component_row.Field<int>(4);
+            this.delta_mass = component_row.Field<double>(5);
+            this.relative_abundance = component_row.Field<double>(6);
+            this.fract_abundance = component_row.Field<double>(7);
+            this.scan_range = component_row.Field<string>(8);
+            this.rt_range = component_row.Field<string>(9);
+            this.rt_apex = component_row.Field<double>(10);
+            this.file_origin = component_row.Field<string>(11);
         }
 
         public double calculate_sum_intensity()
@@ -53,7 +53,6 @@ namespace PS_0._00
             });
             return this.intensity_sum;
         }
-       
 
         public double calculate_sum_intensity(List<int> charges_to_sum)
         {
@@ -75,8 +74,12 @@ namespace PS_0._00
             });
         }
 
-        public void add_charge_state(int charge_state, double intensity, double mz_centroid, double calculated_mass)
+        public void add_charge_state(DataRow charge_row)
         {
+            int charge_state = charge_row.Field<int>(1);
+            double intensity = charge_row.Field<double>(2);
+            double mz_centroid = charge_row.Field<double>(3);
+            double calculated_mass = charge_row.Field<double>(4);
             charge_states.Add(new ChargeState(charge_state, intensity, mz_centroid, calculated_mass));
         }
 
