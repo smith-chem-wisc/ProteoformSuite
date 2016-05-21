@@ -96,6 +96,12 @@
     <Compile Include="ExperimentDecoyComparison.Designer.cs">
       <DependentUpon>ExperimentDecoyComparison.cs</DependentUpon>
     </Compile>
+    <Compile Include="ResultsSummary.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ResultsSummary.Designer.cs">
+      <DependentUpon>ResultsSummary.cs</DependentUpon>
+    </Compile>
     <Compile Include="GlobalData.cs" />
     <Compile Include="LoadDeconvolutionResults.cs">
       <SubType>Form</SubType>
@@ -169,6 +175,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="RawExperimentalComponents.resx">
       <DependentUpon>RawExperimentalComponents.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResultsSummary.resx">
+      <DependentUpon>ResultsSummary.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TheoreticalDatabase.resx">
       <DependentUpon>TheoreticalDatabase.cs</DependentUpon>
