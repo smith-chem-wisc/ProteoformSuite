@@ -118,6 +118,13 @@ namespace PS_0._00
         {
             showForm(proteoformFamilyAssignment);
         }
+        
+        private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //want it to actully load each time so results are up to date with GlobalData.
+            ResultsSummary resultsSummary = new ResultsSummary();
+            showForm(resultsSummary);
+        }
 
         private void saveMethod()
         {
