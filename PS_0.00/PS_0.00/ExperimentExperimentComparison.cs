@@ -546,19 +546,19 @@ namespace PS_0._00
 
             nUD_NoManLower.Minimum = 00m;
             nUD_NoManLower.Maximum = 0.49m;
-            //  nUD_NoManLower.Value = 0.22m;
+            nUD_NoManLower.Value = Lollipop.no_mans_land_lowerBound;
 
             nUD_NoManUpper.Minimum = 0.50m;
             nUD_NoManUpper.Maximum = 1.00m;
-            //   nUD_NoManUpper.Value = 0.88m;
+            nUD_NoManUpper.Value = Lollipop.no_mans_land_upperBound;
 
             nUD_PeakWidthBase.Minimum = 0.001m;
             nUD_PeakWidthBase.Maximum = 0.5000m;
-            //   nUD_PeakWidthBase.Value = 0.0150m;
+            nUD_PeakWidthBase.Value = Lollipop.peak_width_base;
 
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
-            nUD_PeakCountMinThreshold.Value = 10;
+            nUD_PeakCountMinThreshold.Value = Lollipop.min_peak_count;
         }
 
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
