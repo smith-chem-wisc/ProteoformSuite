@@ -158,11 +158,11 @@ namespace PS_0._00
         public static decimal retention_time_tolerance = 3;
         public static decimal missed_monos = 3;
         public static decimal missed_lysines = 1;
-        public static List<ExperimentalProteoform> aggregatedProteoforms = new List<ExperimentalProteoform>();
+        public static List<ExperimentalProteoform> experimental_proteoforms = new List<ExperimentalProteoform>();
         public static void AggregateNeuCodeLightProteoforms()
         {
-            if (Lollipop.aggregatedProteoforms.Count > 0)
-                Lollipop.aggregatedProteoforms.Clear();
+            if (Lollipop.experimental_proteoforms.Count > 0)
+                Lollipop.experimental_proteoforms.Clear();
 
             List<NeuCodePair> remaining_acceptableProteoforms = Lollipop.rawNeuCodePairs.Where(p => p.accepted).ToList().
                 OrderByDescending(p => p.light_intensity).ToList(); //ordered list, so that the proteoform with max intensity is always chosen first
@@ -184,7 +184,7 @@ namespace PS_0._00
                 }
 
                 if (pf_to_aggregate.Count > 0)
-                    Lollipop.aggregatedProteoforms.Add(new ExperimentalProteoform(pf_to_aggregate));
+                    Lollipop.experimental_proteoforms.Add(new ExperimentalProteoform(pf_to_aggregate));
             }
         }
 
@@ -294,15 +294,13 @@ namespace PS_0._00
 
         private static void processEntries()
         {
-            List<TheoreticalProteoform> targets = new List<TheoreticalProteoform>();
             Parallel.ForEach<Protein>(proteins, p =>
             {
                 bool isMetCleaved = (methionine_cleavage && p.Begin == 0 && p.Sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
                 int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
                 string seq = p.Sequence.Substring(startPosAfterCleavage, (p.Sequence.Length - startPosAfterCleavage));
-                EnterTheoreticalProteformFamily(targets, seq, p, p.Accession, max_ptms, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
+                EnterTheoreticalProteformFamily(Lollipop.theoretical_proteoforms, seq, p, p.Accession, isMetCleaved);
             });
-            Lollipop.theoretical_proteoforms = targets;
         }
 
         private static void processDecoys(string giantProtein)
@@ -326,36 +324,30 @@ namespace PS_0._00
                     string hunk = giantProtein.Substring(prevLength, hunkLength);
                     prevLength += hunkLength;
 
-                    EnterTheoreticalProteformFamily(decoys, hunk, p, p.Accession +
-                        "_DECOY_" + decoyNumber, max_ptms, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
+                    EnterTheoreticalProteformFamily(decoys, hunk, p, p.Accession + "_DECOY_" + decoyNumber, isMetCleaved);
                 });
                 decoy_proteoforms.Add("DecoyDatabase_" + decoyNumber, decoys);
             });
         }
 
-        private static void EnterTheoreticalProteformFamily(List<TheoreticalProteoform> proteoforms, string seq, Protein prot, string accession, int maxPTMsPerProteoform, bool isMetCleaved,
-            Dictionary<char, double> aaIsotopeMassList, Dictionary<string, Modification> uniprotModificationTable)
+        private static void EnterTheoreticalProteformFamily(List<TheoreticalProteoform> proteoforms, string seq, Protein prot, string accession, bool isMetCleaved)
         {
             //Calculate the properties of this sequence
-            double mass = CalculateProteoformMass(seq);
-            int kCount = seq.Split('K').Length - 1;
+            double unmodofied_mass = CalculateProteoformMass(seq);
+            int lysine_count = seq.Split('K').Length - 1;
             
             //Initialize a PTM combination list with "unmodified," and then add other PTMs 
-            List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>(new OneUniquePtmGroup[] { new OneUniquePtmGroup(0, new List<string>(new string[] { "unmodified" })) });
-            bool addPtmCombos = maxPTMsPerProteoform > 0 && prot.PositionsAndPtms.Count() > 0;
-            if (addPtmCombos)
-            {
-                aupg.AddRange(new PtmCombos().combos(maxPTMsPerProteoform, uniprotModificationTable, prot.PositionsAndPtms));
-            }
+            List<OneUniquePtmGroup> unique_ptm_groups = new List<OneUniquePtmGroup>(new OneUniquePtmGroup[] { new OneUniquePtmGroup(0, new List<string>(new string[] { "unmodified" })) });
+            bool addPtmCombos = max_ptms > 0 && prot.PositionsAndPtms.Count() > 0;
+            if (addPtmCombos) unique_ptm_groups.AddRange(new PtmCombos().combos(max_ptms, uniprotModificationTable, prot.PositionsAndPtms));
 
-            foreach (OneUniquePtmGroup group in aupg)
+            Parallel.ForEach<OneUniquePtmGroup>( unique_ptm_groups, group =>
             {
                 List<string> ptm_list = group.unique_ptm_combinations;
-                //if (!isMetCleaved) { MessageBox.Show("PTM Combinations: " + String.Join("; ", ptm_list)); }
-                Double ptm_mass = group.mass;
-                Double proteoform_mass = mass + group.mass;
-                table.Rows.Add(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, mass, kCount, string.Join("; ", ptm_list), ptm_mass, proteoform_mass);
-            }
+                double ptm_mass = group.mass;
+                double proteoform_mass = unmodofied_mass + group.mass;
+                proteoforms.Add(new TheoreticalProteoform(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, unmodofied_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass));
+            });
         }
 
         private static double CalculateProteoformMass(string pForm)
@@ -396,6 +388,12 @@ namespace PS_0._00
             return giantProtein.ToString();
         }
 
+        //ET,ED,EE,DD COMPARISONS
+        public static decimal no_mans_land_lowerBound = 0.22m;
+        public static decimal no_mans_land_upperBound = 0.88m;
+        public static decimal peak_width_base = 0.0150m;
+        public static decimal min_peak_count = 10;
+
 
         //METHOD FILE
         public static string method_toString()
@@ -420,7 +418,11 @@ namespace PS_0._00
                 "TheoreticalDatabase|max_ptms\t" + max_ptms.ToString(),
                 "TheoreticalDatabase|decoy_databases\t" + decoy_databases.ToString(),
                 "TheoreticalDatabase|min_peptide_length\t" + min_peptide_length.ToString(),
-                "TheoreticalDatabase|combine_identical_sequences\t" + combine_identical_sequences.ToString()
+                "TheoreticalDatabase|combine_identical_sequences\t" + combine_identical_sequences.ToString(),
+                "Comparisons|no_mans_land_lowerBound\t" + no_mans_land_lowerBound.ToString(),
+                "Comparisons|no_mans_land_upperBound\t" + no_mans_land_upperBound.ToString(),
+                "Comparisons|peak_width_base\t" + peak_width_base.ToString(),
+                "Comparisons|min_peak_count\t" + min_peak_count.ToString()
             });
         }
 
@@ -429,66 +431,30 @@ namespace PS_0._00
             string[] fields = setting_spec.Split('\t');
             switch (fields[0])
             {
-                case "NeuCodePairs|max_intensity_ratio":
-                    max_intensity_ratio = Convert.ToDecimal(fields[1]);
-                    break;
-                case "NeuCodePairs|min_intensity_ratio":
-                    min_intensity_ratio = Convert.ToDecimal(fields[1]);
-                    break;
-                case "NeuCodePairs|max_lysine_ct":
-                    max_lysine_ct = Convert.ToDecimal(fields[1]);
-                    break;
-                case "NeuCodePairs|min_lysine_ct":
-                    min_lysine_ct = Convert.ToDecimal(fields[1]);
-                    break;
-                case "AggregatedProteoforms|mass_tolerance":
-                    mass_tolerance = Convert.ToDecimal(fields[1]);
-                    break;
-                case "AggregatedProteoforms|retention_time_tolerance":
-                    retention_time_tolerance = Convert.ToDecimal(fields[1]);
-                    break;
-                case "AggregatedProteoforms|missed_monos":
-                    missed_monos = Convert.ToDecimal(fields[1]);
-                    break;
-                case "AggregatedProteoforms|missed_lysines":
-                    missed_lysines = Convert.ToDecimal(fields[1]);
-                    break;
-                case "TheoreticalDatabase|uniprot_xml_filepath":
-                    uniprot_xml_filepath = fields[1];
-                    break;
-                case "TheoreticalDatabase|ptmlist_filepath":
-                    ptmlist_filepath = fields[1];
-                    break;
-                case "TheoreticalDatabase|methionine_oxidation":
-                    methionine_oxidation = Convert.ToBoolean(fields[1]);
-                    break;
-                case "TheoreticalDatabase|carbamidomethylation":
-                    carbamidomethylation = Convert.ToBoolean(fields[1]);
-                    break;
-                case "TheoreticalDatabase|methionine_cleavage":
-                    methionine_cleavage = Convert.ToBoolean(fields[1]);
-                    break;
-                case "TheoreticalDatabase|neucode_light_lysine":
-                    neucode_light_lysine = Convert.ToBoolean(fields[1]);
-                    break;
-                case "TheoreticalDatabase|neucode_heavy_lysine":
-                    neucode_heavy_lysine = Convert.ToBoolean(fields[1]);
-                    break;
-                case "TheoreticalDatabase|natural_lysine_isotope_abundance":
-                    natural_lysine_isotope_abundance = Convert.ToBoolean(fields[1]);
-                    break;
-                case "TheoreticalDatabase|combine_identical_sequences":
-                    combine_identical_sequences = Convert.ToBoolean(fields[1]);
-                    break;
-                case "TheoreticalDatabase|max_ptms":
-                    max_ptms = Convert.ToInt32(fields[1]);
-                    break;
-                case "TheoreticalDatabase|decoy_databases":
-                    decoy_databases = Convert.ToInt32(fields[1]);
-                    break;
-                case "TheoreticalDatabase|min_peptide_length":
-                    min_peptide_length = Convert.ToInt32(fields[1]);
-                    break;
+                case "NeuCodePairs|max_intensity_ratio": max_intensity_ratio = Convert.ToDecimal(fields[1]); break;
+                case "NeuCodePairs|min_intensity_ratio": min_intensity_ratio = Convert.ToDecimal(fields[1]); break;
+                case "NeuCodePairs|max_lysine_ct": max_lysine_ct = Convert.ToDecimal(fields[1]); break;
+                case "NeuCodePairs|min_lysine_ct": min_lysine_ct = Convert.ToDecimal(fields[1]); break;
+                case "AggregatedProteoforms|mass_tolerance": mass_tolerance = Convert.ToDecimal(fields[1]); break;
+                case "AggregatedProteoforms|retention_time_tolerance": retention_time_tolerance = Convert.ToDecimal(fields[1]); break;
+                case "AggregatedProteoforms|missed_monos": missed_monos = Convert.ToDecimal(fields[1]); break;
+                case "AggregatedProteoforms|missed_lysines": missed_lysines = Convert.ToDecimal(fields[1]); break;
+                case "TheoreticalDatabase|uniprot_xml_filepath": uniprot_xml_filepath = fields[1]; break;
+                case "TheoreticalDatabase|ptmlist_filepath": ptmlist_filepath = fields[1]; break;
+                case "TheoreticalDatabase|methionine_oxidation": methionine_oxidation = Convert.ToBoolean(fields[1]); break;
+                case "TheoreticalDatabase|carbamidomethylation": carbamidomethylation = Convert.ToBoolean(fields[1]); break;
+                case "TheoreticalDatabase|methionine_cleavage": methionine_cleavage = Convert.ToBoolean(fields[1]); break;
+                case "TheoreticalDatabase|neucode_light_lysine": neucode_light_lysine = Convert.ToBoolean(fields[1]); break;
+                case "TheoreticalDatabase|neucode_heavy_lysine": neucode_heavy_lysine = Convert.ToBoolean(fields[1]); break;
+                case "TheoreticalDatabase|natural_lysine_isotope_abundance": natural_lysine_isotope_abundance = Convert.ToBoolean(fields[1]); break;
+                case "TheoreticalDatabase|combine_identical_sequences": combine_identical_sequences = Convert.ToBoolean(fields[1]); break;
+                case "TheoreticalDatabase|max_ptms": max_ptms = Convert.ToInt32(fields[1]); break;
+                case "TheoreticalDatabase|decoy_databases": decoy_databases = Convert.ToInt32(fields[1]); break;
+                case "TheoreticalDatabase|min_peptide_length": min_peptide_length = Convert.ToInt32(fields[1]); break;
+                case "Comparisons|no_mans_land_lowerBound": no_mans_land_lowerBound = Convert.ToDecimal(fields[1]); break;
+                case "Comparisons|no_mans_land_upperBound": no_mans_land_upperBound = Convert.ToDecimal(fields[1]); break;
+                case "Comparisons|peak_width_base": peak_width_base = Convert.ToDecimal(fields[1]); break;
+                case "Comparisons|min_peak_count": min_peak_count = Convert.ToDecimal(fields[1]); break;
             }
         }
     }

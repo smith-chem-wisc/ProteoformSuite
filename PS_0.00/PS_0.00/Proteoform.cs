@@ -206,6 +206,34 @@ namespace PS_0._00
 
     public class TheoreticalProteoform : Proteoform
     {
+        public string accession { get; set; }
+        public string name { get; set; }
+        public string fragment { get; set; }
+        public int begin { get; set; }
+        public int end { get; set; }
+        public double unmodified_mass { get; set; }
+        public double ptm_mass { get; set; }
+        public double modified_mass { get; set; }
+        public int lysine_count { get; set; }
+        private string sequence { get; set; }
+        public List<OneUniquePtmGroup> ptm_list { get; set; } = new List<OneUniquePtmGroup>();
 
+        public TheoreticalProteoform(string accession, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<OneUniquePtmGroup> ptm_list, double ptm_mass, double modified_mass)
+        {
+            this.accession = accession;
+            this.name = name;
+            this.begin = begin;
+            this.end = end;
+            this.unmodified_mass = unmodified_mass;
+            this.modified_mass = modified_mass;
+            this.lysine_count = lysine_count;
+            this.ptm_list = ptm_list;
+            this.ptm_mass = ptm_mass;
+        }
+
+        public string ptm_list_string()
+        {
+            return string.Join("; ", ptm_list);
+        }
     }
 }

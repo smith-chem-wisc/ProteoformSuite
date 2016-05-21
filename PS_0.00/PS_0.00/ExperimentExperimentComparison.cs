@@ -468,17 +468,17 @@ namespace PS_0._00
             eePairsList = CreateEEPairsDataTable();
             Lollipop.experimentExperimentPairs.Clear();
 
-            int numRows = Lollipop.aggregatedProteoforms.Rows.Count;
+            int numRows = Lollipop.experimental_proteoforms.Rows.Count;
 
             for (int index1 = 0; index1 < numRows; index1++)
             {
                 for (int index2 = 0; index2 < numRows; index2++)
                 {
 
-                    double massLight = Convert.ToDouble(Lollipop.aggregatedProteoforms.Rows[index1]["Aggregated Mass"]);
-                    double massHeavy = Convert.ToDouble(Lollipop.aggregatedProteoforms.Rows[index2]["Aggregated Mass"]);
-                    int lysineLight = Convert.ToInt16(Lollipop.aggregatedProteoforms.Rows[index1]["Lysine Count"]);
-                    int lysineHeavy = Convert.ToInt16(Lollipop.aggregatedProteoforms.Rows[index2]["Lysine Count"]);
+                    double massLight = Convert.ToDouble(Lollipop.experimental_proteoforms.Rows[index1]["Aggregated Mass"]);
+                    double massHeavy = Convert.ToDouble(Lollipop.experimental_proteoforms.Rows[index2]["Aggregated Mass"]);
+                    int lysineLight = Convert.ToInt16(Lollipop.experimental_proteoforms.Rows[index1]["Lysine Count"]);
+                    int lysineHeavy = Convert.ToInt16(Lollipop.experimental_proteoforms.Rows[index2]["Lysine Count"]);
 
                     if (massHeavy > massLight)
                     {
@@ -496,7 +496,7 @@ namespace PS_0._00
                                     oOR = false;
                                 }
 
-                                eePairsList.Rows.Add(massLight, massHeavy, Lollipop.aggregatedProteoforms.Rows[index1]["Aggregated Intensity"], Lollipop.aggregatedProteoforms.Rows[index2]["Aggregated Intensity"], Lollipop.aggregatedProteoforms.Rows[index1]["Aggregated Retention Time"], Lollipop.aggregatedProteoforms.Rows[index2]["Aggregated Retention Time"], lysineLight, Lollipop.aggregatedProteoforms.Rows[index1]["Number of Observations"], Lollipop.aggregatedProteoforms.Rows[index2]["Number of Observations"], deltaMass, 0, 0, deltaMass, oOR, false, false);
+                                eePairsList.Rows.Add(massLight, massHeavy, Lollipop.experimental_proteoforms.Rows[index1]["Aggregated Intensity"], Lollipop.experimental_proteoforms.Rows[index2]["Aggregated Intensity"], Lollipop.experimental_proteoforms.Rows[index1]["Aggregated Retention Time"], Lollipop.experimental_proteoforms.Rows[index2]["Aggregated Retention Time"], lysineLight, Lollipop.experimental_proteoforms.Rows[index1]["Number of Observations"], Lollipop.experimental_proteoforms.Rows[index2]["Number of Observations"], deltaMass, 0, 0, deltaMass, oOR, false, false);
 
                             }
                         }

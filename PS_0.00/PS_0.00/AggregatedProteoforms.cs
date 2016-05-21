@@ -20,7 +20,7 @@ namespace PS_0._00
         public void AggregatedProteoforms_Load(object sender, EventArgs e)
         {
             InitializeSettings();
-            if (Lollipop.aggregatedProteoforms.Count == 0)
+            if (Lollipop.experimental_proteoforms.Count == 0)
             {
                 Lollipop.AggregateNeuCodeLightProteoforms();
                 FillAggregatesTable();
@@ -30,7 +30,7 @@ namespace PS_0._00
         private void FillAggregatesTable()
         {
             BindingSource bs = new BindingSource();
-            bs.DataSource = Lollipop.aggregatedProteoforms;
+            bs.DataSource = Lollipop.experimental_proteoforms;
             dgv_AggregatedProteoforms.DataSource = bs;
             dgv_AggregatedProteoforms.ReadOnly = true;
             //dgv_AggregatedProteoforms.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.####";

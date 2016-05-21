@@ -66,7 +66,7 @@ namespace PS_0._00
                 DataTable eD = GetNewED_DataTable(tableName);
                 Lollipop.experimentDecoyPairs.Tables.Add(eD);
 
-                foreach (DataRow agRow in Lollipop.aggregatedProteoforms.Rows)
+                foreach (DataRow agRow in Lollipop.experimental_proteoforms.Rows)
                 {
                     double lowMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ED_Lower_Bound.Value);
                     double highMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ED_Upper_Bound.Value);

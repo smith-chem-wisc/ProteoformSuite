@@ -121,7 +121,7 @@ namespace PS_0._00
             etPairsList = CreateETPairsDataTable();
             Lollipop.experimentTheoreticalPairs.Clear();
 
-            foreach (DataRow agRow in Lollipop.aggregatedProteoforms.Rows)
+            foreach (DataRow agRow in Lollipop.experimental_proteoforms.Rows)
             {
                 double lowMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ET_Lower_Bound.Value);
                 double highMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ET_Upper_Bound.Value);
@@ -146,7 +146,6 @@ namespace PS_0._00
                     }
 
                     etPairsList.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], agRow["Number of Observations"], deltaMass, 0, 0, deltaMass, oOR, false, false);
-
                 }
             }
             etPairsList.AcceptChanges();
@@ -504,45 +503,45 @@ namespace PS_0._00
 
         private void yMaxET_ValueChanged(object sender, EventArgs e) // scaling for y-axis of displayed ET Histogram of all ET pairs
         {
-            if (!formLoadEvent)
-                ct_ET_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxET.Value.ToString());
+            if (!formLoadEvent) ct_ET_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxET.Value.ToString());
         }
 
         private void yMinET_ValueChanged(object sender, EventArgs e) // scaling for y-axis of displayed ET Histogram of all ET pairs
         {
-            if (!formLoadEvent)
-                ct_ET_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinET.Value.ToString());
+            if (!formLoadEvent) ct_ET_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinET.Value.ToString());
         }
 
         private void xMinET_ValueChanged(object sender, EventArgs e) // scaling for x-axis of displayed ET Histogram of all ET pairs
         {
-            if (!formLoadEvent)
-                ct_ET_Histogram.ChartAreas[0].AxisX.Minimum = double.Parse(xMinET.Value.ToString());            
+            if (!formLoadEvent) ct_ET_Histogram.ChartAreas[0].AxisX.Minimum = double.Parse(xMinET.Value.ToString());            
         }
 
         private void xMaxET_ValueChanged(object sender, EventArgs e) // scaling for x-axis of displayed ET Histogram of all ET pairs
         {
-            if (!formLoadEvent)
-                ct_ET_Histogram.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxET.Value.ToString());            
+            if (!formLoadEvent) ct_ET_Histogram.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxET.Value.ToString());            
         }
 
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e) // lower bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
         {
+            Lollipop.no_mans_land_lowerBound = nUD_NoManLower.Value;
             if (!formLoadEvent) RunTheGamut();
         }
 
         private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)// upper bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
         {
+            Lollipop.no_mans_land_upperBound = nUD_NoManUpper.Value;
             if (!formLoadEvent) RunTheGamut();
         }
 
         private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e) // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
         {
+            Lollipop.peak_width_base = nUD_PeakWidthBase.Value;
             if (!formLoadEvent) RunTheGamut();
         }
 
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e) // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
         {
+            Lollipop.min_peak_count = nUD_PeakCountMinThreshold.Value;
             if (!formLoadEvent)
             {
                 MarkETPairsForProteoformFamilies();
@@ -624,54 +623,24 @@ namespace PS_0._00
 
             nUD_NoManLower.Minimum = 00m;
             nUD_NoManLower.Maximum = 0.49m;
-            nUD_NoManLower.Value = 0.22m; // lower bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
+            nUD_NoManLower.Value = Lollipop.no_mans_land_lowerBound; // lower bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
 
             nUD_NoManUpper.Minimum = 0.50m;
             nUD_NoManUpper.Maximum = 1.00m;
-            nUD_NoManUpper.Value = 0.88m; // upper bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
+            nUD_NoManUpper.Value = Lollipop.no_mans_land_upperBound; // upper bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
 
             nUD_PeakWidthBase.Minimum = 0.001m;
             nUD_PeakWidthBase.Maximum = 0.5000m;
-            nUD_PeakWidthBase.Value = 0.0150m; // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
+            nUD_PeakWidthBase.Value = Lollipop.peak_width_base; // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
 
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
-            nUD_PeakCountMinThreshold.Value = 10; // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
+            nUD_PeakCountMinThreshold.Value = Lollipop.min_peak_count; // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
         }
 
         private void ET_Update_Click(object sender, EventArgs e)
         {
             RunTheGamut();
-        }
-
-        public override string ToString()
-        {
-            return String.Join(System.Environment.NewLine, new string[] {
-                "ExperimentTheoreticalComparison|nUD_NoManLower.Value\t" + nUD_NoManLower.Value.ToString(),
-                "ExperimentTheoreticalComparison|nUD_NoManUpper.Value\t" + nUD_NoManUpper.Value.ToString(),
-                "ExperimentTheoreticalComparison|nUD_PeakWidthBase.Value\t" + nUD_PeakWidthBase.Value.ToString(),
-                "ExperimentTheoreticalComparison|nUD_PeakCountMinThreshold.Value\t" + nUD_PeakCountMinThreshold.Value.ToString()
-            });
-        }
-
-        public void loadSetting(string setting_specs)
-        {
-            string[] fields = setting_specs.Split('\t');
-            switch (fields[0].Split('|')[1])
-            {
-                case "nUD_NoManLower.Value":
-                    nUD_NoManLower.Value = Convert.ToDecimal(fields[1]);
-                    break;
-                case "nUD_NoManUpper.Value":
-                    nUD_NoManUpper.Value = Convert.ToDecimal(fields[1]);
-                    break;
-                case "nUD_PeakWidthBase.Value":
-                    nUD_PeakWidthBase.Value = Convert.ToDecimal(fields[1]);
-                    break;
-                case "nUD_PeakCountMinThreshold.Value":
-                    nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(fields[1]);
-                    break;
-            }
         }
     }
 }
