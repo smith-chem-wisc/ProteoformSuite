@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.IO;
+using System.Threading.Tasks;
 
 
 namespace PS_0._00
@@ -169,11 +170,10 @@ namespace PS_0._00
                     else Lollipop.load_setting(setting_spec);
                 }
                 MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
-                Lollipop.GetDeconResults();
-                Lollipop.GetRawComponents();
-                Lollipop.FillRawNeuCodePairsDataTable();
-                Lollipop.AggregateNeuCodeLightProteoforms();
-                Lollipop.make_databases();
+                Parallel.Invoke(
+                    () => Lollipop.get_experimental_proteoforms(),
+                    () => Lollipop.get_theoretical_proteoforms()
+                );
                 experimentalTheoreticalComparison.run_comparison();
                 experimentDecoyComparison.run_comparison();
                 experimentExperimentComparison.run_comparison();

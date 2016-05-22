@@ -25,7 +25,7 @@ namespace PS_0._00
         {
             if (Lollipop.rawNeuCodePairs.Count == 0)
             {
-                Lollipop.FillRawNeuCodePairsDataTable();
+                Lollipop.pair_neucode_components();
                 FillNeuCodePairsDGV(); //Filling DGV part of the working logic, now, since it seems to take a while
             }
             GraphLysineCount();

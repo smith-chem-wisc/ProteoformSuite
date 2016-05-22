@@ -84,8 +84,9 @@ namespace PS_0._00
             return uniqueSequences;
         }
 
-        public static ProteinSequenceGroups[] consolidateProteins(IEnumerable<Protein> proteins, List<string> sequences) // this creates the proteinsequencegorup[] which adds the accesion list field and changes the accesion name.
+        public static ProteinSequenceGroups[] consolidateProteins(IEnumerable<Protein> proteins) // this creates the proteinsequencegorup[] which adds the accesion list field and changes the accesion name.
         {
+            List<string> sequences = ProteinSequenceGroups.uniqueProteinSequences(proteins);
             ProteinSequenceGroups[] psgs = new ProteinSequenceGroups[sequences.Count];
             int counter = 0;
             Parallel.ForEach<string>(sequences, sequence =>

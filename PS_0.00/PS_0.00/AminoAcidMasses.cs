@@ -10,8 +10,9 @@ namespace PS_0._00
     {
         public Dictionary<char, double> AA_Masses { get; set; }
 
-        public AminoAcidMasses(bool mOx, bool cBn, string kI)
+        public AminoAcidMasses(bool mOx, bool cBn)
         {
+            string kI = WhichLysineIsotopeComposition();
             var aaMasses = new Dictionary<char, double>();
             aaMasses.Add('A', 71.037114);
             aaMasses.Add('R', 156.101111);
@@ -60,6 +61,14 @@ namespace PS_0._00
             aaMasses.Add('V', 99.068414);
 
             this.AA_Masses = aaMasses;
+        }
+
+        private static string WhichLysineIsotopeComposition()
+        {
+            if (Lollipop.natural_lysine_isotope_abundance) return "n";
+            else if (Lollipop.neucode_light_lysine) return "l";
+            else if (Lollipop.neucode_heavy_lysine) return "h";
+            else return "";
         }
     }
 }

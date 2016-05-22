@@ -144,7 +144,7 @@ namespace PS_0._00
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)
         {
-            Lollipop.make_databases();
+            Lollipop.get_theoretical_proteoforms();
 
             BindingList<string> bindinglist = new BindingList<string>() { "Target" };
             BindingSource bindingSource = new BindingSource();
@@ -257,11 +257,6 @@ namespace PS_0._00
         private void nUD_MinPeptideLength_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.min_peptide_length = Convert.ToInt32(nUD_MinPeptideLength.Value);
-        }
-
-        private void groupBox1_Enter(object sender, EventArgs e)
-        {
-            //don't know how to delete this
         }
     }
 }

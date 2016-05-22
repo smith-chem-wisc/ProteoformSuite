@@ -29,7 +29,7 @@ namespace PS_0._00
             if (Lollipop.rawExperimentalComponents.Count == 0)
             {
                 Lollipop.GetDeconResults();
-                Lollipop.GetRawComponents();
+                Lollipop.process_raw_components();
             }
             FillRawExpComponentsTable();
         }

@@ -22,7 +22,7 @@ namespace PS_0._00
             InitializeSettings();
             if (Lollipop.experimental_proteoforms.Count == 0)
             {
-                Lollipop.AggregateNeuCodeLightProteoforms();
+                Lollipop.aggregate_neucode_light_proteoforms();
                 FillAggregatesTable();
             }
         }
@@ -84,25 +84,25 @@ namespace PS_0._00
         private void nUP_mass_tolerance_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.mass_tolerance = nUP_mass_tolerance.Value;
-            Lollipop.AggregateNeuCodeLightProteoforms();
+            Lollipop.aggregate_neucode_light_proteoforms();
         }
 
         private void nUD_RetTimeToleranace_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.retention_time_tolerance = nUD_RetTimeToleranace.Value;
-            Lollipop.AggregateNeuCodeLightProteoforms();
+            Lollipop.aggregate_neucode_light_proteoforms();
         }
 
         private void nUD_Missed_Monos_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.missed_monos = nUD_Missed_Monos.Value;
-            Lollipop.AggregateNeuCodeLightProteoforms();
+            Lollipop.aggregate_neucode_light_proteoforms();
         }
 
         private void nUD_Missed_Ks_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.missed_lysines = nUD_Missed_Ks.Value;
-            Lollipop.AggregateNeuCodeLightProteoforms();
+            Lollipop.aggregate_neucode_light_proteoforms();
         }
 
         private void dgv_AcceptNeuCdLtProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)

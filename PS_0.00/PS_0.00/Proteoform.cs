@@ -176,59 +176,132 @@ namespace PS_0._00
 
     public class Proteoform
     {
+        public string accession { get; set; }
+        public double modified_mass { get; set; }
+        public int lysine_count { get; set; }
+        public List<ExperimentalProteoform> related_experimental_pfs { get; set; } = new List<ExperimentalProteoform>();
+        public List<TheoreticalProteoform> related_theoretical_pfs { get; set; } = new List<TheoreticalProteoform>();
+        public List<TheoreticalProteoform> related_decoy_pfs { get; set; } = new List<TheoreticalProteoform>();
 
+        public Proteoform(string accession, double modified_mass, int lysine_count)
+        {
+            this.accession = accession;
+            this.modified_mass = modified_mass;
+            this.lysine_count = lysine_count;
+        }
+
+        public Proteoform(string accession)
+        {
+            this.accession = accession;
+        }
     }
 
     public class ExperimentalProteoform : Proteoform
     {
+        private NeuCodePair root;
         public List<NeuCodePair> proteoforms;
         public double agg_mass { get; set; } = 0;
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
-        public int lysine_count { get; set; }
         public int observation_count
         {
             get { return proteoforms.Count; }
         }
 
-        public ExperimentalProteoform(List<NeuCodePair> pf_to_aggregate)
+        public ExperimentalProteoform(string accession, NeuCodePair root) : base(accession)
         {
-            proteoforms = pf_to_aggregate;
-            NeuCodePair root = pf_to_aggregate[0];
-            this.lysine_count = root.lysine_count;
-            this.agg_intensity = pf_to_aggregate.Select(p => p.light_intensity).Sum();
-            this.agg_rt = pf_to_aggregate.Select(p => p.light_apexRt * p.light_intensity / this.agg_intensity).Sum();
-            this.agg_mass = pf_to_aggregate.Select(p => 
-                (p.light_corrected_mass + Math.Round((root.light_corrected_mass - p.light_corrected_mass), 0) * 1.0015) //mass + mass shift
+            this.root = root;
+            proteoforms = new List<NeuCodePair>() { root };
+        }
+
+        public void calculate_properties()
+        {
+            this.agg_intensity = proteoforms.Select(p => p.light_intensity).Sum();
+            this.agg_rt = proteoforms.Select(p => p.light_apexRt * p.light_intensity / this.agg_intensity).Sum();
+            this.agg_mass = proteoforms.Select(p =>
+                (p.light_corrected_mass + Math.Round((this.root.light_corrected_mass - p.light_corrected_mass), 0) * 1.0015) //mass + mass shift
                 * p.light_intensity / this.agg_intensity).Sum();
+            this.lysine_count = this.root.lysine_count;
+            this.modified_mass = this.agg_mass;
+        }
+
+        public bool add(NeuCodePair new_pair)
+        {
+            proteoforms.Add(new_pair);
+            if (new_pair.light_intensity > root.light_intensity) this.root = new_pair;
+            return true;
+        }
+
+        public bool includes(NeuCodePair candidate)
+        {
+            return tolerable_rt(candidate) && tolerable_lysCt(candidate) && tolerable_mass(candidate);
+        }
+
+        private bool tolerable_rt(NeuCodePair candidate)
+        {
+            return candidate.light_apexRt >= this.root.light_apexRt - Convert.ToDouble(Lollipop.retention_time_tolerance) &&
+                candidate.light_apexRt <= this.root.light_apexRt + Convert.ToDouble(Lollipop.retention_time_tolerance);
+        }
+
+        private bool tolerable_lysCt(NeuCodePair candidate)
+        {
+            int max_missed_lysines = Convert.ToInt32(Lollipop.missed_lysines);
+            List<int> acceptable_lysineCts = Enumerable.Range(this.root.lysine_count - max_missed_lysines, this.root.lysine_count + max_missed_lysines).ToList();
+            return acceptable_lysineCts.Contains(candidate.lysine_count);
+        }
+
+        private bool tolerable_mass(NeuCodePair candidate)
+        {
+            int max_missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
+            List<int> missed_monoisotopics = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics).ToList();
+            foreach (int m in missed_monoisotopics)
+            {
+                double shift = m * 1.0015;
+                double mass_tolerance = (this.root.light_corrected_mass + shift) / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance);
+                double low = this.root.light_corrected_mass + shift - mass_tolerance;
+                double high = this.root.light_corrected_mass + shift + mass_tolerance;
+                bool tolerable_mass = candidate.light_corrected_mass >= low && candidate.light_corrected_mass <= high;
+                if (tolerable_mass) return true; //Return a true result immediately; acts as an OR between these conditions
+            }
+            return false;
         }
     }
 
     public class TheoreticalProteoform : Proteoform
     {
-        public string accession { get; set; }
         public string name { get; set; }
         public string fragment { get; set; }
         public int begin { get; set; }
         public int end { get; set; }
         public double unmodified_mass { get; set; }
         public double ptm_mass { get; set; }
-        public double modified_mass { get; set; }
-        public int lysine_count { get; set; }
         private string sequence { get; set; }
-        public List<OneUniquePtmGroup> ptm_list { get; set; } = new List<OneUniquePtmGroup>();
+        public bool is_target { get; set; } = true;
+        public bool is_decoy { get; } = false;
+        public List<string> ptm_list { get; set; } = new List<string>();
 
-        public TheoreticalProteoform(string accession, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<OneUniquePtmGroup> ptm_list, double ptm_mass, double modified_mass)
+        public TheoreticalProteoform(string accession, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<string> ptm_list, double ptm_mass, double modified_mass) : base(accession, modified_mass, lysine_count)
         {
             this.accession = accession;
             this.name = name;
             this.begin = begin;
             this.end = end;
             this.unmodified_mass = unmodified_mass;
-            this.modified_mass = modified_mass;
-            this.lysine_count = lysine_count;
             this.ptm_list = ptm_list;
             this.ptm_mass = ptm_mass;
+        }
+    
+        public static double CalculateProteoformMass(string pForm, Dictionary<char, double> aaIsotopeMassList)
+        {
+            double proteoformMass = 18.010565; // start with water
+            char[] aminoAcids = pForm.ToCharArray();
+            List<double> aaMasses = new List<double>();
+            Parallel.For(0, pForm.Length, i =>
+            {
+                if (aaIsotopeMassList.ContainsKey(aminoAcids[i]))
+                    aaMasses.Add(aaIsotopeMassList[aminoAcids[i]]);
+            });
+            return proteoformMass + aaMasses.Sum();
         }
 
         public string ptm_list_string()
