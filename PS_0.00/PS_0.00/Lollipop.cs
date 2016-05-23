@@ -11,12 +11,9 @@ namespace PS_0._00
 {
     public class Lollipop
     {
-        public static ProteoformCommunity proteoformCommunity = new ProteoformCommunity();
-        public static DataTable experimentTheoreticalPairs = new DataTable();
-        public static DataTable etPeakList = new DataTable();
+        public static ProteoformCommunity proteoform_community = new ProteoformCommunity();
         public static DataSet experimentDecoyPairs = new DataSet();
         public static DataTable edList = new DataTable();
-        public static DataTable experimentExperimentPairs = new DataTable();
         public static DataTable eePeakList = new DataTable();
         public static DataTable EE_Parent = new DataTable();
         public static DataSet ProteoformFamiliesET = new DataSet();
@@ -205,8 +202,8 @@ namespace PS_0._00
         //public static List<ExperimentalProteoform> experimental_proteoforms = new List<ExperimentalProteoform>();
         public static void aggregate_neucode_light_proteoforms()
         {
-            if (Lollipop.proteoformCommunity.experimental_proteoforms.Count > 0)
-                Lollipop.proteoformCommunity.experimental_proteoforms.Clear();
+            if (Lollipop.proteoform_community.experimental_proteoforms.Count > 0)
+                Lollipop.proteoform_community.experimental_proteoforms.Clear();
 
             //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
             List<NeuCodePair> remaining_acceptableProteoforms = new List<NeuCodePair>(
@@ -219,7 +216,7 @@ namespace PS_0._00
                 NeuCodePair root = remaining_acceptableProteoforms[0];
                 remaining_acceptableProteoforms.Remove(root);
                 ExperimentalProteoform new_pf = new ExperimentalProteoform("E_" + count, root);
-                Lollipop.proteoformCommunity.add(new_pf);
+                Lollipop.proteoform_community.add(new_pf);
                 Parallel.ForEach<NeuCodePair>(remaining_acceptableProteoforms, p => 
                     { if (new_pf.includes(p)) new_pf.add(p); });
                 new_pf.calculate_properties();
@@ -252,7 +249,7 @@ namespace PS_0._00
         public static void get_theoretical_proteoforms()
         {
             //Clear out data from potential previous runs
-            proteoformCommunity.Clear();
+            proteoform_community.Clear();
             Lollipop.experimentTheoreticalPairs = new DataTable();
             Lollipop.experimentDecoyPairs = new DataSet();
             Lollipop.experimentExperimentPairs = new DataTable();
@@ -288,7 +285,7 @@ namespace PS_0._00
             Parallel.For(0, Lollipop.decoy_databases, decoyNumber =>
             {
                 string decoy_database_name = "DecoyDatabase_" + decoyNumber;
-                proteoformCommunity.decoy_proteoforms.Add(decoy_database_name, new List<TheoreticalProteoform>());
+                proteoform_community.decoy_proteoforms.Add(decoy_database_name, new List<TheoreticalProteoform>());
                 Protein[] shuffled_proteins = new Protein[proteins.Count()];
                 new Random().Shuffle<Protein>(shuffled_proteins); //Randomize Order of Protein Array
 
@@ -325,9 +322,9 @@ namespace PS_0._00
                 double ptm_mass = group.mass;
                 double proteoform_mass = unmodofied_mass + group.mass;
                 if (string.IsNullOrEmpty(decoy_database_name))
-                    proteoformCommunity.add(new TheoreticalProteoform(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, unmodofied_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass));
+                    proteoform_community.add(new TheoreticalProteoform(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, unmodofied_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass));
                 else
-                    proteoformCommunity.add(new TheoreticalProteoform(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, unmodofied_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass), decoy_database_name);
+                    proteoform_community.add(new TheoreticalProteoform(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, unmodofied_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass), decoy_database_name);
             });
         }
 

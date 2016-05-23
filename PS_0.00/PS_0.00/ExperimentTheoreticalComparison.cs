@@ -114,44 +114,6 @@ namespace PS_0._00
             etPeaksList.Clear();
         }
 
-        private void FindAllETPairs()
-        {
-
-            etPairsList.Clear();
-            etPairsList = CreateETPairsDataTable();
-            Lollipop.experimentTheoreticalPairs.Clear();
-
-            foreach (DataRow agRow in Lollipop.experimental_proteoforms.Rows)
-            {
-                double lowMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ET_Lower_Bound.Value);
-                double highMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ET_Upper_Bound.Value);
-
-                string expression = "[Proteoform Mass] >= " + lowMass + " and [Proteoform Mass] <= " + highMass;
-                expression = expression + "and [Lysine Count] >= " + agRow["Lysine Count"];
-
-                DataRow[] closeTheoreticals = Lollipop.theoreticalAndDecoyDatabases.Tables["Target"].Select(expression);
-
-                foreach (DataRow row in closeTheoreticals)
-                {
-                    double deltaMass = Convert.ToDouble(agRow["Aggregated Mass"]) - Convert.ToDouble(row["Proteoform Mass"]);
-                    double afterDecimal = Math.Abs(deltaMass - Math.Truncate(deltaMass));
-                    bool oOR = true;
-                    if (afterDecimal <= Convert.ToDouble(nUD_NoManLower.Value) || afterDecimal >= Convert.ToDouble(nUD_NoManUpper.Value))
-                    {
-                        oOR = false;
-                    }
-                    else
-                    {
-                        oOR = true;
-                    }
-
-                    etPairsList.Rows.Add(row["Accession"], row["Name"], row["Fragment"], row["PTM List"], row["Proteoform Mass"], agRow["Aggregated Mass"], agRow["Aggregated Intensity"], agRow["Aggregated Retention Time"], agRow["Lysine Count"], agRow["Number of Observations"], deltaMass, 0, 0, deltaMass, oOR, false, false);
-                }
-            }
-            etPairsList.AcceptChanges();
-            Lollipop.experimentTheoreticalPairs = etPairsList;
-        }
-
         private void CalculateRunningSums()
         {
             foreach (DataRow row in etPairsList.Rows)

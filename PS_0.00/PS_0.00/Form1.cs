@@ -174,9 +174,7 @@ namespace PS_0._00
                     () => Lollipop.get_experimental_proteoforms(),
                     () => Lollipop.get_theoretical_proteoforms()
                 );
-                experimentalTheoreticalComparison.run_comparison();
-                experimentDecoyComparison.run_comparison();
-                experimentExperimentComparison.run_comparison();
+                Lollipop.proteoform_community.make_relationships();
                 proteoformFamilyAssignment.ProteoformFamilyAssignment_Load(proteoformFamilyAssignment, null);
                 MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
             }

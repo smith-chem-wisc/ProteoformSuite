@@ -46,7 +46,6 @@ namespace PS_0._00
             this.Cursor = Cursors.WaitCursor;
             formLoadEvent = true;
             InitializeParameterSet();
-            FindAllEEPairs();
             CalculateRunningSums();
             eePeakList = InitializeEEPeakListTable();
             UpdateFiguresOfMerit();
@@ -220,42 +219,6 @@ namespace PS_0._00
             });
         }
 
-        //private void MarkEEPairsForProteoformFamilies()
-        //{
-        //    foreach (DataRow row in eePairsList.Rows)
-        //    {
-        //        if (Convert.ToInt32(row["Peak Center Count"].ToString()) >= nUD_PeakCountMinThreshold.Value)
-        //        {
-        //            row["Proteoform Family"] = true;
-        //        }
-        //        else
-        //        {
-        //            row["Proteoform Family"] = false;
-        //        }
-        //    }
-        //    eePairsList.AcceptChanges();
-        //    GlobalData.experimentExperimentPairs = eePairsList;
-        //    dgv_EE_Pairs.Update();
-        //}
-
-        //private void MarkEEPeaksAsAcceptable()
-        //{
-        //    foreach (DataRow row in eePeakList.Rows)
-        //    {
-        //        if (Convert.ToInt32(row["Peak Count"].ToString()) >= nUD_PeakCountMinThreshold.Value)
-        //        {
-        //            row["Acceptable"] = true;
-        //        }
-        //        else
-        //        {
-        //            row["Acceptable"] = false;
-        //        }
-        //    }
-        //    eePeakList.AcceptChanges();
-        //    GlobalData.eePeakList = eePeakList;
-        //    dgv_EE_Peak_List.Update();
-        //}
-
         private void UpdateFiguresOfMerit()
         {
             try
@@ -277,15 +240,6 @@ namespace PS_0._00
                 MessageBox.Show("catch in update figures of merit");
             }
 
-        }
-
-        private void ZeroEEPairsTableValues()
-        {
-            foreach (DataRow row in Lollipop.experimentExperimentPairs.Rows)
-            {
-                row["Acceptable Peak"] = false;
-                row["Peak Center Count"] = 0;
-            }
         }
 
         private void ClearEEPeakListTable()
@@ -459,52 +413,6 @@ namespace PS_0._00
             dt.Columns.Add("Proteoform Family", typeof(bool));
 
             return dt;
-        }
-
-
-        private void FindAllEEPairs()
-        {
-            eePairsList.Clear();
-            eePairsList = CreateEEPairsDataTable();
-            Lollipop.experimentExperimentPairs.Clear();
-
-            int numRows = Lollipop.experimental_proteoforms.Rows.Count;
-
-            for (int index1 = 0; index1 < numRows; index1++)
-            {
-                for (int index2 = 0; index2 < numRows; index2++)
-                {
-
-                    double massLight = Convert.ToDouble(Lollipop.experimental_proteoforms.Rows[index1]["Aggregated Mass"]);
-                    double massHeavy = Convert.ToDouble(Lollipop.experimental_proteoforms.Rows[index2]["Aggregated Mass"]);
-                    int lysineLight = Convert.ToInt16(Lollipop.experimental_proteoforms.Rows[index1]["Lysine Count"]);
-                    int lysineHeavy = Convert.ToInt16(Lollipop.experimental_proteoforms.Rows[index2]["Lysine Count"]);
-
-                    if (massHeavy > massLight)
-                    {
-                        if (lysineLight == lysineHeavy)
-                        {
-                            double deltaMass = massHeavy - massLight;
-
-                            if (deltaMass < Convert.ToDouble(nUD_EE_Upper_Bound.Value))
-                            {
-                                double afterDecimal = Math.Abs(deltaMass - Math.Truncate(deltaMass));
-                                bool oOR = true;
-                                if (afterDecimal <= Convert.ToDouble(nUD_NoManLower.Value) ||
-                                    afterDecimal >= Convert.ToDouble(nUD_NoManUpper.Value))
-                                {
-                                    oOR = false;
-                                }
-
-                                eePairsList.Rows.Add(massLight, massHeavy, Lollipop.experimental_proteoforms.Rows[index1]["Aggregated Intensity"], Lollipop.experimental_proteoforms.Rows[index2]["Aggregated Intensity"], Lollipop.experimental_proteoforms.Rows[index1]["Aggregated Retention Time"], Lollipop.experimental_proteoforms.Rows[index2]["Aggregated Retention Time"], lysineLight, Lollipop.experimental_proteoforms.Rows[index1]["Number of Observations"], Lollipop.experimental_proteoforms.Rows[index2]["Number of Observations"], deltaMass, 0, 0, deltaMass, oOR, false, false);
-
-                            }
-                        }
-                    }
-                }
-            }
-
-            Lollipop.experimentExperimentPairs = eePairsList;
         }
 
         private void CalculateRunningSums()

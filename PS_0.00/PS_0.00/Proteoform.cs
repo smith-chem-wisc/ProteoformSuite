@@ -179,9 +179,9 @@ namespace PS_0._00
         public string accession { get; set; }
         public double modified_mass { get; set; }
         public int lysine_count { get; set; }
-        public List<ExperimentalProteoform> related_experimental_pfs { get; set; } = new List<ExperimentalProteoform>();
-        public List<TheoreticalProteoform> related_theoretical_pfs { get; set; } = new List<TheoreticalProteoform>();
-        public List<TheoreticalProteoform> related_decoy_pfs { get; set; } = new List<TheoreticalProteoform>();
+        public List<ProteoformRelation> experimental_relationships { get; set; } = new List<ProteoformRelation>();
+        public List<ProteoformRelation> theoretical_relationships { get; set; } = new List<ProteoformRelation>();
+        public List<ProteoformRelation> decoy_relationships { get; set; } = new List<ProteoformRelation>();
 
         public Proteoform(string accession, double modified_mass, int lysine_count)
         {
@@ -193,6 +193,25 @@ namespace PS_0._00
         public Proteoform(string accession)
         {
             this.accession = accession;
+        }
+    }
+
+    public class ProteoformRelation
+    {
+        public Proteoform pf1;
+        public Proteoform pf2;
+        public double delta_mass;
+        public bool accepted { get; set; } = false;
+        public ProteoformRelation(Proteoform pf1, Proteoform pf2, double delta_mass)
+        {
+            this.pf1 = pf1;
+            this.pf2 = pf2;
+            this.delta_mass = delta_mass;
+        }
+
+        public void accept()
+        {
+            this.accepted = true;
         }
     }
 
