@@ -181,7 +181,6 @@ namespace PS_0._00
         public int lysine_count { get; set; }
         public List<ProteoformRelation> experimental_relationships { get; set; } = new List<ProteoformRelation>();
         public List<ProteoformRelation> theoretical_relationships { get; set; } = new List<ProteoformRelation>();
-        public List<ProteoformRelation> decoy_relationships { get; set; } = new List<ProteoformRelation>();
 
         public Proteoform(string accession, double modified_mass, int lysine_count)
         {
@@ -194,6 +193,16 @@ namespace PS_0._00
         {
             this.accession = accession;
         }
+
+        public void add_relationship(ProteoformRelation relation, Proteoform pf)
+        {
+            if (pf.GetType() == typeof(ExperimentalProteoform)) experimental_relationships.Add(relation);
+            else
+            {
+                TheoreticalProteoform theoretical_pf = (TheoreticalProteoform)pf;
+                if (theoretical_pf.is_target) theoretical_relationships.Add(relation);
+            }
+        }
     }
 
     public class ProteoformRelation
@@ -201,17 +210,50 @@ namespace PS_0._00
         public Proteoform pf1;
         public Proteoform pf2;
         public double delta_mass;
+        public int local_peak_count { get; set; } = 1;
+        public double local_peak_deltaM { get; set; }
+        public double local_peak_fdr { get; set; }
         public bool accepted { get; set; } = false;
         public ProteoformRelation(Proteoform pf1, Proteoform pf2, double delta_mass)
         {
             this.pf1 = pf1;
             this.pf2 = pf2;
+            pf1.add_relationship(this, pf2);
+            pf2.add_relationship(this, pf1);
             this.delta_mass = delta_mass;
+            this.local_peak_deltaM = delta_mass;
         }
 
         public void accept()
         {
             this.accepted = true;
+        }
+
+        public void set_peak(List<ProteoformRelation> nearby_relations)
+        {
+            local_peak_count = nearby_relations.Count;
+            local_peak_deltaM = nearby_relations.Select(relation => relation.delta_mass).Average();
+        }
+
+        public void calculate_fdr(List<int> nearby_decoy_counts)
+        {
+            double median_false_peak_count;
+            nearby_decoy_counts.Sort();
+            if (nearby_decoy_counts.Count % 2 == 0) //is even
+            {
+                int middle = nearby_decoy_counts.Count / 2;
+                median_false_peak_count = (double)nearby_decoy_counts[middle] + (double)nearby_decoy_counts[middle + 1];
+            }
+            else
+                median_false_peak_count = (double)nearby_decoy_counts[(nearby_decoy_counts.Count - 1) / 2];
+            this.local_peak_fdr = median_false_peak_count / (double)local_peak_count;
+            if (this.local_peak_fdr <= Lollipop.maximum_delta_mass_peak_fdr) this.accept();
+        }
+
+        public void calculate_fdr(int local_false_peak_count)
+        {
+            this.local_peak_fdr = local_false_peak_count / (double)local_peak_count;
+            if (this.local_peak_fdr <= Lollipop.maximum_delta_mass_peak_fdr) this.accept();
         }
     }
 

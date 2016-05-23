@@ -206,8 +206,7 @@ namespace PS_0._00
                 Lollipop.proteoform_community.experimental_proteoforms.Clear();
 
             //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
-            List<NeuCodePair> remaining_acceptableProteoforms = new List<NeuCodePair>(
-                Lollipop.rawNeuCodePairs.Where(p => p.accepted) //Accepted NeuCode pairs
+            List<NeuCodePair> remaining_acceptableProteoforms = Lollipop.rawNeuCodePairs.Where(p => p.accepted) //Accepted NeuCode pairs
                     .OrderByDescending(p => p.light_intensity).ToList()); //ordered list, so that the proteoform with max intensity is always chosen first
 
             int count = 1;
@@ -354,10 +353,14 @@ namespace PS_0._00
         }
 
         //ET,ED,EE,DD COMPARISONS
+        public static double max_mass_difference = 500; //TODO: implement this in ProteoformFamilies and elsewhere
         public static decimal no_mans_land_lowerBound = 0.22m;
         public static decimal no_mans_land_upperBound = 0.88m;
         public static decimal peak_width_base = 0.0150m;
         public static decimal min_peak_count = 10;
+
+        //PROTEOFORM FAMILIES
+        public static double maximum_delta_mass_peak_fdr = 25;
 
 
         //METHOD FILE
