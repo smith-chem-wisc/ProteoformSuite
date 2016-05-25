@@ -11,7 +11,7 @@ namespace PS_0._00
         public List<ExperimentalProteoform> experimental_proteoforms { get; set; } = new List<ExperimentalProteoform>();
         public List<TheoreticalProteoform> theoretical_proteoforms { get; set; } = new List<TheoreticalProteoform>();
         public Dictionary<string, List<TheoreticalProteoform>> decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>>();
-        public List<ProteoformRelation> relation_groups = new List<ProteoformRelation>();
+        public List<DeltaMassPeak> relations_within_peak = new List<DeltaMassPeak>();
 
         //INITIALIZATION of PROTEOFORMS
         //public void add(string accession, NeuCodePair candidate)
@@ -53,12 +53,13 @@ namespace PS_0._00
         }
 
         //BUILDING RELATIONSHIPS
-        private List<ProteoformRelation> relate(Proteoform[] pfs1, Proteoform[] pfs2, RelationType relation_type)
+        private List<ProteoformRelation> relate(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
         {
             List<ProteoformRelation> relations = new List<ProteoformRelation>(
                 from pf1 in pfs1
                 from pf2 in pfs2
                 where pf1.lysine_count == pf2.lysine_count
+                where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.max_mass_difference
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
             count_nearby_relations(relations);
@@ -72,18 +73,18 @@ namespace PS_0._00
 
         public List<ProteoformRelation> relate_ee()
         {
-            return relate(this.experimental_proteoforms.ToArray(), this.experimental_proteoforms.ToArray(), RelationType.ee);
+            return relate(this.experimental_proteoforms.ToArray(), this.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
         }
         public List<ProteoformRelation> relate_et()
         {
-            return relate(this.experimental_proteoforms.ToArray(), this.theoretical_proteoforms.ToArray(), RelationType.et);
+            return relate(this.experimental_proteoforms.ToArray(), this.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
         }
         public Dictionary<string, List<ProteoformRelation>> relate_ed()
         {
             Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
             Parallel.ForEach<KeyValuePair<string, List<TheoreticalProteoform>>>(this.decoy_proteoforms, decoys =>
             {
-                ed_relations[decoys.Key] = relate(experimental_proteoforms.ToArray(), decoys.Value.ToArray(), RelationType.ed);
+                ed_relations[decoys.Key] = relate(experimental_proteoforms.ToArray(), decoys.Value.ToArray(), ProteoformComparison.ed);
             });
             return ed_relations;
         }
@@ -95,29 +96,32 @@ namespace PS_0._00
                 from pf1 in pfs1
                 from pf2 in pfs2
                 where pf1.lysine_count != pf2.lysine_count
-                select new ProteoformRelation(pf1, pf2, RelationType.ef, pf1.modified_mass - pf2.modified_mass)
+                where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.max_mass_difference
+                select new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass)
                 );
             count_nearby_relations(ef_relations);
             return ef_relations;
         }
 
         //GROUP and ANALYZE RELATIONS
-        public void accept_exclusive_relation_groups(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
+        public void accept_deltaMass_peak(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
         {
             List<ProteoformRelation> grouped_relations = new List<ProteoformRelation>();
-            List<ProteoformRelation> relation_groups = new List<ProteoformRelation>();
-            foreach (ProteoformRelation relation in relations.Except(grouped_relations).OrderByDescending(r => r.group_count))
+            List<ProteoformRelation> exclusive_relation_group = relations.Except(grouped_relations).OrderByDescending(r => r.group_count)
+                .Where(r => Math.Abs(r.group_adjusted_deltaM) >= Lollipop.no_mans_land_upperBound && Math.Abs(r.group_adjusted_deltaM) <= Lollipop.no_mans_land_lowerBound).ToList();
+            List<DeltaMassPeak> relations_within_peak = new List<DeltaMassPeak>();
+            foreach (ProteoformRelation relation in exclusive_relation_group)
             {
                 relation.accept_exclusive_group(grouped_relations);
-                if (relation.relation_type == RelationType.ee || relation.relation_type == RelationType.et) relation_groups.Add(relation);
-                grouped_relations.AddRange(relation.relations_group);
+                if (relation.relation_type == ProteoformComparison.ee || relation.relation_type == ProteoformComparison.et) relations_within_peak.Add(new DeltaMassPeak(relation));
+                grouped_relations.AddRange(relation.mass_difference_group);
             }
-            Parallel.ForEach<ProteoformRelation>(relation_groups, relation_group => relation_group.calculate_fdr(decoy_relations));
-            this.relation_groups.AddRange(relation_groups);
+            Parallel.ForEach<DeltaMassPeak>(relations_within_peak, relation_group => relation_group.calculate_fdr(decoy_relations));
+            this.relations_within_peak.AddRange(relations_within_peak);
         }
-        public void accept_exclusive_relation_groups(List<ProteoformRelation> relations, List<ProteoformRelation> false_relations)
+        public void accept_deltaMass_peak(List<ProteoformRelation> relations, List<ProteoformRelation> false_relations)
         {
-            accept_exclusive_relation_groups(relations, new Dictionary<string, List<ProteoformRelation>> { { "", false_relations } });
+            accept_deltaMass_peak(relations, new Dictionary<string, List<ProteoformRelation>> { { "", false_relations } });
         }
 
         //CONSTRUCTING FAMILIES

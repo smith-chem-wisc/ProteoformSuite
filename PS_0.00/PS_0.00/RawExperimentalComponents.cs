@@ -59,7 +59,7 @@ namespace PS_0._00
 
                 //Round doubles before displaying
                 BindingSource bs = new BindingSource();
-                bs.DataSource = c.get_chargestates();
+                bs.DataSource = c.charge_states;
                 dgv_RawExpComp_IndChgSts.DataSource = bs;
                 dgv_RawExpComp_IndChgSts.ReadOnly = true;
                 //dgv_RawExpComp_IndChgSts.Columns["MZ Centroid"].DefaultCellStyle.Format = "0.####";

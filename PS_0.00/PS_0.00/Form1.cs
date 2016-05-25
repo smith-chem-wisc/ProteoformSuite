@@ -174,8 +174,8 @@ namespace PS_0._00
                     () => Lollipop.get_experimental_proteoforms(),
                     () => Lollipop.get_theoretical_proteoforms()
                 );
-                Lollipop.proteoform_community.make_relationships();
-                Lollipop.proteoform_community.accept_relation_groups();
+                Lollipop.make_et_relationships();
+                Lollipop.make_ee_relationships();
                 Lollipop.proteoform_community.construct_families();
                 MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
             }

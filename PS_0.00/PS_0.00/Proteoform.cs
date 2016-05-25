@@ -7,95 +7,6 @@ using System.Threading.Tasks;
 
 namespace PS_0._00
 {
-    public class Component
-    {
-        public string file_origin { get; set; }
-        public int id { get; set; }
-        public double monoisotopic_mass { get; set; }
-        public double intensity_sum { get; set; }
-        public double delta_mass { get; set; }
-        public double relative_abundance { get; set; }
-        public double fract_abundance { get; set; }
-        public string scan_range { get; set; }
-        public string rt_range { get; set; }
-        public double rt_apex { get; set; }
-        public double weighted_monoisotopic_mass { get; set; }
-        private List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
-        public int num_charge_states
-        {
-            get { return this.charge_states.Count; }
-        }
-        private int num_detected_intervals { get; set; }
-        private int num_charge_states_fromFile { get; set; }
-
-        public Component(DataRow component_row)
-        {
-            this.id = component_row.Field<int>(0);
-            this.monoisotopic_mass = component_row.Field<double>(1);
-            this.intensity_sum = component_row.Field<double>(2);
-            this.num_charge_states_fromFile = component_row.Field<int>(3);
-            this.num_detected_intervals = component_row.Field<int>(4);
-            this.delta_mass = component_row.Field<double>(5);
-            this.relative_abundance = component_row.Field<double>(6);
-            this.fract_abundance = component_row.Field<double>(7);
-            this.scan_range = component_row.Field<string>(8);
-            this.rt_range = component_row.Field<string>(9);
-            this.rt_apex = component_row.Field<double>(10);
-            this.file_origin = component_row.Field<string>(11);
-        }
-
-        public double calculate_sum_intensity()
-        {
-            this.intensity_sum = this.charge_states.Select(charge_state => charge_state.intensity).Sum();
-            return this.intensity_sum;
-        }
-
-        public double calculate_sum_intensity(List<int> charges_to_sum)
-        {
-            return this.charge_states.Where(cs => charges_to_sum.Contains(cs.charge_count)).Select(charge_state => charge_state.intensity).Sum();
-        }
-
-        public void calculate_weighted_monoisotopic_mass()
-        {
-            this.weighted_monoisotopic_mass = this.charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum();
-        }
-
-        public void add_charge_state(DataRow charge_row)
-        {
-            int charge_state = charge_row.Field<int>(1);
-            double intensity = charge_row.Field<double>(2);
-            double mz_centroid = charge_row.Field<double>(3);
-            double calculated_mass = charge_row.Field<double>(4);
-            charge_states.Add(new ChargeState(charge_state, intensity, mz_centroid, calculated_mass));
-        }
-
-        public bool is_neucode_pair(Component c, float minIntensity, float maxIntensity, float minLysineCount, float maxLysineCount)
-        {
-            return false;
-        }
-
-        public List<ChargeState> get_chargestates()
-        {
-            return charge_states;
-        }
-    }
-
-    public class ChargeState
-    {
-        public int charge_count { get; set; }
-        public double intensity { get; set; }
-        public double mz_centroid { get; set; }
-        public double calculated_mass { get; set; }
-
-        public ChargeState(int chage_count, double intensity, double mz_centroid, double calculated_mass)
-        {
-            this.charge_count = charge_count;
-            this.intensity = intensity;
-            this.mz_centroid = mz_centroid;
-            this.calculated_mass = calculated_mass;
-        }
-    }
-
     public class NeuCodePair 
     {
         Component neuCodeLight;
@@ -137,8 +48,8 @@ namespace PS_0._00
         {
             double mass_difference = higher_rawNeuCode.weighted_monoisotopic_mass - lower_rawNeuCode.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
             int diff_integer = Convert.ToInt32(Math.Round(mass_difference / 1.0015 - 0.5, 0, MidpointRounding.AwayFromZero));
-            List<int> lower_charges = lower_rawNeuCode.get_chargestates().Select(charge_state => charge_state.charge_count).ToList<int>();
-            List<int> higher_charges = higher_rawNeuCode.get_chargestates().Select(charge_states => charge_states.charge_count).ToList<int>();
+            List<int> lower_charges = lower_rawNeuCode.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
+            List<int> higher_charges = higher_rawNeuCode.charge_states.Select(charge_states => charge_states.charge_count).ToList<int>();
             this.overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
             double lower_intensity = lower_rawNeuCode.calculate_sum_intensity(this.overlapping_charge_states);
             double higher_intensity = lower_rawNeuCode.calculate_sum_intensity(this.overlapping_charge_states);
@@ -181,8 +92,8 @@ namespace PS_0._00
         public int lysine_count { get; set; }
         public bool is_target { get; set; } = true;
         public bool is_decoy { get; } = false;
-        public List<ProteoformRelation> experimental_relationships { get; set; } = new List<ProteoformRelation>();
-        public List<ProteoformRelation> theoretical_relationships { get; set; } = new List<ProteoformRelation>();
+        public List<MassDifference> experimental_relationships { get; set; } = new List<MassDifference>();
+        public List<MassDifference> theoretical_relationships { get; set; } = new List<MassDifference>();
 
         public Proteoform(string accession, double modified_mass, int lysine_count, bool is_target)
         {
@@ -201,7 +112,7 @@ namespace PS_0._00
             this.accession = accession;
         }
 
-        public void add_relationship(ProteoformRelation relation, Proteoform pf)
+        public void add_relationship(MassDifference relation, Proteoform pf)
         {
             if (pf.GetType() == typeof(ExperimentalProteoform)) experimental_relationships.Add(relation);
             else
@@ -210,9 +121,8 @@ namespace PS_0._00
                 if (theoretical_pf.is_target) theoretical_relationships.Add(relation);
             }
         }
+    }
     
-    
-
     //Note ExperimentalProteoform is a bit of a misnomer. These are not experimental observations, but rather aggregated experimental
     //observations. Each NeuCodePair is an ExperimentalProteoform, but this class is used after accounting for missed lysines and monoisotopics.
     //However, I think this makes the programming a bit cleaner, since "Experimental-Theoretical" pairs should naturally be between 

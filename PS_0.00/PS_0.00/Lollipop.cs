@@ -351,10 +351,10 @@ namespace PS_0._00
 
         //ET,ED,EE,EF COMPARISONS
         public static double max_mass_difference = 500; //TODO: implement this in ProteoformFamilies and elsewhere
-        public static decimal no_mans_land_lowerBound = 0.22m;
-        public static decimal no_mans_land_upperBound = 0.88m;
-        public static decimal peak_width_base = 0.0150m;
-        public static decimal min_peak_count = 10;
+        public static double no_mans_land_lowerBound = 0.22;
+        public static double no_mans_land_upperBound = 0.88;
+        public static double peak_width_base = 0.0150;
+        public static double min_peak_count = 10;
         public static int relation_group_centering_iterations = 2;
         public static List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
         public static List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
@@ -367,7 +367,7 @@ namespace PS_0._00
                 () => et_relations = Lollipop.proteoform_community.relate_et(),
                 () => ed_relations = Lollipop.proteoform_community.relate_ed()
             );
-            Lollipop.proteoform_community.accept_exclusive_relation_groups(Lollipop.et_relations, Lollipop.ed_relations);
+            Lollipop.proteoform_community.accept_deltaMass_peak(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
         public static void make_ee_relationships()
@@ -376,7 +376,7 @@ namespace PS_0._00
                 () => ee_relations = proteoform_community.relate_ee(),
                 () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
             );
-            Lollipop.proteoform_community.accept_exclusive_relation_groups(Lollipop.ee_relations, Lollipop.ef_relations);
+            Lollipop.proteoform_community.accept_deltaMass_peak(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
         //PROTEOFORM FAMILIES
@@ -408,6 +408,8 @@ namespace PS_0._00
                 "TheoreticalDatabase|combine_identical_sequences\t" + combine_identical_sequences.ToString(),
                 "Comparisons|no_mans_land_lowerBound\t" + no_mans_land_lowerBound.ToString(),
                 "Comparisons|no_mans_land_upperBound\t" + no_mans_land_upperBound.ToString(),
+                "Comparisons|max_mass_difference\t" + max_mass_difference.ToString(),
+                "Comparisons|relation_group_centering_iterations\t" + relation_group_centering_iterations.ToString(),
                 "Comparisons|peak_width_base\t" + peak_width_base.ToString(),
                 "Comparisons|min_peak_count\t" + min_peak_count.ToString()
             });

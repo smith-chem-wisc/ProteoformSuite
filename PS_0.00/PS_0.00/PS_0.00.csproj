@@ -66,6 +66,8 @@
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </Compile>
     <Compile Include="AminoAcidMasses.cs" />
+    <Compile Include="Component.cs" />
+    <Compile Include="DeltaMassPeak.cs" />
     <Compile Include="ExcelReader.cs" />
     <Compile Include="Proteoform.cs" />
     <Compile Include="ExperimentExperimentComparison.cs">
