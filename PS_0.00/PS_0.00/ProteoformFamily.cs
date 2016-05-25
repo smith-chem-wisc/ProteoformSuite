@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 namespace PS_0._00
 {
-
-
     public class ProteoformFamily
     {
         public int lysine_count;
