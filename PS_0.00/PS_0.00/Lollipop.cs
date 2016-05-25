@@ -195,8 +195,8 @@ namespace PS_0._00
         //}
 
         //AGGREGATED PROTEOFORMS
-        public static decimal mass_tolerance = 3;
-        public static decimal retention_time_tolerance = 3;
+        public static decimal mass_tolerance = 3; //ppm
+        public static decimal retention_time_tolerance = 3; //min
         public static decimal missed_monos = 3;
         public static decimal missed_lysines = 1;
         //public static List<ExperimentalProteoform> experimental_proteoforms = new List<ExperimentalProteoform>();
@@ -207,14 +207,14 @@ namespace PS_0._00
 
             //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
             List<NeuCodePair> remaining_acceptableProteoforms = Lollipop.rawNeuCodePairs.Where(p => p.accepted) //Accepted NeuCode pairs
-                    .OrderByDescending(p => p.light_intensity).ToList()); //ordered list, so that the proteoform with max intensity is always chosen first
+                    .OrderByDescending(p => p.light_intensity).ToList(); //ordered list, so that the proteoform with max intensity is always chosen first
 
             int count = 1;
             while (remaining_acceptableProteoforms.Count > 0)
             {
                 NeuCodePair root = remaining_acceptableProteoforms[0];
                 remaining_acceptableProteoforms.Remove(root);
-                ExperimentalProteoform new_pf = new ExperimentalProteoform("E_" + count, root);
+                ExperimentalProteoform new_pf = new ExperimentalProteoform("E_" + count, root, true);
                 Lollipop.proteoform_community.add(new_pf);
                 Parallel.ForEach<NeuCodePair>(remaining_acceptableProteoforms, p => 
                     { if (new_pf.includes(p)) new_pf.add(p); });
@@ -249,9 +249,6 @@ namespace PS_0._00
         {
             //Clear out data from potential previous runs
             proteoform_community.Clear();
-            Lollipop.experimentTheoreticalPairs = new DataTable();
-            Lollipop.experimentDecoyPairs = new DataSet();
-            Lollipop.experimentExperimentPairs = new DataTable();
             Lollipop.ProteoformFamiliesEE = new DataSet();
             Lollipop.ProteoformFamiliesET = new DataSet();
             ProteomeDatabaseReader.oldPtmlistFilePath = ptmlist_filepath;
@@ -321,9 +318,9 @@ namespace PS_0._00
                 double ptm_mass = group.mass;
                 double proteoform_mass = unmodofied_mass + group.mass;
                 if (string.IsNullOrEmpty(decoy_database_name))
-                    proteoform_community.add(new TheoreticalProteoform(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, unmodofied_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass));
+                    proteoform_community.add(new TheoreticalProteoform(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, unmodofied_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
                 else
-                    proteoform_community.add(new TheoreticalProteoform(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, unmodofied_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass), decoy_database_name);
+                    proteoform_community.add(new TheoreticalProteoform(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, unmodofied_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
             });
         }
 
@@ -352,16 +349,38 @@ namespace PS_0._00
             return giantProtein.ToString();
         }
 
-        //ET,ED,EE,DD COMPARISONS
+        //ET,ED,EE,EF COMPARISONS
         public static double max_mass_difference = 500; //TODO: implement this in ProteoformFamilies and elsewhere
         public static decimal no_mans_land_lowerBound = 0.22m;
         public static decimal no_mans_land_upperBound = 0.88m;
         public static decimal peak_width_base = 0.0150m;
         public static decimal min_peak_count = 10;
+        public static int relation_group_centering_iterations = 2;
+        public static List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
+        public static List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
+        public static Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
+        public static List<ProteoformRelation> ef_relations = new List<ProteoformRelation>();
+
+        public static void make_et_relationships()
+        {
+            Parallel.Invoke(
+                () => et_relations = Lollipop.proteoform_community.relate_et(),
+                () => ed_relations = Lollipop.proteoform_community.relate_ed()
+            );
+            Lollipop.proteoform_community.accept_exclusive_relation_groups(Lollipop.et_relations, Lollipop.ed_relations);
+        }
+
+        public static void make_ee_relationships()
+        {
+            Parallel.Invoke(
+                () => ee_relations = proteoform_community.relate_ee(),
+                () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
+            );
+            Lollipop.proteoform_community.accept_exclusive_relation_groups(Lollipop.ee_relations, Lollipop.ef_relations);
+        }
 
         //PROTEOFORM FAMILIES
         public static double maximum_delta_mass_peak_fdr = 25;
-
 
         //METHOD FILE
         public static string method_toString()

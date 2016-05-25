@@ -127,8 +127,8 @@
             this.experimentExperimentComparisonToolStripMenuItem,
             this.proteoformFamilyAssignmentToolStripMenuItem});
             this.processingPhaseToolStripMenuItem.Name = "processingPhaseToolStripMenuItem";
-            this.processingPhaseToolStripMenuItem.Size = new System.Drawing.Size(71, 22);
-            this.processingPhaseToolStripMenuItem.Text = "View Data";
+            this.processingPhaseToolStripMenuItem.Size = new System.Drawing.Size(56, 22);
+            this.processingPhaseToolStripMenuItem.Text = "Results";
             // 
             // loadDeconvolutionResultsToolStripMenuItem
             // 
