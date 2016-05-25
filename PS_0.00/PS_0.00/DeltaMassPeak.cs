@@ -16,6 +16,7 @@ namespace PS_0._00
         public DeltaMassPeak(ProteoformRelation base_relation) : base(base_relation)
         {
             this.base_relation = base_relation;
+            Parallel.ForEach<ProteoformRelation>(base_relation.mass_difference_group, relation => relation.peak = this);
         }
 
         public void calculate_fdr(Dictionary<string, List<ProteoformRelation>> decoy_relations)

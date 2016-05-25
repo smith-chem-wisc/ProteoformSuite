@@ -11,7 +11,9 @@ namespace PS_0._00
         public List<ExperimentalProteoform> experimental_proteoforms { get; set; } = new List<ExperimentalProteoform>();
         public List<TheoreticalProteoform> theoretical_proteoforms { get; set; } = new List<TheoreticalProteoform>();
         public Dictionary<string, List<TheoreticalProteoform>> decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>>();
-        public List<DeltaMassPeak> relations_within_peak = new List<DeltaMassPeak>();
+        public List<ProteoformRelation> relations_in_peaks = new List<ProteoformRelation>();
+        public List<DeltaMassPeak> delta_mass_peaks = new List<DeltaMassPeak>();
+        public List<ProteoformFamily> families = new List<ProteoformFamily>();
 
         //INITIALIZATION of PROTEOFORMS
         //public void add(string accession, NeuCodePair candidate)
@@ -29,12 +31,10 @@ namespace PS_0._00
         {
             this.experimental_proteoforms.Add(pf);
         }
-
         public void add(TheoreticalProteoform pf)
         {
             this.theoretical_proteoforms.Add(pf);
         }
-
         public void add(TheoreticalProteoform pf, string decoy_database)
         {
             this.decoy_proteoforms[decoy_database].Add(pf);
@@ -42,14 +42,7 @@ namespace PS_0._00
 
         public void calculate_aggregated_experimental_masses()
         {
-            Parallel.ForEach<ExperimentalProteoform>(this.experimental_proteoforms, pf => { pf.calculate_properties(); });
-        }
-
-        public void Clear()
-        {
-            this.experimental_proteoforms.Clear();
-            this.theoretical_proteoforms.Clear();
-            this.decoy_proteoforms.Clear();
+            Parallel.ForEach<ExperimentalProteoform>(this.experimental_proteoforms, pf => pf.calculate_properties());
         }
 
         //BUILDING RELATIONSHIPS
@@ -59,7 +52,7 @@ namespace PS_0._00
                 from pf1 in pfs1
                 from pf2 in pfs2
                 where pf1.lysine_count == pf2.lysine_count
-                where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.max_mass_difference
+                //where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
             count_nearby_relations(relations);
@@ -96,7 +89,7 @@ namespace PS_0._00
                 from pf1 in pfs1
                 from pf2 in pfs2
                 where pf1.lysine_count != pf2.lysine_count
-                where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.max_mass_difference
+                //where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass)
                 );
             count_nearby_relations(ef_relations);
@@ -107,32 +100,62 @@ namespace PS_0._00
         public void accept_deltaMass_peak(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
         {
             List<ProteoformRelation> grouped_relations = new List<ProteoformRelation>();
-            List<ProteoformRelation> exclusive_relation_group = relations.Except(grouped_relations).OrderByDescending(r => r.group_count)
-                .Where(r => Math.Abs(r.group_adjusted_deltaM) >= Lollipop.no_mans_land_upperBound && Math.Abs(r.group_adjusted_deltaM) <= Lollipop.no_mans_land_lowerBound).ToList();
+            List<ProteoformRelation> remaining_relations = exclusive_relation_group(relations, grouped_relations);
             List<DeltaMassPeak> relations_within_peak = new List<DeltaMassPeak>();
-            foreach (ProteoformRelation relation in exclusive_relation_group)
+            while (remaining_relations.Count > 0)
             {
-                relation.accept_exclusive_group(grouped_relations);
-                if (relation.relation_type == ProteoformComparison.ee || relation.relation_type == ProteoformComparison.et) relations_within_peak.Add(new DeltaMassPeak(relation));
-                grouped_relations.AddRange(relation.mass_difference_group);
+                ProteoformRelation top_relation = remaining_relations[0];
+                List<ProteoformRelation> mass_differences_in_peak = top_relation.accept_exclusive(grouped_relations);
+                if (top_relation.relation_type == ProteoformComparison.ee || top_relation.relation_type == ProteoformComparison.et)
+                {
+                    relations_within_peak.Add(new DeltaMassPeak(top_relation));
+                    relations_in_peaks.AddRange(mass_differences_in_peak);
+                }
+                grouped_relations.AddRange(mass_differences_in_peak);
+                remaining_relations = exclusive_relation_group(relations, grouped_relations);
             }
             Parallel.ForEach<DeltaMassPeak>(relations_within_peak, relation_group => relation_group.calculate_fdr(decoy_relations));
-            this.relations_within_peak.AddRange(relations_within_peak);
+            this.delta_mass_peaks.AddRange(relations_within_peak);
         }
         public void accept_deltaMass_peak(List<ProteoformRelation> relations, List<ProteoformRelation> false_relations)
         {
             accept_deltaMass_peak(relations, new Dictionary<string, List<ProteoformRelation>> { { "", false_relations } });
         }
 
+        private List<ProteoformRelation> exclusive_relation_group(List<ProteoformRelation> relations, List<ProteoformRelation> grouped_relations)
+        {
+            return relations.Except(grouped_relations).OrderByDescending(r => r.group_count)
+                .Where(r => Math.Abs(r.group_adjusted_deltaM) >= Lollipop.no_mans_land_upperBound &&
+                            Math.Abs(r.group_adjusted_deltaM) <= Lollipop.no_mans_land_lowerBound).ToList();
+        }
+
         //CONSTRUCTING FAMILIES
         public void construct_families()
         {
-
+            List<Proteoform> inducted = new List<Proteoform>();
+            List<Proteoform> remaining = new List<Proteoform>(this.experimental_proteoforms);
+            while (remaining.Count > 0)
+            {
+                ProteoformFamily new_family = new ProteoformFamily(construct_family(new List<Proteoform> { remaining[0] }));
+                this.families.Add(new_family);
+                inducted.AddRange(new_family.proteoforms);
+                remaining = remaining.Except(inducted).ToList();
+            }
         }
 
-        private void determine_adjacencies()
+        public List<Proteoform> construct_family(List<Proteoform> seed)
         {
+            List<Proteoform> expanded_seed = seed.SelectMany(p => p.get_connected_proteoforms()).ToList();
+            if (expanded_seed.Except(seed).Count() == 0) return seed;
+            else return construct_family(expanded_seed);
+        }
 
+        //MISC
+        public void Clear()
+        {
+            this.experimental_proteoforms.Clear();
+            this.theoretical_proteoforms.Clear();
+            this.decoy_proteoforms.Clear();
         }
     }
 }

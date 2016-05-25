@@ -26,25 +26,23 @@ namespace PS_0._00
     //referring to an individual value. 
     public class MassDifference
     {
-        public Proteoform pf1;
-        public Proteoform pf2;
+        public Proteoform[] connected_proteoforms = new Proteoform[2];
         public ProteoformComparison relation_type;
         public double delta_mass { get; set; }
         public bool accepted { get; set; } = false;
 
         public MassDifference(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass)
         {
-            this.pf1 = pf1;
-            this.pf2 = pf2;
+            this.connected_proteoforms[0] = pf1;
+            this.connected_proteoforms[1] = pf2;
             this.relation_type = relation_type;
-            pf1.add_relationship(this, pf2);
-            pf2.add_relationship(this, pf1);
             this.delta_mass = delta_mass;
         }
     }
 
     public class ProteoformRelation : MassDifference
     {
+        public DeltaMassPeak peak { get; set; }
         private List<ProteoformRelation> _mass_difference_group;
         public List<ProteoformRelation> mass_difference_group
         {
@@ -63,20 +61,21 @@ namespace PS_0._00
         {
             this.group_adjusted_deltaM = delta_mass;
         }
-        public ProteoformRelation(ProteoformRelation relation) : base(relation.pf1, relation.pf2, relation.relation_type, relation.delta_mass)
+        public ProteoformRelation(ProteoformRelation relation) : base(relation.connected_proteoforms[0], relation.connected_proteoforms[1], relation.relation_type, relation.delta_mass)
         {
-            this.accepted = relation.accepted;
+            this.peak = relation.peak;
             this.mass_difference_group = relation.mass_difference_group;
         }
 
-        //Assert this relation as the representative of the group
-        //Excludes proteoforms that were already grouped, 
-        //and then re-centers and calculates the FDR from the decoy relations within the re-centered peak range
-        public void accept_exclusive_group(List<ProteoformRelation> already_grouped)
+        public List<ProteoformRelation> accept_exclusive(List<ProteoformRelation> already_grouped)
         {
             this.mass_difference_group = this.mass_difference_group.Except(already_grouped).ToList();
-            Parallel.ForEach(this.mass_difference_group, relation => relation.accepted = false);
-            this.accepted = true;
+            Parallel.ForEach<ProteoformRelation>(mass_difference_group, mass_difference =>
+            {
+                mass_difference.connected_proteoforms[0].relationships.Add(mass_difference);
+                mass_difference.connected_proteoforms[1].relationships.Add(mass_difference);
+            });
+            return this.mass_difference_group;
         }
 
         public void set_nearby_group(List<ProteoformRelation> all_relations)

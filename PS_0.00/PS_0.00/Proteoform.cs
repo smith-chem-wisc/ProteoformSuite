@@ -92,8 +92,7 @@ namespace PS_0._00
         public int lysine_count { get; set; }
         public bool is_target { get; set; } = true;
         public bool is_decoy { get; } = false;
-        public List<MassDifference> experimental_relationships { get; set; } = new List<MassDifference>();
-        public List<MassDifference> theoretical_relationships { get; set; } = new List<MassDifference>();
+        public List<MassDifference> relationships { get; set; } = new List<MassDifference>();
 
         public Proteoform(string accession, double modified_mass, int lysine_count, bool is_target)
         {
@@ -106,20 +105,14 @@ namespace PS_0._00
                 this.is_decoy = true;
             }
         }
-
         public Proteoform(string accession, bool is_target)
         {
             this.accession = accession;
         }
 
-        public void add_relationship(MassDifference relation, Proteoform pf)
+        public List<Proteoform> get_connected_proteoforms()
         {
-            if (pf.GetType() == typeof(ExperimentalProteoform)) experimental_relationships.Add(relation);
-            else
-            {
-                TheoreticalProteoform theoretical_pf = (TheoreticalProteoform)pf;
-                if (theoretical_pf.is_target) theoretical_relationships.Add(relation);
-            }
+            return relationships.SelectMany(r => r.connected_proteoforms).ToList();
         }
     }
     
