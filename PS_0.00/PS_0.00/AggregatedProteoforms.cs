@@ -20,11 +20,7 @@ namespace PS_0._00
         public void AggregatedProteoforms_Load(object sender, EventArgs e)
         {
             InitializeSettings();
-            if (Lollipop.proteoform_community.experimental_proteoforms.Count == 0)
-            {
-                Lollipop.aggregate_neucode_light_proteoforms();
-                FillAggregatesTable();
-            }
+            if (Lollipop.proteoform_community.experimental_proteoforms.Count == 0) Lollipop.aggregate_neucode_light_proteoforms();
         }
 
         private void InitializeSettings()
@@ -46,7 +42,7 @@ namespace PS_0._00
             nUD_Missed_Ks.Value = Lollipop.missed_lysines;
         }
 
-        private void FillAggregatesTable()
+        public void FillAggregatesTable()
         {
             BindingSource bs = new BindingSource();
             bs.DataSource = Lollipop.proteoform_community.experimental_proteoforms;
@@ -65,7 +61,7 @@ namespace PS_0._00
             {
                 ExperimentalProteoform selected_pf = (ExperimentalProteoform)this.dgv_AggregatedProteoforms.Rows[e.RowIndex].DataBoundItem;
                 BindingSource bs = new BindingSource();
-                bs.DataSource = selected_pf.proteoforms;
+                bs.DataSource = selected_pf.aggregated_neucode_pairs;
                 dgv_AcceptNeuCdLtProteoforms.DataSource = bs;
                 dgv_AcceptNeuCdLtProteoforms.ReadOnly = true;
                 //dgv_AcceptNeuCdLtProteoforms.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.####";

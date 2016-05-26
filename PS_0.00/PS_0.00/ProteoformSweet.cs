@@ -153,9 +153,20 @@ namespace PS_0._00
                 );
                 Lollipop.make_et_relationships();
                 Lollipop.make_ee_relationships();
-                Lollipop.proteoform_community.construct_families();
+                //Lollipop.proteoform_community.construct_families();
+                prepare_tables();
                 MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
             }
+        }
+
+        private void prepare_tables()
+        {
+            Parallel.Invoke(
+                () => rawExperimentalComponents.FillRawExpComponentsTable(),
+                () => neuCodePairs.FillNeuCodePairsDGV(),
+                () => aggregatedProteoforms.FillAggregatesTable(),
+                () => theoreticalDatabase.FillDataBaseTable("Target")
+            );
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)

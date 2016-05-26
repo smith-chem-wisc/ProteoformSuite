@@ -237,9 +237,6 @@ namespace PS_0._00
                                     {
                                         protein_list.Add(new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence,
                                             SegmentPtms(positionsAndPtms, feature_begin, feature_end)));
-                                        //MessageBox.Show("added " + new Protein(accession, name, feature_type, feature_begin, feature_end, subsequence,
-                                        //    SegmentPtms(positionsAndPtms, feature_begin, feature_end)).ToString());
-
                                     }
                                 }
                                 break;
@@ -283,7 +280,7 @@ namespace PS_0._00
                 return -1;
         }
 
-        static Dictionary<int, List<string>> SegmentPtms(Dictionary<int, List<string>> allPosPTMs, int begin, int end)
+        private static Dictionary<int, List<string>> SegmentPtms(Dictionary<int, List<string>> allPosPTMs, int begin, int end)
         {
             Dictionary<int, List<string>> segPosPTMs = new Dictionary<int, List<string>>();
             Parallel.ForEach<int>(allPosPTMs.Keys, position =>

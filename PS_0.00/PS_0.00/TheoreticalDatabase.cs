@@ -69,7 +69,7 @@ namespace PS_0._00
             this.openPtmlistDialog.Title = "UniProt PTM List";
         }
 
-        private void FillDataBaseTable(string table)
+        public void FillDataBaseTable(string table)
         {
             BindingSource bs = new BindingSource();
             if (table == "Target") bs.DataSource = Lollipop.proteoform_community.theoretical_proteoforms;

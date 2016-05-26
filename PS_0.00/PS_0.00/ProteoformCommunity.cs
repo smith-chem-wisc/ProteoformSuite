@@ -131,25 +131,25 @@ namespace PS_0._00
         }
 
         //CONSTRUCTING FAMILIES
-        public void construct_families()
-        {
-            List<Proteoform> inducted = new List<Proteoform>();
-            List<Proteoform> remaining = new List<Proteoform>(this.experimental_proteoforms);
-            while (remaining.Count > 0)
-            {
-                ProteoformFamily new_family = new ProteoformFamily(construct_family(new List<Proteoform> { remaining[0] }));
-                this.families.Add(new_family);
-                inducted.AddRange(new_family.proteoforms);
-                remaining = remaining.Except(inducted).ToList();
-            }
-        }
+        //public void construct_families()
+        //{
+        //    List<Proteoform> inducted = new List<Proteoform>();
+        //    List<Proteoform> remaining = new List<Proteoform>(this.experimental_proteoforms);
+        //    while (remaining.Count > 0)
+        //    {
+        //        ProteoformFamily new_family = new ProteoformFamily(construct_family(new List<Proteoform> { remaining[0] }));
+        //        this.families.Add(new_family);
+        //        inducted.AddRange(new_family.proteoforms);
+        //        remaining = remaining.Except(inducted).ToList();
+        //    }
+        //}
 
-        public List<Proteoform> construct_family(List<Proteoform> seed)
-        {
-            List<Proteoform> expanded_seed = seed.SelectMany(p => p.get_connected_proteoforms()).ToList();
-            if (expanded_seed.Except(seed).Count() == 0) return seed;
-            else return construct_family(expanded_seed);
-        }
+        //public List<Proteoform> construct_family(List<Proteoform> seed)
+        //{
+        //    List<Proteoform> expanded_seed = seed.SelectMany(p => p.get_connected_proteoforms()).ToList();
+        //    if (expanded_seed.Except(seed).Count() == 0) return seed;
+        //    else return construct_family(expanded_seed);
+        //}
 
         //MISC
         public void Clear()

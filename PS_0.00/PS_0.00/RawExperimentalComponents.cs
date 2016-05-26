@@ -25,12 +25,10 @@ namespace PS_0._00
 
         public void RawExperimentalComponents_Load(object sender, EventArgs e)
         {
-
             if (Lollipop.raw_experimental_components.Count == 0) Lollipop.process_raw_components();
-            FillRawExpComponentsTable();
         }
 
-        private void FillRawExpComponentsTable()
+        public void FillRawExpComponentsTable()
         {
             BindingSource bs = new BindingSource();
             bs.DataSource = Lollipop.raw_experimental_components;

@@ -27,10 +27,10 @@ namespace PS_0._00
             GraphIntensityRatio();
         }
 
-        private void FillNeuCodePairsDGV()
+        public void FillNeuCodePairsDGV()
         {
             BindingSource bs = new BindingSource();
-            bs.DataSource = Lollipop.rawNeuCodePairs;
+            bs.DataSource = Lollipop.raw_neucode_pairs;
             dgv_RawExpNeuCodePairs.DataSource = bs;
             dgv_RawExpNeuCodePairs.ReadOnly = true;
             //dgv_RawExpNeuCodePairs.Columns["Acceptable"].ReadOnly = false;
@@ -55,7 +55,7 @@ namespace PS_0._00
             for (double i = 0; i <= 20; i = i + 0.05)
             {
                 string expression = "[Intensity Ratio] >= " + (i - .025) + "AND [Intensity Ratio] < " + (i + .025);
-                List<NeuCodePair> proteoforms_by_intensityRatio = Lollipop.rawNeuCodePairs.Where(p => p.intensity_ratio >= i - 0.025 && p.intensity_ratio < i + 0.025).ToList();
+                List<NeuCodePair> proteoforms_by_intensityRatio = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio >= i - 0.025 && p.intensity_ratio < i + 0.025).ToList();
                 if (proteoforms_by_intensityRatio.Count > ymax)
                     ymax = proteoforms_by_intensityRatio.Count;
                 intensityRatioHistogram.Rows.Add(i, proteoforms_by_intensityRatio.Count);
@@ -90,7 +90,7 @@ namespace PS_0._00
 
             for (int i = 0; i <= 28; i++)
             {
-                List<NeuCodePair> pf_by_lysCt = Lollipop.rawNeuCodePairs.Where(p => p.lysine_count == i).ToList();
+                List<NeuCodePair> pf_by_lysCt = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count == i).ToList();
                 if (pf_by_lysCt.Count > ymax)
                     ymax = pf_by_lysCt.Count;
                 lysCtHistogram.Rows.Add(i, pf_by_lysCt.Count);
@@ -202,7 +202,7 @@ namespace PS_0._00
         private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.min_lysine_ct = KMinAcceptable.Value;
-            List<NeuCodePair> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.lysine_count < double.Parse(KMinAcceptable.Value.ToString())).ToList();
+            List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count < double.Parse(KMinAcceptable.Value.ToString())).ToList();
             Parallel.ForEach(selected_pf, p => { p.accepted = false; });
             dgv_RawExpNeuCodePairs.Refresh();
         }
@@ -210,7 +210,7 @@ namespace PS_0._00
         private void KMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.max_lysine_ct = KMaxAcceptable.Value;
-            List<NeuCodePair> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.lysine_count > double.Parse(KMaxAcceptable.Value.ToString())).ToList();
+            List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count > double.Parse(KMaxAcceptable.Value.ToString())).ToList();
             Parallel.ForEach(selected_pf, p => { p.accepted = false; });
             dgv_RawExpNeuCodePairs.Refresh();
         }
@@ -218,7 +218,7 @@ namespace PS_0._00
         private void IRatMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.min_intensity_ratio = IRatMinAcceptable.Value;
-            List<NeuCodePair> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.intensity_ratio < double.Parse(IRatMinAcceptable.Value.ToString())).ToList();
+            List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio < double.Parse(IRatMinAcceptable.Value.ToString())).ToList();
             Parallel.ForEach(selected_pf, p => { p.accepted = false; });
             dgv_RawExpNeuCodePairs.Refresh();
         }
@@ -226,7 +226,7 @@ namespace PS_0._00
         private void IRatMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.max_intensity_ratio = IRatMaxAcceptable.Value;
-            List<NeuCodePair> selected_pf = Lollipop.rawNeuCodePairs.Where(p => p.intensity_ratio > double.Parse(IRatMaxAcceptable.Value.ToString())).ToList();
+            List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio > double.Parse(IRatMaxAcceptable.Value.ToString())).ToList();
             Parallel.ForEach(selected_pf, p => { p.accepted = false; });
             dgv_RawExpNeuCodePairs.Refresh();
         }

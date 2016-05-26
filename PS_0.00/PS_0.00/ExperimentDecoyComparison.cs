@@ -25,10 +25,6 @@ namespace PS_0._00
 
         public void ExperimentDecoyComparison_Load(object sender, EventArgs e)
         {
-           if (Lollipop.experimentDecoyPairs.Tables.Count == 0)
-           {
-                run_comparison();
-            }
             GraphEDHistogram();
             FillEDListTable();
             FillEDGridView("DecoyDatabase_0");

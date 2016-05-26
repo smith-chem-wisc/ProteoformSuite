@@ -42,7 +42,7 @@ namespace PS_0._00
         
         public double intensity_ratio { get; set; }
         public int lysine_count { get; set; }
-        public bool accepted { get; set; }
+        public bool accepted { get; set; } = false;
 
         public NeuCodePair(Component lower_rawNeuCode, Component higher_rawNeuCode)
         {
@@ -54,12 +54,7 @@ namespace PS_0._00
             double lower_intensity = lower_rawNeuCode.calculate_sum_intensity(this.overlapping_charge_states);
             double higher_intensity = lower_rawNeuCode.calculate_sum_intensity(this.overlapping_charge_states);
 
-            if (lower_intensity <= 0 || higher_intensity <= 0)
-            {
-                this.accepted = false;
-                return;
-            }
-            else
+            if (lower_intensity > 0 || higher_intensity > 0)
             {
                 this.accepted = true;
                 if (lower_intensity > higher_intensity) //lower mass is neucode light
@@ -123,26 +118,26 @@ namespace PS_0._00
     public class ExperimentalProteoform : Proteoform 
     {
         private NeuCodePair root;
-        public List<NeuCodePair> proteoforms;
+        public List<NeuCodePair> aggregated_neucode_pairs;
         public double agg_mass { get; set; } = 0;
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
         public int observation_count
         {
-            get { return proteoforms.Count; }
+            get { return aggregated_neucode_pairs.Count; }
         }
 
         public ExperimentalProteoform(string accession, NeuCodePair root, bool is_target) : base(accession, is_target)
         {
             this.root = root;
-            proteoforms = new List<NeuCodePair>() { root };
+            aggregated_neucode_pairs = new List<NeuCodePair>() { root };
         }
 
         public void calculate_properties()
         {
-            this.agg_intensity = proteoforms.Select(p => p.light_intensity).Sum();
-            this.agg_rt = proteoforms.Select(p => p.light_apexRt * p.light_intensity / this.agg_intensity).Sum();
-            this.agg_mass = proteoforms.Select(p =>
+            this.agg_intensity = aggregated_neucode_pairs.Select(p => p.light_intensity).Sum();
+            this.agg_rt = aggregated_neucode_pairs.Select(p => p.light_apexRt * p.light_intensity / this.agg_intensity).Sum();
+            this.agg_mass = aggregated_neucode_pairs.Select(p =>
                 (p.light_corrected_mass + Math.Round((this.root.light_corrected_mass - p.light_corrected_mass), 0) * 1.0015) //mass + mass shift
                 * p.light_intensity / this.agg_intensity).Sum();
             this.lysine_count = this.root.lysine_count;
@@ -151,7 +146,7 @@ namespace PS_0._00
 
         public bool add(NeuCodePair new_pair)
         {
-            proteoforms.Add(new_pair);
+            aggregated_neucode_pairs.Add(new_pair);
             if (new_pair.light_intensity > root.light_intensity) this.root = new_pair;
             return true;
         }

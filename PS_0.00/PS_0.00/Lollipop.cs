@@ -49,31 +49,25 @@ namespace PS_0._00
         }
 
         //NEUCODE PAIRS
-        public static List<NeuCodePair> rawNeuCodePairs = new List<NeuCodePair>();
+        public static List<NeuCodePair> raw_neucode_pairs = new List<NeuCodePair>();
         public static decimal max_intensity_ratio = 6;
         public static decimal min_intensity_ratio = 1.4m;
         public static decimal max_lysine_ct = 26.2m;
         public static decimal min_lysine_ct = 1.5m;
         public static void find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange)
         {
-            List<Component> components = components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
-
             //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
-            int lower_mass_index = 0;
-            Parallel.For(lower_mass_index, components.Count - 2, lower_index =>
+            List<Component> components = components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
+            Parallel.ForEach<Component>(components, lower_component =>
             {
-                Component lower_component = components[lower_index];
-                int higher_mass_index = lower_mass_index + 1;
-                //double apexRT = lower_component.rt_apex;
-
-                Parallel.For(higher_mass_index, components.Count - 1, higher_index =>
+                IEnumerable<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.weighted_monoisotopic_mass >= lower_component.weighted_monoisotopic_mass);
+                Parallel.ForEach<Component>(higher_mass_components, higher_component =>
                 {
-                    Component higher_component = components[higher_index];
                     double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
                     if (mass_difference < 6)
                     {
                         NeuCodePair pair = new NeuCodePair(lower_component, higher_component);
-                        if (pair.accepted) Lollipop.rawNeuCodePairs.Add(pair);
+                        if (pair.accepted) Lollipop.raw_neucode_pairs.Add(pair);
                     }
                 });
             });
@@ -149,7 +143,7 @@ namespace PS_0._00
                 Lollipop.proteoform_community.experimental_proteoforms.Clear();
 
             //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
-            List<NeuCodePair> remaining_acceptableProteoforms = Lollipop.rawNeuCodePairs.Where(p => p.accepted) //Accepted NeuCode pairs
+            List<NeuCodePair> remaining_acceptableProteoforms = Lollipop.raw_neucode_pairs.Where(p => p.accepted) //Accepted NeuCode pairs
                     .OrderByDescending(p => p.light_intensity).ToList(); //ordered list, so that the proteoform with max intensity is always chosen first
 
             int count = 1;
@@ -162,7 +156,7 @@ namespace PS_0._00
                 Parallel.ForEach<NeuCodePair>(remaining_acceptableProteoforms, p => 
                     { if (new_pf.includes(p)) new_pf.add(p); });
                 new_pf.calculate_properties();
-                remaining_acceptableProteoforms = remaining_acceptableProteoforms.Except(new_pf.proteoforms).ToList();
+                remaining_acceptableProteoforms = remaining_acceptableProteoforms.Except(new_pf.aggregated_neucode_pairs).ToList();
                 count += 1;
             }
         }
