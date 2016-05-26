@@ -123,15 +123,11 @@ namespace PS_0._00
             {
                 string new_ptmlist_filepath = Path.Combine(Path.GetDirectoryName(oldPtmlistFilePath), "ptmlist.new.txt");
                 using (WebClient client = new WebClient())
-                {
                     client.DownloadFile("http://www.uniprot.org/docs/ptmlist.txt", new_ptmlist_filepath);
-                }
                 string old_ptmlist = File.ReadAllText(oldPtmlistFilePath);
                 string new_ptmlist = File.ReadAllText(new_ptmlist_filepath);
                 if (string.Equals(old_ptmlist, new_ptmlist))
-                {
                     File.Delete(new_ptmlist_filepath);
-                }
                 else
                 {
                     File.Delete(oldPtmlistFilePath);

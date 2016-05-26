@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace PS_0._00
 {
-    public partial class Form1 : Form
+    public partial class ProteoformSweet : Form
     {
         //  Initialize Forms START
         LoadDeconvolutionResults loadDeconvolutionResults = new LoadDeconvolutionResults();
@@ -24,14 +24,14 @@ namespace PS_0._00
         ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
         ExperimentDecoyComparison experimentDecoyComparison = new ExperimentDecoyComparison();
         ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
-        ProteoformFamilyAssignment proteoformFamilyAssignment = new ProteoformFamilyAssignment();
+        //ProteoformFamilyAssignment proteoformFamilyAssignment = new ProteoformFamilyAssignment();
         List<Form> forms;
         //  Initialize Forms END
 
         OpenFileDialog methodFileOpen = new OpenFileDialog();
         SaveFileDialog methodFileSave = new SaveFileDialog();
 
-        public Form1()
+        public ProteoformSweet()
         {
             InitializeComponent();
             InitializeForms();
@@ -44,7 +44,7 @@ namespace PS_0._00
             forms = new List<Form>(new Form[] {
                 loadDeconvolutionResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
                 theoreticalDatabase, experimentalTheoreticalComparison, experimentDecoyComparison, experimentExperimentComparison,
-                proteoformFamilyAssignment
+                //proteoformFamilyAssignment
             });
         }
 
@@ -87,14 +87,8 @@ namespace PS_0._00
         
         private void experimentDecoyComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Lollipop.decoy_databases > 0)
-            {
-                showForm(experimentDecoyComparison);
-            }
-            else
-            {
-                MessageBox.Show("Create at least 1 decoy database in Theoretical Proteoform Database in order to view Experiment - Decoy Comparison.");
-            }
+            if (Lollipop.decoy_databases > 0) showForm(experimentDecoyComparison);
+            else MessageBox.Show("Create at least 1 decoy database in Theoretical Proteoform Database in order to view Experiment - Decoy Comparison.");
         }
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
@@ -104,10 +98,8 @@ namespace PS_0._00
 
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            showForm(proteoformFamilyAssignment);
+            //showForm(proteoformFamilyAssignment);
         }
-
-
 
         private void generateMethodToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -136,11 +128,9 @@ namespace PS_0._00
             DialogResult dr = this.methodFileSave.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
-                String filename = methodFileSave.FileName;
-                using (StreamWriter file = new StreamWriter(filename))
-                {
+                string method_filename = methodFileSave.FileName;
+                using (StreamWriter file = new StreamWriter(method_filename))
                     file.WriteLine(Lollipop.method_toString());
-                }
             }
         }
 
@@ -149,25 +139,12 @@ namespace PS_0._00
             DialogResult dr = this.methodFileOpen.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
-                String filename = methodFileOpen.FileName;
-                string[] lines = File.ReadAllLines(filename);
+                string method_filename = methodFileOpen.FileName;
+                string[] lines = File.ReadAllLines(method_filename);
                 foreach (string line in lines)
                 {
                     string setting_spec = line.Trim();
-                    string[] fields = line.Split('\t');
-                    if (fields[0].Split('|')[0] == "LoadDeconvolutionResults")
-                    {
-                        if (Lollipop.deconResultsFileNames.Count > 0)
-                        {
-                            var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?",
-                                "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
-                            if (response == DialogResult.Yes) { break; }
-                            if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); }
-                            if (response == DialogResult.Cancel) { return; }
-                        }
-                        loadDeconvolutionResults.loadSetting(setting_spec);
-                    }
-                    else Lollipop.load_setting(setting_spec);
+                    Lollipop.load_setting(setting_spec);
                 }
                 MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
                 Parallel.Invoke(

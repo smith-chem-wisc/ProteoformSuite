@@ -31,16 +31,16 @@ namespace PS_0._00
         public Component(DataRow component_row)
         {
             this.id = component_row.Field<int>(0);
-            this.monoisotopic_mass = component_row.Field<double>(1);
-            this.intensity_sum = component_row.Field<double>(2);
-            this.num_charge_states_fromFile = component_row.Field<int>(3);
-            this.num_detected_intervals = component_row.Field<int>(4);
-            this.delta_mass = component_row.Field<double>(5);
-            this.relative_abundance = component_row.Field<double>(6);
-            this.fract_abundance = component_row.Field<double>(7);
+            this.monoisotopic_mass = Convert.ToDouble(component_row.Field<string>(1));
+            this.intensity_sum = Convert.ToDouble(component_row.Field<string>(2));
+            this.num_charge_states_fromFile = Convert.ToInt32(component_row.Field<string>(3));
+            this.num_detected_intervals = Convert.ToInt32(component_row.Field<string>(4));
+            this.delta_mass = Convert.ToDouble(component_row.Field<string>(5));
+            this.relative_abundance = Convert.ToDouble(component_row.Field<string>(6));
+            this.fract_abundance = Convert.ToDouble(component_row.Field<string>(7));
             this.scan_range = component_row.Field<string>(8);
             this.rt_range = component_row.Field<string>(9);
-            this.rt_apex = component_row.Field<double>(10);
+            this.rt_apex = Convert.ToDouble(component_row.Field<string>(10));
             this.file_origin = component_row.Field<string>(11);
         }
 

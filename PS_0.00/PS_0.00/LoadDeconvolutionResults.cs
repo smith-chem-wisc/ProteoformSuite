@@ -28,22 +28,10 @@ namespace PS_0._00
 
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
         {            
-            if (Lollipop.repeat == true)
-            {
-                repeat = true;
-                Lollipop.repeat = false;
-                LoadDeconvolutionResults_Load(sender, e);
-                return;
-            }
             InitializeOpenFileDialog();
             lbDeconResults.Sorted = true;
             lbDeconResults.SelectionMode = SelectionMode.MultiExtended;
             lbDeconResults.DataSource = Lollipop.deconResultsFileNames;
-            if (repeat==true)
-            {
-                repeat = false;
-                Lollipop.repeat = true;
-            }
         }
 
         private void btnDeconResultsAdd_Click(object sender, EventArgs e)
@@ -51,17 +39,12 @@ namespace PS_0._00
             DialogResult dr = this.openFileDialog1.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
-
                 foreach (String file in openFileDialog1.FileNames)
                 {
                     try
                     {
                         if (!Lollipop.deconResultsFileNames.Contains(file) && FirstLineOK(file))
-                        {
                             Lollipop.deconResultsFileNames.Add(file);
-                            //MessageBox.Show("Added File: " + file +" Count: " + GlobalData.deconResultsFileNames.Count);
-                            
-                        }
                     }
                     catch (SecurityException ex)
                     {
@@ -79,7 +62,6 @@ namespace PS_0._00
                             "it may be corrupt.\n\nReported error: " + ex.Message);
                     }
                 }
-
             }
         }
 
@@ -118,26 +100,6 @@ namespace PS_0._00
         private void lbDeconResults_SelectedIndexChanged(object sender, EventArgs e)
         {
             
-        }
-
-        public override string ToString()
-        {
-            return "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("\t", Lollipop.deconResultsFileNames.ToArray<string>());
-        }
-
-        public void loadSetting(string setting_specs)
-        {
-            string[] fields = setting_specs.Split('\t');
-            switch (fields[0].Split('|')[1])
-            {
-                case "deconvolution_file_names":
-                    foreach (string filename in fields)
-                    {
-                        if (filename == "LoadDeconvolutionResults|deconvolution_file_names") { continue; }
-                        Lollipop.deconResultsFileNames.Add(filename);
-                    }
-                    break;
-            }
         }
     }
 }

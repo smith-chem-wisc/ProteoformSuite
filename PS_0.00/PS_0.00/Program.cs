@@ -16,7 +16,7 @@ namespace PS_0._00
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new ProteoformSweet());
         }
     }
 }

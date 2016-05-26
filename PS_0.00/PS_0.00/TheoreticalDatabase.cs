@@ -16,8 +16,8 @@ namespace PS_0._00
 {
     public partial class TheoreticalDatabase : Form
     {
-        OpenFileDialog openFileDialog2 = new OpenFileDialog();
-        OpenFileDialog openFileDialog3 = new OpenFileDialog();
+        OpenFileDialog openXmlDialog = new OpenFileDialog();
+        OpenFileDialog openPtmlistDialog = new OpenFileDialog();
         Protein[] proteinRawInfo = null;
 
         public TheoreticalDatabase()
@@ -27,8 +27,8 @@ namespace PS_0._00
 
         public void TheoreticalDatabase_Load(object sender, EventArgs e)
         {
-            InitializeOpenFileDialog2();
-            InitializeOpenFileDialog3();
+            InitializeOpenXmlDialog();
+            InitializeOpenPtmlistDialog();
             InitializeSettings();
         }
 
@@ -55,29 +55,26 @@ namespace PS_0._00
             ckbx_aggregateProteoforms.Checked = Lollipop.combine_identical_sequences;
         }
 
-        private void InitializeOpenFileDialog2()
+        private void InitializeOpenXmlDialog()
         {
-            // Set the file dialog to filter for graphics files.
-            this.openFileDialog2.Filter = "UniProt XML (*.xml, *.xml.gz)|*.xml;*.xml.gz";
-            // Allow the user to select multiple images.
-            this.openFileDialog2.Multiselect = false;
-            this.openFileDialog2.Title = "UniProt XML Format Database";
+            this.openXmlDialog.Filter = "UniProt XML (*.xml, *.xml.gz)|*.xml;*.xml.gz";
+            this.openXmlDialog.Multiselect = false;
+            this.openXmlDialog.Title = "UniProt XML Format Database";
         }
 
-        private void InitializeOpenFileDialog3()
+        private void InitializeOpenPtmlistDialog()
         {
-            // Set the file dialog to filter for graphics files.
-            this.openFileDialog3.Filter = "UniProt PTM List (*.txt)|*.txt";
-            // Allow the user to select multiple images.
-            this.openFileDialog3.Multiselect = false;
-            this.openFileDialog3.Title = "UniProt PTM List";
+            this.openPtmlistDialog.Filter = "UniProt PTM List (*.txt)|*.txt";
+            this.openPtmlistDialog.Multiselect = false;
+            this.openPtmlistDialog.Title = "UniProt PTM List";
         }
 
         private void FillDataBaseTable(string table)
         {
             BindingSource bs = new BindingSource();
-            if (table == "Target") bs.DataSource = Lollipop.theoretical_proteoforms;
-            else if (Lollipop.decoy_proteoforms.ContainsKey(table)) bs.DataSource = Lollipop.decoy_proteoforms[table];
+            if (table == "Target") bs.DataSource = Lollipop.proteoform_community.theoretical_proteoforms;
+            else if (Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(table))
+                bs.DataSource = Lollipop.proteoform_community.decoy_proteoforms[table];
             dgv_Database.DataSource = bs;
             dgv_Database.ReadOnly = true;
             //dgv_Database.Columns["Mass"].DefaultCellStyle.Format = "0.####";
@@ -89,10 +86,10 @@ namespace PS_0._00
 
         private void btn_GetUniProtXML_Click(object sender, EventArgs e)
         {
-            DialogResult dr = this.openFileDialog2.ShowDialog();
+            DialogResult dr = this.openXmlDialog.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
-                String uniprotXmlFile = openFileDialog2.FileName;
+                string uniprotXmlFile = openXmlDialog.FileName;
                 try
                 {
                     tb_UniProtXML_Path.Text = uniprotXmlFile;
@@ -117,10 +114,10 @@ namespace PS_0._00
 
         private void btn_UniPtPtmList_Click(object sender, EventArgs e)
         {
-            DialogResult dr = this.openFileDialog3.ShowDialog();
+            DialogResult dr = this.openPtmlistDialog.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
-                String ptmlist_filename = openFileDialog3.FileName;
+                string ptmlist_filename = openPtmlistDialog.FileName;
                 try
                 {
                     tb_UniProtPtmList_Path.Text = ptmlist_filename;
@@ -145,63 +142,17 @@ namespace PS_0._00
         private void btn_Make_Databases_Click(object sender, EventArgs e)
         {
             Lollipop.get_theoretical_proteoforms();
-
             BindingList<string> bindinglist = new BindingList<string>() { "Target" };
             BindingSource bindingSource = new BindingSource();
             bindingSource.DataSource = bindinglist;
             cmbx_DisplayWhichDB.DataSource = bindingSource;
             //Add the new proteoform databases to the bindingList, and then display
-            foreach (string decoy_tablename in Lollipop.decoy_proteoforms.Keys)
+            foreach (string decoy_tablename in Lollipop.proteoform_community.decoy_proteoforms.Keys)
             {
                 bindinglist.Add(decoy_tablename);
-                //cmbx_DisplayWhichDB.Items.Add(dt.TableName[0].ToString());
             }
 
             FillDataBaseTable(cmbx_DisplayWhichDB.SelectedItem.ToString());
-        }
-
-        public void loadSetting(string setting_specs)
-        {
-            string[] fields = setting_specs.Split('\t');
-            switch (fields[0].Split('|')[1])
-            {
-                case "tb_UniProtXML_Path.Text":
-                    tb_UniProtXML_Path.Text = fields[1];
-                    break;
-                case "tb_UniProtPtmList_Path.Text":
-                    tb_UniProtPtmList_Path.Text = fields[1];
-                    break;
-                case "ckbx_OxidMeth.Checked":
-                    ckbx_OxidMeth.Checked = Convert.ToBoolean(fields[1]);
-                    break;
-                case "ckbx_Carbam.Checked":
-                    ckbx_Carbam.Checked = Convert.ToBoolean(fields[1]);
-                    break;
-                case "ckbx_Meth_Cleaved.Checked":
-                    ckbx_Meth_Cleaved.Checked = Convert.ToBoolean(fields[1]);
-                    break;
-                case "btn_NeuCode_Lt.Checked":
-                    btn_NeuCode_Lt.Checked = Convert.ToBoolean(fields[1]);
-                    break;
-                case "btn_NeuCode_Hv.Checked":
-                    btn_NeuCode_Hv.Checked = Convert.ToBoolean(fields[1]);
-                    break;
-                case "btn_NaturalIsotopes.Checked":
-                    btn_NaturalIsotopes.Checked = Convert.ToBoolean(fields[1]);
-                    break;
-                case "ckbx_aggregateProteoforms.Checked":
-                    ckbx_aggregateProteoforms.Checked = Convert.ToBoolean(fields[1]);
-                    break;
-                case "nUD_MaxPTMs.Value":
-                    nUD_MaxPTMs.Value = Convert.ToDecimal(fields[1]);
-                    break;
-                case "nUD_NumDecoyDBs.Value":
-                    nUD_NumDecoyDBs.Value = Convert.ToDecimal(fields[1]);
-                    break;
-                case "nUD_MinPeptideLength.Value":
-                    nUD_MinPeptideLength.Value = Convert.ToDecimal(fields[1]);
-                    break;
-            }
         }
 
         private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)

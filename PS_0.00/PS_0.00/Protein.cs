@@ -89,7 +89,7 @@ namespace PS_0._00
             List<string> sequences = ProteinSequenceGroups.uniqueProteinSequences(proteins);
             ProteinSequenceGroups[] psgs = new ProteinSequenceGroups[sequences.Count];
             int counter = 0;
-            Parallel.ForEach<string>(sequences, sequence =>
+            foreach (string sequence in sequences)
             {
                 List<string> accessionList = new List<string>();
                 //ProteinSequenceGroups psg = new ProteinSequenceGroups();
@@ -103,7 +103,7 @@ namespace PS_0._00
 
                 ProteinSequenceGroups psg = new ProteinSequenceGroups(accession, name, fragment, begin, end, "", conPAP);
 
-                Parallel.ForEach<Protein>(proteins, protein =>
+                foreach (Protein protein in proteins)
                 {
                     if (protein.Sequence == sequence)
                     {
@@ -118,7 +118,7 @@ namespace PS_0._00
                             end = protein.End;
                         }
                     }
-                });
+                }
 
                 accessionList.Sort();
 
@@ -135,7 +135,7 @@ namespace PS_0._00
                 psgs[counter] = psg;
 
                 counter++;
-            });
+            }
 
             return psgs;
         }

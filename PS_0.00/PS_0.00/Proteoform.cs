@@ -218,11 +218,10 @@ namespace PS_0._00
             double proteoformMass = 18.010565; // start with water
             char[] aminoAcids = pForm.ToCharArray();
             List<double> aaMasses = new List<double>();
-            Parallel.For(0, pForm.Length, i =>
+            for (int i = 0; i < pForm.Length; i++)
             {
-                if (aaIsotopeMassList.ContainsKey(aminoAcids[i]))
-                    aaMasses.Add(aaIsotopeMassList[aminoAcids[i]]);
-            });
+                if (aaIsotopeMassList.ContainsKey(aminoAcids[i])) aaMasses.Add(aaIsotopeMassList[aminoAcids[i]]);
+            }
             return proteoformMass + aaMasses.Sum();
         }
 

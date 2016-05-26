@@ -20,24 +20,11 @@ namespace PS_0._00
         public void AggregatedProteoforms_Load(object sender, EventArgs e)
         {
             InitializeSettings();
-            if (Lollipop.experimental_proteoforms.Count == 0)
+            if (Lollipop.proteoform_community.experimental_proteoforms.Count == 0)
             {
                 Lollipop.aggregate_neucode_light_proteoforms();
                 FillAggregatesTable();
             }
-        }
-
-        private void FillAggregatesTable()
-        {
-            BindingSource bs = new BindingSource();
-            bs.DataSource = Lollipop.experimental_proteoforms;
-            dgv_AggregatedProteoforms.DataSource = bs;
-            dgv_AggregatedProteoforms.ReadOnly = true;
-            //dgv_AggregatedProteoforms.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_AggregatedProteoforms.Columns["Aggregated Retention Time"].DefaultCellStyle.Format = "0.##";
-            //dgv_AggregatedProteoforms.Columns["Aggregated Intensity"].DefaultCellStyle.Format = "0";
-            dgv_AggregatedProteoforms.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_AggregatedProteoforms.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
 
         private void InitializeSettings()
@@ -59,12 +46,24 @@ namespace PS_0._00
             nUD_Missed_Ks.Value = Lollipop.missed_lysines;
         }
 
+        private void FillAggregatesTable()
+        {
+            BindingSource bs = new BindingSource();
+            bs.DataSource = Lollipop.proteoform_community.experimental_proteoforms;
+            dgv_AggregatedProteoforms.DataSource = bs;
+            dgv_AggregatedProteoforms.ReadOnly = true;
+            //dgv_AggregatedProteoforms.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.####";
+            //dgv_AggregatedProteoforms.Columns["Aggregated Retention Time"].DefaultCellStyle.Format = "0.##";
+            //dgv_AggregatedProteoforms.Columns["Aggregated Intensity"].DefaultCellStyle.Format = "0";
+            dgv_AggregatedProteoforms.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv_AggregatedProteoforms.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+        }
+
         private void dgv_AggregatedProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if(e.RowIndex >= 0)
             {
                 ExperimentalProteoform selected_pf = (ExperimentalProteoform)this.dgv_AggregatedProteoforms.Rows[e.RowIndex].DataBoundItem;
-
                 BindingSource bs = new BindingSource();
                 bs.DataSource = selected_pf.proteoforms;
                 dgv_AcceptNeuCdLtProteoforms.DataSource = bs;

@@ -23,11 +23,6 @@ namespace PS_0._00
 
         public void NeuCodePairs_Load(object sender, EventArgs e)
         {
-            if (Lollipop.rawNeuCodePairs.Count == 0)
-            {
-                Lollipop.pair_neucode_components();
-                FillNeuCodePairsDGV(); //Filling DGV part of the working logic, now, since it seems to take a while
-            }
             GraphLysineCount();
             GraphIntensityRatio();
         }
@@ -69,37 +64,19 @@ namespace PS_0._00
             ct_IntensityRatio.Series["intensityRatio"].XValueMember = "intRatio";
             ct_IntensityRatio.Series["intensityRatio"].YValueMembers = "numPairsAtThisIntRatio";
 
-            yMaxIRat.Maximum = ymax;
-            yMaxIRat.Minimum = 0;
+            yMaxIRat.Minimum = 0; yMaxIRat.Maximum = ymax; yMaxIRat.Value = ymax;
+            yMinIRat.Minimum = 0; yMinIRat.Maximum = ymax; yMinIRat.Value = 0;
+            xMaxIRat.Minimum = 0; xMaxIRat.Maximum = 20; xMaxIRat.Value = 20;
+            xMinIRat.Minimum = 0; xMinIRat.Maximum = 20; xMinIRat.Value = 0;
 
-            yMinIRat.Maximum = ymax;
-            yMinIRat.Minimum = 0;
-
-            xMaxIRat.Maximum = 20;
-            xMaxIRat.Minimum = 0;
-
-            xMinIRat.Maximum = 20;
-            xMinIRat.Minimum = 0;
-
-            yMaxIRat.Value = ymax;
-            yMinIRat.Value = 0;
-            xMaxIRat.Value = 20;
-            xMinIRat.Value = 0;
-
-            IRatMaxAcceptable.Value = Lollipop.max_intensity_ratio;
-            IRatMinAcceptable.Maximum = 20;
-            IRatMinAcceptable.Minimum = 0;
-
-            IRatMinAcceptable.Value = Lollipop.min_intensity_ratio;
-            IRatMinAcceptable.Maximum = 20;
-            IRatMinAcceptable.Minimum = 0;
+            IRatMaxAcceptable.Minimum = 0; IRatMaxAcceptable.Maximum = 20; IRatMaxAcceptable.Value = Lollipop.max_intensity_ratio;
+            IRatMinAcceptable.Minimum = 0; IRatMinAcceptable.Maximum = 20; IRatMinAcceptable.Value = Lollipop.min_intensity_ratio;
 
             ct_IntensityRatio.ChartAreas[0].AxisX.Title = "Intensity Ratio of a Pair";
             ct_IntensityRatio.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";
 
             ct_IntensityRatio.DataSource = intensityRatioHistogram;
             ct_IntensityRatio.DataBind();
-
         }
 
         private void GraphLysineCount()
@@ -122,29 +99,13 @@ namespace PS_0._00
             ct_LysineCount.Series["lysineCount"].XValueMember = "numLysines";
             ct_LysineCount.Series["lysineCount"].YValueMembers = "numPairsAtThisLysCt";
 
-            yMaxKCt.Maximum = ymax;
-            yMaxKCt.Minimum = 0;
+            yMaxKCt.Minimum = 0; yMaxKCt.Maximum = ymax; yMaxKCt.Value = ymax;
+            yMinKCt.Minimum = 0; yMinKCt.Maximum = ymax; yMinKCt.Value = 0;
+            xMaxKCt.Minimum = 0;                         xMaxKCt.Value = 28;
+            xMinKCt.Minimum = 0; xMinKCt.Maximum = 28; xMinKCt.Value = 0;
 
-            yMinKCt.Maximum = ymax;
-            yMinKCt.Minimum = 0;
-
-            xMaxKCt.Maximum = 28;
-            xMaxKCt.Minimum = 0;
-
-            xMinKCt.Maximum = 28;
-            xMinKCt.Minimum = 0;
-
-            yMaxKCt.Value = ymax;
-            yMinKCt.Value = 0;
-            xMaxKCt.Value = 28;
-            xMinKCt.Value = 0;
-
-            KMaxAcceptable.Value = Lollipop.max_lysine_ct;
-            KMaxAcceptable.Maximum = 28;
-            KMaxAcceptable.Minimum = 0;
-            KMinAcceptable.Value = Lollipop.min_lysine_ct;
-            KMinAcceptable.Maximum = 28;
-            KMinAcceptable.Minimum = 0;
+            KMaxAcceptable.Minimum = 0; KMaxAcceptable.Maximum = 28; KMaxAcceptable.Value = Lollipop.max_lysine_ct;
+            KMinAcceptable.Minimum = 0; KMinAcceptable.Maximum = 28; KMinAcceptable.Value = Lollipop.min_lysine_ct;
 
             ct_LysineCount.ChartAreas[0].AxisX.Title = "Lysine Count";
             ct_LysineCount.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";

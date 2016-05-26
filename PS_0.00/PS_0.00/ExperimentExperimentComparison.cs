@@ -15,10 +15,6 @@ namespace PS_0._00
 { 
     public partial class ExperimentExperimentComparison : Form
     {
-        DataTable eePairsList = new DataTable(); // this is a list of all individual EE pairs with mass difference smaller than the threshold
-        DataTable eePeakList = new DataTable(); // these are the aggregated peaks coming from groups of individual EE pairs.
-        Boolean formLoadEvent; // this is needed to prevent firing of ParameterSet events from firing on form load and let them fire only when the values are actually changed
-
         public ExperimentExperimentComparison()
         {
             InitializeComponent();
@@ -31,7 +27,7 @@ namespace PS_0._00
 
         public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
         {
-            if (Lollipop.experimentExperimentPairs.Columns.Count == 0)
+            if (Lollipop.ee_relations.Count == 0)
             {
                 run_comparison();
             }
@@ -44,12 +40,8 @@ namespace PS_0._00
         public void run_comparison()
         {
             this.Cursor = Cursors.WaitCursor;
-            formLoadEvent = true;
             InitializeParameterSet();
-            CalculateRunningSums();
-            eePeakList = InitializeEEPeakListTable();
             UpdateFiguresOfMerit();
-            formLoadEvent = false;
             this.Cursor = Cursors.Default;
         }
 
@@ -58,8 +50,6 @@ namespace PS_0._00
             this.Cursor = Cursors.WaitCursor;
             ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
-            FindAllEEPairs();
-            CalculateRunningSums();
             GraphEEHistogram();
             FillEEPeakListTable();
             FillEEPairsGridView();
@@ -69,75 +59,7 @@ namespace PS_0._00
             this.Cursor = Cursors.Default;
         }
 
-        Point? prevPosition = null;
-        ToolTip tooltip = new ToolTip();
-
-        void ct_EE_Histogram_MouseMove(object sender, MouseEventArgs e)
-        {
-            var pos = e.Location;
-            if (prevPosition.HasValue && pos == prevPosition.Value)
-                return;
-            tooltip.RemoveAll();
-            prevPosition = pos;
-            var results = ct_EE_Histogram.HitTest(pos.X, pos.Y, false,
-                                            ChartElementType.DataPoint);
-            foreach (var result in results)
-            {
-                if (result.ChartElementType == ChartElementType.DataPoint)
-                {
-                    var prop = result.Object as DataPoint;
-                    if (prop != null)
-                    {
-                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
-                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
-
-                        // check if the cursor is really close to the point (2 pixels around the point)
-                        if (Math.Abs(pos.X - pointXPixel) < 2) // &&
-                            //Math.Abs(pos.Y - pointYPixel) < 2)
-                        {
-                            tooltip.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_EE_Histogram,
-                                            pos.X, pos.Y - 15);
-                        }
-                    }
-                }
-            }
-        }
-
-        Point? prevPosition2 = null;
-        ToolTip tooltip2 = new ToolTip();
-
-        void ct_EE_peakList_MouseMove(object sender, MouseEventArgs e)
-        {
-            var pos = e.Location;
-            if (prevPosition2.HasValue && pos == prevPosition2.Value)
-                return;
-            tooltip2.RemoveAll();
-            prevPosition2 = pos;
-            var results = ct_EE_peakList.HitTest(pos.X, pos.Y, false,
-                                            ChartElementType.DataPoint);
-            foreach (var result in results)
-            {
-                if (result.ChartElementType == ChartElementType.DataPoint)
-                {
-                    var prop = result.Object as DataPoint;
-                    if (prop != null)
-                    {
-                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
-                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
-
-                        // check if the cursor is really close to the point (2 pixels around the point)
-                        if (Math.Abs(pos.X - pointXPixel) < 2)// &&
-                            //Math.Abs(pos.Y - pointYPixel) < 2)
-                        {
-                            tooltip2.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], this.ct_EE_peakList,
-                                            pos.X, pos.Y - 15);
-                        }
-                    }
-                }
-            }
-        }
-
-
+        
         private void dgv_EE_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -152,35 +74,35 @@ namespace PS_0._00
 
         private void GraphEEPairsList()
         {
-            string colName = "Delta Mass";
-            string direction = "DESC";
-            DataTable dt = eePairsList;
-            dt.DefaultView.Sort = colName + " " + direction;
-            dt = dt.DefaultView.ToTable();
-            eePairsList = dt;
+           // string colName = "Delta Mass";
+           // string direction = "DESC";
+           // DataTable dt = eePairsList;
+           // dt.DefaultView.Sort = colName + " " + direction;
+           // dt = dt.DefaultView.ToTable();
+           // eePairsList = dt;
 
-            ct_EE_peakList.Series["eePeakList"].XValueMember = "Delta Mass";
-            ct_EE_peakList.Series["eePeakList"].YValueMembers = "Running Sum";
-            ct_EE_peakList.DataSource = eePairsList;
-            ct_EE_peakList.DataBind();
-            ct_EE_peakList.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
+           // ct_EE_peakList.Series["eePeakList"].XValueMember = "Delta Mass";
+           // ct_EE_peakList.Series["eePeakList"].YValueMembers = "Running Sum";
+           // ct_EE_peakList.DataSource = eePairsList;
+           // ct_EE_peakList.DataBind();
+           // ct_EE_peakList.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
 
-            ct_EE_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - Convert.ToDouble(nUD_PeakWidthBase.Value);
-            ct_EE_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) + Convert.ToDouble(nUD_PeakWidthBase.Value);
-           // ct_EE_peakList.Series["eePeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
-            ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
-            {
-                BorderColor = Color.Red,
-                IntervalOffset = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) + 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
-            });
+           // ct_EE_peakList.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - Convert.ToDouble(nUD_PeakWidthBase.Value);
+           // ct_EE_peakList.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) + Convert.ToDouble(nUD_PeakWidthBase.Value);
+           //// ct_EE_peakList.Series["eePeakList"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+           // ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
+           // {
+           //     BorderColor = Color.Red,
+           //     IntervalOffset = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) + 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+           // });
 
-            ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
-            {
-                BorderColor = Color.Red,
-                IntervalOffset = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
-            });
-            ct_EE_peakList.ChartAreas[0].AxisX.Title = "Delta m/z";
-            ct_EE_peakList.ChartAreas[0].AxisY.Title = "Peak Count";
+           // ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Add(new StripLine()
+           // {
+           //     BorderColor = Color.Red,
+           //     IntervalOffset = Convert.ToDouble(dgv_EE_Peak_List.Rows[0].Cells["Average Delta Mass"].Value.ToString()) - 0.5 * Convert.ToDouble((nUD_PeakWidthBase.Value)),
+           // });
+           // ct_EE_peakList.ChartAreas[0].AxisX.Title = "Delta m/z";
+           // ct_EE_peakList.ChartAreas[0].AxisY.Title = "Peak Count";
         }
 
 
@@ -221,105 +143,32 @@ namespace PS_0._00
 
         private void UpdateFiguresOfMerit()
         {
-            try
-            {
-                int peakSum = 0;
-                int peakCount = 0;
-                DataRow[] bigPeaks = eePeakList.Select("[Acceptable] = true");
-                foreach (DataRow row in bigPeaks)
-                {
-                    peakSum = peakSum + Convert.ToInt32(row["Peak Count"]);
-                    peakCount++;
-                }
+            //try
+            //{
+            //    int peakSum = 0;
+            //    int peakCount = 0;
+            //    DataRow[] bigPeaks = eePeakList.Select("[Acceptable] = true");
+            //    foreach (DataRow row in bigPeaks)
+            //    {
+            //        peakSum = peakSum + Convert.ToInt32(row["Peak Count"]);
+            //        peakCount++;
+            //    }
 
-                tb_TotalPeaks.Text = peakCount.ToString();
-                tb_IdentifiedProteoforms.Text = peakSum.ToString();
-            }
-            catch
-            {
-                MessageBox.Show("catch in update figures of merit");
-            }
+            //    tb_TotalPeaks.Text = peakCount.ToString();
+            //    tb_IdentifiedProteoforms.Text = peakSum.ToString();
+            //}
+            //catch
+            //{
+            //    MessageBox.Show("catch in update figures of merit");
+            //}
 
-        }
-
-        private void ClearEEPeakListTable()
-        {
-            eePeakList.Clear();
-        }
-
-        private void ClearEEGridView()
-        {
-            Lollipop.experimentExperimentPairs.Clear();
         }
 
         private void FillEEPeakListTable()
         {
-            eePeakList.Clear();
-            Lollipop.eePeakList.Clear();
-
-            string colName = "Running Sum";
-            string direction = "DESC";
-
-            DataTable dt = eePairsList;
-            dt.DefaultView.Sort = colName + " " + direction;
-            dt = dt.DefaultView.ToTable();
-            eePairsList = dt;
-
-            foreach (DataRow row in eePairsList.Rows)
-            {
-                if (
-                    Convert.ToBoolean(row["Out of Range Decimal"].ToString()) == false &&
-                    Convert.ToBoolean(row["Acceptable Peak"].ToString()) == false)
-                {
-                    double deltaMass = Convert.ToDouble(row["Delta Mass"].ToString());
-                    double lower = deltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-                    double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-                    string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <=" + upper +
-                        "and [Acceptable Peak] = false";
-                    DataRow[] firstSet = eePairsList.Select(expression);
-                    var firstAverage = firstSet.Average(fsRow => fsRow.Field<double>("Delta Mass"));
-
-                    lower = firstAverage - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-                    upper = firstAverage + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-                    expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper +
-                        "and [Acceptable Peak] = false";
-                    DataRow[] secondSet = eePairsList.Select(expression);
-                    var secondAverage = secondSet.Average(ssRow => ssRow.Field<double>("Delta Mass"));
-
-                    foreach (DataRow rutrow in secondSet)
-                    {
-                        rutrow["Peak Center Count"] = secondSet.Length;
-                        rutrow["Peak Center Mass"] = secondAverage;
-                        rutrow["Acceptable Peak"] = true;
-
-                        if (secondSet.Length >= Convert.ToInt32(nUD_PeakCountMinThreshold.Value))
-                        {
-                            rutrow["Proteoform Family"] = true;
-                        }
-                        else
-                        {
-                            rutrow["Proteoform Family"] = false;
-                        }
-
-                        rutrow.EndEdit();
-                    }
-
-                    if (secondSet.Length >= nUD_PeakCountMinThreshold.Value)
-                    {
-                        eePeakList.Rows.Add(secondAverage, secondSet.Length, true);
-                    }
-                    else
-                    {
-                        eePeakList.Rows.Add(secondAverage, secondSet.Length, false);
-                    }
-                }
-                eePairsList.AcceptChanges();
-                Lollipop.experimentExperimentPairs = eePairsList;
-            }
-
-            Lollipop.eePeakList = eePeakList;
-
-            dgv_EE_Peak_List.DataSource = eePeakList;
+            BindingSource bs = new BindingSource();
+            bs.DataSource = Lollipop.ee_peaks;
+            dgv_EE_Peak_List.DataSource = bs;
             dgv_EE_Peak_List.Columns["Average Delta Mass"].ReadOnly = true;
             dgv_EE_Peak_List.Columns["Peak Count"].ReadOnly = true;
             dgv_EE_Peak_List.Columns["Average Delta Mass"].DefaultCellStyle.Format = "0.#####";
@@ -330,56 +179,38 @@ namespace PS_0._00
 
         }
 
-        private DataTable InitializeEEPeakListTable()
-        {
-            DataTable dt = new DataTable();
-            dt.Columns.Add("Average Delta Mass", typeof(double));
-            dt.Columns.Add("Peak Count", typeof(int));
-            dt.Columns.Add("Acceptable", typeof(bool));
-
-            return dt;
-        }
-
-
         private void GraphEEHistogram()
-
         {
-            try
-            {
-                string colName = "Delta Mass";
-                string direction = "DESC";
+            //string colName = "Delta Mass";
+            //string direction = "DESC";
 
-                DataTable dt = eePairsList;
-                dt.DefaultView.Sort = colName + " " + direction;
-                dt = dt.DefaultView.ToTable();
-                eePairsList = dt;
+            //DataTable dt = eePairsList;
+            //dt.DefaultView.Sort = colName + " " + direction;
+            //dt = dt.DefaultView.ToTable();
+            //eePairsList = dt;
 
-                ct_EE_Histogram.Series["eeHistogram"].XValueMember = "Delta Mass";
-                ct_EE_Histogram.Series["eeHistogram"].YValueMembers = "Running Sum";
-                ct_EE_Histogram.DataSource = eePairsList;
-                ct_EE_Histogram.DataBind();
-                ct_EE_Histogram.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
-                ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(
-                    new StripLine()
-                    {
-                        BorderColor = Color.Red,
-                        IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value),
-                    });
+            //ct_EE_Histogram.Series["eeHistogram"].XValueMember = "Delta Mass";
+            //ct_EE_Histogram.Series["eeHistogram"].YValueMembers = "Running Sum";
+            //ct_EE_Histogram.DataSource = eePairsList;
+            //ct_EE_Histogram.DataBind();
+            //ct_EE_Histogram.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
+            //ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(
+            //    new StripLine()
+            //    {
+            //        BorderColor = Color.Red,
+            //        IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value),
+            //    });
 
-                // ct_EE_Histogram.Series["eeHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
-                ct_EE_Histogram.ChartAreas[0].AxisX.Title = "Delta m/z";
-                ct_EE_Histogram.ChartAreas[0].AxisY.Title = "Peak Count";
-            }
-            catch
-            {
-
-            }
-            
+            //// ct_EE_Histogram.Series["eeHistogram"].ToolTip = "#VALX{#.##}" + " , " + "#VALY{#.##}";
+            //ct_EE_Histogram.ChartAreas[0].AxisX.Title = "Delta m/z";
+            //ct_EE_Histogram.ChartAreas[0].AxisY.Title = "Peak Count";
         }
 
         private void FillEEPairsGridView()
         {
-            dgv_EE_Pairs.DataSource = eePairsList;
+            BindingSource bs = new BindingSource();
+            bs.DataSource = Lollipop.ee_relations;
+            dgv_EE_Pairs.DataSource = bs;
             dgv_EE_Pairs.ReadOnly = true;
             dgv_EE_Pairs.Columns["Acceptable Peak"].ReadOnly = false;
             dgv_EE_Pairs.Columns["Aggregated Mass Light"].DefaultCellStyle.Format = "0.#####";
@@ -391,44 +222,6 @@ namespace PS_0._00
             dgv_EE_Pairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
             dgv_EE_Pairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
-
-        private DataTable CreateEEPairsDataTable()
-        {
-            DataTable dt = new DataTable();
-            dt.Columns.Add("Aggregated Mass Light", typeof(double));
-            dt.Columns.Add("Aggregated Mass Heavy", typeof(double));
-            dt.Columns.Add("Aggregated Intensity Light", typeof(double));
-            dt.Columns.Add("Aggregated Intensity Heavy", typeof(double));
-            dt.Columns.Add("Retention Time Light", typeof(double));
-            dt.Columns.Add("Retention Time Heavy", typeof(double));
-            dt.Columns.Add("Lysine Count", typeof(int));
-            dt.Columns.Add("Number of Observations Light", typeof(int));
-            dt.Columns.Add("Number of Observations Heavy", typeof(int));
-            dt.Columns.Add("Delta Mass", typeof(double));
-            dt.Columns.Add("Running Sum", typeof(int));
-            dt.Columns.Add("Peak Center Count", typeof(int));
-            dt.Columns.Add("Peak Center Mass", typeof(double));
-            dt.Columns.Add("Out of Range Decimal", typeof(bool));
-            dt.Columns.Add("Acceptable Peak", typeof(bool));
-            dt.Columns.Add("Proteoform Family", typeof(bool));
-
-            return dt;
-        }
-
-        private void CalculateRunningSums()
-        {
-            foreach (DataRow row in eePairsList.Rows)
-            {
-                double deltaMass = Convert.ToDouble(row["Delta Mass"].ToString());
-                double lower = deltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-                double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-                string expression = "[Delta Mass] >= " + lower + "and [Delta Mass] <= " + upper;
-                row["Running Sum"] = eePairsList.Select(expression).Length;
-            }
-            eePairsList.AcceptChanges();
-            Lollipop.experimentExperimentPairs = eePairsList;
-        }
-
 
         private void InitializeParameterSet()
         {
@@ -454,62 +247,62 @@ namespace PS_0._00
 
             nUD_NoManLower.Minimum = 00m;
             nUD_NoManLower.Maximum = 0.49m;
-            nUD_NoManLower.Value = Lollipop.no_mans_land_lowerBound;
+            nUD_NoManLower.Value = Convert.ToDecimal(Lollipop.no_mans_land_lowerBound);
 
             nUD_NoManUpper.Minimum = 0.50m;
             nUD_NoManUpper.Maximum = 1.00m;
-            nUD_NoManUpper.Value = Lollipop.no_mans_land_upperBound;
+            nUD_NoManUpper.Value = Convert.ToDecimal(Lollipop.no_mans_land_upperBound);
 
             nUD_PeakWidthBase.Minimum = 0.001m;
             nUD_PeakWidthBase.Maximum = 0.5000m;
-            nUD_PeakWidthBase.Value = Lollipop.peak_width_base;
+            nUD_PeakWidthBase.Value = Convert.ToDecimal(Lollipop.peak_width_base);
 
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
-            nUD_PeakCountMinThreshold.Value = Lollipop.min_peak_count;
+            nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(Lollipop.min_peak_count);
         }
 
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
         {
 
-            double averageDeltaMass = Convert.ToDouble(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 2].Value);
-            int peakCount = Convert.ToInt32(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Value);
-            dgv_EE_Peak_List.EndEdit();
-            dgv_EE_Peak_List.Update();
+            //double averageDeltaMass = Convert.ToDouble(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 2].Value);
+            //int peakCount = Convert.ToInt32(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Value);
+            //dgv_EE_Peak_List.EndEdit();
+            //dgv_EE_Peak_List.Update();
 
-            double lowMass = averageDeltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-            double highMass = averageDeltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+            //double lowMass = averageDeltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+            //double highMass = averageDeltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
 
-            string expression = "[Average Delta Mass] > " + lowMass + " and [Average Delta Mass] < " + highMass;
+            //string expression = "[Average Delta Mass] > " + lowMass + " and [Average Delta Mass] < " + highMass;
 
-            DataRow[] selectedPeaks = eePeakList.Select(expression);
+            //DataRow[] selectedPeaks = eePeakList.Select(expression);
 
-            foreach (DataRow row in selectedPeaks)
-            {
-                row["Acceptable"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
-            }
-            eePeakList.AcceptChanges();
-            Lollipop.etPeakList = eePeakList;
-            dgv_EE_Peak_List.Update();
-            dgv_EE_Peak_List.Refresh();
+            //foreach (DataRow row in selectedPeaks)
+            //{
+            //    row["Acceptable"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
+            //}
+            //eePeakList.AcceptChanges();
+            //Lollipop.etPeakList = eePeakList;
+            //dgv_EE_Peak_List.Update();
+            //dgv_EE_Peak_List.Refresh();
 
-            expression = "[Peak Center Mass] > " + lowMass + " and [Peak Center Mass] < " + highMass;
+            //expression = "[Peak Center Mass] > " + lowMass + " and [Peak Center Mass] < " + highMass;
 
-            selectedPeaks = eePairsList.Select(expression);
+            //selectedPeaks = eePairsList.Select(expression);
 
-            foreach (DataRow row in selectedPeaks)
-            {
+            //foreach (DataRow row in selectedPeaks)
+            //{
 
-                row["Proteoform Family"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
+            //    row["Proteoform Family"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
 
-            }
-            eePairsList.AcceptChanges();
+            //}
+            //eePairsList.AcceptChanges();
 
-            Lollipop.experimentExperimentPairs = eePairsList;
-            dgv_EE_Pairs.DataSource = null;
-            FillEEPairsGridView();
+            //Lollipop.experimentExperimentPairs = eePairsList;
+            //dgv_EE_Pairs.DataSource = null;
+            //FillEEPairsGridView();
 
-            UpdateFiguresOfMerit();
+            //UpdateFiguresOfMerit();
 
         }
 
@@ -524,56 +317,56 @@ namespace PS_0._00
 
         private void xMaxEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
         {
-            if (!formLoadEvent)
+            if (true)
             {
                 double newXMaxEE = double.Parse(xMaxEE.Value.ToString());
                 if (newXMaxEE > double.Parse(xMinEE.Value.ToString()))
                 {
                     ct_EE_Histogram.ChartAreas[0].AxisX.Maximum = newXMaxEE;
                 }
-            }          
+            }
         }
 
         private void yMaxEE_ValueChanged(object sender, EventArgs e) // scaling for y-axis maximum in the histogram of all EE pairs
         {
-            if (!formLoadEvent)
+            if (true)
             {
                 double newYMaxEE = double.Parse(yMaxEE.Value.ToString());
                 if (newYMaxEE > double.Parse(yMinEE.Value.ToString()))
                 {
                     ct_EE_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxEE.Value.ToString());
                 }
-            }           
+            }
         }
 
         private void yMinEE_ValueChanged(object sender, EventArgs e) // scaling for y-axis minimum in the histogram of all EE pairs
         {
-            if (!formLoadEvent)
+            if (true)
             {
                 double newYMinEE = double.Parse(yMinEE.Value.ToString());
                 if (newYMinEE < double.Parse(yMaxEE.Value.ToString()))
                 {
                     ct_EE_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinEE.Value.ToString());
                 }
-            }           
+            }
         }
 
         private void xMinEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
         {
-            if (!formLoadEvent)
+            if (true)
             {
                 double newXMinEE = double.Parse(xMinEE.Value.ToString());
                 if (newXMinEE < double.Parse(xMaxEE.Value.ToString()))
                 {
                     ct_EE_Histogram.ChartAreas[0].AxisX.Minimum = newXMinEE;
                 }
-            }           
+            }
         }
 
 
         private void cb_Graph_lowerThreshold_CheckedChanged(object sender, EventArgs e)
         {
-            if (!formLoadEvent)
+            if (true)
             {
                 if (cb_Graph_lowerThreshold.Checked)
                 {
@@ -590,42 +383,56 @@ namespace PS_0._00
                     ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
 
                 }
-            }         
+            }
+        }
+
+        Point? ct_EE_Histogram_prevPosition = null;
+        ToolTip ct_EE_Histogram_tt = new ToolTip();
+
+        private void ct_EE_Histogram_MouseMove(object sender, MouseEventArgs e)
+        {
+            tooltip_graph_display(ct_EE_peakList_tt, e, ct_EE_Histogram, ct_EE_Histogram_prevPosition);
+        }
+
+        Point? ct_EE_peakList_prevPosition = null;
+        ToolTip ct_EE_peakList_tt = new ToolTip();
+
+        private void ct_EE_peakList_MouseMove(object sender, MouseEventArgs e)
+        {
+            tooltip_graph_display(ct_EE_peakList_tt, e, ct_EE_peakList, ct_EE_peakList_prevPosition);
+        }
+
+        private void tooltip_graph_display(ToolTip t, MouseEventArgs e, Chart c, Point? p)
+        {
+            var pos = e.Location;
+            if (p.HasValue && pos == p.Value) return;
+            t.RemoveAll();
+            p = pos;
+            var results = c.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);
+            foreach (var result in results)
+            {
+                if (result.ChartElementType == ChartElementType.DataPoint)
+                {
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
+                                                               // Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            t.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], c, pos.X, pos.Y - 15);
+                        }
+                    }
+                }
+            }
         }
 
         private void EE_update_Click(object sender, EventArgs e)
         {
             RunTheGamut();
-        }
-
-        public override string ToString()
-        {
-            return String.Join(System.Environment.NewLine, new string[] {
-                "ExperimentExperimentComparison|nUD_NoManLower.Value\t" + nUD_NoManLower.Value.ToString(),
-                "ExperimentExperimentComparison|nUD_NoManUpper.Value\t" + nUD_NoManUpper.Value.ToString(),
-                "ExperimentExperimentComparison|nUD_PeakWidthBase.Value\t" + nUD_PeakWidthBase.Value.ToString(),
-                "ExperimentExperimentComparison|nUD_PeakCountMinThreshold.Value\t" + nUD_PeakCountMinThreshold.Value.ToString()
-            });
-        }
-
-        public void loadSetting(string setting_specs)
-        {
-            string[] fields = setting_specs.Split('\t');
-            switch (fields[0].Split('|')[1])
-            {
-                case "nUD_NoManLower.Value":
-                    nUD_NoManLower.Value = Convert.ToDecimal(fields[1]);
-                    break;
-                case "nUD_NoManUpper.Value":
-                    nUD_NoManUpper.Value = Convert.ToDecimal(fields[1]);
-                    break;
-                case "nUD_PeakWidthBase.Value":
-                    nUD_PeakWidthBase.Value = Convert.ToDecimal(fields[1]);
-                    break;
-                case "nUD_PeakCountMinThreshold.Value":
-                    nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(fields[1]);
-                    break;
-            }
         }
     }
 }

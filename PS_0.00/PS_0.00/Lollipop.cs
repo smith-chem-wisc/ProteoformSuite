@@ -35,7 +35,6 @@ namespace PS_0._00
         public static void GetDeconResults()
         {
             List<DataTable> decon_results = new List<DataTable>();
-
             Parallel.ForEach<string>(Lollipop.deconResultsFileNames, filename =>
             {
                 DataTable dt = excelReader.ReadExcelFile(filename);
@@ -44,25 +43,16 @@ namespace PS_0._00
                 foreach (DataRow row in dt.Rows)
                 {
                     int number;
-                    bool result = int.TryParse(row[dt.Columns[0].ColumnName].ToString(), out number);
-                    if (result)
-                    {
+                    if (int.TryParse(row[dt.Columns[0].ColumnName].ToString(), out number))
                         dc.ImportRow(row);
-                    }
                     else
                     {
                         row[dt.Columns[0].ColumnName] = "-1";
                         dc.ImportRow(row);
                     }
-
                 }
                 dc.Columns.Add("Filename", typeof(string));
-
-                foreach (DataRow row in dc.Rows)
-                {
-                    row["Filename"] = Path.GetFileName(filename);
-                }
-
+                foreach (DataRow row in dc.Rows) { row["Filename"] = Path.GetFileName(filename); }
                 decon_results.Add(dc);
             });
             Lollipop.deconResultsFiles = decon_results;
@@ -282,8 +272,9 @@ namespace PS_0._00
             {
                 string decoy_database_name = "DecoyDatabase_" + decoyNumber;
                 proteoform_community.decoy_proteoforms.Add(decoy_database_name, new List<TheoreticalProteoform>());
-                Protein[] shuffled_proteins = new Protein[proteins.Count()];
-                new Random().Shuffle<Protein>(shuffled_proteins); //Randomize Order of Protein Array
+                Protein[] shuffled_proteins = new Protein[proteins.Length];
+                shuffled_proteins = proteins;
+                new Random().Shuffle(shuffled_proteins); //randomize order of protein array
 
                 int prevLength = 0;
                 foreach (Protein p in shuffled_proteins)
@@ -360,6 +351,8 @@ namespace PS_0._00
         public static List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
         public static Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
         public static List<ProteoformRelation> ef_relations = new List<ProteoformRelation>();
+        public static List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
+        public static List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
 
         public static void make_et_relationships()
         {
@@ -367,7 +360,7 @@ namespace PS_0._00
                 () => et_relations = Lollipop.proteoform_community.relate_et(),
                 () => ed_relations = Lollipop.proteoform_community.relate_ed()
             );
-            Lollipop.proteoform_community.accept_deltaMass_peak(Lollipop.et_relations, Lollipop.ed_relations);
+            et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
         public static void make_ee_relationships()
@@ -376,7 +369,7 @@ namespace PS_0._00
                 () => ee_relations = proteoform_community.relate_ee(),
                 () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
             );
-            Lollipop.proteoform_community.accept_deltaMass_peak(Lollipop.ee_relations, Lollipop.ef_relations);
+            ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
         //PROTEOFORM FAMILIES
@@ -386,6 +379,7 @@ namespace PS_0._00
         public static string method_toString()
         {
             return String.Join(System.Environment.NewLine, new string[] {
+                "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("\t", Lollipop.deconResultsFileNames.ToArray<string>()),
                 "NeuCodePairs|max_intensity_ratio\t" + max_intensity_ratio.ToString(),
                 "NeuCodePairs|min_intensity_ratio\t" + min_intensity_ratio.ToString(),
                 "NeuCodePairs|max_lysine_ct\t" + max_lysine_ct.ToString(),
@@ -420,6 +414,7 @@ namespace PS_0._00
             string[] fields = setting_spec.Split('\t');
             switch (fields[0])
             {
+                case "LoadDeconvolutionResults|deconvolution_file_names": foreach (string filename in fields) { if (filename != "LoadDeconvolutionResults|deconvolution_file_names") Lollipop.deconResultsFileNames.Add(filename); } break;
                 case "NeuCodePairs|max_intensity_ratio": max_intensity_ratio = Convert.ToDecimal(fields[1]); break;
                 case "NeuCodePairs|min_intensity_ratio": min_intensity_ratio = Convert.ToDecimal(fields[1]); break;
                 case "NeuCodePairs|max_lysine_ct": max_lysine_ct = Convert.ToDecimal(fields[1]); break;
@@ -440,10 +435,10 @@ namespace PS_0._00
                 case "TheoreticalDatabase|max_ptms": max_ptms = Convert.ToInt32(fields[1]); break;
                 case "TheoreticalDatabase|decoy_databases": decoy_databases = Convert.ToInt32(fields[1]); break;
                 case "TheoreticalDatabase|min_peptide_length": min_peptide_length = Convert.ToInt32(fields[1]); break;
-                case "Comparisons|no_mans_land_lowerBound": no_mans_land_lowerBound = Convert.ToDecimal(fields[1]); break;
-                case "Comparisons|no_mans_land_upperBound": no_mans_land_upperBound = Convert.ToDecimal(fields[1]); break;
-                case "Comparisons|peak_width_base": peak_width_base = Convert.ToDecimal(fields[1]); break;
-                case "Comparisons|min_peak_count": min_peak_count = Convert.ToDecimal(fields[1]); break;
+                case "Comparisons|no_mans_land_lowerBound": no_mans_land_lowerBound = Convert.ToDouble(fields[1]); break;
+                case "Comparisons|no_mans_land_upperBound": no_mans_land_upperBound = Convert.ToDouble(fields[1]); break;
+                case "Comparisons|peak_width_base": peak_width_base = Convert.ToDouble(fields[1]); break;
+                case "Comparisons|min_peak_count": min_peak_count = Convert.ToDouble(fields[1]); break;
             }
         }
     }

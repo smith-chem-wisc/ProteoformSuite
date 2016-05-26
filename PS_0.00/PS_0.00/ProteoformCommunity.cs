@@ -97,29 +97,30 @@ namespace PS_0._00
         }
 
         //GROUP and ANALYZE RELATIONS
-        public void accept_deltaMass_peak(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
+        public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
         {
             List<ProteoformRelation> grouped_relations = new List<ProteoformRelation>();
             List<ProteoformRelation> remaining_relations = exclusive_relation_group(relations, grouped_relations);
-            List<DeltaMassPeak> relations_within_peak = new List<DeltaMassPeak>();
+            List<DeltaMassPeak> peaks = new List<DeltaMassPeak>();
             while (remaining_relations.Count > 0)
             {
                 ProteoformRelation top_relation = remaining_relations[0];
                 List<ProteoformRelation> mass_differences_in_peak = top_relation.accept_exclusive(grouped_relations);
                 if (top_relation.relation_type == ProteoformComparison.ee || top_relation.relation_type == ProteoformComparison.et)
                 {
-                    relations_within_peak.Add(new DeltaMassPeak(top_relation));
+                    peaks.Add(new DeltaMassPeak(top_relation));
                     relations_in_peaks.AddRange(mass_differences_in_peak);
                 }
                 grouped_relations.AddRange(mass_differences_in_peak);
                 remaining_relations = exclusive_relation_group(relations, grouped_relations);
             }
-            Parallel.ForEach<DeltaMassPeak>(relations_within_peak, relation_group => relation_group.calculate_fdr(decoy_relations));
-            this.delta_mass_peaks.AddRange(relations_within_peak);
+            Parallel.ForEach<DeltaMassPeak>(peaks, relation_group => relation_group.calculate_fdr(decoy_relations));
+            this.delta_mass_peaks.AddRange(peaks);
+            return peaks;
         }
-        public void accept_deltaMass_peak(List<ProteoformRelation> relations, List<ProteoformRelation> false_relations)
+        public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, List<ProteoformRelation> false_relations)
         {
-            accept_deltaMass_peak(relations, new Dictionary<string, List<ProteoformRelation>> { { "", false_relations } });
+            return accept_deltaMass_peaks(relations, new Dictionary<string, List<ProteoformRelation>> { { "", false_relations } });
         }
 
         private List<ProteoformRelation> exclusive_relation_group(List<ProteoformRelation> relations, List<ProteoformRelation> grouped_relations)
