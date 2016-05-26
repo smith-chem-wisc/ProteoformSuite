@@ -6,6 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Packaging;
+using System.Windows.Forms;
 
 namespace PS_0._00
 {
@@ -22,72 +25,27 @@ namespace PS_0._00
 
         public static void get_experimental_proteoforms()
         {
-            Lollipop.GetDeconResults();
             Lollipop.process_raw_components();
             Lollipop.aggregate_neucode_light_proteoforms();
         }
 
         //RAW EXPERIMENTAL COMPONENTS
-        public static ExcelReader excelReader = new ExcelReader();
+        public static ExcelReader excel_reader = new ExcelReader();
         public static BindingList<string> deconResultsFileNames = new BindingList<string>();
-        public static List<DataTable> deconResultsFiles = new List<DataTable>();
-        public static BindingList<Component> rawExperimentalComponents = new BindingList<Component>();
-        public static void GetDeconResults()
-        {
-            List<DataTable> decon_results = new List<DataTable>();
-            Parallel.ForEach<string>(Lollipop.deconResultsFileNames, filename =>
-            {
-                DataTable dt = excelReader.ReadExcelFile(filename);
-                DataTable dc = dt.Clone();
-                dc.Columns[0].DataType = typeof(int);
-                foreach (DataRow row in dt.Rows)
-                {
-                    int number;
-                    if (int.TryParse(row[dt.Columns[0].ColumnName].ToString(), out number))
-                        dc.ImportRow(row);
-                    else
-                    {
-                        row[dt.Columns[0].ColumnName] = "-1";
-                        dc.ImportRow(row);
-                    }
-                }
-                dc.Columns.Add("Filename", typeof(string));
-                foreach (DataRow row in dc.Rows) { row["Filename"] = Path.GetFileName(filename); }
-                decon_results.Add(dc);
-            });
-            Lollipop.deconResultsFiles = decon_results;
-        }
-        
+        public static List<Component> raw_experimental_components = new List<Component>();
         public static void process_raw_components()
         {
-            BindingList<Component> raw_components = new BindingList<Component>();
-
-            Parallel.ForEach<DataTable>(Lollipop.deconResultsFiles, table =>
+            Parallel.ForEach<string>(Lollipop.deconResultsFileNames, filename =>
             {
-                DataRow[] component_rows = table.Select("[" + table.Columns[0].ColumnName + "] > 0"); //Checking that it's a component row, not a charge state one
+                List<Component> raw_components = excel_reader.read_components_from_xlsx(filename);
+                raw_experimental_components.AddRange(raw_components);
 
-                Dictionary<string, List<Component>> components_in_file_scanrange = new Dictionary<string, List<Component>>();
-                Parallel.ForEach<DataRow>(component_rows, component_row =>
+                HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
+                Parallel.ForEach<string>(scan_ranges, scan_range =>
                 {
-                    Component raw_component = new Component(component_row);
-
-                    string charge_states_for_this_id = "[" + table.Columns[5].ColumnName
-                        + "] is null AND [" + table.Columns[0].ColumnName + "] = " + raw_component.id
-                        + " AND [" + table.Columns[1].ColumnName + "] <> 'Charge State'";
-                    DataRow[] charge_rows = table.Select(charge_states_for_this_id);
-                    Parallel.ForEach<DataRow>(charge_rows, charge_row => { raw_component.add_charge_state(charge_row); });
-
-                    raw_component.calculate_sum_intensity();
-                    raw_component.calculate_weighted_monoisotopic_mass();
-                    raw_components.Add(raw_component);
-                    if (components_in_file_scanrange.ContainsKey(raw_component.scan_range))
-                        components_in_file_scanrange[raw_component.scan_range].Add(raw_component);
-                    else
-                        components_in_file_scanrange.Add(raw_component.scan_range, new List<Component>() { raw_component });
+                    find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
                 });
-                find_neucode_pairs(components_in_file_scanrange);
-            });        
-            Lollipop.rawExperimentalComponents = raw_components;
+            });
         }
 
         //NEUCODE PAIRS
@@ -96,32 +54,27 @@ namespace PS_0._00
         public static decimal min_intensity_ratio = 1.4m;
         public static decimal max_lysine_ct = 26.2m;
         public static decimal min_lysine_ct = 1.5m;
-        public static void find_neucode_pairs(Dictionary<string, List<Component>> components_in_file_scanrange)
+        public static void find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange)
         {
-            Parallel.ForEach<KeyValuePair<string, List<Component>>>(components_in_file_scanrange, entry =>
+            List<Component> components = components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
+
+            //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
+            int lower_mass_index = 0;
+            Parallel.For(lower_mass_index, components.Count - 2, lower_index =>
             {
-                List<Component> components = entry.Value.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
+                Component lower_component = components[lower_index];
+                int higher_mass_index = lower_mass_index + 1;
+                //double apexRT = lower_component.rt_apex;
 
-                //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
-                int lower_mass_index = 0;
-                Parallel.For(lower_mass_index, components.Count - 2, lower_index =>
+                Parallel.For(higher_mass_index, components.Count - 1, higher_index =>
                 {
-                    Component lower_component = components[lower_index];
-                    int higher_mass_index = lower_mass_index + 1;
-                    //double apexRT = lower_component.rt_apex;
-
-                    Parallel.For(higher_mass_index, components.Count - 1, higher_index =>
+                    Component higher_component = components[higher_index];
+                    double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
+                    if (mass_difference < 6)
                     {
-                        Component higher_component = components[higher_index];
-                        double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
-                        if (mass_difference < 6)
-                        {
-                            NeuCodePair pair = new NeuCodePair(lower_component, higher_component);
-                            if (pair.accepted) {
-                                Lollipop.rawNeuCodePairs.Add(pair);
-                            }
-                        }
-                    });
+                        NeuCodePair pair = new NeuCodePair(lower_component, higher_component);
+                        if (pair.accepted) Lollipop.rawNeuCodePairs.Add(pair);
+                    }
                 });
             });
         }

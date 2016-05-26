@@ -26,18 +26,14 @@ namespace PS_0._00
         public void RawExperimentalComponents_Load(object sender, EventArgs e)
         {
 
-            if (Lollipop.rawExperimentalComponents.Count == 0)
-            {
-                Lollipop.GetDeconResults();
-                Lollipop.process_raw_components();
-            }
+            if (Lollipop.raw_experimental_components.Count == 0) Lollipop.process_raw_components();
             FillRawExpComponentsTable();
         }
 
         private void FillRawExpComponentsTable()
         {
             BindingSource bs = new BindingSource();
-            bs.DataSource = Lollipop.rawExperimentalComponents;
+            bs.DataSource = Lollipop.raw_experimental_components;
             dgv_RawExpComp_MI_masses.DataSource = bs;
             dgv_RawExpComp_MI_masses.ReadOnly = true;
             //dgv_RawExpComp_MI_masses.Columns["Monoisotopic Mass"].DefaultCellStyle.Format = "0.####";
@@ -59,7 +55,7 @@ namespace PS_0._00
 
                 //Round doubles before displaying
                 BindingSource bs = new BindingSource();
-                bs.DataSource = c.charge_states;
+                bs.DataSource = new BindingList<ChargeState>(c.charge_states);
                 dgv_RawExpComp_IndChgSts.DataSource = bs;
                 dgv_RawExpComp_IndChgSts.ReadOnly = true;
                 //dgv_RawExpComp_IndChgSts.Columns["MZ Centroid"].DefaultCellStyle.Format = "0.####";

@@ -74,14 +74,7 @@ namespace PS_0._00
 
         public static List<string> uniqueProteinSequences(IEnumerable<Protein> proteins) // this finds all unique proteins sequences in the protein[]
         {
-            List<string> uniqueSequences = new List<string>();
-
-            Parallel.ForEach<Protein>(proteins, protein =>
-            {
-                if (!uniqueSequences.Contains(protein.Sequence))
-                    uniqueSequences.Add(protein.Sequence);
-            });
-            return uniqueSequences;
+            return new List<string>(new HashSet<string>(proteins.Select(p => p.Sequence)).ToList());
         }
 
         public static ProteinSequenceGroups[] consolidateProteins(IEnumerable<Protein> proteins) // this creates the proteinsequencegorup[] which adds the accesion list field and changes the accesion name.

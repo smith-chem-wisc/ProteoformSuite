@@ -6,123 +6,62 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
+using System.ComponentModel; // needed for bindinglist
+using System.Windows.Forms;
 
 namespace PS_0._00
 {
     public class ExcelReader
     {
-        public DataTable ReadExcelFile(string filename)
-        {
-            // Initialize an instance of DataTable
-            DataTable dt = new DataTable();
+        private List<Component> raw_components_in_file = new List<Component>();
 
+        public List<Component> read_components_from_xlsx(string filename)
+        {
+            this.raw_components_in_file.Clear();
             try
             {
-                using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(filename, false)) // Use SpreadSheetDocument class of Open XML SDK to open excel file
+                using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(filename, false))
                 {
-                    // Open Excel workbook, and get Sheet1
-                    WorkbookPart workbookPart = spreadsheetDocument.WorkbookPart; // Get Workbook Part of Spread Sheet Document
-                    IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
-                    string relationshipId = sheetcollection.First().Id.Value; // Get relationship Id
-                    WorksheetPart worksheetPart = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(relationshipId); // Get sheet1 Part of Spread Sheet Document
-
                     // Get Data in Sheet1 of Excel file
-                    SheetData sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
-                    IEnumerable<Row> rowcollection = sheetData.Descendants<Row>();
+                    IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
+                    WorksheetPart worksheet_1 = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
+                    SheetData sheet_1 = worksheet_1.Worksheet.Elements<SheetData>().First();
+                    List<Row> rowcollection = sheet_1.Descendants<Row>().ToList();
 
-                    if (rowcollection.Count() == 0) return dt;
-
-                    // Add columns
-                    foreach (Cell cell in rowcollection.ElementAt(0))
+                    Component new_component = new Component();
+                    int charge_row_index = 0;
+                    for (int i = 0; i < rowcollection.Count(); i++)
                     {
-                        dt.Columns.Add(GetValueOfCell(spreadsheetDocument, cell));
-                    }
-
-                    // Add rows into DataTable
-                    foreach (Row row in rowcollection)
-                    {
-                        DataRow temprow = dt.NewRow();
-
-                        //Remove empty cells from beginning of row
-                        int columnIndex = 0;
-                        foreach (Cell cell in row.Descendants<Cell>())
+                        if (i == 0) continue; //skip component header
+                        List<Cell> cells = rowcollection[i].Descendants<Cell>().ToList();
+                        if (cells.Count > 4) //component row
                         {
-                            // Get Cell Column Index
-                            int cellColumnIndex = GetColumnIndex(GetColumnName(cell.CellReference));
-                            while (columnIndex < cellColumnIndex)
-                            {
-                                temprow[columnIndex] = string.Empty;
-                                columnIndex++;
-                            }
-                            temprow[columnIndex] = GetValueOfCell(spreadsheetDocument, cell);
-                            columnIndex++;
+                            if (i > 1) add_component(new_component);
+                            new_component = new Component(cells, filename);
+                            charge_row_index = 0;
                         }
-
-                        // Add the row to DataTable
-                        // the rows include header row
-                        dt.Rows.Add(temprow);
+                        else if (cells.Count == 4) //charge-state row
+                        {
+                            if (charge_row_index == 0)
+                            {
+                                charge_row_index += 1;
+                                continue; //skip charge state headers
+                            }
+                            else new_component.add_charge_state(cells);
+                        }
                     }
+                    add_component(new_component); //add the final component
                 }
-
-                // Here remove header row
-                dt.Rows.RemoveAt(0);
-                return dt;
+                return raw_components_in_file;
             }
             catch (IOException ex) { throw new IOException(ex.Message); }
         }
 
-        /// <summary>
-        ///  Get Value of Cell 
-        /// </summary>
-        /// <param name="spreadsheetdocument">SpreadSheet Document Object</param>
-        /// <param name="cell">Cell Object</param>
-        /// <returns>The Value in Cell</returns>
-        private static string GetValueOfCell(SpreadsheetDocument spreadsheetdocument, Cell cell)
+        private void add_component(Component c)
         {
-            // Get value in Cell
-            SharedStringTablePart sharedString = spreadsheetdocument.WorkbookPart.SharedStringTablePart;
-            if (cell.CellValue == null) return string.Empty;
-            string cellValue = cell.CellValue.InnerText;
-            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString)
-                return sharedString.SharedStringTable.ChildElements[int.Parse(cellValue)].InnerText;
-            else
-                return cellValue;
-        }
-
-        /// <summary>
-        /// Get Column Name From given cell name
-        /// </summary>
-        /// <param name="cellReference">Cell Name(For example,A1)</param>
-        /// <returns>Column Name(For example, A)</returns>
-        private string GetColumnName(string cellReference)
-        {
-            // Create a regular expression to match the column name of cell
-            Regex regex = new Regex("[A-Za-z]+");
-            Match match = regex.Match(cellReference);
-            return match.Value;
-        }
-
-        /// <summary>
-        /// Get Index of Column from given column name
-        /// </summary>
-        /// <param name="columnName">Column Name(For Example,A or AA)</param>
-        /// <returns>Column Index</returns>
-        private int GetColumnIndex(string columnName)
-        {
-            int columnIndex = 0;
-            int factor = 1;
-
-            // From right to left
-            for (int position = columnName.Length - 1; position >= 0; position--)
-            {
-                // For letters
-                if (Char.IsLetter(columnName[position]))
-                {
-                    columnIndex += factor * ((columnName[position] - 'A') + 1) - 1;
-                    factor *= 26;
-                }
-            }
-            return columnIndex;
+            c.calculate_sum_intensity();
+            c.calculate_weighted_monoisotopic_mass();
+            this.raw_components_in_file.Add(c);
         }
     }
 }

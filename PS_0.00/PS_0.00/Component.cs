@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
+using System.ComponentModel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace PS_0._00
 {
@@ -28,20 +31,22 @@ namespace PS_0._00
         private int num_detected_intervals { get; set; }
         private int num_charge_states_fromFile { get; set; }
 
-        public Component(DataRow component_row)
+        public Component()
+        { }
+        public Component(List<Cell> component_cells, string filename)
         {
-            this.id = component_row.Field<int>(0);
-            this.monoisotopic_mass = Convert.ToDouble(component_row.Field<string>(1));
-            this.intensity_sum = Convert.ToDouble(component_row.Field<string>(2));
-            this.num_charge_states_fromFile = Convert.ToInt32(component_row.Field<string>(3));
-            this.num_detected_intervals = Convert.ToInt32(component_row.Field<string>(4));
-            this.delta_mass = Convert.ToDouble(component_row.Field<string>(5));
-            this.relative_abundance = Convert.ToDouble(component_row.Field<string>(6));
-            this.fract_abundance = Convert.ToDouble(component_row.Field<string>(7));
-            this.scan_range = component_row.Field<string>(8);
-            this.rt_range = component_row.Field<string>(9);
-            this.rt_apex = Convert.ToDouble(component_row.Field<string>(10));
-            this.file_origin = component_row.Field<string>(11);
+            this.id = Convert.ToInt32(component_cells[0].InnerText);
+            this.monoisotopic_mass = Convert.ToDouble(component_cells[1].InnerText);
+            this.intensity_sum = Convert.ToDouble(component_cells[2].InnerText);
+            this.num_charge_states_fromFile = Convert.ToInt32(component_cells[3].InnerText);
+            this.num_detected_intervals = Convert.ToInt32(component_cells[4].InnerText);
+            this.delta_mass = Convert.ToDouble(component_cells[5].InnerText);
+            this.relative_abundance = Convert.ToDouble(component_cells[6].InnerText);
+            this.fract_abundance = Convert.ToDouble(component_cells[7].InnerText);
+            this.scan_range = component_cells[8].InnerText;
+            this.rt_range = component_cells[9].InnerText;
+            this.rt_apex = Convert.ToDouble(component_cells[10].InnerText);
+            this.file_origin = filename;
         }
 
         public double calculate_sum_intensity()
@@ -60,13 +65,9 @@ namespace PS_0._00
             this.weighted_monoisotopic_mass = this.charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum();
         }
 
-        public void add_charge_state(DataRow charge_row)
+        public void add_charge_state(List<Cell> charge_row)
         {
-            int charge_state = charge_row.Field<int>(1);
-            double intensity = charge_row.Field<double>(2);
-            double mz_centroid = charge_row.Field<double>(3);
-            double calculated_mass = charge_row.Field<double>(4);
-            charge_states.Add(new ChargeState(charge_state, intensity, mz_centroid, calculated_mass));
+            this.charge_states.Add(new ChargeState(charge_row));
         }
     }
 
@@ -77,12 +78,17 @@ namespace PS_0._00
         public double mz_centroid { get; set; }
         public double calculated_mass { get; set; }
 
-        public ChargeState(int chage_count, double intensity, double mz_centroid, double calculated_mass)
+        public ChargeState(List<Cell> charge_row)
         {
-            this.charge_count = charge_count;
-            this.intensity = intensity;
-            this.mz_centroid = mz_centroid;
-            this.calculated_mass = calculated_mass;
+            this.charge_count = Convert.ToInt32(charge_row[0].InnerText);
+            this.intensity = Convert.ToDouble(charge_row[1].InnerText);
+            this.mz_centroid = Convert.ToDouble(charge_row[2].InnerText);
+            this.calculated_mass = Convert.ToDouble(charge_row[3].InnerText);
+        }
+
+        public override string ToString()
+        {
+            return String.Join("\t", new List<string> { charge_count.ToString(), intensity.ToString() });
         }
     }
 }
