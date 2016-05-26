@@ -40,30 +40,18 @@ namespace PS_0._00
 
     public class OneUniquePtmGroup
     {
-        private List<string> _unique_ptm_combination;
-        private double _mass;
+        public List<string> unique_ptm_combination { get; set; }
+        public double mass { get; set; }
 
         public OneUniquePtmGroup(double mass, List<string> unique_ptm_combination)
         {
-            _mass = mass;
-            _unique_ptm_combination = unique_ptm_combination;
+            this.mass = mass;
+            this.unique_ptm_combination = unique_ptm_combination;
         }
 
         public OneUniquePtmGroup()
         {
 
-        }
-
-        public List<string> unique_ptm_combinations
-        {
-            get { return _unique_ptm_combination; }
-            set { _unique_ptm_combination = value; }
-        }
-
-        public double mass
-        {
-            get { return _mass; }
-            set { _mass = value; }
         }
     }
 
@@ -83,21 +71,11 @@ namespace PS_0._00
         public List<OneUniquePtmGroup> combos(int numPtmsNeeded, Dictionary<string, Modification> uniprotModificationTable, Dictionary<int, List<string>> somePtmData)
         {
 
-            Dictionary<int, Dictionary<int, string>> sortedProteinPTMs = new Dictionary<int, Dictionary<int, string>>();
-
-            sortedProteinPTMs = GetAnOrganizedList(somePtmData);//(index, dict(pos,ptm))
-
+            Dictionary<int, Dictionary<int, string>> sortedProteinPTMs = GetAnOrganizedList(somePtmData);//(index, dict(pos,ptm))
             List<int[]> aPC = AllPossibleCombinations(numPtmsNeeded, sortedProteinPTMs.Keys.ToArray().Max() + 1);
-
             List<int[]> uPC = UniquePositionCombinations(aPC, sortedProteinPTMs);
-
             List<int[]> uMC = UniqueMassCombinations(uPC, sortedProteinPTMs, uniprotModificationTable);
-
-            List<OneUniquePtmGroup> aupg = new List<OneUniquePtmGroup>();
-
-            aupg = GetGroups(uMC, sortedProteinPTMs, uniprotModificationTable);
-
-            return aupg;
+            return GetGroups(uMC, sortedProteinPTMs, uniprotModificationTable);
         }
 
         static List<OneUniquePtmGroup> GetGroups(List<int[]> uMC, Dictionary<int, Dictionary<int, string>> sPP, Dictionary<string, Modification> uniprotModificationTable)
@@ -124,7 +102,7 @@ namespace PS_0._00
                 }
                 OneUniquePtmGroup one = new OneUniquePtmGroup();
                 one.mass = p.Sum();
-                one.unique_ptm_combinations = ptms_in_one_combo;
+                one.unique_ptm_combination = ptms_in_one_combo;
                 //Console.Writeline("\t\tGetGroups--ptms_in_one_combo: " + String.Join("; ", ptms_in_one_combo));
                 oupg.Add(one);
             }
@@ -133,7 +111,7 @@ namespace PS_0._00
 
             foreach (OneUniquePtmGroup won in oupg)
             {
-                foreach (string item in won.unique_ptm_combinations)
+                foreach (string item in won.unique_ptm_combination)
                 {
                     //Console.Writeline("\t\tGetGroups--ptm combos to be returned: " + item);
                 }

@@ -252,7 +252,7 @@ namespace PS_0._00
 
             Parallel.ForEach<OneUniquePtmGroup>( unique_ptm_groups, group =>
             {
-                List<string> ptm_list = group.unique_ptm_combinations;
+                List<string> ptm_list = group.unique_ptm_combination;
                 double ptm_mass = group.mass;
                 double proteoform_mass = unmodofied_mass + group.mass;
                 if (string.IsNullOrEmpty(decoy_database_name))
