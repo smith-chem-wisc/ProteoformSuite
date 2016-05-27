@@ -138,7 +138,7 @@ namespace PS_0._00
             return oldPtmlistFilePath;
         }
 
-        public static Protein[] ReadUniprotXml(string uniprotXmlFile, int minPeptideLength, bool fixedMethionineCleavage)
+        public static Protein[] ReadUniprotXml(string uniprotXmlFile, Dictionary<string, Modification> uniprot_modification_table, int minPeptideLength, bool fixedMethionineCleavage)
         {
             StreamReader uniprotXmlStream;
             List<Protein> protein_list = new List<Protein>();
@@ -176,7 +176,7 @@ namespace PS_0._00
                     }
                     int begin = 0;
                     int end = sequence.Length - 1;
-                    Dictionary<int, List<string>> positionsAndPtms = new Dictionary<int, List<string>>();
+                    Dictionary<int, List<Modification>> positionsAndPtms = new Dictionary<int, List<Modification>>();
 
                     //Other fields
                     //Full name follows desired order: recommendedName > submittedName > alternativeName because these appear in this order in UniProt-XMLs
@@ -194,17 +194,18 @@ namespace PS_0._00
                         {
                             XElement feature_position_elem = GetDescendant(feature, "position");
                             int feature_position = ConvertPositionElem(feature_position_elem);
-                            if (feature_position >= 0)
+                            string feature_description = GetAttribute(feature, "description").Split(';')[0];
+                            if (feature_position >= 0 && uniprot_modification_table.ContainsKey(feature_description))
                             {
-                                string feature_description = GetAttribute(feature, "description").Split(';')[0];
-                                List<string> modListAtPos;
+                                List<Modification> modListAtPos;
                                 if (positionsAndPtms.TryGetValue(feature_position, out modListAtPos))
                                 {
-                                    modListAtPos.Add(feature_description);
+                                    if (uniprot_modification_table.ContainsKey(feature_description))
+                                        modListAtPos.Add(uniprot_modification_table[feature_description]);
                                 }
-                                else
+                                else if (uniprot_modification_table.ContainsKey(feature_description))
                                 {
-                                    modListAtPos = new List<string> { feature_description };
+                                    modListAtPos = new List<Modification> { uniprot_modification_table[feature_description] };
                                     positionsAndPtms.Add(feature_position, modListAtPos);
                                 }
                             }
@@ -280,9 +281,9 @@ namespace PS_0._00
                 return -1;
         }
 
-        private static Dictionary<int, List<string>> SegmentPtms(Dictionary<int, List<string>> allPosPTMs, int begin, int end)
+        private static Dictionary<int, List<Modification>> SegmentPtms(Dictionary<int, List<Modification>> allPosPTMs, int begin, int end)
         {
-            Dictionary<int, List<string>> segPosPTMs = new Dictionary<int, List<string>>();
+            Dictionary<int, List<Modification>> segPosPTMs = new Dictionary<int, List<Modification>>();
             Parallel.ForEach<int>(allPosPTMs.Keys, position =>
             {
                 if (position >= begin && position <= end)

@@ -11,32 +11,14 @@ namespace PS_0._00
     {
         Component neuCodeLight;
         Component neuCodeHeavy;
-        public string file_origin
-        {
-            get { return neuCodeLight.file_origin; }
-        }
-        public int light_id
-        {
-            get { return neuCodeLight.id; }
-        }
-        public double light_weighted_monoisotopic_mass
-        {
-            get { return neuCodeLight.weighted_monoisotopic_mass; }
-        }
+        public string file_origin { get { return neuCodeLight.file_origin; } }
+        public int light_id { get { return neuCodeLight.id; } }
+        public double light_weighted_monoisotopic_mass { get { return neuCodeLight.weighted_monoisotopic_mass; } }
         public double light_corrected_mass { get; set; }
         public double light_intensity { get; set; }
-        public double light_apexRt
-        {
-            get { return neuCodeLight.rt_apex; }
-        }
-        public int heavy_id
-        {
-            get { return neuCodeHeavy.id; }
-        }
-        public double heavy_weighted_monoisotopic_mass
-        {
-            get { return neuCodeHeavy.weighted_monoisotopic_mass; }
-        }
+        public double light_apexRt { get { return neuCodeLight.rt_apex; } }
+        public int heavy_id { get { return neuCodeHeavy.id; } }
+        public double heavy_weighted_monoisotopic_mass { get { return neuCodeHeavy.weighted_monoisotopic_mass; } }
         public double heavy_intensity { get; set; }
         public List<int> overlapping_charge_states { get; set; }
         
@@ -47,7 +29,6 @@ namespace PS_0._00
         public NeuCodePair(Component lower_rawNeuCode, Component higher_rawNeuCode)
         {
             double mass_difference = higher_rawNeuCode.weighted_monoisotopic_mass - lower_rawNeuCode.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
-            int diff_integer = Convert.ToInt32(Math.Round(mass_difference / 1.0015 - 0.5, 0, MidpointRounding.AwayFromZero));
             List<int> lower_charges = lower_rawNeuCode.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
             List<int> higher_charges = higher_rawNeuCode.charge_states.Select(charge_states => charge_states.charge_count).ToList<int>();
             this.overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
@@ -72,6 +53,7 @@ namespace PS_0._00
                     this.heavy_intensity = lower_intensity;
                 }
 
+                int diff_integer = Convert.ToInt32(Math.Round(mass_difference / 1.0015 - 0.5, 0, MidpointRounding.AwayFromZero));
                 double firstCorrection = neuCodeLight.weighted_monoisotopic_mass + diff_integer * 1.0015;
                 this.lysine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.weighted_monoisotopic_mass - firstCorrection) / 0.036015372, 0, MidpointRounding.AwayFromZero)));
                 this.intensity_ratio = this.light_intensity / this.heavy_intensity;
@@ -195,9 +177,9 @@ namespace PS_0._00
         public double unmodified_mass { get; set; }
         public double ptm_mass { get; set; }
         private string sequence { get; set; }
-        public List<string> ptm_list { get; set; } = new List<string>();
+        public List<Ptm> ptm_list { get; set; } = new List<Ptm>();
 
-        public TheoreticalProteoform(string accession, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<string> ptm_list, double ptm_mass, double modified_mass, bool is_target) : base(accession, modified_mass, lysine_count, is_target)
+        public TheoreticalProteoform(string accession, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<Ptm> ptm_list, double ptm_mass, double modified_mass, bool is_target) : base(accession, modified_mass, lysine_count, is_target)
         {
             this.accession = accession;
             this.name = name;
@@ -222,7 +204,7 @@ namespace PS_0._00
 
         public string ptm_list_string()
         {
-            return string.Join("; ", ptm_list);
+            return string.Join("; ", ptm_list.Select(ptm => ptm.modification.description));
         }
     }
 }

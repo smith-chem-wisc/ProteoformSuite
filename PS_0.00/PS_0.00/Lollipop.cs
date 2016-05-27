@@ -171,6 +171,7 @@ namespace PS_0._00
         public static int max_ptms = 3;
         public static int decoy_databases = 1;
         public static int min_peptide_length = 7;
+        public static double ptmset_mass_tolerance = 0.00001;
         public static bool combine_identical_sequences = true;
         public static string uniprot_xml_filepath = "";
         public static string ptmlist_filepath = "";
@@ -193,22 +194,31 @@ namespace PS_0._00
             aaIsotopeMassList = new AminoAcidMasses(methionine_oxidation, carbamidomethylation).AA_Masses;
 
             //Read the UniProt-XML and ptmlist
-            proteins = ProteomeDatabaseReader.ReadUniprotXml(uniprot_xml_filepath, min_peptide_length, methionine_cleavage);
-            if (combine_identical_sequences) proteins = ProteinSequenceGroups.consolidateProteins(proteins); //consolodate proteins that have identical sequences into protein groups. this also aggregates ptms
+            proteins = ProteomeDatabaseReader.ReadUniprotXml(uniprot_xml_filepath, uniprotModificationTable, min_peptide_length, methionine_cleavage);
+            if (combine_identical_sequences) proteins = group_proteins_by_sequence(proteins);
             Parallel.Invoke(
                 () => process_entries(), 
                 () => process_decoys()
             );
         }
-      
+
+        private static ProteinSequenceGroup[] group_proteins_by_sequence(IEnumerable<Protein> proteins)
+        {
+            List<ProteinSequenceGroup> protein_sequence_groups = new List<ProteinSequenceGroup>();
+            HashSet<string> unique_sequences = new HashSet<string>(proteins.Select(p => p.sequence));
+            Parallel.ForEach<string>(unique_sequences, sequence => protein_sequence_groups.Add(new ProteinSequenceGroup(proteins.Where(p => p.sequence == sequence).ToList()))
+            );
+            return protein_sequence_groups.ToArray();
+        }
+
         private static void process_entries()
         {
             Parallel.ForEach<Protein>(proteins, p =>
             {
-                bool isMetCleaved = (methionine_cleavage && p.Begin == 0 && p.Sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
+                bool isMetCleaved = (methionine_cleavage && p.begin == 0 && p.sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
                 int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
-                string seq = p.Sequence.Substring(startPosAfterCleavage, (p.Sequence.Length - startPosAfterCleavage));
-                EnterTheoreticalProteformFamily(seq, p, p.Accession, isMetCleaved, null);
+                string seq = p.sequence.Substring(startPosAfterCleavage, (p.sequence.Length - startPosAfterCleavage));
+                EnterTheoreticalProteformFamily(seq, p, p.accession, isMetCleaved, null);
             });
         }
 
@@ -226,15 +236,15 @@ namespace PS_0._00
                 int prevLength = 0;
                 foreach (Protein p in shuffled_proteins)
                 {
-                    bool isMetCleaved = (methionine_cleavage && p.Begin == 0 && p.Sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
+                    bool isMetCleaved = (methionine_cleavage && p.begin == 0 && p.sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
                     int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
 
                     //From the concatenated proteome, cut a decoy sequence of a randomly selected length
-                    int hunkLength = p.Sequence.Length - startPosAfterCleavage;
+                    int hunkLength = p.sequence.Length - startPosAfterCleavage;
                     string hunk = giantProtein.Substring(prevLength, hunkLength);
                     prevLength += hunkLength;
 
-                    EnterTheoreticalProteformFamily(hunk, p, p.Accession + "_DECOY_" + decoyNumber, isMetCleaved, decoy_database_name);
+                    EnterTheoreticalProteformFamily(hunk, p, p.accession + "_DECOY_" + decoyNumber, isMetCleaved, decoy_database_name);
                 }
             });
         }
@@ -242,35 +252,35 @@ namespace PS_0._00
         private static void EnterTheoreticalProteformFamily(string seq, Protein prot, string accession, bool isMetCleaved, string decoy_database_name)
         {
             //Calculate the properties of this sequence
-            double unmodofied_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
+            double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
             int lysine_count = seq.Split('K').Length - 1;
             
             //Initialize a PTM combination list with "unmodified," and then add other PTMs 
-            List<OneUniquePtmGroup> unique_ptm_groups = new List<OneUniquePtmGroup>(new OneUniquePtmGroup[] { new OneUniquePtmGroup(0, new List<string>(new string[] { "unmodified" })) });
-            bool addPtmCombos = max_ptms > 0 && prot.PositionsAndPtms.Count() > 0;
-            if (addPtmCombos) unique_ptm_groups.AddRange(new PtmCombos().combos(max_ptms, uniprotModificationTable, prot.PositionsAndPtms));
+            List<PtmSet> unique_ptm_groups = new List<PtmSet>();
+            bool addPtmCombos = max_ptms > 0 && prot.ptms_by_position.Count() > 0;
+            if (addPtmCombos) unique_ptm_groups.AddRange(new PtmCombos(prot.ptms_by_position).get_combinations(max_ptms));
 
-            Parallel.ForEach<OneUniquePtmGroup>( unique_ptm_groups, group =>
+            Parallel.ForEach<PtmSet>( unique_ptm_groups, group =>
             {
-                List<string> ptm_list = group.unique_ptm_combination;
+                List<Ptm> ptm_list = group.ptm_combination.ToList();
                 double ptm_mass = group.mass;
-                double proteoform_mass = unmodofied_mass + group.mass;
+                double proteoform_mass = unmodified_mass + group.mass;
                 if (string.IsNullOrEmpty(decoy_database_name))
-                    proteoform_community.add(new TheoreticalProteoform(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, unmodofied_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
+                    proteoform_community.add(new TheoreticalProteoform(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
                 else
-                    proteoform_community.add(new TheoreticalProteoform(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, unmodofied_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
+                    proteoform_community.add(new TheoreticalProteoform(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
             });
         }
 
-        private static string GetOneGiantProtein(IEnumerable<Protein> proteins, bool mC)
+        private static string GetOneGiantProtein(IEnumerable<Protein> proteins, bool methionine_cleavage)
         {
             StringBuilder giantProtein = new StringBuilder(5000000); // this set-aside is autoincremented to larger values when necessary.
             foreach (Protein protein in proteins)
             {
-                string sequence = protein.Sequence;
-                bool isMetCleaved = mC && (sequence.Substring(0, 1) == "M");
+                string sequence = protein.sequence;
+                bool isMetCleaved = methionine_cleavage && (sequence.Substring(0, 1) == "M");
                 int startPosAfterMetCleavage = Convert.ToInt32(isMetCleaved);
-                switch (protein.Fragment)
+                switch (protein.fragment)
                 {
                     case "chain":
                     case "signal peptide":

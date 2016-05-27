@@ -52,7 +52,7 @@ namespace PS_0._00
                 from pf1 in pfs1
                 from pf2 in pfs2
                 where pf1.lysine_count == pf2.lysine_count
-                //where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
+                where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
             count_nearby_relations(relations);
@@ -83,16 +83,22 @@ namespace PS_0._00
         }
         public List<ProteoformRelation> relate_unequal_ee_lysine_counts()
         {
+            List<ProteoformRelation> ef_relations = new List<ProteoformRelation>();
             Proteoform[] pfs1 = this.experimental_proteoforms.ToArray();
             Proteoform[] pfs2 = this.experimental_proteoforms.ToArray();
-            List<ProteoformRelation> ef_relations = new List<ProteoformRelation>(
-                from pf1 in pfs1
-                from pf2 in pfs2
-                where pf1.lysine_count != pf2.lysine_count
-                //where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
-                select new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass)
+            Parallel.ForEach<Proteoform>(pfs1, pf1 =>
+            {
+                int num_equal_lysines = pfs2.Where(p => p.lysine_count == pf1.lysine_count).Count();
+                new Random().Shuffle(pfs2);
+                List<ProteoformRelation> ef_relation_addition = new List<ProteoformRelation>(
+                    from pf2 in pfs2
+                        .Where(p => p.lysine_count != pf1.lysine_count && Math.Abs(pf1.modified_mass - p.modified_mass) <= Lollipop.max_mass_difference)
+                        .Take(pfs2.Where(p => p.lysine_count == pf1.lysine_count).Count()) // take only the number that would be chosen with equal lysine counts from a randomized set
+                    select new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass)
                 );
-            count_nearby_relations(ef_relations);
+                count_nearby_relations(ef_relation_addition);
+                ef_relations.AddRange(ef_relation_addition);
+            });
             return ef_relations;
         }
 

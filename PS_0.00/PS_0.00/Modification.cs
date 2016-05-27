@@ -3,272 +3,136 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
-//Adapted from the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
 namespace PS_0._00
 {
     public class Modification
     {
+        //Adapted from the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
         // unused but available public string pA, cF, lC, tR, kW, dR;
 
-        public string Description { get; set; } //ID
-        public string Accession { get; set; } //AC
-        public string FeatureType { get; set; } //FT
-        public string Position { get; set; } //PP
-        public char[] TargetAAs { get; set; } //TG
-        public double MonoisotopicMassShift { get; set; } //MM
-        public double AverageMassShift { get; set; } //MA
+        public string description { get; set; } //ID
+        public string accession { get; set; } //AC
+        public string feature_type { get; set; } //FT
+        public string position { get; set; } //PP
+        public char[] target_aas { get; set; } //TG
+        public double monoisotopic_mass_shift { get; set; } //MM
+        public double average_mass_shift { get; set; } //MA
 
         public Modification(string description, string accession, string featureType, 
             string position, char[] targetAAs, double monoisotopicMassShift, double averageMassShift)
         {
-            this.Description = description;
-            this.Accession = accession;
-            this.FeatureType = featureType;
-            this.Position = position;
-            this.TargetAAs = targetAAs;
-            this.MonoisotopicMassShift = monoisotopicMassShift;
-            this.AverageMassShift = averageMassShift;
+            this.description = description;
+            this.accession = accession;
+            this.feature_type = featureType;
+            this.position = position;
+            this.target_aas = targetAAs;
+            this.monoisotopic_mass_shift = monoisotopicMassShift;
+            this.average_mass_shift = averageMassShift;
         }
 
         public override string ToString()
         {
-            return "Description=" + this.Description + " Accession=" + this.Accession + 
-                " FeatureType=" + this.FeatureType + " MonisotopicMass=" + this.MonoisotopicMassShift;
+            return "Description=" + this.description + " Accession=" + this.accession + 
+                " FeatureType=" + this.feature_type + " MonisotopicMass=" + this.monoisotopic_mass_shift;
         }
     }
 
-    public class OneUniquePtmGroup
+    public class Ptm
     {
-        public List<string> unique_ptm_combination { get; set; }
-        public double mass { get; set; }
-
-        public OneUniquePtmGroup(double mass, List<string> unique_ptm_combination)
+        public int position;
+        public Modification modification;
+        public Ptm(int position, Modification modification)
         {
-            this.mass = mass;
-            this.unique_ptm_combination = unique_ptm_combination;
-        }
-
-        public OneUniquePtmGroup()
-        {
-
+            this.position = position;
+            this.modification = modification;
         }
     }
 
-    class AllUniquePtmGroups
+    public class PtmSet
     {
-        private List<OneUniquePtmGroup> _all_unique_ptm_groups;
-        public List<OneUniquePtmGroup> unique_ptm_groups
+        public double mass;
+        public IEnumerable<Ptm> ptm_combination
         {
-            get { return _all_unique_ptm_groups; }
-            set { _all_unique_ptm_groups = value; }
+            get { return this.ptm_combination; }
+            set
+            {
+                this.ptm_combination = value;
+                this.mass = value.Select(ptm => ptm.modification.monoisotopic_mass_shift).Sum();
+            }
+        }
+        
+        public PtmSet(IEnumerable<Ptm> unique_ptm_combination)
+        {
+            this.ptm_combination = unique_ptm_combination;
         }
     }
 
-    class PtmCombos
+    public class PtmCombos
     {
-
-        public List<OneUniquePtmGroup> combos(int numPtmsNeeded, Dictionary<string, Modification> uniprotModificationTable, Dictionary<int, List<string>> somePtmData)
+        public List<Ptm> all_ptms;
+        public PtmCombos(Dictionary<int, List<Modification>> ptm_data)
         {
-
-            Dictionary<int, Dictionary<int, string>> sortedProteinPTMs = GetAnOrganizedList(somePtmData);//(index, dict(pos,ptm))
-            List<int[]> aPC = AllPossibleCombinations(numPtmsNeeded, sortedProteinPTMs.Keys.ToArray().Max() + 1);
-            List<int[]> uPC = UniquePositionCombinations(aPC, sortedProteinPTMs);
-            List<int[]> uMC = UniqueMassCombinations(uPC, sortedProteinPTMs, uniprotModificationTable);
-            return GetGroups(uMC, sortedProteinPTMs, uniprotModificationTable);
+            this.all_ptms = new List<Ptm>(
+                from position in ptm_data.Keys
+                from modification in ptm_data[position]
+                select new Ptm(position, modification)
+            );
         }
 
-        static List<OneUniquePtmGroup> GetGroups(List<int[]> uMC, Dictionary<int, Dictionary<int, string>> sPP, Dictionary<string, Modification> uniprotModificationTable)
+        //Gets unique-mass (given a tolerance) ptm combinations from all the possible ones without positional redundancy
+        //given a maximum number of ptms allowed on a theoretical protein
+        public List<PtmSet> get_combinations(int num_ptms_needed)
         {
-            //Console.Writeline("  CALL GetGroups:");
-            List<OneUniquePtmGroup> oupg = new List<OneUniquePtmGroup>();
-
-
-            //Console.Writeline("   CALL GetGroups  int[] in uMC count = "+uMC.Count);
-            foreach (int[] c in uMC)
+            List<PtmSet> combinations = all_possible_combinations(num_ptms_needed);
+            List<PtmSet> unique_positional_combinations = combinations.Where(set => set.ptm_combination.Select(ptm => ptm.position).Count() //where the length of the positions list
+                == new HashSet<int>(set.ptm_combination.Select(ptm => ptm.position)).Count).ToList(); //is the same as the number of unique positions
+            List<PtmSet> unique_mass_combinations = new List<PtmSet>();
+            foreach (PtmSet combination in unique_positional_combinations)
             {
-                //Console.Writeline("    GetGroups uMC int[]: "+String.Join("; ",c));
-
-                double[] p = new double[c.Length];
-                List<string> ptms_in_one_combo = new List<string>();
-                for (int i = 0; i < c.Length; i++)
-                {
-                    int myKey = sPP[c[i]].Keys.ToArray()[0];
-                    Dictionary<int, string> posPTM = sPP[c[i]];
-                    string ptm = posPTM[myKey];
-                    ptms_in_one_combo.Add(ptm);
-                    double mass = uniprotModificationTable[ptm].MonoisotopicMassShift;
-                    p[i] = mass;
-                }
-                OneUniquePtmGroup one = new OneUniquePtmGroup();
-                one.mass = p.Sum();
-                one.unique_ptm_combination = ptms_in_one_combo;
-                //Console.Writeline("\t\tGetGroups--ptms_in_one_combo: " + String.Join("; ", ptms_in_one_combo));
-                oupg.Add(one);
+                double lower_mass = combination.mass - Lollipop.ptmset_mass_tolerance;
+                double upper_mass = combination.mass + Lollipop.ptmset_mass_tolerance;
+                if (unique_mass_combinations.Where(c => c.mass >= lower_mass && c.mass <= upper_mass).Count() == 0)
+                    unique_mass_combinations.Add(combination);
             }
-
-            //Console.Writeline("   CALL GetGroups  oupg count = " + oupg.Count);
-
-            foreach (OneUniquePtmGroup won in oupg)
-            {
-                foreach (string item in won.unique_ptm_combination)
-                {
-                    //Console.Writeline("\t\tGetGroups--ptm combos to be returned: " + item);
-                }
-
-            }
-
-            return oupg;
+            return unique_mass_combinations;
         }
-        static List<int[]> UniqueMassCombinations(List<int[]> uPC, Dictionary<int, Dictionary<int, string>> sPP, Dictionary<string, Modification> uniprotModificationTable)
+
+        //For each length up to the maximum number of ptms (or the max number of modifications in this list),
+        //generate all the combinations, with the shortest combinations first, and with the modifications at the first positions first
+        private List<PtmSet> all_possible_combinations(int max_length)
         {
-            //Console.Writeline("** Call UniqueMassCombinations");
-            List<int[]> uMC = new List<int[]>();
-            List<double> allPosCat = new List<double>();
-
-            foreach (int[] c in uPC)
-            {
-                //Console.Writeline("\tUniqueMassCombinations\tint[] c" + String.Join(" ",c));
-                double[] each_ptm_mass_array = new double[c.Length];
-                for (int i = 0; i < c.Length; i++)
-                {
-                    Dictionary<int, string> posPTM = new Dictionary<int, string>();
-
-                    posPTM = sPP[c[i]];
-
-                    int one_position = -1;
-                    string one_ptm = null;
-
-                    foreach (KeyValuePair<int, string> kvp in posPTM)
-                    {
-                        one_position = kvp.Key;
-                        one_ptm = kvp.Value;
-                    }
-
-                    double one_ptm_mass = uniprotModificationTable[one_ptm].MonoisotopicMassShift;
-                    each_ptm_mass_array[i] = one_ptm_mass;
-                }
-
-                double comboMass = each_ptm_mass_array.Sum();//sum of all ptm masses in one combination
-
-                bool found = false;
-
-                foreach (double set_mass in allPosCat)
-                {
-                    ////Console.Writeline("set_mass: {0} combo_mass: {1}",set_mass,comboMass);
-                    if (comboMass >= (set_mass - 0.00001) && comboMass <= (set_mass + 0.00001))
-                    {
-                        ////Console.Writeline("Inside ---> set_mass: {0} combo_mass: {1}", set_mass, comboMass);
-                        found = true;
-                        break;
-                    }
-                }
-
-                if (!(found))
-                {
-                    ////Console.Writeline("------combo_mass: {0}", comboMass);
-                    allPosCat.Add(comboMass);
-                    uMC.Add(c);
-                }
-            }
-            return uMC;
-        }
-        static List<int[]> UniquePositionCombinations(List<int[]> aPC, Dictionary<int, Dictionary<int, string>> sPP)
-        {
-            //Console.Writeline("## Call UniquePositionsCombinations");
-
-            List<int[]> uPC = new List<int[]>();
-            List<string> allPosCat = new List<string>();
-
-            foreach (int[] c in aPC)
-            {
-                //Console.Writeline("\t\t##UniquePositionCombinations\tint[] c" + String.Join(" ", c));
-
-                int[] p = new int[c.Length];
-                for (int i = 0; i < c.Length; i++)
-                {
-                    p[i] = sPP[c[i]].Keys.ToArray()[0];//this adds the amino acid position to the array
-                }
-
-                string pCat = String.Join(";", p);
-
-                if (!(allPosCat.Contains(pCat)))
-                {
-                    allPosCat.Add(pCat);
-                    uPC.Add(c);
-                }
-            }
-
-            return uPC;
-        }
-        static List<int[]> AllPossibleCombinations(int subset, int fullset)
-        {
-            subset = Math.Min(subset, fullset);
-            //Console.Writeline("$$$APC CALLED subset: {0}\tfullset: {1}", subset, fullset);
-
-            List<int[]> combos = new List<int[]>();
-
-            for (int i = 1; i <= subset; i++)
-            {
-                //Console.Writeline("   $$$APC subset loop");
-                foreach (int[] c in Combinations(i, fullset))
-                {
-                    combos.Add(c.ToArray());
-                    //Console.Writeline("\t\t\t$$$ APC int []" + String.Join(", ", c));
-                }
-            }
+            List<PtmSet> combos = new List<PtmSet>();
+            max_length = Math.Min(max_length, this.all_ptms.Count);
+            Parallel.For(1, max_length, i => Parallel.ForEach<PtmSet>(combinations(i), combination => combos.Add(combination)));
             return combos;
         }
 
-        static IEnumerable<int[]> Combinations(int subset, int fullset)
+        //Generates all the combinations of a certain length
+        private IEnumerable<PtmSet> combinations(int combination_length)
         {
-            int[] result = new int[subset];
+            Ptm[] result = new Ptm[combination_length];
             Stack<int> stack = new Stack<int>();
             stack.Push(0);
 
             while (stack.Count > 0)
             {
-                int index = stack.Count - 1;
-                int value = stack.Pop();
+                int result_index = stack.Count - 1;
+                int mod_index = stack.Pop();
+                Ptm value = this.all_ptms[mod_index];
 
-                while (value < fullset)
+                while (mod_index < this.all_ptms.Count)
                 {
-                    result[index++] = value++;
-                    stack.Push(value);
-                    if (index == subset)
+                    result[result_index++] = this.all_ptms[mod_index++];
+                    stack.Push(mod_index);
+                    if (result_index == combination_length)
                     {
-                        yield return result;
+                        yield return new PtmSet(result);
                         break;
                     }
                 }
             }
         }
-
-        static Dictionary<int, Dictionary<int, string>> GetAnOrganizedList(Dictionary<int, List<string>> pAP)
-        {
-            //Console.WriteLine("GAOL CALLED");
-
-            Dictionary<int, Dictionary<int, string>> sorted = new Dictionary<int, Dictionary<int, string>>();
-
-            int count = 0;
-
-            var keyList = pAP.Keys.ToList();
-            keyList.Sort();
-
-            foreach (var key in keyList)
-            {
-                pAP[key].Sort();
-                foreach (string ptm in pAP[key])
-                {
-                    Dictionary<int, string> oneMod = new Dictionary<int, string>();
-                    oneMod.Add(key, ptm);
-                    sorted.Add(count, oneMod);
-                    //Console.WriteLine("key: {0}\tptm: {1}\tcount: {2}", key, ptm, count);
-                    count++;
-                }
-            }
-            return sorted;
-        }
-
     }
 }
