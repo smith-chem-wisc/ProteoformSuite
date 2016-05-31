@@ -467,7 +467,8 @@ namespace PS_0._00
                 PF_Group_Num++;
             }
         }
-        private void AssignColumns()
+
+        public void AssignColumns()
         {
             ET_Groups.Columns.Add("Accession", typeof(string));
             ET_Groups.Columns.Add("Name", typeof(string));
