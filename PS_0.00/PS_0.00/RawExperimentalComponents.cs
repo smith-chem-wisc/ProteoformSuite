@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -37,6 +38,7 @@ namespace PS_0._00
             }
 
             FillRawExpComponentsTable();
+            DataToCSV(GlobalData.rawExperimentalComponents);
 
         }
 
@@ -46,6 +48,52 @@ namespace PS_0._00
             GlobalData.rawExperimentalComponents = GetRawComponents();
             GlobalData.rawExperimentalChargeStateData = GetRawChargeStates();
             CalculateWeightedMonoisotopicMass();
+        }
+
+        private void DataToCSV(DataTable dt)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (DataColumn col in dt.Columns)
+            {
+                sb.Append(col.ColumnName + ',');
+            }
+
+            sb.Remove(sb.Length - 1, 1);
+            sb.Append(Environment.NewLine);
+
+            foreach (DataRow row in dt.Rows)
+            {
+                for (int i = 0; i < dt.Columns.Count; i++)
+                {
+                    sb.Append(row[i].ToString() + ",");
+                }
+
+                sb.Append(Environment.NewLine);
+            }
+
+            string path = @"C:\Users\Michael\Downloads\garbage\debug_text.txt";
+            // This text is added only once to the file.
+            if (!File.Exists(path))
+            {
+                // Create a file to write to.
+                using (StreamWriter sw = File.CreateText(path))
+                {
+                    sw.WriteLine("");
+                }
+            }
+
+            //foreach (string tN in sb.ToString())
+            //{
+            //    // This text is always added, making the file longer over time
+            //    // if it is not deleted.
+            //    using (StreamWriter sw = File.AppendText(path))
+            //    {
+            //        sw.WriteLine(tN);
+            //    }
+            //}
+
+            File.WriteAllText(path, sb.ToString());
         }
 
         private void FillRawExpComponentsTable()
@@ -149,37 +197,78 @@ namespace PS_0._00
 
         private void CalculateWeightedMonoisotopicMass()
         {
-            foreach (DataTable table in GlobalData.rawExperimentalChargeStateData.Tables)
-            {
-                string Filename = "";
-                int entryNumber = 0;
-                object sumObject; 
-                sumObject = table.Compute("Sum(Intensity)", "");
-                decimal intensitySum = Convert.ToDecimal(sumObject);
-                decimal weightedMonoisotopicMass = 0;
-                foreach (DataRow row in table.Rows)
-                {
-                    Filename = row["Filename"].ToString();
-                    entryNumber = int.Parse(row["No#"].ToString());
-                    weightedMonoisotopicMass = weightedMonoisotopicMass + (decimal.Parse(row["intensity"].ToString())/intensitySum*(decimal.Parse(row["Calculated Mass"].ToString())));
-                }
-                string expression = GlobalData.rawExperimentalComponents.Columns[11].ColumnName + " = '"+ Filename +"'"
-                    + " AND [" + GlobalData.rawExperimentalComponents.Columns[0].ColumnName + "] = " + entryNumber;// you gotta have single quotes on the filename or this don't work. took me forever to figure that out.
 
-                DataRow[] rawComponentRows = GlobalData.rawExperimentalComponents.Select(expression);
+            //ConcurrentBag<List<Dictionary<string, decimal>>> dictList = new ConcurrentBag<List<Dictionary<string, decimal>>>();
+
+            var dictList = new ConcurrentBag<string>();
+
+            List<DataTable> rECSDs = new List<DataTable>();
+            foreach (DataTable dt in GlobalData.rawExperimentalChargeStateData.Tables)
+            {
+                rECSDs.Add(dt);
+            }
+
+            ParallelLoopResult rlt = Parallel.ForEach(rECSDs, table => 
+            {
+                dictList.Add(expressionMonoIsotopicMass(table));
+            });
+
+            rECSDs.Clear();
+
+            foreach (string exp in dictList)
+            {
+                string[] expMass = exp.Split('|');
+                DataRow[] rawComponentRows = GlobalData.rawExperimentalComponents.Select(expMass[0]);
 
                 foreach (DataRow row in rawComponentRows)
                 {
-                    row["Weighted Monoisotopic Mass"] = weightedMonoisotopicMass;
+                    row["Weighted Monoisotopic Mass"] = Convert.ToDecimal(expMass[1]);
                 }
 
             }
+
         }
+
+        private string expressionMonoIsotopicMass(DataTable table)
+        {
+            string result;
+
+            string Filename = "";
+            int entryNumber = 0;
+            object sumObject;
+            sumObject = table.Compute("Sum(Intensity)", "");
+            decimal intensitySum = Convert.ToDecimal(sumObject);
+            decimal weightedMonoisotopicMass = 0;
+            foreach (DataRow row in table.Rows)
+            {
+                Filename = row["Filename"].ToString();
+                entryNumber = int.Parse(row["No#"].ToString());
+                weightedMonoisotopicMass = weightedMonoisotopicMass + (decimal.Parse(row["intensity"].ToString()) / intensitySum * (decimal.Parse(row["Calculated Mass"].ToString())));
+            }
+            string expression = GlobalData.rawExperimentalComponents.Columns[11].ColumnName + " = '" + Filename + "'"
+                + " AND [" + GlobalData.rawExperimentalComponents.Columns[0].ColumnName + "] = " + entryNumber;// you gotta have single quotes on the filename or this don't work. took me forever to figure that out.
+
+            //DataRow[] rawComponentRows = GlobalData.rawExperimentalComponents.Select(expression);
+
+            //foreach (DataRow row in rawComponentRows)
+            //{
+            //    row["Weighted Monoisotopic Mass"] = weightedMonoisotopicMass;
+            //}
+
+            result = expression +"|"+ weightedMonoisotopicMass.ToString();
+
+            return result;
+        }
+
 
         private DataSet GetRawChargeStates()
         {
             DataSet rawChargeStateTables = new DataSet();
-            List<DataTable> rCSTL = new List<DataTable>();
+
+            ConcurrentBag<DataTable> rCSTL = new ConcurrentBag<DataTable>();
+            //ConcurrentBag<string> debug_text = new ConcurrentBag<string>();
+
+            //List<DataTable> rCSTL = new List<DataTable>();
 
             List<DataTable> bigTables = new List<DataTable>();
 
@@ -207,49 +296,83 @@ namespace PS_0._00
 
                 DataTable tableCopy = table.Copy();
 
-                Parallel.For(1, maxEntry, i =>
-                {
+                var idNumberList = Enumerable.Range(1, maxEntry).ToList();
 
-                    string expression = "[" + tableCopy.Columns[5].ColumnName
-                        + "] is null AND [" + tableCopy.Columns[0].ColumnName + "] = " + i
-                        + " AND [" + tableCopy.Columns[1].ColumnName + "] <> 'Charge State'";
-
-                    DataRow[] chargeStates = tableCopy.Select(expression);
-
-                    string tableName = chargeStates[0]["Filename"].ToString() + "_" + i.ToString();
-                    DataTable csTable = new DataTable(tableName);
-                    csTable.Columns.Add("Filename", typeof(string));
-                    csTable.Columns.Add("No#", typeof(int));
-                    csTable.Columns.Add("Charge State", typeof(int));
-                    csTable.Columns.Add("Intensity", typeof(double));
-                    csTable.Columns.Add("MZ Centroid", typeof(double));
-                    csTable.Columns.Add("Calculated Mass", typeof(double));
-
-                    foreach (DataRow row in chargeStates)
-                    {
-                        csTable.Rows.Add(
-                            row[11].ToString(),
-                            int.Parse(row[0].ToString()),
-                            int.Parse(row[1].ToString()),
-                            double.Parse(row[2].ToString()),
-                            double.Parse(row[3].ToString()),
-                            double.Parse(row[4].ToString())
-                            );
-                    }
-                    rCSTL.Add(csTable);
-                });
+                //var csTableCollection = new ConcurrentBag<DataTable>();
+                ParallelLoopResult rlt = Parallel.ForEach(idNumberList, id =>
+                 {
+                     //debug_text.Add(id.ToString());
+                     rCSTL.Add(rCSTLParallel(id, tableCopy));
+                 });
                 tableCopy.Clear();
             });
+
+            //string path = @"C:\Users\Michael\Downloads\garbage\debug_text.txt";
+            //// This text is added only once to the file.
+            //if (!File.Exists(path))
+            //{
+            //    // Create a file to write to.
+            //    using (StreamWriter sw = File.CreateText(path))
+            //    {
+            //        sw.WriteLine("");
+            //    }
+            //}
+
+            //foreach (string tN in debug_text)
+            //{
+            //    // This text is always added, making the file longer over time
+            //    // if it is not deleted.
+            //    using (StreamWriter sw = File.AppendText(path))
+            //    {
+            //        sw.WriteLine(tN);
+            //    }
+            //}
+
 
             foreach (DataTable tbl in rCSTL)
             {
                 rawChargeStateTables.Tables.Add(tbl);
             }
 
-            rCSTL.Clear();
+            DataTable dtbl;
+            while (rCSTL.TryTake(out dtbl)) ;
+
             bigTables.Clear();
 
             return rawChargeStateTables;
+        }
+
+        private DataTable rCSTLParallel(int i, DataTable tableCopy)
+        {
+            string expression = "[" + tableCopy.Columns[5].ColumnName
+                        + "] is null AND [" + tableCopy.Columns[0].ColumnName + "] = " + i
+                        + " AND [" + tableCopy.Columns[1].ColumnName + "] <> 'Charge State'";
+
+            DataRow[] chargeStates = tableCopy.Select(expression);
+
+            string tableName = chargeStates[0]["Filename"].ToString() + "_" + i.ToString();
+
+            DataTable csTable = new DataTable(tableName);
+            csTable.Columns.Add("Filename", typeof(string));
+            csTable.Columns.Add("No#", typeof(int));
+            csTable.Columns.Add("Charge State", typeof(int));
+            csTable.Columns.Add("Intensity", typeof(double));
+            csTable.Columns.Add("MZ Centroid", typeof(double));
+            csTable.Columns.Add("Calculated Mass", typeof(double));
+
+            foreach (DataRow row in chargeStates)
+            {
+                csTable.Rows.Add(
+                    row[11].ToString(),
+                    int.Parse(row[0].ToString()),
+                    int.Parse(row[1].ToString()),
+                    double.Parse(row[2].ToString()),
+                    double.Parse(row[3].ToString()),
+                    double.Parse(row[4].ToString())
+                    );
+            }
+
+            return csTable;
         }
 
         private DataTable ReadExcelFile(string filename)
