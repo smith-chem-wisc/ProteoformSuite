@@ -5,7 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
@@ -29,6 +29,7 @@ namespace PS_0._00
         //  Initialize Forms END
 
         OpenFileDialog methodFileOpen = new OpenFileDialog();
+        FolderBrowserDialog resultsFolderOpen = new FolderBrowserDialog();
         SaveFileDialog methodFileSave = new SaveFileDialog();
 
         public Form1()
@@ -217,18 +218,91 @@ namespace PS_0._00
                             break;
                     }
                 }
+
+                string working_directory;
+                MessageBox.Show("Choose a results folder.");
+                DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
+                if (dr == System.Windows.Forms.DialogResult.OK)
+                    working_directory = this.resultsFolderOpen.SelectedPath;
+                else
+                    working_directory = Path.GetDirectoryName(GlobalData.deconResultsFileNames[0]);
+
                 MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
-                rawExperimentalComponents.pull_raw_experimental_components();
-                neuCodePairs.NeuCodePairs_Load(neuCodePairs, null);
-                aggregatedProteoforms.AggregatedProteoforms_Load(aggregatedProteoforms, null);
-                theoreticalDatabase.make_databases();
-                experimentalTheoreticalComparison.run_comparison();
-                experimentDecoyComparison.run_comparison();
-                experimentExperimentComparison.run_comparison();
-                decoyDecoyComparison.run_comparison();
-                proteoformFamilyAssignment.ProteoformFamilyAssignment_Load(proteoformFamilyAssignment, null);
-                MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
+                Parallel.Invoke(
+                    () => process_raw_components(working_directory),
+                    () => theoreticalDatabase.make_databases()
+                );
+                DataToCSV(GlobalData.theoreticalAndDecoyDatabases.Tables["Target"], working_directory + "\\theoretical_target_database.csv");
+                Parallel.Invoke(
+                    () => experimentalTheoreticalComparison.run_comparison(),
+                    () => experimentExperimentComparison.run_comparison()
+                    //() => experimentDecoyComparison.run_comparison(),
+                    //() => decoyDecoyComparison.run_comparison()
+                );
+                DataToCSV(GlobalData.experimentTheoreticalPairs, working_directory + "\\experimental_theoretical_pairs.csv");
+                DataToCSV(GlobalData.etPeakList, working_directory + "\\experimental_theoretical_deltaM_peaks.csv");
+                DataToCSV(GlobalData.experimentExperimentPairs, working_directory + "\\experimental_experimental_pairs.csv");
+                DataToCSV(GlobalData.eePeakList, working_directory + "\\experimental_experimental_deltaM_peaks.csv");
+                proteoformFamilyAssignment.AssignColumns();
+                proteoformFamilyAssignment.assign_families();
+                DataToCSV(GlobalData.ProteoformFamilyMetrics, working_directory + "\\proteoform_family_metrics.csv");
+                MessageBox.Show("Successfully ran method and exported results to CSV files. Feel free to explore using the Processing Phase menu.");
             }
+        }
+
+        private void process_raw_components(string working_directory)
+        {
+            rawExperimentalComponents.pull_raw_experimental_components();
+            DataToCSV(GlobalData.rawExperimentalComponents, working_directory + "\\raw_experimental_components.csv");
+            neuCodePairs.find_neucode_pairs();
+            DataToCSV(GlobalData.rawNeuCodePairs, working_directory + "\\raw_neucode_pairs.csv");
+            aggregatedProteoforms.aggregate_proteoforms();
+            DataToCSV(GlobalData.acceptableNeuCodeLightProteoforms, working_directory + "\\acceptable_neucode_light_proteoforms.csv");
+            DataToCSV(GlobalData.aggregatedProteoforms, working_directory + "\\aggregated_proteoforms.csv");
+        }
+
+        private void DataToCSV(DataTable dt, string out_filename)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (DataColumn col in dt.Columns)
+            {
+                sb.Append(col.ColumnName + ',');
+            }
+
+            sb.Remove(sb.Length - 1, 1);
+            sb.Append(Environment.NewLine);
+
+            foreach (DataRow row in dt.Rows)
+            {
+                for (int i = 0; i < dt.Columns.Count; i++)
+                {
+                    sb.Append(row[i].ToString() + ",");
+                }
+                sb.Append(Environment.NewLine);
+            }
+
+            // This text is added only once to the file.
+            if (!File.Exists(out_filename))
+            {
+                // Create a file to write to.
+                using (StreamWriter sw = File.CreateText(out_filename))
+                {
+                    sw.WriteLine("");
+                }
+            }
+
+            //foreach (string tN in sb.ToString())
+            //{
+            //    // This text is always added, making the file longer over time
+            //    // if it is not deleted.
+            //    using (StreamWriter sw = File.AppendText(path))
+            //    {
+            //        sw.WriteLine(tN);
+            //    }
+            //}
+
+            File.WriteAllText(out_filename, sb.ToString());
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)

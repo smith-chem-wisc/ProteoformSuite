@@ -21,6 +21,7 @@ namespace PS_0._00
         public ExperimentTheoreticalComparison()
         {
             InitializeComponent();
+            InitializeParameterSet();
             this.dgv_ET_Peak_List.MouseClick += new MouseEventHandler(dgv_ET_Peak_List_CellClick);
             this.ct_ET_Histogram.MouseMove += new MouseEventHandler(ct_ET_Histogram_MouseMove);
             this.ct_ET_peakList.MouseMove += new MouseEventHandler(ct_ET_peakList_MouseMove);
@@ -30,24 +31,26 @@ namespace PS_0._00
 
         public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor;
             if (GlobalData.experimentTheoreticalPairs.Columns.Count == 0)
             {
                 run_comparison();
             }
             GraphETHistogram();
-            FillETPeakListTable();
             FillETPairsGridView();
+            FillETPeakGridView();
             GraphETPairsList();
+            UpdateFiguresOfMerit();
+            this.Cursor = Cursors.Default;
         }
 
         public void run_comparison()
         {
             formLoadEvent = true;
-            InitializeParameterSet();
             FindAllETPairs();
             CalculateRunningSums();
             etPeaksList = InitializeETPeakListTable();
-            UpdateFiguresOfMerit();
+            FillETPeakListTable();
             formLoadEvent = false;
         }
 
@@ -419,8 +422,10 @@ namespace PS_0._00
                 GlobalData.experimentTheoreticalPairs = etPairsList;
             }
             GlobalData.etPeakList = etPeaksList;
+        }
 
-
+        private void FillETPeakGridView()
+        {
             dgv_ET_Peak_List.DataSource = etPeaksList;
             //dgv_ET_Peak_List.ReadOnly = true;
             dgv_ET_Peak_List.Columns["Average Delta Mass"].ReadOnly = true;
@@ -430,7 +435,6 @@ namespace PS_0._00
             dgv_ET_Peak_List.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
             dgv_ET_Peak_List.EndEdit();
             dgv_ET_Peak_List.Refresh();
-
         }
 
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
