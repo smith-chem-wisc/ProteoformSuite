@@ -46,6 +46,8 @@
             this.tb_uniprotXmlDatabase = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.lb_deconResults = new System.Windows.Forms.ListBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.lb_ddPairs = new System.Windows.Forms.ListBox();
             this.SuspendLayout();
             // 
             // label1
@@ -79,6 +81,7 @@
             // 
             this.tb_RawExperimentalComponents.Location = new System.Drawing.Point(196, 94);
             this.tb_RawExperimentalComponents.Name = "tb_RawExperimentalComponents";
+            this.tb_RawExperimentalComponents.ReadOnly = true;
             this.tb_RawExperimentalComponents.Size = new System.Drawing.Size(100, 20);
             this.tb_RawExperimentalComponents.TabIndex = 5;
             // 
@@ -86,6 +89,7 @@
             // 
             this.tb_neucodePairs.Location = new System.Drawing.Point(196, 123);
             this.tb_neucodePairs.Name = "tb_neucodePairs";
+            this.tb_neucodePairs.ReadOnly = true;
             this.tb_neucodePairs.Size = new System.Drawing.Size(100, 20);
             this.tb_neucodePairs.TabIndex = 6;
             // 
@@ -93,6 +97,7 @@
             // 
             this.tb_ETPeaks.Location = new System.Drawing.Point(196, 244);
             this.tb_ETPeaks.Name = "tb_ETPeaks";
+            this.tb_ETPeaks.ReadOnly = true;
             this.tb_ETPeaks.Size = new System.Drawing.Size(100, 20);
             this.tb_ETPeaks.TabIndex = 8;
             // 
@@ -109,6 +114,7 @@
             // 
             this.tb_ETPairs.Location = new System.Drawing.Point(196, 214);
             this.tb_ETPairs.Name = "tb_ETPairs";
+            this.tb_ETPairs.ReadOnly = true;
             this.tb_ETPairs.Size = new System.Drawing.Size(100, 20);
             this.tb_ETPairs.TabIndex = 10;
             // 
@@ -125,6 +131,7 @@
             // 
             this.tb_aggregatedProteoforms.Location = new System.Drawing.Point(196, 153);
             this.tb_aggregatedProteoforms.Name = "tb_aggregatedProteoforms";
+            this.tb_aggregatedProteoforms.ReadOnly = true;
             this.tb_aggregatedProteoforms.Size = new System.Drawing.Size(100, 20);
             this.tb_aggregatedProteoforms.TabIndex = 12;
             // 
@@ -141,6 +148,7 @@
             // 
             this.tb_EEPairs.Location = new System.Drawing.Point(196, 275);
             this.tb_EEPairs.Name = "tb_EEPairs";
+            this.tb_EEPairs.ReadOnly = true;
             this.tb_EEPairs.Size = new System.Drawing.Size(100, 20);
             this.tb_EEPairs.TabIndex = 14;
             // 
@@ -157,6 +165,7 @@
             // 
             this.tb_EEPeaks.Location = new System.Drawing.Point(196, 307);
             this.tb_EEPeaks.Name = "tb_EEPeaks";
+            this.tb_EEPeaks.ReadOnly = true;
             this.tb_EEPeaks.Size = new System.Drawing.Size(100, 20);
             this.tb_EEPeaks.TabIndex = 16;
             // 
@@ -173,6 +182,7 @@
             // 
             this.tb_uniprotXmlDatabase.Location = new System.Drawing.Point(196, 182);
             this.tb_uniprotXmlDatabase.Name = "tb_uniprotXmlDatabase";
+            this.tb_uniprotXmlDatabase.ReadOnly = true;
             this.tb_uniprotXmlDatabase.Size = new System.Drawing.Size(503, 20);
             this.tb_uniprotXmlDatabase.TabIndex = 18;
             // 
@@ -187,6 +197,7 @@
             // 
             // lb_deconResults
             // 
+            this.lb_deconResults.BackColor = System.Drawing.Color.WhiteSmoke;
             this.lb_deconResults.FormattingEnabled = true;
             this.lb_deconResults.ImeMode = System.Windows.Forms.ImeMode.Off;
             this.lb_deconResults.Location = new System.Drawing.Point(15, 28);
@@ -195,11 +206,33 @@
             this.lb_deconResults.Size = new System.Drawing.Size(684, 43);
             this.lb_deconResults.TabIndex = 4;
             // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(21, 340);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(98, 13);
+            this.label10.TabIndex = 19;
+            this.label10.Text = "Decoy Decoy Pairs";
+            // 
+            // lb_ddPairs
+            // 
+            this.lb_ddPairs.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.lb_ddPairs.FormattingEnabled = true;
+            this.lb_ddPairs.ImeMode = System.Windows.Forms.ImeMode.Off;
+            this.lb_ddPairs.Location = new System.Drawing.Point(24, 356);
+            this.lb_ddPairs.Name = "lb_ddPairs";
+            this.lb_ddPairs.SelectionMode = System.Windows.Forms.SelectionMode.None;
+            this.lb_ddPairs.Size = new System.Drawing.Size(75, 225);
+            this.lb_ddPairs.TabIndex = 20;
+            // 
             // ResultsSummary
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(711, 596);
+            this.Controls.Add(this.lb_ddPairs);
+            this.Controls.Add(this.label10);
             this.Controls.Add(this.tb_uniprotXmlDatabase);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.tb_EEPeaks);
@@ -246,5 +279,7 @@
         private System.Windows.Forms.TextBox tb_uniprotXmlDatabase;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ListBox lb_deconResults;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ListBox lb_ddPairs;
     }
 }
