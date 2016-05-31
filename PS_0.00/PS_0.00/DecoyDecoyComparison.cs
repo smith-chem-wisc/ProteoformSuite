@@ -85,13 +85,13 @@ namespace PS_0._00
                     DataRow[] decoysWithSameKCount = decoyDatabase.Select(expression);
 
 
-                    //chooses random decoy with same K count. 
-                    //int index = randGen.Next(decoysWithSameKCount.Length); 
+                    ////chooses random decoy with same K count. 
+                    //int index = randGen.Next(decoysWithSameKCount.Length);
                     //dt.ImportRow(decoysWithSameKCount[index]);
-                    //decoysWithSameKCount[index].Delete();
+                    //string accessionNumber = decoysWithSameKCount[index]["Accession"].ToString();
+
 
                     //chooses decoy that's closest to mass of aggregate proteoform
-                   //might be more efficeint ways to do this, let LS know
                     int closestMassProteoform = 0;
                     for (int m = 0; m < decoysWithSameKCount.Length; m++)
                     {
@@ -103,12 +103,19 @@ namespace PS_0._00
                             closestMassProteoform = m;
                         }
                     }
-
+                    string accessionNumber = decoysWithSameKCount[closestMassProteoform]["Accession"].ToString();
                     dt.ImportRow(decoysWithSameKCount[closestMassProteoform]);
-                    decoysWithSameKCount[closestMassProteoform].Delete();
+
+                    for (int j = 0; j < decoysWithSameKCount.Length; j++)
+                    {
+                        if (decoysWithSameKCount[j]["Accession"].ToString().Equals(accessionNumber))
+                        {
+                            decoysWithSameKCount[j].Delete();
+                        }
+                    }
                 }
 
-                GlobalData.decoyDecoyDatabases.Tables.Add(dt);
+                    GlobalData.decoyDecoyDatabases.Tables.Add(dt);
             }
         }
 

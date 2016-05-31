@@ -72,16 +72,20 @@ namespace PS_0._00
                 sb.Append(Environment.NewLine);
             }
 
-            string path = @"C:\Users\Michael\Downloads\garbage\debug_text.txt";
-            // This text is added only once to the file.
-            if (!File.Exists(path))
-            {
-                // Create a file to write to.
-                using (StreamWriter sw = File.CreateText(path))
-                {
-                    sw.WriteLine("");
-                }
-            }
+
+
+            //this caused an exception to be thrown on my computer. I also commented out
+             //line 100 below. -LS
+            // string path = @"C:\Users\Michael\Downloads\garbage\debug_text.txt";
+            //// This text is added only once to the file.
+            //if (!File.Exists(path))
+            //{
+            //    // Create a file to write to.
+            //    using (StreamWriter sw = File.CreateText(path))
+            //    {
+            //        sw.WriteLine("");
+            //    }
+            //}
 
             //foreach (string tN in sb.ToString())
             //{
@@ -93,7 +97,7 @@ namespace PS_0._00
             //    }
             //}
 
-            File.WriteAllText(path, sb.ToString());
+           // File.WriteAllText(path, sb.ToString());
         }
 
         private void FillRawExpComponentsTable()
