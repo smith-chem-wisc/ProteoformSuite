@@ -25,13 +25,18 @@ namespace PS_0._00
         {
             if (GlobalData.rawNeuCodePairs.Columns.Count == 0)
             {
-                GlobalData.rawNeuCodePairs = CreateRawNeuCodePairsDataTable();
+                find_neucode_pairs();
             }
-            Dictionary<string, List<string>> fileNameScanRanges = GetSFileNameScanRangesList();
-            FillRawNeuCodePairsDataTable(fileNameScanRanges);
             FillNeuCodePairsDGV();
             GraphLysineCount();
             GraphIntensityRatio();
+        }
+
+        public void find_neucode_pairs()
+        {
+            GlobalData.rawNeuCodePairs = CreateRawNeuCodePairsDataTable();
+            Dictionary<string, List<string>> fileNameScanRanges = GetSFileNameScanRangesList();
+            FillRawNeuCodePairsDataTable(fileNameScanRanges);
         }
 
         Point? prevPosition = null;
