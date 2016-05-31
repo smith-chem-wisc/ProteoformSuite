@@ -22,6 +22,7 @@ namespace PS_0._00
         public ExperimentExperimentComparison()
         {
             InitializeComponent();
+            InitializeParameterSet();
             this.dgv_EE_Peak_List.MouseClick += new MouseEventHandler(dgv_EE_Peak_List_CellClick);
             this.ct_EE_Histogram.MouseMove += new MouseEventHandler(ct_EE_Histogram_MouseMove);
             this.ct_EE_peakList.MouseMove += new MouseEventHandler(ct_EE_peakList_MouseMove);
@@ -31,27 +32,27 @@ namespace PS_0._00
 
         public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor;
             if (GlobalData.experimentExperimentPairs.Columns.Count == 0)
             {
                 run_comparison();
             }
             GraphEEHistogram();
-            FillEEPeakListTable();
             FillEEPairsGridView();
+            FillEEPeakGridView();
             GraphEEPairsList();
+            UpdateFiguresOfMerit();
+            this.Cursor = Cursors.Default;
         }
 
         public void run_comparison()
         {
-            this.Cursor = Cursors.WaitCursor;
             formLoadEvent = true;
-            InitializeParameterSet();
             FindAllEEPairs();
             CalculateRunningSums();
             eePeakList = InitializeEEPeakListTable();
-            UpdateFiguresOfMerit();
+            FillEEPeakListTable();
             formLoadEvent = false;
-            this.Cursor = Cursors.Default;
         }
 
         private void RunTheGamut()
@@ -364,7 +365,10 @@ namespace PS_0._00
             }
 
             GlobalData.eePeakList = eePeakList;
+        }
 
+        private void FillEEPeakGridView()
+        {
             dgv_EE_Peak_List.DataSource = eePeakList;
             dgv_EE_Peak_List.Columns["Average Delta Mass"].ReadOnly = true;
             dgv_EE_Peak_List.Columns["Peak Count"].ReadOnly = true;
@@ -373,7 +377,6 @@ namespace PS_0._00
             dgv_EE_Peak_List.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
             dgv_EE_Peak_List.EndEdit();
             dgv_EE_Peak_List.Refresh();
-
         }
 
         private DataTable InitializeEEPeakListTable()
