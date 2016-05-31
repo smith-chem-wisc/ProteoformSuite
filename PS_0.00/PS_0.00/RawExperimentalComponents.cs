@@ -38,8 +38,6 @@ namespace PS_0._00
             }
 
             FillRawExpComponentsTable();
-            DataToCSV(GlobalData.rawExperimentalComponents);
-
         }
 
         public void pull_raw_experimental_components()
@@ -48,52 +46,6 @@ namespace PS_0._00
             GlobalData.rawExperimentalComponents = GetRawComponents();
             GlobalData.rawExperimentalChargeStateData = GetRawChargeStates();
             CalculateWeightedMonoisotopicMass();
-        }
-
-        private void DataToCSV(DataTable dt)
-        {
-            StringBuilder sb = new StringBuilder();
-
-            foreach (DataColumn col in dt.Columns)
-            {
-                sb.Append(col.ColumnName + ',');
-            }
-
-            sb.Remove(sb.Length - 1, 1);
-            sb.Append(Environment.NewLine);
-
-            foreach (DataRow row in dt.Rows)
-            {
-                for (int i = 0; i < dt.Columns.Count; i++)
-                {
-                    sb.Append(row[i].ToString() + ",");
-                }
-
-                sb.Append(Environment.NewLine);
-            }
-
-            string path = @"C:\Users\Michael\Downloads\garbage\debug_text.txt";
-            // This text is added only once to the file.
-            if (!File.Exists(path))
-            {
-                // Create a file to write to.
-                using (StreamWriter sw = File.CreateText(path))
-                {
-                    sw.WriteLine("");
-                }
-            }
-
-            //foreach (string tN in sb.ToString())
-            //{
-            //    // This text is always added, making the file longer over time
-            //    // if it is not deleted.
-            //    using (StreamWriter sw = File.AppendText(path))
-            //    {
-            //        sw.WriteLine(tN);
-            //    }
-            //}
-
-            File.WriteAllText(path, sb.ToString());
         }
 
         private void FillRawExpComponentsTable()
