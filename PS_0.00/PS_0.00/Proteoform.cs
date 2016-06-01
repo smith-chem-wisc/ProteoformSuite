@@ -60,6 +60,19 @@ namespace PS_0._00
                 this.light_corrected_mass = neuCodeLight.weighted_monoisotopic_mass + Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * 1.0015;
             }
         }
+
+        public string as_csv_row()
+        {
+            return String.Join(",", new List<string> { this.light_id.ToString(), this.light_intensity.ToString(), this.light_weighted_monoisotopic_mass.ToString(), this.light_corrected_mass.ToString(), this.light_apexRt.ToString(),
+                this.heavy_id.ToString(), this.heavy_intensity.ToString(), this.heavy_weighted_monoisotopic_mass.ToString(), this.intensity_ratio.ToString(), this.lysine_count.ToString(),
+                this.file_origin.ToString() });
+        }
+
+        public static string get_csv_header()
+        {
+            return String.Join(",", new List<string> { "light_id", "light_intensity", "light_weighted_monoisotopic_mass", "light_corrected_mass", "light_apexRt",
+                "heavy_id", "heavy_intensity", "heavy_weighted_monoisotopic_mass", "intensity_ratio", "lysine_count", "file_origin" });
+        }
     }
 
     public class Proteoform
@@ -109,13 +122,15 @@ namespace PS_0._00
             get { return aggregated_neucode_pairs.Count; }
         }
 
-        public ExperimentalProteoform(string accession, NeuCodePair root, bool is_target) : base(accession, is_target)
+        public ExperimentalProteoform(string accession, NeuCodePair root, List<NeuCodePair> candidate_observations, bool is_target) : base(accession, is_target)
         {
             this.root = root;
-            aggregated_neucode_pairs = new List<NeuCodePair>() { root };
+            this.aggregated_neucode_pairs = new List<NeuCodePair>() { root };
+            this.aggregated_neucode_pairs.AddRange(candidate_observations.Where(p => this.includes(p)));
+            this.calculate_properties();
         }
 
-        public void calculate_properties()
+        private void calculate_properties()
         {
             this.agg_intensity = aggregated_neucode_pairs.Select(p => p.light_intensity).Sum();
             this.agg_rt = aggregated_neucode_pairs.Select(p => p.light_apexRt * p.light_intensity / this.agg_intensity).Sum();
@@ -124,13 +139,6 @@ namespace PS_0._00
                 * p.light_intensity / this.agg_intensity).Sum();
             this.lysine_count = this.root.lysine_count;
             this.modified_mass = this.agg_mass;
-        }
-
-        public bool add(NeuCodePair new_pair)
-        {
-            aggregated_neucode_pairs.Add(new_pair);
-            if (new_pair.light_intensity > root.light_intensity) this.root = new_pair;
-            return true;
         }
 
         public bool includes(NeuCodePair candidate)
@@ -147,14 +155,14 @@ namespace PS_0._00
         private bool tolerable_lysCt(NeuCodePair candidate)
         {
             int max_missed_lysines = Convert.ToInt32(Lollipop.missed_lysines);
-            List<int> acceptable_lysineCts = Enumerable.Range(this.root.lysine_count - max_missed_lysines, this.root.lysine_count + max_missed_lysines).ToList();
+            List<int> acceptable_lysineCts = Enumerable.Range(this.root.lysine_count - max_missed_lysines, max_missed_lysines * 2 + 1).ToList();
             return acceptable_lysineCts.Contains(candidate.lysine_count);
         }
 
         private bool tolerable_mass(NeuCodePair candidate)
         {
             int max_missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
-            List<int> missed_monoisotopics = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics).ToList();
+            List<int> missed_monoisotopics = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
             foreach (int m in missed_monoisotopics)
             {
                 double shift = m * 1.0015;
@@ -165,6 +173,18 @@ namespace PS_0._00
                 if (tolerable_mass) return true; //Return a true result immediately; acts as an OR between these conditions
             }
             return false;
+        }
+
+        public string as_csv_row()
+        {
+            return String.Join(",", new List<string> { this.accession.ToString(), this.modified_mass.ToString(), this.lysine_count.ToString(), this.is_target.ToString(), this.is_decoy.ToString(),
+                this.agg_mass.ToString(), this.agg_intensity.ToString(), this.agg_rt.ToString(), this.observation_count.ToString() });
+        }
+
+        public static string get_csv_header()
+        {
+            return String.Join(",", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
+                "agg_mass", "agg_intensity", "agg_rt", "observation_count" });
         }
     }
 

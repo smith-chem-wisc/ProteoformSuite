@@ -29,25 +29,22 @@ namespace PS_0._00
 
         public void add(ExperimentalProteoform pf)
         {
-            this.experimental_proteoforms.Add(pf);
+            if (pf != null) this.experimental_proteoforms.Add(pf);
         }
         public void add(TheoreticalProteoform pf)
         {
-            this.theoretical_proteoforms.Add(pf);
+            if (pf != null) this.theoretical_proteoforms.Add(pf);
         }
         public void add(TheoreticalProteoform pf, string decoy_database)
         {
-            this.decoy_proteoforms[decoy_database].Add(pf);
-        }
-
-        public void calculate_aggregated_experimental_masses()
-        {
-            Parallel.ForEach<ExperimentalProteoform>(this.experimental_proteoforms, pf => pf.calculate_properties());
+            if (pf != null) this.decoy_proteoforms[decoy_database].Add(pf);
         }
 
         //BUILDING RELATIONSHIPS
         private List<ProteoformRelation> relate(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
         {
+            pfs1 = pfs1.Where(p => p != null).ToArray();
+            pfs2 = pfs2.Where(p => p != null).ToArray();
             List<ProteoformRelation> relations = new List<ProteoformRelation>(
                 from pf1 in pfs1
                 from pf2 in pfs2
@@ -86,7 +83,7 @@ namespace PS_0._00
             List<ProteoformRelation> ef_relations = new List<ProteoformRelation>();
             Proteoform[] pfs1 = this.experimental_proteoforms.ToArray();
             Proteoform[] pfs2 = this.experimental_proteoforms.ToArray();
-            Parallel.ForEach<Proteoform>(pfs1, pf1 =>
+            foreach (Proteoform pf1 in pfs1)
             {
                 int num_equal_lysines = pfs2.Where(p => p.lysine_count == pf1.lysine_count).Count();
                 new Random().Shuffle(pfs2);
@@ -98,7 +95,7 @@ namespace PS_0._00
                 );
                 count_nearby_relations(ef_relation_addition);
                 ef_relations.AddRange(ef_relation_addition);
-            });
+            }
             return ef_relations;
         }
 

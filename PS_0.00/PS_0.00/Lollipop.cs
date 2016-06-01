@@ -30,14 +30,13 @@ namespace PS_0._00
         }
 
         //RAW EXPERIMENTAL COMPONENTS
-        public static ExcelReader excel_reader = new ExcelReader();
         public static BindingList<string> deconResultsFileNames = new BindingList<string>();
         public static List<Component> raw_experimental_components = new List<Component>();
         public static void process_raw_components()
         {
             Parallel.ForEach<string>(Lollipop.deconResultsFileNames, filename =>
             {
-                List<Component> raw_components = excel_reader.read_components_from_xlsx(filename);
+                List<Component> raw_components = new List<Component>(new ExcelReader().read_components_from_xlsx(filename));
                 raw_experimental_components.AddRange(raw_components);
 
                 HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
@@ -58,10 +57,10 @@ namespace PS_0._00
         {
             //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
             List<Component> components = components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
-            Parallel.ForEach<Component>(components, lower_component =>
+            foreach (Component lower_component in components)
             {
                 IEnumerable<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.weighted_monoisotopic_mass >= lower_component.weighted_monoisotopic_mass);
-                Parallel.ForEach<Component>(higher_mass_components, higher_component =>
+                foreach (Component higher_component in higher_mass_components)
                 {
                     double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
                     if (mass_difference < 6)
@@ -69,8 +68,8 @@ namespace PS_0._00
                         NeuCodePair pair = new NeuCodePair(lower_component, higher_component);
                         if (pair.accepted) Lollipop.raw_neucode_pairs.Add(pair);
                     }
-                });
-            });
+                }
+            }
         }
 
         //public static void pair_neucode_components() //Legacy for form-load runs, or and starting over at NeuCodePairs
@@ -143,22 +142,20 @@ namespace PS_0._00
                 Lollipop.proteoform_community.experimental_proteoforms.Clear();
 
             //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
-            List<NeuCodePair> remaining_acceptableProteoforms = Lollipop.raw_neucode_pairs.Where(p => p.accepted) //Accepted NeuCode pairs
-                    .OrderByDescending(p => p.light_intensity).ToList(); //ordered list, so that the proteoform with max intensity is always chosen first
+            Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
+            List<NeuCodePair> remaining_acceptableProteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.light_intensity).ToList(); //ordered list, so that the proteoform with max intensity is always chosen first
 
             int count = 1;
             while (remaining_acceptableProteoforms.Count > 0)
             {
                 NeuCodePair root = remaining_acceptableProteoforms[0];
                 remaining_acceptableProteoforms.Remove(root);
-                ExperimentalProteoform new_pf = new ExperimentalProteoform("E_" + count, root, true);
+                ExperimentalProteoform new_pf = new ExperimentalProteoform("E_" + count, root, remaining_acceptableProteoforms, true);
                 Lollipop.proteoform_community.add(new_pf);
-                Parallel.ForEach<NeuCodePair>(remaining_acceptableProteoforms, p => 
-                    { if (new_pf.includes(p)) new_pf.add(p); });
-                new_pf.calculate_properties();
                 remaining_acceptableProteoforms = remaining_acceptableProteoforms.Except(new_pf.aggregated_neucode_pairs).ToList();
                 count += 1;
             }
+            Lollipop.proteoform_community.experimental_proteoforms = Lollipop.proteoform_community.experimental_proteoforms.Where(p => p != null).ToList();
         }
 
         //THEORETICAL DATABASE
@@ -313,23 +310,53 @@ namespace PS_0._00
         public static void make_et_relationships()
         {
             Parallel.Invoke(
-                () => et_relations = Lollipop.proteoform_community.relate_et(),
-                () => ed_relations = Lollipop.proteoform_community.relate_ed()
+                () => et_relations = Lollipop.proteoform_community.relate_et()
+                //() => ed_relations = Lollipop.proteoform_community.relate_ed()
             );
-            et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
+            //et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
         public static void make_ee_relationships()
         {
             Parallel.Invoke(
-                () => ee_relations = proteoform_community.relate_ee(),
-                () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
+                () => ee_relations = proteoform_community.relate_ee()
+                //() => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
             );
-            ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
+            //ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
         //PROTEOFORM FAMILIES
         public static double maximum_delta_mass_peak_fdr = 25;
+
+        //RESULTS OUTPUT
+        public static string raw_component_results()
+        {
+            return Component.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, Lollipop.raw_experimental_components.Where(c => c != null).Select(c => c.as_csv_row()));
+        }
+        public static string raw_neucode_pair_results()
+        {
+            return NeuCodePair.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, Lollipop.raw_neucode_pairs.Select(p => p.as_csv_row()));
+        }
+        public static string aggregated_experimental_proteoform_results()
+        {
+            return ExperimentalProteoform.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, Lollipop.proteoform_community.experimental_proteoforms.Select(p => p.as_csv_row()));
+        }
+        public static string et_relations_results()
+        {
+            return ProteoformRelation.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, et_relations.Select(r => r.as_csv_row()));
+        }
+        public static string et_peak_results()
+        {
+            return DeltaMassPeak.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, et_peaks.Select(r => r.as_csv_row()));
+        }
+        public static string ee_relations_results()
+        {
+            return ProteoformRelation.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, ee_relations.Select(r => r.as_csv_row()));
+        }
+        public static string ee_peak_results()
+        {
+            return DeltaMassPeak.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, ee_peaks.Select(r => r.as_csv_row()));
+        }
 
         //METHOD FILE
         public static string method_toString()
@@ -370,7 +397,16 @@ namespace PS_0._00
             string[] fields = setting_spec.Split('\t');
             switch (fields[0])
             {
-                case "LoadDeconvolutionResults|deconvolution_file_names": foreach (string filename in fields) { if (filename != "LoadDeconvolutionResults|deconvolution_file_names") Lollipop.deconResultsFileNames.Add(filename); } break;
+                case "LoadDeconvolutionResults|deconvolution_file_names":
+                    if (Lollipop.deconResultsFileNames.Count != 0)
+                    {
+                        var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?", "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
+                        if (response == DialogResult.Yes) { break; }
+                        if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); }
+                        if (response == DialogResult.Cancel) { return; }
+                    }
+                    foreach (string filename in fields) { if (filename != "LoadDeconvolutionResults|deconvolution_file_names") Lollipop.deconResultsFileNames.Add(filename); }
+                    break;
                 case "NeuCodePairs|max_intensity_ratio": max_intensity_ratio = Convert.ToDecimal(fields[1]); break;
                 case "NeuCodePairs|min_intensity_ratio": min_intensity_ratio = Convert.ToDecimal(fields[1]); break;
                 case "NeuCodePairs|max_lysine_ct": max_lysine_ct = Convert.ToDecimal(fields[1]); break;

@@ -69,6 +69,20 @@ namespace PS_0._00
         {
             this.charge_states.Add(new ChargeState(charge_row));
         }
+
+        public string as_csv_row()
+        {
+            return String.Join(",", new List<string> { this.id.ToString(), this.monoisotopic_mass.ToString(), this.weighted_monoisotopic_mass.ToString(), this.intensity_sum.ToString(), this.num_charge_states.ToString(),
+                this.delta_mass.ToString(), this.relative_abundance.ToString(), this.fract_abundance.ToString(), this.scan_range.ToString(), this.rt_apex.ToString(),
+                this.rt_apex.ToString(), this.file_origin.ToString() });
+        }
+
+        public static string get_csv_header()
+        {
+            return String.Join(",", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "intensity_sum", "num_charge_states",
+                "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_apex",
+                "rt_apex", "file_origin" });
+        }
     }
 
     public class ChargeState

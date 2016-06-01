@@ -35,5 +35,16 @@ namespace PS_0._00
             }
             this.group_fdr = median_false_peak_count / (double)group_count;
         }
+
+        public string as_csv_row()
+        {
+            return String.Join(",", new List<string> { this.connected_proteoforms[0].accession.ToString(), this.connected_proteoforms[1].accession.ToString(), this.delta_mass.ToString(), this.group_adjusted_deltaM.ToString(),
+                this.group_count.ToString(), group_fdr.ToString() });
+        }
+
+        public static string get_csv_header()
+        {
+            return String.Join(",", new List<string> { "proteoform1_accession", "proteoform2_accession", "delta_mass", "group_adjusted_deltaM", "group_count", "group_fdr" });
+        }
     }
 }
