@@ -53,12 +53,13 @@ namespace PS_0._00
     public class PtmSet
     {
         public double mass;
+        private IEnumerable<Ptm> _ptm_combination;
         public IEnumerable<Ptm> ptm_combination
         {
-            get { return this.ptm_combination; }
+            get { return this._ptm_combination; }
             set
             {
-                this.ptm_combination = value;
+                this._ptm_combination = value;
                 this.mass = value.Select(ptm => ptm.modification.monoisotopic_mass_shift).Sum();
             }
         }
@@ -103,9 +104,12 @@ namespace PS_0._00
         //generate all the combinations, with the shortest combinations first, and with the modifications at the first positions first
         private List<PtmSet> all_possible_combinations(int max_length)
         {
-            List<PtmSet> combos = new List<PtmSet>();
             max_length = Math.Min(max_length, this.all_ptms.Count);
-            Parallel.For(1, max_length, i => Parallel.ForEach<PtmSet>(combinations(i), combination => combos.Add(combination)));
+            List<PtmSet> combos = new List<PtmSet>(
+                from i in Enumerable.Range(1, max_length)
+                from combination in combinations(i)
+                select combination
+            );
             return combos;
         }
 
@@ -122,7 +126,7 @@ namespace PS_0._00
                 int mod_index = stack.Pop();
                 Ptm value = this.all_ptms[mod_index];
 
-                while (mod_index < this.all_ptms.Count)
+                while (mod_index < this.all_ptms.Count - 1)
                 {
                     result[result_index++] = this.all_ptms[mod_index++];
                     stack.Push(mod_index);

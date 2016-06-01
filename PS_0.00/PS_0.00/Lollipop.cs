@@ -206,8 +206,7 @@ namespace PS_0._00
         {
             List<ProteinSequenceGroup> protein_sequence_groups = new List<ProteinSequenceGroup>();
             HashSet<string> unique_sequences = new HashSet<string>(proteins.Select(p => p.sequence));
-            Parallel.ForEach<string>(unique_sequences, sequence => protein_sequence_groups.Add(new ProteinSequenceGroup(proteins.Where(p => p.sequence == sequence).ToList()))
-            );
+            foreach (string sequence in unique_sequences) protein_sequence_groups.Add(new ProteinSequenceGroup(proteins.Where(p => p.sequence == sequence).ToList()));
             return protein_sequence_groups.ToArray();
         }
 

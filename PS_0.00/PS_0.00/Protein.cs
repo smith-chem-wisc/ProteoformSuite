@@ -47,8 +47,8 @@ namespace PS_0._00
             this.accessionList = proteins.Select(p => p.accession).ToList();
             HashSet<int> all_positions = new HashSet<int>(proteins.SelectMany(p => p.ptms_by_position.Keys).ToList());
             Dictionary<int, List<Modification>> ptms_by_position = new Dictionary<int, List<Modification>>();
-            Parallel.ForEach<int>(all_positions, position => 
-                ptms_by_position.Add(position, proteins.Where(p => p.ptms_by_position.ContainsKey(position)).SelectMany(p => p.ptms_by_position[position]).ToList()));
+            foreach (int position in all_positions)
+                ptms_by_position.Add(position, proteins.Where(p => p.ptms_by_position.ContainsKey(position)).SelectMany(p => p.ptms_by_position[position]).ToList());
         }
     }
 }

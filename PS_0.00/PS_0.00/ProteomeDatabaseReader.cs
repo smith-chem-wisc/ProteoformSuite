@@ -187,7 +187,7 @@ namespace PS_0._00
                     string sequence_version = GetAttribute(sequence_elem, "version");
 
                     //Process the modified residues
-                    Parallel.ForEach<XElement>(features, feature =>
+                    foreach (XElement feature in features)
                     {
                         string feature_type = GetAttribute(feature, "type");
                         if (feature_type == "modified residue")
@@ -210,7 +210,7 @@ namespace PS_0._00
                                 }
                             }
                         }
-                    });
+                    }
 
                     //Add the full length protein, and then add the fragments with segments of the above modification dictionary
                     protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, positionsAndPtms));
@@ -248,7 +248,7 @@ namespace PS_0._00
                     });
                 });
             }
-            return protein_list.ToArray();
+            return protein_list.Where(p => p != null).ToArray();
         }
 
         private static string GetAttribute(XElement element, string attribute_name)
