@@ -48,6 +48,7 @@ namespace PS_0._00
             CalculateWeightedMonoisotopicMass();
         }
 
+
         private void FillRawExpComponentsTable()
         {
             dgv_RawExpComp_MI_masses.DataSource = GlobalData.rawExperimentalComponents;
