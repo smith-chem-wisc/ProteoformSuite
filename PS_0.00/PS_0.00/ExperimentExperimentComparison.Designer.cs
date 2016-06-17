@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea9 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea10 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.dgv_EE_Peak_List = new System.Windows.Forms.DataGridView();
@@ -62,7 +62,6 @@
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
-            this.EE_update = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -150,6 +149,7 @@
             0,
             0,
             0});
+            this.nUD_EE_Upper_Bound.ValueChanged += new System.EventHandler(this.nUD_EE_Upper_Bound_ValueChanged);
             // 
             // nUD_PeakWidthBase
             // 
@@ -163,6 +163,7 @@
             0,
             0,
             262144});
+            this.nUD_PeakWidthBase.ValueChanged += new System.EventHandler(this.nUD_PeakWidthBase_ValueChanged);
             // 
             // nUD_PeakCountMinThreshold
             // 
@@ -175,6 +176,7 @@
             0,
             0,
             0});
+            this.nUD_PeakCountMinThreshold.ValueChanged += new System.EventHandler(this.nUD_PeakCountMinThreshold_ValueChanged);
             // 
             // nUD_NoManLower
             // 
@@ -188,6 +190,7 @@
             0,
             0,
             131072});
+            this.nUD_NoManLower.ValueChanged += new System.EventHandler(this.nUD_NoManLower_ValueChanged);
             // 
             // nUD_NoManUpper
             // 
@@ -201,6 +204,7 @@
             0,
             0,
             131072});
+            this.nUD_NoManUpper.ValueChanged += new System.EventHandler(this.nUD_NoManUpper_ValueChanged);
             // 
             // yMaxEE
             // 
@@ -335,17 +339,17 @@
             // 
             // ct_EE_Histogram
             // 
-            chartArea1.Name = "ChartArea1";
-            this.ct_EE_Histogram.ChartAreas.Add(chartArea1);
+            chartArea9.Name = "ChartArea1";
+            this.ct_EE_Histogram.ChartAreas.Add(chartArea9);
             this.ct_EE_Histogram.Cursor = System.Windows.Forms.Cursors.Default;
             this.ct_EE_Histogram.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_EE_Histogram.Location = new System.Drawing.Point(0, 0);
             this.ct_EE_Histogram.Name = "ct_EE_Histogram";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Legend = "Legend1";
-            series1.Name = "eeHistogram";
-            this.ct_EE_Histogram.Series.Add(series1);
+            series9.ChartArea = "ChartArea1";
+            series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series9.Legend = "Legend1";
+            series9.Name = "eeHistogram";
+            this.ct_EE_Histogram.Series.Add(series9);
             this.ct_EE_Histogram.Size = new System.Drawing.Size(464, 273);
             this.ct_EE_Histogram.TabIndex = 16;
             this.ct_EE_Histogram.TabStop = false;
@@ -363,17 +367,17 @@
             // 
             // ct_EE_peakList
             // 
-            chartArea2.Name = "ChartArea1";
-            this.ct_EE_peakList.ChartAreas.Add(chartArea2);
+            chartArea10.Name = "ChartArea1";
+            this.ct_EE_peakList.ChartAreas.Add(chartArea10);
             this.ct_EE_peakList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_EE_peakList.Enabled = false;
             this.ct_EE_peakList.Location = new System.Drawing.Point(0, 0);
             this.ct_EE_peakList.Name = "ct_EE_peakList";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series2.Legend = "Legend1";
-            series2.Name = "eePeakList";
-            this.ct_EE_peakList.Series.Add(series2);
+            series10.ChartArea = "ChartArea1";
+            series10.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series10.Legend = "Legend1";
+            series10.Name = "eePeakList";
+            this.ct_EE_peakList.Series.Add(series10);
             this.ct_EE_peakList.Size = new System.Drawing.Size(235, 319);
             this.ct_EE_peakList.TabIndex = 2;
             this.ct_EE_peakList.TabStop = false;
@@ -432,7 +436,6 @@
             // 
             // splitContainer5.Panel2
             // 
-            this.splitContainer5.Panel2.Controls.Add(this.EE_update);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox4);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox3);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox2);
@@ -458,18 +461,6 @@
             this.splitContainer4.Size = new System.Drawing.Size(457, 323);
             this.splitContainer4.SplitterDistance = 214;
             this.splitContainer4.TabIndex = 18;
-            // 
-            // EE_update
-            // 
-            this.EE_update.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.EE_update.Location = new System.Drawing.Point(0, 268);
-            this.EE_update.Name = "EE_update";
-            this.EE_update.Size = new System.Drawing.Size(453, 23);
-            this.EE_update.TabIndex = 31;
-            this.EE_update.Text = "Update";
-            this.EE_update.UseMnemonic = false;
-            this.EE_update.UseVisualStyleBackColor = true;
-            this.EE_update.Click += new System.EventHandler(this.EE_update_Click);
             // 
             // groupBox4
             // 
@@ -636,7 +627,6 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.SplitContainer splitContainer6;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.Button EE_update;
     }
 }
 

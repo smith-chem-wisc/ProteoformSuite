@@ -18,6 +18,7 @@ namespace PS_0._00
         DataTable eePairsList = new DataTable(); // this is a list of all individual EE pairs with mass difference smaller than the threshold
         DataTable eePeakList = new DataTable(); // these are the aggregated peaks coming from groups of individual EE pairs.
         Boolean formLoadEvent; // this is needed to prevent firing of ParameterSet events from firing on form load and let them fire only when the values are actually changed
+        double initial_nud_EE_Upper_Bound;
 
         public ExperimentExperimentComparison()
         {
@@ -48,6 +49,7 @@ namespace PS_0._00
         public void run_comparison()
         {
             formLoadEvent = true;
+            initial_nud_EE_Upper_Bound = Convert.ToDouble(nUD_EE_Upper_Bound.Value);
             FindAllEEPairs();
             CalculateRunningSums();
             eePeakList = InitializeEEPeakListTable();
@@ -323,14 +325,16 @@ namespace PS_0._00
                     double upper = deltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     string expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <=" + upper +
                         "and [Acceptable Peak] = false";
-                    DataRow[] firstSet = eePairsList.Select(expression);
+                     DataRow[] firstSet = eePairsList.Select(expression);
+
                     var firstAverage = firstSet.Average(fsRow => fsRow.Field<double>("Delta Mass"));
 
                     lower = firstAverage - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     upper = firstAverage + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
                     expression = "[Delta Mass] >= " + lower + " and [Delta Mass] <= " + upper +
                         "and [Acceptable Peak] = false";
-                    DataRow[] secondSet = eePairsList.Select(expression);
+                     DataRow[] secondSet = eePairsList.Select(expression);
+
                     var secondAverage = secondSet.Average(ssRow => ssRow.Field<double>("Delta Mass"));
 
                     foreach (DataRow rutrow in secondSet)
@@ -360,13 +364,14 @@ namespace PS_0._00
                         eePeakList.Rows.Add(secondAverage, secondSet.Length, false);
                     }
                 }
-                eePairsList.AcceptChanges();
-                GlobalData.experimentExperimentPairs = eePairsList;
+                    eePairsList.AcceptChanges();
+                    GlobalData.experimentExperimentPairs = eePairsList;
+               
             }
 
             GlobalData.eePeakList = eePeakList;
         }
-
+        
         private void FillEEPeakGridView()
         {
             dgv_EE_Peak_List.DataSource = eePeakList;
@@ -688,11 +693,6 @@ namespace PS_0._00
             }         
         }
 
-        private void EE_update_Click(object sender, EventArgs e)
-        {
-            RunTheGamut();
-        }
-
         public override string ToString()
         {
             return String.Join(System.Environment.NewLine, new string[] {
@@ -720,6 +720,84 @@ namespace PS_0._00
                 case "nUD_PeakCountMinThreshold.Value":
                     nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(fields[1]);
                     break;
+            }
+        }
+
+        private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e)
+        {
+            if (!formLoadEvent)
+            {
+                RunTheGamut();
+            }
+        }
+
+
+        private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
+        {
+            if (!formLoadEvent)
+            {
+                RunTheGamut();
+
+            }
+        }
+
+
+        private void nUD_EE_Upper_Bound_ValueChanged(object sender, EventArgs e)
+        {
+            if (!formLoadEvent)
+            {
+                ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+                ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
+                if (Convert.ToDouble(nUD_EE_Upper_Bound.Value) <= initial_nud_EE_Upper_Bound)
+                {
+                    string expression = "[Delta Mass] > " + Convert.ToDouble(nUD_EE_Upper_Bound.Value);
+                    DataRow[] overMaxDeltaMax = eePairsList.Select(expression);
+
+                    foreach (DataRow row in overMaxDeltaMax)
+                    {
+                        row.Delete();
+                    }
+
+                    string peakListExpression = "[Average Delta Mass] >" + Convert.ToDouble(nUD_EE_Upper_Bound.Value);
+                    DataRow[] peaksOverDeltaMax = eePeakList.Select(peakListExpression);
+
+                    foreach (DataRow row in peaksOverDeltaMax)
+                    {
+                        row.Delete();
+                    }
+
+                    GlobalData.eePeakList = eePeakList;
+                    GlobalData.experimentExperimentPairs = eePairsList;
+                }
+                else
+                {
+                    FindAllEEPairs();
+                    CalculateRunningSums();
+                    FillEEPeakListTable();
+
+                }
+
+                FillEEPairsGridView();
+                GraphEEPairsList();
+                UpdateFiguresOfMerit();
+                xMaxEE.Value = nUD_EE_Upper_Bound.Value;
+                initial_nud_EE_Upper_Bound = Convert.ToDouble(nUD_EE_Upper_Bound.Value);
+            }
+        }
+
+        private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
+        {
+            if (!formLoadEvent)
+            {
+                RunTheGamut();
+            }
+        }
+
+        private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
+        {
+            if (!formLoadEvent)
+            {
+                RunTheGamut();
             }
         }
     }
