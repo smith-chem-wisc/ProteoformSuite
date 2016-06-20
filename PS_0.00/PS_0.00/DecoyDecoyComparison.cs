@@ -73,17 +73,16 @@ namespace PS_0._00
             {
                 string tableName = "DecoyDatabase_" + i;
                 DataTable dt = GenerateDecoyDataTable(tableName);
+                DataTable decoyDatabase = new DataTable();
+                decoyDatabase  = GlobalData.theoreticalAndDecoyDatabases.Tables[tableName].Copy();
 
                 foreach (DataRow agRow in GlobalData.aggregatedProteoforms.Rows)
                 {
-
                     int kCount = Convert.ToInt32(agRow["Lysine Count"]);
                     double agMass = Convert.ToDouble(agRow["Aggregated Mass"]);
 
                     string expression = "[Lysine Count] = " + kCount;
-                    DataTable decoyDatabase = GlobalData.theoreticalAndDecoyDatabases.Tables[tableName];
                     DataRow[] decoysWithSameKCount = decoyDatabase.Select(expression);
-
 
                     ////chooses random decoy with same K count. 
                     //int index = randGen.Next(decoysWithSameKCount.Length);
@@ -93,10 +92,11 @@ namespace PS_0._00
 
                     //chooses decoy that's closest to mass of aggregate proteoform
                     int closestMassProteoform = 0;
+                   
                     for (int m = 0; m < decoysWithSameKCount.Length; m++)
                     {
-                        double massDiff1 = agMass - Convert.ToDouble(decoysWithSameKCount[m]["Proteoform Mass"]);
-                        double massDiffCurrentClosest = agMass - Convert.ToDouble(decoysWithSameKCount[closestMassProteoform]["Proteoform Mass"]);
+                        double massDiff1 = Math.Abs(agMass - Convert.ToDouble(decoysWithSameKCount[m]["Proteoform Mass"]));
+                        double massDiffCurrentClosest = Math.Abs(agMass - Convert.ToDouble(decoysWithSameKCount[closestMassProteoform]["Proteoform Mass"]));
 
                         if (massDiff1 < massDiffCurrentClosest)
                         {
@@ -106,13 +106,14 @@ namespace PS_0._00
                     string accessionNumber = decoysWithSameKCount[closestMassProteoform]["Accession"].ToString();
                     dt.ImportRow(decoysWithSameKCount[closestMassProteoform]);
 
-                    for (int j = 0; j < decoysWithSameKCount.Length; j++)
+                    foreach (DataRow row in decoysWithSameKCount)
                     {
-                        if (decoysWithSameKCount[j]["Accession"].ToString().Equals(accessionNumber))
+                        if (row["Accession"].ToString().Equals(accessionNumber))
                         {
-                            decoysWithSameKCount[j].Delete();
+                            row.Delete();
                         }
                     }
+
                 }
 
                     GlobalData.decoyDecoyDatabases.Tables.Add(dt);
@@ -252,6 +253,7 @@ namespace PS_0._00
 
         private void FillDDPairsGridView(string table)
         {
+
             DataTable displayTable = GlobalData.decoyDecoyPairs.Tables[table];
 
             dgv_DD_Pairs.DataSource = displayTable;
