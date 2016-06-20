@@ -139,5 +139,19 @@ namespace PS_0._00
                     break;
             }
         }
+
+        private void cb_neucodeLabeled_CheckedChanged(object sender, EventArgs e)
+        {
+            //default is set to true for now 
+            if (cb_neucodeLabeled.Checked)
+            {
+                GlobalData.neucodeLabeled = true;
+            }
+
+            else if (!cb_neucodeLabeled.Checked)
+            {
+                GlobalData.neucodeLabeled = false;
+            }
+        }
     }
 }

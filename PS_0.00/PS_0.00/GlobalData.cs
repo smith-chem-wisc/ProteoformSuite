@@ -14,6 +14,7 @@ namespace PS_0._00
     public class GlobalData
     {
         public static BindingList<string> deconResultsFileNames = new BindingList<string>();
+        public static Boolean neucodeLabeled = true;
         public static DataSet deconResultsFiles = new DataSet();
         public static DataTable rawExperimentalComponents = new DataTable();
         public static DataSet rawExperimentalChargeStateData = new DataSet();
