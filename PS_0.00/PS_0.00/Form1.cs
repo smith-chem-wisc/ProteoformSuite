@@ -68,7 +68,14 @@ namespace PS_0._00
 
         private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            showForm(neuCodePairs);
+            if (GlobalData.neucodeLabeled == true)
+            {
+                showForm(neuCodePairs);
+            }
+            else
+            {
+                MessageBox.Show("Samples must be neucode labeled in order to view Neucode Proteoform Pairs.");
+            }
         }
 
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)

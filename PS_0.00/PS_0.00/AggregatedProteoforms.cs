@@ -99,23 +99,48 @@ namespace PS_0._00
             acceptableLtProteoforms.Columns.Add("Aggregated Intensity", typeof(double));
             acceptableLtProteoforms.Columns.Add("Aggregated Retention Time", typeof(double));
 
-            foreach (DataRow row in GlobalData.rawNeuCodePairs.Rows)
+            if (GlobalData.neucodeLabeled == true)
             {
-                if (bool.Parse(row["Acceptable"].ToString()))
+                foreach (DataRow row in GlobalData.rawNeuCodePairs.Rows)
                 {
-                    string lightFilename = row["Light Filename"].ToString();
-                    int lightNumber = int.Parse(row["Light No."].ToString());
-                    double ltMass = double.Parse(row["Light Mass"].ToString());
-                    double ltMassCorrected = double.Parse(row["Light Mass Corrected"].ToString());
-                    double ltIntensity = double.Parse(row["Light Intensity"].ToString());
-                    double ltRetentionTime = double.Parse(row["Apex RT"].ToString());
-                    int lysineCount = int.Parse(row["Lysine Count"].ToString());
+                    if (bool.Parse(row["Acceptable"].ToString()))
+                    {
+                        string lightFilename = row["Light Filename"].ToString();
+                        int lightNumber = int.Parse(row["Light No."].ToString());
+                        double ltMass = double.Parse(row["Light Mass"].ToString());
+                        double ltMassCorrected = double.Parse(row["Light Mass Corrected"].ToString());
+                        double ltIntensity = double.Parse(row["Light Intensity"].ToString());
+                        double ltRetentionTime = double.Parse(row["Apex RT"].ToString());
+                        int lysineCount = int.Parse(row["Lysine Count"].ToString());
 
+                        double aggregatedMass = 0;
+                        double aggregatedIntensity = 0;
+                        double aggreagedRetentionTime = 0;
+
+                        acceptableLtProteoforms.Rows.Add(lightFilename, lightNumber, ltMass, ltMassCorrected, ltIntensity, ltRetentionTime, lysineCount,
+                            aggregatedMass, aggregatedIntensity, aggreagedRetentionTime);
+                    }
+                }
+            }
+
+            else
+            {
+
+                foreach (DataRow row in GlobalData.rawExperimentalComponents.Rows)
+                {
+                    //these columns aren't named when created in RawExperimentalComponents
+                    string lightFilename = row[11].ToString();
+                    int lightNumber = int.Parse(row[0].ToString());
+                    double ltMass = double.Parse(row[1].ToString());
+                    double ltMassCorrected = double.Parse(row[1].ToString());
+                    double ltIntensity = double.Parse(row[2].ToString());
+                    double ltRetentionTime = double.Parse(row[10].ToString());
+                    int lysineCount = 0;
                     double aggregatedMass = 0;
                     double aggregatedIntensity = 0;
                     double aggreagedRetentionTime = 0;
 
-                    acceptableLtProteoforms.Rows.Add(lightFilename, lightNumber, ltMass, ltMassCorrected, ltIntensity, ltRetentionTime, lysineCount, 
+                    acceptableLtProteoforms.Rows.Add(lightFilename, lightNumber, ltMass, ltMassCorrected, ltIntensity, ltRetentionTime, lysineCount,
                         aggregatedMass, aggregatedIntensity, aggreagedRetentionTime);
                 }
             }
@@ -178,18 +203,21 @@ namespace PS_0._00
                 }
 
                 //The section below allows for missed lysine counts to be aggregated
-                expression = expression + "(";
-                for (int shiftNum = -(Convert.ToInt32(nUD_Missed_Ks.Value)); shiftNum <= (Convert.ToInt32(nUD_Missed_Ks.Value)); shiftNum++)
+                if (GlobalData.neucodeLabeled == true)
                 {
-                    int K_to_Add = lysineCount + shiftNum;
-                    expression = expression + "[Lysine Count] = " + K_to_Add;
-                    if (shiftNum < (Convert.ToInt32(nUD_Missed_Ks.Value)))
+                    expression = expression + "(";
+                    for (int shiftNum = -(Convert.ToInt32(nUD_Missed_Ks.Value)); shiftNum <= (Convert.ToInt32(nUD_Missed_Ks.Value)); shiftNum++)
                     {
-                        expression = expression + " or ";
-                    }
-                    else
-                    {
-                        expression = expression + ") and ";
+                        int K_to_Add = lysineCount + shiftNum;
+                        expression = expression + "[Lysine Count] = " + K_to_Add;
+                        if (shiftNum < (Convert.ToInt32(nUD_Missed_Ks.Value)))
+                        {
+                            expression = expression + " or ";
+                        }
+                        else
+                        {
+                            expression = expression + ") and ";
+                        }
                     }
                 }
 
