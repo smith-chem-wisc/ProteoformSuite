@@ -214,6 +214,7 @@
             this.label10.Size = new System.Drawing.Size(98, 13);
             this.label10.TabIndex = 19;
             this.label10.Text = "Decoy Decoy Pairs";
+            this.label10.Visible = false;
             // 
             // lb_ddPairs
             // 
@@ -225,6 +226,7 @@
             this.lb_ddPairs.SelectionMode = System.Windows.Forms.SelectionMode.None;
             this.lb_ddPairs.Size = new System.Drawing.Size(75, 225);
             this.lb_ddPairs.TabIndex = 20;
+            this.lb_ddPairs.Visible = false;
             // 
             // ResultsSummary
             // 
