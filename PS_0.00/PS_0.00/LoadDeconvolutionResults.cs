@@ -122,7 +122,12 @@ namespace PS_0._00
 
         public override string ToString()
         {
-            return "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("\t", GlobalData.deconResultsFileNames.ToArray<string>());
+            return String.Join(System.Environment.NewLine, new string[]
+                {
+                "LoadDeconvolutionResults|deconvolution_file_names\t" +
+                String.Join(", ", GlobalData.deconResultsFileNames.ToArray<string>()),
+                "LoadDeconvolutionResults|cb_neucodeLabeled.Checked\t" + cb_neucodeLabeled.Checked.ToString()
+                    });
         }
 
         public void loadSetting(string setting_specs)
@@ -131,11 +136,13 @@ namespace PS_0._00
             switch (fields[0].Split('|')[1])
             {
                 case "deconvolution_file_names":
-                    foreach (string filename in fields)
+                    foreach (string filename in fields[1].Split(','))
                     {
-                        if (filename == "LoadDeconvolutionResults|deconvolution_file_names") { continue; }
                         GlobalData.deconResultsFileNames.Add(filename);
                     }
+                    break;
+                case "cb_neucodeLabeled.Checked":
+                    GlobalData.neucodeLabeled = Convert.ToBoolean(fields[1]);
                     break;
             }
         }
