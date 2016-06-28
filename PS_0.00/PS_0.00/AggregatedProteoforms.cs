@@ -124,7 +124,7 @@ namespace PS_0._00
                 }
             }
 
-            else if (GlobalData.neucodeLabeled == false)
+            else
             {
 
                 foreach (DataRow row in GlobalData.rawExperimentalComponents.Rows)
