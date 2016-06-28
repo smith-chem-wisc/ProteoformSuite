@@ -1,0 +1,42 @@
+LoadDeconvolutionResults|deconvolution_file_names
+LoadDeconvolutionResults|cb_neucodeLabeled.Checked	True
+RawExperimentalComponents|
+NeuCodePairs|KMaxAcceptable.Value	26.2
+NeuCodePairs|KMinAcceptable.Value	1.5
+NeuCodePairs|IRatMaxAcceptable.Value	6
+NeuCodePairs|IRatMinAcceptable.Value	1.4
+AggregatedProteoforms|nUP_mass_tolerance.Value	3
+AggregatedProteoforms|nUD_RetTimeToleranace.Value	3
+AggregatedProteoforms|nUD_Missed_Monos.Value	3
+AggregatedProteoforms|nUD_Missed_Ks.Value	1
+TheoreticalDatabase|tb_UniProtXML_Path.Text	C:\Users\Leah\Desktop\Testing load and run\yeast_160126.xml.gz
+TheoreticalDatabase|tb_UniProtPtmList_Path.Text	C:\Users\Leah\Desktop\Testing load and run\ptmlist.txt
+TheoreticalDatabase|ckbx_OxidMeth.Checked	False
+TheoreticalDatabase|ckbx_Carbam.Checked	True
+TheoreticalDatabase|ckbx_Meth_Cleaved.Checked	True
+TheoreticalDatabase|btn_NeuCode_Lt.Checked	True
+TheoreticalDatabase|btn_NeuCode_Hv.Checked	False
+TheoreticalDatabase|btn_NaturalIsotopes.Checked	False
+TheoreticalDatabase|nUD_MaxPTMs.Value	3
+TheoreticalDatabase|nUD_NumDecoyDBs.Value	1
+TheoreticalDatabase|nUD_MinPeptideLength.Value	7
+TheoreticalDatabase|ckbx_aggregateProteoforms.Checked	True
+ExperimentTheoreticalComparison|nUD_ET_Lower_Bound.Value	-250
+ExperimentTheoreticalComparison|nUD_ET_Upper_Bound.Value	250
+ExperimentTheoreticalComparison|nUD_NoManLower.Value	0.22
+ExperimentTheoreticalComparison|nUD_NoManUpper.Value	0.88
+ExperimentTheoreticalComparison|nUD_PeakWidthBase.Value	0.0150
+ExperimentTheoreticalComparison|nUD_PeakCountMinThreshold.Value	10
+ExperimentDecoyComparison|nUD_NoManLower.Value	0
+ExperimentDecoyComparison|nUD_NoManUpper.Value	0
+ExperimentDecoyComparison|nUD_PeakWidthBase.Value	0
+ExperimentDecoyComparison|nud_Decoy_Database.Value	1
+ExperimentExperimentComparison|nUD_EE_Upper_Bound.Value	500
+ExperimentExperimentComparison|nUD_NoManLower.Value	0.22
+ExperimentExperimentComparison|nUD_NoManUpper.Value	0.88
+ExperimentExperimentComparison|nUD_PeakWidthBase.Value	0.0150
+ExperimentExperimentComparison|nUD_PeakCountMinThreshold.Value	10
+DecoyDecoyComparison|nUD_NoManLower.Value	0.22
+DecoyDecoyComparison|nUD_NoManUpper.Value	0.88
+DecoyDecoyComparison|nUD_PeakWidthBase.Value	0.0150
+ProteoformFamilyAssignment|
