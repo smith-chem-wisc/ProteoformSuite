@@ -48,6 +48,8 @@
             this.lb_deconResults = new System.Windows.Forms.ListBox();
             this.label10 = new System.Windows.Forms.Label();
             this.lb_ddPairs = new System.Windows.Forms.ListBox();
+            this.tb_loadAndRunMethod = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -209,7 +211,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(21, 340);
+            this.label10.Location = new System.Drawing.Point(591, 503);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(98, 13);
             this.label10.TabIndex = 19;
@@ -221,18 +223,37 @@
             this.lb_ddPairs.BackColor = System.Drawing.Color.WhiteSmoke;
             this.lb_ddPairs.FormattingEnabled = true;
             this.lb_ddPairs.ImeMode = System.Windows.Forms.ImeMode.Off;
-            this.lb_ddPairs.Location = new System.Drawing.Point(24, 356);
+            this.lb_ddPairs.Location = new System.Drawing.Point(594, 519);
             this.lb_ddPairs.Name = "lb_ddPairs";
             this.lb_ddPairs.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            this.lb_ddPairs.Size = new System.Drawing.Size(75, 225);
+            this.lb_ddPairs.Size = new System.Drawing.Size(75, 69);
             this.lb_ddPairs.TabIndex = 20;
             this.lb_ddPairs.Visible = false;
+            // 
+            // tb_loadAndRunMethod
+            // 
+            this.tb_loadAndRunMethod.Location = new System.Drawing.Point(141, 340);
+            this.tb_loadAndRunMethod.Name = "tb_loadAndRunMethod";
+            this.tb_loadAndRunMethod.ReadOnly = true;
+            this.tb_loadAndRunMethod.Size = new System.Drawing.Size(564, 20);
+            this.tb_loadAndRunMethod.TabIndex = 22;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(21, 343);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(114, 13);
+            this.label11.TabIndex = 21;
+            this.label11.Text = "Load and Run Method";
             // 
             // ResultsSummary
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(711, 596);
+            this.Controls.Add(this.tb_loadAndRunMethod);
+            this.Controls.Add(this.label11);
             this.Controls.Add(this.lb_ddPairs);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.tb_uniprotXmlDatabase);
@@ -283,5 +304,7 @@
         private System.Windows.Forms.ListBox lb_deconResults;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.ListBox lb_ddPairs;
+        private System.Windows.Forms.TextBox tb_loadAndRunMethod;
+        private System.Windows.Forms.Label label11;
     }
 }
