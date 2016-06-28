@@ -180,6 +180,7 @@ namespace PS_0._00
                 bool loadDeconDialog = false;   //only want to ask for user feedback once
                 bool useMethod = true;  //true if user wants to use deconvolution files specified in method
                 String filename = methodFileOpen.FileName;
+                GlobalData.loadAndRunMethod = filename;
                 string[] lines = File.ReadAllLines(filename);
                 foreach (string line in lines)
                 {
