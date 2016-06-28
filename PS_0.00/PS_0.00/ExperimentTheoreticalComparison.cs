@@ -21,7 +21,6 @@ namespace PS_0._00
         public ExperimentTheoreticalComparison()
         {
             InitializeComponent();
-            InitializeParameterSet();
             this.dgv_ET_Peak_List.MouseClick += new MouseEventHandler(dgv_ET_Peak_List_CellClick);
             this.ct_ET_Histogram.MouseMove += new MouseEventHandler(ct_ET_Histogram_MouseMove);
             this.ct_ET_peakList.MouseMove += new MouseEventHandler(ct_ET_peakList_MouseMove);
@@ -34,6 +33,7 @@ namespace PS_0._00
             this.Cursor = Cursors.WaitCursor;
             if (GlobalData.experimentTheoreticalPairs.Columns.Count == 0)
             {
+                InitializeParameterSet();
                 run_comparison();
             }
             GraphETHistogram();
@@ -705,6 +705,8 @@ namespace PS_0._00
         public override string ToString()
         {
             return String.Join(System.Environment.NewLine, new string[] {
+               "ExperimentTheoreticalComparison|nUD_ET_Lower_Bound.Value\t" + nUD_ET_Lower_Bound.Value.ToString(),
+               "ExperimentTheoreticalComparison|nUD_ET_Upper_Bound.Value\t" + nUD_ET_Upper_Bound.Value.ToString(),
                 "ExperimentTheoreticalComparison|nUD_NoManLower.Value\t" + nUD_NoManLower.Value.ToString(),
                 "ExperimentTheoreticalComparison|nUD_NoManUpper.Value\t" + nUD_NoManUpper.Value.ToString(),
                 "ExperimentTheoreticalComparison|nUD_PeakWidthBase.Value\t" + nUD_PeakWidthBase.Value.ToString(),
@@ -717,6 +719,12 @@ namespace PS_0._00
             string[] fields = setting_specs.Split('\t');
             switch (fields[0].Split('|')[1])
             {
+                case "nUD_ET_Lower_Bound.Value":
+                    nUD_ET_Lower_Bound.Value = Convert.ToDecimal(fields[1]);
+                    break;
+                case "nUD_ET_Upper_Bound.Value":
+                    nUD_ET_Upper_Bound.Value = Convert.ToDecimal(fields[1]);
+                    break;
                 case "nUD_NoManLower.Value":
                     nUD_NoManLower.Value = Convert.ToDecimal(fields[1]);
                     break;

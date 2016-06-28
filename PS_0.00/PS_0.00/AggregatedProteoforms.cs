@@ -19,9 +19,10 @@ namespace PS_0._00
 
         public void AggregatedProteoforms_Load(object sender, EventArgs e)
         {
-            InitializeSettings();
+
             if (GlobalData.aggregatedProteoforms.Columns.Count == 0)
             {
+                InitializeSettings();
                 aggregate_proteoforms();
             }
             FillAggregatesTable();
@@ -123,7 +124,7 @@ namespace PS_0._00
                 }
             }
 
-            else
+            else if (GlobalData.neucodeLabeled == false)
             {
 
                 foreach (DataRow row in GlobalData.rawExperimentalComponents.Rows)
