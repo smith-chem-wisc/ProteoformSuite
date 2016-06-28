@@ -18,7 +18,7 @@ namespace PS_0._00
         DataTable eePairsList = new DataTable(); // this is a list of all individual EE pairs with mass difference smaller than the threshold
         DataTable eePeakList = new DataTable(); // these are the aggregated peaks coming from groups of individual EE pairs.
         Boolean formLoadEvent = true; // this is needed to prevent firing of ParameterSet events from firing on form load and let them fire only when the values are actually changed
-        Double initial_nud_EE_Upper_Bound;
+        double initial_nud_EE_Upper_Bound;
 
         public ExperimentExperimentComparison()
         {
