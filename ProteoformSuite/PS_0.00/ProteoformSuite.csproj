@@ -86,12 +86,10 @@
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </Compile>
     <Compile Include="AminoAcidMasses.cs" />
-    <Compile Include="DecoyDecoyComparison.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DecoyDecoyComparison.Designer.cs">
-      <DependentUpon>DecoyDecoyComparison.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Component.cs" />
+    <Compile Include="DeltaMassPeak.cs" />
+    <Compile Include="ExcelReader.cs" />
+    <Compile Include="Proteoform.cs" />
     <Compile Include="ExperimentExperimentComparison.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -104,11 +102,11 @@
     <Compile Include="ExperimentTheoreticalComparison.Designer.cs">
       <DependentUpon>ExperimentTheoreticalComparison.cs</DependentUpon>
     </Compile>
-    <Compile Include="Form1.cs">
+    <Compile Include="ProteoformSweet.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="ProteoformSweet.Designer.cs">
+      <DependentUpon>ProteoformSweet.cs</DependentUpon>
     </Compile>
     <Compile Include="ExperimentDecoyComparison.cs">
       <SubType>Form</SubType>
@@ -116,13 +114,7 @@
     <Compile Include="ExperimentDecoyComparison.Designer.cs">
       <DependentUpon>ExperimentDecoyComparison.cs</DependentUpon>
     </Compile>
-    <Compile Include="ResultsSummary.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ResultsSummary.Designer.cs">
-      <DependentUpon>ResultsSummary.cs</DependentUpon>
-    </Compile>
-    <Compile Include="GlobalData.cs" />
+    <Compile Include="Lollipop.cs" />
     <Compile Include="LoadDeconvolutionResults.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -139,10 +131,12 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protein.cs" />
+    <Compile Include="ProteoformCommunity.cs" />
+    <Compile Include="ProteoformFamily.cs" />
     <Compile Include="ProteoformFamilyAssignment.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="PtmCombos.cs" />
+    <Compile Include="ProteoformRelation.cs" />
     <Compile Include="RandomExtensions.cs" />
     <Compile Include="RawExperimentalComponents.cs">
       <SubType>Form</SubType>
@@ -160,9 +154,6 @@
     <EmbeddedResource Include="AggregatedProteoforms.resx">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DecoyDecoyComparison.resx">
-      <DependentUpon>DecoyDecoyComparison.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="ExperimentDecoyComparison.resx">
       <DependentUpon>ExperimentDecoyComparison.cs</DependentUpon>
     </EmbeddedResource>
@@ -172,8 +163,8 @@
     <EmbeddedResource Include="ExperimentTheoreticalComparison.resx">
       <DependentUpon>ExperimentTheoreticalComparison.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="ProteoformSweet.resx">
+      <DependentUpon>ProteoformSweet.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="LoadDeconvolutionResults.resx">
       <DependentUpon>LoadDeconvolutionResults.cs</DependentUpon>
@@ -195,9 +186,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="RawExperimentalComponents.resx">
       <DependentUpon>RawExperimentalComponents.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ResultsSummary.resx">
-      <DependentUpon>ResultsSummary.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TheoreticalDatabase.resx">
       <DependentUpon>TheoreticalDatabase.cs</DependentUpon>
