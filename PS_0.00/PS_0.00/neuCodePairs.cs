@@ -25,6 +25,7 @@ namespace PS_0._00
         {
             if (GlobalData.rawNeuCodePairs.Columns.Count == 0)
             {
+                InitializeSettings();
                 find_neucode_pairs();
             }
             FillNeuCodePairsDGV();
@@ -37,6 +38,7 @@ namespace PS_0._00
             GlobalData.rawNeuCodePairs = CreateRawNeuCodePairsDataTable();
             Dictionary<string, List<string>> fileNameScanRanges = GetSFileNameScanRangesList();
             FillRawNeuCodePairsDataTable(fileNameScanRanges);
+            set_neucode_params(); //sets approriate rows as false... before only did this if user changed nUD -LVS
         }
 
         Point? prevPosition = null;
@@ -123,6 +125,25 @@ namespace PS_0._00
             dgv_RawExpNeuCodePairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
 
+        private void InitializeSettings()
+        {
+            IRatMaxAcceptable.Value = 6;
+            IRatMinAcceptable.Maximum = 20;
+            IRatMinAcceptable.Minimum = 0;
+
+            IRatMinAcceptable.Value = 1.4m;
+            IRatMinAcceptable.Maximum = 20;
+            IRatMinAcceptable.Minimum = 0;
+
+            KMaxAcceptable.Value = 26.2m;
+            KMaxAcceptable.Maximum = 28;
+            KMaxAcceptable.Minimum = 0;
+            KMinAcceptable.Value = 1.5m;
+            KMinAcceptable.Maximum = 28;
+            KMinAcceptable.Minimum = 0;
+
+        }
+
         private void GraphIntensityRatio()
         {
             DataTable intensityRatioHistogram = new DataTable();
@@ -159,14 +180,6 @@ namespace PS_0._00
             yMinIRat.Value = 0;
             xMaxIRat.Value = 20;
             xMinIRat.Value = 0;
-
-            IRatMaxAcceptable.Value = 6;
-            IRatMinAcceptable.Maximum = 20;
-            IRatMinAcceptable.Minimum = 0;
-
-            IRatMinAcceptable.Value = 1.4m;
-            IRatMinAcceptable.Maximum = 20;
-            IRatMinAcceptable.Minimum = 0;
 
             ct_IntensityRatio.ChartAreas[0].AxisX.Title = "Intensity Ratio of a Pair";
             ct_IntensityRatio.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";
@@ -213,13 +226,6 @@ namespace PS_0._00
             yMinKCt.Value = 0;
             xMaxKCt.Value = 28;
             xMinKCt.Value = 0;
-
-            KMaxAcceptable.Value = 26.2m;
-            KMaxAcceptable.Maximum = 28;
-            KMaxAcceptable.Minimum = 0;
-            KMinAcceptable.Value = 1.5m;
-            KMinAcceptable.Maximum = 28;
-            KMinAcceptable.Minimum = 0;
 
             ct_LysineCount.ChartAreas[0].AxisX.Title = "Lysine Count";
             ct_LysineCount.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";
@@ -455,6 +461,34 @@ namespace PS_0._00
             }
             dgv_RawExpNeuCodePairs.Refresh();
         }
+
+        private void set_neucode_params()
+        {
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Lysine Count")) { }
+            else {
+                string expression = "[Lysine Count] < " + double.Parse(KMinAcceptable.Value.ToString());
+                parse_neucode_param_change(expression);
+            }
+
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Lysine Count")) { }
+            else {
+                string expression = "[Lysine Count] > " + double.Parse(KMaxAcceptable.Value.ToString());
+                parse_neucode_param_change(expression);
+            }
+
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Intensity Ratio")) { }
+            else {
+                string expression = "[Intensity Ratio] < " + double.Parse(IRatMinAcceptable.Value.ToString());
+                parse_neucode_param_change(expression);
+            }
+
+            if (!GlobalData.rawNeuCodePairs.Columns.Contains("Intensity Ratio")) { }
+            else {
+                string expression = "[Intensity Ratio] > " + double.Parse(IRatMaxAcceptable.Value.ToString());
+                parse_neucode_param_change(expression);
+            }
+        }
+
 
         private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
