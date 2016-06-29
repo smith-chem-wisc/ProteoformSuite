@@ -177,7 +177,10 @@ namespace PS_0._00
             DialogResult dr = this.methodFileOpen.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
+                bool loadDeconDialog = false;   //only want to ask for user feedback once
+                bool useMethod = true;  //true if user wants to use deconvolution files specified in method
                 String filename = methodFileOpen.FileName;
+                GlobalData.loadAndRunMethod = filename;
                 string[] lines = File.ReadAllLines(filename);
                 foreach (string line in lines)
                 {
@@ -189,21 +192,31 @@ namespace PS_0._00
                             aggregatedProteoforms.loadSetting(setting_specs);
                             break;
                         case "LoadDeconvolutionResults":
-                            if (GlobalData.deconResultsFileNames.Count > 0)
+                                if (!loadDeconDialog)
+                                {
+                                loadDeconDialog = true; //won't ask again
+                                if (GlobalData.deconResultsFileNames.Count > 0)
+                                    { 
+                                    var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?",
+                                        "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
+                                    if (response == DialogResult.Yes) { useMethod = false; break; }
+                                    if (response == DialogResult.No) { useMethod = true; GlobalData.deconResultsFileNames.Clear(); }
+                                    if (response == DialogResult.Cancel) { useMethod = false; return; }
+                                     }
+                                 }
+                            if (useMethod == true)
                             {
-                                var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?",
-                                    "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
-                                if (response == DialogResult.Yes) { break; }
-                                if (response == DialogResult.No) { GlobalData.deconResultsFileNames.Clear(); }
-                                if (response == DialogResult.Cancel) { return; }
-                            }
-                            loadDeconvolutionResults.loadSetting(setting_specs);
+                                loadDeconvolutionResults.loadSetting(setting_specs);
+                            }           
                             break;
                         case "RawExperimentalComponents":
                             rawExperimentalComponents.loadSetting(setting_specs);
                             break;
                         case "NeuCodePairs":
-                            neuCodePairs.loadSetting(setting_specs);
+                            if (GlobalData.neucodeLabeled == true)
+                            {
+                                neuCodePairs.loadSetting(setting_specs);
+                            }
                             break;
                         case "ProteoformFamilyAssignment":
                             proteoformFamilyAssignment.loadSetting(setting_specs);
@@ -261,8 +274,11 @@ namespace PS_0._00
         {
             rawExperimentalComponents.pull_raw_experimental_components();
             DataToCSV(GlobalData.rawExperimentalComponents, working_directory + "\\raw_experimental_components.csv");
-            neuCodePairs.find_neucode_pairs();
-            DataToCSV(GlobalData.rawNeuCodePairs, working_directory + "\\raw_neucode_pairs.csv");
+            if (GlobalData.neucodeLabeled == true)
+            { 
+                neuCodePairs.find_neucode_pairs();
+                DataToCSV(GlobalData.rawNeuCodePairs, working_directory + "\\raw_neucode_pairs.csv");
+            }
             aggregatedProteoforms.aggregate_proteoforms();
             DataToCSV(GlobalData.acceptableNeuCodeLightProteoforms, working_directory + "\\acceptable_neucode_light_proteoforms.csv");
             DataToCSV(GlobalData.aggregatedProteoforms, working_directory + "\\aggregated_proteoforms.csv");

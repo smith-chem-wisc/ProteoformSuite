@@ -414,6 +414,7 @@ namespace PS_0._00
             {
                 case "tb_UniProtXML_Path.Text":
                     tb_UniProtXML_Path.Text = fields[1];
+                    GlobalData.uniprotXmlFile = fields[1];
                     break;
                 case "tb_UniProtPtmList_Path.Text":
                     tb_UniProtPtmList_Path.Text = fields[1];

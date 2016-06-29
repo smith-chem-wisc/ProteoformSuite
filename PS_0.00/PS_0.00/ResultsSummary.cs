@@ -22,6 +22,7 @@ namespace PS_0._00
          int numEEpairs;
          int numEEpeaks;
          List<int> numDDpairs = new List<int>();
+        string loadAndRunMethod;
         //int numProteoformFamilies
 
         public ResultsSummary()
@@ -48,6 +49,8 @@ namespace PS_0._00
             numETpeaks = GlobalData.etPeakList.Rows.Count;
             numEEpairs = GlobalData.experimentExperimentPairs.Rows.Count;
             numEEpeaks = GlobalData.eePeakList.Rows.Count;
+            loadAndRunMethod = GlobalData.loadAndRunMethod;
+
             for (int i = 0; i < GlobalData.decoyDecoyPairs.Tables.Count; i++)
             {
                 string tableName = "DecoyDatabase_" + i;
@@ -69,7 +72,7 @@ namespace PS_0._00
             tb_EEPairs.Text = numEEpairs.ToString();
             tb_EEPeaks.Text = numEEpeaks.ToString();
             lb_ddPairs.DataSource = numDDpairs;
-
+            tb_loadAndRunMethod.Text = loadAndRunMethod;
 
         }
     }

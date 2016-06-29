@@ -13,6 +13,7 @@ namespace PS_0._00
 {
     public class GlobalData
     {
+        public static string loadAndRunMethod; 
         public static BindingList<string> deconResultsFileNames = new BindingList<string>();
         public static Boolean neucodeLabeled = true;
         public static DataSet deconResultsFiles = new DataSet();

@@ -17,13 +17,12 @@ namespace PS_0._00
     {
         DataTable eePairsList = new DataTable(); // this is a list of all individual EE pairs with mass difference smaller than the threshold
         DataTable eePeakList = new DataTable(); // these are the aggregated peaks coming from groups of individual EE pairs.
-        Boolean formLoadEvent; // this is needed to prevent firing of ParameterSet events from firing on form load and let them fire only when the values are actually changed
+        Boolean formLoadEvent = true; // this is needed to prevent firing of ParameterSet events from firing on form load and let them fire only when the values are actually changed
         double initial_nud_EE_Upper_Bound;
 
         public ExperimentExperimentComparison()
         {
             InitializeComponent();
-            InitializeParameterSet();
             this.dgv_EE_Peak_List.MouseClick += new MouseEventHandler(dgv_EE_Peak_List_CellClick);
             this.ct_EE_Histogram.MouseMove += new MouseEventHandler(ct_EE_Histogram_MouseMove);
             this.ct_EE_peakList.MouseMove += new MouseEventHandler(ct_EE_peakList_MouseMove);
@@ -36,6 +35,7 @@ namespace PS_0._00
             this.Cursor = Cursors.WaitCursor;
             if (GlobalData.experimentExperimentPairs.Columns.Count == 0)
             {
+                InitializeParameterSet();
                 run_comparison();
             }
             GraphEEHistogram();
@@ -534,7 +534,7 @@ namespace PS_0._00
         {
             nUD_EE_Upper_Bound.Minimum = 0;
             nUD_EE_Upper_Bound.Maximum = 500;
-            //nUD_EE_Upper_Bound.Value = 500; // maximum mass difference in Da allowed between experimental pairs
+            nUD_EE_Upper_Bound.Value = 500; // maximum mass difference in Da allowed between experimental pairs
 
             yMaxEE.Minimum = 0;
             yMaxEE.Maximum = 1000;
@@ -696,6 +696,7 @@ namespace PS_0._00
         public override string ToString()
         {
             return String.Join(System.Environment.NewLine, new string[] {
+                "ExperimentExperimentComparison|nUD_EE_Upper_Bound.Value\t" + nUD_EE_Upper_Bound.Value.ToString(),
                 "ExperimentExperimentComparison|nUD_NoManLower.Value\t" + nUD_NoManLower.Value.ToString(),
                 "ExperimentExperimentComparison|nUD_NoManUpper.Value\t" + nUD_NoManUpper.Value.ToString(),
                 "ExperimentExperimentComparison|nUD_PeakWidthBase.Value\t" + nUD_PeakWidthBase.Value.ToString(),
@@ -708,6 +709,9 @@ namespace PS_0._00
             string[] fields = setting_specs.Split('\t');
             switch (fields[0].Split('|')[1])
             {
+                case "nUD_EE_Upper_Bound.Value":
+                    nUD_EE_Upper_Bound.Value = Convert.ToDecimal(fields[1]);
+                    break;
                 case "nUD_NoManLower.Value":
                     nUD_NoManLower.Value = Convert.ToDecimal(fields[1]);
                     break;
