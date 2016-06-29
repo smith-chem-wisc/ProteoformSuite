@@ -156,7 +156,7 @@ namespace PS_0._00
                 {
                     uniprotXmlFileStream = stream;
                 }
-                uniprotXmlStream = new StreamReader(uniprotXmlFileStream);
+                uniprotXmlStream = new StreamReader(uniprotXmlFileStream); //this causes out of memory exception in debug mode. consider changing to read one entry at a time.
 
                 XDocument xml = XDocument.Parse(uniprotXmlStream.ReadToEnd());
                 XNamespace ns = xml.Root.Name.Namespace;
@@ -249,6 +249,14 @@ namespace PS_0._00
                                 break;
                             case "splice variant":
                             case "sequence variant":
+                            case "sequence conflict":
+                            case "mutagenesis site":
+                            case "coiled-coil region":
+                            case "domain":
+                            case "compositionally biased region":
+                            case "binding site":
+                            case "transit peptide":
+                            default:
                                 break;
                         }
                     }
