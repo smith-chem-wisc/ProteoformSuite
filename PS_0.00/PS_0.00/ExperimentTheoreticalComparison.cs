@@ -198,7 +198,11 @@ namespace PS_0._00
                 double highMass = Convert.ToDouble(agRow["Aggregated Mass"]) + Convert.ToDouble(nUD_ET_Upper_Bound.Value);
 
                 string expression = "[Proteoform Mass] >= " + lowMass + " and [Proteoform Mass] <= " + highMass;
-                expression = expression + "and [Lysine Count] >= " + agRow["Lysine Count"];
+                if (GlobalData.neucodeLabeled)
+                {
+                    expression = expression + "and [Lysine Count] = " + agRow["Lysine Count"];
+                }
+                 
 
                 DataRow[] closeTheoreticals = GlobalData.theoreticalAndDecoyDatabases.Tables["Target"].Select(expression);
 
@@ -658,11 +662,11 @@ namespace PS_0._00
         {
             nUD_ET_Lower_Bound.Minimum = -500;
             nUD_ET_Lower_Bound.Maximum = 0;
-            nUD_ET_Lower_Bound.Value = -250; // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
+            nUD_ET_Lower_Bound.Value = -200; // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
 
             nUD_ET_Upper_Bound.Minimum = 0;
             nUD_ET_Upper_Bound.Maximum = 500;
-            nUD_ET_Upper_Bound.Value = 250; // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
+            nUD_ET_Upper_Bound.Value = 200; // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
 
             yMaxET.Minimum = 0;
             yMaxET.Maximum = 1000;
@@ -694,7 +698,7 @@ namespace PS_0._00
 
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
-            nUD_PeakCountMinThreshold.Value = 10; // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
+            nUD_PeakCountMinThreshold.Value = 8; // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
         }
 
         private void ET_Update_Click(object sender, EventArgs e)
