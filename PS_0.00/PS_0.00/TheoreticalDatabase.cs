@@ -251,9 +251,9 @@ namespace PS_0._00
                     int hunkLength = proteinRawData[i].Sequence.Length - startPosAfterCleavage;
                     string hunk = giantProtein.Substring(prevLength, hunkLength);
                     prevLength += hunkLength;
+                    string decoyName = proteinRawData[i].Accession + "_DECOY_" + decoyNumber.ToString();
 
-                    EnterTheoreticalProteformFamily(decoy, hunk, proteinRawData[i], proteinRawData[i].Accession +
-                        "_DECOY_" + decoyNumber, maxPTMsPerProteoform, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
+                    EnterTheoreticalProteformFamily(decoy, hunk, proteinRawData[i], decoyName, maxPTMsPerProteoform, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
                 }
                 GlobalData.theoreticalAndDecoyDatabases.Tables.Add(decoy);
             }
