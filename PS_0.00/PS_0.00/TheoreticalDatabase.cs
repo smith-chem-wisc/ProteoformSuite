@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -60,7 +61,8 @@ namespace PS_0._00
         private void InitializeOpenFileDialog2()
         {
             // Set the file dialog to filter for graphics files.
-            this.openFileDialog2.Filter = "UniProt XML (*.xml, *.xml.gz)|*.xml;*.xml.gz";
+            //this.openFileDialog2.Filter = "UniProt XML (*.xml, *.xml.gz)|*.xml;*.xml.gz"; //uncomment this when you can read zip files again.
+            this.openFileDialog2.Filter = "UniProt XML (*.xml)|*.xml";
             // Allow the user to select multiple images.
             this.openFileDialog2.Multiselect = false;
             this.openFileDialog2.Title = "UniProt XML Format Database";
@@ -227,6 +229,7 @@ namespace PS_0._00
                 string seq = proteinRawData[i].Sequence.Substring(startPosAfterCleavage, (proteinRawData[i].Sequence.Length - startPosAfterCleavage));
                 EnterTheoreticalProteformFamily(target, seq, proteinRawData[i], proteinRawData[i].Accession, maxPTMsPerProteoform, isMetCleaved, aaIsotopeMassList, uniprotModificationTable);
             }
+
             GlobalData.theoreticalAndDecoyDatabases.Tables.Add(target);
         }
 
@@ -274,14 +277,56 @@ namespace PS_0._00
                 aupg.AddRange(new PtmCombos().combos(maxPTMsPerProteoform, uniprotModificationTable, prot.PositionsAndPtms));
             }
 
-            foreach (OneUniquePtmGroup group in aupg)
+            ConcurrentBag<etTableRow> etTR = new ConcurrentBag<etTableRow>();
+           
+            Parallel.ForEach(aupg, (group) => 
             {
+
                 List<string> ptm_list = group.unique_ptm_combinations;
                 //if (!isMetCleaved) { MessageBox.Show("PTM Combinations: " + String.Join("; ", ptm_list)); }
                 Double ptm_mass = group.mass;
                 Double proteoform_mass = mass + group.mass;
-                table.Rows.Add(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, mass, kCount, string.Join("; ", ptm_list), ptm_mass, proteoform_mass);
+                etTableRow TR = new etTableRow();
+                TR.accession = accession;
+                TR.protName = prot.Name;
+                TR.protFragment = prot.Fragment;
+                TR.protBegin = prot.Begin + Convert.ToInt32(isMetCleaved);
+                TR.protEnd = prot.End;
+                TR.mass = mass;
+                TR.kCount = kCount;
+                TR.ptm_list = string.Join("; ", ptm_list);
+                TR.ptm_mass = ptm_mass;
+                TR.proteoform_mass = proteoform_mass;
+                etTR.Add(TR);
+
+            });
+
+            //foreach (OneUniquePtmGroup group in aupg)
+            //{
+            //    List<string> ptm_list = group.unique_ptm_combinations;
+            //    //if (!isMetCleaved) { MessageBox.Show("PTM Combinations: " + String.Join("; ", ptm_list)); }
+            //    Double ptm_mass = group.mass;
+            //    Double proteoform_mass = mass + group.mass;
+            //    etTableRow TR = new etTableRow();
+            //    TR.accession = accession;
+            //    TR.protName = prot.Name;
+            //    TR.protFragment = prot.Fragment;
+            //    TR.protBegin = prot.Begin + Convert.ToInt32(isMetCleaved);
+            //    TR.protEnd = prot.End;
+            //    TR.mass = mass;
+            //    TR.kCount = kCount;
+            //    TR.ptm_list = string.Join("; ", ptm_list);
+            //    TR.ptm_mass = ptm_mass;
+            //    TR.proteoform_mass = proteoform_mass;
+            //    etTR.Add(TR);
+            //    //table.Rows.Add(accession, prot.Name, prot.Fragment, prot.Begin + Convert.ToInt32(isMetCleaved), prot.End, mass, kCount, string.Join("; ", ptm_list), ptm_mass, proteoform_mass);
+            //}
+
+            foreach (var row in etTR)
+            {
+                table.Rows.Add(row.accession, row.protName, row.protFragment, row.protBegin, row.protEnd, row.mass, row.kCount, row.ptm_list, row.ptm_mass, row.proteoform_mass);
             }
+
         }
 
         static double CalculateProteoformMass(ref Dictionary<char, double> aaIsotopeMassList, string pForm)
@@ -452,5 +497,18 @@ namespace PS_0._00
         }
 
         
+    }
+    public class etTableRow
+    {
+        public string accession { get; set; } 
+        public string protName { get; set; }
+        public string protFragment { get; set; }
+        public int protBegin{ get; set; } 
+        public int protEnd { get; set; } 
+        public double mass { get; set; } 
+        public int kCount { get; set; } 
+        public string ptm_list { get; set; }
+        public double ptm_mass { get; set; } 
+        public double proteoform_mass { get; set; } 
     }
 }
