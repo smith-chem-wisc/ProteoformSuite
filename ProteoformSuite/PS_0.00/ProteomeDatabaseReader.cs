@@ -79,23 +79,17 @@ namespace ProteoformSuite
                         switch (line.Substring(0, 2))
                         {
                             case "ID":
-                                description = line.Substring(5);
-                                break;
+                                description = line.Substring(5); break;
                             case "AC":
-                                accession = line.Substring(5);
-                                break;
+                                accession = line.Substring(5); break;
                             case "FT":
-                                featureType = line.Substring(5);
-                                break;
+                                featureType = line.Substring(5); break;
                             case "PP":
-                                position = line.Substring(5);
-                                break;
+                                position = line.Substring(5); break;
                             case "MM":
-                                monoisotopicMassShift = double.Parse(line.Substring(5));
-                                break;
+                                monoisotopicMassShift = double.Parse(line.Substring(5)); break;
                             case "MA":
-                                averageMassShift = double.Parse(line.Substring(5));
-                                break;
+                                averageMassShift = double.Parse(line.Substring(5)); break;
                             case "TG":
                                 string amino_acids = line.Substring(5).TrimEnd('.');
                                 string[] acids = amino_acids.Split(new string[] { " or ", "-" }, StringSplitOptions.None);
@@ -174,7 +168,7 @@ namespace ProteoformSuite
                     if (fragment == "" || fragment == null)
                     {
                         fragment = "Full";
-                        if (fixedMethionineCleavage) { fragment += "_MetCleaved"; }
+                        if (fixedMethionineCleavage) fragment += "_MetCleaved";
                     }
                     int begin = 0;
                     int end = sequence.Length - 1;
@@ -201,11 +195,8 @@ namespace ProteoformSuite
                             {
                                 List<Modification> modListAtPos;
                                 if (positionsAndPtms.TryGetValue(feature_position, out modListAtPos))
-                                {
-                                    if (uniprot_modification_table.ContainsKey(feature_description))
-                                        modListAtPos.Add(uniprot_modification_table[feature_description]);
-                                }
-                                else if (uniprot_modification_table.ContainsKey(feature_description))
+                                    modListAtPos.Add(uniprot_modification_table[feature_description]);
+                                else
                                 {
                                     modListAtPos = new List<Modification> { uniprot_modification_table[feature_description] };
                                     positionsAndPtms.Add(feature_position, modListAtPos);
@@ -234,13 +225,9 @@ namespace ProteoformSuite
                                 {
                                     bool justMetCleavage = fixedMethionineCleavage && feature_begin - 1 == begin && feature_end == end;
                                     string subsequence = sequence.Substring(feature_begin, feature_end - feature_begin + 1);
-                                    if (!justMetCleavage &&
-                                        subsequence.Length != sequence.Length &&
-                                        subsequence.Length >= minPeptideLength)
-                                    {
+                                    if (!justMetCleavage && subsequence.Length != sequence.Length && subsequence.Length >= minPeptideLength)
                                         protein_list.Add(new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence,
                                             SegmentPtms(positionsAndPtms, feature_begin, feature_end)));
-                                    }
                                 }
                                 break;
                             case "splice variant":
