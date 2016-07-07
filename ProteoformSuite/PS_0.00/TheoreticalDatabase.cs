@@ -57,7 +57,8 @@ namespace ProteoformSuite
 
         private void InitializeOpenXmlDialog()
         {
-            this.openXmlDialog.Filter = "UniProt XML (*.xml, *.xml.gz)|*.xml;*.xml.gz";
+            //this.openXmlDialog.Filter = "UniProt XML (*.xml, *.xml.gz)|*.xml;*.xml.gz";
+            this.openXmlDialog.Filter = "UniProt XML (*.xml)|*.xml";
             this.openXmlDialog.Multiselect = false;
             this.openXmlDialog.Title = "UniProt XML Format Database";
         }

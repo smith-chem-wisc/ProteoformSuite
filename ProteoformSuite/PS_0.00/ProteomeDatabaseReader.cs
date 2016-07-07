@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml;
 using System.Xml.Linq;
 
 //Inspired by the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
@@ -138,28 +139,36 @@ namespace ProteoformSuite
             return oldPtmlistFilePath;
         }
 
+        public static IEnumerable<XElement> SimpleStreamAxis(
+                       string inputUrl, string matchName)
+        {
+            using (XmlReader reader = XmlReader.Create(inputUrl))
+            {
+                reader.MoveToContent();
+                while (reader.Read())
+                {
+                    switch (reader.NodeType)
+                    {
+                        case XmlNodeType.Element:
+                            if (reader.Name == matchName)
+                            {
+                                XElement el = XElement.ReadFrom(reader)
+                                                      as XElement;
+                                if (el != null)
+                                    yield return el;
+                            }
+                            break;
+                    }
+                }
+                reader.Close();
+            }
+        }
+
         public static Protein[] ReadUniprotXml(string uniprotXmlFile, Dictionary<string, Modification> uniprot_modification_table, int minPeptideLength, bool fixedMethionineCleavage)
         {
-            StreamReader uniprotXmlStream;
             List<Protein> protein_list = new List<Protein>();
-            using (var stream = new FileStream(uniprotXmlFile, FileMode.Open))
-            {
-                Stream uniprotXmlFileStream;
-                if (uniprotXmlFile.EndsWith(".gz"))
-                {
-                    uniprotXmlFileStream = new GZipStream(stream, CompressionMode.Decompress);
-                }
-                else
-                {
-                    uniprotXmlFileStream = stream;
-                }
-                uniprotXmlStream = new StreamReader(uniprotXmlFileStream);
-
-                XDocument xml = XDocument.Parse(uniprotXmlStream.ReadToEnd());
-                XNamespace ns = xml.Root.Name.Namespace;
-
-                IEnumerable<XElement> entries = from node in xml.Descendants() where node.Name.LocalName == "entry" select node;
-                Parallel.ForEach<XElement>(entries, entry =>
+            IEnumerable<XElement> entries = from el in SimpleStreamAxis(uniprotXmlFile, "entry") select el;
+            Parallel.ForEach<XElement>(entries, entry =>
                 {
                     //Used fields
                     string dataset = GetAttribute(entry, "dataset");
@@ -247,7 +256,7 @@ namespace ProteoformSuite
                         }
                     });
                 });
-            }
+            
             return protein_list.Where(p => p != null).ToArray();
         }
 
