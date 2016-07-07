@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Xml;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -146,19 +147,20 @@ namespace ProteoformSuite
             {
                 Stream uniprotXmlFileStream;
                 if (uniprotXmlFile.EndsWith(".gz"))
-                {
                     uniprotXmlFileStream = new GZipStream(stream, CompressionMode.Decompress);
-                }
-                else
+                else uniprotXmlFileStream = stream;
+
+                List<XElement> entries = new List<XElement>();
+                using (XmlReader uniprotXmlReader = XmlReader.Create(uniprotXmlFileStream))
                 {
-                    uniprotXmlFileStream = stream;
+                    uniprotXmlReader.MoveToContent();
+                    while (uniprotXmlReader.Read())
+                    {
+                        if (uniprotXmlReader.NodeType == XmlNodeType.Element && uniprotXmlReader.Name == "entry")
+                            entries.Add(XElement.ReadFrom(uniprotXmlReader) as XElement);
+                    }
                 }
-                uniprotXmlStream = new StreamReader(uniprotXmlFileStream);
 
-                XDocument xml = XDocument.Parse(uniprotXmlStream.ReadToEnd());
-                XNamespace ns = xml.Root.Name.Namespace;
-
-                IEnumerable<XElement> entries = from node in xml.Descendants() where node.Name.LocalName == "entry" select node;
                 Parallel.ForEach<XElement>(entries, entry =>
                 {
                     //Used fields
