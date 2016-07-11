@@ -13,11 +13,14 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuite
 {
+
     public partial class ProteoformSweet : Form
     {
+
         //  Initialize Forms START
         LoadDeconvolutionResults loadDeconvolutionResults = new LoadDeconvolutionResults();
         RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
+       
         NeuCodePairs neuCodePairs = new NeuCodePairs();
         AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms();
         TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase();
@@ -47,6 +50,17 @@ namespace ProteoformSuite
                 theoreticalDatabase, experimentalTheoreticalComparison, experimentDecoyComparison, experimentExperimentComparison,
                 //proteoformFamilyAssignment
             });
+
+        }
+
+        public void enableNeuCodeProteoformPairsToolStripMenuItem(bool setting)
+        {
+            neuCodeProteoformPairsToolStripMenuItem.Enabled = setting;
+        }
+
+        public static void donothing()
+        {
+
         }
 
         private void showForm(Form form)
@@ -68,7 +82,7 @@ namespace ProteoformSuite
 
         private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            showForm(neuCodePairs);
+           showForm(neuCodePairs);
         }
 
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
