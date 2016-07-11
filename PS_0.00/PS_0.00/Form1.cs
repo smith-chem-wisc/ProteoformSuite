@@ -56,6 +56,11 @@ namespace PS_0._00
             form.WindowState = FormWindowState.Maximized;
         }
 
+        public void enableNeuCodeProteoformPairsToolStripMenuItem(bool setting)
+        {
+            neuCodeProteoformPairsToolStripMenuItem.Enabled = setting;
+        }
+
         public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(loadDeconvolutionResults);

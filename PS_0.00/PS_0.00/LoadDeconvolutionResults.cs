@@ -153,11 +153,15 @@ namespace PS_0._00
             if (cb_neucodeLabeled.Checked)
             {
                 GlobalData.neucodeLabeled = true;
+                Form1 neuCodeMenuItemEnableDisable = (Form1)MdiParent;
+                neuCodeMenuItemEnableDisable.enableNeuCodeProteoformPairsToolStripMenuItem(true);
             }
 
             else if (!cb_neucodeLabeled.Checked)
             {
                 GlobalData.neucodeLabeled = false;
+                Form1 neuCodeMenuItemEnableDisable = (Form1)MdiParent;
+                neuCodeMenuItemEnableDisable.enableNeuCodeProteoformPairsToolStripMenuItem(false);
             }
         }
     }
