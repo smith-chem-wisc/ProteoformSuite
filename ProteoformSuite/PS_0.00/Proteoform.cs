@@ -11,7 +11,7 @@ namespace ProteoformSuite
     {
         public string accession { get; set; }
         public double modified_mass { get; set; }
-        public int lysine_count { get; set; } = -1
+        public int lysine_count { get; set; } = -1;
         public bool is_target { get; set; } = true;
         public bool is_decoy { get; } = false;
         public List<MassDifference> relationships { get; set; } = new List<MassDifference>();
