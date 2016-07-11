@@ -10,7 +10,6 @@ namespace ProteoformSuite
     {
         Component neuCodeLight;
         Component neuCodeHeavy;
-        public double corrected_mass { get; set; }
         public List<int> overlapping_charge_states { get; set; }
 
         public double intensity_ratio { get; set; }
@@ -20,6 +19,7 @@ namespace ProteoformSuite
         public NeuCodePair(Component neuCodeLight, Component neuCodeHeavy, double mass_difference, List<int> overlapping_charge_states) : base(neuCodeLight)
         {
             this.overlapping_charge_states = overlapping_charge_states;
+            this.neuCodeLight = neuCodeLight;
             this.neuCodeHeavy = neuCodeHeavy;
 
             int diff_integer = Convert.ToInt32(Math.Round(mass_difference / 1.0015 - 0.5, 0, MidpointRounding.AwayFromZero));
