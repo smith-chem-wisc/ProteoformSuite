@@ -23,6 +23,7 @@ namespace ProteoformSuite
         public string rt_range { get; set; }
         public double rt_apex { get; set; }
         public double weighted_monoisotopic_mass { get; set; }
+        public double corrected_mass { get; set; }
         public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
         public int num_charge_states
         {
@@ -48,6 +49,24 @@ namespace ProteoformSuite
             this.rt_apex = Convert.ToDouble(component_cells[10].InnerText);
             this.file_origin = filename;
         }
+        public Component(Component c)
+        {
+            this.file_origin = c.file_origin;
+            this.id = c.id;
+            this.monoisotopic_mass = c.monoisotopic_mass;
+            this.weighted_monoisotopic_mass = c.weighted_monoisotopic_mass;
+            this.corrected_mass = c.corrected_mass;
+            this.intensity_sum = c.intensity_sum = c.intensity_sum;
+            this.delta_mass = c.delta_mass;
+            this.relative_abundance = c.relative_abundance;
+            this.fract_abundance = c.fract_abundance;
+            this.scan_range = c.scan_range;
+            this.rt_apex = c.rt_apex;
+            this.rt_range = c.rt_range;
+            this.charge_states = c.charge_states;
+            this.num_detected_intervals = c.num_detected_intervals;
+            this.num_charge_states_fromFile = c.num_charge_states_fromFile;
+        }
 
         public double calculate_sum_intensity()
         {
@@ -63,6 +82,7 @@ namespace ProteoformSuite
         public void calculate_weighted_monoisotopic_mass()
         {
             this.weighted_monoisotopic_mass = this.charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum();
+            this.corrected_mass = this.weighted_monoisotopic_mass;
         }
 
         public void add_charge_state(List<Cell> charge_row)

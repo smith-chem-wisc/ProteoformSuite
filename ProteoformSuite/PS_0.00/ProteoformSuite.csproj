@@ -87,6 +87,7 @@
     </Compile>
     <Compile Include="AminoAcidMasses.cs" />
     <Compile Include="Component.cs" />
+    <Compile Include="ComponentAggregate.cs" />
     <Compile Include="DeltaMassPeak.cs" />
     <Compile Include="ExcelReader.cs" />
     <Compile Include="Proteoform.cs" />
