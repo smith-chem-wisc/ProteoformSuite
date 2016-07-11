@@ -29,16 +29,16 @@ namespace ProteoformSuite
             this.corrected_mass = this.weighted_monoisotopic_mass + Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * 1.0015;
         }
 
-        public string as_csv_row()
+        public string as_tsv_row()
         {
-            return String.Join(",", new List<string> { this.id.ToString(), this.intensity_sum.ToString(), this.weighted_monoisotopic_mass.ToString(), this.corrected_mass.ToString(), this.rt_apex.ToString(),
+            return String.Join("\t", new List<string> { this.id.ToString(), this.intensity_sum.ToString(), this.weighted_monoisotopic_mass.ToString(), this.corrected_mass.ToString(), this.rt_apex.ToString(),
                 this.neuCodeHeavy.id.ToString(), this.neuCodeHeavy.intensity_sum.ToString(), this.neuCodeHeavy.weighted_monoisotopic_mass.ToString(), this.intensity_ratio.ToString(), this.lysine_count.ToString(),
                 this.file_origin.ToString() });
         }
 
-        public static string get_csv_header()
+        public static string get_tsv_header()
         {
-            return String.Join(",", new List<string> { "light_id", "light_intensity", "light_weighted_monoisotopic_mass", "light_corrected_mass", "light_apexRt",
+            return String.Join("\t", new List<string> { "light_id", "light_intensity", "light_weighted_monoisotopic_mass", "light_corrected_mass", "light_apexRt",
                 "heavy_id", "heavy_intensity", "heavy_weighted_monoisotopic_mass", "intensity_ratio", "lysine_count", "file_origin" });
         }
     }

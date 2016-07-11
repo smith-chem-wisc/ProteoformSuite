@@ -195,6 +195,11 @@ namespace ProteoformSuite
             );
         }
 
+        public void enable_neuCodeProteoformPairsToolStripMenuItem(bool setting)
+        {
+            neuCodeProteoformPairsToolStripMenuItem.Enabled = setting;
+        }
+
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("openToolStripMenuItem_Click");
