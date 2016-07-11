@@ -26,7 +26,7 @@ namespace ProteoformSuite
         public static void get_experimental_proteoforms()
         {
             Lollipop.process_raw_components();
-            Lollipop.aggregate_neucode_light_proteoforms();
+            Lollipop.aggregate_proteoforms();
         }
 
         //RAW EXPERIMENTAL COMPONENTS
@@ -39,11 +39,14 @@ namespace ProteoformSuite
                 List<Component> raw_components = new List<Component>(new ExcelReader().read_components_from_xlsx(filename));
                 raw_experimental_components.AddRange(raw_components);
 
-                HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
-                Parallel.ForEach<string>(scan_ranges, scan_range =>
+                //if (no_label_button_checked)
                 {
-                    find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
-                });
+                    HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
+                    Parallel.ForEach<string>(scan_ranges, scan_range =>
+                    {
+                        find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
+                    });
+                }
             });
         }
 
@@ -65,8 +68,19 @@ namespace ProteoformSuite
                     double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
                     if (mass_difference < 6)
                     {
-                        NeuCodePair pair = new NeuCodePair(lower_component, higher_component);
-                        if (pair.accepted) Lollipop.raw_neucode_pairs.Add(pair);
+                        List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
+                        List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList<int>();
+                        List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
+                        double lower_intensity = lower_component.calculate_sum_intensity(overlapping_charge_states);
+                        double higher_intensity = higher_component.calculate_sum_intensity(overlapping_charge_states);
+
+                        if (lower_intensity > 0 || higher_intensity > 0)
+                        {
+                            NeuCodePair pair;
+                            if (lower_intensity > higher_intensity) pair = new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states); //lower mass is neucode light
+                            else pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states); //higher mass is neucode light
+                            Lollipop.raw_neucode_pairs.Add(pair);
+                        }
                     }
                 }
             }
@@ -136,23 +150,28 @@ namespace ProteoformSuite
         public static decimal missed_monos = 3;
         public static decimal missed_lysines = 1;
         //public static List<ExperimentalProteoform> experimental_proteoforms = new List<ExperimentalProteoform>();
-        public static void aggregate_neucode_light_proteoforms()
+        public static void aggregate_proteoforms()
         {
             if (Lollipop.proteoform_community.experimental_proteoforms.Count > 0)
                 Lollipop.proteoform_community.experimental_proteoforms.Clear();
 
             //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
+            //If no NeuCodePairs exist, e.g. for an experiment without labeling, the raw components are used instead.
+            //Uses an ordered list, so that the proteoform with max intensity is always chosen first
             Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
-            List<NeuCodePair> remaining_acceptableProteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.light_intensity).ToList(); //ordered list, so that the proteoform with max intensity is always chosen first
+            Component[] remaining_proteoforms;
+            if (Lollipop.raw_neucode_pairs.Count > 0) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum).ToArray();
+            else remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).ToArray();
 
             int count = 1;
-            while (remaining_acceptableProteoforms.Count > 0)
+            while (remaining_proteoforms.Length > 0)
             {
-                NeuCodePair root = remaining_acceptableProteoforms[0];
-                remaining_acceptableProteoforms.Remove(root);
-                ExperimentalProteoform new_pf = new ExperimentalProteoform("E_" + count, root, remaining_acceptableProteoforms, true);
+                Component root = remaining_proteoforms[0];
+                List<Component> tmp_remaining_proteoforms = remaining_proteoforms.ToList();
+                tmp_remaining_proteoforms.Remove(root);
+                ExperimentalProteoform new_pf = new ExperimentalProteoform("E_" + count, root, tmp_remaining_proteoforms, true);
                 Lollipop.proteoform_community.add(new_pf);
-                remaining_acceptableProteoforms = remaining_acceptableProteoforms.Except(new_pf.aggregated_neucode_pairs).ToList();
+                remaining_proteoforms = tmp_remaining_proteoforms.Except(new_pf.aggregated_components).ToArray();
                 count += 1;
             }
             Lollipop.proteoform_community.experimental_proteoforms = Lollipop.proteoform_community.experimental_proteoforms.Where(p => p != null).ToList();
