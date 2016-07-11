@@ -101,5 +101,11 @@ namespace ProteoformSuite
         {
             
         }
+
+        private void cb_neuCodeLabeled_CheckedChanged(object sender, EventArgs e)
+        {
+            ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(cb_neuCodeLabeled.Checked);
+            Lollipop.neucode_labeled = cb_neuCodeLabeled.Checked;
+        }
     }
 }

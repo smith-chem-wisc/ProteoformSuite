@@ -32,6 +32,7 @@ namespace ProteoformSuite
         //RAW EXPERIMENTAL COMPONENTS
         public static BindingList<string> deconResultsFileNames = new BindingList<string>();
         public static List<Component> raw_experimental_components = new List<Component>();
+        public static bool neucode_labeled = true;
         public static void process_raw_components()
         {
             Parallel.ForEach<string>(Lollipop.deconResultsFileNames, filename =>
@@ -39,7 +40,7 @@ namespace ProteoformSuite
                 List<Component> raw_components = new List<Component>(new ExcelReader().read_components_from_xlsx(filename));
                 raw_experimental_components.AddRange(raw_components);
 
-                //if (no_label_button_checked)
+                if (neucode_labeled)
                 {
                     HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
                     Parallel.ForEach<string>(scan_ranges, scan_range =>
@@ -350,31 +351,31 @@ namespace ProteoformSuite
         //RESULTS OUTPUT
         public static string raw_component_results()
         {
-            return Component.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, Lollipop.raw_experimental_components.Where(c => c != null).Select(c => c.as_csv_row()));
+            return Component.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, Lollipop.raw_experimental_components.Where(c => c != null).Select(c => c.as_tsv_row()));
         }
         public static string raw_neucode_pair_results()
         {
-            return NeuCodePair.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, Lollipop.raw_neucode_pairs.Select(p => p.as_csv_row()));
+            return NeuCodePair.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, Lollipop.raw_neucode_pairs.Select(p => p.as_tsv_row()));
         }
         public static string aggregated_experimental_proteoform_results()
         {
-            return ExperimentalProteoform.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, Lollipop.proteoform_community.experimental_proteoforms.Select(p => p.as_csv_row()));
+            return ExperimentalProteoform.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, Lollipop.proteoform_community.experimental_proteoforms.Select(p => p.as_tsv_row()));
         }
         public static string et_relations_results()
         {
-            return ProteoformRelation.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, et_relations.Select(r => r.as_csv_row()));
+            return ProteoformRelation.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, et_relations.Select(r => r.as_tsv_row()));
         }
         public static string et_peak_results()
         {
-            return DeltaMassPeak.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, et_peaks.Select(r => r.as_csv_row()));
+            return DeltaMassPeak.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, et_peaks.Select(r => r.as_tsv_row()));
         }
         public static string ee_relations_results()
         {
-            return ProteoformRelation.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, ee_relations.Select(r => r.as_csv_row()));
+            return ProteoformRelation.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, ee_relations.Select(r => r.as_tsv_row()));
         }
         public static string ee_peak_results()
         {
-            return DeltaMassPeak.get_csv_header() + Environment.NewLine + String.Join(Environment.NewLine, ee_peaks.Select(r => r.as_csv_row()));
+            return DeltaMassPeak.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, ee_peaks.Select(r => r.as_tsv_row()));
         }
 
         //METHOD FILE

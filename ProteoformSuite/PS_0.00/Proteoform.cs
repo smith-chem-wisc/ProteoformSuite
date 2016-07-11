@@ -109,15 +109,15 @@ namespace ProteoformSuite
             return false;
         }
 
-        public string as_csv_row()
+        public string as_tsv_row()
         {
-            return String.Join(",", new List<string> { this.accession.ToString(), this.modified_mass.ToString(), this.lysine_count.ToString(), this.is_target.ToString(), this.is_decoy.ToString(),
+            return String.Join("\t", new List<string> { this.accession.ToString(), this.modified_mass.ToString(), this.lysine_count.ToString(), this.is_target.ToString(), this.is_decoy.ToString(),
                 this.agg_mass.ToString(), this.agg_intensity.ToString(), this.agg_rt.ToString(), this.observation_count.ToString() });
         }
 
-        public static string get_csv_header()
+        public static string get_tsv_header()
         {
-            return String.Join(",", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
+            return String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
                 "agg_mass", "agg_intensity", "agg_rt", "observation_count" });
         }
     }
