@@ -134,17 +134,12 @@ namespace ProteoformSuiteInternal
         public List<Ptm> ptm_list { get; set; } = new List<Ptm>();
         public string ptm_descriptions
         {
-<<<<<<< HEAD:ProteoformSuiteInternal/Proteoform.cs
             get
             {
                 return ptm_list_string();
             }
         }
-=======
-            get { return ptm_list_string(); }
-        }
 
->>>>>>> c2112c3181f15b40dab82fcd79eab9afce020501:ProteoformSuite/PS_0.00/Proteoform.cs
         public TheoreticalProteoform(string accession, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<Ptm> ptm_list, double ptm_mass, double modified_mass, bool is_target) : base(accession, modified_mass, lysine_count, is_target)
         {
             this.accession = accession;
