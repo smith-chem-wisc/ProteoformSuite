@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
@@ -19,7 +17,7 @@ namespace ProteoformSuiteInternal
         public double average_mass_shift { get; set; } = 0; //MA
         public Modification() // constructs an "un-Modification"
         { }
-        public Modification(string description, string accession, string featureType, 
+        public Modification(string description, string accession, string featureType,
             string position, char[] targetAAs, double monoisotopicMassShift, double averageMassShift)
         {
             this.description = description;
@@ -33,7 +31,7 @@ namespace ProteoformSuiteInternal
 
         public override string ToString()
         {
-            return "Description=" + this.description + " Accession=" + this.accession + 
+            return "Description=" + this.description + " Accession=" + this.accession +
                 " FeatureType=" + this.feature_type + " MonisotopicMass=" + this.monoisotopic_mass_shift;
         }
     }
@@ -64,7 +62,7 @@ namespace ProteoformSuiteInternal
                 this.mass = value.Select(ptm => ptm.modification.monoisotopic_mass_shift).Sum();
             }
         }
-        
+
         public PtmSet(IEnumerable<Ptm> unique_ptm_combination)
         {
             this.ptm_combination = unique_ptm_combination;
