@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
     //Types of comparisons, aka ProteoformFamily edges
-    public enum ProteoformComparison 
-    { 
+    public enum ProteoformComparison
+    {
         et, //Experiment-Theoretical comparisons
         ed, //Experiment-Decoy comparisons
         ee, //Experiment-Experiment comparisons

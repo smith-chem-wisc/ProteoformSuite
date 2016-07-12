@@ -4,9 +4,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Xml;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 //Inspired by the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
@@ -255,10 +254,10 @@ namespace ProteoformSuiteInternal
         private static XElement GetDescendant(XElement element, string name)
         {
             XElement e = element.Descendants().FirstOrDefault(elem => elem.Name.LocalName == name);
-            if (e != null) return e; 
+            if (e != null) return e;
             else return new XElement("dummy_node");
         }
-        
+
         private static int ConvertPositionElem(XElement position_elem)
         {
             string feature_position = GetAttribute(position_elem, "position");
@@ -281,6 +280,5 @@ namespace ProteoformSuiteInternal
         }
     }
 }
-           
-                            
-                          
+
+
