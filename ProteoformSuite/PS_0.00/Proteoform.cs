@@ -132,6 +132,10 @@ namespace ProteoformSuite
         public double ptm_mass { get; set; }
         private string sequence { get; set; }
         public List<Ptm> ptm_list { get; set; } = new List<Ptm>();
+        public string ptm_descriptions
+        {
+            get { return ptm_list_string(); }
+        }
 
         public TheoreticalProteoform(string accession, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<Ptm> ptm_list, double ptm_mass, double modified_mass, bool is_target) : base(accession, modified_mass, lysine_count, is_target)
         {
