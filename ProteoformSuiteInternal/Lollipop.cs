@@ -270,8 +270,13 @@ namespace ProteoformSuiteInternal
             //Calculate the properties of this sequence
             double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
             int lysine_count = seq.Split('K').Length - 1;
+<<<<<<< HEAD:ProteoformSuiteInternal/Lollipop.cs
 
             //Initialize a PTM combination list with "unmodified," and then add other PTMs
+=======
+            
+            //Initialize a PTM combination list with "unmodified," and then add other PTMs 
+>>>>>>> c2112c3181f15b40dab82fcd79eab9afce020501:ProteoformSuite/PS_0.00/Lollipop.cs
             proteoform_community.add(new TheoreticalProteoform(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, new List<Ptm>() { new Ptm() }, 0, unmodified_mass, true));
             List<PtmSet> unique_ptm_groups = new List<PtmSet>();
             bool addPtmCombos = max_ptms > 0 && prot.ptms_by_position.Count() > 0;
