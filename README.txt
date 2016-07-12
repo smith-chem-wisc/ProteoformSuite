@@ -1,5 +1,5 @@
 # ProteoformSuite
-
+[![Build status](https://ci.appveyor.com/api/projects/status/qbc3xy4b35otnsxe/branch/master?svg=true)](https://ci.appveyor.com/project/stefanks/proteoform-suite/branch/master)
 
 ## License
 
