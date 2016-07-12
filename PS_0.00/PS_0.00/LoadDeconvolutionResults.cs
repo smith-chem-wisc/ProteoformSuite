@@ -149,16 +149,8 @@ namespace PS_0._00
 
         private void cb_neucodeLabeled_CheckedChanged(object sender, EventArgs e)
         {
-            //default is set to true for now 
-            if (cb_neucodeLabeled.Checked)
-            {
-                GlobalData.neucodeLabeled = true;
-            }
-
-            else if (!cb_neucodeLabeled.Checked)
-            {
-                GlobalData.neucodeLabeled = false;
-            }
+            GlobalData.neucodeLabeled = cb_neucodeLabeled.Checked;
+            ((Form1)MdiParent).enableNeuCodeProteoformPairsToolStripMenuItem(cb_neucodeLabeled.Checked);
         }
     }
 }

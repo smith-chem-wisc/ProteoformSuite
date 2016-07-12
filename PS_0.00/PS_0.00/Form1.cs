@@ -328,6 +328,11 @@ namespace PS_0._00
             File.WriteAllText(out_filename, sb.ToString());
         }
 
+        public void enableNeuCodeProteoformPairsToolStripMenuItem(bool setting)
+        {
+            neuCodeProteoformPairsToolStripMenuItem.Enabled = setting;
+        }
+
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("openToolStripMenuItem_Click");
