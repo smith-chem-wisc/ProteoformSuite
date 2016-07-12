@@ -11,9 +11,9 @@ namespace TasteTesting
         [TestMethod]
         public void FindNeuCodePairs_withEmptyComponentList()
         {
-            List<ProteoformSuite.Component> c_list = new List<ProteoformSuite.Component>();
-            ProteoformSuite.Lollipop.find_neucode_pairs(c_list);
-            Assert.AreEqual(0, ProteoformSuite.Lollipop.raw_neucode_pairs.Count);
+            List<ProteoformSuite.Component> c_list = new List<ProteoformSuite.Component>(); //arrange
+            ProteoformSuite.Lollipop.find_neucode_pairs(c_list); //act
+            Assert.AreEqual(0, ProteoformSuite.Lollipop.raw_neucode_pairs.Count); //assert
         }
     }
 }

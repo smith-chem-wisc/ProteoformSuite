@@ -25,6 +25,7 @@ namespace ProteoformSuite
         {
             GraphLysineCount();
             GraphIntensityRatio();
+            FillNeuCodePairsDGV();
         }
 
         public void FillNeuCodePairsDGV()
@@ -54,12 +55,13 @@ namespace ProteoformSuite
             int ymax = 0;
             for (double i = 0; i <= 20; i = i + 0.05)
             {
-                string expression = "[Intensity Ratio] >= " + (i - .025) + "AND [Intensity Ratio] < " + (i + .025);
                 List<NeuCodePair> proteoforms_by_intensityRatio = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio >= i - 0.025 && p.intensity_ratio < i + 0.025).ToList();
                 if (proteoforms_by_intensityRatio.Count > ymax)
                     ymax = proteoforms_by_intensityRatio.Count;
                 intensityRatioHistogram.Rows.Add(i, proteoforms_by_intensityRatio.Count);
             }
+            ct_IntensityRatio.DataSource = intensityRatioHistogram;
+            ct_IntensityRatio.DataBind();
 
             ct_IntensityRatio.Series["intensityRatio"].XValueMember = "intRatio";
             ct_IntensityRatio.Series["intensityRatio"].YValueMembers = "numPairsAtThisIntRatio";
@@ -74,9 +76,6 @@ namespace ProteoformSuite
 
             ct_IntensityRatio.ChartAreas[0].AxisX.Title = "Intensity Ratio of a Pair";
             ct_IntensityRatio.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";
-
-            ct_IntensityRatio.DataSource = intensityRatioHistogram;
-            ct_IntensityRatio.DataBind();
         }
 
         private void GraphLysineCount()
@@ -86,8 +85,6 @@ namespace ProteoformSuite
             lysCtHistogram.Columns.Add("numPairsAtThisLysCt", typeof(int));
 
             int ymax = 0;
-            //double xInt = 0.2;
-
             for (int i = 0; i <= 28; i++)
             {
                 List<NeuCodePair> pf_by_lysCt = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count == i).ToList();
@@ -95,6 +92,8 @@ namespace ProteoformSuite
                     ymax = pf_by_lysCt.Count;
                 lysCtHistogram.Rows.Add(i, pf_by_lysCt.Count);
             }
+            ct_LysineCount.DataSource = lysCtHistogram;
+            ct_LysineCount.DataBind();
 
             ct_LysineCount.Series["lysineCount"].XValueMember = "numLysines";
             ct_LysineCount.Series["lysineCount"].YValueMembers = "numPairsAtThisLysCt";
@@ -108,11 +107,7 @@ namespace ProteoformSuite
             KMinAcceptable.Minimum = 0; KMinAcceptable.Maximum = 28; KMinAcceptable.Value = Lollipop.min_lysine_ct;
 
             ct_LysineCount.ChartAreas[0].AxisX.Title = "Lysine Count";
-            ct_LysineCount.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";
-
-            ct_LysineCount.DataSource = lysCtHistogram;
-            ct_LysineCount.DataBind();
-
+            ct_LysineCount.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";            
         }
 
         Point? ct_intensityRatio_prevPosition = null;
