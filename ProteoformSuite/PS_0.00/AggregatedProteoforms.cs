@@ -19,8 +19,9 @@ namespace ProteoformSuite
 
         public void AggregatedProteoforms_Load(object sender, EventArgs e)
         {
-            InitializeSettings();
-            if (Lollipop.proteoform_community.experimental_proteoforms.Count == 0) Lollipop.aggregate_neucode_light_proteoforms();
+            this.InitializeSettings();
+            if (Lollipop.proteoform_community.experimental_proteoforms.Count == 0) Lollipop.aggregate_proteoforms();
+            this.FillAggregatesTable();
         }
 
         private void InitializeSettings()
@@ -61,7 +62,7 @@ namespace ProteoformSuite
             {
                 ExperimentalProteoform selected_pf = (ExperimentalProteoform)this.dgv_AggregatedProteoforms.Rows[e.RowIndex].DataBoundItem;
                 BindingSource bs = new BindingSource();
-                bs.DataSource = selected_pf.aggregated_neucode_pairs;
+                bs.DataSource = selected_pf.aggregated_components;
                 dgv_AcceptNeuCdLtProteoforms.DataSource = bs;
                 dgv_AcceptNeuCdLtProteoforms.ReadOnly = true;
                 //dgv_AcceptNeuCdLtProteoforms.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.####";
@@ -79,25 +80,25 @@ namespace ProteoformSuite
         private void nUP_mass_tolerance_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.mass_tolerance = nUP_mass_tolerance.Value;
-            Lollipop.aggregate_neucode_light_proteoforms();
+            Lollipop.aggregate_proteoforms();
         }
 
         private void nUD_RetTimeToleranace_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.retention_time_tolerance = nUD_RetTimeToleranace.Value;
-            Lollipop.aggregate_neucode_light_proteoforms();
+            Lollipop.aggregate_proteoforms();
         }
 
         private void nUD_Missed_Monos_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.missed_monos = nUD_Missed_Monos.Value;
-            Lollipop.aggregate_neucode_light_proteoforms();
+            Lollipop.aggregate_proteoforms();
         }
 
         private void nUD_Missed_Ks_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.missed_lysines = nUD_Missed_Ks.Value;
-            Lollipop.aggregate_neucode_light_proteoforms();
+            Lollipop.aggregate_proteoforms();
         }
 
         private void dgv_AcceptNeuCdLtProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)

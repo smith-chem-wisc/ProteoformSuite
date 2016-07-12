@@ -26,6 +26,7 @@ namespace ProteoformSuite
         public void RawExperimentalComponents_Load(object sender, EventArgs e)
         {
             if (Lollipop.raw_experimental_components.Count == 0) Lollipop.process_raw_components();
+            this.FillRawExpComponentsTable();
         }
 
         public void FillRawExpComponentsTable()
