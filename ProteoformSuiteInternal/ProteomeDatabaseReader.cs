@@ -133,7 +133,6 @@ namespace ProteoformSuiteInternal
 
         public static Protein[] ReadUniprotXml(string uniprotXmlFile, Dictionary<string, Modification> uniprot_modification_table, int minPeptideLength, bool fixedMethionineCleavage)
         {
-            StreamReader uniprotXmlStream;
             List<Protein> protein_list = new List<Protein>();
             using (var stream = new FileStream(uniprotXmlFile, FileMode.Open))
             {
