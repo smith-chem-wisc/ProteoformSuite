@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProteoformSuiteGUI", "PS_0.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProteoformSuiteInternal", "ProteoformSuiteInternal\ProteoformSuiteInternal.csproj", "{6B27B6E2-8EFF-43C9-8582-F6224CA9AFC1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{4C22C2BB-E7D0-4F3D-9E98-1B076570439C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{6B27B6E2-8EFF-43C9-8582-F6224CA9AFC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B27B6E2-8EFF-43C9-8582-F6224CA9AFC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B27B6E2-8EFF-43C9-8582-F6224CA9AFC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C22C2BB-E7D0-4F3D-9E98-1B076570439C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C22C2BB-E7D0-4F3D-9E98-1B076570439C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C22C2BB-E7D0-4F3D-9E98-1B076570439C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C22C2BB-E7D0-4F3D-9E98-1B076570439C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
