@@ -27,7 +27,7 @@ namespace ProteoformSuiteInternal
                 this.is_decoy = true;
             }
         }
-        public Proteoform(string accession, bool is_target)
+        public Proteoform(string accession)
         {
             this.accession = accession;
         }
@@ -54,7 +54,7 @@ namespace ProteoformSuiteInternal
             get { return aggregated_components.Count; }
         }
 
-        public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession, is_target)
+        public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession)
         {
             this.root = root;
             this.aggregated_components = new List<Component>() { root };
