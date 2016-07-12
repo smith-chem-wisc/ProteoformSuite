@@ -37,12 +37,12 @@ namespace ProteoformSuiteInternal
             return relationships.SelectMany(r => r.connected_proteoforms).ToList();
         }
     }
-    
+
     //Note ExperimentalProteoform is a bit of a misnomer. These are not experimental observations, but rather aggregated experimental
     //observations. Each NeuCodePair is an ExperimentalProteoform, but this class is used after accounting for missed lysines and monoisotopics.
     //However, I think this makes the programming a bit cleaner, since "Experimental-Theoretical" pairs should naturally be between 
     //"ExperimentalProteoform" and "TheoreticalProteoform" objects
-    public class ExperimentalProteoform : Proteoform 
+    public class ExperimentalProteoform : Proteoform
     {
         private Component root;
         public List<Component> aggregated_components;
@@ -132,7 +132,13 @@ namespace ProteoformSuiteInternal
         public double ptm_mass { get; set; }
         private string sequence { get; set; }
         public List<Ptm> ptm_list { get; set; } = new List<Ptm>();
-
+        public string ptm_descriptions
+        {
+            get
+            {
+                return ptm_list_string();
+            }
+        }
         public TheoreticalProteoform(string accession, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<Ptm> ptm_list, double ptm_mass, double modified_mass, bool is_target) : base(accession, modified_mass, lysine_count, is_target)
         {
             this.accession = accession;
@@ -143,7 +149,7 @@ namespace ProteoformSuiteInternal
             this.ptm_list = ptm_list;
             this.ptm_mass = ptm_mass;
         }
-    
+
         public static double CalculateProteoformMass(string pForm, Dictionary<char, double> aaIsotopeMassList)
         {
             double proteoformMass = 18.010565; // start with water
