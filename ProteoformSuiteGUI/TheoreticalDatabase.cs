@@ -19,7 +19,6 @@ namespace ProteoformSuite
     {
         OpenFileDialog openXmlDialog = new OpenFileDialog();
         OpenFileDialog openPtmlistDialog = new OpenFileDialog();
-        Protein[] proteinRawInfo = null;
 
         public TheoreticalDatabase()
         {

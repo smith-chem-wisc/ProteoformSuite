@@ -15,23 +15,12 @@ namespace ProteoformSuite
 {
     public partial class ProteoformFamilyAssignment : Form
     {
-        private SplitContainer splitContainer1;
-        private SplitContainer splitContainer2;
-        private DataGridView dataGridView1;
-        private DataGridView dataGridView2;
         public static DataTable ET_Groups = new DataTable(); //4/5/16
         public static DataTable EE_Groups = new DataTable(); //4/5/16
         public static int PF_Group_Num = 0;
-        public static double parentmass=0;
+        public static double parentmass = 0;
         public static int EE_Checkpoint = 0;
-        private SplitContainer splitContainer3;
-        private DataGridView dataGridView3;
         DataRow[] foundRowsSingle;
-        private Button button1;
-        private Button button2;
-        private TextBox textBox1;
-        private TextBox textBox2;
-        private Label label1;
         public static string filename = "";
         public static string csv = "";
         public static DataTable ExportDataTable = new DataTable();
@@ -51,13 +40,6 @@ namespace ProteoformSuite
                 AssignColumns();
             }
             assign_families();
-            dataGridView1.RowsDefaultCellStyle.BackColor = Color.LightGray;
-            dataGridView1.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
-            dataGridView2.RowsDefaultCellStyle.BackColor = Color.LightGray;
-            dataGridView2.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
-            dataGridView3.RowsDefaultCellStyle.BackColor = Color.LightGray;
-            dataGridView3.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
-            dataGridView1.DataSource = Lollipop.ProteoformFamilyMetrics;
             ExportProteoformFamilies();
         }
 
@@ -67,7 +49,7 @@ namespace ProteoformSuite
             {
                 SingleLysineIteration(q);
             }
-        }    
+        }
 
         private void SingleLysineIteration(int q) //called in initializecomponents
         {
@@ -80,7 +62,7 @@ namespace ProteoformSuite
             //put a sweet message box here to track relative progress (state q)
             if (Convert.ToInt32(EE_Groups.Rows.Count).Equals(0)) //if nothing with that lysine count, then ignore it. Only 25 iterations
             {
-                    
+
             }
             else //somethin there!
             {
@@ -97,13 +79,13 @@ namespace ProteoformSuite
                     }
                     else //potentially a parent or child
                     {
-                        if (ChildrenList.Contains(Convert.ToDouble(EE_Groups.Rows[i]["Aggregated Mass Light"]))==true)//if it's a child //.Equals(EE_Groups.Tables[(q - 2)].Rows[EE_Checkpoint]["Aggregated Mass Heavy"])) //if child
+                        if (ChildrenList.Contains(Convert.ToDouble(EE_Groups.Rows[i]["Aggregated Mass Light"])) == true)//if it's a child //.Equals(EE_Groups.Tables[(q - 2)].Rows[EE_Checkpoint]["Aggregated Mass Heavy"])) //if child
                         {
                             FamilyMember(ChildrenList, q, i);
                         }
                         else //it's a parent. We can save this parent, but we gotta keep moving for right now to find the rest of the current family
                         {
-                            if (EE_Checkpoint==0) //if not zero, there's already a checkpoint we don't want to overwrite
+                            if (EE_Checkpoint == 0) //if not zero, there's already a checkpoint we don't want to overwrite
                             {
                                 EE_Checkpoint = i;
                             }
@@ -125,7 +107,7 @@ namespace ProteoformSuite
                 }
 
                 Family_Death(q, ChildrenList, parentmass);
-                
+
             }
         }
 
@@ -297,9 +279,9 @@ namespace ProteoformSuite
             {
                 foreach (DataRow row in dt.Rows)
                 {
-                    ExportDataTable.Rows.Add((row["Aggregated Mass Light"].ToString() + "_n=" + row["Number of Observations Light"].ToString() 
+                    ExportDataTable.Rows.Add((row["Aggregated Mass Light"].ToString() + "_n=" + row["Number of Observations Light"].ToString()
                                     + "_K=" + row["Lysine Count"].ToString()),
-                                    (row["Aggregated Mass Heavy"].ToString() + "_n=" + row["Number of Observations Heavy"].ToString() + "_K=" 
+                                    (row["Aggregated Mass Heavy"].ToString() + "_n=" + row["Number of Observations Heavy"].ToString() + "_K="
                                     + row["Lysine Count"].ToString()),
                                     row["Delta Mass"],
                                     "Experimental",
@@ -308,7 +290,7 @@ namespace ProteoformSuite
                                     row["Aggregated Intensity Heavy"]);
                 }
             }
-            
+
             foreach (DataTable dt in Lollipop.ProteoformFamiliesET.Tables)
             {
                 foreach (DataRow row in dt.Rows)
@@ -316,7 +298,7 @@ namespace ProteoformSuite
                     if (row["PTM List"].Equals("unmodified"))
                     {
                         ExportDataTable.Rows.Add((row["Accession"].ToString() + "_K=" + row["Lysine Count"].ToString()),
-                            (row["Aggregated Mass"].ToString() + "_n=" + row["Number of Observations"].ToString() 
+                            (row["Aggregated Mass"].ToString() + "_n=" + row["Number of Observations"].ToString()
                             + "_K=" + row["Lysine Count"].ToString()),
                             row["Delta Mass"],
                             "Theoretical",
@@ -326,8 +308,8 @@ namespace ProteoformSuite
                     }
                     else
                     {
-                        ExportDataTable.Rows.Add((row["Accession"].ToString() +row["PTM List"].ToString()+ "_K=" + row["Lysine Count"].ToString()),
-                        (row["Aggregated Mass"].ToString() + "_n=" + row["Number of Observations"].ToString() 
+                        ExportDataTable.Rows.Add((row["Accession"].ToString() + row["PTM List"].ToString() + "_K=" + row["Lysine Count"].ToString()),
+                        (row["Aggregated Mass"].ToString() + "_n=" + row["Number of Observations"].ToString()
                         + "_K=" + row["Lysine Count"].ToString()),
                         row["Delta Mass"],
                         "TheoreticalWithPTM",
@@ -346,13 +328,8 @@ namespace ProteoformSuite
 
         private void dataGridView1_CellContentClick_1(object sender, DataGridViewCellEventArgs e)
         {
-            int groupnumber;
             if (e.RowIndex >= 0)
             {
-                DataGridViewRow row = this.dataGridView1.Rows[e.RowIndex];
-                groupnumber = Convert.ToInt32(row.Cells["Group Number"].Value);
-                dataGridView2.DataSource = Lollipop.ProteoformFamiliesET.Tables[(groupnumber - 1)];
-                dataGridView3.DataSource = Lollipop.ProteoformFamiliesEE.Tables[(groupnumber - 1)];
             }
         } //called in DGV
 
@@ -408,7 +385,7 @@ namespace ProteoformSuite
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            filename = this.textBox2.Text.ToString();
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -422,7 +399,6 @@ namespace ProteoformSuite
             //folderPath = openFileDialog1.FileName.ToString();
             //DialogResult dr = this.openFileDialog1.ShowDialog();
             //folderPath = dr.ToString();
-            textBox1.Text = folderPath;
             //folderPath = textBox1.ToString();
         }
     }
