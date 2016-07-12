@@ -55,48 +55,20 @@ namespace ProteoformSuite
             form.Show();
             form.WindowState = FormWindowState.Maximized;
         }
-
-        public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            showForm(loadDeconvolutionResults);
-        }
-
-        private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            showForm(rawExperimentalComponents);
-        }
-
-        private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            showForm(neuCodePairs);
-        }
-
-        private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            showForm(aggregatedProteoforms);
-        }
-
-        private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            showForm(theoreticalDatabase);
-        }
-
-        private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            showForm(experimentalTheoreticalComparison);
-        }
         
+        // tool strip clicks
+        public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(loadDeconvolutionResults); }
+        private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(rawExperimentalComponents); }
+        private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(neuCodePairs); }
+        private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(aggregatedProteoforms); }
+        private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e) { showForm(theoreticalDatabase); }
+        private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentalTheoreticalComparison); }
+        private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentExperimentComparison); }
         private void experimentDecoyComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (Lollipop.decoy_databases > 0) showForm(experimentDecoyComparison);
             else MessageBox.Show("Create at least 1 decoy database in Theoretical Proteoform Database in order to view Experiment - Decoy Comparison.");
         }
-
-        private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            showForm(experimentExperimentComparison);
-        }
-
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //showForm(proteoformFamilyAssignment);

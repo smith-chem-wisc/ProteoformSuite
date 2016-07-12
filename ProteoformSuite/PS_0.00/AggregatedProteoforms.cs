@@ -19,8 +19,9 @@ namespace ProteoformSuite
 
         public void AggregatedProteoforms_Load(object sender, EventArgs e)
         {
-            InitializeSettings();
+            this.InitializeSettings();
             if (Lollipop.proteoform_community.experimental_proteoforms.Count == 0) Lollipop.aggregate_proteoforms();
+            this.FillAggregatesTable();
         }
 
         private void InitializeSettings()
