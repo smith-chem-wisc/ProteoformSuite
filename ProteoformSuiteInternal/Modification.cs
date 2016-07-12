@@ -10,6 +10,10 @@ namespace ProteoformSuiteInternal
     {
         //Adapted from the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
         // unused but available public string pA, cF, lC, tR, kW, dR;
+<<<<<<< HEAD:ProteoformSuiteInternal/Modification.cs
+=======
+
+>>>>>>> c2112c3181f15b40dab82fcd79eab9afce020501:ProteoformSuite/PS_0.00/Modification.cs
         public string description { get; set; } = "unmodified"; //ID
         public string accession { get; set; } = ""; //AC
         public string feature_type { get; set; } = ""; //FT
@@ -17,10 +21,15 @@ namespace ProteoformSuiteInternal
         public char[] target_aas { get; set; } = new char[0]; //TG
         public double monoisotopic_mass_shift { get; set; } = 0; //MM
         public double average_mass_shift { get; set; } = 0; //MA
+<<<<<<< HEAD:ProteoformSuiteInternal/Modification.cs
  
         public Modification() // constructs an "un-Modification"
         { }
+=======
+>>>>>>> c2112c3181f15b40dab82fcd79eab9afce020501:ProteoformSuite/PS_0.00/Modification.cs
 
+        public Modification() // constructs an "un-Modification"
+        { }
         public Modification(string description, string accession, string featureType, 
             string position, char[] targetAAs, double monoisotopicMassShift, double averageMassShift)
         {
