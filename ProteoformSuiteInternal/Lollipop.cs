@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel; // needed for bindinglist
 using System.Data;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Packaging;
 
 namespace ProteoformSuiteInternal
 {
