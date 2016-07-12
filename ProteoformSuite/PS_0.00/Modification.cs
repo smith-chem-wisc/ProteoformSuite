@@ -12,14 +12,16 @@ namespace ProteoformSuite
         //Adapted from the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
         // unused but available public string pA, cF, lC, tR, kW, dR;
 
-        public string description { get; set; } //ID
-        public string accession { get; set; } //AC
-        public string feature_type { get; set; } //FT
-        public string position { get; set; } //PP
-        public char[] target_aas { get; set; } //TG
-        public double monoisotopic_mass_shift { get; set; } //MM
-        public double average_mass_shift { get; set; } //MA
+        public string description { get; set; } = "unmodified"; //ID
+        public string accession { get; set; } = ""; //AC
+        public string feature_type { get; set; } = ""; //FT
+        public string position { get; set; } = ""; //PP
+        public char[] target_aas { get; set; } = new char[0]; //TG
+        public double monoisotopic_mass_shift { get; set; } = 0; //MM
+        public double average_mass_shift { get; set; } = 0; //MA
 
+        public Modification() // constructs an "un-Modification"
+        { }
         public Modification(string description, string accession, string featureType, 
             string position, char[] targetAAs, double monoisotopicMassShift, double averageMassShift)
         {
@@ -41,8 +43,10 @@ namespace ProteoformSuite
 
     public class Ptm
     {
-        public int position;
-        public Modification modification;
+        public int position = -1;
+        public Modification modification = new Modification();
+        public Ptm() // initializes an "un-Modification"
+        { }
         public Ptm(int position, Modification modification)
         {
             this.position = position;

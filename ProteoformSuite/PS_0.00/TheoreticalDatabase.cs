@@ -38,7 +38,14 @@ namespace ProteoformSuite
             ckbx_Carbam.Checked = Lollipop.carbamidomethylation;
             ckbx_Meth_Cleaved.Checked = Lollipop.methionine_cleavage;
 
-            btn_NeuCode_Lt.Checked = Lollipop.neucode_light_lysine;
+            if (Lollipop.neucode_labeled)
+            {
+                btn_NeuCode_Lt.Checked = true;
+            }
+            else
+            {
+                btn_NaturalIsotopes.Checked = true;
+            }
 
             nUD_MaxPTMs.Minimum = 0;
             nUD_MaxPTMs.Maximum = 5;

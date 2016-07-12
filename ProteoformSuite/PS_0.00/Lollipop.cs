@@ -203,8 +203,8 @@ namespace ProteoformSuite
         public static void get_theoretical_proteoforms()
         {
             //Clear out data from potential previous runs
-            proteoform_community.Clear();
-            Lollipop.ProteoformFamiliesEE = new DataSet();
+            proteoform_community.theoretical_proteoforms.Clear();
+            proteoform_community.decoy_proteoforms.Clear();
             Lollipop.ProteoformFamiliesET = new DataSet();
             ProteomeDatabaseReader.oldPtmlistFilePath = ptmlist_filepath;
             uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
@@ -272,6 +272,7 @@ namespace ProteoformSuite
             int lysine_count = seq.Split('K').Length - 1;
             
             //Initialize a PTM combination list with "unmodified," and then add other PTMs 
+            proteoform_community.add(new TheoreticalProteoform(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, new List<Ptm>() { new Ptm() }, 0, unmodified_mass, true));
             List<PtmSet> unique_ptm_groups = new List<PtmSet>();
             bool addPtmCombos = max_ptms > 0 && prot.ptms_by_position.Count() > 0;
             if (addPtmCombos) unique_ptm_groups.AddRange(new PtmCombos(prot.ptms_by_position).get_combinations(max_ptms));
