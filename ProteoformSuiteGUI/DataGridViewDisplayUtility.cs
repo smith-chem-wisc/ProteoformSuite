@@ -1,10 +1,14 @@
-﻿using System;
+﻿using ProteoformSuiteInternal;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace ProteoformSuite
 {
@@ -20,41 +24,32 @@ namespace ProteoformSuite
             dgv.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
 
-        public static void sortDataGridViewColumn(DataGridView dgv, int columnIndex)
+        public static void tooltip_graph_display(ToolTip t, MouseEventArgs e, Chart c, Point? p)
         {
-            DataGridViewColumn newColumn = dgv.Columns[columnIndex];
-            DataGridViewColumn oldColumn = dgv.SortedColumn;
-            ListSortDirection direction;
-
-            // If oldColumn is null, then the DataGridView is not sorted.
-            if (oldColumn != null)
+            var pos = e.Location;
+            if (p.HasValue && pos == p.Value) return;
+            t.RemoveAll();
+            p = pos;
+            var results = c.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);
+            foreach (var result in results)
             {
-                if (oldColumn == newColumn)
+                if (result.ChartElementType == ChartElementType.DataPoint)
                 {
-                    if (dgv.SortOrder == SortOrder.Ascending)                    
-                        direction = ListSortDirection.Descending;                   
-                    else
-                        direction = ListSortDirection.Ascending;
+                    var prop = result.Object as DataPoint;
+                    if (prop != null)
+                    {
+                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
 
+                        // check if the cursor is really close to the point (2 pixels around the point)
+                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
+                                                               // Math.Abs(pos.Y - pointYPixel) < 2)
+                        {
+                            t.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], c, pos.X, pos.Y - 15);
+                        }
+                    }
                 }
-                else
-                {
-                    direction = ListSortDirection.Descending;
-                    oldColumn.HeaderCell.SortGlyphDirection = SortOrder.None;
-                }
-
             }
-            else
-            {
-                direction = ListSortDirection.Descending;
-            }
-
-            // Sort the selected column.
-            dgv.Sort(newColumn, direction);
-            newColumn.HeaderCell.SortGlyphDirection =
-                direction == ListSortDirection.Ascending ?
-                SortOrder.Ascending : SortOrder.Descending;
         }
-
     }
 }

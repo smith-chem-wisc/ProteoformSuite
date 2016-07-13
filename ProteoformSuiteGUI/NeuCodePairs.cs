@@ -32,20 +32,7 @@ namespace ProteoformSuite
 
         public void FillNeuCodePairsDGV()
         {
-            BindingSource bs = new BindingSource();
-            bs.DataSource = Lollipop.raw_neucode_pairs;
-            dgv_RawExpNeuCodePairs.DataSource = bs;
-            dgv_RawExpNeuCodePairs.ReadOnly = true;
-            //dgv_RawExpNeuCodePairs.Columns["Acceptable"].ReadOnly = false;
-            //dgv_RawExpNeuCodePairs.Columns["Light Mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpNeuCodePairs.Columns["Light Mass Corrected"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpNeuCodePairs.Columns["Heavy Mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpNeuCodePairs.Columns["Intensity Ratio"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpNeuCodePairs.Columns["Apex RT"].DefaultCellStyle.Format = "0.##";
-            //dgv_RawExpNeuCodePairs.Columns["Light Intensity"].DefaultCellStyle.Format = "0";
-            //dgv_RawExpNeuCodePairs.Columns["Heavy Intensity"].DefaultCellStyle.Format = "0";
-            dgv_RawExpNeuCodePairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_RawExpNeuCodePairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+            DataGridViewDisplayUtility.FillDataGridView(dgv_RawExpNeuCodePairs, Lollipop.raw_neucode_pairs);
         }
         
         private void GraphIntensityRatio()
@@ -117,7 +104,7 @@ namespace ProteoformSuite
 
         void ct_IntensityRatio_MouseMove(object sender, MouseEventArgs e)
         {
-            tooltip_graph_display(ct_intensityRatio_tt, e, ct_IntensityRatio, ct_intensityRatio_prevPosition);
+            DataGridViewDisplayUtility.tooltip_graph_display(ct_intensityRatio_tt, e, ct_IntensityRatio, ct_intensityRatio_prevPosition);
         }
 
         Point? ct_LysineCount_prevPosition = null;
@@ -125,35 +112,7 @@ namespace ProteoformSuite
 
         void ct_LysineCount_MouseMove(object sender, MouseEventArgs e)
         {
-            tooltip_graph_display(ct_LysineCount_tt, e, ct_LysineCount, ct_LysineCount_prevPosition);
-        }
-
-        private void tooltip_graph_display(ToolTip t, MouseEventArgs e, Chart c, Point? p)
-        {
-            var pos = e.Location;
-            if (p.HasValue && pos == p.Value) return;
-            t.RemoveAll();
-            p = pos;
-            var results = c.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);
-            foreach (var result in results)
-            {
-                if (result.ChartElementType == ChartElementType.DataPoint)
-                {
-                    var prop = result.Object as DataPoint;
-                    if (prop != null)
-                    {
-                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
-                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
-
-                        // check if the cursor is really close to the point (2 pixels around the point)
-                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
-                                                               // Math.Abs(pos.Y - pointYPixel) < 2)
-                        {
-                            t.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], c, pos.X, pos.Y - 15);
-                        }
-                    }
-                }
-            }
+            DataGridViewDisplayUtility.tooltip_graph_display(ct_LysineCount_tt, e, ct_LysineCount, ct_LysineCount_prevPosition);
         }
 
         private void yMaxKCt_ValueChanged(object sender, EventArgs e)

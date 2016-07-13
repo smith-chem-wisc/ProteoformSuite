@@ -37,6 +37,27 @@ namespace ProteoformSuite
             //GraphETPeaks();
         }
 
+        private void RunTheGamut()
+        {
+            this.Cursor = Cursors.WaitCursor;
+            //GraphETRelations();
+            //FillETPeakListTable();
+            FillETRelationsGridView();
+            //GraphETPeaks();
+            UpdateFiguresOfMerit();
+            this.Cursor = Cursors.Default;
+        }
+
+        private void FillETRelationsGridView()
+        {
+            DataGridViewDisplayUtility.FillDataGridView(dgv_ET_Pairs, Lollipop.et_relations);
+        }
+
+        private void FillETPeakListTable()
+        {
+            DataGridViewDisplayUtility.FillDataGridView(dgv_ET_Peak_List, Lollipop.et_peaks);
+        }
+
         private void InitializeParameterSet()
         {
             nUD_ET_Lower_Bound.Minimum = -500;
@@ -78,37 +99,6 @@ namespace ProteoformSuite
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
             nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(Lollipop.min_peak_count); // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
-        }
-
-        private void FillETRelationsGridView()
-        {
-            BindingSource bs = new BindingSource();
-            bs.DataSource = Lollipop.et_relations;
-            dgv_ET_Pairs.DataSource = bs;
-            dgv_ET_Pairs.ReadOnly = true;
-            //dgv_ET_Pairs.Columns["Acceptable Peak"].ReadOnly = false;
-            //dgv_ET_Pairs.Columns["Aggregated Retention Time"].DefaultCellStyle.Format = "0.##";
-            //dgv_ET_Pairs.Columns["Proteoform Mass"].DefaultCellStyle.Format = "0.#####";
-            //dgv_ET_Pairs.Columns["Aggregated Mass"].DefaultCellStyle.Format = "0.#####";
-            //dgv_ET_Pairs.Columns["Delta Mass"].DefaultCellStyle.Format = "0.#####";
-            //dgv_ET_Pairs.Columns["Peak Center Mass"].DefaultCellStyle.Format = "0.#####";
-            dgv_ET_Pairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_ET_Pairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-        }
-
-        private void FillETPeakListTable()
-        {
-            BindingSource bs = new BindingSource();
-            bs.DataSource = Lollipop.et_peaks;
-            dgv_ET_Peak_List.DataSource = bs;
-            dgv_ET_Pairs.ReadOnly = true;
-            //dgv_ET_Peak_List.Columns["Average Delta Mass"].ReadOnly = true;
-            //dgv_ET_Peak_List.Columns["Peak Count"].ReadOnly = true;
-            //dgv_ET_Peak_List.Columns["Average Delta Mass"].DefaultCellStyle.Format = "0.#####";
-            dgv_ET_Peak_List.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_ET_Peak_List.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-            //dgv_ET_Peak_List.EndEdit();
-            //dgv_ET_Peak_List.Refresh();
         }
 
         private void GraphETRelations()
@@ -183,7 +173,7 @@ namespace ProteoformSuite
 
         private void ct_ET_Histogram_MouseMove(object sender, MouseEventArgs e)
         {
-            tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_Histogram, ct_ET_Histogram_prevPosition);
+            DataGridViewDisplayUtility.tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_Histogram, ct_ET_Histogram_prevPosition);
         }
 
         Point? ct_ET_peakList_prevPosition = null;
@@ -191,48 +181,9 @@ namespace ProteoformSuite
 
         private void ct_ET_peakList_MouseMove(object sender, MouseEventArgs e)
         {
-            tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_peakList, ct_ET_peakList_prevPosition);
+            DataGridViewDisplayUtility.tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_peakList, ct_ET_peakList_prevPosition);
         }
-
-        private void tooltip_graph_display(ToolTip t, MouseEventArgs e, Chart c, Point? p)
-        {
-            var pos = e.Location;
-            if (p.HasValue && pos == p.Value) return;
-            t.RemoveAll();
-            p = pos;
-            var results = c.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);
-            foreach (var result in results)
-            {
-                if (result.ChartElementType == ChartElementType.DataPoint)
-                {
-                    var prop = result.Object as DataPoint;
-                    if (prop != null)
-                    {
-                        var pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
-                        var pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
-
-                        // check if the cursor is really close to the point (2 pixels around the point)
-                        if (Math.Abs(pos.X - pointXPixel) < 2) //&&
-                                                               // Math.Abs(pos.Y - pointYPixel) < 2)
-                        {
-                            t.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], c, pos.X, pos.Y - 15);
-                        }
-                    }
-                }
-            }
-        }
-
-        private void RunTheGamut()
-        {
-            this.Cursor = Cursors.WaitCursor;
-            //GraphETRelations();
-            //FillETPeakListTable();
-            FillETRelationsGridView();
-            //GraphETPeaks();
-            UpdateFiguresOfMerit();
-            this.Cursor = Cursors.Default;
-        }
-
+     
         private void UpdateFiguresOfMerit()
         {
             //try
@@ -320,9 +271,18 @@ namespace ProteoformSuite
         {
             ct_ET_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxET.Value.ToString());
         }
-        private void yMinET_ValueChanged(object sender, EventArgs e) { ct_ET_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinET.Value.ToString()); }
-        private void xMinET_ValueChanged(object sender, EventArgs e) { ct_ET_Histogram.ChartAreas[0].AxisX.Minimum = double.Parse(xMinET.Value.ToString()); }
-        private void xMaxET_ValueChanged(object sender, EventArgs e) { ct_ET_Histogram.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxET.Value.ToString()); }
+        private void yMinET_ValueChanged(object sender, EventArgs e)
+        {
+            ct_ET_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinET.Value.ToString());
+        }
+        private void xMinET_ValueChanged(object sender, EventArgs e)
+        {
+            ct_ET_Histogram.ChartAreas[0].AxisX.Minimum = double.Parse(xMinET.Value.ToString());
+        }
+        private void xMaxET_ValueChanged(object sender, EventArgs e)
+        {
+            ct_ET_Histogram.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxET.Value.ToString());
+        }
 
         // bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
