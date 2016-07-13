@@ -24,11 +24,6 @@ namespace ProteoformSuite
             DataGridViewDisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, Lollipop.raw_experimental_components);
         }
 
-        private void dgv_RawExpComp_MI_masses_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            //DataGridViewDisplayUtility.sortDataGridViewColumn(dgv_RawExpComp_MI_masses, e.ColumnIndex);           
-        }
-
         private void dgv_RawExpComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)

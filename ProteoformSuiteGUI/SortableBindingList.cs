@@ -17,8 +17,7 @@ namespace ProteoformSuite
         /// Initializes a new instance of the <see cref="SortableBindingList{T}"/> class.
         /// </summary>
         public SortableBindingList()
-        {
-        }
+        { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SortableBindingList{T}"/> class.
@@ -26,17 +25,13 @@ namespace ProteoformSuite
         /// <param name="list">An <see cref="T:System.Collections.Generic.IList`1" /> of items to be contained in the <see cref="T:System.ComponentModel.BindingList`1" />.</param>
         public SortableBindingList(IList<T> list)
             : base(list)
-        {
-        }
-
+        { }
 
         /// <summary>
-        /// Initializes a new instance of IEnumberable....
-
+        /// Initializes a new instance of SortableBindingList from IEnumberable....
         public SortableBindingList(IEnumerable<T> enumerable)
             : base(enumerable.ToList())
-        {
-        }
+        { }
 
         /// <summary>
         /// Gets a value indicating whether the list supports sorting.
@@ -115,21 +110,17 @@ namespace ProteoformSuite
             object lhsValue = lhs == null ? null : _sortProperty.GetValue(lhs);
             object rhsValue = rhs == null ? null : _sortProperty.GetValue(rhs);
             if (lhsValue == null)
-            {
                 return (rhsValue == null) ? 0 : -1; //nulls are equal
-            }
+
             if (rhsValue == null)
-            {
                 return 1; //first has value, second doesn't
-            }
+
             if (lhsValue is IComparable)
-            {
                 return ((IComparable)lhsValue).CompareTo(rhsValue);
-            }
+
             if (lhsValue.Equals(rhsValue))
-            {
                 return 0; //both are the same
-            }
+
             //not comparable, compare ToString
             return lhsValue.ToString().CompareTo(rhsValue.ToString());
         }
