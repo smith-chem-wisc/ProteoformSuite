@@ -27,6 +27,7 @@ namespace ProteoformSuite
             GraphLysineCount();
             GraphIntensityRatio();
             FillNeuCodePairsDGV();
+
         }
 
         public void FillNeuCodePairsDGV()
