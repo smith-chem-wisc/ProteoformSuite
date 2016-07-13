@@ -110,6 +110,7 @@
     <Compile Include="AggregatedProteoforms.Designer.cs">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </Compile>
+    <Compile Include="DataGridViewDisplayUtility.cs" />
     <Compile Include="ExcelReader.cs" />
     <Compile Include="ExperimentExperimentComparison.cs">
       <SubType>Form</SubType>
@@ -158,6 +159,7 @@
     <Compile Include="RawExperimentalComponents.Designer.cs">
       <DependentUpon>RawExperimentalComponents.cs</DependentUpon>
     </Compile>
+    <Compile Include="SortableBindingList.cs" />
     <Compile Include="TheoreticalDatabase.cs">
       <SubType>Form</SubType>
     </Compile>
