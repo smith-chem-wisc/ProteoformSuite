@@ -32,20 +32,7 @@ namespace ProteoformSuite
 
         public void FillNeuCodePairsDGV()
         {
-            BindingSource bs = new BindingSource();
-            bs.DataSource = Lollipop.raw_neucode_pairs;
-            dgv_RawExpNeuCodePairs.DataSource = bs;
-            dgv_RawExpNeuCodePairs.ReadOnly = true;
-            //dgv_RawExpNeuCodePairs.Columns["Acceptable"].ReadOnly = false;
-            //dgv_RawExpNeuCodePairs.Columns["Light Mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpNeuCodePairs.Columns["Light Mass Corrected"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpNeuCodePairs.Columns["Heavy Mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpNeuCodePairs.Columns["Intensity Ratio"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpNeuCodePairs.Columns["Apex RT"].DefaultCellStyle.Format = "0.##";
-            //dgv_RawExpNeuCodePairs.Columns["Light Intensity"].DefaultCellStyle.Format = "0";
-            //dgv_RawExpNeuCodePairs.Columns["Heavy Intensity"].DefaultCellStyle.Format = "0";
-            dgv_RawExpNeuCodePairs.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_RawExpNeuCodePairs.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+            DataGridViewDisplayUtility.FillDataGridView(dgv_RawExpNeuCodePairs, Lollipop.raw_neucode_pairs);
         }
         
         private void GraphIntensityRatio()
