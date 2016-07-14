@@ -59,7 +59,6 @@
             // 
             // tb_RawExperimentalComponents
             // 
-            this.tb_RawExperimentalComponents.Enabled = false;
             this.tb_RawExperimentalComponents.Location = new System.Drawing.Point(181, 90);
             this.tb_RawExperimentalComponents.Name = "tb_RawExperimentalComponents";
             this.tb_RawExperimentalComponents.ReadOnly = true;
@@ -68,7 +67,6 @@
             // 
             // tb_neucodePairs
             // 
-            this.tb_neucodePairs.Enabled = false;
             this.tb_neucodePairs.Location = new System.Drawing.Point(181, 124);
             this.tb_neucodePairs.Name = "tb_neucodePairs";
             this.tb_neucodePairs.ReadOnly = true;
@@ -86,7 +84,6 @@
             // 
             // tb_experimentalProteoforms
             // 
-            this.tb_experimentalProteoforms.Enabled = false;
             this.tb_experimentalProteoforms.Location = new System.Drawing.Point(181, 167);
             this.tb_experimentalProteoforms.Name = "tb_experimentalProteoforms";
             this.tb_experimentalProteoforms.ReadOnly = true;
@@ -104,7 +101,6 @@
             // 
             // tb_uniprotXmlDatabase
             // 
-            this.tb_uniprotXmlDatabase.Enabled = false;
             this.tb_uniprotXmlDatabase.Location = new System.Drawing.Point(181, 225);
             this.tb_uniprotXmlDatabase.Name = "tb_uniprotXmlDatabase";
             this.tb_uniprotXmlDatabase.ReadOnly = true;
@@ -140,7 +136,6 @@
             // 
             // tb_ETPairs
             // 
-            this.tb_ETPairs.Enabled = false;
             this.tb_ETPairs.Location = new System.Drawing.Point(181, 270);
             this.tb_ETPairs.Name = "tb_ETPairs";
             this.tb_ETPairs.ReadOnly = true;
@@ -158,7 +153,6 @@
             // 
             // tb_ETPeaks
             // 
-            this.tb_ETPeaks.Enabled = false;
             this.tb_ETPeaks.Location = new System.Drawing.Point(181, 324);
             this.tb_ETPeaks.Name = "tb_ETPeaks";
             this.tb_ETPeaks.ReadOnly = true;
@@ -176,7 +170,6 @@
             // 
             // tb_EEPairs
             // 
-            this.tb_EEPairs.Enabled = false;
             this.tb_EEPairs.Location = new System.Drawing.Point(181, 389);
             this.tb_EEPairs.Name = "tb_EEPairs";
             this.tb_EEPairs.ReadOnly = true;
@@ -194,7 +187,6 @@
             // 
             // tb_EEPeaks
             // 
-            this.tb_EEPeaks.Enabled = false;
             this.tb_EEPeaks.Location = new System.Drawing.Point(181, 442);
             this.tb_EEPeaks.Name = "tb_EEPeaks";
             this.tb_EEPeaks.ReadOnly = true;

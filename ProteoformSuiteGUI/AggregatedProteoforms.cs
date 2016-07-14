@@ -84,7 +84,11 @@ namespace ProteoformSuite
 
         private void dgv_AcceptNeuCdLtProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-
+            if (e.ColumnIndex == 0)
+            {
+                int index = e.RowIndex;
+           
+            }
         }
     }
 }
