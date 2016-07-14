@@ -23,7 +23,7 @@ namespace ProteoformSuite
         int numETPeaks;
         int numEEPairs;
         int numEEPeaks;
-        string loadAndRunMethod;
+      //  string loadAndRunMethod;
         
 
         public ResultsSummary()
