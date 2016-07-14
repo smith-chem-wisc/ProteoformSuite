@@ -74,6 +74,12 @@ namespace ProteoformSuite
             //showForm(proteoformFamilyAssignment);
         }
 
+        private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ResultsSummary resultsSummary = new ResultsSummary();
+            showForm(resultsSummary);
+        }
+
         private void generateMethodToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var response = MessageBox.Show("This option does a dry run of the program.\n\nIt allows you to select input files and parameters to generate a method file.\n\nThen, select Load & Run from the Method drop-down menu to then perform the full run of ProteoformSuite.", "Generate Method", MessageBoxButtons.OKCancel);

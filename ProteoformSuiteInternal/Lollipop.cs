@@ -159,7 +159,8 @@ namespace ProteoformSuiteInternal
             //Uses an ordered list, so that the proteoform with max intensity is always chosen first
             Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
             Component[] remaining_proteoforms;
-            if (Lollipop.raw_neucode_pairs.Count > 0) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum).ToArray();
+            //only aggregate accepatable neucode pairs
+            if (Lollipop.raw_neucode_pairs.Count > 0) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true).ToArray();
             else remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).ToArray();
 
             int count = 1;
