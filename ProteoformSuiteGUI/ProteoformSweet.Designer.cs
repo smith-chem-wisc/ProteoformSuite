@@ -50,6 +50,7 @@
             this.generateMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resultsSummaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -125,10 +126,13 @@
             this.experimentTheoreticalComparisonToolStripMenuItem,
             this.experimentDecoyComparisonToolStripMenuItem,
             this.experimentExperimentComparisonToolStripMenuItem,
-            this.proteoformFamilyAssignmentToolStripMenuItem});
+            this.proteoformFamilyAssignmentToolStripMenuItem,
+            this.resultsSummaryToolStripMenuItem});
             this.processingPhaseToolStripMenuItem.Name = "processingPhaseToolStripMenuItem";
             this.processingPhaseToolStripMenuItem.Size = new System.Drawing.Size(56, 22);
             this.processingPhaseToolStripMenuItem.Text = "Results";
+            this.resultsSummaryToolStripMenuItem.Click += new System.EventHandler(this.resultsSummaryToolStripMenuItem_Click);
+
             // 
             // loadDeconvolutionResultsToolStripMenuItem
             // 
@@ -225,6 +229,12 @@
             this.loadRunToolStripMenuItem.Text = "Load && Run";
             this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
             // 
+            // resultsSummaryToolStripMenuItem
+            // 
+            this.resultsSummaryToolStripMenuItem.Name = "resultsSummaryToolStripMenuItem";
+            this.resultsSummaryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.resultsSummaryToolStripMenuItem.Text = "Results Summary";
+            // 
             // ProteoformSweet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -269,6 +279,7 @@
         private System.Windows.Forms.ToolStripMenuItem generateMethodToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadRunToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveMethodToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem resultsSummaryToolStripMenuItem;
     }
 }
 
