@@ -40,7 +40,7 @@ namespace ProteoformSuite
             GraphIntensityRatio();
         }
 
-        public void FormatNeuCodePairsDGV()
+        private void FormatNeuCodePairsDGV()
         {
             //round table values
             dgv_RawExpNeuCodePairs.Columns["monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
