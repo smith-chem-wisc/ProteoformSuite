@@ -34,13 +34,13 @@ namespace Test
             Assert.AreEqual(6, ptmCombos.all_ptms.Select(b => b.position).Sum());
 
             // With masses 1, 2, 3, 4
-            Assert.AreEqual(4, ptmCombos.get_combinations(1).Count());
+            Assert.AreEqual(1 + 4, ptmCombos.get_combinations(1).Count());
             // With masses 1, 2, 3, 4, 5, 6
-            Assert.AreEqual(6, ptmCombos.get_combinations(2).Count());
+            Assert.AreEqual(1 + 6, ptmCombos.get_combinations(2).Count());
             // With masses 1, 2, 3, 4, 5, 6
-            Assert.AreEqual(6, ptmCombos.get_combinations(3).Count());
+            Assert.AreEqual(1 + 6, ptmCombos.get_combinations(3).Count());
             // With masses 1, 2, 3, 4, 5, 6
-            Assert.AreEqual(6, ptmCombos.get_combinations(4).Count());
+            Assert.AreEqual(1 + 6, ptmCombos.get_combinations(4).Count());
 
         }
 
@@ -67,10 +67,10 @@ namespace Test
             Assert.AreEqual(4, ptmCombos.all_ptms.Count);
             Assert.AreEqual(6, ptmCombos.all_ptms.Select(b => b.position).Sum());
 
-            Assert.AreEqual(4, ptmCombos.get_combinations(1).Count());
-            Assert.AreEqual(8, ptmCombos.get_combinations(2).Count());
-            Assert.AreEqual(8, ptmCombos.get_combinations(3).Count());
-            Assert.AreEqual(8, ptmCombos.get_combinations(4).Count());
+            Assert.AreEqual(1 + 4, ptmCombos.get_combinations(1).Count());
+            Assert.AreEqual(1 + 8, ptmCombos.get_combinations(2).Count());
+            Assert.AreEqual(1 + 8, ptmCombos.get_combinations(3).Count());
+            Assert.AreEqual(1 + 8, ptmCombos.get_combinations(4).Count());
 
         }
 
@@ -98,9 +98,9 @@ namespace Test
 
             PtmCombos ptmCombos = new PtmCombos(ptm_data);
 
-            Assert.AreEqual(2, ptmCombos.get_combinations(1).Count());
-            Assert.AreEqual(4, ptmCombos.get_combinations(2).Count());
-            Assert.AreEqual(6, ptmCombos.get_combinations(3).Count());
+            Assert.AreEqual(1 + 2, ptmCombos.get_combinations(1).Count());
+            Assert.AreEqual(1 + 4, ptmCombos.get_combinations(2).Count());
+            Assert.AreEqual(1 + 6, ptmCombos.get_combinations(3).Count());
 
         }
 
@@ -129,12 +129,10 @@ namespace Test
 
             PtmCombos ptmCombos = new PtmCombos(ptm_data);
 
-            Assert.AreEqual(3, ptmCombos.get_combinations(1).Count());
-            Assert.AreEqual(3 + 3, ptmCombos.get_combinations(2).Count());
-            Assert.AreEqual(3 + 3 + 3, ptmCombos.get_combinations(3).Count());
-
-
-
+            Assert.AreEqual(1, ptmCombos.get_combinations(0).Count());
+            Assert.AreEqual(1 + 3, ptmCombos.get_combinations(1).Count());
+            Assert.AreEqual(1 + 3 + 3, ptmCombos.get_combinations(2).Count());
+            Assert.AreEqual(1 + 3 + 3 + 3, ptmCombos.get_combinations(3).Count());
         }
     }
 }
