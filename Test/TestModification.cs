@@ -130,6 +130,8 @@ namespace Test
             PtmCombos ptmCombos = new PtmCombos(ptm_data);
 
             Assert.AreEqual(1, ptmCombos.get_combinations(0).Count());
+            Assert.AreEqual(0, ptmCombos.get_combinations(0)[0].mass);
+            Assert.AreEqual(0, ptmCombos.get_combinations(0)[0].ptm_combination.Count());
             Assert.AreEqual(1 + 3, ptmCombos.get_combinations(1).Count());
             Assert.AreEqual(1 + 3 + 3, ptmCombos.get_combinations(2).Count());
             Assert.AreEqual(1 + 3 + 3 + 3, ptmCombos.get_combinations(3).Count());
