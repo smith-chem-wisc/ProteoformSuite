@@ -28,10 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
@@ -46,6 +48,7 @@
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.dgv_ET_Peak_List = new System.Windows.Forms.DataGridView();
             this.ct_ET_peakList = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.ET_update = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -142,6 +145,7 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.Controls.Add(this.ET_update);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox4);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox3);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox2);
@@ -149,7 +153,7 @@
             this.splitContainer3.Panel2.Paint += new System.Windows.Forms.PaintEventHandler(this.splitContainer3_Panel2_Paint);
             this.splitContainer3.Panel2MinSize = 125;
             this.splitContainer3.Size = new System.Drawing.Size(497, 660);
-            this.splitContainer3.SplitterDistance = 318;
+            this.splitContainer3.SplitterDistance = 407;
             this.splitContainer3.SplitterWidth = 3;
             this.splitContainer3.TabIndex = 0;
             // 
@@ -175,8 +179,8 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.splitContainer5);
-            this.splitContainer4.Size = new System.Drawing.Size(497, 318);
-            this.splitContainer4.SplitterDistance = 90;
+            this.splitContainer4.Size = new System.Drawing.Size(497, 407);
+            this.splitContainer4.SplitterDistance = 71;
             this.splitContainer4.SplitterWidth = 3;
             this.splitContainer4.TabIndex = 0;
             // 
@@ -269,7 +273,7 @@
             // splitContainer5.Panel2
             // 
             this.splitContainer5.Panel2.Controls.Add(this.ct_ET_peakList);
-            this.splitContainer5.Size = new System.Drawing.Size(497, 225);
+            this.splitContainer5.Size = new System.Drawing.Size(497, 333);
             this.splitContainer5.SplitterDistance = 229;
             this.splitContainer5.TabIndex = 16;
             // 
@@ -284,32 +288,56 @@
             this.dgv_ET_Peak_List.Margin = new System.Windows.Forms.Padding(2);
             this.dgv_ET_Peak_List.Name = "dgv_ET_Peak_List";
             this.dgv_ET_Peak_List.RowTemplate.Height = 28;
-            this.dgv_ET_Peak_List.Size = new System.Drawing.Size(229, 225);
+            this.dgv_ET_Peak_List.Size = new System.Drawing.Size(229, 333);
             this.dgv_ET_Peak_List.TabIndex = 0;
             // 
             // ct_ET_peakList
             // 
-            chartArea3.Name = "ChartArea1";
-            this.ct_ET_peakList.ChartAreas.Add(chartArea3);
+            chartArea1.Name = "ChartArea1";
+            this.ct_ET_peakList.ChartAreas.Add(chartArea1);
             this.ct_ET_peakList.Dock = System.Windows.Forms.DockStyle.Fill;
+            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
+            legend1.Name = "Legend1";
+            this.ct_ET_peakList.Legends.Add(legend1);
             this.ct_ET_peakList.Location = new System.Drawing.Point(0, 0);
             this.ct_ET_peakList.Name = "ct_ET_peakList";
-            series3.ChartArea = "ChartArea1";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series3.Name = "etPeakList";
-            this.ct_ET_peakList.Series.Add(series3);
-            this.ct_ET_peakList.Size = new System.Drawing.Size(264, 225);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series1.Legend = "Legend1";
+            series1.MarkerSize = 10;
+            series1.Name = "Peak Count";
+            series1.YValuesPerPoint = 2;
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series2.Legend = "Legend1";
+            series2.MarkerSize = 10;
+            series2.Name = "Decoy Count";
+            this.ct_ET_peakList.Series.Add(series1);
+            this.ct_ET_peakList.Series.Add(series2);
+            this.ct_ET_peakList.Size = new System.Drawing.Size(264, 333);
             this.ct_ET_peakList.TabIndex = 1;
             this.ct_ET_peakList.Text = "chart1";
             // 
+            // ET_update
+            // 
+            this.ET_update.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.ET_update.Location = new System.Drawing.Point(0, 227);
+            this.ET_update.Name = "ET_update";
+            this.ET_update.Size = new System.Drawing.Size(497, 23);
+            this.ET_update.TabIndex = 32;
+            this.ET_update.Text = "Update";
+            this.ET_update.UseMnemonic = false;
+            this.ET_update.UseVisualStyleBackColor = true;
+            this.ET_update.Click += new System.EventHandler(this.ET_update_Click);
+            // 
             // groupBox4
             // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.groupBox4.Controls.Add(this.label4);
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(16, 92);
+            this.groupBox4.Location = new System.Drawing.Point(31, 30);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -320,7 +348,7 @@
             // 
             // label4
             // 
-            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(13, 25);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -331,7 +359,7 @@
             // 
             // label3
             // 
-            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(13, 51);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -342,7 +370,7 @@
             // 
             // nUD_PeakWidthBase
             // 
-            this.nUD_PeakWidthBase.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.nUD_PeakWidthBase.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.nUD_PeakWidthBase.DecimalPlaces = 4;
             this.nUD_PeakWidthBase.Increment = new decimal(new int[] {
             5,
@@ -363,7 +391,7 @@
             // 
             // nUD_PeakCountMinThreshold
             // 
-            this.nUD_PeakCountMinThreshold.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.nUD_PeakCountMinThreshold.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.nUD_PeakCountMinThreshold.Location = new System.Drawing.Point(132, 50);
             this.nUD_PeakCountMinThreshold.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_PeakCountMinThreshold.Name = "nUD_PeakCountMinThreshold";
@@ -373,12 +401,12 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.groupBox3.Controls.Add(this.label5);
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(248, 92);
+            this.groupBox3.Location = new System.Drawing.Point(263, 30);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -389,7 +417,7 @@
             // 
             // label5
             // 
-            this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(31, 27);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -400,7 +428,7 @@
             // 
             // label6
             // 
-            this.label6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.label6.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(31, 54);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -411,7 +439,7 @@
             // 
             // nUD_ET_Lower_Bound
             // 
-            this.nUD_ET_Lower_Bound.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.nUD_ET_Lower_Bound.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.nUD_ET_Lower_Bound.Location = new System.Drawing.Point(107, 23);
             this.nUD_ET_Lower_Bound.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_ET_Lower_Bound.Maximum = new decimal(new int[] {
@@ -431,7 +459,7 @@
             // 
             // nUD_ET_Upper_Bound
             // 
-            this.nUD_ET_Upper_Bound.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.nUD_ET_Upper_Bound.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.nUD_ET_Upper_Bound.Location = new System.Drawing.Point(107, 54);
             this.nUD_ET_Upper_Bound.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_ET_Upper_Bound.Maximum = new decimal(new int[] {
@@ -446,12 +474,12 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.groupBox2.Controls.Add(this.yMaxET);
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(248, 179);
+            this.groupBox2.Location = new System.Drawing.Point(263, 117);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -462,7 +490,7 @@
             // 
             // yMaxET
             // 
-            this.yMaxET.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.yMaxET.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.yMaxET.Location = new System.Drawing.Point(63, 20);
             this.yMaxET.Margin = new System.Windows.Forms.Padding(2);
             this.yMaxET.Name = "yMaxET";
@@ -472,7 +500,7 @@
             // 
             // xMinET
             // 
-            this.xMinET.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.xMinET.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.xMinET.DecimalPlaces = 1;
             this.xMinET.Increment = new decimal(new int[] {
             1,
@@ -488,7 +516,7 @@
             // 
             // yMinET
             // 
-            this.yMinET.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.yMinET.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.yMinET.Location = new System.Drawing.Point(63, 60);
             this.yMinET.Margin = new System.Windows.Forms.Padding(2);
             this.yMinET.Name = "yMinET";
@@ -498,7 +526,7 @@
             // 
             // xMaxET
             // 
-            this.xMaxET.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.xMaxET.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.xMaxET.DecimalPlaces = 1;
             this.xMaxET.Increment = new decimal(new int[] {
             1,
@@ -514,12 +542,12 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.groupBox1.Controls.Add(this.nUD_NoManUpper);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(16, 179);
+            this.groupBox1.Location = new System.Drawing.Point(31, 117);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -530,7 +558,7 @@
             // 
             // nUD_NoManUpper
             // 
-            this.nUD_NoManUpper.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.nUD_NoManUpper.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.nUD_NoManUpper.DecimalPlaces = 2;
             this.nUD_NoManUpper.Increment = new decimal(new int[] {
             1,
@@ -561,6 +589,7 @@
             // 
             // label2
             // 
+            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(5, 62);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -571,7 +600,7 @@
             // 
             // nUD_NoManLower
             // 
-            this.nUD_NoManLower.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.nUD_NoManLower.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.nUD_NoManLower.DecimalPlaces = 2;
             this.nUD_NoManLower.Increment = new decimal(new int[] {
             1,
@@ -592,6 +621,7 @@
             // 
             // label1
             // 
+            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(5, 21);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -637,16 +667,16 @@
             // 
             // ct_ET_Histogram
             // 
-            chartArea4.Name = "ChartArea1";
-            this.ct_ET_Histogram.ChartAreas.Add(chartArea4);
+            chartArea2.Name = "ChartArea1";
+            this.ct_ET_Histogram.ChartAreas.Add(chartArea2);
             this.ct_ET_Histogram.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_ET_Histogram.Location = new System.Drawing.Point(0, 0);
             this.ct_ET_Histogram.Margin = new System.Windows.Forms.Padding(2);
             this.ct_ET_Histogram.Name = "ct_ET_Histogram";
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series4.Name = "etHistogram";
-            this.ct_ET_Histogram.Series.Add(series4);
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Name = "relations";
+            this.ct_ET_Histogram.Series.Add(series3);
             this.ct_ET_Histogram.Size = new System.Drawing.Size(422, 247);
             this.ct_ET_Histogram.TabIndex = 0;
             this.ct_ET_Histogram.Text = "chart1";
@@ -747,5 +777,6 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart ct_ET_peakList;
         private System.Windows.Forms.SplitContainer splitContainer5;
         private System.Windows.Forms.DataGridView dgv_ET_Peak_List;
+        private System.Windows.Forms.Button ET_update;
     }
 }

@@ -34,18 +34,14 @@ namespace ProteoformSuite
 
         private void InitializeSettings()
         {
+            if (Lollipop.neucode_labeled)
+                btn_NeuCode_Lt.Checked = true;
+            else
+                btn_NaturalIsotopes.Checked = true;
+
             ckbx_OxidMeth.Checked = Lollipop.methionine_oxidation;
             ckbx_Carbam.Checked = Lollipop.carbamidomethylation;
             ckbx_Meth_Cleaved.Checked = Lollipop.methionine_cleavage;
-
-            if (Lollipop.neucode_labeled)
-            {
-                btn_NeuCode_Lt.Checked = true;
-            }
-            else
-            {
-                btn_NaturalIsotopes.Checked = true;
-            }
 
             nUD_MaxPTMs.Minimum = 0;
             nUD_MaxPTMs.Maximum = 5;
@@ -78,17 +74,10 @@ namespace ProteoformSuite
 
         public void FillDataBaseTable(string table)
         {
-            BindingSource bs = new BindingSource();
-            if (table == "Target") bs.DataSource = Lollipop.proteoform_community.theoretical_proteoforms;
+            if (table == "Target")
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
             else if (Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(table))
-                bs.DataSource = Lollipop.proteoform_community.decoy_proteoforms[table];
-            dgv_Database.DataSource = bs;
-            dgv_Database.ReadOnly = true;
-            //dgv_Database.Columns["Mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_Database.Columns["PTM Group Mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_Database.Columns["Proteoform Mass"].DefaultCellStyle.Format = "0.####";
-            dgv_Database.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_Database.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
         }
 
         private void btn_GetUniProtXML_Click(object sender, EventArgs e)

@@ -21,19 +21,36 @@ namespace ProteoformSuite
 
         public void FillRawExpComponentsTable()
         {
-            BindingSource bs = new BindingSource();
-            bs.DataSource = Lollipop.raw_experimental_components;
-            dgv_RawExpComp_MI_masses.DataSource = bs;
-            dgv_RawExpComp_MI_masses.ReadOnly = true;
-            //dgv_RawExpComp_MI_masses.Columns["Monoisotopic Mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpComp_MI_masses.Columns["Delta Mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpComp_MI_masses.Columns["Weighted Monoisotopic Mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpComp_MI_masses.Columns["Apex RT"].DefaultCellStyle.Format = "0.##";
-            //dgv_RawExpComp_MI_masses.Columns["Relative Abundance"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpComp_MI_masses.Columns["Fractional Abundance"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpComp_MI_masses.Columns["Sum Intensity"].DefaultCellStyle.Format = "0";
-            dgv_RawExpComp_MI_masses.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv_RawExpComp_MI_masses.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+            DisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, Lollipop.raw_experimental_components);
+            this.FormatRawExpComponentsTable();
+        }
+
+        private void FormatRawExpComponentsTable()
+        {
+            //round table values
+            dgv_RawExpComp_MI_masses.Columns["monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpComp_MI_masses.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpComp_MI_masses.Columns["weighted_monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpComp_MI_masses.Columns["corrected_mass"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpComp_MI_masses.Columns["rt_apex"].DefaultCellStyle.Format = "0.##";
+            dgv_RawExpComp_MI_masses.Columns["relative_abundance"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpComp_MI_masses.Columns["fract_abundance"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpComp_MI_masses.Columns["intensity_sum"].DefaultCellStyle.Format = "0.####";
+
+            //set column header
+            dgv_RawExpComp_MI_masses.Columns["monoisotopic_mass"].HeaderText = "Monoisotopic Mass";
+            dgv_RawExpComp_MI_masses.Columns["delta_mass"].HeaderText = "Delta Mass";
+            dgv_RawExpComp_MI_masses.Columns["weighted_monoisotopic_mass"].HeaderText = "Weighted Monoisotopic Mass";
+            dgv_RawExpComp_MI_masses.Columns["corrected_mass"].HeaderText = "Corrected Mass";
+            dgv_RawExpComp_MI_masses.Columns["rt_apex"].HeaderText = "Apex RT";
+            dgv_RawExpComp_MI_masses.Columns["relative_abundance"].HeaderText = "Relative Abundance";
+            dgv_RawExpComp_MI_masses.Columns["fract_abundance"].HeaderText = "Fractional Abundance";
+            dgv_RawExpComp_MI_masses.Columns["intensity_sum"].HeaderText = "Intensity Sum";
+            dgv_RawExpComp_MI_masses.Columns["file_origin"].HeaderText = "Filename";
+            dgv_RawExpComp_MI_masses.Columns["id"].HeaderText = "ID";
+            dgv_RawExpComp_MI_masses.Columns["scan_range"].HeaderText = "Scan Range";
+            dgv_RawExpComp_MI_masses.Columns["rt_range"].HeaderText = "RT Range";
+            dgv_RawExpComp_MI_masses.Columns["num_charge_states"].HeaderText = "No. Charge States";
         }
 
         private void dgv_RawExpComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -41,17 +58,7 @@ namespace ProteoformSuite
             if (e.RowIndex >= 0)
             {
                 ProteoformSuiteInternal.Component c = (ProteoformSuiteInternal.Component)this.dgv_RawExpComp_MI_masses.Rows[e.RowIndex].DataBoundItem;
-
-                //Round doubles before displaying
-                BindingSource bs = new BindingSource();
-                bs.DataSource = new BindingList<ChargeState>(c.charge_states);
-                dgv_RawExpComp_IndChgSts.DataSource = bs;
-                dgv_RawExpComp_IndChgSts.ReadOnly = true;
-                //dgv_RawExpComp_IndChgSts.Columns["MZ Centroid"].DefaultCellStyle.Format = "0.####";
-                //dgv_RawExpComp_IndChgSts.Columns["Calculated Mass"].DefaultCellStyle.Format = "0.####";
-                //dgv_RawExpComp_IndChgSts.Columns["Intensity"].DefaultCellStyle.Format = "0";
-                dgv_RawExpComp_IndChgSts.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-                dgv_RawExpComp_IndChgSts.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+                DisplayUtility.FillDataGridView(dgv_RawExpComp_IndChgSts, c.charge_states);
             }
         }
     }
