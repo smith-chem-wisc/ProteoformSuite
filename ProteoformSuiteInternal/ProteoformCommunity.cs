@@ -102,7 +102,10 @@ namespace ProteoformSuiteInternal
         public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
         {
             List<ProteoformRelation> grouped_relations = new List<ProteoformRelation>();
-            List<ProteoformRelation> remaining_relations = exclusive_relation_group(relations, grouped_relations);
+            List<ProteoformRelation> relations_outside_no_mans = relations.Where(r => 
+                Math.Abs(r.group_adjusted_deltaM) >= Lollipop.no_mans_land_upperBound ||
+                Math.Abs(r.group_adjusted_deltaM) <= Lollipop.no_mans_land_lowerBound).ToList();
+            List<ProteoformRelation> remaining_relations = exclusive_relation_group(relations_outside_no_mans, grouped_relations);
             List<DeltaMassPeak> peaks = new List<DeltaMassPeak>();
             while (remaining_relations.Count > 0)
             {
@@ -127,9 +130,7 @@ namespace ProteoformSuiteInternal
 
         private List<ProteoformRelation> exclusive_relation_group(List<ProteoformRelation> relations, List<ProteoformRelation> grouped_relations)
         {
-            return relations.Except(grouped_relations).OrderByDescending(r => r.group_count)
-                .Where(r => Math.Abs(r.group_adjusted_deltaM) >= Lollipop.no_mans_land_upperBound &&
-                            Math.Abs(r.group_adjusted_deltaM) <= Lollipop.no_mans_land_lowerBound).ToList();
+            return relations.Except(grouped_relations).OrderByDescending(r => r.group_count).ToList();
         }
 
         //CONSTRUCTING FAMILIES
