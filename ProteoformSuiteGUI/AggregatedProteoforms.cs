@@ -46,7 +46,7 @@ namespace ProteoformSuite
 
         public void FillAggregatesTable()
         {
-            DataGridViewDisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, Lollipop.proteoform_community.experimental_proteoforms);
+            DisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, Lollipop.proteoform_community.experimental_proteoforms);
         }
 
         private void dgv_AggregatedProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -54,7 +54,7 @@ namespace ProteoformSuite
             if(e.RowIndex >= 0)
             {
                 ExperimentalProteoform selected_pf = (ExperimentalProteoform)this.dgv_AggregatedProteoforms.Rows[e.RowIndex].DataBoundItem;
-                DataGridViewDisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, selected_pf.aggregated_components);
+                DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, selected_pf.aggregated_components);
             }
         }
 
