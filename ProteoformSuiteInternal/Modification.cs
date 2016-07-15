@@ -83,11 +83,12 @@ namespace ProteoformSuiteInternal
 
         //Gets unique-mass (given a tolerance) ptm combinations from all the possible ones without positional redundancy
         //given a maximum number of ptms allowed on a theoretical protein
+        //Includes an empty combination with no PTMS
         public List<PtmSet> get_combinations(int num_ptms_needed)
         {
             List<PtmSet> combinations = all_possible_combinations(num_ptms_needed);
             List<PtmSet> unique_positional_combinations = combinations.Where(set => set.ptm_combination.Select(ptm => ptm.position).Count() //where the length of the positions list
-               == new HashSet<int>(set.ptm_combination.Select(ptm => ptm.position)).Count).ToList(); //is the same as the number of unique positions
+                == new HashSet<int>(set.ptm_combination.Select(ptm => ptm.position)).Count).ToList(); //is the same as the number of unique positions
             List<PtmSet> unique_mass_combinations = new List<PtmSet>();
             foreach (PtmSet combination in unique_positional_combinations)
             {
@@ -96,6 +97,7 @@ namespace ProteoformSuiteInternal
                 if (unique_mass_combinations.Where(c => c.mass >= lower_mass && c.mass <= upper_mass).Count() == 0)
                     unique_mass_combinations.Add(combination);
             }
+            unique_mass_combinations.Add(new PtmSet(new List<Ptm>()));
             return unique_mass_combinations;
         }
 
@@ -130,9 +132,7 @@ namespace ProteoformSuiteInternal
                     result_index++;
                     mod_index++;
                     if (mod_index < this.all_ptms.Count)
-                    {
                         stack.Push(mod_index);
-                    }
                     if (result_index == combination_length)
                     {
                         Ptm[] destinationArray = new Ptm[combination_length];
