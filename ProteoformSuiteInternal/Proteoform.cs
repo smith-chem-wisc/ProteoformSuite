@@ -163,7 +163,10 @@ namespace ProteoformSuiteInternal
 
         public string ptm_list_string()
         {
-            return string.Join("; ", ptm_list.Select(ptm => ptm.modification.description));
+            if (ptm_list.Count == 0)
+                return "unmodified";
+            else
+                return string.Join("; ", ptm_list.Select(ptm => ptm.modification.description));
         }
     }
 }
