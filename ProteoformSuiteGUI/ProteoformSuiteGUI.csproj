@@ -110,6 +110,7 @@
     <Compile Include="AggregatedProteoforms.Designer.cs">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </Compile>
+    <Compile Include="DisplayUtility.cs" />
     <Compile Include="ExcelReader.cs" />
     <Compile Include="ExperimentExperimentComparison.cs">
       <SubType>Form</SubType>
@@ -128,12 +129,6 @@
     </Compile>
     <Compile Include="ProteoformSweet.Designer.cs">
       <DependentUpon>ProteoformSweet.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ExperimentDecoyComparison.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ExperimentDecoyComparison.Designer.cs">
-      <DependentUpon>ExperimentDecoyComparison.cs</DependentUpon>
     </Compile>
     <Compile Include="LoadDeconvolutionResults.cs">
       <SubType>Form</SubType>
@@ -158,6 +153,13 @@
     <Compile Include="RawExperimentalComponents.Designer.cs">
       <DependentUpon>RawExperimentalComponents.cs</DependentUpon>
     </Compile>
+    <Compile Include="ResultsSummary.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ResultsSummary.Designer.cs">
+      <DependentUpon>ResultsSummary.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SortableBindingList.cs" />
     <Compile Include="TheoreticalDatabase.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -166,9 +168,6 @@
     </Compile>
     <EmbeddedResource Include="AggregatedProteoforms.resx">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ExperimentDecoyComparison.resx">
-      <DependentUpon>ExperimentDecoyComparison.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ExperimentExperimentComparison.resx">
       <DependentUpon>ExperimentExperimentComparison.cs</DependentUpon>
@@ -199,6 +198,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="RawExperimentalComponents.resx">
       <DependentUpon>RawExperimentalComponents.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ResultsSummary.resx">
+      <DependentUpon>ResultsSummary.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="TheoreticalDatabase.resx">
       <DependentUpon>TheoreticalDatabase.cs</DependentUpon>

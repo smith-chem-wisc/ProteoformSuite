@@ -46,6 +46,8 @@ namespace ProteoformSuiteInternal
                     });
                 }
             });
+            raw_experimental_components = raw_experimental_components.Where(c => c != null).ToList();
+            raw_neucode_pairs = raw_neucode_pairs.Where(p => p != null).ToList();
         }
 
         //NEUCODE PAIRS
@@ -147,7 +149,6 @@ namespace ProteoformSuiteInternal
         public static decimal retention_time_tolerance = 3; //min
         public static decimal missed_monos = 3;
         public static decimal missed_lysines = 1;
-        //public static List<ExperimentalProteoform> experimental_proteoforms = new List<ExperimentalProteoform>();
         public static void aggregate_proteoforms()
         {
             if (Lollipop.proteoform_community.experimental_proteoforms.Count > 0)
@@ -158,7 +159,8 @@ namespace ProteoformSuiteInternal
             //Uses an ordered list, so that the proteoform with max intensity is always chosen first
             Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
             Component[] remaining_proteoforms;
-            if (Lollipop.raw_neucode_pairs.Count > 0) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum).ToArray();
+            //only aggregate accepatable neucode pairs
+            if (Lollipop.raw_neucode_pairs.Count > 0) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true).ToArray();
             else remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).ToArray();
 
             int count = 1;
@@ -200,8 +202,8 @@ namespace ProteoformSuiteInternal
         public static void get_theoretical_proteoforms()
         {
             //Clear out data from potential previous runs
-            proteoform_community.theoretical_proteoforms.Clear();
-            proteoform_community.decoy_proteoforms.Clear();
+            Lollipop.proteoform_community.theoretical_proteoforms.Clear();
+            Lollipop.proteoform_community.decoy_proteoforms.Clear();
             Lollipop.ProteoformFamiliesET = new DataSet();
             ProteomeDatabaseReader.oldPtmlistFilePath = ptmlist_filepath;
             uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
@@ -213,6 +215,10 @@ namespace ProteoformSuiteInternal
             Parallel.Invoke(
                 () => process_entries(),
                 () => process_decoys()
+            );
+            Lollipop.proteoform_community.theoretical_proteoforms = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p != null).ToList();
+            Parallel.ForEach<List<TheoreticalProteoform>>(Lollipop.proteoform_community.decoy_proteoforms.Values, decoys => 
+                decoys = decoys.Where(d => d != null).ToList()
             );
         }
 
@@ -233,15 +239,16 @@ namespace ProteoformSuiteInternal
                 string seq = p.sequence.Substring(startPosAfterCleavage, (p.sequence.Length - startPosAfterCleavage));
                 EnterTheoreticalProteformFamily(seq, p, p.accession, isMetCleaved, null);
             });
+            
         }
 
         private static void process_decoys()
         {
-            string giantProtein = GetOneGiantProtein(proteins, methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
-            Parallel.For(0, Lollipop.decoy_databases, decoyNumber =>
+            for (int decoyNumber = 0; decoyNumber < Lollipop.decoy_databases; decoyNumber++)
             {
+                string giantProtein = GetOneGiantProtein(proteins, methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
                 string decoy_database_name = "DecoyDatabase_" + decoyNumber;
-                proteoform_community.decoy_proteoforms.Add(decoy_database_name, new List<TheoreticalProteoform>());
+                Lollipop.proteoform_community.decoy_proteoforms.Add(decoy_database_name, new List<TheoreticalProteoform>());
                 Protein[] shuffled_proteins = new Protein[proteins.Length];
                 shuffled_proteins = proteins;
                 new Random().Shuffle(shuffled_proteins); //randomize order of protein array
@@ -259,7 +266,7 @@ namespace ProteoformSuiteInternal
 
                     EnterTheoreticalProteformFamily(hunk, p, p.accession + "_DECOY_" + decoyNumber, isMetCleaved, decoy_database_name);
                 }
-            });
+            }
         }
 
         private static void EnterTheoreticalProteformFamily(string seq, Protein prot, string accession, bool isMetCleaved, string decoy_database_name)
@@ -326,19 +333,19 @@ namespace ProteoformSuiteInternal
         public static void make_et_relationships()
         {
             Parallel.Invoke(
-                () => et_relations = Lollipop.proteoform_community.relate_et()
-                //() => ed_relations = Lollipop.proteoform_community.relate_ed()
+                () => et_relations = Lollipop.proteoform_community.relate_et(),
+                () => ed_relations = Lollipop.proteoform_community.relate_ed()
             );
-            //et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
+            et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
         public static void make_ee_relationships()
         {
             Parallel.Invoke(
-                () => ee_relations = proteoform_community.relate_ee()
-                //() => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
+                () => ee_relations = proteoform_community.relate_ee(),
+                () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
             );
-            //ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
+            ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
         //PROTEOFORM FAMILIES
@@ -365,9 +372,17 @@ namespace ProteoformSuiteInternal
         {
             return DeltaMassPeak.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, et_peaks.Select(r => r.as_tsv_row()));
         }
+        public static string ed_relations_results()
+        {
+            return ProteoformRelation.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, ed_relations.Values.ToList()[0].Select(r => r.as_tsv_row()));
+        }
         public static string ee_relations_results()
         {
             return ProteoformRelation.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, ee_relations.Select(r => r.as_tsv_row()));
+        }
+        public static string ef_relations_results()
+        {
+            return ProteoformRelation.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, ef_relations.Select(r => r.as_tsv_row()));
         }
         public static string ee_peak_results()
         {

@@ -9,8 +9,8 @@ AggregatedProteoforms|nUP_mass_tolerance.Value	3
 AggregatedProteoforms|nUD_RetTimeToleranace.Value	3
 AggregatedProteoforms|nUD_Missed_Monos.Value	3
 AggregatedProteoforms|nUD_Missed_Ks.Value	1
-TheoreticalDatabase|tb_UniProtXML_Path.Text	C:\Users\Leah\Desktop\Testing load and run\yeast_160126.xml.gz
-TheoreticalDatabase|tb_UniProtPtmList_Path.Text	C:\Users\Leah\Desktop\Testing load and run\ptmlist.txt
+TheoreticalDatabase|tb_UniProtXML_Path.Text	.\..\..\..\..\Examples\yeast_160126.xml
+TheoreticalDatabase|tb_UniProtPtmList_Path.Text	.\..\..\..\..\Examples\ptmlist.txt
 TheoreticalDatabase|ckbx_OxidMeth.Checked	False
 TheoreticalDatabase|ckbx_Carbam.Checked	True
 TheoreticalDatabase|ckbx_Meth_Cleaved.Checked	True
