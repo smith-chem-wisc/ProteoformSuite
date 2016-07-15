@@ -31,10 +31,12 @@
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.dgv_EE_Peak_List = new System.Windows.Forms.DataGridView();
+            this.dgv_EE_Peaks = new System.Windows.Forms.DataGridView();
             this.nUD_EE_Upper_Bound = new System.Windows.Forms.NumericUpDown();
             this.nUD_PeakWidthBase = new System.Windows.Forms.NumericUpDown();
             this.nUD_PeakCountMinThreshold = new System.Windows.Forms.NumericUpDown();
@@ -56,7 +58,7 @@
             this.tb_IdentifiedProteoforms = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.ct_EE_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.dgv_EE_Pairs = new System.Windows.Forms.DataGridView();
+            this.dgv_EE_Relations = new System.Windows.Forms.DataGridView();
             this.ct_EE_peakList = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
@@ -69,7 +71,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peak_List)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakWidthBase)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakCountMinThreshold)).BeginInit();
@@ -82,7 +84,7 @@
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.xMinEE)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_EE_Histogram)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Pairs)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Relations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_EE_peakList)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
@@ -125,14 +127,14 @@
             this.dataGridView1.Size = new System.Drawing.Size(613, 167);
             this.dataGridView1.TabIndex = 1;
             // 
-            // dgv_EE_Peak_List
+            // dgv_EE_Peaks
             // 
-            this.dgv_EE_Peak_List.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_EE_Peak_List.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_EE_Peak_List.Location = new System.Drawing.Point(0, 0);
-            this.dgv_EE_Peak_List.Name = "dgv_EE_Peak_List";
-            this.dgv_EE_Peak_List.Size = new System.Drawing.Size(210, 319);
-            this.dgv_EE_Peak_List.TabIndex = 1;
+            this.dgv_EE_Peaks.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_EE_Peaks.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_EE_Peaks.Location = new System.Drawing.Point(0, 0);
+            this.dgv_EE_Peaks.Name = "dgv_EE_Peaks";
+            this.dgv_EE_Peaks.Size = new System.Drawing.Size(210, 340);
+            this.dgv_EE_Peaks.TabIndex = 1;
             // 
             // nUD_EE_Upper_Bound
             // 
@@ -344,22 +346,22 @@
             series1.ChartArea = "ChartArea1";
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series1.Legend = "Legend1";
-            series1.Name = "eeHistogram";
+            series1.Name = "relations";
             this.ct_EE_Histogram.Series.Add(series1);
             this.ct_EE_Histogram.Size = new System.Drawing.Size(464, 273);
             this.ct_EE_Histogram.TabIndex = 16;
             this.ct_EE_Histogram.TabStop = false;
             this.ct_EE_Histogram.Text = "eeHistogram";
             // 
-            // dgv_EE_Pairs
+            // dgv_EE_Relations
             // 
-            this.dgv_EE_Pairs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_EE_Pairs.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_EE_Pairs.Location = new System.Drawing.Point(0, 0);
-            this.dgv_EE_Pairs.Name = "dgv_EE_Pairs";
-            this.dgv_EE_Pairs.Size = new System.Drawing.Size(464, 375);
-            this.dgv_EE_Pairs.TabIndex = 2;
-            this.dgv_EE_Pairs.TabStop = false;
+            this.dgv_EE_Relations.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_EE_Relations.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_EE_Relations.Location = new System.Drawing.Point(0, 0);
+            this.dgv_EE_Relations.Name = "dgv_EE_Relations";
+            this.dgv_EE_Relations.Size = new System.Drawing.Size(464, 375);
+            this.dgv_EE_Relations.TabIndex = 2;
+            this.dgv_EE_Relations.TabStop = false;
             // 
             // ct_EE_peakList
             // 
@@ -367,14 +369,24 @@
             this.ct_EE_peakList.ChartAreas.Add(chartArea2);
             this.ct_EE_peakList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_EE_peakList.Enabled = false;
+            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
+            legend1.Name = "Legend1";
+            this.ct_EE_peakList.Legends.Add(legend1);
             this.ct_EE_peakList.Location = new System.Drawing.Point(0, 0);
             this.ct_EE_peakList.Name = "ct_EE_peakList";
             series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
             series2.Legend = "Legend1";
-            series2.Name = "eePeakList";
+            series2.MarkerSize = 10;
+            series2.Name = "Peak Count";
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series3.Legend = "Legend1";
+            series3.MarkerSize = 10;
+            series3.Name = "Decoy Count";
             this.ct_EE_peakList.Series.Add(series2);
-            this.ct_EE_peakList.Size = new System.Drawing.Size(235, 319);
+            this.ct_EE_peakList.Series.Add(series3);
+            this.ct_EE_peakList.Size = new System.Drawing.Size(235, 340);
             this.ct_EE_peakList.TabIndex = 2;
             this.ct_EE_peakList.TabStop = false;
             this.ct_EE_peakList.Text = "eePeakList";
@@ -438,7 +450,7 @@
             this.splitContainer5.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox1);
             this.splitContainer5.Size = new System.Drawing.Size(457, 622);
-            this.splitContainer5.SplitterDistance = 323;
+            this.splitContainer5.SplitterDistance = 344;
             this.splitContainer5.TabIndex = 2;
             // 
             // splitContainer4
@@ -450,19 +462,19 @@
             // 
             // splitContainer4.Panel1
             // 
-            this.splitContainer4.Panel1.Controls.Add(this.dgv_EE_Peak_List);
+            this.splitContainer4.Panel1.Controls.Add(this.dgv_EE_Peaks);
             // 
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.ct_EE_peakList);
-            this.splitContainer4.Size = new System.Drawing.Size(457, 323);
+            this.splitContainer4.Size = new System.Drawing.Size(457, 344);
             this.splitContainer4.SplitterDistance = 214;
             this.splitContainer4.TabIndex = 18;
             // 
             // EE_update
             // 
             this.EE_update.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.EE_update.Location = new System.Drawing.Point(0, 268);
+            this.EE_update.Location = new System.Drawing.Point(0, 247);
             this.EE_update.Name = "EE_update";
             this.EE_update.Size = new System.Drawing.Size(453, 23);
             this.EE_update.TabIndex = 31;
@@ -473,9 +485,10 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox4.Controls.Add(this.nUD_EE_Upper_Bound);
             this.groupBox4.Controls.Add(this.label10);
-            this.groupBox4.Location = new System.Drawing.Point(216, 60);
+            this.groupBox4.Location = new System.Drawing.Point(218, 33);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(160, 83);
             this.groupBox4.TabIndex = 30;
@@ -484,11 +497,12 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox3.Controls.Add(this.yMaxEE);
             this.groupBox3.Controls.Add(this.xMinEE);
             this.groupBox3.Controls.Add(this.xMaxEE);
             this.groupBox3.Controls.Add(this.yMinEE);
-            this.groupBox3.Location = new System.Drawing.Point(196, 160);
+            this.groupBox3.Location = new System.Drawing.Point(198, 133);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(245, 106);
             this.groupBox3.TabIndex = 29;
@@ -497,11 +511,12 @@
             // 
             // groupBox2
             // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox2.Controls.Add(this.nUD_NoManUpper);
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.nUD_NoManLower);
             this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Location = new System.Drawing.Point(10, 160);
+            this.groupBox2.Location = new System.Drawing.Point(12, 133);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(180, 106);
             this.groupBox2.TabIndex = 0;
@@ -510,12 +525,13 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox1.Controls.Add(this.nUD_PeakCountMinThreshold);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Controls.Add(this.cb_Graph_lowerThreshold);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.nUD_PeakWidthBase);
-            this.groupBox1.Location = new System.Drawing.Point(10, 31);
+            this.groupBox1.Location = new System.Drawing.Point(12, 4);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(200, 123);
             this.groupBox1.TabIndex = 28;
@@ -532,7 +548,7 @@
             // 
             // splitContainer3.Panel1
             // 
-            this.splitContainer3.Panel1.Controls.Add(this.dgv_EE_Pairs);
+            this.splitContainer3.Panel1.Controls.Add(this.dgv_EE_Relations);
             // 
             // splitContainer3.Panel2
             // 
@@ -552,7 +568,7 @@
             this.Text = "ExperimentExperimentComparison";
             this.Load += new System.EventHandler(this.ExperimentExperimentComparison_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peak_List)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakWidthBase)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakCountMinThreshold)).EndInit();
@@ -565,7 +581,7 @@
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.xMinEE)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_EE_Histogram)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Pairs)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Relations)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_EE_peakList)).EndInit();
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
@@ -603,7 +619,7 @@
 
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridView dgv_EE_Peak_List;
+        private System.Windows.Forms.DataGridView dgv_EE_Peaks;
         private System.Windows.Forms.NumericUpDown nUD_EE_Upper_Bound;
         private System.Windows.Forms.NumericUpDown nUD_PeakWidthBase;
         private System.Windows.Forms.NumericUpDown nUD_PeakCountMinThreshold;
@@ -625,7 +641,7 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.CheckBox cb_Graph_lowerThreshold;
         private System.Windows.Forms.DataVisualization.Charting.Chart ct_EE_Histogram;
-        private System.Windows.Forms.DataGridView dgv_EE_Pairs;
+        private System.Windows.Forms.DataGridView dgv_EE_Relations;
         private System.Windows.Forms.DataVisualization.Charting.Chart ct_EE_peakList;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.SplitContainer splitContainer5;

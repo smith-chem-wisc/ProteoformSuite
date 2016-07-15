@@ -24,16 +24,20 @@ namespace ProteoformSuite
 
         public void NeuCodePairs_Load(object sender, EventArgs e)
         {
-            GraphLysineCount();
-            GraphIntensityRatio();
+            GraphNeuCodePairs();
             FillNeuCodePairsDGV();
-            FormatNeuCodePairsDGV();
-
         }
 
         public void FillNeuCodePairsDGV()
         {
-            DataGridViewDisplayUtility.FillDataGridView(dgv_RawExpNeuCodePairs, Lollipop.raw_neucode_pairs);
+            DisplayUtility.FillDataGridView(dgv_RawExpNeuCodePairs, Lollipop.raw_neucode_pairs);
+            FormatNeuCodePairsDGV();
+        }
+
+        public void GraphNeuCodePairs()
+        {
+            GraphLysineCount();
+            GraphIntensityRatio();
         }
 
         public void FormatNeuCodePairsDGV()
@@ -136,7 +140,7 @@ namespace ProteoformSuite
 
         void ct_IntensityRatio_MouseMove(object sender, MouseEventArgs e)
         {
-            DataGridViewDisplayUtility.tooltip_graph_display(ct_intensityRatio_tt, e, ct_IntensityRatio, ct_intensityRatio_prevPosition);
+            DisplayUtility.tooltip_graph_display(ct_intensityRatio_tt, e, ct_IntensityRatio, ct_intensityRatio_prevPosition);
         }
 
         Point? ct_LysineCount_prevPosition = null;
@@ -144,7 +148,7 @@ namespace ProteoformSuite
 
         void ct_LysineCount_MouseMove(object sender, MouseEventArgs e)
         {
-            DataGridViewDisplayUtility.tooltip_graph_display(ct_LysineCount_tt, e, ct_LysineCount, ct_LysineCount_prevPosition);
+            DisplayUtility.tooltip_graph_display(ct_LysineCount_tt, e, ct_LysineCount, ct_LysineCount_prevPosition);
         }
 
         private void yMaxKCt_ValueChanged(object sender, EventArgs e)

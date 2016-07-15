@@ -17,15 +17,15 @@ namespace ProteoformSuite
             if (Lollipop.raw_experimental_components.Count == 0)
                 Lollipop.process_raw_components((b) => new ExcelReader().read_components_from_xlsx(b));
             this.FillRawExpComponentsTable();
-            this.FormatRawExpComponentsTable();
         }
 
         public void FillRawExpComponentsTable()
         {
-            DataGridViewDisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, Lollipop.raw_experimental_components);
+            DisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, Lollipop.raw_experimental_components);
+            this.FormatRawExpComponentsTable();
         }
 
-        public void FormatRawExpComponentsTable()
+        private void FormatRawExpComponentsTable()
         {
             //round table values
             dgv_RawExpComp_MI_masses.Columns["monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
@@ -58,7 +58,7 @@ namespace ProteoformSuite
             if (e.RowIndex >= 0)
             {
                 ProteoformSuiteInternal.Component c = (ProteoformSuiteInternal.Component)this.dgv_RawExpComp_MI_masses.Rows[e.RowIndex].DataBoundItem;
-                DataGridViewDisplayUtility.FillDataGridView(dgv_RawExpComp_IndChgSts, c.charge_states);
+                DisplayUtility.FillDataGridView(dgv_RawExpComp_IndChgSts, c.charge_states);
             }
         }
     }

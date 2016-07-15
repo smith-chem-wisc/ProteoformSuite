@@ -43,14 +43,13 @@
             this.aggregatedProteoformsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.theoreticalProteoformDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.experimentTheoreticalComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.experimentDecoyComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.experimentExperimentComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.proteoformFamilyAssignmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resultsSummaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.generateMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.resultsSummaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -124,15 +123,12 @@
             this.aggregatedProteoformsToolStripMenuItem,
             this.theoreticalProteoformDatabaseToolStripMenuItem,
             this.experimentTheoreticalComparisonToolStripMenuItem,
-            this.experimentDecoyComparisonToolStripMenuItem,
             this.experimentExperimentComparisonToolStripMenuItem,
             this.proteoformFamilyAssignmentToolStripMenuItem,
             this.resultsSummaryToolStripMenuItem});
             this.processingPhaseToolStripMenuItem.Name = "processingPhaseToolStripMenuItem";
             this.processingPhaseToolStripMenuItem.Size = new System.Drawing.Size(56, 22);
             this.processingPhaseToolStripMenuItem.Text = "Results";
-            this.resultsSummaryToolStripMenuItem.Click += new System.EventHandler(this.resultsSummaryToolStripMenuItem_Click);
-
             // 
             // loadDeconvolutionResultsToolStripMenuItem
             // 
@@ -176,13 +172,6 @@
             this.experimentTheoreticalComparisonToolStripMenuItem.Text = "Experiment - Theoretical Comparison";
             this.experimentTheoreticalComparisonToolStripMenuItem.Click += new System.EventHandler(this.experimentTheoreticalComparisonToolStripMenuItem_Click);
             // 
-            // experimentDecoyComparisonToolStripMenuItem
-            // 
-            this.experimentDecoyComparisonToolStripMenuItem.Name = "experimentDecoyComparisonToolStripMenuItem";
-            this.experimentDecoyComparisonToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.experimentDecoyComparisonToolStripMenuItem.Text = "Experiment - Decoy Comparison";
-            this.experimentDecoyComparisonToolStripMenuItem.Click += new System.EventHandler(this.experimentDecoyComparisonToolStripMenuItem_Click);
-            // 
             // experimentExperimentComparisonToolStripMenuItem
             // 
             this.experimentExperimentComparisonToolStripMenuItem.Name = "experimentExperimentComparisonToolStripMenuItem";
@@ -196,6 +185,13 @@
             this.proteoformFamilyAssignmentToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.proteoformFamilyAssignmentToolStripMenuItem.Text = "Proteoform Family Assignment";
             this.proteoformFamilyAssignmentToolStripMenuItem.Click += new System.EventHandler(this.proteoformFamilyAssignmentToolStripMenuItem_Click);
+            // 
+            // resultsSummaryToolStripMenuItem
+            // 
+            this.resultsSummaryToolStripMenuItem.Name = "resultsSummaryToolStripMenuItem";
+            this.resultsSummaryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.resultsSummaryToolStripMenuItem.Text = "Results Summary";
+            this.resultsSummaryToolStripMenuItem.Click += new System.EventHandler(this.resultsSummaryToolStripMenuItem_Click);
             // 
             // runMethodToolStripMenuItem
             // 
@@ -228,12 +224,6 @@
             this.loadRunToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.loadRunToolStripMenuItem.Text = "Load && Run";
             this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
-            // 
-            // resultsSummaryToolStripMenuItem
-            // 
-            this.resultsSummaryToolStripMenuItem.Name = "resultsSummaryToolStripMenuItem";
-            this.resultsSummaryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.resultsSummaryToolStripMenuItem.Text = "Results Summary";
             // 
             // ProteoformSweet
             // 
@@ -269,7 +259,6 @@
         private System.Windows.Forms.ToolStripMenuItem aggregatedProteoformsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem theoreticalProteoformDatabaseToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem experimentTheoreticalComparisonToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem experimentDecoyComparisonToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem experimentExperimentComparisonToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem proteoformFamilyAssignmentToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
