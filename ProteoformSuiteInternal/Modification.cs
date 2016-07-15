@@ -87,7 +87,7 @@ namespace ProteoformSuiteInternal
         {
             List<PtmSet> combinations = all_possible_combinations(num_ptms_needed);
             List<PtmSet> unique_positional_combinations = combinations.Where(set => set.ptm_combination.Select(ptm => ptm.position).Count() //where the length of the positions list
-                == new HashSet<int>(set.ptm_combination.Select(ptm => ptm.position)).Count).ToList(); //is the same as the number of unique positions
+               == new HashSet<int>(set.ptm_combination.Select(ptm => ptm.position)).Count).ToList(); //is the same as the number of unique positions
             List<PtmSet> unique_mass_combinations = new List<PtmSet>();
             foreach (PtmSet combination in unique_positional_combinations)
             {
@@ -124,14 +124,20 @@ namespace ProteoformSuiteInternal
                 int result_index = stack.Count - 1;
                 int mod_index = stack.Pop();
                 Ptm value = this.all_ptms[mod_index];
-
-                while (mod_index < this.all_ptms.Count - 1)
+                while (mod_index < this.all_ptms.Count)
                 {
-                    result[result_index++] = this.all_ptms[mod_index++];
-                    stack.Push(mod_index);
+                    result[result_index] = this.all_ptms[mod_index];
+                    result_index++;
+                    mod_index++;
+                    if (mod_index < this.all_ptms.Count)
+                    {
+                        stack.Push(mod_index);
+                    }
                     if (result_index == combination_length)
                     {
-                        yield return new PtmSet(result);
+                        Ptm[] destinationArray = new Ptm[combination_length];
+                        Array.Copy(result, destinationArray, combination_length);
+                        yield return new PtmSet(destinationArray);
                         break;
                     }
                 }
