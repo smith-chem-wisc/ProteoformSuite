@@ -40,22 +40,37 @@ namespace ProteoformSuiteInternal
         }
 
         //BUILDING RELATIONSHIPS
-        private List<ProteoformRelation> relate(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
+        public static List<ProteoformRelation> relate(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
         {
             pfs1 = pfs1.Where(p => p != null).ToArray();
             pfs2 = pfs2.Where(p => p != null).ToArray();
-            List<ProteoformRelation> relations = new List<ProteoformRelation>(
+
+            if (Lollipop.neucode_labeled)
+            {
+                List<ProteoformRelation> relations = new List<ProteoformRelation>(
                 from pf1 in pfs1
-                from pf2 in pfs2
+                from pf2 in pfs2.Where(p=> p.modified_mass > pf1.modified_mass)
                 where pf1.lysine_count == pf2.lysine_count
                 where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
-            count_nearby_relations(relations);
-            return relations;
+                count_nearby_relations(relations);
+                return relations;
+            }
+            else
+            {
+                List<ProteoformRelation> relations = new List<ProteoformRelation>(
+                from pf1 in pfs1
+                from pf2 in pfs2.Where(p => p.modified_mass > pf1.modified_mass)
+                where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
+                select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
+            );
+                count_nearby_relations(relations);
+                return relations;
+            }                  
         }
 
-        private void count_nearby_relations(List<ProteoformRelation> relations)
+        private static void count_nearby_relations(List<ProteoformRelation> relations)
         {
             Parallel.ForEach<ProteoformRelation>(relations, relation => relation.set_nearby_group(relations));
         }
