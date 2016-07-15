@@ -22,7 +22,6 @@ namespace ProteoformSuite
         AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms();
         TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase();
         ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
-        ExperimentDecoyComparison experimentDecoyComparison = new ExperimentDecoyComparison();
         ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
         //ProteoformFamilyAssignment proteoformFamilyAssignment = new ProteoformFamilyAssignment();
         List<Form> forms;
@@ -44,7 +43,7 @@ namespace ProteoformSuite
         {
             forms = new List<Form>(new Form[] {
                 loadDeconvolutionResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
-                theoreticalDatabase, experimentalTheoreticalComparison, experimentDecoyComparison, experimentExperimentComparison,
+                theoreticalDatabase, experimentalTheoreticalComparison, experimentExperimentComparison,
                 //proteoformFamilyAssignment
             });
         }
@@ -64,11 +63,6 @@ namespace ProteoformSuite
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e) { showForm(theoreticalDatabase); }
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentalTheoreticalComparison); }
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentExperimentComparison); }
-        private void experimentDecoyComparisonToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (Lollipop.decoy_databases > 0) showForm(experimentDecoyComparison);
-            else MessageBox.Show("Create at least 1 decoy database in Theoretical Proteoform Database in order to view Experiment - Decoy Comparison.");
-        }
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //showForm(proteoformFamilyAssignment);
@@ -140,36 +134,33 @@ namespace ProteoformSuite
                     () => Lollipop.get_experimental_proteoforms((b)=>new ExcelReader().read_components_from_xlsx(b)),
                     () => Lollipop.get_theoretical_proteoforms()
                 );
-                File.WriteAllText(working_directory + "\\raw_experimental_components.csv", Lollipop.raw_component_results());
-                File.WriteAllText(working_directory + "\\raw_neucode_pairs.csv", Lollipop.raw_neucode_pair_results());
-                File.WriteAllText(working_directory + "\\aggregated_experimental_proteoforms.csv", Lollipop.aggregated_experimental_proteoform_results());
-
-                Lollipop.make_et_relationships();
-                File.WriteAllText(working_directory + "\\experimental_theoretical_relationships.csv", Lollipop.et_relations_results());
-                File.WriteAllText(working_directory + "\\experimental_theoretical_peaks.csv", Lollipop.et_peak_results());
-                Lollipop.et_relations.Clear(); Lollipop.et_relations.Capacity = 0;
-                Lollipop.et_peaks.Clear(); Lollipop.et_peaks.Capacity = 0;
-                Lollipop.ed_relations.Clear();
-
-                Lollipop.make_ee_relationships();
-                File.WriteAllText(working_directory + "\\experimental_experimental_relationships.csv", Lollipop.ee_relations_results());
-                File.WriteAllText(working_directory + "\\experimental_experimental_peaks.csv", Lollipop.ee_peak_results());
-                Lollipop.ee_relations.Clear(); Lollipop.ee_relations.Capacity = 0;
-                Lollipop.ee_peaks.Clear(); Lollipop.ee_peaks.Capacity = 0;
-                Lollipop.ef_relations.Clear(); Lollipop.ef_relations.Capacity = 0;
-
-                //Lollipop.proteoform_community.construct_families();
+                Parallel.Invoke(
+                    () => Lollipop.make_et_relationships(),
+                    () => Lollipop.make_ee_relationships()
+                );
+                File.WriteAllText(working_directory + "\\raw_experimental_components.tsv", Lollipop.raw_component_results());
+                File.WriteAllText(working_directory + "\\raw_neucode_pairs.tsv", Lollipop.raw_neucode_pair_results());
+                File.WriteAllText(working_directory + "\\aggregated_experimental_proteoforms.tsv", Lollipop.aggregated_experimental_proteoform_results());         
+                File.WriteAllText(working_directory + "\\experimental_theoretical_relationships.tsv", Lollipop.et_relations_results());
+                File.WriteAllText(working_directory + "\\experimental_decoy_relationships.tsv", Lollipop.ed_relations_results());
+                File.WriteAllText(working_directory + "\\experimental_experimental_relationships.tsv", Lollipop.ee_relations_results());
+                File.WriteAllText(working_directory + "\\experimental_false_relationships.tsv", Lollipop.ef_relations_results());
+                File.WriteAllText(working_directory + "\\experimental_theoretical_peaks.tsv", Lollipop.et_peak_results());
+                File.WriteAllText(working_directory + "\\experimental_experimental_peaks.tsv", Lollipop.ee_peak_results());
+                prepare_figures_and_tables();
                 MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
             }
         }
 
-        private void prepare_tables()
+        private void prepare_figures_and_tables()
         {
             Parallel.Invoke(
                 () => rawExperimentalComponents.FillRawExpComponentsTable(),
                 () => neuCodePairs.FillNeuCodePairsDGV(),
+                () => neuCodePairs.GraphNeuCodePairs(),
                 () => aggregatedProteoforms.FillAggregatesTable(),
-                () => theoreticalDatabase.FillDataBaseTable("Target")
+                () => theoreticalDatabase.FillDataBaseTable("Target"),
+                () => experimentalTheoreticalComparison.FillTablesAndGraphs()
             );
         }
 

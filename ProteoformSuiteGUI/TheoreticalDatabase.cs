@@ -75,9 +75,9 @@ namespace ProteoformSuite
         public void FillDataBaseTable(string table)
         {
             if (table == "Target")
-                DataGridViewDisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
             else if (Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(table))
-                DataGridViewDisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
         }
 
         private void btn_GetUniProtXML_Click(object sender, EventArgs e)
