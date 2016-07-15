@@ -217,7 +217,7 @@ namespace ProteoformSuiteInternal
                 () => process_decoys()
             );
             Lollipop.proteoform_community.theoretical_proteoforms = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p != null).ToList();
-            Parallel.ForEach<List<TheoreticalProteoform>>(Lollipop.proteoform_community.decoy_proteoforms.Values, decoys => 
+            Parallel.ForEach<List<TheoreticalProteoform>>(Lollipop.proteoform_community.decoy_proteoforms.Values, decoys =>
                 decoys = decoys.Where(d => d != null).ToList()
             );
         }
@@ -239,7 +239,7 @@ namespace ProteoformSuiteInternal
                 string seq = p.sequence.Substring(startPosAfterCleavage, (p.sequence.Length - startPosAfterCleavage));
                 EnterTheoreticalProteformFamily(seq, p, p.accession, isMetCleaved, null);
             });
-            
+
         }
 
         private static void process_decoys()
@@ -274,7 +274,6 @@ namespace ProteoformSuiteInternal
             //Calculate the properties of this sequence
             double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
             int lysine_count = seq.Split('K').Length - 1;
-            proteoform_community.add(new TheoreticalProteoform(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, new List<Ptm>() { new Ptm() }, 0, unmodified_mass, true));
             List<PtmSet> unique_ptm_groups = new List<PtmSet>();
             bool addPtmCombos = max_ptms > 0 && prot.ptms_by_position.Count() > 0;
             if (addPtmCombos) unique_ptm_groups.AddRange(new PtmCombos(prot.ptms_by_position).get_combinations(max_ptms));
