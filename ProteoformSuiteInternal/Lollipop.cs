@@ -316,11 +316,14 @@ namespace ProteoformSuiteInternal
         }
 
         //ET,ED,EE,EF COMPARISONS
-        public static double max_mass_difference = 500; //TODO: implement this in ProteoformFamilies and elsewhere
+        public static double ee_max_mass_difference = 250; //TODO: implement this in ProteoformFamilies and elsewhere
+        public static double et_low_mass_difference = -100;
+        public static double et_high_mass_difference = 200;
+
         public static double no_mans_land_lowerBound = 0.22;
         public static double no_mans_land_upperBound = 0.88;
         public static double peak_width_base = 0.0150;
-        public static double min_peak_count = 10;
+        public static double min_peak_count = 8;
         public static int relation_group_centering_iterations = 2;
         public static List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
         public static List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
@@ -332,7 +335,7 @@ namespace ProteoformSuiteInternal
         public static void make_et_relationships()
         {
             Parallel.Invoke(
-                () => et_relations = Lollipop.proteoform_community.relate_et(),
+                () => et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et),
                 () => ed_relations = Lollipop.proteoform_community.relate_ed()
             );
             et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
@@ -341,7 +344,7 @@ namespace ProteoformSuiteInternal
         public static void make_ee_relationships()
         {
             Parallel.Invoke(
-                () => ee_relations = proteoform_community.relate_ee(),
+                () => ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.et),
                 () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
             );
             ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
@@ -415,7 +418,9 @@ namespace ProteoformSuiteInternal
                 "TheoreticalDatabase|combine_identical_sequences\t" + combine_identical_sequences.ToString(),
                 "Comparisons|no_mans_land_lowerBound\t" + no_mans_land_lowerBound.ToString(),
                 "Comparisons|no_mans_land_upperBound\t" + no_mans_land_upperBound.ToString(),
-                "Comparisons|max_mass_difference\t" + max_mass_difference.ToString(),
+                "Comparisons|ee_max_mass_difference\t" + ee_max_mass_difference.ToString(),
+                "Comparisons|et_low_mass_difference\t" + et_low_mass_difference.ToString(),
+                "Comparisons|et_high_mass_difference\t" + et_high_mass_difference.ToString(),
                 "Comparisons|relation_group_centering_iterations\t" + relation_group_centering_iterations.ToString(),
                 "Comparisons|peak_width_base\t" + peak_width_base.ToString(),
                 "Comparisons|min_peak_count\t" + min_peak_count.ToString()
