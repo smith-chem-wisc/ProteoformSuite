@@ -40,18 +40,50 @@ namespace ProteoformSuiteInternal
         }
 
         //BUILDING RELATIONSHIPS
-        public static List<ProteoformRelation> relate(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
+        public List<ProteoformRelation> relate_et(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
         {
-            pfs1 = pfs1.Where(p => p != null).ToArray();
-            pfs2 = pfs2.Where(p => p != null).ToArray();
+            pfs1 = pfs1.Where(p => p != null).ToArray(); //this should be the set of experimental values
+            pfs2 = pfs2.Where(p => p != null).ToArray(); //this should be the set of theoretical values
 
             if (Lollipop.neucode_labeled)
             {
                 List<ProteoformRelation> relations = new List<ProteoformRelation>(
                 from pf1 in pfs1
-                from pf2 in pfs2.Where(p=> p.modified_mass > pf1.modified_mass)
+                from pf2 in pfs2
+                where pf1.lysine_count == pf2.lysine_count &&
+                    Math.Abs(pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference && //use if this step is rate-limiting, otherwise, just process them all
+                    Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference //use if this step is rate-limiting, otherwise, just process them all
+                select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
+            );
+                count_nearby_relations(relations);
+                return relations;
+            }
+            else
+            {
+                List<ProteoformRelation> relations = new List<ProteoformRelation>(
+                from pf1 in pfs1
+                from pf2 in pfs2
+                where Math.Abs(pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference && //use if this step is rate-limiting, otherwise, just process them all
+                    Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference//use if this step is rate-limiting, otherwise, just process them all
+                select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
+            );
+                count_nearby_relations(relations);
+                return relations;
+            }                  
+        }
+
+        public List<ProteoformRelation> relate_ee(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
+        {
+            pfs1 = pfs1.Where(p => p != null).ToArray(); //this should be the set of experimental values
+            pfs2 = pfs2.Where(p => p != null).ToArray(); //this should be the set of experimental values
+
+            if (Lollipop.neucode_labeled)
+            {
+                List<ProteoformRelation> relations = new List<ProteoformRelation>(
+                from pf1 in pfs1
+                from pf2 in pfs2.Where(p => p.modified_mass > pf1.modified_mass)
                 where pf1.lysine_count == pf2.lysine_count
-                where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
+                where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.ee_max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
                 count_nearby_relations(relations);
@@ -62,12 +94,12 @@ namespace ProteoformSuiteInternal
                 List<ProteoformRelation> relations = new List<ProteoformRelation>(
                 from pf1 in pfs1
                 from pf2 in pfs2.Where(p => p.modified_mass > pf1.modified_mass)
-                where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
+                where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.ee_max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
                 count_nearby_relations(relations);
                 return relations;
-            }                  
+            }
         }
 
         private static void count_nearby_relations(List<ProteoformRelation> relations)
@@ -75,20 +107,21 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach<ProteoformRelation>(relations, relation => relation.set_nearby_group(relations));
         }
 
-        public List<ProteoformRelation> relate_ee()
-        {
-            return relate(this.experimental_proteoforms.ToArray(), this.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
-        }
-        public List<ProteoformRelation> relate_et()
-        {
-            return relate(this.experimental_proteoforms.ToArray(), this.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
-        }
+        //public List<ProteoformRelation> relate_ee()
+        //{
+        //    return relate(this.experimental_proteoforms.ToArray(), this.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
+        //}
+        //public List<ProteoformRelation> relate_et()
+        //{
+        //    return relate(this.experimental_proteoforms.ToArray(), this.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
+        //}
+
         public Dictionary<string, List<ProteoformRelation>> relate_ed()
         {
             Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
             Parallel.ForEach<KeyValuePair<string, List<TheoreticalProteoform>>>(this.decoy_proteoforms, decoys =>
             {
-                ed_relations[decoys.Key] = relate(experimental_proteoforms.ToArray(), decoys.Value.ToArray(), ProteoformComparison.ed);
+                ed_relations[decoys.Key] = relate_et(experimental_proteoforms.ToArray(), decoys.Value.ToArray(), ProteoformComparison.ed);
             });
             return ed_relations;
         }
@@ -103,7 +136,7 @@ namespace ProteoformSuiteInternal
                 new Random().Shuffle(pfs2);
                 List<ProteoformRelation> ef_relation_addition = new List<ProteoformRelation>(
                     from pf2 in pfs2
-                        .Where(p => p.lysine_count != pf1.lysine_count && Math.Abs(pf1.modified_mass - p.modified_mass) <= Lollipop.max_mass_difference)
+                        .Where(p => p.lysine_count != pf1.lysine_count && Math.Abs(pf1.modified_mass - p.modified_mass) <= Lollipop.ee_max_mass_difference)
                         .Take(pfs2.Where(p => p.lysine_count == pf1.lysine_count).Count()) // take only the number that would be chosen with equal lysine counts from a randomized set
                     select new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass)
                 );
