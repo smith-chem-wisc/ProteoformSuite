@@ -36,6 +36,42 @@ namespace Test
 
             Lollipop.get_theoretical_proteoforms();
             Assert.AreEqual(27, Lollipop.proteoform_community.theoretical_proteoforms.Count());
+
+            int peptide = 0;
+            int chain = 0;
+            int Full_MetCleaved = 0;
+            int propeptide = 0;
+            int signalPeptide = 0;
+
+            foreach (TheoreticalProteoform p in Lollipop.proteoform_community.theoretical_proteoforms)
+            {
+                switch (p.fragment)
+                {
+                    case "peptide":
+                        peptide++;
+                        break;
+                    case "chain":
+                        chain++;
+                        break;
+                    case "full-met-cleaved":
+                        Full_MetCleaved++;
+                        break;
+                    case "propeptide":
+                        propeptide++;
+                        break;
+                    case "signal-peptide":
+                        signalPeptide++;
+                        break;
+                    default:
+                        break;
+                }
+
+            }
+            Assert.AreEqual(8,chain);
+            Assert.AreEqual(11,Full_MetCleaved);
+            Assert.AreEqual(2,peptide);
+            Assert.AreEqual(3,propeptide);
+            Assert.AreEqual(3,signalPeptide);
         }
     }
 }
