@@ -51,8 +51,8 @@ namespace ProteoformSuiteInternal
                 from pf1 in pfs1
                 from pf2 in pfs2
                 where pf1.lysine_count == pf2.lysine_count &&
-                    Math.Abs(pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference && //use if this step is rate-limiting, otherwise, just process them all
-                    Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference //use if this step is rate-limiting, otherwise, just process them all
+                    pf1.modified_mass - pf2.modified_mass >= Lollipop.et_low_mass_difference && //use if this step is rate-limiting, otherwise, just process them all
+                    pf1.modified_mass - pf2.modified_mass <= Lollipop.et_high_mass_difference //use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
                 count_nearby_relations(relations);
@@ -83,7 +83,8 @@ namespace ProteoformSuiteInternal
                 from pf1 in pfs1
                 from pf2 in pfs2.Where(p => p.modified_mass > pf1.modified_mass)
                 where pf1.lysine_count == pf2.lysine_count
-                where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.ee_max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
+                where pf1.modified_mass > pf2.modified_mass //so that each EE delta mass isn't double-counted
+                where pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
                 count_nearby_relations(relations);
@@ -94,7 +95,8 @@ namespace ProteoformSuiteInternal
                 List<ProteoformRelation> relations = new List<ProteoformRelation>(
                 from pf1 in pfs1
                 from pf2 in pfs2.Where(p => p.modified_mass > pf1.modified_mass)
-                where Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.ee_max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
+                where pf1.modified_mass > pf2.modified_mass //so that each EE delta mass isn't double-counted
+                where pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
                 count_nearby_relations(relations);
