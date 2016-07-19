@@ -166,8 +166,8 @@ namespace ProteoformSuiteInternal
                     string fragment = GetAttribute(sequence_elem, "fragment");
                     if (fragment == "" || fragment == null)
                     {
-                        fragment = "Full";
-                        if (fixedMethionineCleavage) fragment += "_MetCleaved";
+                        fragment = "full";
+                        if (fixedMethionineCleavage) fragment += "-met-cleaved";
                     }
                     int begin = 0;
                     int end = sequence.Length - 1;

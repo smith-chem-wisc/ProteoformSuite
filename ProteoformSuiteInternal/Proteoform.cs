@@ -142,6 +142,7 @@ namespace ProteoformSuiteInternal
         {
             this.accession = accession;
             this.name = name;
+            this.fragment = fragment;
             this.begin = begin;
             this.end = end;
             this.unmodified_mass = unmodified_mass;

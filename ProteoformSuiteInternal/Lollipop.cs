@@ -288,18 +288,19 @@ namespace ProteoformSuiteInternal
             double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
             int lysine_count = seq.Split('K').Length - 1;
             List<PtmSet> unique_ptm_groups = new List<PtmSet>();
-            //bool addPtmCombos = max_ptms > 0 && prot.ptms_by_position.Count() > 0;
             unique_ptm_groups.AddRange(new PtmCombos(prot.ptms_by_position).get_combinations(max_ptms));
 
+            int listMemberNumber = 1;
             foreach (PtmSet group in unique_ptm_groups)
             {
                 List<Ptm> ptm_list = group.ptm_combination.ToList();
                 double ptm_mass = group.mass;
                 double proteoform_mass = unmodified_mass + group.mass;
                 if (string.IsNullOrEmpty(decoy_database_name))
-                    proteoform_community.add(new TheoreticalProteoform(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
+                    proteoform_community.add(new TheoreticalProteoform(accession + "_" + prot.fragment + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
                 else
-                    proteoform_community.add(new TheoreticalProteoform(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
+                    proteoform_community.add(new TheoreticalProteoform(accession + "_" + prot.fragment + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
+                listMemberNumber++;
             }
         }
 
