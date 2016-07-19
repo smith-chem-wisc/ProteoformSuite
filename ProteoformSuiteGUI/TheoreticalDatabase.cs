@@ -156,6 +156,19 @@ namespace ProteoformSuite
             }
         }
 
+        public void FillDataBaseTable(string table)
+        {
+
+            if (table == "Target")
+            {
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+            }
+            else
+            {
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
+            }
+        }
+
         private void ckbx_aggregateProteoforms_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.combine_identical_sequences = ckbx_aggregateProteoforms.Checked;
