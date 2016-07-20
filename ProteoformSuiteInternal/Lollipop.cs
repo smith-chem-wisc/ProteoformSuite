@@ -341,9 +341,9 @@ namespace ProteoformSuiteInternal
         //ET,ED,EE,EF COMPARISONS
 
         
-        public static double ee_max_mass_difference = 250; //TODO: implement this in ProteoformFamilies and elsewhere
+        public static double ee_max_mass_difference = 500; //TODO: implement this in ProteoformFamilies and elsewhere
         public static double et_low_mass_difference = -250;
-        public static double et_high_mass_difference = 500;
+        public static double et_high_mass_difference = 250;
     
 
         public static double no_mans_land_lowerBound = 0.22;
