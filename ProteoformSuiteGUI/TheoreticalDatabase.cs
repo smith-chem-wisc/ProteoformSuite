@@ -172,9 +172,10 @@ namespace ProteoformSuite
                 }
             }
 
-            //FormatDataBaseTable();
             cmbx_DisplayWhichDB.DataSource = databases.ToList();
             DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+            FormatDataBaseTable();
+
         }
 
         private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)
