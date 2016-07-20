@@ -29,9 +29,9 @@ namespace ProteoformSuite
         bool initial_load = true;
         public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
         {
+            InitializeParameterSet();
             if (Lollipop.ee_relations.Count == 0) Lollipop.make_ee_relationships();
             initial_load = false;
-            InitializeParameterSet();
             this.FillTablesAndCharts();
         }
 

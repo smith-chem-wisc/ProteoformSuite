@@ -46,6 +46,8 @@
             this.label7 = new System.Windows.Forms.Label();
             this.tb_EEPeaks = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.tb_theoreticalProteoforms = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label
@@ -136,7 +138,7 @@
             // 
             // tb_ETPairs
             // 
-            this.tb_ETPairs.Location = new System.Drawing.Point(181, 270);
+            this.tb_ETPairs.Location = new System.Drawing.Point(181, 283);
             this.tb_ETPairs.Name = "tb_ETPairs";
             this.tb_ETPairs.ReadOnly = true;
             this.tb_ETPairs.Size = new System.Drawing.Size(100, 20);
@@ -145,7 +147,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(21, 270);
+            this.label5.Location = new System.Drawing.Point(20, 286);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(141, 13);
             this.label5.TabIndex = 10;
@@ -202,11 +204,30 @@
             this.label8.TabIndex = 16;
             this.label8.Text = "Experiment Experiment Peaks";
             // 
+            // tb_theoreticalProteoforms
+            // 
+            this.tb_theoreticalProteoforms.Location = new System.Drawing.Point(182, 247);
+            this.tb_theoreticalProteoforms.Name = "tb_theoreticalProteoforms";
+            this.tb_theoreticalProteoforms.ReadOnly = true;
+            this.tb_theoreticalProteoforms.Size = new System.Drawing.Size(100, 20);
+            this.tb_theoreticalProteoforms.TabIndex = 19;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(21, 250);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(119, 13);
+            this.label9.TabIndex = 18;
+            this.label9.Text = "Theoretical Proteoforms";
+            // 
             // ResultsSummary
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(750, 620);
+            this.Controls.Add(this.tb_theoreticalProteoforms);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.tb_EEPeaks);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.tb_EEPairs);
@@ -253,5 +274,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox tb_EEPeaks;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox tb_theoreticalProteoforms;
+        private System.Windows.Forms.Label label9;
     }
 }
