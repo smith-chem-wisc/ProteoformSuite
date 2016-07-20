@@ -174,6 +174,8 @@ namespace ProteoformSuite
 
             FillDataBaseTable(cmbx_DisplayWhichDB.SelectedItem.ToString());
             FormatDataBaseTable();
+            
+            
         }
 
         private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)

@@ -152,7 +152,9 @@ namespace ProteoformSuiteInternal
                     }
                 }
 
-                Parallel.ForEach<XElement>(entries, entry =>
+                //PARALLEL PROBLEM
+               // Parallel.ForEach<XElement>(entries, entry =>
+                foreach (XElement entry in entries)
                 {
                     //Used fields
                     string dataset = GetAttribute(entry, "dataset");
@@ -205,7 +207,9 @@ namespace ProteoformSuiteInternal
                     //Add the full length protein, and then add the fragments with segments of the above modification dictionary
                     protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, positionsAndPtms));
                     //MessageBox.Show("added " + new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms).ToString());
-                    Parallel.ForEach<XElement>(features, feature =>
+                    //PARALLEL PROBLEM
+                    //Parallel.ForEach<XElement>(features, feature =>
+                    foreach (XElement feature in features)
                     {
                         string feature_type = GetAttribute(feature, "type");
                         switch (feature_type)
@@ -224,15 +228,16 @@ namespace ProteoformSuiteInternal
                                     string subsequence = sequence.Substring(feature_begin, feature_end - feature_begin + 1);
                                     if (!justMetCleavage && subsequence.Length != sequence.Length && subsequence.Length >= minPeptideLength)
                                         protein_list.Add(new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence,
-                                            SegmentPtms(positionsAndPtms, feature_begin, feature_end)));
+                                             SegmentPtms(positionsAndPtms, feature_begin, feature_end)));
                                 }
                                 break;
                             case "splice variant":
                             case "sequence variant":
                                 break;
                         }
-                    });
-                });
+                    } //});
+                } //}); 
+                
             }
             return protein_list.Where(p => p != null).ToArray();
         }
