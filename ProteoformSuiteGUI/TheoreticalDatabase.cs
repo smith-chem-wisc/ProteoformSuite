@@ -162,26 +162,46 @@ namespace ProteoformSuite
         private void btn_Make_Databases_Click(object sender, EventArgs e)
         {
             Lollipop.get_theoretical_proteoforms();
-            BindingList<string> bindinglist = new BindingList<string>() { "Target" };
-            BindingSource bindingSource = new BindingSource();
-            bindingSource.DataSource = bindinglist;
-            cmbx_DisplayWhichDB.DataSource = bindingSource;
-            //Add the new proteoform databases to the bindingList, and then display
-            foreach (string decoy_tablename in Lollipop.proteoform_community.decoy_proteoforms.Keys)
+            List<string> databases = new List<string>();
+            databases.Add("Target");
+            if (Lollipop.proteoform_community.decoy_proteoforms.Keys.Count > 0)
             {
-                bindinglist.Add(decoy_tablename);
+                foreach (string name in Lollipop.proteoform_community.decoy_proteoforms.Keys)
+                {
+                    databases.Add(name);
+                }
             }
 
-            FillDataBaseTable(cmbx_DisplayWhichDB.SelectedItem.ToString());
-            FormatDataBaseTable();
-            
-            
+            //FormatDataBaseTable();
+            cmbx_DisplayWhichDB.DataSource = databases.ToList();
+            DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
         }
 
         private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            FillDataBaseTable(cmbx_DisplayWhichDB.SelectedItem.ToString());
+        {         
+            string table = cmbx_DisplayWhichDB.SelectedItem.ToString();
+            if(table == "Target")
+            {
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+            }
+            else
+            {
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
+            }
         }
+
+        //public void FillDataBaseTable(string table)
+        //{
+
+        //    if (table == "Target")
+        //    {
+        //        DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+        //    }
+        //    else
+        //    {
+        //        DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
+        //    }
+        //}
 
         private void ckbx_aggregateProteoforms_CheckedChanged(object sender, EventArgs e)
         {
