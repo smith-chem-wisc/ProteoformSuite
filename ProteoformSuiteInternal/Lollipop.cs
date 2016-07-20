@@ -217,16 +217,15 @@ namespace ProteoformSuiteInternal
             if (combine_identical_sequences) proteins = group_proteins_by_sequence(proteins);
 
             //PARALLEL PROBLEM
+            process_entries();
+            process_decoys();
             //Parallel.Invoke(
             //    () => process_entries(),
             //    () => process_decoys()
             //);
 
-            process_entries();
-            process_decoys();
-
-            Lollipop.proteoform_community.theoretical_proteoforms = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p != null).ToList();
             //POSSIBLE PARALLEL PROBLEM - DIDN'T TEST DECOY
+            Lollipop.proteoform_community.theoretical_proteoforms = Lollipop.proteoform_community.theoretical_proteoforms.ToList();
             Parallel.ForEach<List<TheoreticalProteoform>>(Lollipop.proteoform_community.decoy_proteoforms.Values, decoys =>
                 decoys = decoys.Where(d => d != null).ToList()
             );
@@ -242,6 +241,7 @@ namespace ProteoformSuiteInternal
 
         private static void process_entries()
         {
+
             //PARALLEL PROBLEM
             //Parallel.ForEach<Protein>(proteins, p =>
             //{
@@ -258,7 +258,6 @@ namespace ProteoformSuiteInternal
                 string seq = p.sequence.Substring(startPosAfterCleavage, (p.sequence.Length - startPosAfterCleavage));
                 EnterTheoreticalProteformFamily(seq, p, p.accession, isMetCleaved, null);
             }
-
         }
 
         private static void process_decoys()
@@ -309,7 +308,6 @@ namespace ProteoformSuiteInternal
                else
                    proteoform_community.add(new TheoreticalProteoform(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
            } //);
-
         }
 
         private static string GetOneGiantProtein(IEnumerable<Protein> proteins, bool methionine_cleavage)
