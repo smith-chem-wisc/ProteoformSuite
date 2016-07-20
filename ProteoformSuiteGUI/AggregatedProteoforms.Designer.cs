@@ -205,6 +205,7 @@
             this.dgv_AcceptNeuCdLtProteoforms.RowTemplate.Height = 28;
             this.dgv_AcceptNeuCdLtProteoforms.Size = new System.Drawing.Size(988, 224);
             this.dgv_AcceptNeuCdLtProteoforms.TabIndex = 0;
+            this.dgv_AcceptNeuCdLtProteoforms.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_AcceptNeuCdLtProteoforms_CellContentClick);
             // 
             // AggregatedProteoforms
             // 

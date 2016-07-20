@@ -117,6 +117,11 @@ namespace ProteoformSuite
             
         }
 
+        private void dgv_AcceptNeuCdLtProteoforms_CellContentClick(object sender, EventArgs e)
+        {
+            //code for if acceptable boolean is changed by user. 
+        }
+
         private void nUP_mass_tolerance_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.mass_tolerance = nUP_mass_tolerance.Value;
