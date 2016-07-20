@@ -63,8 +63,8 @@ namespace ProteoformSuiteInternal
                 List<ProteoformRelation> relations = new List<ProteoformRelation>(
                 from pf1 in pfs1
                 from pf2 in pfs2
-                where Math.Abs(pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference && //use if this step is rate-limiting, otherwise, just process them all
-                    Math.Abs(pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference//use if this step is rate-limiting, otherwise, just process them all
+                where pf1.modified_mass - pf2.modified_mass >= Lollipop.et_low_mass_difference && //use if this step is rate-limiting, otherwise, just process them all
+                    pf1.modified_mass - pf2.modified_mass <= Lollipop.et_high_mass_difference//use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
                 count_nearby_relations(relations);

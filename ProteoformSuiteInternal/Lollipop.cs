@@ -42,9 +42,9 @@ namespace ProteoformSuiteInternal
                 {
                     HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
                     //PARALLEL PROBLEM
-                   // Parallel.ForEach<string>(scan_ranges, scan_range =>
+                    // Parallel.ForEach<string>(scan_ranges, scan_range =>
                     {
-                        foreach(string scan_range in scan_ranges)
+                        foreach (string scan_range in scan_ranges)
                             find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
                     }//);
                 }
@@ -293,21 +293,24 @@ namespace ProteoformSuiteInternal
             double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
             int lysine_count = seq.Split('K').Length - 1;
             List<PtmSet> unique_ptm_groups = new List<PtmSet>();
-            bool addPtmCombos = max_ptms > 0;
-            if (addPtmCombos) unique_ptm_groups.AddRange(new PtmCombos(prot.ptms_by_position).get_combinations(max_ptms));
+            unique_ptm_groups.AddRange(new PtmCombos(prot.ptms_by_position).get_combinations(max_ptms));
+
+            int listMemberNumber = 1;
 
             //PARALLEL PROBLEM
             //Parallel.ForEach<PtmSet>(unique_ptm_groups, group =>
             foreach (PtmSet group in unique_ptm_groups)
             {
-               List<Ptm> ptm_list = group.ptm_combination.ToList();
-               double ptm_mass = group.mass;
-               double proteoform_mass = unmodified_mass + group.mass;
-               if (string.IsNullOrEmpty(decoy_database_name))
-                   proteoform_community.add(new TheoreticalProteoform(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
-               else
-                   proteoform_community.add(new TheoreticalProteoform(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
-           } //);
+                List<Ptm> ptm_list = group.ptm_combination.ToList();
+                double ptm_mass = group.mass;
+                double proteoform_mass = unmodified_mass + group.mass;
+                if (string.IsNullOrEmpty(decoy_database_name))
+                    proteoform_community.add(new TheoreticalProteoform(accession + "_" + prot.fragment + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
+                else
+                    proteoform_community.add(new TheoreticalProteoform(accession + "_" + prot.fragment + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
+
+                listMemberNumber++;
+            } //);
         }
 
         private static string GetOneGiantProtein(IEnumerable<Protein> proteins, bool methionine_cleavage)
@@ -336,9 +339,12 @@ namespace ProteoformSuiteInternal
         }
 
         //ET,ED,EE,EF COMPARISONS
-        public static double ee_max_mass_difference = 500; //TODO: implement this in ProteoformFamilies and elsewhere
+
+        
+        public static double ee_max_mass_difference = 250; //TODO: implement this in ProteoformFamilies and elsewhere
         public static double et_low_mass_difference = -250;
-        public static double et_high_mass_difference = 250;
+        public static double et_high_mass_difference = 500;
+    
 
         public static double no_mans_land_lowerBound = 0.22;
         public static double no_mans_land_upperBound = 0.88;
@@ -359,6 +365,11 @@ namespace ProteoformSuiteInternal
             //    () => et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et),
             //    () => ed_relations = Lollipop.proteoform_community.relate_ed()
             //);
+            if (!neucode_labeled)
+            {
+                et_low_mass_difference = -100;
+                et_high_mass_difference = 200;
+            }
             et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
             ed_relations = Lollipop.proteoform_community.relate_ed();
             et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
@@ -371,6 +382,10 @@ namespace ProteoformSuiteInternal
             //    () => ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.et),
             //    () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
             //);
+            if (!neucode_labeled)
+            {
+                ee_max_mass_difference = 250;
+            }
 
             ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
             ef_relations = proteoform_community.relate_unequal_ee_lysine_counts();
