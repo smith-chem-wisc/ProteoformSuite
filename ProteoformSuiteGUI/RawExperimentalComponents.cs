@@ -51,6 +51,8 @@ namespace ProteoformSuite
             dgv_RawExpComp_MI_masses.Columns["scan_range"].HeaderText = "Scan Range";
             dgv_RawExpComp_MI_masses.Columns["rt_range"].HeaderText = "RT Range";
             dgv_RawExpComp_MI_masses.Columns["num_charge_states"].HeaderText = "No. Charge States";
+
+            dgv_RawExpComp_MI_masses.AllowUserToAddRows = false;
         }
 
         private void dgv_RawExpComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -59,7 +61,24 @@ namespace ProteoformSuite
             {
                 ProteoformSuiteInternal.Component c = (ProteoformSuiteInternal.Component)this.dgv_RawExpComp_MI_masses.Rows[e.RowIndex].DataBoundItem;
                 DisplayUtility.FillDataGridView(dgv_RawExpComp_IndChgSts, c.charge_states);
+                Format_IndChgSts();
             }
+        }
+
+        private void Format_IndChgSts()
+        {
+            //round table values
+            dgv_RawExpComp_IndChgSts.Columns["intensity"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpComp_IndChgSts.Columns["mz_centroid"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpComp_IndChgSts.Columns["calculated_mass"].DefaultCellStyle.Format = "0.####";
+
+            //set column header
+            dgv_RawExpComp_IndChgSts.Columns["intensity"].HeaderText = "Intensity";
+            dgv_RawExpComp_IndChgSts.Columns["mz_centroid"].HeaderText = "Centroid m/z";
+            dgv_RawExpComp_IndChgSts.Columns["calculated_mass"].HeaderText = "Calculated Mass";
+            dgv_RawExpComp_IndChgSts.Columns["charge_count"].HeaderText = "Charge Count";
+
+            dgv_RawExpComp_IndChgSts.AllowUserToAddRows = false;
         }
     }
 }
