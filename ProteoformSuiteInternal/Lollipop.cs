@@ -46,12 +46,14 @@ namespace ProteoformSuiteInternal
                     {
                         foreach (string scan_range in scan_ranges)
                             find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
+
                     }//);
                 }
+                raw_experimental_components = raw_experimental_components.Where(c => c != null).ToList();
+                raw_neucode_pairs = raw_neucode_pairs.Where(p => p != null).ToList();
             });
-            raw_experimental_components = raw_experimental_components.Where(c => c != null).ToList();
-            raw_neucode_pairs = raw_neucode_pairs.Where(p => p != null).ToList();
-        }
+            }
+
 
         //NEUCODE PAIRS
         public static List<NeuCodePair> raw_neucode_pairs = new List<NeuCodePair>();
@@ -59,16 +61,17 @@ namespace ProteoformSuiteInternal
         public static decimal min_intensity_ratio = 1.4m;
         public static decimal max_lysine_ct = 26.2m;
         public static decimal min_lysine_ct = 1.5m;
+
         public static void find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange)
         {
             //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
             List<Component> components = components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
             foreach (Component lower_component in components)
             {
-                IEnumerable<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.weighted_monoisotopic_mass >= lower_component.weighted_monoisotopic_mass);
+                IEnumerable<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.weighted_monoisotopic_mass > lower_component.weighted_monoisotopic_mass);
                 foreach (Component higher_component in higher_mass_components)
                 {
-                    double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
+                    double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
                     if (mass_difference < 6)
                     {
                         List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
@@ -76,12 +79,14 @@ namespace ProteoformSuiteInternal
                         List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
                         double lower_intensity = lower_component.calculate_sum_intensity(overlapping_charge_states);
                         double higher_intensity = higher_component.calculate_sum_intensity(overlapping_charge_states);
-
-                        if (lower_intensity > 0 || higher_intensity > 0)
+                        bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
+                        
+                        if (lower_intensity > 0 && higher_intensity > 0)
                         {
                             NeuCodePair pair;
-                            if (lower_intensity > higher_intensity) pair = new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states); //lower mass is neucode light
-                            else pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states); //higher mass is neucode light
+                            if (lower_intensity > higher_intensity) 
+                                pair = new NeuCodePair(lower_component, higher_component, lower_intensity, higher_intensity, mass_difference, overlapping_charge_states, light_is_lower); //lower mass is neucode light
+                            else pair = new NeuCodePair(higher_component, lower_component, higher_intensity, lower_intensity, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light  
                             Lollipop.raw_neucode_pairs.Add(pair);
                         }
                     }
@@ -163,7 +168,7 @@ namespace ProteoformSuiteInternal
             Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
             Component[] remaining_proteoforms;
             //only aggregate accepatable neucode pairs
-            if (Lollipop.raw_neucode_pairs.Count > 0) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true).ToArray();
+            if (neucode_labeled) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true).ToArray();
             else remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).ToArray();
 
             int count = 1;
