@@ -86,64 +86,6 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        //public static void pair_neucode_components() //Legacy for form-load runs, or and starting over at NeuCodePairs
-        //{
-        //    Dictionary<string, HashSet<string>> filename_scanRange = Lollipop.get_scanranges_by_filename();
-        //    Parallel.ForEach<KeyValuePair<string, HashSet<string>>>(filename_scanRange, entry =>
-        //    {
-        //        string filename = entry.Key;
-        //        Parallel.ForEach<string>(entry.Value, scanRange =>
-        //        {
-        //            List<Component> components_in_file_scanrange = new List<Component>();
-
-        //            //select all components in file and this particular scanrange
-        //            Parallel.ForEach<Component>(Lollipop.rawExperimentalComponents, c =>
-        //            {
-        //                if (c.file_origin == filename && c.scan_range == scanRange)
-        //                    components_in_file_scanrange.Add(c);
-        //            });
-
-        //            components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass);
-
-        //            //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
-        //            int lower_mass_index = 0;
-        //            Parallel.For(lower_mass_index, components_in_file_scanrange.Count - 2, lower_index =>
-        //            {
-        //                Component lower_component = components_in_file_scanrange[lower_index];
-        //                int higher_mass_index = lower_mass_index + 1;
-        //                //double apexRT = lower_component.rt_apex;
-
-        //                Parallel.For(higher_mass_index, components_in_file_scanrange.Count - 1, higher_index =>
-        //                {
-        //                    Component higher_component = components_in_file_scanrange[higher_index];
-        //                    double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
-        //                    if (mass_difference < 6)
-        //                    {
-        //                        NeuCodePair p = new NeuCodePair(lower_component, higher_component);
-        //                        if (p.accepted) { Lollipop.rawNeuCodePairs.Add(p); }
-        //                    }
-        //                });
-        //            });
-        //        });
-        //    });
-        //}
-
-        //private static Dictionary<string, HashSet<string>> get_scanranges_by_filename()
-        //{
-        //    Dictionary<string, HashSet<string>> filename_scanRanges = new Dictionary<string, HashSet<string>>();
-        //    Parallel.ForEach<string>(Lollipop.deconResultsFileNames, filename =>
-        //    {
-        //        if (!filename_scanRanges.ContainsKey(filename))
-        //            filename_scanRanges.Add(filename, new HashSet<string>());
-        //    });
-
-        //    Parallel.ForEach<Component>(Lollipop.rawExperimentalComponents, c =>
-        //    {
-        //        filename_scanRanges[c.file_origin].Add(c.scan_range);
-        //    });
-        //    return filename_scanRanges;
-        //}
-
         //AGGREGATED PROTEOFORMS
         public static decimal mass_tolerance = 3; //ppm
         public static decimal retention_time_tolerance = 3; //min
@@ -338,7 +280,7 @@ namespace ProteoformSuiteInternal
         public static double no_mans_land_upperBound = 0.88;
         public static double peak_width_base = 0.0150;
         public static double min_peak_count = 8;
-        public static int relation_group_centering_iterations = 2;
+        public static int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
         public static List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
         public static List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
         public static Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
