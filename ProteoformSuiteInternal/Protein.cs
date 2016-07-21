@@ -17,7 +17,7 @@ namespace ProteoformSuiteInternal
         {
             this.accession = accession;
             this.name = name;
-            this.fragment = fragment;
+            this.fragment = fragment.Replace(' ', '-');
             this.begin = begin;
             this.end = end;
             this.sequence = sequence;

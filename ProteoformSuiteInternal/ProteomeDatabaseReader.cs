@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -133,6 +134,7 @@ namespace ProteoformSuiteInternal
 
         public static Protein[] ReadUniprotXml(string uniprotXmlFile, Dictionary<string, Modification> uniprot_modification_table, int minPeptideLength, bool fixedMethionineCleavage)
         {
+            ConcurrentBag<Protein> bag_protein_list = new ConcurrentBag<Protein>();
             List<Protein> protein_list = new List<Protein>();
             using (var stream = new FileStream(uniprotXmlFile, FileMode.Open))
             {
@@ -164,8 +166,8 @@ namespace ProteoformSuiteInternal
                     string fragment = GetAttribute(sequence_elem, "fragment");
                     if (fragment == "" || fragment == null)
                     {
-                        fragment = "Full";
-                        if (fixedMethionineCleavage) fragment += "_MetCleaved";
+                        fragment = "full";
+                        if (fixedMethionineCleavage) fragment += "-met-cleaved";
                     }
                     int begin = 0;
                     int end = sequence.Length - 1;
@@ -203,8 +205,9 @@ namespace ProteoformSuiteInternal
                     }
 
                     //Add the full length protein, and then add the fragments with segments of the above modification dictionary
-                    protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, positionsAndPtms));
+                    bag_protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, positionsAndPtms));
                     //MessageBox.Show("added " + new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms).ToString());
+
                     Parallel.ForEach<XElement>(features, feature =>
                     {
                         string feature_type = GetAttribute(feature, "type");
@@ -223,7 +226,7 @@ namespace ProteoformSuiteInternal
                                     bool justMetCleavage = fixedMethionineCleavage && feature_begin - 1 == begin && feature_end == end;
                                     string subsequence = sequence.Substring(feature_begin, feature_end - feature_begin + 1);
                                     if (!justMetCleavage && subsequence.Length != sequence.Length && subsequence.Length >= minPeptideLength)
-                                        protein_list.Add(new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence,
+                                        bag_protein_list.Add(new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence,
                                             SegmentPtms(positionsAndPtms, feature_begin, feature_end)));
                                 }
                                 break;
@@ -234,7 +237,11 @@ namespace ProteoformSuiteInternal
                     });
                 });
             }
-            return protein_list.Where(p => p != null).ToArray();
+            foreach (Protein p in bag_protein_list)
+            {
+                protein_list.Add(p);
+            }
+            return protein_list.ToArray();
         }
 
         private static string GetAttribute(XElement element, string attribute_name)
