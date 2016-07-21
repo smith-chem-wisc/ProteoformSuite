@@ -72,6 +72,38 @@ namespace ProteoformSuite
             this.openPtmlistDialog.Title = "UniProt PTM List";
         }
 
+        public void FillDataBaseTable(string table)
+        {
+            if (table == "Target")
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+            else if (Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(table))
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
+        }
+
+        public void FormatDataBaseTable()
+        {
+            //round table values
+            dgv_Database.Columns["unmodified_mass"].DefaultCellStyle.Format = "0.####";
+            dgv_Database.Columns["ptm_mass"].DefaultCellStyle.Format = "0.####";
+            dgv_Database.Columns["modified_mass"].DefaultCellStyle.Format = "0.####";
+
+            //set column header
+            dgv_Database.Columns["name"].HeaderText = "Name";
+            dgv_Database.Columns["fragment"].HeaderText = "Fragment";
+            dgv_Database.Columns["begin"].HeaderText = "Begin";
+            dgv_Database.Columns["end"].HeaderText = "End";
+            dgv_Database.Columns["unmodified_mass"].HeaderText = "Unmodified Mass";
+            dgv_Database.Columns["ptm_mass"].HeaderText = "PTM Mass";
+            dgv_Database.Columns["ptm_descriptions"].HeaderText = "PTM Description";
+            dgv_Database.Columns["accession"].HeaderText = "Accession";
+            dgv_Database.Columns["modified_mass"].HeaderText = "Modified Mass";
+            dgv_Database.Columns["lysine_count"].HeaderText = "Lysine Count";
+
+            //making these columns invisible.
+            dgv_Database.Columns["is_target"].Visible = false;
+            dgv_Database.Columns["is_decoy"].Visible = false;
+        }
+
         private void btn_GetUniProtXML_Click(object sender, EventArgs e)
         {
             DialogResult dr = this.openXmlDialog.ShowDialog();
@@ -139,8 +171,11 @@ namespace ProteoformSuite
                     databases.Add(name);
                 }
             }
+
             cmbx_DisplayWhichDB.DataSource = databases.ToList();
             DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+            FormatDataBaseTable();
+
         }
 
         private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)
@@ -156,18 +191,18 @@ namespace ProteoformSuite
             }
         }
 
-        public void FillDataBaseTable(string table)
-        {
+        //public void FillDataBaseTable(string table)
+        //{
 
-            if (table == "Target")
-            {
-                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
-            }
-            else
-            {
-                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
-            }
-        }
+        //    if (table == "Target")
+        //    {
+        //        DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+        //    }
+        //    else
+        //    {
+        //        DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
+        //    }
+        //}
 
         private void ckbx_aggregateProteoforms_CheckedChanged(object sender, EventArgs e)
         {
