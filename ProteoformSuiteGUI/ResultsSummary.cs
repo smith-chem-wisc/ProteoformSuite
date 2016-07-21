@@ -23,6 +23,7 @@ namespace ProteoformSuite
         int numETPeaks;
         int numEEPairs;
         int numEEPeaks;
+        int numTheoreticalProteoforms;
       //  string loadAndRunMethod;
         
 
@@ -49,6 +50,7 @@ namespace ProteoformSuite
             numETPeaks = Lollipop.et_peaks.Count;
             numEEPairs = Lollipop.ee_relations.Count;
             numEEPeaks = Lollipop.ee_peaks.Count;
+            numTheoreticalProteoforms = Lollipop.proteoform_community.theoretical_proteoforms.Count;
 
         }
 
@@ -63,6 +65,7 @@ namespace ProteoformSuite
             tb_ETPeaks.Text = numETPeaks.ToString();
             tb_EEPairs.Text = numEEPairs.ToString();
             tb_EEPeaks.Text = numEEPeaks.ToString();
+            tb_theoreticalProteoforms.Text = numTheoreticalProteoforms.ToString();
 
         }
     }

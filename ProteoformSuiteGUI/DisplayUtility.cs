@@ -74,7 +74,7 @@ namespace ProteoformSuite
             ct.Series["Decoy Count"].XValueMember = "group_adjusted_deltaM";
             ct.Series["Decoy Count"].YValueMembers = "decoy_count";
             ct.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
-            GraphSelectedDeltaMassPeak(ct, ee_peaks_ordered[0]);
+            if (ee_peaks_ordered.Count > 0) GraphSelectedDeltaMassPeak(ct, ee_peaks_ordered[0]);
         }
 
         public static void GraphSelectedDeltaMassPeak(Chart ct, DeltaMassPeak peak)

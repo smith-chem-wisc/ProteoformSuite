@@ -154,7 +154,9 @@ namespace ProteoformSuiteInternal
                     }
                 }
 
-                Parallel.ForEach<XElement>(entries, entry =>
+                //PARALLEL PROBLEM
+               // Parallel.ForEach<XElement>(entries, entry =>
+                foreach (XElement entry in entries)
                 {
                     //Used fields
                     string dataset = GetAttribute(entry, "dataset");
@@ -208,7 +210,9 @@ namespace ProteoformSuiteInternal
                     bag_protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, positionsAndPtms));
                     //MessageBox.Show("added " + new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms).ToString());
 
-                    Parallel.ForEach<XElement>(features, feature =>
+                    //PARALLEL PROBLEM
+                    //Parallel.ForEach<XElement>(features, feature =>
+                    foreach (XElement feature in features)
                     {
                         string feature_type = GetAttribute(feature, "type");
                         switch (feature_type)
@@ -234,8 +238,9 @@ namespace ProteoformSuiteInternal
                             case "sequence variant":
                                 break;
                         }
-                    });
-                });
+                    } //});
+                } //}); 
+                
             }
             foreach (Protein p in bag_protein_list)
             {

@@ -11,18 +11,29 @@ namespace ProteoformSuiteInternal
 
         public double intensity_ratio { get; set; }
         public int lysine_count { get; set; }
-        public bool accepted { get; set; } = true;
+        public bool accepted { get; set; } 
 
-        public NeuCodePair(Component neuCodeLight, Component neuCodeHeavy, double mass_difference, List<int> overlapping_charge_states) : base(neuCodeLight)
+        public NeuCodePair(Component neuCodeLight, Component neuCodeHeavy, double light_intensity, double heavy_intensity, double mass_difference, List<int> overlapping_charge_states, bool light_is_lower) : base(neuCodeLight)
         {
             this.overlapping_charge_states = overlapping_charge_states;
             this.neuCodeLight = neuCodeLight;
             this.neuCodeHeavy = neuCodeHeavy;
 
-            int diff_integer = Convert.ToInt32(Math.Round(mass_difference / 1.0015 - 0.5, 0, MidpointRounding.AwayFromZero));
-            double firstCorrection = neuCodeLight.weighted_monoisotopic_mass + diff_integer * 1.0015;
+            int diff_integer = Convert.ToInt32(Math.Round(mass_difference / 1.0015 - 0.5, 0, MidpointRounding.AwayFromZero)); 
+            double firstCorrection;
+
+            if (light_is_lower) { firstCorrection = neuCodeLight.weighted_monoisotopic_mass + diff_integer * 1.0015; }
+            else  { firstCorrection = neuCodeLight.weighted_monoisotopic_mass - (diff_integer + 1) * 1.0015; }
+
             this.lysine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.weighted_monoisotopic_mass - firstCorrection) / 0.036015372, 0, MidpointRounding.AwayFromZero)));
-            this.intensity_ratio = this.intensity_sum / this.neuCodeHeavy.intensity_sum;
+            this.intensity_ratio = light_intensity / heavy_intensity; //ratio of overlapping charge states
+
+            //marking pair as accepted or not when it's created
+            if (this.lysine_count > Lollipop.min_lysine_ct && this.lysine_count < Lollipop.max_lysine_ct
+                && this.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio) && this.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio))
+                 { this.accepted = true; }
+            else { this.accepted = false; }
+
             this.corrected_mass = this.weighted_monoisotopic_mass + Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * 1.0015;
         }
 
