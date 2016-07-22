@@ -40,7 +40,7 @@ namespace ProteoformSuite
             GraphIntensityRatio();
         }
 
-        public void FormatNeuCodePairsDGV()
+        private void FormatNeuCodePairsDGV()
         {
             //round table values
             dgv_RawExpNeuCodePairs.Columns["monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
@@ -54,23 +54,26 @@ namespace ProteoformSuite
             dgv_RawExpNeuCodePairs.Columns["intensity_ratio"].DefaultCellStyle.Format = "0.####";
 
             //set column header
-            dgv_RawExpNeuCodePairs.Columns["monoisotopic_mass"].HeaderText = "Monoisotopic Mass";
-            dgv_RawExpNeuCodePairs.Columns["delta_mass"].HeaderText = "Delta Mass";
-            dgv_RawExpNeuCodePairs.Columns["weighted_monoisotopic_mass"].HeaderText = "Weighted Monoisotopic Mass";
-            dgv_RawExpNeuCodePairs.Columns["corrected_mass"].HeaderText = "Corrected Mass";
-            dgv_RawExpNeuCodePairs.Columns["rt_apex"].HeaderText = "Apex RT";
-            dgv_RawExpNeuCodePairs.Columns["relative_abundance"].HeaderText = "Relative Abundance";
-            dgv_RawExpNeuCodePairs.Columns["fract_abundance"].HeaderText = "Fractional Abundance";
-            dgv_RawExpNeuCodePairs.Columns["intensity_sum"].HeaderText = "Intensity Sum";
+            dgv_RawExpNeuCodePairs.Columns["monoisotopic_mass"].HeaderText = "Light Monoisotopic Mass";
+            dgv_RawExpNeuCodePairs.Columns["id_light"].HeaderText = "Neucode Light ID";
+            dgv_RawExpNeuCodePairs.Columns["id_heavy"].HeaderText = "Neucode Heavy ID";
+            dgv_RawExpNeuCodePairs.Columns["delta_mass"].HeaderText = "Light Delta Mass";
+            dgv_RawExpNeuCodePairs.Columns["weighted_monoisotopic_mass"].HeaderText = "Light Weighted Monoisotopic Mass";
+            dgv_RawExpNeuCodePairs.Columns["corrected_mass"].HeaderText = "Light Corrected Mass";
+            dgv_RawExpNeuCodePairs.Columns["rt_apex"].HeaderText = "Light Apex RT";
+            dgv_RawExpNeuCodePairs.Columns["relative_abundance"].HeaderText = "Light Relative Abundance";
+            dgv_RawExpNeuCodePairs.Columns["fract_abundance"].HeaderText = "Light Fractional Abundance";
+            dgv_RawExpNeuCodePairs.Columns["intensity_sum"].HeaderText = "Light Intensity Sum";
             dgv_RawExpNeuCodePairs.Columns["file_origin"].HeaderText = "Filename";
-            dgv_RawExpNeuCodePairs.Columns["id"].HeaderText = "ID";
             dgv_RawExpNeuCodePairs.Columns["scan_range"].HeaderText = "Scan Range";
             dgv_RawExpNeuCodePairs.Columns["rt_range"].HeaderText = "RT Range";
             dgv_RawExpNeuCodePairs.Columns["num_charge_states"].HeaderText = "No. Charge States";
             dgv_RawExpNeuCodePairs.Columns["intensity_ratio"].HeaderText = "Intensity Ratio";
             dgv_RawExpNeuCodePairs.Columns["lysine_count"].HeaderText = "Lysine Count";
+
+            dgv_RawExpNeuCodePairs.Columns["id"].Visible = false;
         }
-        
+
         private void GraphIntensityRatio()
         {
             DataTable intensityRatioHistogram = new DataTable();
