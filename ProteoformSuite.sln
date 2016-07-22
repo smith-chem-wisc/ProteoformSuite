@@ -9,6 +9,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProteoformSuiteGUI", "ProteoformSuiteGUI\ProteoformSuiteGUI.csproj", "{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWindows", "TestWindows\TestWindows.csproj", "{FA4CE40E-018B-4ADA-95F0-5617265C2AA1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF} = {90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}
+		{6B27B6E2-8EFF-43C9-8582-F6224CA9AFC1} = {6B27B6E2-8EFF-43C9-8582-F6224CA9AFC1}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,6 +47,14 @@ Global
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Release|x64.ActiveCfg = Release|x64
 		{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}.Release|x64.Build.0 = Release|x64
+		{FA4CE40E-018B-4ADA-95F0-5617265C2AA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA4CE40E-018B-4ADA-95F0-5617265C2AA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA4CE40E-018B-4ADA-95F0-5617265C2AA1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FA4CE40E-018B-4ADA-95F0-5617265C2AA1}.Debug|x64.Build.0 = Debug|Any CPU
+		{FA4CE40E-018B-4ADA-95F0-5617265C2AA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA4CE40E-018B-4ADA-95F0-5617265C2AA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA4CE40E-018B-4ADA-95F0-5617265C2AA1}.Release|x64.ActiveCfg = Release|Any CPU
+		{FA4CE40E-018B-4ADA-95F0-5617265C2AA1}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

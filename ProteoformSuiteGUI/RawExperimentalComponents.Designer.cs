@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGui
 {
     partial class RawExperimentalComponents
     {

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGui
 {
     public class DisplayUtility
     {

@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGui
 {
     public partial class RawExperimentalComponents : Form
     {

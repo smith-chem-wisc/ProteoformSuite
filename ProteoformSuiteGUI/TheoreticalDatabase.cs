@@ -13,7 +13,7 @@ using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGui
 {
     public partial class TheoreticalDatabase : Form
     {
