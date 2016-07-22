@@ -9,15 +9,20 @@ namespace ProteoformSuiteInternal
         Component neuCodeHeavy;
         public List<int> overlapping_charge_states { get; set; }
 
+        public int id_light { get; set; }
+        public int id_heavy { get; set; }
         public double intensity_ratio { get; set; }
         public int lysine_count { get; set; }
-        public bool accepted { get; set; } 
+        public bool accepted { get; set; }
+       
 
         public NeuCodePair(Component neuCodeLight, Component neuCodeHeavy, double light_intensity, double heavy_intensity, double mass_difference, List<int> overlapping_charge_states, bool light_is_lower) : base(neuCodeLight)
         {
             this.overlapping_charge_states = overlapping_charge_states;
             this.neuCodeLight = neuCodeLight;
             this.neuCodeHeavy = neuCodeHeavy;
+            this.id_light = neuCodeLight.id;
+            this.id_heavy = neuCodeHeavy.id;
 
             int diff_integer = Convert.ToInt32(Math.Round(mass_difference / 1.0015 - 0.5, 0, MidpointRounding.AwayFromZero)); 
             double firstCorrection;
