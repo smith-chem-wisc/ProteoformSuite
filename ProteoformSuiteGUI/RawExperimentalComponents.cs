@@ -41,7 +41,6 @@ namespace ProteoformSuite
             dgv_RawExpComp_MI_masses.Columns["monoisotopic_mass"].HeaderText = "Monoisotopic Mass";
             dgv_RawExpComp_MI_masses.Columns["delta_mass"].HeaderText = "Delta Mass";
             dgv_RawExpComp_MI_masses.Columns["weighted_monoisotopic_mass"].HeaderText = "Weighted Monoisotopic Mass";
-            dgv_RawExpComp_MI_masses.Columns["corrected_mass"].HeaderText = "Corrected Mass";
             dgv_RawExpComp_MI_masses.Columns["rt_apex"].HeaderText = "Apex RT";
             dgv_RawExpComp_MI_masses.Columns["relative_abundance"].HeaderText = "Relative Abundance";
             dgv_RawExpComp_MI_masses.Columns["fract_abundance"].HeaderText = "Fractional Abundance";
@@ -53,6 +52,7 @@ namespace ProteoformSuite
             dgv_RawExpComp_MI_masses.Columns["num_charge_states"].HeaderText = "No. Charge States";
 
             dgv_RawExpComp_MI_masses.AllowUserToAddRows = false;
+            dgv_RawExpComp_MI_masses.Columns["corrected_mass"].Visible = false;
         }
 
         private void dgv_RawExpComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
