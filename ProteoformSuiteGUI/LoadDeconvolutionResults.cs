@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel; //Right click Solution/Explorer/References. Then Add  "Reference". Assemblies/Extension/Microsoft.Office.Interop.Excel
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGui
 {
     public partial class LoadDeconvolutionResults : Form
     {

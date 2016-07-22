@@ -11,7 +11,7 @@ using System.IO;
 using System.Threading.Tasks;
 using ProteoformSuiteInternal;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGui
 {
     public partial class ProteoformSweet : Form
     {

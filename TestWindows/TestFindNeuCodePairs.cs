@@ -1,6 +1,6 @@
 ﻿using DocumentFormat.OpenXml;
 using NUnit.Framework;
-using ProteoformSuite;
+using ProteoformSuiteGui;
 using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;

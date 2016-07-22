@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGui
 {
     public class SortableBindingList<T> : BindingList<T> where T : class
     {

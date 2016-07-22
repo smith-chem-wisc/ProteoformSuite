@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGui
 {
     public partial class ProteoformFamilyAssignment : Form
     {
