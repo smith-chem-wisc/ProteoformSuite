@@ -102,6 +102,9 @@ namespace ProteoformSuite
             //making these columns invisible.
             dgv_Database.Columns["is_target"].Visible = false;
             dgv_Database.Columns["is_decoy"].Visible = false;
+
+            dgv_Database.AllowUserToAddRows = false;
+
         }
 
         private void btn_GetUniProtXML_Click(object sender, EventArgs e)

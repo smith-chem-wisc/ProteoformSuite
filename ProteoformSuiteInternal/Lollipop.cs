@@ -85,8 +85,8 @@ namespace ProteoformSuiteInternal
                         {
                             NeuCodePair pair;
                             if (lower_intensity > higher_intensity) 
-                                pair = new NeuCodePair(lower_component, higher_component, lower_intensity, higher_intensity, mass_difference, overlapping_charge_states, light_is_lower); //lower mass is neucode light
-                            else pair = new NeuCodePair(higher_component, lower_component, higher_intensity, lower_intensity, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light  
+                                pair = new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower); //lower mass is neucode light
+                            else pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light  
                             Lollipop.raw_neucode_pairs.Add(pair);
                         }
                     }
@@ -110,7 +110,7 @@ namespace ProteoformSuiteInternal
             Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
             Component[] remaining_proteoforms;
             //only aggregate accepatable neucode pairs
-            if (neucode_labeled) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true).ToArray();
+            if (neucode_labeled) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true).ToArray();
             else remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).ToArray();
 
             int count = 1;
@@ -251,6 +251,7 @@ namespace ProteoformSuiteInternal
                 List<Ptm> ptm_list = group.ptm_combination.ToList();
                 double ptm_mass = group.mass;
                 double proteoform_mass = unmodified_mass + group.mass;
+                string ptm_description = group.ptm_combination.ToString();
                 if (string.IsNullOrEmpty(decoy_database_name))
                     proteoform_community.add(new TheoreticalProteoform(accession + "_" + prot.fragment + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
                 else
