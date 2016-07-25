@@ -19,6 +19,8 @@ namespace ProteoformSuite
     {
         OpenFileDialog openXmlDialog = new OpenFileDialog();
         OpenFileDialog openPtmlistDialog = new OpenFileDialog();
+        public bool gotPTMlistFilePath = false;
+        public bool gotXMLFilePath = false;
 
         public TheoreticalDatabase()
         {
@@ -27,6 +29,7 @@ namespace ProteoformSuite
 
         public void TheoreticalDatabase_Load(object sender, EventArgs e)
         {
+            btn_Make_Databases.Enabled = false;
             InitializeOpenXmlDialog();
             InitializeOpenPtmlistDialog();
             InitializeSettings();
@@ -114,6 +117,11 @@ namespace ProteoformSuite
                 {
                     tb_UniProtXML_Path.Text = uniprotXmlFile;
                     Lollipop.uniprot_xml_filepath = uniprotXmlFile;
+                    if (File.Exists(uniprotXmlFile))
+                    {
+                        gotXMLFilePath = true;
+                        enable_Make_Database_Button();
+                    }
                 }
                 catch (SecurityException ex)
                 {
@@ -142,6 +150,11 @@ namespace ProteoformSuite
                 {
                     tb_UniProtPtmList_Path.Text = ptmlist_filename;
                     Lollipop.ptmlist_filepath = ptmlist_filename;
+                    if (File.Exists(ptmlist_filename))
+                    {
+                        gotPTMlistFilePath = true;
+                        enable_Make_Database_Button();
+                    } 
                 }
                 catch (SecurityException ex)
                 {
@@ -157,6 +170,11 @@ namespace ProteoformSuite
                 }
 
             }
+        }
+
+        private void enable_Make_Database_Button()
+        {
+            if (gotPTMlistFilePath && gotXMLFilePath) btn_Make_Databases.Enabled = true;
         }
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)
