@@ -227,10 +227,14 @@ namespace ProteoformSuite
         {
             nUD_ET_Lower_Bound.Minimum = -500;
             nUD_ET_Lower_Bound.Maximum = 0;
+            if (Lollipop.neucode_labeled) Lollipop.et_low_mass_difference = -250;
+            else Lollipop.et_low_mass_difference = -50;
             nUD_ET_Lower_Bound.Value = Convert.ToDecimal(Lollipop.et_low_mass_difference); // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
 
             nUD_ET_Upper_Bound.Minimum = 0;
             nUD_ET_Upper_Bound.Maximum = 500;
+            if (Lollipop.neucode_labeled) Lollipop.et_high_mass_difference = 250;
+            else Lollipop.et_high_mass_difference = 150;
             nUD_ET_Upper_Bound.Value = Convert.ToDecimal(Lollipop.et_high_mass_difference); // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
 
             yMaxET.Minimum = 0;
