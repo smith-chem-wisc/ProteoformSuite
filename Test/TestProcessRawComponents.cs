@@ -29,7 +29,7 @@ namespace Test
             Lollipop.neucode_labeled = true;
             Lollipop.process_raw_components(componentReader);
 
-            Assert.AreEqual(222,Lollipop.raw_experimental_components.Count);
+            Assert.AreEqual(224,Lollipop.raw_experimental_components.Count);
         }
 
     }
