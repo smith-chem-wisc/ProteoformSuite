@@ -12,6 +12,7 @@ namespace ProteoformSuiteInternal
         public int id { get; set; }
         public double monoisotopic_mass { get; set; }
         public double intensity_sum { get; set; }
+        public double intensity_sum_olcs { get; set; } //intensity sum for overlapping charge states -> determined when grouped into neucode pairs.
         public double delta_mass { get; set; }
         public double relative_abundance { get; set; }
         public double fract_abundance { get; set; }
@@ -62,6 +63,7 @@ namespace ProteoformSuiteInternal
             this.charge_states = c.charge_states;
             this.num_detected_intervals = c.num_detected_intervals;
             this.num_charge_states_fromFile = c.num_charge_states_fromFile;
+            this.intensity_sum_olcs = c.intensity_sum_olcs;
         }
 
         public double calculate_sum_intensity()
@@ -72,7 +74,8 @@ namespace ProteoformSuiteInternal
 
         public double calculate_sum_intensity(List<int> charges_to_sum)
         {
-            return this.charge_states.Where(cs => charges_to_sum.Contains(cs.charge_count)).Select(charge_state => charge_state.intensity).Sum();
+            this.intensity_sum_olcs = this.charge_states.Where(cs => charges_to_sum.Contains(cs.charge_count)).Select(charge_state => charge_state.intensity).Sum();
+            return this.intensity_sum_olcs;
         }
 
         public void calculate_weighted_monoisotopic_mass()

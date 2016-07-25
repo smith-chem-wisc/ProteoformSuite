@@ -16,7 +16,7 @@ namespace ProteoformSuiteInternal
         public bool accepted { get; set; }
        
 
-        public NeuCodePair(Component neuCodeLight, Component neuCodeHeavy, double light_intensity, double heavy_intensity, double mass_difference, List<int> overlapping_charge_states, bool light_is_lower) : base(neuCodeLight)
+        public NeuCodePair(Component neuCodeLight, Component neuCodeHeavy, double mass_difference, List<int> overlapping_charge_states, bool light_is_lower) : base(neuCodeLight)
         {
             this.overlapping_charge_states = overlapping_charge_states;
             this.neuCodeLight = neuCodeLight;
@@ -31,7 +31,7 @@ namespace ProteoformSuiteInternal
             else  { firstCorrection = neuCodeLight.weighted_monoisotopic_mass - (diff_integer + 1) * 1.0015; }
 
             this.lysine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.weighted_monoisotopic_mass - firstCorrection) / 0.036015372, 0, MidpointRounding.AwayFromZero)));
-            this.intensity_ratio = light_intensity / heavy_intensity; //ratio of overlapping charge states
+            this.intensity_ratio = neuCodeLight.intensity_sum_olcs / neuCodeHeavy.intensity_sum_olcs; //ratio of overlapping charge states
 
             //marking pair as accepted or not when it's created
             if (this.lysine_count > Lollipop.min_lysine_ct && this.lysine_count < Lollipop.max_lysine_ct

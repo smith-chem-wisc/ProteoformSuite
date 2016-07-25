@@ -17,9 +17,9 @@ namespace Test
             
 
             // Two proteoforms; lysine count equal; mass difference < 250 -- return 1
-            Proteoform pf1 = new Proteoform("A1",1000.0,1,true);
-            Proteoform pf2 = new Proteoform("A2", 1010.0, 1, true);
-            Proteoform[] pa1 = new Proteoform[2];
+            ExperimentalProteoform pf1 = new ExperimentalProteoform("A1",1000.0,1,true);
+            ExperimentalProteoform pf2 = new ExperimentalProteoform("A2", 1010.0, 1, true);
+            ExperimentalProteoform[] pa1 = new ExperimentalProteoform[2];
             pa1[0] = pf1;
             pa1[1] = pf2;
             List<ProteoformRelation> prList = new List<ProteoformRelation>();
@@ -47,10 +47,10 @@ namespace Test
             Assert.AreEqual(0, prList.Count);
 
             //Three proteoforms; lysine count equal; mass difference < 250 Da -- return 3
-            Proteoform pf3 = new Proteoform("A1", 1000.0, 1, true);
-            Proteoform pf4 = new Proteoform("A2", 1010.0, 1, true);
-            Proteoform pf5 = new Proteoform("A3", 1020.0, 1, true);
-            Proteoform[] pa2 = new Proteoform[3];
+            ExperimentalProteoform pf3 = new ExperimentalProteoform("A1", 1000.0, 1, true);
+            ExperimentalProteoform pf4 = new ExperimentalProteoform("A2", 1010.0, 1, true);
+            ExperimentalProteoform pf5 = new ExperimentalProteoform("A3", 1020.0, 1, true);
+            ExperimentalProteoform[] pa2 = new ExperimentalProteoform[3];
             pa2[0] = pf3;
             pa2[1] = pf4;
             pa2[2] = pf5;
@@ -104,9 +104,9 @@ namespace Test
             Lollipop.neucode_labeled = false;
 
             // Two proteoforms; mass difference < 250 -- return 1
-            Proteoform pf1 = new Proteoform("A1", 1000.0, -1, true);
-            Proteoform pf2 = new Proteoform("A2", 1010.0, -1, true);
-            Proteoform[] pa1 = new Proteoform[2];
+            ExperimentalProteoform pf1 = new ExperimentalProteoform("A1", 1000.0, -1, true);
+            ExperimentalProteoform pf2 = new ExperimentalProteoform("A2", 1010.0, -1, true);
+            ExperimentalProteoform[] pa1 = new ExperimentalProteoform[2];
             pa1[0] = pf1;
             pa1[1] = pf2;
             List<ProteoformRelation> prList = new List<ProteoformRelation>();
@@ -122,10 +122,10 @@ namespace Test
             Assert.AreEqual(0, prList.Count);
 
             //Three proteoforms; mass difference < 250 Da -- return 3
-            Proteoform pf3 = new Proteoform("A1", 1000.0, -1, true);
-            Proteoform pf4 = new Proteoform("A2", 1010.0, -1, true);
-            Proteoform pf5 = new Proteoform("A3", 1020.0, -1, true);
-            Proteoform[] pa2 = new Proteoform[3];
+            ExperimentalProteoform pf3 = new ExperimentalProteoform("A1", 1000.0, -1, true);
+            ExperimentalProteoform pf4 = new ExperimentalProteoform("A2", 1010.0, -1, true);
+            ExperimentalProteoform pf5 = new ExperimentalProteoform("A3", 1020.0, -1, true);
+            ExperimentalProteoform[] pa2 = new ExperimentalProteoform[3];
             pa2[0] = pf3;
             pa2[1] = pf4;
             pa2[2] = pf5;
@@ -159,10 +159,10 @@ namespace Test
             Lollipop.neucode_labeled = true;
 
             // One experimental one theoretical proteoforms; lysine count equal; mass difference < 500 -- return 1
-            Proteoform pf1 = new Proteoform("A1", 1000.0, 1, true);
-            Proteoform pf2 = new Proteoform("T1", 1010.0, 1, true);
-            Proteoform[] paE = new Proteoform[1];
-            Proteoform[] paT = new Proteoform[1];
+            ExperimentalProteoform pf1 = new ExperimentalProteoform("A1", 1000.0, 1, true);
+            TheoreticalProteoform pf2 = new TheoreticalProteoform("T1", 1010.0, 1, true);
+            ExperimentalProteoform[] paE = new ExperimentalProteoform[1];
+            TheoreticalProteoform[] paT = new TheoreticalProteoform[1];
             paE[0] = pf1;
             paT[0] = pf2;
             List<ProteoformRelation> prList = new List<ProteoformRelation>();
@@ -190,10 +190,10 @@ namespace Test
             Assert.AreEqual(0, prList.Count);
 
             //Two experimental one theoretical proteoforms; lysine count equal; mass difference < 500 Da -- return 2
-            Proteoform pf3 = new Proteoform("A1", 1000.0, 1, true);
-            Proteoform pf4 = new Proteoform("A2", 1010.0, 1, true);
-            Proteoform pf5 = new Proteoform("T1", 1020.0, 1, true);
-            Proteoform[] paE2 = new Proteoform[2];
+            ExperimentalProteoform pf3 = new ExperimentalProteoform("A1", 1000.0, 1, true);
+            ExperimentalProteoform pf4 = new ExperimentalProteoform("A2", 1010.0, 1, true);
+            TheoreticalProteoform pf5 = new TheoreticalProteoform("T1", 1020.0, 1, true);
+            ExperimentalProteoform[] paE2 = new ExperimentalProteoform[2];
             paE2[0] = pf3;
             paE2[1] = pf4;
             paT[0] = pf5;
@@ -247,10 +247,10 @@ namespace Test
             Lollipop.neucode_labeled = false;
 
             // One experimental one theoretical protoeform; mass difference < 500 -- return 1
-            Proteoform pf1 = new Proteoform("A1", 1000.0, -1, true);
-            Proteoform pf2 = new Proteoform("T1", 1010.0, 1, true);
-            Proteoform[] paE = new Proteoform[1];
-            Proteoform[] paT = new Proteoform[1];
+            ExperimentalProteoform pf1 = new ExperimentalProteoform("A1", 1000.0, -1, true);
+            TheoreticalProteoform pf2 = new TheoreticalProteoform("T1", 1010.0, 1, true);
+            ExperimentalProteoform[] paE = new ExperimentalProteoform[1];
+            TheoreticalProteoform[] paT = new TheoreticalProteoform[1];
             paE[0] = pf1;
             paT[0] = pf2;
             List<ProteoformRelation> prList = new List<ProteoformRelation>();
@@ -266,10 +266,10 @@ namespace Test
             Assert.AreEqual(0, prList.Count);
 
             //Two experimental one theoretical proteoforms; mass difference < 500 Da -- return 2
-            Proteoform pf3 = new Proteoform("A1", 1000.0, -1, true);
-            Proteoform pf4 = new Proteoform("A2", 1010.0, -1, true);
-            Proteoform pf5 = new Proteoform("T1", 1020.0, 1, true);
-            Proteoform[] paE2 = new Proteoform[2];
+            ExperimentalProteoform pf3 = new ExperimentalProteoform("A1", 1000.0, -1, true);
+            ExperimentalProteoform pf4 = new ExperimentalProteoform("A2", 1010.0, -1, true);
+            TheoreticalProteoform pf5 = new TheoreticalProteoform("T1", 1020.0, 1, true);
+            ExperimentalProteoform[] paE2 = new ExperimentalProteoform[2];
             paE2[0] = pf3;
             paE2[1] = pf4;
             paT[0] = pf5;

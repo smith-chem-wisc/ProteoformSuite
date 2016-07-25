@@ -15,6 +15,8 @@ namespace ProteoformSuite
 {
     public partial class NeuCodePairs : Form
     {
+        bool formLoadEvent = true; 
+
         public NeuCodePairs()
         {
             InitializeComponent();
@@ -24,8 +26,10 @@ namespace ProteoformSuite
 
         public void NeuCodePairs_Load(object sender, EventArgs e)
         {
+            InitializeParameterSet();
             GraphNeuCodePairs();
             FillNeuCodePairsDGV();
+            formLoadEvent = false;
         }
 
         public void FillNeuCodePairsDGV()
@@ -38,6 +42,17 @@ namespace ProteoformSuite
         {
             GraphLysineCount();
             GraphIntensityRatio();
+        }
+
+        private void InitializeParameterSet()
+        {
+            IRatMaxAcceptable.Minimum = 0; IRatMaxAcceptable.Maximum = 20; IRatMaxAcceptable.Value = Lollipop.max_intensity_ratio;
+            IRatMinAcceptable.Minimum = 0; IRatMinAcceptable.Maximum = 20; IRatMinAcceptable.Value = Lollipop.min_intensity_ratio;
+
+            KMaxAcceptable.Minimum = 0; KMaxAcceptable.Maximum = 28; KMaxAcceptable.Value = Lollipop.max_lysine_ct;
+            KMinAcceptable.Minimum = 0; KMinAcceptable.Maximum = 28; KMinAcceptable.Value = Lollipop.min_lysine_ct;
+
+
         }
 
         private void FormatNeuCodePairsDGV()
@@ -63,7 +78,7 @@ namespace ProteoformSuite
             dgv_RawExpNeuCodePairs.Columns["rt_apex"].HeaderText = "Light Apex RT";
             dgv_RawExpNeuCodePairs.Columns["relative_abundance"].HeaderText = "Light Relative Abundance";
             dgv_RawExpNeuCodePairs.Columns["fract_abundance"].HeaderText = "Light Fractional Abundance";
-            dgv_RawExpNeuCodePairs.Columns["intensity_sum"].HeaderText = "Light Intensity Sum";
+            dgv_RawExpNeuCodePairs.Columns["intensity_sum_olcs"].HeaderText = "Light Intensity Sum for Overlapping Charge States";
             dgv_RawExpNeuCodePairs.Columns["file_origin"].HeaderText = "Filename";
             dgv_RawExpNeuCodePairs.Columns["scan_range"].HeaderText = "Scan Range";
             dgv_RawExpNeuCodePairs.Columns["rt_range"].HeaderText = "RT Range";
@@ -72,6 +87,8 @@ namespace ProteoformSuite
             dgv_RawExpNeuCodePairs.Columns["lysine_count"].HeaderText = "Lysine Count";
 
             dgv_RawExpNeuCodePairs.Columns["id"].Visible = false;
+            dgv_RawExpNeuCodePairs.Columns["intensity_sum"].Visible = false;
+            dgv_RawExpNeuCodePairs.AllowUserToAddRows = false;
         }
 
         private void GraphIntensityRatio()
@@ -98,9 +115,6 @@ namespace ProteoformSuite
             yMinIRat.Minimum = 0; yMinIRat.Maximum = ymax; yMinIRat.Value = 0;
             xMaxIRat.Minimum = 0; xMaxIRat.Maximum = 20; xMaxIRat.Value = 20;
             xMinIRat.Minimum = 0; xMinIRat.Maximum = 20; xMinIRat.Value = 0;
-
-            IRatMaxAcceptable.Minimum = 0; IRatMaxAcceptable.Maximum = 20; IRatMaxAcceptable.Value = Lollipop.max_intensity_ratio;
-            IRatMinAcceptable.Minimum = 0; IRatMinAcceptable.Maximum = 20; IRatMinAcceptable.Value = Lollipop.min_intensity_ratio;
 
             ct_IntensityRatio.ChartAreas[0].AxisX.Title = "Intensity Ratio of a Pair";
             ct_IntensityRatio.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";
@@ -130,9 +144,6 @@ namespace ProteoformSuite
             yMinKCt.Minimum = 0; yMinKCt.Maximum = ymax; yMinKCt.Value = 0;
             xMaxKCt.Minimum = 0;                         xMaxKCt.Value = 28;
             xMinKCt.Minimum = 0; xMinKCt.Maximum = 28; xMinKCt.Value = 0;
-
-            KMaxAcceptable.Minimum = 0; KMaxAcceptable.Maximum = 28; KMaxAcceptable.Value = Lollipop.max_lysine_ct;
-            KMinAcceptable.Minimum = 0; KMinAcceptable.Maximum = 28; KMinAcceptable.Value = Lollipop.min_lysine_ct;
 
             ct_LysineCount.ChartAreas[0].AxisX.Title = "Lysine Count";
             ct_LysineCount.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";            
@@ -196,54 +207,66 @@ namespace ProteoformSuite
 
         private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            Lollipop.min_lysine_ct = KMinAcceptable.Value;
-            //if KMin increased, incorrect values un-accepted
-            List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count < double.Parse(KMinAcceptable.Value.ToString())).ToList();
-            Parallel.ForEach(selected_pf, p => { p.accepted = false; });
-            //if Kmin is decreased, correct values are re-accepted.  
-            List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count > double.Parse(KMinAcceptable.Value.ToString())
-                && p.lysine_count < double.Parse(KMaxAcceptable.Value.ToString())).ToList();
-            Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
-            dgv_RawExpNeuCodePairs.Refresh();
+            if (!formLoadEvent)
+            {
+                Lollipop.min_lysine_ct = KMinAcceptable.Value;
+                //if KMin increased, incorrect values un-accepted
+                List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count < Lollipop.min_lysine_ct).ToList();
+                Parallel.ForEach(selected_pf, p => { p.accepted = false; });
+                //if Kmin is decreased, correct values are re-accepted.  
+                List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count > Lollipop.min_lysine_ct
+                    && p.lysine_count < Lollipop.max_lysine_ct).ToList();
+                Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
+                dgv_RawExpNeuCodePairs.Refresh();
+            }
         }
 
         private void KMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            Lollipop.max_lysine_ct = KMaxAcceptable.Value;
-            //if KMax is decreased, incorrect values are un-accepted
-            List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count > double.Parse(KMaxAcceptable.Value.ToString())).ToList();
-            Parallel.ForEach(selected_pf, p => { p.accepted = false; });
-            //if Kmax  is increased, correct values are re-accepted.  
-            List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count < double.Parse(KMaxAcceptable.Value.ToString())
-               && p.lysine_count > double.Parse(KMinAcceptable.Value.ToString())).ToList();
-            Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
-            dgv_RawExpNeuCodePairs.Refresh();
+            if (!formLoadEvent)
+            {
+                Lollipop.max_lysine_ct = KMaxAcceptable.Value;
+                //if KMax is decreased, incorrect values are un-accepted
+                List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count > Lollipop.max_lysine_ct).ToList();
+                Parallel.ForEach(selected_pf, p => { p.accepted = false; });
+                //if Kmax  is increased, correct values are re-accepted.  
+                List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count < Lollipop.max_lysine_ct
+                   && p.lysine_count > Lollipop.min_lysine_ct).ToList();
+                Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
+                dgv_RawExpNeuCodePairs.Refresh();
+            }
         }
 
         private void IRatMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            Lollipop.min_intensity_ratio = IRatMinAcceptable.Value;
-            //if IMin is increaed, incorrect values are un-accepted
-            List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio < double.Parse(IRatMinAcceptable.Value.ToString())).ToList();
-            Parallel.ForEach(selected_pf, p => { p.accepted = false; });
-            //if IMin is decreased, correct values are re-accepted
-            List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio > double.Parse(IRatMinAcceptable.Value.ToString())
-               && p.intensity_ratio < double.Parse(IRatMaxAcceptable.Value.ToString())).ToList();
-            Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
-            dgv_RawExpNeuCodePairs.Refresh();
+            if (!formLoadEvent)
+            {
+                Lollipop.min_intensity_ratio = IRatMinAcceptable.Value;
+                //if IMin is increaed, incorrect values are un-accepted
+                List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio < Convert.ToDouble(Lollipop.min_intensity_ratio)).ToList();
+                Parallel.ForEach(selected_pf, p => { p.accepted = false; });
+                //if IMin is decreased, correct values are re-accepted
+                List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio)
+                   && p.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio)).ToList();
+                Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
+                dgv_RawExpNeuCodePairs.Refresh();
+            }
         }
 
         private void IRatMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            Lollipop.max_intensity_ratio = IRatMaxAcceptable.Value;
-            //if Imax is decreased, incorrect values are un-accepted
-            List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio > double.Parse(IRatMaxAcceptable.Value.ToString())).ToList();
-            Parallel.ForEach(selected_pf, p => { p.accepted = false; });
-            //if Imax is increased, correct values are re-accepted
-            List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio < double.Parse(IRatMaxAcceptable.Value.ToString())
-              && p.intensity_ratio > double.Parse(IRatMinAcceptable.Value.ToString())).ToList();
-            Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
-            dgv_RawExpNeuCodePairs.Refresh();
+            if (!formLoadEvent)
+            {
+                Lollipop.max_intensity_ratio = IRatMaxAcceptable.Value;
+                //if Imax is decreased, incorrect values are un-accepted
+                List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio > Convert.ToDouble(Lollipop.max_intensity_ratio)).ToList();
+                Parallel.ForEach(selected_pf, p => { p.accepted = false; });
+                //if Imax is increased, correct values are re-accepted
+                List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio)
+                  && p.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio)).ToList();
+                Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
+                dgv_RawExpNeuCodePairs.Refresh();
+            }
         }
     }
 }

@@ -65,7 +65,7 @@ namespace ProteoformSuite
         }
         private void GraphEERelations()
         {
-            DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ee_relations);
+            DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ee_relations, "relations");
         }
         private void GraphEEPeaks()
         {
