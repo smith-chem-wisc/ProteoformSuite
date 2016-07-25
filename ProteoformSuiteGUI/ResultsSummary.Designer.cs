@@ -46,6 +46,8 @@
             this.label7 = new System.Windows.Forms.Label();
             this.tb_EEPeaks = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.tb_theoreticalProteoforms = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label
@@ -59,7 +61,7 @@
             // 
             // tb_RawExperimentalComponents
             // 
-            this.tb_RawExperimentalComponents.Location = new System.Drawing.Point(181, 90);
+            this.tb_RawExperimentalComponents.Location = new System.Drawing.Point(182, 90);
             this.tb_RawExperimentalComponents.Name = "tb_RawExperimentalComponents";
             this.tb_RawExperimentalComponents.ReadOnly = true;
             this.tb_RawExperimentalComponents.Size = new System.Drawing.Size(100, 20);
@@ -67,7 +69,7 @@
             // 
             // tb_neucodePairs
             // 
-            this.tb_neucodePairs.Location = new System.Drawing.Point(181, 124);
+            this.tb_neucodePairs.Location = new System.Drawing.Point(182, 124);
             this.tb_neucodePairs.Name = "tb_neucodePairs";
             this.tb_neucodePairs.ReadOnly = true;
             this.tb_neucodePairs.Size = new System.Drawing.Size(100, 20);
@@ -84,7 +86,7 @@
             // 
             // tb_experimentalProteoforms
             // 
-            this.tb_experimentalProteoforms.Location = new System.Drawing.Point(181, 167);
+            this.tb_experimentalProteoforms.Location = new System.Drawing.Point(182, 160);
             this.tb_experimentalProteoforms.Name = "tb_experimentalProteoforms";
             this.tb_experimentalProteoforms.ReadOnly = true;
             this.tb_experimentalProteoforms.Size = new System.Drawing.Size(100, 20);
@@ -93,7 +95,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(21, 167);
+            this.label2.Location = new System.Drawing.Point(21, 160);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(126, 13);
             this.label2.TabIndex = 4;
@@ -101,7 +103,7 @@
             // 
             // tb_uniprotXmlDatabase
             // 
-            this.tb_uniprotXmlDatabase.Location = new System.Drawing.Point(181, 225);
+            this.tb_uniprotXmlDatabase.Location = new System.Drawing.Point(182, 208);
             this.tb_uniprotXmlDatabase.Name = "tb_uniprotXmlDatabase";
             this.tb_uniprotXmlDatabase.ReadOnly = true;
             this.tb_uniprotXmlDatabase.Size = new System.Drawing.Size(444, 20);
@@ -110,7 +112,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(21, 225);
+            this.label3.Location = new System.Drawing.Point(21, 208);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(109, 13);
             this.label3.TabIndex = 6;
@@ -136,7 +138,7 @@
             // 
             // tb_ETPairs
             // 
-            this.tb_ETPairs.Location = new System.Drawing.Point(181, 270);
+            this.tb_ETPairs.Location = new System.Drawing.Point(182, 284);
             this.tb_ETPairs.Name = "tb_ETPairs";
             this.tb_ETPairs.ReadOnly = true;
             this.tb_ETPairs.Size = new System.Drawing.Size(100, 20);
@@ -145,7 +147,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(21, 270);
+            this.label5.Location = new System.Drawing.Point(20, 284);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(141, 13);
             this.label5.TabIndex = 10;
@@ -153,7 +155,7 @@
             // 
             // tb_ETPeaks
             // 
-            this.tb_ETPeaks.Location = new System.Drawing.Point(181, 324);
+            this.tb_ETPeaks.Location = new System.Drawing.Point(180, 322);
             this.tb_ETPeaks.Name = "tb_ETPeaks";
             this.tb_ETPeaks.ReadOnly = true;
             this.tb_ETPeaks.Size = new System.Drawing.Size(100, 20);
@@ -162,7 +164,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(21, 324);
+            this.label6.Location = new System.Drawing.Point(21, 322);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(148, 13);
             this.label6.TabIndex = 12;
@@ -170,7 +172,7 @@
             // 
             // tb_EEPairs
             // 
-            this.tb_EEPairs.Location = new System.Drawing.Point(181, 389);
+            this.tb_EEPairs.Location = new System.Drawing.Point(180, 372);
             this.tb_EEPairs.Name = "tb_EEPairs";
             this.tb_EEPairs.ReadOnly = true;
             this.tb_EEPairs.Size = new System.Drawing.Size(100, 20);
@@ -179,7 +181,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(21, 389);
+            this.label7.Location = new System.Drawing.Point(20, 372);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(140, 13);
             this.label7.TabIndex = 14;
@@ -187,7 +189,7 @@
             // 
             // tb_EEPeaks
             // 
-            this.tb_EEPeaks.Location = new System.Drawing.Point(181, 442);
+            this.tb_EEPeaks.Location = new System.Drawing.Point(181, 411);
             this.tb_EEPeaks.Name = "tb_EEPeaks";
             this.tb_EEPeaks.ReadOnly = true;
             this.tb_EEPeaks.Size = new System.Drawing.Size(100, 20);
@@ -196,17 +198,36 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(21, 442);
+            this.label8.Location = new System.Drawing.Point(20, 411);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(147, 13);
             this.label8.TabIndex = 16;
             this.label8.Text = "Experiment Experiment Peaks";
+            // 
+            // tb_theoreticalProteoforms
+            // 
+            this.tb_theoreticalProteoforms.Location = new System.Drawing.Point(182, 233);
+            this.tb_theoreticalProteoforms.Name = "tb_theoreticalProteoforms";
+            this.tb_theoreticalProteoforms.ReadOnly = true;
+            this.tb_theoreticalProteoforms.Size = new System.Drawing.Size(100, 20);
+            this.tb_theoreticalProteoforms.TabIndex = 19;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(21, 233);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(119, 13);
+            this.label9.TabIndex = 18;
+            this.label9.Text = "Theoretical Proteoforms";
             // 
             // ResultsSummary
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(750, 620);
+            this.Controls.Add(this.tb_theoreticalProteoforms);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.tb_EEPeaks);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.tb_EEPairs);
@@ -253,5 +274,7 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox tb_EEPeaks;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox tb_theoreticalProteoforms;
+        private System.Windows.Forms.Label label9;
     }
 }

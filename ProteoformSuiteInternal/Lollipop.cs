@@ -31,6 +31,7 @@ namespace ProteoformSuiteInternal
         public static bool neucode_labeled = true;
         public static void process_raw_components(Func<string, IEnumerable<Component>> componentReader)
         {
+            //POTENTIAL PARALLEL PROBLEM - DIDN'T TEST
             Parallel.ForEach<string>(Lollipop.deconResultsFileNames, filename =>
             {
                 IEnumerable<Component> readComponents = componentReader(filename);
@@ -40,15 +41,19 @@ namespace ProteoformSuiteInternal
                 if (neucode_labeled)
                 {
                     HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
-                    Parallel.ForEach<string>(scan_ranges, scan_range =>
+                    //PARALLEL PROBLEM
+                    // Parallel.ForEach<string>(scan_ranges, scan_range =>
                     {
-                        find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
-                    });
+                        foreach (string scan_range in scan_ranges)
+                            find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
+
+                    }//);
                 }
+                raw_experimental_components = raw_experimental_components.Where(c => c != null).ToList();
+                raw_neucode_pairs = raw_neucode_pairs.Where(p => p != null).ToList();
             });
-            raw_experimental_components = raw_experimental_components.Where(c => c != null).ToList();
-            raw_neucode_pairs = raw_neucode_pairs.Where(p => p != null).ToList();
-        }
+            }
+
 
         //NEUCODE PAIRS
         public static List<NeuCodePair> raw_neucode_pairs = new List<NeuCodePair>();
@@ -56,16 +61,17 @@ namespace ProteoformSuiteInternal
         public static decimal min_intensity_ratio = 1.4m;
         public static decimal max_lysine_ct = 26.2m;
         public static decimal min_lysine_ct = 1.5m;
+
         public static void find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange)
         {
             //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
             List<Component> components = components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
             foreach (Component lower_component in components)
             {
-                IEnumerable<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.weighted_monoisotopic_mass >= lower_component.weighted_monoisotopic_mass);
+                IEnumerable<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.weighted_monoisotopic_mass > lower_component.weighted_monoisotopic_mass);
                 foreach (Component higher_component in higher_mass_components)
                 {
-                    double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
+                    double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
                     if (mass_difference < 6)
                     {
                         List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
@@ -73,12 +79,14 @@ namespace ProteoformSuiteInternal
                         List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
                         double lower_intensity = lower_component.calculate_sum_intensity(overlapping_charge_states);
                         double higher_intensity = higher_component.calculate_sum_intensity(overlapping_charge_states);
-
-                        if (lower_intensity > 0 || higher_intensity > 0)
+                        bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
+                        
+                        if (lower_intensity > 0 && higher_intensity > 0)
                         {
                             NeuCodePair pair;
-                            if (lower_intensity > higher_intensity) pair = new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states); //lower mass is neucode light
-                            else pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states); //higher mass is neucode light
+                            if (lower_intensity > higher_intensity) 
+                                pair = new NeuCodePair(lower_component, higher_component, lower_intensity, higher_intensity, mass_difference, overlapping_charge_states, light_is_lower); //lower mass is neucode light
+                            else pair = new NeuCodePair(higher_component, lower_component, higher_intensity, lower_intensity, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light  
                             Lollipop.raw_neucode_pairs.Add(pair);
                         }
                     }
@@ -102,7 +110,7 @@ namespace ProteoformSuiteInternal
             Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
             Component[] remaining_proteoforms;
             //only aggregate accepatable neucode pairs
-            if (Lollipop.raw_neucode_pairs.Count > 0) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true).ToArray();
+            if (neucode_labeled) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true).ToArray();
             else remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).ToArray();
 
             int count = 1;
@@ -155,14 +163,15 @@ namespace ProteoformSuiteInternal
             proteins = ProteomeDatabaseReader.ReadUniprotXml(uniprot_xml_filepath, uniprotModificationTable, min_peptide_length, methionine_cleavage);
             if (combine_identical_sequences) proteins = group_proteins_by_sequence(proteins);
 
+            //PARALLEL PROBLEM
             process_entries();
             process_decoys();
-
-
             //Parallel.Invoke(
             //    () => process_entries(),
             //    () => process_decoys()
             //);
+
+            //POSSIBLE PARALLEL PROBLEM - DIDN'T TEST DECOY
             Lollipop.proteoform_community.theoretical_proteoforms = Lollipop.proteoform_community.theoretical_proteoforms.ToList();
             Parallel.ForEach<List<TheoreticalProteoform>>(Lollipop.proteoform_community.decoy_proteoforms.Values, decoys =>
                 decoys = decoys.Where(d => d != null).ToList()
@@ -179,14 +188,8 @@ namespace ProteoformSuiteInternal
 
         private static void process_entries()
         {
-            foreach (Protein p in proteins)
-            {
-                bool isMetCleaved = (methionine_cleavage && p.begin == 0 && p.sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
-                int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
-                string seq = p.sequence.Substring(startPosAfterCleavage, (p.sequence.Length - startPosAfterCleavage));
-                EnterTheoreticalProteformFamily(seq, p, p.accession, isMetCleaved, null);
-            }
 
+            //PARALLEL PROBLEM
             //Parallel.ForEach<Protein>(proteins, p =>
             //{
             //    bool isMetCleaved = (methionine_cleavage && p.begin == 0 && p.sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
@@ -195,6 +198,13 @@ namespace ProteoformSuiteInternal
             //    EnterTheoreticalProteformFamily(seq, p, p.accession, isMetCleaved, null);
             //});
 
+            foreach (Protein p in proteins)
+            {
+                bool isMetCleaved = (methionine_cleavage && p.begin == 0 && p.sequence.Substring(0, 1) == "M");
+                int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
+                string seq = p.sequence.Substring(startPosAfterCleavage, (p.sequence.Length - startPosAfterCleavage));
+                EnterTheoreticalProteformFamily(seq, p, p.accession, isMetCleaved, null);
+            }
         }
 
         private static void process_decoys()
@@ -233,6 +243,9 @@ namespace ProteoformSuiteInternal
             unique_ptm_groups.AddRange(new PtmCombos(prot.ptms_by_position).get_combinations(max_ptms));
 
             int listMemberNumber = 1;
+
+            //PARALLEL PROBLEM
+            //Parallel.ForEach<PtmSet>(unique_ptm_groups, group =>
             foreach (PtmSet group in unique_ptm_groups)
             {
                 List<Ptm> ptm_list = group.ptm_combination.ToList();
@@ -242,8 +255,9 @@ namespace ProteoformSuiteInternal
                     proteoform_community.add(new TheoreticalProteoform(accession + "_" + prot.fragment + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
                 else
                     proteoform_community.add(new TheoreticalProteoform(accession + "_" + prot.fragment + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
+
                 listMemberNumber++;
-            }
+            } //);
         }
 
         private static string GetOneGiantProtein(IEnumerable<Protein> proteins, bool methionine_cleavage)
@@ -272,9 +286,12 @@ namespace ProteoformSuiteInternal
         }
 
         //ET,ED,EE,EF COMPARISONS
-        public static double ee_max_mass_difference = 250; //TODO: implement this in ProteoformFamilies and elsewhere
-        public static double et_low_mass_difference = -100;
-        public static double et_high_mass_difference = 200;
+
+        
+        public static double ee_max_mass_difference = 500; //TODO: implement this in ProteoformFamilies and elsewhere
+        public static double et_low_mass_difference = -250;
+        public static double et_high_mass_difference = 250;
+    
 
         public static double no_mans_land_lowerBound = 0.22;
         public static double no_mans_land_upperBound = 0.88;
@@ -290,19 +307,36 @@ namespace ProteoformSuiteInternal
 
         public static void make_et_relationships()
         {
-            Parallel.Invoke(
-                () => et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et),
-                () => ed_relations = Lollipop.proteoform_community.relate_ed()
-            );
+            //PARALLEL PROBLEM
+            //Parallel.Invoke(
+            //    () => et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et),
+            //    () => ed_relations = Lollipop.proteoform_community.relate_ed()
+            //);
+            if (!neucode_labeled)
+            {
+                et_low_mass_difference = -100;
+                et_high_mass_difference = 200;
+            }
+            et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
+            ed_relations = Lollipop.proteoform_community.relate_ed();
             et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
         public static void make_ee_relationships()
         {
-            Parallel.Invoke(
-                () => ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.et),
-                () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
-            );
+            //PARALLEL PROBLEM
+            //Parallel.Invoke(
+            //    () => ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.et),
+            //    () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
+            //);
+            if (!neucode_labeled)
+            {
+                ee_max_mass_difference = 250;
+            }
+
+            ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
+            ef_relations = proteoform_community.relate_unequal_ee_lysine_counts();
+
             ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
