@@ -282,11 +282,12 @@ namespace ProteoformSuiteInternal
         private static Dictionary<int, List<Modification>> SegmentPtms(Dictionary<int, List<Modification>> allPosPTMs, int begin, int end)
         {
             Dictionary<int, List<Modification>> segPosPTMs = new Dictionary<int, List<Modification>>();
-            Parallel.ForEach<int>(allPosPTMs.Keys, position =>
+            foreach (int position in allPosPTMs.Keys)
             {
                 if (position >= begin && position <= end)
                     segPosPTMs.Add(position, allPosPTMs[position]);
-            });
+            }
+
             return segPosPTMs;// the int is the amino acid position and the string[] are the different ptms at that position
         }
     }
