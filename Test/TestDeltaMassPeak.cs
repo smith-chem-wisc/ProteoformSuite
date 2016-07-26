@@ -9,9 +9,22 @@ namespace Test
     public class TestDeltaMassPeak
     {
 
+        [OneTimeSetUp]
+        public void setup()
+        {
+            Environment.CurrentDirectory = TestContext.CurrentContext.TestDirectory;
+        }
+
+
         [Test]
         public void TestDeltaMassPeakConstructor()
         {
+            ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
+
+            ProteomeDatabaseReader.oldPtmlistFilePath = "UnitTestFiles\\ptmlist.txt";
+            Lollipop.uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
+
+
             ExperimentalProteoform pf1 = new ExperimentalProteoform("acession1");
             TheoreticalProteoform pf2 = new TheoreticalProteoform("acession2");
             ProteoformComparison relation_type = ProteoformComparison.et;
