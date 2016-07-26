@@ -288,11 +288,6 @@ namespace ProteoformSuiteInternal
                     segPosPTMs.Add(position, allPosPTMs[position]);
             }
 
-            //Parallel.ForEach<int>(allPosPTMs.Keys, position =>
-            //{
-            //    if (position >= begin && position <= end)
-            //        segPosPTMs.Add(position, allPosPTMs[position]);
-            //});
             return segPosPTMs;// the int is the amino acid position and the string[] are the different ptms at that position
         }
     }
