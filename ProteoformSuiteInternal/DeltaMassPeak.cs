@@ -11,12 +11,20 @@ namespace ProteoformSuiteInternal
         public double peak_width { get; } = Lollipop.peak_width_base;
         public double decoy_count { get; set; }
         public double group_fdr { get; set; }
+        public bool peak_accepted { get; set; }
         public ProteoformRelation base_relation { get; set; }
 
         public DeltaMassPeak(ProteoformRelation base_relation) : base(base_relation)
         {
             this.base_relation = base_relation;
            Parallel.ForEach<ProteoformRelation>(base_relation.mass_difference_group, relation => relation.peak = this);
+            this.peak_accepted = set_peak_accepted();
+        }
+
+        private bool set_peak_accepted()
+        {
+            if (this.base_relation.group_count >= Lollipop.min_peak_count) { return true; }
+            else {return false; }
         }
 
         public void calculate_fdr(Dictionary<string, List<ProteoformRelation>> decoy_relations)

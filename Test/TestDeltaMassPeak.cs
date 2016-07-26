@@ -12,23 +12,23 @@ namespace Test
         [Test]
         public void TestDeltaMassPeakConstructor()
         {
-            Proteoform pf1 = new Proteoform("acession1");
-            Proteoform pf2 = new Proteoform("acession2");
+            ExperimentalProteoform pf1 = new ExperimentalProteoform("acession1");
+            TheoreticalProteoform pf2 = new TheoreticalProteoform("acession2");
             ProteoformComparison relation_type = ProteoformComparison.et;
             double delta_mass = 1 - 1e-7;
 
-            Proteoform pf3 = new Proteoform("acession3");
-            Proteoform pf4 = new Proteoform("acession4");
+            ExperimentalProteoform pf3 = new ExperimentalProteoform("acession3");
+            TheoreticalProteoform pf4 = new TheoreticalProteoform("acession4");
             ProteoformComparison relation_type2 = ProteoformComparison.et;
             double delta_mass2 = 1;
 
-            Proteoform pf5 = new Proteoform("acession5");
-            Proteoform pf6 = new Proteoform("acession6");
+            ExperimentalProteoform pf5 = new ExperimentalProteoform("acession5");
+            TheoreticalProteoform pf6 = new TheoreticalProteoform("acession6");
             ProteoformComparison relation_type3 = ProteoformComparison.et;
             double delta_mass3 = 1 + 1e-7;
 
-            Proteoform pf55 = new Proteoform("acession5");
-            Proteoform pf65 = new Proteoform("acession6");
+            ExperimentalProteoform pf55 = new ExperimentalProteoform("acession5");
+            TheoreticalProteoform pf65 = new TheoreticalProteoform("acession6");
             ProteoformComparison relation_type35 = ProteoformComparison.et;
             double delta_mass35 = 1 + 2e-7;
 
@@ -53,8 +53,8 @@ namespace Test
 
             decoy_relations["decoyDatabase1"] = new List<ProteoformRelation>();
 
-            Proteoform pf7 = new Proteoform("experimental1");
-            Proteoform pf8 = new Proteoform("decoy1");
+            ExperimentalProteoform pf7 = new ExperimentalProteoform("experimental1");
+            TheoreticalProteoform pf8 = new TheoreticalProteoform("decoy1");
             ProteoformComparison relation_type4 = ProteoformComparison.ed;
             double delta_mass4 = 1;
 
