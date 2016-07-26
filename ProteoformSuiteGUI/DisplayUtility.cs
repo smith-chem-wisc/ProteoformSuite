@@ -49,9 +49,9 @@ namespace ProteoformSuite
 
         public static void GraphRelationsChart(Chart ct, List<ProteoformRelation> relations, string series)
         {
-            ct.Series[series].XValueMember = "group_adjusted_deltaM";
-            ct.Series[series].YValueMembers = "running_sum";
-            List<ProteoformRelation> et_relations_ordered = relations.OrderByDescending(r => r.group_adjusted_deltaM).ToList();
+            ct.Series[series].XValueMember = "delta_mass";
+            ct.Series[series].YValueMembers = "unadjusted_group_count";
+            List<ProteoformRelation> et_relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
                 ct.DataSource = et_relations_ordered;
                 ct.DataBind();
 
@@ -59,7 +59,7 @@ namespace ProteoformSuite
                 StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count };
                 ct.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
 
-                ct.ChartAreas[0].AxisX.Title = "Adjusted Delta m/z";
+                ct.ChartAreas[0].AxisX.Title = "Delta m/z";
                 ct.ChartAreas[0].AxisY.Title = "Nearby Count";
         }
 
@@ -89,8 +89,8 @@ namespace ProteoformSuite
             ct.ChartAreas[0].AxisX.StripLines.Add(lowerPeakBound_stripline);
             ct.ChartAreas[0].AxisX.StripLines.Add(upperPeakBound_stripline);
 
-            ct.ChartAreas[0].AxisX.Title = "Adjusted Delta m/z";
-            ct.ChartAreas[0].AxisY.Title = "Peak Group Count";
+            ct.ChartAreas[0].AxisX.Title = "Delta m/z";
+            ct.ChartAreas[0].AxisY.Title = "Nearby Count";
         }
     }
 }

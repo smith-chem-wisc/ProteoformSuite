@@ -14,7 +14,6 @@ namespace Test
         public void TestNeuCodeLabeledProteoformCommunityRelate_EE()
         {
             Lollipop.neucode_labeled = true;
-            
 
             // Two proteoforms; lysine count equal; mass difference < 250 -- return 1
             ExperimentalProteoform pf1 = new ExperimentalProteoform("A1",1000.0,1,true);

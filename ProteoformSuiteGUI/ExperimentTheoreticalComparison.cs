@@ -128,13 +128,12 @@ namespace ProteoformSuite
             dgv_ET_Pairs.Columns["delta_mass"].HeaderText = "Delta Mass";
             dgv_ET_Pairs.Columns["delta_mass"].DisplayIndex = 18;
             dgv_ET_Pairs.Columns["name"].HeaderText = "Name";
-            dgv_ET_Pairs.Columns["running_sum"].HeaderText = "Running Sum";
+            dgv_ET_Pairs.Columns["unadjusted_group_count"].HeaderText = "Unadjusted Group Count";
             dgv_ET_Pairs.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
             dgv_ET_Pairs.Columns["accepted"].HeaderText = "Accepeted";
 
             //making these columns invisible
             dgv_ET_Pairs.Columns["peak"].Visible = false;
-            dgv_ET_Pairs.Columns["unadjusted_group_count"].Visible = false;
             dgv_ET_Pairs.Columns["agg_intensity_2"].Visible = false;
             dgv_ET_Pairs.Columns["agg_RT_2"].Visible = false;
             dgv_ET_Pairs.Columns["num_observations_2"].Visible = false;

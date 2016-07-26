@@ -40,7 +40,7 @@ namespace ProteoformSuiteInternal
         }
 
         //BUILDING RELATIONSHIPS
-        public List<ProteoformRelation> relate_et(ExperimentalProteoform[] pfs1, TheoreticalProteoform[] pfs2, ProteoformComparison relation_type)
+        public List<ProteoformRelation> relate_et(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
         {
             pfs1 = pfs1.Where(p => p != null).ToArray(); //this should be the set of experimental values
             pfs2 = pfs2.Where(p => p != null).ToArray(); //this should be the set of theoretical values
@@ -56,7 +56,6 @@ namespace ProteoformSuiteInternal
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
                 count_nearby_relations(relations.Where(p => p.outside_no_mans_land).ToList()); //only make peaks out of relations outside no-mans-land
-                calculate_running_sums(relations);
                 return relations;
             }
             else
@@ -69,12 +68,11 @@ namespace ProteoformSuiteInternal
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
                 count_nearby_relations(relations.Where(p => p.outside_no_mans_land).ToList());  //only make peaks out of relations outside no-mans-land
-                calculate_running_sums(relations);
                 return relations;
             }
         }
 
-        public List<ProteoformRelation> relate_ee(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2, ProteoformComparison relation_type)
+        public List<ProteoformRelation> relate_ee(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
         {
             pfs1 = pfs1.Where(p => p != null).ToArray(); //this should be the set of experimental values
             pfs2 = pfs2.Where(p => p != null).ToArray(); //this should be the set of experimental values
@@ -90,7 +88,6 @@ namespace ProteoformSuiteInternal
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
                 count_nearby_relations(relations.Where(p => p.outside_no_mans_land).ToList());  //only make peaks out of relations outside no-mans-land
-                calculate_running_sums(relations);
                 return relations;
             }
             else
@@ -103,7 +100,6 @@ namespace ProteoformSuiteInternal
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
                 count_nearby_relations(relations.Where(p => p.outside_no_mans_land).ToList());
-                calculate_running_sums(relations);
                 return relations;
             }
         }
@@ -118,13 +114,6 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        private static void calculate_running_sums(List<ProteoformRelation> relations)
-        {
-            foreach (ProteoformRelation relation in relations)
-            {
-                relation.calculate_running_sum(relations);
-            }
-        }
         //public List<ProteoformRelation> relate_ee()
         //{
         //    return relate(this.experimental_proteoforms.ToArray(), this.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
@@ -146,8 +135,8 @@ namespace ProteoformSuiteInternal
         public List<ProteoformRelation> relate_unequal_ee_lysine_counts()
         {
             List<ProteoformRelation> ef_relations = new List<ProteoformRelation>();
-            ExperimentalProteoform[] pfs1 = this.experimental_proteoforms.ToArray();
-            ExperimentalProteoform[] pfs2 = this.experimental_proteoforms.ToArray();
+            Proteoform[] pfs1 = this.experimental_proteoforms.ToArray();
+            Proteoform[] pfs2 = this.experimental_proteoforms.ToArray();
             foreach (ExperimentalProteoform pf1 in pfs1)
             {
                 int num_equal_lysines = pfs2.Where(p => p.lysine_count == pf1.lysine_count).Count();
