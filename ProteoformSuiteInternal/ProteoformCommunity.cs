@@ -55,7 +55,7 @@ namespace ProteoformSuiteInternal
                     pf1.modified_mass - pf2.modified_mass <= Lollipop.et_high_mass_difference //use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
-                count_nearby_relations(relations);
+                count_nearby_relations(relations.Where(p => p.outside_no_mans_land).ToList()); //only make peaks out of relations outside no-mans-land
                 return relations;
             }
             else
@@ -67,7 +67,7 @@ namespace ProteoformSuiteInternal
                     pf1.modified_mass - pf2.modified_mass <= Lollipop.et_high_mass_difference//use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
-                count_nearby_relations(relations);
+                count_nearby_relations(relations.Where(p => p.outside_no_mans_land).ToList());  //only make peaks out of relations outside no-mans-land
                 return relations;
             }
         }
@@ -87,7 +87,7 @@ namespace ProteoformSuiteInternal
                 where pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
-                count_nearby_relations(relations);
+                count_nearby_relations(relations.Where(p => p.outside_no_mans_land).ToList());  //only make peaks out of relations outside no-mans-land
                 return relations;
             }
             else
@@ -99,7 +99,7 @@ namespace ProteoformSuiteInternal
                 where pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference //use if this step is rate-limiting, otherwise, just process them all
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
-                count_nearby_relations(relations);
+                count_nearby_relations(relations.Where(p => p.outside_no_mans_land).ToList());
                 return relations;
             }
         }
@@ -137,7 +137,7 @@ namespace ProteoformSuiteInternal
             List<ProteoformRelation> ef_relations = new List<ProteoformRelation>();
             Proteoform[] pfs1 = this.experimental_proteoforms.ToArray();
             Proteoform[] pfs2 = this.experimental_proteoforms.ToArray();
-            foreach (Proteoform pf1 in pfs1)
+            foreach (ExperimentalProteoform pf1 in pfs1)
             {
                 int num_equal_lysines = pfs2.Where(p => p.lysine_count == pf1.lysine_count).Count();
                 new Random().Shuffle(pfs2);
@@ -147,7 +147,7 @@ namespace ProteoformSuiteInternal
                         .Take(pfs2.Where(p => p.lysine_count == pf1.lysine_count).Count()) // take only the number that would be chosen with equal lysine counts from a randomized set
                     select new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass)
                 );
-                count_nearby_relations(ef_relation_addition);
+                count_nearby_relations(ef_relation_addition.Where(p => p.outside_no_mans_land).ToList());
                 ef_relations.AddRange(ef_relation_addition);
             }
             return ef_relations;
@@ -157,9 +157,7 @@ namespace ProteoformSuiteInternal
         public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
         {
             List<ProteoformRelation> grouped_relations = new List<ProteoformRelation>();
-            List<ProteoformRelation> relations_outside_no_mans = relations.Where(r => 
-                Math.Abs(r.group_adjusted_deltaM - Math.Truncate(r.group_adjusted_deltaM)) >= Lollipop.no_mans_land_upperBound ||
-                Math.Abs(r.group_adjusted_deltaM - Math.Truncate(r.group_adjusted_deltaM))  <= Lollipop.no_mans_land_lowerBound).ToList();
+            List<ProteoformRelation> relations_outside_no_mans = relations.Where(r => r.outside_no_mans_land).ToList();
             //analyze relations outside of no-man's-land
             //List<ProteoformRelation> remaining_relations = exclusive_relation_group(relations_in_no_mans, );
             List<DeltaMassPeak> peaks = new List<DeltaMassPeak>();

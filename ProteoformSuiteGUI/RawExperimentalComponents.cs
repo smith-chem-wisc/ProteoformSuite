@@ -53,6 +53,7 @@ namespace ProteoformSuite
 
             dgv_RawExpComp_MI_masses.AllowUserToAddRows = false;
             dgv_RawExpComp_MI_masses.Columns["corrected_mass"].Visible = false;
+            dgv_RawExpComp_MI_masses.Columns["intensity_sum_olcs"].Visible = false;
         }
 
         private void dgv_RawExpComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)

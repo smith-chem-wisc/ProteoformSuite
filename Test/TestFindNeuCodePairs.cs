@@ -50,6 +50,9 @@ namespace Test
             neucode_pair = Lollipop.raw_neucode_pairs.Where(i => i.id_heavy == 222 && i.id_light == 221).ToList();
             Assert.AreEqual(false, neucode_pair[0].accepted);
 
+            //test that pair w/ out of bounds K-count is marked unaccepted
+            neucode_pair = Lollipop.raw_neucode_pairs.Where(i => i.id_heavy == 224 && i.id_light == 223).ToList();
+            Assert.AreEqual(false, neucode_pair[0].accepted);
         }
 
     }

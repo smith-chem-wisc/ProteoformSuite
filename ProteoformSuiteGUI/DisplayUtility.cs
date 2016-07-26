@@ -47,21 +47,20 @@ namespace ProteoformSuite
             }
         }
 
-        public static void GraphRelationsChart(Chart ct, List<ProteoformRelation> relations)
+        public static void GraphRelationsChart(Chart ct, List<ProteoformRelation> relations, string series)
         {
-            List<ProteoformRelation> et_relations_ordered = relations.OrderByDescending(r => r.group_adjusted_deltaM).ToList();
-            ct.DataSource = et_relations_ordered;
-            ct.DataBind();
-            ct.Series["relations"].XValueMember = "group_adjusted_deltaM";
-            ct.Series["relations"].YValueMembers = "group_count";
-            ct.ChartAreas[0].AxisY.StripLines.Clear();
+            ct.Series[series].XValueMember = "delta_mass";
+            ct.Series[series].YValueMembers = "unadjusted_group_count";
+            List<ProteoformRelation> et_relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
+                ct.DataSource = et_relations_ordered;
+                ct.DataBind();
 
-            ct.ChartAreas[0].AxisY.StripLines.Clear();
-            StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count };
-            ct.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+                ct.ChartAreas[0].AxisY.StripLines.Clear();
+                StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count };
+                ct.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
 
-            ct.ChartAreas[0].AxisX.Title = "Adjusted Delta m/z";
-            ct.ChartAreas[0].AxisY.Title = "Nearby Count";
+                ct.ChartAreas[0].AxisX.Title = "Delta m/z";
+                ct.ChartAreas[0].AxisY.Title = "Nearby Count";
         }
 
         public static void GraphDeltaMassPeaks(Chart ct, List<DeltaMassPeak> peaks)
@@ -79,6 +78,7 @@ namespace ProteoformSuite
 
         public static void GraphSelectedDeltaMassPeak(Chart ct, DeltaMassPeak peak)
         {
+            ct.ChartAreas[0].AxisY.StripLines.Clear();
             ct.ChartAreas[0].AxisX.Minimum = peak.group_adjusted_deltaM - Lollipop.peak_width_base;
             ct.ChartAreas[0].AxisX.Maximum = peak.group_adjusted_deltaM + Lollipop.peak_width_base;
 
@@ -89,8 +89,8 @@ namespace ProteoformSuite
             ct.ChartAreas[0].AxisX.StripLines.Add(lowerPeakBound_stripline);
             ct.ChartAreas[0].AxisX.StripLines.Add(upperPeakBound_stripline);
 
-            ct.ChartAreas[0].AxisX.Title = "Adjusted Delta m/z";
-            ct.ChartAreas[0].AxisY.Title = "Peak Group Count";
+            ct.ChartAreas[0].AxisX.Title = "Delta m/z";
+            ct.ChartAreas[0].AxisY.Title = "Nearby Count";
         }
     }
 }

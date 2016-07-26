@@ -64,13 +64,16 @@ namespace ProteoformSuite
             dgv_AggregatedProteoforms.Columns["agg_rt"].HeaderText = "Aggregated RT";
             dgv_AggregatedProteoforms.Columns["observation_count"].HeaderText = "Observation Count";
             dgv_AggregatedProteoforms.Columns["accession"].HeaderText = "Experimental Proteoform ID";
-            dgv_AggregatedProteoforms.Columns["modified_mass"].HeaderText = "Modified Mass";
             dgv_AggregatedProteoforms.Columns["lysine_count"].HeaderText = "Lysine Count";
 
-            //making these columns invisible.
+            //making these columns invisible. (irrelevent for agg proteoforms)
             dgv_AggregatedProteoforms.Columns["is_target"].Visible = false; 
-            dgv_AggregatedProteoforms.Columns["is_decoy"].Visible = false; 
+            dgv_AggregatedProteoforms.Columns["is_decoy"].Visible = false;
+            dgv_AggregatedProteoforms.Columns["modified_mass"].Visible = false;
+            if (!Lollipop.neucode_labeled) { dgv_AggregatedProteoforms.Columns["lysine_count"].Visible = false; }
 
+
+            dgv_AggregatedProteoforms.AllowUserToAddRows = false;
         }
 
         private void dgv_AggregatedProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -114,7 +117,11 @@ namespace ProteoformSuite
             dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].HeaderText = "Intensity Ratio";
             dgv_AcceptNeuCdLtProteoforms.Columns["lysine_count"].HeaderText = "Lysine Count";
             dgv_AcceptNeuCdLtProteoforms.Columns["accepted"].HeaderText = "Accepted";
-            
+            dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].HeaderText = "Intensity Sum for Overlapping Charge States";
+
+            dgv_AcceptNeuCdLtProteoforms.AllowUserToAddRows = false;
+            if (!Lollipop.neucode_labeled) { dgv_AcceptNeuCdLtProteoforms.Columns["lysine_count"].Visible = false; }
+
         }
 
         private void dgv_AcceptNeuCdLtProteoforms_CellContentClick(object sender, EventArgs e)
