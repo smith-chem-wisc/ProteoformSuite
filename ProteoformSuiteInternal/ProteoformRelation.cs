@@ -126,11 +126,11 @@ namespace ProteoformSuiteInternal
         public List<ProteoformRelation> accept_exclusive(List<ProteoformRelation> already_grouped)
         {
             this.mass_difference_group = this.mass_difference_group.Except(already_grouped).ToList();
-            Parallel.ForEach<ProteoformRelation>(mass_difference_group, mass_difference =>
+            foreach (ProteoformRelation mass_difference in mass_difference_group)
             {
                 mass_difference.connected_proteoforms[0].relationships.Add(mass_difference);
                 mass_difference.connected_proteoforms[1].relationships.Add(mass_difference);
-            });
+            }
             return this.mass_difference_group;
         }
 
