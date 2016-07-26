@@ -4,6 +4,7 @@ using System.ComponentModel; // needed for bindinglist
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
@@ -34,25 +35,25 @@ namespace ProteoformSuiteInternal
             //POTENTIAL PARALLEL PROBLEM - DIDN'T TEST
             Parallel.ForEach<string>(Lollipop.deconResultsFileNames, filename =>
             {
-                IEnumerable<Component> readComponents = componentReader(filename);
-                List<Component> raw_components = new List<Component>(readComponents);
-                raw_experimental_components.AddRange(raw_components);
-
-                if (neucode_labeled)
-                {
-                    HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
-                    //PARALLEL PROBLEM
-                    // Parallel.ForEach<string>(scan_ranges, scan_range =>
+                var thread = new Thread(
+                    () =>
                     {
-                        foreach (string scan_range in scan_ranges)
-                            find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
+                        IEnumerable<Component> readComponents = componentReader(filename);
+                        List<Component> raw_components = new List<Component>(readComponents);
+                        raw_experimental_components.AddRange(raw_components);
 
-                    }//);
-                }
-                raw_experimental_components = raw_experimental_components.Where(c => c != null).ToList();
-                raw_neucode_pairs = raw_neucode_pairs.Where(p => p != null).ToList();
+                        if (neucode_labeled)
+                        {
+                            HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
+                            foreach (string scan_range in scan_ranges)
+                            find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
+                        }
+                    }    
+                    );
+                thread.Start();
+                thread.Join();
             });
-            }
+        }
 
 
         //NEUCODE PAIRS
