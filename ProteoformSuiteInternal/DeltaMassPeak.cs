@@ -12,12 +12,18 @@ namespace ProteoformSuiteInternal
         public double decoy_count { get; set; }
         public double group_fdr { get; set; }
         public bool peak_accepted { get; set; }
+        public List<Modification> possiblePeakAssignments { get; set; }
+        public string possiblePeakAssignments_string
+        {
+            get {
+                return String.Join("; ", possiblePeakAssignments.Select(m => m.description).ToArray()); } }
         public ProteoformRelation base_relation { get; set; }
 
         public DeltaMassPeak(ProteoformRelation base_relation) : base(base_relation)
         {
             this.base_relation = base_relation;
-           Parallel.ForEach<ProteoformRelation>(base_relation.mass_difference_group, relation => relation.peak = this);
+            Parallel.ForEach<ProteoformRelation>(base_relation.mass_difference_group, relation => relation.peak = this);
+            this.possiblePeakAssignments = nearestPTMs(this.group_adjusted_deltaM);
             this.peak_accepted = set_peak_accepted();
         }
 
@@ -25,6 +31,20 @@ namespace ProteoformSuiteInternal
         {
             if (this.base_relation.group_count >= Lollipop.min_peak_count) { return true; }
             else {return false; }
+        }
+
+        private List<Modification> nearestPTMs(double dMass)
+        {
+            List<Modification> possiblePTMs = new List<Modification>();
+            foreach (KeyValuePair<string, Modification> knownMod in Lollipop.uniprotModificationTable)
+            {
+                Decimal modMass = Convert.ToDecimal(knownMod.Value.monoisotopic_mass_shift);
+                if (Math.Abs(Convert.ToDecimal(dMass) - modMass) <= Convert.ToDecimal(Lollipop.peak_width_base)/2)
+                {
+                    possiblePTMs.Add(knownMod.Value);
+                }
+            }
+            return possiblePTMs;
         }
 
         public void calculate_fdr(Dictionary<string, List<ProteoformRelation>> decoy_relations)

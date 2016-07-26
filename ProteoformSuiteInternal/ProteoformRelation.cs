@@ -29,6 +29,7 @@ namespace ProteoformSuiteInternal
         public ProteoformComparison relation_type;
         public double delta_mass { get; set; }
         public bool accepted { get; set; } = false;
+        
 
         public MassDifference(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass)
         {
@@ -36,6 +37,7 @@ namespace ProteoformSuiteInternal
             this.connected_proteoforms[1] = pf2;
             this.relation_type = relation_type;
             this.delta_mass = delta_mass;
+
         }
     }
 
@@ -109,6 +111,8 @@ namespace ProteoformSuiteInternal
             this.peak = relation.peak;
             this.mass_difference_group = relation.mass_difference_group;
         }
+
+
 
         private bool set_outside_no_mans_land()
         {
