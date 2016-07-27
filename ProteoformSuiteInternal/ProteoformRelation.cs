@@ -28,7 +28,7 @@ namespace ProteoformSuiteInternal
         public Proteoform[] connected_proteoforms = new Proteoform[2];
         public ProteoformComparison relation_type;
         public double delta_mass { get; set; }
-        public bool accepted { get; set; } = false;
+        //public bool accepted { get; set; } = false;
         
 
         public MassDifference(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass)
@@ -44,6 +44,7 @@ namespace ProteoformSuiteInternal
     public class ProteoformRelation : MassDifference
     {
         public DeltaMassPeak peak { get; set; }
+        public Boolean accepted { get; set; } = false;
         private List<ProteoformRelation> _mass_difference_group;
         public List<ProteoformRelation> mass_difference_group
         {
