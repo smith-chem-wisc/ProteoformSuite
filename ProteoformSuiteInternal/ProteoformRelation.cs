@@ -57,8 +57,30 @@ namespace ProteoformSuiteInternal
                 this.accepted = set_accepted(); //dependent on peak count
             }
         }
-
         public int unadjusted_group_count { get; set; } //"running sum"
+        public int group_count { get; set; }
+        public bool outside_no_mans_land { get; set; }
+        public double group_adjusted_deltaM { get; set; }
+        public int lysine_count { get; set; }
+
+
+        // For DataGridView displays
+        public int peak_center_count
+        {
+            get
+            {
+                if (this.peak != null) return this.peak.group_count;
+                else return int.MinValue;
+            }
+        }
+        public double peak_center_deltaM
+        {
+            get
+            {
+                if (this.peak != null) return peak.group_adjusted_deltaM;
+                else return double.MinValue;
+            }
+        }
         public string accession { get; set; } //theoretical for ET, null for EE
         public string name { get; set; } //theoretical for ET, null for EE
         public string fragment { get; set; }
@@ -71,10 +93,6 @@ namespace ProteoformSuiteInternal
         public double agg_RT_2 { get; set; } //0 for ET, experiment_2 for EE
         public int num_observations_1 { get; set; }
         public int num_observations_2 { get; set; } //0 for ET
-        public int lysine_count { get; set; }
-        public double group_adjusted_deltaM { get; set; }
-        public int group_count { get; set; }
-        public bool outside_no_mans_land { get; set; }
 
         public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass) : base(pf1, pf2, relation_type, delta_mass)
         {

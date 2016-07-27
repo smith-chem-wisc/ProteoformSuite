@@ -164,24 +164,18 @@ namespace ProteoformSuite
             {
                 double newXMaxEE = double.Parse(xMaxEE.Value.ToString());
                 if (newXMaxEE > double.Parse(xMinEE.Value.ToString()))
-                {
                     ct_EE_Histogram.ChartAreas[0].AxisX.Maximum = newXMaxEE;
-                }
             }
         }
-
         private void yMaxEE_ValueChanged(object sender, EventArgs e) // scaling for y-axis maximum in the histogram of all EE pairs
         {
             if (initial_load)
             {
                 double newYMaxEE = double.Parse(yMaxEE.Value.ToString());
                 if (newYMaxEE > double.Parse(yMinEE.Value.ToString()))
-                {
                     ct_EE_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxEE.Value.ToString());
-                }
             }
         }
-
         private void yMinEE_ValueChanged(object sender, EventArgs e) // scaling for y-axis minimum in the histogram of all EE pairs
         {
             if (initial_load)
@@ -190,7 +184,6 @@ namespace ProteoformSuite
                 if (newYMinEE < double.Parse(yMaxEE.Value.ToString())) ct_EE_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinEE.Value.ToString());
             }
         }
-
         private void xMinEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
         {
             if (initial_load)
@@ -199,8 +192,6 @@ namespace ProteoformSuite
                 if (newXMinEE < double.Parse(xMaxEE.Value.ToString())) ct_EE_Histogram.ChartAreas[0].AxisX.Minimum = newXMinEE;
             }
         }
-
-
         private void cb_Graph_lowerThreshold_CheckedChanged(object sender, EventArgs e)
         {
             if (initial_load)

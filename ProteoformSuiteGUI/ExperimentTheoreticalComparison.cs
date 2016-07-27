@@ -108,16 +108,20 @@ namespace ProteoformSuite
         private void FormatETRelationsGridView()
         {
             //round table values
-            dgv_ET_Pairs.Columns["group_adjusted_deltaM"].DefaultCellStyle.Format = "0.####";
+            dgv_ET_Pairs.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
+            dgv_ET_Pairs.Columns["peak_center_deltaM"].DefaultCellStyle.Format = "0.####";
             dgv_ET_Pairs.Columns["proteoform_mass_1"].DefaultCellStyle.Format = "0.####";
             dgv_ET_Pairs.Columns["proteoform_mass_2"].DefaultCellStyle.Format = "0.####";
             dgv_ET_Pairs.Columns["agg_intensity_1"].DefaultCellStyle.Format = "0.##";
             dgv_ET_Pairs.Columns["agg_RT_1"].DefaultCellStyle.Format = "0.##";
-            dgv_ET_Pairs.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
 
             //set column header
-            dgv_ET_Pairs.Columns["group_adjusted_deltaM"].HeaderText = "Peak Center Delta Mass";
-            dgv_ET_Pairs.Columns["group_count"].HeaderText = "Peak Center Count";
+            dgv_ET_Pairs.Columns["delta_mass"].HeaderText = "Delta Mass";
+            dgv_ET_Pairs.Columns["delta_mass"].DisplayIndex = 18;
+            dgv_ET_Pairs.Columns["unadjusted_group_count"].HeaderText = "Nearby Relation Count";
+            dgv_ET_Pairs.Columns["accepted"].HeaderText = "Accepted";
+            dgv_ET_Pairs.Columns["peak_center_deltaM"].HeaderText = "Peak Center Delta Mass";
+            dgv_ET_Pairs.Columns["peak_center_count"].HeaderText = "Peak Center Count";
             dgv_ET_Pairs.Columns["accession"].HeaderText = "Accession";
             dgv_ET_Pairs.Columns["fragment"].HeaderText = "Fragment";
             dgv_ET_Pairs.Columns["ptm_list"].HeaderText = "PTM Description";
@@ -127,14 +131,12 @@ namespace ProteoformSuite
             dgv_ET_Pairs.Columns["agg_RT_1"].HeaderText = "Experimental Aggregated RT";
             dgv_ET_Pairs.Columns["lysine_count"].HeaderText = "Lysine Count";
             dgv_ET_Pairs.Columns["num_observations_1"].HeaderText = "Number Experimental Observations";
-            dgv_ET_Pairs.Columns["delta_mass"].HeaderText = "Delta Mass";
-            dgv_ET_Pairs.Columns["delta_mass"].DisplayIndex = 18;
             dgv_ET_Pairs.Columns["name"].HeaderText = "Name";
-            dgv_ET_Pairs.Columns["unadjusted_group_count"].HeaderText = "Unadjusted Group Count";
             dgv_ET_Pairs.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
-            dgv_ET_Pairs.Columns["accepted"].HeaderText = "Accepted";
 
             //making these columns invisible
+            dgv_ET_Pairs.Columns["group_adjusted_deltaM"].Visible = false;
+            dgv_ET_Pairs.Columns["group_count"].Visible = false;
             dgv_ET_Pairs.Columns["peak"].Visible = false;
             dgv_ET_Pairs.Columns["agg_intensity_2"].Visible = false;
             dgv_ET_Pairs.Columns["agg_RT_2"].Visible = false;
