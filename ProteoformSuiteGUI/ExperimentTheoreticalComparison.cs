@@ -207,19 +207,19 @@ namespace ProteoformSuite
         // scaling for axes of displayed ET Histogram of all ET pairs
         private void yMaxET_ValueChanged(object sender, EventArgs e)
         {
-            ct_ET_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxET.Value.ToString());
+            ct_ET_Histogram.ChartAreas[0].AxisY.Maximum = Convert.ToDouble(yMaxET.Value);
         }
         private void yMinET_ValueChanged(object sender, EventArgs e)
         {
-            ct_ET_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinET.Value.ToString());
+            ct_ET_Histogram.ChartAreas[0].AxisY.Minimum = Convert.ToDouble(yMinET.Value);
         }
         private void xMinET_ValueChanged(object sender, EventArgs e)
         {
-            ct_ET_Histogram.ChartAreas[0].AxisX.Minimum = double.Parse(xMinET.Value.ToString());
+            ct_ET_Histogram.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(xMinET.Value);
         }
         private void xMaxET_ValueChanged(object sender, EventArgs e)
         {
-            ct_ET_Histogram.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxET.Value.ToString());
+            ct_ET_Histogram.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(xMaxET.Value);
         }
 
         // bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts

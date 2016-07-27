@@ -297,7 +297,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(31, 32);
+            this.groupBox4.Location = new System.Drawing.Point(31, 33);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -366,7 +366,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(263, 32);
+            this.groupBox3.Location = new System.Drawing.Point(263, 33);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -439,7 +439,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(263, 119);
+            this.groupBox2.Location = new System.Drawing.Point(263, 120);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -453,6 +453,11 @@
             this.yMaxET.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.yMaxET.Location = new System.Drawing.Point(63, 20);
             this.yMaxET.Margin = new System.Windows.Forms.Padding(2);
+            this.yMaxET.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.yMaxET.Name = "yMaxET";
             this.yMaxET.Size = new System.Drawing.Size(80, 20);
             this.yMaxET.TabIndex = 4;
@@ -469,6 +474,11 @@
             65536});
             this.xMinET.Location = new System.Drawing.Point(23, 41);
             this.xMinET.Margin = new System.Windows.Forms.Padding(2);
+            this.xMinET.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.xMinET.Name = "xMinET";
             this.xMinET.Size = new System.Drawing.Size(80, 20);
             this.xMinET.TabIndex = 6;
@@ -479,6 +489,11 @@
             this.yMinET.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.yMinET.Location = new System.Drawing.Point(63, 60);
             this.yMinET.Margin = new System.Windows.Forms.Padding(2);
+            this.yMinET.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.yMinET.Name = "yMinET";
             this.yMinET.Size = new System.Drawing.Size(80, 20);
             this.yMinET.TabIndex = 5;
@@ -495,6 +510,11 @@
             65536});
             this.xMaxET.Location = new System.Drawing.Point(107, 41);
             this.xMaxET.Margin = new System.Windows.Forms.Padding(2);
+            this.xMaxET.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.xMaxET.Name = "xMaxET";
             this.xMaxET.Size = new System.Drawing.Size(80, 20);
             this.xMaxET.TabIndex = 7;
@@ -507,7 +527,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(31, 119);
+            this.groupBox1.Location = new System.Drawing.Point(31, 120);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);

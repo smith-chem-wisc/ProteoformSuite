@@ -106,7 +106,7 @@ namespace ProteoformSuite
             xMaxEE.Maximum = nUD_EE_Upper_Bound.Value;
             xMaxEE.Value = nUD_EE_Upper_Bound.Value; // scaling for x-axis maximum in the histogram of all EE pairs
 
-            xMinEE.Minimum = 0;
+            xMinEE.Minimum = -100;
             xMinEE.Maximum = xMaxEE.Value;
             xMinEE.Value = 0; // scaling for x-axis minimum in the histogram of all EE pairs
 
@@ -143,41 +143,23 @@ namespace ProteoformSuite
 
         private void xMaxEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
         {
-            if (initial_load)
-            {
-                double newXMaxEE = double.Parse(xMaxEE.Value.ToString());
-                if (newXMaxEE > double.Parse(xMinEE.Value.ToString()))
-                    ct_EE_Histogram.ChartAreas[0].AxisX.Maximum = newXMaxEE;
-            }
+            ct_EE_Histogram.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(yMaxEE.Value);
         }
         private void yMaxEE_ValueChanged(object sender, EventArgs e) // scaling for y-axis maximum in the histogram of all EE pairs
         {
-            if (initial_load)
-            {
-                double newYMaxEE = double.Parse(yMaxEE.Value.ToString());
-                if (newYMaxEE > double.Parse(yMinEE.Value.ToString()))
-                    ct_EE_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxEE.Value.ToString());
-            }
+            ct_EE_Histogram.ChartAreas[0].AxisY.Maximum = Convert.ToDouble(yMaxEE.Value);
         }
         private void yMinEE_ValueChanged(object sender, EventArgs e) // scaling for y-axis minimum in the histogram of all EE pairs
         {
-            if (initial_load)
-            {
-                double newYMinEE = double.Parse(yMinEE.Value.ToString());
-                if (newYMinEE < double.Parse(yMaxEE.Value.ToString())) ct_EE_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinEE.Value.ToString());
-            }
+            ct_EE_Histogram.ChartAreas[0].AxisY.Minimum = Convert.ToDouble(yMinEE.Value);
         }
         private void xMinEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
         {
-            if (initial_load)
-            {
-                double newXMinEE = double.Parse(xMinEE.Value.ToString());
-                if (newXMinEE < double.Parse(xMaxEE.Value.ToString())) ct_EE_Histogram.ChartAreas[0].AxisX.Minimum = newXMinEE;
-            }
+            ct_EE_Histogram.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(xMinEE.Value);
         }
         private void cb_Graph_lowerThreshold_CheckedChanged(object sender, EventArgs e)
         {
-            if (initial_load)
+            if (!initial_load)
             {
                 if (cb_Graph_lowerThreshold.Checked)
                     ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
