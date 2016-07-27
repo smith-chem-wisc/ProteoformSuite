@@ -1,10 +1,7 @@
 ﻿using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using ProteoformSuiteInternal;
-using System.Text;
-using System.Threading.Tasks;
+using System;
+using System.Linq;
 
 namespace Test
 {
@@ -68,11 +65,11 @@ namespace Test
                 }
 
             }
-            Assert.AreEqual(9,chain);
-            Assert.AreEqual(12,Full_MetCleaved);
-            Assert.AreEqual(2,peptide);
-            Assert.AreEqual(3,propeptide);
-            Assert.AreEqual(3,signalPeptide);
+            Assert.AreEqual(9, chain);
+            Assert.AreEqual(12, Full_MetCleaved);
+            Assert.AreEqual(2, peptide);
+            Assert.AreEqual(3, propeptide);
+            Assert.AreEqual(3, signalPeptide);
         }
 
         [Test]

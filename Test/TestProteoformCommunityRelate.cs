@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using ProteoformSuiteInternal;
-using System;
 using System.Collections.Generic;
 
 namespace Test
@@ -16,7 +15,7 @@ namespace Test
             Lollipop.neucode_labeled = true;
 
             // Two proteoforms; lysine count equal; mass difference < 250 -- return 1
-            ExperimentalProteoform pf1 = new ExperimentalProteoform("A1",1000.0,1,true);
+            ExperimentalProteoform pf1 = new ExperimentalProteoform("A1", 1000.0, 1, true);
             ExperimentalProteoform pf2 = new ExperimentalProteoform("A2", 1010.0, 1, true);
             ExperimentalProteoform[] pa1 = new ExperimentalProteoform[2];
             pa1[0] = pf1;

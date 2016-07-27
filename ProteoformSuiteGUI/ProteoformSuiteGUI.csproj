@@ -7,8 +7,8 @@
     <ProjectGuid>{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PS_0._00</RootNamespace>
-    <AssemblyName>PS_0.00</AssemblyName>
+    <RootNamespace>ProteoformSuite</RootNamespace>
+    <AssemblyName>ProteoformSuite</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -115,7 +115,6 @@
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </Compile>
     <Compile Include="DisplayUtility.cs" />
-    <Compile Include="ExcelReader.cs" />
     <Compile Include="ExperimentExperimentComparison.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -196,6 +195,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="ProteoformFamilyAssignment.resx">
       <DependentUpon>ProteoformFamilyAssignment.cs</DependentUpon>
