@@ -52,15 +52,15 @@ namespace ProteoformSuite
             ct.Series[series].XValueMember = "delta_mass";
             ct.Series[series].YValueMembers = "unadjusted_group_count";
             List<ProteoformRelation> et_relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
-                ct.DataSource = et_relations_ordered;
-                ct.DataBind();
+            ct.DataSource = et_relations_ordered;
+            ct.DataBind();
 
-                ct.ChartAreas[0].AxisY.StripLines.Clear();
-                StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count };
-                ct.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+            ct.ChartAreas[0].AxisY.StripLines.Clear();
+            StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count };
+            ct.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
 
-                ct.ChartAreas[0].AxisX.Title = "Delta m/z";
-                ct.ChartAreas[0].AxisY.Title = "Nearby Count";
+            ct.ChartAreas[0].AxisX.Title = "Delta m/z";
+            ct.ChartAreas[0].AxisY.Title = "Nearby Count";
         }
 
         public static void GraphDeltaMassPeaks(Chart ct, List<DeltaMassPeak> peaks)

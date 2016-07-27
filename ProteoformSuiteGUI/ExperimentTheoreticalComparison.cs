@@ -88,8 +88,7 @@ namespace ProteoformSuite
         }
         private void GraphETPeaks()
         {
-            DisplayUtility.GraphRelationsChart(ct_ET_peakList, Lollipop.et_relations, "relations");
-           // DisplayUtility.GraphRelationsChart(ct_ET_peakList, Lollipop.ed_relations, "decoys");
+            DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks);
 
         }
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
