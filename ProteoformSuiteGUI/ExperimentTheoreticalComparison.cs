@@ -32,20 +32,20 @@ namespace ProteoformSuite
         {
             InitializeParameterSet();
             if (Lollipop.et_relations.Count == 0) Lollipop.make_et_relationships();
-            this.FillTablesAndGraphs();
+            this.FillTablesAndCharts();
             initial_load = false;
         }
 
         private void RunTheGamut()
         {
             this.Cursor = Cursors.WaitCursor;
-            ClearListsTablesAndGraphs();
+            ClearListsAndTables();
             Lollipop.make_et_relationships();
-            this.FillTablesAndGraphs();
+            this.FillTablesAndCharts();
             this.Cursor = Cursors.Default;
         }
 
-        public void FillTablesAndGraphs()
+        public void FillTablesAndCharts()
         {
             FillETPeakListTable();
             FillETRelationsGridView();
@@ -59,7 +59,7 @@ namespace ProteoformSuite
             tb_TotalPeaks.Text = big_peaks.Count.ToString();
         }
 
-        private void ClearListsTablesAndGraphs()
+        private void ClearListsAndTables()
         {
             Lollipop.et_relations.Clear();
             Lollipop.et_peaks.Clear();
@@ -244,13 +244,13 @@ namespace ProteoformSuite
             yMinET.Maximum = yMaxET.Maximum;
             yMinET.Value = 0; // scaling for y-axis of displayed ET Histogram of all ET pairs
 
-            xMinET.Minimum = nUD_ET_Lower_Bound.Value;
-            xMinET.Maximum = xMaxET.Value;
-            xMinET.Value = nUD_ET_Lower_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
-
             xMaxET.Minimum = xMinET.Value;
             xMaxET.Maximum = nUD_ET_Upper_Bound.Value;
             xMaxET.Value = nUD_ET_Upper_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
+
+            xMinET.Minimum = nUD_ET_Lower_Bound.Value;
+            xMinET.Maximum = xMaxET.Value;
+            xMinET.Value = nUD_ET_Lower_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
             nUD_NoManLower.Minimum = 00m;
             nUD_NoManLower.Maximum = 0.49m;

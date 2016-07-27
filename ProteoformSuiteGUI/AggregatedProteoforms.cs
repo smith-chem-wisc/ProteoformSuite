@@ -97,7 +97,7 @@ namespace ProteoformSuite
             dgv_AcceptNeuCdLtProteoforms.Columns["relative_abundance"].DefaultCellStyle.Format = "0.####";
             dgv_AcceptNeuCdLtProteoforms.Columns["fract_abundance"].DefaultCellStyle.Format = "0.####";
             dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum"].DefaultCellStyle.Format = "0.####";
-            dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].DefaultCellStyle.Format = "0.####";
+            if (Lollipop.neucode_labeled) { dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].DefaultCellStyle.Format = "0.####"; }
 
 
             //set column header
@@ -120,8 +120,14 @@ namespace ProteoformSuite
             dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].HeaderText = "Intensity Sum for Overlapping Charge States";
 
             dgv_AcceptNeuCdLtProteoforms.AllowUserToAddRows = false;
-            if (!Lollipop.neucode_labeled) { dgv_AcceptNeuCdLtProteoforms.Columns["lysine_count"].Visible = false; }
 
+            if (!Lollipop.neucode_labeled)
+            {
+                dgv_AcceptNeuCdLtProteoforms.Columns["lysine_count"].Visible = false;
+                dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].Visible = false;
+                dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].Visible = false;
+
+            }
         }
 
         private void dgv_AcceptNeuCdLtProteoforms_CellContentClick(object sender, EventArgs e)
