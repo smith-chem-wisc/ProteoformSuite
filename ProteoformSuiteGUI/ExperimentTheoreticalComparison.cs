@@ -53,10 +53,7 @@ namespace ProteoformSuite
             FormatETPeakListGridView();
             GraphETRelations();
             GraphETPeaks();
-
-            List<DeltaMassPeak> big_peaks = Lollipop.et_peaks.Where(p => p.accepted).ToList();
-            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.mass_difference_group.Count).Sum().ToString();
-            tb_TotalPeaks.Text = big_peaks.Count.ToString();
+            updateFiguresOfMerit();       
         }
 
         private void ClearListsTablesAndGraphs()
@@ -74,6 +71,17 @@ namespace ProteoformSuite
             dgv_ET_Peak_List.Rows.Clear();
         }
 
+        private void updateFiguresOfMerit()
+        {
+            List<DeltaMassPeak> big_peaks = Lollipop.et_peaks.Where(p => p.peak_accepted).ToList();
+            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.mass_difference_group.Count).Sum().ToString();
+            tb_TotalPeaks.Text = big_peaks.Count.ToString();
+
+            //decoy figures of merit still missing
+            //tb_DecoyAverage = ?;
+            //tb_DecoyStdDev = ?
+        }
+
         private void FillETRelationsGridView()
         {
             DisplayUtility.FillDataGridView(dgv_ET_Pairs, Lollipop.et_relations);
@@ -89,7 +97,6 @@ namespace ProteoformSuite
         private void GraphETPeaks()
         {
             DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, Lollipop.et_relations);
-
         }
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
@@ -129,7 +136,7 @@ namespace ProteoformSuite
             dgv_ET_Pairs.Columns["name"].HeaderText = "Name";
             dgv_ET_Pairs.Columns["unadjusted_group_count"].HeaderText = "Unadjusted Group Count";
             dgv_ET_Pairs.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
-            dgv_ET_Pairs.Columns["accepted"].HeaderText = "Accepeted";
+            dgv_ET_Pairs.Columns["accepted"].HeaderText = "Accepted";
 
             //making these columns invisible
             dgv_ET_Pairs.Columns["peak"].Visible = false;
@@ -174,47 +181,16 @@ namespace ProteoformSuite
      
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
         {
-            //double averageDeltaMass = Convert.ToDouble(dgv_ET_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 2].Value);
-            //int peakCount = Convert.ToInt32(dgv_ET_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Value);
-            //dgv_ET_Peak_List.EndEdit();
-            //dgv_ET_Peak_List.Update();
+            updateFiguresOfMerit(); //I'm not sure if this is necessary here.
 
-            //double lowMass = averageDeltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-            //double highMass = averageDeltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+            //boolean accepted in proteoform relation must change in response to DeltaMassPeak change.
 
-            //string expression = "[Average Delta Mass] > " + lowMass + " and [Average Delta Mass] < " + highMass;
-            //DataRow[] selectedPeaks = etPeaksList.Select(expression);
-
-            //foreach (DataRow row in selectedPeaks)
-            //{
-            //    row["Acceptable"] = Convert.ToBoolean(dgv_ET_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
-            //}
-            //etPeaksList.AcceptChanges();
-            //Lollipop.etPeakList = etPeaksList;
-            //dgv_ET_Peak_List.Update();
-            //dgv_ET_Peak_List.Refresh();
-
-            //expression = "[Peak Center Mass] > " + lowMass + " and [Peak Center Mass] < " + highMass;
-
-            //selectedPeaks = etPairsList.Select(expression);
-
-            //foreach (DataRow row in selectedPeaks)
-            //{
-            //    row["Proteoform Family"] = Convert.ToBoolean(dgv_ET_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
-            //}
-            //etPairsList.AcceptChanges();
-
-            //Lollipop.experimentTheoreticalPairs = etPairsList;
-            //dgv_ET_Pairs.Update();
-            //dgv_ET_Pairs.Refresh();
-
-            //UpdateFiguresOfMerit();
         }
 
         private void peakListSpecificPeakAcceptanceChanged(object sender, EventArgs e)
         {
             if (dgv_ET_Peak_List.IsCurrentCellDirty)
-            {                
+            {
                 dgv_ET_Peak_List.EndEdit();
                 dgv_ET_Peak_List.Update();
             }
