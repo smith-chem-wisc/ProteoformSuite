@@ -41,10 +41,7 @@ namespace ProteoformSuite
             FillEEPairsGridView();
             GraphEERelations();
             GraphEEPeaks();
-
-            List<DeltaMassPeak> big_peaks = Lollipop.ee_peaks.Where(p => p.accepted).ToList();
-            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.mass_difference_group.Count).Sum().ToString();
-            tb_TotalPeaks.Text = big_peaks.Count.ToString();
+            updateFiguresOfMerit();
         }
 
         private void RunTheGamut()
@@ -53,6 +50,17 @@ namespace ProteoformSuite
             this.FillTablesAndCharts();
             xMaxEE.Value = nUD_EE_Upper_Bound.Value;
             this.Cursor = Cursors.Default;
+        }
+
+        private void updateFiguresOfMerit()
+        {
+            List<DeltaMassPeak> big_peaks = Lollipop.ee_peaks.Where(p => p.peak_accepted).ToList();
+            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.mass_difference_group.Count).Sum().ToString();
+            tb_TotalPeaks.Text = big_peaks.Count.ToString();
+
+            //decoy figures of merit still missing
+            //tb_DecoyAverage = ?;
+            //tb_DecoyStdDev = ?
         }
 
         private void FillEEPairsGridView()
@@ -123,46 +131,7 @@ namespace ProteoformSuite
 
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
         {
-
-            //double averageDeltaMass = Convert.ToDouble(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 2].Value);
-            //int peakCount = Convert.ToInt32(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Value);
-            //dgv_EE_Peak_List.EndEdit();
-            //dgv_EE_Peak_List.Update();
-
-            //double lowMass = averageDeltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-            //double highMass = averageDeltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-
-            //string expression = "[Average Delta Mass] > " + lowMass + " and [Average Delta Mass] < " + highMass;
-
-            //DataRow[] selectedPeaks = eePeakList.Select(expression);
-
-            //foreach (DataRow row in selectedPeaks)
-            //{
-            //    row["Acceptable"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
-            //}
-            //eePeakList.AcceptChanges();
-            //Lollipop.etPeakList = eePeakList;
-            //dgv_EE_Peak_List.Update();
-            //dgv_EE_Peak_List.Refresh();
-
-            //expression = "[Peak Center Mass] > " + lowMass + " and [Peak Center Mass] < " + highMass;
-
-            //selectedPeaks = eePairsList.Select(expression);
-
-            //foreach (DataRow row in selectedPeaks)
-            //{
-
-            //    row["Proteoform Family"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
-
-            //}
-            //eePairsList.AcceptChanges();
-
-            //Lollipop.experimentExperimentPairs = eePairsList;
-            //dgv_EE_Pairs.DataSource = null;
-            //FillEEPairsGridView();
-
-            //UpdateFiguresOfMerit();
-
+            updateFiguresOfMerit();
         }
 
         private void peakListSpecificPeakAcceptanceChanged(object sender, EventArgs e)
