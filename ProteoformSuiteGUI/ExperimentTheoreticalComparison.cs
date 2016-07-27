@@ -100,6 +100,7 @@ namespace ProteoformSuite
                 ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
                 DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
                 DisplayUtility.GraphSelectedDeltaMassPeak(ct_ET_peakList, selected_peak);
+                ct_ET_peakList.ChartAreas[0].AxisY.Maximum = Convert.ToInt32(selected_peak.group_count * 1.2); //this automatically scales the vertical axis to the peak height plus 20%
             }
         }
         
@@ -150,10 +151,12 @@ namespace ProteoformSuite
             dgv_ET_Peak_List.Columns["group_count"].Visible = true;
             dgv_ET_Peak_List.Columns["group_adjusted_deltaM"].Visible = true;
             dgv_ET_Peak_List.Columns["peak_accepted"].Visible = true;
+            dgv_ET_Peak_List.Columns["possiblePeakAssignments_string"].Visible = true;
 
             dgv_ET_Peak_List.Columns["group_count"].HeaderText = "Peak Center Count";
             dgv_ET_Peak_List.Columns["group_adjusted_deltaM"].HeaderText = "Peak Center Delta Mass";
             dgv_ET_Peak_List.Columns["peak_accepted"].HeaderText = "Peak Accepted";
+            dgv_ET_Peak_List.Columns["possiblePeakAssignments_string"].HeaderText = "Peak Assignment";
 
             dgv_ET_Peak_List.AllowUserToAddRows = false;
         }
