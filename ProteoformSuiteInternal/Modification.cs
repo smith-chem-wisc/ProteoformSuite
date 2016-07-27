@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
@@ -10,10 +8,6 @@ namespace ProteoformSuiteInternal
     {
         //Adapted from the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
         // unused but available public string pA, cF, lC, tR, kW, dR;
-<<<<<<< HEAD:ProteoformSuiteInternal/Modification.cs
-=======
-
->>>>>>> c2112c3181f15b40dab82fcd79eab9afce020501:ProteoformSuite/PS_0.00/Modification.cs
         public string description { get; set; } = "unmodified"; //ID
         public string accession { get; set; } = ""; //AC
         public string feature_type { get; set; } = ""; //FT
@@ -21,16 +15,9 @@ namespace ProteoformSuiteInternal
         public char[] target_aas { get; set; } = new char[0]; //TG
         public double monoisotopic_mass_shift { get; set; } = 0; //MM
         public double average_mass_shift { get; set; } = 0; //MA
-<<<<<<< HEAD:ProteoformSuiteInternal/Modification.cs
- 
         public Modification() // constructs an "un-Modification"
         { }
-=======
->>>>>>> c2112c3181f15b40dab82fcd79eab9afce020501:ProteoformSuite/PS_0.00/Modification.cs
-
-        public Modification() // constructs an "un-Modification"
-        { }
-        public Modification(string description, string accession, string featureType, 
+        public Modification(string description, string accession, string featureType,
             string position, char[] targetAAs, double monoisotopicMassShift, double averageMassShift)
         {
             this.description = description;
@@ -44,7 +31,7 @@ namespace ProteoformSuiteInternal
 
         public override string ToString()
         {
-            return "Description=" + this.description + " Accession=" + this.accession + 
+            return "Description=" + this.description + " Accession=" + this.accession +
                 " FeatureType=" + this.feature_type + " MonisotopicMass=" + this.monoisotopic_mass_shift;
         }
     }
@@ -75,7 +62,7 @@ namespace ProteoformSuiteInternal
                 this.mass = value.Select(ptm => ptm.modification.monoisotopic_mass_shift).Sum();
             }
         }
-        
+
         public PtmSet(IEnumerable<Ptm> unique_ptm_combination)
         {
             this.ptm_combination = unique_ptm_combination;
@@ -96,6 +83,7 @@ namespace ProteoformSuiteInternal
 
         //Gets unique-mass (given a tolerance) ptm combinations from all the possible ones without positional redundancy
         //given a maximum number of ptms allowed on a theoretical protein
+        //Includes an empty combination with no PTMS
         public List<PtmSet> get_combinations(int num_ptms_needed)
         {
             List<PtmSet> combinations = all_possible_combinations(num_ptms_needed);
@@ -109,6 +97,7 @@ namespace ProteoformSuiteInternal
                 if (unique_mass_combinations.Where(c => c.mass >= lower_mass && c.mass <= upper_mass).Count() == 0)
                     unique_mass_combinations.Add(combination);
             }
+            unique_mass_combinations.Add(new PtmSet(new List<Ptm>()));
             return unique_mass_combinations;
         }
 
@@ -137,14 +126,18 @@ namespace ProteoformSuiteInternal
                 int result_index = stack.Count - 1;
                 int mod_index = stack.Pop();
                 Ptm value = this.all_ptms[mod_index];
-
-                while (mod_index < this.all_ptms.Count - 1)
+                while (mod_index < this.all_ptms.Count)
                 {
-                    result[result_index++] = this.all_ptms[mod_index++];
-                    stack.Push(mod_index);
+                    result[result_index] = this.all_ptms[mod_index];
+                    result_index++;
+                    mod_index++;
+                    if (mod_index < this.all_ptms.Count)
+                        stack.Push(mod_index);
                     if (result_index == combination_length)
                     {
-                        yield return new PtmSet(result);
+                        Ptm[] destinationArray = new Ptm[combination_length];
+                        Array.Copy(result, destinationArray, combination_length);
+                        yield return new PtmSet(destinationArray);
                         break;
                     }
                 }

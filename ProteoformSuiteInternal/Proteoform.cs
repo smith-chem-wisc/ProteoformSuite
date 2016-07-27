@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Data;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
@@ -13,7 +11,7 @@ namespace ProteoformSuiteInternal
         public double modified_mass { get; set; }
         public int lysine_count { get; set; } = -1;
         public bool is_target { get; set; } = true;
-        public bool is_decoy { get; } = false;
+        public bool is_decoy { get; set; } = false;
         public List<MassDifference> relationships { get; set; } = new List<MassDifference>();
 
         public Proteoform(string accession, double modified_mass, int lysine_count, bool is_target)
@@ -62,13 +60,44 @@ namespace ProteoformSuiteInternal
             this.calculate_properties();
         }
 
+        //for Tests
+        public ExperimentalProteoform(string accession) : base(accession)
+        {
+            this.aggregated_components = new List<Component>() { root };
+            this.accession = accession;
+        }
+        //for Tests
+        public ExperimentalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession, modified_mass, lysine_count, is_target)
+        {
+            this.aggregated_components = new List<Component>() { root };
+            this.accession = accession;
+            this.modified_mass = modified_mass;
+            this.lysine_count = lysine_count;
+            if (!is_target)
+            {
+                this.is_target = false;
+                this.is_decoy = true;
+            }
+        }
+
         private void calculate_properties()
         {
-            this.agg_intensity = aggregated_components.Select(p => p.intensity_sum).Sum();
-            this.agg_rt = aggregated_components.Select(p => p.rt_apex * p.intensity_sum / this.agg_intensity).Sum();
-            this.agg_mass = aggregated_components.Select(p =>
-                (p.corrected_mass + Math.Round((this.root.corrected_mass - p.corrected_mass), 0) * 1.0015) //mass + mass shift
-                * p.intensity_sum / this.agg_intensity).Sum();
+            if (Lollipop.neucode_labeled)
+            {   //if neucode labeled, use intensity sum for overlapping charge states --> neucode pair. 
+                this.agg_intensity = aggregated_components.Select(p => p.intensity_sum_olcs).Sum();
+                this.agg_rt = aggregated_components.Select(p => p.rt_apex * p.intensity_sum_olcs / this.agg_intensity).Sum();
+                this.agg_mass = aggregated_components.Select(p =>
+                    (p.corrected_mass + Math.Round((this.root.corrected_mass - p.corrected_mass), 0) * 1.0015) //mass + mass shift
+                    * p.intensity_sum_olcs / this.agg_intensity).Sum();
+            }
+            else
+            {
+                this.agg_intensity = aggregated_components.Select(p => p.intensity_sum).Sum();
+                this.agg_rt = aggregated_components.Select(p => p.rt_apex * p.intensity_sum / this.agg_intensity).Sum();
+                this.agg_mass = aggregated_components.Select(p =>
+                    (p.corrected_mass + Math.Round((this.root.corrected_mass - p.corrected_mass), 0) * 1.0015) //mass + mass shift
+                    * p.intensity_sum / this.agg_intensity).Sum();
+            }
             if (root is NeuCodePair) this.lysine_count = ((NeuCodePair)this.root).lysine_count;
             this.modified_mass = this.agg_mass;
         }
@@ -134,26 +163,41 @@ namespace ProteoformSuiteInternal
         public List<Ptm> ptm_list { get; set; } = new List<Ptm>();
         public string ptm_descriptions
         {
-<<<<<<< HEAD:ProteoformSuiteInternal/Proteoform.cs
             get
             {
                 return ptm_list_string();
             }
         }
-=======
-            get { return ptm_list_string(); }
-        }
 
->>>>>>> c2112c3181f15b40dab82fcd79eab9afce020501:ProteoformSuite/PS_0.00/Proteoform.cs
+
         public TheoreticalProteoform(string accession, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<Ptm> ptm_list, double ptm_mass, double modified_mass, bool is_target) : base(accession, modified_mass, lysine_count, is_target)
         {
             this.accession = accession;
             this.name = name;
+            this.fragment = fragment;
             this.begin = begin;
             this.end = end;
             this.unmodified_mass = unmodified_mass;
             this.ptm_list = ptm_list;
             this.ptm_mass = ptm_mass;
+        }
+
+        //for Tests
+        public TheoreticalProteoform(string accession): base(accession)
+        {
+            this.accession = accession;
+        }
+        //for Tests
+        public TheoreticalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base (accession,  modified_mass,  lysine_count,  is_target)
+        {
+            this.accession = accession;
+            this.modified_mass = modified_mass;
+            this.lysine_count = lysine_count;
+            if (!is_target)
+            {
+                this.is_target = false;
+                this.is_decoy = true;
+            }
         }
 
         public static double CalculateProteoformMass(string pForm, Dictionary<char, double> aaIsotopeMassList)
@@ -170,7 +214,10 @@ namespace ProteoformSuiteInternal
 
         public string ptm_list_string()
         {
-            return string.Join("; ", ptm_list.Select(ptm => ptm.modification.description));
+            if (ptm_list.Count == 0)
+                return "unmodified";
+            else
+                return string.Join("; ", ptm_list.Select(ptm => ptm.modification.description));
         }
     }
 }

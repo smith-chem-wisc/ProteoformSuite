@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel; // needed for bindinglist
 using System.Data;
-using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Packaging;
 
 namespace ProteoformSuiteInternal
 {
@@ -34,22 +32,29 @@ namespace ProteoformSuiteInternal
         public static bool neucode_labeled = true;
         public static void process_raw_components(Func<string, IEnumerable<Component>> componentReader)
         {
+            //POTENTIAL PARALLEL PROBLEM - DIDN'T TEST
             Parallel.ForEach<string>(Lollipop.deconResultsFileNames, filename =>
             {
-                IEnumerable<Component> readComponents = componentReader(filename);
-                List<Component> raw_components = new List<Component>(readComponents);
-                raw_experimental_components.AddRange(raw_components);
-
-                if (neucode_labeled)
-                {
-                    HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
-                    Parallel.ForEach<string>(scan_ranges, scan_range =>
+                var thread = new Thread(
+                    () =>
                     {
-                        find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
-                    });
-                }
+                        IEnumerable<Component> readComponents = componentReader(filename);
+                        List<Component> raw_components = new List<Component>(readComponents);
+                        raw_experimental_components.AddRange(raw_components);
+
+                        if (neucode_labeled)
+                        {
+                            HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
+                            foreach (string scan_range in scan_ranges)
+                            find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
+                        }
+                    }    
+                    );
+                thread.Start();
+                thread.Join();
             });
         }
+
 
         //NEUCODE PAIRS
         public static List<NeuCodePair> raw_neucode_pairs = new List<NeuCodePair>();
@@ -57,16 +62,17 @@ namespace ProteoformSuiteInternal
         public static decimal min_intensity_ratio = 1.4m;
         public static decimal max_lysine_ct = 26.2m;
         public static decimal min_lysine_ct = 1.5m;
+
         public static void find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange)
         {
             //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
             List<Component> components = components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
             foreach (Component lower_component in components)
             {
-                IEnumerable<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.weighted_monoisotopic_mass >= lower_component.weighted_monoisotopic_mass);
+                IEnumerable<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.weighted_monoisotopic_mass > lower_component.weighted_monoisotopic_mass);
                 foreach (Component higher_component in higher_mass_components)
                 {
-                    double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
+                    double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
                     if (mass_difference < 6)
                     {
                         List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
@@ -74,12 +80,14 @@ namespace ProteoformSuiteInternal
                         List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
                         double lower_intensity = lower_component.calculate_sum_intensity(overlapping_charge_states);
                         double higher_intensity = higher_component.calculate_sum_intensity(overlapping_charge_states);
-
-                        if (lower_intensity > 0 || higher_intensity > 0)
+                        bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
+                        
+                        if (lower_intensity > 0 && higher_intensity > 0)
                         {
                             NeuCodePair pair;
-                            if (lower_intensity > higher_intensity) pair = new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states); //lower mass is neucode light
-                            else pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states); //higher mass is neucode light
+                            if (lower_intensity > higher_intensity) 
+                                pair = new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower); //lower mass is neucode light
+                            else pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light  
                             Lollipop.raw_neucode_pairs.Add(pair);
                         }
                     }
@@ -87,70 +95,11 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        //public static void pair_neucode_components() //Legacy for form-load runs, or and starting over at NeuCodePairs
-        //{
-        //    Dictionary<string, HashSet<string>> filename_scanRange = Lollipop.get_scanranges_by_filename();
-        //    Parallel.ForEach<KeyValuePair<string, HashSet<string>>>(filename_scanRange, entry =>
-        //    {
-        //        string filename = entry.Key;
-        //        Parallel.ForEach<string>(entry.Value, scanRange =>
-        //        {
-        //            List<Component> components_in_file_scanrange = new List<Component>();
-
-        //            //select all components in file and this particular scanrange
-        //            Parallel.ForEach<Component>(Lollipop.rawExperimentalComponents, c =>
-        //            {
-        //                if (c.file_origin == filename && c.scan_range == scanRange)
-        //                    components_in_file_scanrange.Add(c);
-        //            });
-
-        //            components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass);
-
-        //            //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
-        //            int lower_mass_index = 0;
-        //            Parallel.For(lower_mass_index, components_in_file_scanrange.Count - 2, lower_index =>
-        //            {
-        //                Component lower_component = components_in_file_scanrange[lower_index];
-        //                int higher_mass_index = lower_mass_index + 1;
-        //                //double apexRT = lower_component.rt_apex;
-
-        //                Parallel.For(higher_mass_index, components_in_file_scanrange.Count - 1, higher_index =>
-        //                {
-        //                    Component higher_component = components_in_file_scanrange[higher_index];
-        //                    double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass; //changed from decimal; it doesn't seem like that should make a difference
-        //                    if (mass_difference < 6)
-        //                    {
-        //                        NeuCodePair p = new NeuCodePair(lower_component, higher_component);
-        //                        if (p.accepted) { Lollipop.rawNeuCodePairs.Add(p); }
-        //                    }
-        //                });
-        //            });
-        //        });
-        //    });
-        //}
-
-        //private static Dictionary<string, HashSet<string>> get_scanranges_by_filename()
-        //{
-        //    Dictionary<string, HashSet<string>> filename_scanRanges = new Dictionary<string, HashSet<string>>();
-        //    Parallel.ForEach<string>(Lollipop.deconResultsFileNames, filename =>
-        //    {
-        //        if (!filename_scanRanges.ContainsKey(filename))
-        //            filename_scanRanges.Add(filename, new HashSet<string>());
-        //    });
-
-        //    Parallel.ForEach<Component>(Lollipop.rawExperimentalComponents, c =>
-        //    {
-        //        filename_scanRanges[c.file_origin].Add(c.scan_range);
-        //    });
-        //    return filename_scanRanges;
-        //}
-
         //AGGREGATED PROTEOFORMS
         public static decimal mass_tolerance = 3; //ppm
         public static decimal retention_time_tolerance = 3; //min
         public static decimal missed_monos = 3;
         public static decimal missed_lysines = 1;
-        //public static List<ExperimentalProteoform> experimental_proteoforms = new List<ExperimentalProteoform>();
         public static void aggregate_proteoforms()
         {
             if (Lollipop.proteoform_community.experimental_proteoforms.Count > 0)
@@ -161,7 +110,8 @@ namespace ProteoformSuiteInternal
             //Uses an ordered list, so that the proteoform with max intensity is always chosen first
             Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
             Component[] remaining_proteoforms;
-            if (Lollipop.raw_neucode_pairs.Count > 0) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum).ToArray();
+            //only aggregate accepatable neucode pairs
+            if (neucode_labeled) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true).ToArray();
             else remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).ToArray();
 
             int count = 1;
@@ -197,14 +147,14 @@ namespace ProteoformSuiteInternal
         static Protein[] proteins;
 
         static ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
-        static Dictionary<string, Modification> uniprotModificationTable;
+        public static Dictionary<string, Modification> uniprotModificationTable;
         static Dictionary<char, double> aaIsotopeMassList;
 
         public static void get_theoretical_proteoforms()
         {
             //Clear out data from potential previous runs
-            proteoform_community.theoretical_proteoforms.Clear();
-            proteoform_community.decoy_proteoforms.Clear();
+            Lollipop.proteoform_community.theoretical_proteoforms.Clear();
+            Lollipop.proteoform_community.decoy_proteoforms.Clear();
             Lollipop.ProteoformFamiliesET = new DataSet();
             ProteomeDatabaseReader.oldPtmlistFilePath = ptmlist_filepath;
             uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
@@ -213,9 +163,19 @@ namespace ProteoformSuiteInternal
             //Read the UniProt-XML and ptmlist
             proteins = ProteomeDatabaseReader.ReadUniprotXml(uniprot_xml_filepath, uniprotModificationTable, min_peptide_length, methionine_cleavage);
             if (combine_identical_sequences) proteins = group_proteins_by_sequence(proteins);
-            Parallel.Invoke(
-                () => process_entries(),
-                () => process_decoys()
+
+            //PARALLEL PROBLEM
+            process_entries();
+            process_decoys();
+            //Parallel.Invoke(
+            //    () => process_entries(),
+            //    () => process_decoys()
+            //);
+
+            //POSSIBLE PARALLEL PROBLEM - DIDN'T TEST DECOY
+            Lollipop.proteoform_community.theoretical_proteoforms = Lollipop.proteoform_community.theoretical_proteoforms.ToList();
+            Parallel.ForEach<List<TheoreticalProteoform>>(Lollipop.proteoform_community.decoy_proteoforms.Values, decoys =>
+                decoys = decoys.Where(d => d != null).ToList()
             );
         }
 
@@ -229,22 +189,32 @@ namespace ProteoformSuiteInternal
 
         private static void process_entries()
         {
-            Parallel.ForEach<Protein>(proteins, p =>
+
+            //PARALLEL PROBLEM
+            //Parallel.ForEach<Protein>(proteins, p =>
+            //{
+            //    bool isMetCleaved = (methionine_cleavage && p.begin == 0 && p.sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
+            //    int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
+            //    string seq = p.sequence.Substring(startPosAfterCleavage, (p.sequence.Length - startPosAfterCleavage));
+            //    EnterTheoreticalProteformFamily(seq, p, p.accession, isMetCleaved, null);
+            //});
+
+            foreach (Protein p in proteins)
             {
-                bool isMetCleaved = (methionine_cleavage && p.begin == 0 && p.sequence.Substring(0, 1) == "M"); // methionine cleavage of N-terminus specified
+                bool isMetCleaved = (methionine_cleavage && p.begin == 0 && p.sequence.Substring(0, 1) == "M");
                 int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
                 string seq = p.sequence.Substring(startPosAfterCleavage, (p.sequence.Length - startPosAfterCleavage));
                 EnterTheoreticalProteformFamily(seq, p, p.accession, isMetCleaved, null);
-            });
+            }
         }
 
         private static void process_decoys()
         {
-            string giantProtein = GetOneGiantProtein(proteins, methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
-            Parallel.For(0, Lollipop.decoy_databases, decoyNumber =>
+            for (int decoyNumber = 0; decoyNumber < Lollipop.decoy_databases; decoyNumber++)
             {
+                string giantProtein = GetOneGiantProtein(proteins, methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
                 string decoy_database_name = "DecoyDatabase_" + decoyNumber;
-                proteoform_community.decoy_proteoforms.Add(decoy_database_name, new List<TheoreticalProteoform>());
+                Lollipop.proteoform_community.decoy_proteoforms.Add(decoy_database_name, new List<TheoreticalProteoform>());
                 Protein[] shuffled_proteins = new Protein[proteins.Length];
                 shuffled_proteins = proteins;
                 new Random().Shuffle(shuffled_proteins); //randomize order of protein array
@@ -262,7 +232,7 @@ namespace ProteoformSuiteInternal
 
                     EnterTheoreticalProteformFamily(hunk, p, p.accession + "_DECOY_" + decoyNumber, isMetCleaved, decoy_database_name);
                 }
-            });
+            }
         }
 
         private static void EnterTheoreticalProteformFamily(string seq, Protein prot, string accession, bool isMetCleaved, string decoy_database_name)
@@ -270,28 +240,26 @@ namespace ProteoformSuiteInternal
             //Calculate the properties of this sequence
             double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
             int lysine_count = seq.Split('K').Length - 1;
-<<<<<<< HEAD:ProteoformSuiteInternal/Lollipop.cs
-
-            //Initialize a PTM combination list with "unmodified," and then add other PTMs
-=======
-            
-            //Initialize a PTM combination list with "unmodified," and then add other PTMs 
->>>>>>> c2112c3181f15b40dab82fcd79eab9afce020501:ProteoformSuite/PS_0.00/Lollipop.cs
-            proteoform_community.add(new TheoreticalProteoform(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, new List<Ptm>() { new Ptm() }, 0, unmodified_mass, true));
             List<PtmSet> unique_ptm_groups = new List<PtmSet>();
-            bool addPtmCombos = max_ptms > 0 && prot.ptms_by_position.Count() > 0;
-            if (addPtmCombos) unique_ptm_groups.AddRange(new PtmCombos(prot.ptms_by_position).get_combinations(max_ptms));
+            unique_ptm_groups.AddRange(new PtmCombos(prot.ptms_by_position).get_combinations(max_ptms));
 
-            Parallel.ForEach<PtmSet>(unique_ptm_groups, group =>
-           {
-               List<Ptm> ptm_list = group.ptm_combination.ToList();
-               double ptm_mass = group.mass;
-               double proteoform_mass = unmodified_mass + group.mass;
-               if (string.IsNullOrEmpty(decoy_database_name))
-                   proteoform_community.add(new TheoreticalProteoform(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
-               else
-                   proteoform_community.add(new TheoreticalProteoform(accession, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
-           });
+            int listMemberNumber = 1;
+
+            //PARALLEL PROBLEM
+            //Parallel.ForEach<PtmSet>(unique_ptm_groups, group =>
+            foreach (PtmSet group in unique_ptm_groups)
+            {
+                List<Ptm> ptm_list = group.ptm_combination.ToList();
+                double ptm_mass = group.mass;
+                double proteoform_mass = unmodified_mass + group.mass;
+                string ptm_description = group.ptm_combination.ToString();
+                if (string.IsNullOrEmpty(decoy_database_name))
+                    proteoform_community.add(new TheoreticalProteoform(accession + "_" + prot.fragment + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
+                else
+                    proteoform_community.add(new TheoreticalProteoform(accession + "_" + prot.fragment + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
+
+                listMemberNumber++;
+            } //);
         }
 
         private static string GetOneGiantProtein(IEnumerable<Protein> proteins, bool methionine_cleavage)
@@ -320,12 +288,16 @@ namespace ProteoformSuiteInternal
         }
 
         //ET,ED,EE,EF COMPARISONS
-        public static double max_mass_difference = 500; //TODO: implement this in ProteoformFamilies and elsewhere
+
+        
+        public static double ee_max_mass_difference=200; //TODO: implement this in ProteoformFamilies and elsewhere
+        public static double et_low_mass_difference=-50;
+        public static double et_high_mass_difference=150;
         public static double no_mans_land_lowerBound = 0.22;
         public static double no_mans_land_upperBound = 0.88;
         public static double peak_width_base = 0.0150;
-        public static double min_peak_count = 10;
-        public static int relation_group_centering_iterations = 2;
+        public static double min_peak_count = 8;
+        public static int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
         public static List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
         public static List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
         public static Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
@@ -335,20 +307,37 @@ namespace ProteoformSuiteInternal
 
         public static void make_et_relationships()
         {
-            Parallel.Invoke(
-                () => et_relations = Lollipop.proteoform_community.relate_et()
-                //() => ed_relations = Lollipop.proteoform_community.relate_ed()
-            );
-            //et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
+            //PARALLEL PROBLEM
+            //Parallel.Invoke(
+            //    () => et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et),
+            //    () => ed_relations = Lollipop.proteoform_community.relate_ed()
+            //);
+            if (!neucode_labeled)
+            {
+                et_low_mass_difference = -100;
+                et_high_mass_difference = 200;
+            }
+            et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
+            ed_relations = Lollipop.proteoform_community.relate_ed();
+            et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
         public static void make_ee_relationships()
         {
-            Parallel.Invoke(
-                () => ee_relations = proteoform_community.relate_ee()
-                //() => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
-            );
-            //ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
+            //PARALLEL PROBLEM
+            //Parallel.Invoke(
+            //    () => ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.et),
+            //    () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
+            //);
+            if (!neucode_labeled)
+            {
+                ee_max_mass_difference = 250;
+            }
+
+            ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
+            ef_relations = proteoform_community.relate_unequal_ee_lysine_counts();
+
+            ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
         //PROTEOFORM FAMILIES
@@ -375,9 +364,17 @@ namespace ProteoformSuiteInternal
         {
             return DeltaMassPeak.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, et_peaks.Select(r => r.as_tsv_row()));
         }
+        public static string ed_relations_results()
+        {
+            return ProteoformRelation.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, ed_relations.Values.ToList()[0].Select(r => r.as_tsv_row()));
+        }
         public static string ee_relations_results()
         {
             return ProteoformRelation.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, ee_relations.Select(r => r.as_tsv_row()));
+        }
+        public static string ef_relations_results()
+        {
+            return ProteoformRelation.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, ef_relations.Select(r => r.as_tsv_row()));
         }
         public static string ee_peak_results()
         {
@@ -411,7 +408,9 @@ namespace ProteoformSuiteInternal
                 "TheoreticalDatabase|combine_identical_sequences\t" + combine_identical_sequences.ToString(),
                 "Comparisons|no_mans_land_lowerBound\t" + no_mans_land_lowerBound.ToString(),
                 "Comparisons|no_mans_land_upperBound\t" + no_mans_land_upperBound.ToString(),
-                "Comparisons|max_mass_difference\t" + max_mass_difference.ToString(),
+                "Comparisons|ee_max_mass_difference\t" + ee_max_mass_difference.ToString(),
+                "Comparisons|et_low_mass_difference\t" + et_low_mass_difference.ToString(),
+                "Comparisons|et_high_mass_difference\t" + et_high_mass_difference.ToString(),
                 "Comparisons|relation_group_centering_iterations\t" + relation_group_centering_iterations.ToString(),
                 "Comparisons|peak_width_base\t" + peak_width_base.ToString(),
                 "Comparisons|min_peak_count\t" + min_peak_count.ToString()

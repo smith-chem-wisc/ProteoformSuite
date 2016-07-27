@@ -1,18 +1,18 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Xml;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 //Inspired by the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
 namespace ProteoformSuiteInternal
 {
-    class ProteomeDatabaseReader
+    public class ProteomeDatabaseReader
     {
         private static Dictionary<string, char> aminoAcidCodes;
         public static string oldPtmlistFilePath;
@@ -134,7 +134,7 @@ namespace ProteoformSuiteInternal
 
         public static Protein[] ReadUniprotXml(string uniprotXmlFile, Dictionary<string, Modification> uniprot_modification_table, int minPeptideLength, bool fixedMethionineCleavage)
         {
-            StreamReader uniprotXmlStream;
+            ConcurrentBag<Protein> bag_protein_list = new ConcurrentBag<Protein>();
             List<Protein> protein_list = new List<Protein>();
             using (var stream = new FileStream(uniprotXmlFile, FileMode.Open))
             {
@@ -154,7 +154,9 @@ namespace ProteoformSuiteInternal
                     }
                 }
 
-                Parallel.ForEach<XElement>(entries, entry =>
+                //PARALLEL PROBLEM
+               // Parallel.ForEach<XElement>(entries, entry =>
+                foreach (XElement entry in entries)
                 {
                     //Used fields
                     string dataset = GetAttribute(entry, "dataset");
@@ -166,8 +168,8 @@ namespace ProteoformSuiteInternal
                     string fragment = GetAttribute(sequence_elem, "fragment");
                     if (fragment == "" || fragment == null)
                     {
-                        fragment = "Full";
-                        if (fixedMethionineCleavage) fragment += "_MetCleaved";
+                        fragment = "full";
+                        if (fixedMethionineCleavage) fragment += "-met-cleaved";
                     }
                     int begin = 0;
                     int end = sequence.Length - 1;
@@ -205,9 +207,12 @@ namespace ProteoformSuiteInternal
                     }
 
                     //Add the full length protein, and then add the fragments with segments of the above modification dictionary
-                    protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, positionsAndPtms));
+                    bag_protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, positionsAndPtms));
                     //MessageBox.Show("added " + new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms).ToString());
-                    Parallel.ForEach<XElement>(features, feature =>
+
+                    //PARALLEL PROBLEM
+                    //Parallel.ForEach<XElement>(features, feature =>
+                    foreach (XElement feature in features)
                     {
                         string feature_type = GetAttribute(feature, "type");
                         switch (feature_type)
@@ -225,7 +230,7 @@ namespace ProteoformSuiteInternal
                                     bool justMetCleavage = fixedMethionineCleavage && feature_begin - 1 == begin && feature_end == end;
                                     string subsequence = sequence.Substring(feature_begin, feature_end - feature_begin + 1);
                                     if (!justMetCleavage && subsequence.Length != sequence.Length && subsequence.Length >= minPeptideLength)
-                                        protein_list.Add(new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence,
+                                        bag_protein_list.Add(new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence,
                                             SegmentPtms(positionsAndPtms, feature_begin, feature_end)));
                                 }
                                 break;
@@ -233,10 +238,15 @@ namespace ProteoformSuiteInternal
                             case "sequence variant":
                                 break;
                         }
-                    });
-                });
+                    } //});
+                } //}); 
+                
             }
-            return protein_list.Where(p => p != null).ToArray();
+            foreach (Protein p in bag_protein_list)
+            {
+                protein_list.Add(p);
+            }
+            return protein_list.ToArray();
         }
 
         private static string GetAttribute(XElement element, string attribute_name)
@@ -255,10 +265,10 @@ namespace ProteoformSuiteInternal
         private static XElement GetDescendant(XElement element, string name)
         {
             XElement e = element.Descendants().FirstOrDefault(elem => elem.Name.LocalName == name);
-            if (e != null) return e; 
+            if (e != null) return e;
             else return new XElement("dummy_node");
         }
-        
+
         private static int ConvertPositionElem(XElement position_elem)
         {
             string feature_position = GetAttribute(position_elem, "position");
@@ -272,15 +282,15 @@ namespace ProteoformSuiteInternal
         private static Dictionary<int, List<Modification>> SegmentPtms(Dictionary<int, List<Modification>> allPosPTMs, int begin, int end)
         {
             Dictionary<int, List<Modification>> segPosPTMs = new Dictionary<int, List<Modification>>();
-            Parallel.ForEach<int>(allPosPTMs.Keys, position =>
+            foreach (int position in allPosPTMs.Keys)
             {
                 if (position >= begin && position <= end)
                     segPosPTMs.Add(position, allPosPTMs[position]);
-            });
+            }
+
             return segPosPTMs;// the int is the amino acid position and the string[] are the different ptms at that position
         }
     }
 }
-           
-                            
-                          
+
+
