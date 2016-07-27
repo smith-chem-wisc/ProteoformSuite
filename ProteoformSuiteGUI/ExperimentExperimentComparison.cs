@@ -69,7 +69,7 @@ namespace ProteoformSuite
         }
         private void GraphEEPeaks()
         {
-            DisplayUtility.GraphDeltaMassPeaks(ct_EE_peakList, Lollipop.ee_peaks);
+            DisplayUtility.GraphDeltaMassPeaks(ct_EE_peakList, Lollipop.ee_peaks, Lollipop.ee_relations);
         }
         private void dgv_EE_Peak_List_CellClick(object sender, MouseEventArgs e)
         {

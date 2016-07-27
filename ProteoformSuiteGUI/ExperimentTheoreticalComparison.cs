@@ -88,7 +88,7 @@ namespace ProteoformSuite
         }
         private void GraphETPeaks()
         {
-            DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks);
+            DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, Lollipop.et_relations);
 
         }
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
@@ -99,7 +99,6 @@ namespace ProteoformSuite
                 ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
                 DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
                 DisplayUtility.GraphSelectedDeltaMassPeak(ct_ET_peakList, selected_peak);
-                ct_ET_peakList.ChartAreas[0].AxisY.Maximum = Convert.ToInt32(selected_peak.group_count * 1.2); //this automatically scales the vertical axis to the peak height plus 20%
             }
         }
         
