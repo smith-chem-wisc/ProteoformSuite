@@ -85,6 +85,7 @@ namespace ProteoformSuite
             dgv_RawExpNeuCodePairs.Columns["num_charge_states"].HeaderText = "No. Charge States";
             dgv_RawExpNeuCodePairs.Columns["intensity_ratio"].HeaderText = "Intensity Ratio";
             dgv_RawExpNeuCodePairs.Columns["lysine_count"].HeaderText = "Lysine Count";
+            dgv_RawExpNeuCodePairs.Columns["accepted"].HeaderText = "Accepted";
 
             dgv_RawExpNeuCodePairs.Columns["id"].Visible = false;
             dgv_RawExpNeuCodePairs.Columns["intensity_sum"].Visible = false;

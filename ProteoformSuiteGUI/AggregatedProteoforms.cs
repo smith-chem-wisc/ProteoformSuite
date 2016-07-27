@@ -110,7 +110,6 @@ namespace ProteoformSuite
             dgv_AcceptNeuCdLtProteoforms.Columns["fract_abundance"].HeaderText = "Fractional Abundance";
             dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum"].HeaderText = "Intensity Sum";
             dgv_AcceptNeuCdLtProteoforms.Columns["file_origin"].HeaderText = "Filename";
-            dgv_AcceptNeuCdLtProteoforms.Columns["id"].HeaderText = "ID";
             dgv_AcceptNeuCdLtProteoforms.Columns["scan_range"].HeaderText = "Scan Range";
             dgv_AcceptNeuCdLtProteoforms.Columns["rt_range"].HeaderText = "RT Range";
             dgv_AcceptNeuCdLtProteoforms.Columns["num_charge_states"].HeaderText = "No. Charge States";
@@ -118,6 +117,8 @@ namespace ProteoformSuite
             dgv_AcceptNeuCdLtProteoforms.Columns["lysine_count"].HeaderText = "Lysine Count";
             dgv_AcceptNeuCdLtProteoforms.Columns["accepted"].HeaderText = "Accepted";
             dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].HeaderText = "Intensity Sum for Overlapping Charge States";
+            dgv_AcceptNeuCdLtProteoforms.Columns["id_light"].HeaderText = "ID Light";
+            dgv_AcceptNeuCdLtProteoforms.Columns["id_heavy"].HeaderText = "ID Heavy";
 
             dgv_AcceptNeuCdLtProteoforms.AllowUserToAddRows = false;
 
@@ -126,6 +127,7 @@ namespace ProteoformSuite
                 dgv_AcceptNeuCdLtProteoforms.Columns["lysine_count"].Visible = false;
                 dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].Visible = false;
                 dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].Visible = false;
+                dgv_AcceptNeuCdLtProteoforms.Columns["id"].Visible = false;
 
             }
         }

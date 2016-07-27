@@ -104,20 +104,19 @@ namespace ProteoformSuite
         private void FormatEERelationsGridView()
         {
             //round table values
-            dgv_EE_Relations.Columns["group_adjusted_deltaM"].DefaultCellStyle.Format = "0.####";
-            dgv_EE_Relations.Columns["proteoform_mass_1"].DefaultCellStyle.Format = "0.####";
-            dgv_EE_Relations.Columns["proteoform_mass_2"].DefaultCellStyle.Format = "0.####";
+            dgv_EE_Relations.Columns["group_adjusted_deltaM"].DefaultCellStyle.Format = "0.#####";
+            dgv_EE_Relations.Columns["proteoform_mass_1"].DefaultCellStyle.Format = "0.#####";
+            dgv_EE_Relations.Columns["proteoform_mass_2"].DefaultCellStyle.Format = "0.#####";
             dgv_EE_Relations.Columns["agg_intensity_1"].DefaultCellStyle.Format = "0.##";
             dgv_EE_Relations.Columns["agg_intensity_2"].DefaultCellStyle.Format = "0.##";
             dgv_EE_Relations.Columns["agg_RT_1"].DefaultCellStyle.Format = "0.##";
             dgv_EE_Relations.Columns["agg_RT_2"].DefaultCellStyle.Format = "0.##";
-            dgv_EE_Relations.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
+            dgv_EE_Relations.Columns["delta_mass"].DefaultCellStyle.Format = "0.#####";
 
 
             //set column header
             dgv_EE_Relations.Columns["group_adjusted_deltaM"].HeaderText = "Peak Center Delta Mass";
             dgv_EE_Relations.Columns["group_count"].HeaderText = "Peak Center Count";
-            dgv_EE_Relations.Columns["ptm_list"].HeaderText = "PTM Description";
             dgv_EE_Relations.Columns["proteoform_mass_1"].HeaderText = "Heavy Experimental Aggregated Proteoform Mass";
             dgv_EE_Relations.Columns["proteoform_mass_2"].HeaderText = "Light Experimental Aggregarted Proteoform Mass";
             dgv_EE_Relations.Columns["agg_intensity_1"].HeaderText = "Heavy Experimental Aggregated Intensity";
@@ -128,8 +127,9 @@ namespace ProteoformSuite
             dgv_EE_Relations.Columns["num_observations_1"].HeaderText = "Number Heavy Experimental Observations";
             dgv_EE_Relations.Columns["num_observations_2"].HeaderText = "Number Light Experimental Observations";
             dgv_EE_Relations.Columns["delta_mass"].HeaderText = "Delta Mass";
-            dgv_EE_Relations.Columns["delta_mass"].DisplayIndex = 18; //column ordering
+            dgv_EE_Relations.Columns["delta_mass"].DisplayIndex = 15; //column ordering
             dgv_EE_Relations.Columns["unadjusted_group_count"].HeaderText = "Unadjusted Group Count";
+            dgv_EE_Relations.Columns["unadjusted_group_count"].DisplayIndex = 14;
             dgv_EE_Relations.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
             dgv_EE_Relations.Columns["accepted"].HeaderText = "Accepeted";
 
@@ -138,6 +138,7 @@ namespace ProteoformSuite
             dgv_EE_Relations.Columns["peak"].Visible = false;
             dgv_EE_Relations.Columns["name"].Visible = false;
             dgv_EE_Relations.Columns["fragment"].Visible = false;
+            dgv_EE_Relations.Columns["ptm_list"].Visible = false;
             if (!Lollipop.neucode_labeled) { dgv_EE_Relations.Columns["lysine_count"].Visible = false; }
 
             dgv_EE_Relations.AllowUserToAddRows = false;
@@ -173,8 +174,8 @@ namespace ProteoformSuite
             yMinEE.Value = 0; // scaling for y-axis minimum in the histogram of all EE pairs
 
             xMaxEE.Minimum = xMinEE.Value;
-            xMaxEE.Maximum = nUD_EE_Upper_Bound.Value;
-            xMaxEE.Value = nUD_EE_Upper_Bound.Value; // scaling for x-axis maximum in the histogram of all EE pairs
+            xMaxEE.Maximum = 500;
+            xMaxEE.Value = (decimal)Lollipop.ee_max_mass_difference; // scaling for x-axis maximum in the histogram of all EE pairs
 
             xMinEE.Minimum = 0;
             xMinEE.Maximum = xMaxEE.Value;
@@ -319,6 +320,7 @@ namespace ProteoformSuite
         private void EE_update_Click(object sender, EventArgs e)
         {
             RunTheGamut();
+            xMaxEE.Value = (decimal)Lollipop.ee_max_mass_difference;
         }
 
         private void nUD_EE_Upper_Bound_ValueChanged(object sender, EventArgs e)
@@ -326,8 +328,7 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.ee_max_mass_difference = Convert.ToDouble(nUD_EE_Upper_Bound.Value);
-                RunTheGamut();
-                xMaxEE.Value = (decimal)Lollipop.ee_max_mass_difference;
+                //RunTheGamut();
             }
         }
 
@@ -336,7 +337,7 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.peak_width_base = Convert.ToDouble(nUD_PeakWidthBase.Value);
-                RunTheGamut();
+               // RunTheGamut();
             }
         }
 
@@ -345,7 +346,7 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.min_peak_count = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
-                RunTheGamut();
+               // RunTheGamut();
             }
         }
 
@@ -354,7 +355,7 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.no_mans_land_lowerBound = Convert.ToDouble(nUD_NoManLower.Value);
-                RunTheGamut();
+               // RunTheGamut();
             }
         }
 
@@ -363,7 +364,7 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value); 
-                RunTheGamut();
+               // RunTheGamut();
             }
         }
     }
