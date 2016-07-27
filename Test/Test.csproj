@@ -94,10 +94,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ProteoformSuiteGUI\ProteoformSuiteGUI.csproj">
-      <Project>{90952c10-9060-4e42-aa1c-dc4bbe6a2fff}</Project>
-      <Name>ProteoformSuiteGUI</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ProteoformSuiteInternal\ProteoformSuiteInternal.csproj">
       <Project>{6b27b6e2-8eff-43c9-8582-f6224ca9afc1}</Project>
       <Name>ProteoformSuiteInternal</Name>

@@ -1,12 +1,7 @@
-﻿using DocumentFormat.OpenXml;
-using NUnit.Framework;
-using ProteoformSuite;
+﻿using NUnit.Framework;
 using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Test
 {
@@ -29,7 +24,7 @@ namespace Test
             Lollipop.neucode_labeled = true;
             Lollipop.process_raw_components(componentReader);
 
-            Assert.AreEqual(224,Lollipop.raw_experimental_components.Count);
+            Assert.AreEqual(224, Lollipop.raw_experimental_components.Count);
         }
 
     }
