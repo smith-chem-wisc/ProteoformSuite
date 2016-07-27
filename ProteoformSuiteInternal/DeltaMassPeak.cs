@@ -10,6 +10,7 @@ namespace ProteoformSuiteInternal
     {
         public double peak_width { get; } = Lollipop.peak_width_base;
         public double decoy_count { get; set; }
+        public double decoy_sd { get; set; }
         public double group_fdr { get; set; }
         public Boolean peak_accepted { get; set; }
         public List<Modification> possiblePeakAssignments { get; set; }

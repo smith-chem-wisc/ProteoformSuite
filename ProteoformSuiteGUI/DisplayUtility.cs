@@ -63,19 +63,19 @@ namespace ProteoformSuite
             ct.ChartAreas[0].AxisY.Title = "Nearby Count";
         }
 
-        public static void GraphDeltaMassPeaks(Chart ct, List<DeltaMassPeak> peaks, List<ProteoformRelation> relations)
+        public static void GraphDeltaMassPeaks(Chart ct, List<DeltaMassPeak> peaks, string peak_series, string decoy_series, List<ProteoformRelation> relations, string relations_series)
         {
             List<DeltaMassPeak> peaks_ordered = peaks.OrderByDescending(r => r.group_adjusted_deltaM).ToList();
             foreach (DeltaMassPeak peak in peaks_ordered)
             {
-                ct.Series["Peak Count"].Points.AddXY(peak.group_adjusted_deltaM, peak.group_count);
-                ct.Series["Decoy Count"].Points.AddXY(peak.group_adjusted_deltaM, peak.decoy_count);
+                ct.Series[peak_series].Points.AddXY(peak.group_adjusted_deltaM, peak.group_count);
+                ct.Series[decoy_series].Points.AddXY(peak.group_adjusted_deltaM, peak.decoy_count);
             }
 
             List<ProteoformRelation> relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
             foreach (ProteoformRelation relation in relations_ordered)
             {
-                ct.Series["Nearby Relations"].Points.AddXY(relation.delta_mass, relation.unadjusted_group_count);
+                ct.Series[relations_series].Points.AddXY(relation.delta_mass, relation.unadjusted_group_count);
             }
             ct.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
             if (peaks_ordered.Count > 0) GraphSelectedDeltaMassPeak(ct, peaks_ordered[0]);

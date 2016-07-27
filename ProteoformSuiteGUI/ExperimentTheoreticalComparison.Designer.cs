@@ -38,10 +38,6 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
-            this.tb_DecoyStdDev = new System.Windows.Forms.TextBox();
-            this.tb_DecoyAverage = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.label10 = new System.Windows.Forms.Label();
             this.tb_IdentifiedProteoforms = new System.Windows.Forms.TextBox();
             this.tb_TotalPeaks = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -168,10 +164,6 @@
             // 
             // splitContainer4.Panel1
             // 
-            this.splitContainer4.Panel1.Controls.Add(this.tb_DecoyStdDev);
-            this.splitContainer4.Panel1.Controls.Add(this.tb_DecoyAverage);
-            this.splitContainer4.Panel1.Controls.Add(this.label9);
-            this.splitContainer4.Panel1.Controls.Add(this.label10);
             this.splitContainer4.Panel1.Controls.Add(this.tb_IdentifiedProteoforms);
             this.splitContainer4.Panel1.Controls.Add(this.tb_TotalPeaks);
             this.splitContainer4.Panel1.Controls.Add(this.label8);
@@ -181,51 +173,13 @@
             // 
             this.splitContainer4.Panel2.Controls.Add(this.splitContainer5);
             this.splitContainer4.Size = new System.Drawing.Size(497, 407);
-            this.splitContainer4.SplitterDistance = 71;
+            this.splitContainer4.SplitterDistance = 35;
             this.splitContainer4.SplitterWidth = 3;
             this.splitContainer4.TabIndex = 0;
             // 
-            // tb_DecoyStdDev
-            // 
-            this.tb_DecoyStdDev.Location = new System.Drawing.Point(109, 30);
-            this.tb_DecoyStdDev.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_DecoyStdDev.Name = "tb_DecoyStdDev";
-            this.tb_DecoyStdDev.ReadOnly = true;
-            this.tb_DecoyStdDev.Size = new System.Drawing.Size(86, 20);
-            this.tb_DecoyStdDev.TabIndex = 7;
-            // 
-            // tb_DecoyAverage
-            // 
-            this.tb_DecoyAverage.Location = new System.Drawing.Point(109, 8);
-            this.tb_DecoyAverage.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_DecoyAverage.Name = "tb_DecoyAverage";
-            this.tb_DecoyAverage.ReadOnly = true;
-            this.tb_DecoyAverage.Size = new System.Drawing.Size(86, 20);
-            this.tb_DecoyAverage.TabIndex = 6;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(13, 32);
-            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(86, 13);
-            this.label9.TabIndex = 5;
-            this.label9.Text = "Decoy Std. Dev.";
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(13, 10);
-            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(81, 13);
-            this.label10.TabIndex = 4;
-            this.label10.Text = "Decoy Average";
-            // 
             // tb_IdentifiedProteoforms
             // 
-            this.tb_IdentifiedProteoforms.Location = new System.Drawing.Point(355, 30);
+            this.tb_IdentifiedProteoforms.Location = new System.Drawing.Point(155, 8);
             this.tb_IdentifiedProteoforms.Margin = new System.Windows.Forms.Padding(2);
             this.tb_IdentifiedProteoforms.Name = "tb_IdentifiedProteoforms";
             this.tb_IdentifiedProteoforms.ReadOnly = true;
@@ -244,7 +198,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(226, 32);
+            this.label8.Location = new System.Drawing.Point(26, 10);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(109, 13);
@@ -274,7 +228,7 @@
             // splitContainer5.Panel2
             // 
             this.splitContainer5.Panel2.Controls.Add(this.ct_ET_peakList);
-            this.splitContainer5.Size = new System.Drawing.Size(497, 333);
+            this.splitContainer5.Size = new System.Drawing.Size(497, 369);
             this.splitContainer5.SplitterDistance = 229;
             this.splitContainer5.TabIndex = 16;
             // 
@@ -289,7 +243,7 @@
             this.dgv_ET_Peak_List.Margin = new System.Windows.Forms.Padding(2);
             this.dgv_ET_Peak_List.Name = "dgv_ET_Peak_List";
             this.dgv_ET_Peak_List.RowTemplate.Height = 28;
-            this.dgv_ET_Peak_List.Size = new System.Drawing.Size(229, 333);
+            this.dgv_ET_Peak_List.Size = new System.Drawing.Size(229, 369);
             this.dgv_ET_Peak_List.TabIndex = 0;
             // 
             // ct_ET_peakList
@@ -316,11 +270,11 @@
             series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
             series3.Legend = "Legend1";
             series3.MarkerSize = 10;
-            series3.Name = "Decoy Count";
+            series3.Name = "Median Decoy Count";
             this.ct_ET_peakList.Series.Add(series1);
             this.ct_ET_peakList.Series.Add(series2);
             this.ct_ET_peakList.Series.Add(series3);
-            this.ct_ET_peakList.Size = new System.Drawing.Size(264, 333);
+            this.ct_ET_peakList.Size = new System.Drawing.Size(264, 369);
             this.ct_ET_peakList.TabIndex = 1;
             this.ct_ET_peakList.Text = "chart1";
             // 
@@ -343,7 +297,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(31, 31);
+            this.groupBox4.Location = new System.Drawing.Point(31, 32);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -412,7 +366,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(263, 31);
+            this.groupBox3.Location = new System.Drawing.Point(263, 32);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -485,7 +439,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(263, 118);
+            this.groupBox2.Location = new System.Drawing.Point(263, 119);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -553,7 +507,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(31, 118);
+            this.groupBox1.Location = new System.Drawing.Point(31, 119);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -766,10 +720,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DataVisualization.Charting.Chart ct_ET_Histogram;
         private System.Windows.Forms.SplitContainer splitContainer4;
-        private System.Windows.Forms.TextBox tb_DecoyStdDev;
-        private System.Windows.Forms.TextBox tb_DecoyAverage;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.Label label10;
         private System.Windows.Forms.TextBox tb_IdentifiedProteoforms;
         private System.Windows.Forms.TextBox tb_TotalPeaks;
         private System.Windows.Forms.Label label8;
