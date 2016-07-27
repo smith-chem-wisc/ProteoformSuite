@@ -39,6 +39,7 @@ namespace ProteoformSuite
         {
             FillEEPeakListTable();
             FillEEPairsGridView();
+            FormatEEPeakListGridView();
             GraphEERelations();
             GraphEEPeaks();
             updateFiguresOfMerit();
@@ -57,10 +58,6 @@ namespace ProteoformSuite
             List<DeltaMassPeak> big_peaks = Lollipop.ee_peaks.Where(p => p.peak_accepted).ToList();
             tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.mass_difference_group.Count).Sum().ToString();
             tb_TotalPeaks.Text = big_peaks.Count.ToString();
-
-            //decoy figures of merit still missing
-            //tb_DecoyAverage = ?;
-            //tb_DecoyStdDev = ?
         }
 
         private void FillEEPairsGridView()
@@ -132,6 +129,24 @@ namespace ProteoformSuite
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
         {
             updateFiguresOfMerit();
+        }
+
+        private void FormatEEPeakListGridView()
+        {
+            //making all columns invisible first - faster
+            foreach (DataGridViewColumn column in dgv_EE_Peaks.Columns) { column.Visible = false; }
+
+            dgv_EE_Peaks.Columns["group_count"].Visible = true;
+            dgv_EE_Peaks.Columns["group_adjusted_deltaM"].Visible = true;
+            dgv_EE_Peaks.Columns["peak_accepted"].Visible = true;
+            dgv_EE_Peaks.Columns["possiblePeakAssignments_string"].Visible = true;
+
+            dgv_EE_Peaks.Columns["group_count"].HeaderText = "Peak Center Count";
+            dgv_EE_Peaks.Columns["group_adjusted_deltaM"].HeaderText = "Peak Center Delta Mass";
+            dgv_EE_Peaks.Columns["peak_accepted"].HeaderText = "Peak Accepted";
+            dgv_EE_Peaks.Columns["possiblePeakAssignments_string"].HeaderText = "Peak Assignment";
+
+            dgv_EE_Peaks.AllowUserToAddRows = false;
         }
 
         private void peakListSpecificPeakAcceptanceChanged(object sender, EventArgs e)
