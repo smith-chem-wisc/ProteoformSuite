@@ -17,7 +17,9 @@ namespace ProteoformSuiteInternal
         public DeltaMassPeak(ProteoformRelation base_relation) : base(base_relation)
         {
             this.base_relation = base_relation;
-           Parallel.ForEach<ProteoformRelation>(base_relation.mass_difference_group, relation => relation.peak = this);
+            Parallel.ForEach<ProteoformRelation>(base_relation.mass_difference_group, relation => relation.peak = this);
+            //Each relation in a given peak should have the same group_adjusted_deltaM and the same peak count (# relations that went into that peak)
+            Parallel.ForEach<ProteoformRelation>(base_relation.mass_difference_group, relation => relation.mass_difference_group = base_relation.mass_difference_group);
             this.peak_accepted = set_peak_accepted();
         }
 

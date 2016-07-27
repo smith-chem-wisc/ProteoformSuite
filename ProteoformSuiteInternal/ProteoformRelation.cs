@@ -123,37 +123,44 @@ namespace ProteoformSuiteInternal
             else { return false; }
         } 
 
-        public List<ProteoformRelation> accept_exclusive(List<ProteoformRelation> already_grouped)
+        public void set_nearby_group(List<ProteoformRelation> all_relations)
         {
-            this.mass_difference_group = this.mass_difference_group.Except(already_grouped).ToList();
+            calculate_unadjusted_group_count(all_relations);
+        }
+
+        /*(this needs to be done at the actual time of forming peaks or else the average is wrong so the peak can be formed out
+            of incorrect relations (average shouldn't include relations already grouped into peaks)*/
+                public List<ProteoformRelation> find_nearby_relations(List<ProteoformRelation> ungrouped_relations)
+        {
+            List<ProteoformRelation> nearby_relations = new List<ProteoformRelation>();
+            double nearby_deltaM = this.delta_mass;
+            for (int i = 0; i < Lollipop.relation_group_centering_iterations; i++)
+            {
+                double lower_limit_of_peak_width = nearby_deltaM - Lollipop.peak_width_base / 2;
+                double upper_limit_of_peak_width = nearby_deltaM + Lollipop.peak_width_base / 2;
+                nearby_relations = ungrouped_relations.Where(relation =>
+                    relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
+                nearby_deltaM = nearby_relations.Select(r => r.delta_mass).Average();
+            }
+            this.group_count = nearby_relations.Count;
+            this.mass_difference_group = nearby_relations;
+
             Parallel.ForEach<ProteoformRelation>(mass_difference_group, mass_difference =>
             {
                 mass_difference.connected_proteoforms[0].relationships.Add(mass_difference);
                 mass_difference.connected_proteoforms[1].relationships.Add(mass_difference);
             });
+
             return this.mass_difference_group;
         }
 
-        public void set_nearby_group(List<ProteoformRelation> all_relations)
-        {
-            this.mass_difference_group = find_nearby_relations(all_relations);
-        }
 
-        public List<ProteoformRelation> find_nearby_relations(List<ProteoformRelation> all_relations)
+        private void calculate_unadjusted_group_count(List<ProteoformRelation> all_relations)
         {
-            List<ProteoformRelation> nearby_relations = new List<ProteoformRelation>();
-            double nearby_deltaM = this.group_adjusted_deltaM;
-            for (int i = 0; i < Lollipop.relation_group_centering_iterations; i++)
-            {
-                double lower_limit_of_peak_width = nearby_deltaM - Lollipop.peak_width_base / 2;
-                double upper_limit_of_peak_width = nearby_deltaM + Lollipop.peak_width_base / 2;
-                nearby_relations = all_relations.Where(relation =>
-                    relation.group_adjusted_deltaM >= lower_limit_of_peak_width && relation.group_adjusted_deltaM <= upper_limit_of_peak_width).ToList();
-                nearby_deltaM = nearby_relations.Select(r => r.delta_mass).Average();
-                if (i == 0) { this.unadjusted_group_count = nearby_relations.Count; }
-            }
-            this.group_count = nearby_relations.Count;
-            return nearby_relations;
+            double lower_limit_of_peak_width = this.delta_mass - Lollipop.peak_width_base / 2;
+            double upper_limit_of_peak_width = this.delta_mass + Lollipop.peak_width_base / 2;
+            this.unadjusted_group_count = all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width
+            && relation.delta_mass <= upper_limit_of_peak_width).ToList().Count;
         }
 
         public string as_tsv_row()
