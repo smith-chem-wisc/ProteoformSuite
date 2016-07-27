@@ -49,8 +49,8 @@ namespace ProteoformSuite
         {
             FillETPeakListTable();
             FillETRelationsGridView();
-            FormatETRelationsGridView();
-            FormatETPeakListGridView();
+            DisplayUtility.FormatRelationsGridView(dgv_ET_Pairs);
+            DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List);
             GraphETRelations();
             GraphETPeaks();
             updateFiguresOfMerit();       
@@ -105,65 +105,6 @@ namespace ProteoformSuite
             }
         }
         
-        private void FormatETRelationsGridView()
-        {
-            //round table values
-            dgv_ET_Pairs.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
-            dgv_ET_Pairs.Columns["peak_center_deltaM"].DefaultCellStyle.Format = "0.####";
-            dgv_ET_Pairs.Columns["proteoform_mass_1"].DefaultCellStyle.Format = "0.####";
-            dgv_ET_Pairs.Columns["proteoform_mass_2"].DefaultCellStyle.Format = "0.####";
-            dgv_ET_Pairs.Columns["agg_intensity_1"].DefaultCellStyle.Format = "0.##";
-            dgv_ET_Pairs.Columns["agg_RT_1"].DefaultCellStyle.Format = "0.##";
-
-            //set column header
-            dgv_ET_Pairs.Columns["delta_mass"].HeaderText = "Delta Mass";
-            dgv_ET_Pairs.Columns["delta_mass"].DisplayIndex = 18;
-            dgv_ET_Pairs.Columns["unadjusted_group_count"].HeaderText = "Nearby Relation Count";
-            dgv_ET_Pairs.Columns["accepted"].HeaderText = "Accepted";
-            dgv_ET_Pairs.Columns["peak_center_deltaM"].HeaderText = "Peak Center Delta Mass";
-            dgv_ET_Pairs.Columns["peak_center_count"].HeaderText = "Peak Center Count";
-            dgv_ET_Pairs.Columns["accession"].HeaderText = "Accession";
-            dgv_ET_Pairs.Columns["fragment"].HeaderText = "Fragment";
-            dgv_ET_Pairs.Columns["ptm_list"].HeaderText = "PTM Description";
-            dgv_ET_Pairs.Columns["proteoform_mass_1"].HeaderText = "Experimental Aggregated Proteoform Mass";
-            dgv_ET_Pairs.Columns["proteoform_mass_2"].HeaderText = "Theoretical Proteoform Mass";
-            dgv_ET_Pairs.Columns["agg_intensity_1"].HeaderText = "Experimental Aggregated Intensity";
-            dgv_ET_Pairs.Columns["agg_RT_1"].HeaderText = "Experimental Aggregated RT";
-            dgv_ET_Pairs.Columns["lysine_count"].HeaderText = "Lysine Count";
-            dgv_ET_Pairs.Columns["num_observations_1"].HeaderText = "Number Experimental Observations";
-            dgv_ET_Pairs.Columns["name"].HeaderText = "Name";
-            dgv_ET_Pairs.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
-
-            //making these columns invisible
-            dgv_ET_Pairs.Columns["group_adjusted_deltaM"].Visible = false;
-            dgv_ET_Pairs.Columns["group_count"].Visible = false;
-            dgv_ET_Pairs.Columns["peak"].Visible = false;
-            dgv_ET_Pairs.Columns["agg_intensity_2"].Visible = false;
-            dgv_ET_Pairs.Columns["agg_RT_2"].Visible = false;
-            dgv_ET_Pairs.Columns["num_observations_2"].Visible = false;
-            if (!Lollipop.neucode_labeled) { dgv_ET_Pairs.Columns["lysine_count"].Visible = false; }
-
-            dgv_ET_Pairs.AllowUserToAddRows = false;
-        }
-
-        private void FormatETPeakListGridView()
-        {
-            //making all columns invisible first - faster
-            foreach (DataGridViewColumn column in dgv_ET_Peak_List.Columns) { column.Visible = false; }
-
-            dgv_ET_Peak_List.Columns["group_count"].Visible = true;
-            dgv_ET_Peak_List.Columns["group_adjusted_deltaM"].Visible = true;
-            dgv_ET_Peak_List.Columns["peak_accepted"].Visible = true;
-            dgv_ET_Peak_List.Columns["possiblePeakAssignments_string"].Visible = true;
-
-            dgv_ET_Peak_List.Columns["group_count"].HeaderText = "Peak Center Count";
-            dgv_ET_Peak_List.Columns["group_adjusted_deltaM"].HeaderText = "Peak Center Delta Mass";
-            dgv_ET_Peak_List.Columns["peak_accepted"].HeaderText = "Peak Accepted";
-            dgv_ET_Peak_List.Columns["possiblePeakAssignments_string"].HeaderText = "Peak Assignment";
-
-            dgv_ET_Peak_List.AllowUserToAddRows = false;
-        }
-
         Point? ct_ET_Histogram_prevPosition = null;
         Point? ct_ET_peakList_prevPosition = null;
         ToolTip ct_ET_Histogram_tt = new ToolTip();
