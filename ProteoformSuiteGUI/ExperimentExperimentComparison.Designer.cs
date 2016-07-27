@@ -34,6 +34,7 @@
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.dgv_EE_Peaks = new System.Windows.Forms.DataGridView();
@@ -380,12 +381,17 @@
             series2.MarkerSize = 10;
             series2.Name = "Peak Count";
             series3.ChartArea = "ChartArea1";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series3.Legend = "Legend1";
-            series3.MarkerSize = 10;
-            series3.Name = "Decoy Count";
+            series3.Name = "Nearby Relations";
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series4.Legend = "Legend1";
+            series4.MarkerSize = 10;
+            series4.Name = "Decoy Count";
             this.ct_EE_peakList.Series.Add(series2);
             this.ct_EE_peakList.Series.Add(series3);
+            this.ct_EE_peakList.Series.Add(series4);
             this.ct_EE_peakList.Size = new System.Drawing.Size(235, 340);
             this.ct_EE_peakList.TabIndex = 2;
             this.ct_EE_peakList.TabStop = false;
