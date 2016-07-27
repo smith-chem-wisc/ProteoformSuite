@@ -189,7 +189,7 @@ namespace ProteoformSuiteInternal
 
         private List<ProteoformRelation> exclusive_relation_group(List<ProteoformRelation> relations, List<ProteoformRelation> grouped_relations)
         {
-            return relations.Except(grouped_relations).OrderByDescending(r => r.group_count).ToList();
+            return relations.Except(grouped_relations).OrderByDescending(r => r.unadjusted_group_count).ToList();
         }
 
         //CONSTRUCTING FAMILIES
