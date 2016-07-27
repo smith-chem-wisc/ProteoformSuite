@@ -18,7 +18,7 @@ namespace ProteoformSuite
         {
             SortableBindingList<object> sbl = new SortableBindingList<object>(someList);
             dgv.DataSource = sbl;
-            dgv.ReadOnly = true;
+            dgv.ReadOnly = false;
             dgv.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
             dgv.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
