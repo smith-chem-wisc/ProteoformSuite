@@ -295,5 +295,68 @@ namespace Test
             Assert.AreEqual(0, prList.Count);
         }
 
+
+        [Test]
+        public void TestProteoformCommunityRelate_ED()
+        {
+            ProteoformCommunity testProteoformCommunity = new ProteoformCommunity();
+            var edDictionary = testProteoformCommunity.relate_ed();
+            // In empty comminity, relate ed is empty
+            Assert.AreEqual(0, edDictionary.Count);
+
+            testProteoformCommunity.decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>>();
+            edDictionary = testProteoformCommunity.relate_ed();
+            // In comminity with initialized decoy_proteoforms, still no relations
+            Assert.AreEqual(0, edDictionary.Count);
+
+            testProteoformCommunity.decoy_proteoforms["fake_decoy_proteoform1"] = new List<TheoreticalProteoform>();
+            edDictionary = testProteoformCommunity.relate_ed();
+            // In comminity with a single decoy proteoform, have a single relation
+            Assert.AreEqual(1, edDictionary.Count);
+            // But it's empty
+            Assert.IsEmpty(edDictionary["fake_decoy_proteoform1"]);
+
+            // In order to make it not empty, we must have relate_et method output a non-empty List
+            // it must take as arguments non-empty pfs1 and pfs2
+            // So testProteoformCommunity.experimental_proteoforms must be non-empty
+            // And decoy_proteoforms["fake_decoy_proteoform1"] must be non-empty
+            testProteoformCommunity.decoy_proteoforms["fake_decoy_proteoform1"].Add(new TheoreticalProteoform("decoyProteoform1"));
+
+            Assert.IsEmpty(testProteoformCommunity.experimental_proteoforms);
+            testProteoformCommunity.experimental_proteoforms.Add(new ExperimentalProteoform("experimentalProteoform1"));
+
+            edDictionary = testProteoformCommunity.relate_ed();
+            // Make sure there is one relation total, because only a single decoy was provided
+            Assert.AreEqual(1, edDictionary.Count);
+            Assert.IsNotEmpty(edDictionary["fake_decoy_proteoform1"]);
+            // Make sure there is one relation for the provided fake_decoy_proteoform1
+            Assert.AreEqual(1, edDictionary["fake_decoy_proteoform1"].Count);
+
+
+            ProteoformRelation rel = edDictionary["fake_decoy_proteoform1"][0];
+
+
+            Assert.IsFalse(rel.accepted);
+            Assert.AreEqual("decoyProteoform1", rel.accession);
+            Assert.AreEqual(0, rel.agg_intensity_1);
+            Assert.AreEqual(0, rel.agg_intensity_2);
+            Assert.AreEqual(0, rel.agg_RT_1);
+            Assert.AreEqual(0, rel.agg_RT_2);
+            Assert.AreEqual(0, rel.delta_mass);
+            Assert.IsNull(rel.fragment);
+            Assert.AreEqual(0, rel.group_adjusted_deltaM);
+            Assert.AreEqual(1, rel.group_count);
+            Assert.AreEqual(-1, rel.lysine_count);
+            Assert.AreEqual(1, rel.mass_difference_group.Count);
+            Assert.IsNull(rel.name);
+            Assert.AreEqual(1, rel.num_observations_1);
+            Assert.AreEqual(0, rel.num_observations_2);
+            Assert.IsTrue(rel.outside_no_mans_land);
+            Assert.IsNull(rel.peak);
+            Assert.AreEqual(0, rel.proteoform_mass_1);
+            Assert.AreEqual(0, rel.proteoform_mass_2);
+            Assert.AreEqual("unmodified", rel.ptm_list);
+            Assert.AreEqual(1, rel.unadjusted_group_count);
+        }
     }
 }
