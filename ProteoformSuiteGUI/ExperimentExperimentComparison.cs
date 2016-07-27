@@ -39,12 +39,10 @@ namespace ProteoformSuite
         {
             FillEEPeakListTable();
             FillEEPairsGridView();
+            FormatEEPeakListGridView();
             GraphEERelations();
             GraphEEPeaks();
-
-            List<DeltaMassPeak> big_peaks = Lollipop.ee_peaks.Where(p => p.accepted).ToList();
-            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.mass_difference_group.Count).Sum().ToString();
-            tb_TotalPeaks.Text = big_peaks.Count.ToString();
+            updateFiguresOfMerit();
         }
 
         private void RunTheGamut()
@@ -53,6 +51,13 @@ namespace ProteoformSuite
             this.FillTablesAndCharts();
             xMaxEE.Value = nUD_EE_Upper_Bound.Value;
             this.Cursor = Cursors.Default;
+        }
+
+        private void updateFiguresOfMerit()
+        {
+            List<DeltaMassPeak> big_peaks = Lollipop.ee_peaks.Where(p => p.peak_accepted).ToList();
+            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.mass_difference_group.Count).Sum().ToString();
+            tb_TotalPeaks.Text = big_peaks.Count.ToString();
         }
 
         private void FillEEPairsGridView()
@@ -123,46 +128,25 @@ namespace ProteoformSuite
 
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
         {
+            updateFiguresOfMerit();
+        }
 
-            //double averageDeltaMass = Convert.ToDouble(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 2].Value);
-            //int peakCount = Convert.ToInt32(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Value);
-            //dgv_EE_Peak_List.EndEdit();
-            //dgv_EE_Peak_List.Update();
+        private void FormatEEPeakListGridView()
+        {
+            //making all columns invisible first - faster
+            foreach (DataGridViewColumn column in dgv_EE_Peaks.Columns) { column.Visible = false; }
 
-            //double lowMass = averageDeltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-            //double highMass = averageDeltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+            dgv_EE_Peaks.Columns["group_count"].Visible = true;
+            dgv_EE_Peaks.Columns["group_adjusted_deltaM"].Visible = true;
+            dgv_EE_Peaks.Columns["peak_accepted"].Visible = true;
+            dgv_EE_Peaks.Columns["possiblePeakAssignments_string"].Visible = true;
 
-            //string expression = "[Average Delta Mass] > " + lowMass + " and [Average Delta Mass] < " + highMass;
+            dgv_EE_Peaks.Columns["group_count"].HeaderText = "Peak Center Count";
+            dgv_EE_Peaks.Columns["group_adjusted_deltaM"].HeaderText = "Peak Center Delta Mass";
+            dgv_EE_Peaks.Columns["peak_accepted"].HeaderText = "Peak Accepted";
+            dgv_EE_Peaks.Columns["possiblePeakAssignments_string"].HeaderText = "Peak Assignment";
 
-            //DataRow[] selectedPeaks = eePeakList.Select(expression);
-
-            //foreach (DataRow row in selectedPeaks)
-            //{
-            //    row["Acceptable"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
-            //}
-            //eePeakList.AcceptChanges();
-            //Lollipop.etPeakList = eePeakList;
-            //dgv_EE_Peak_List.Update();
-            //dgv_EE_Peak_List.Refresh();
-
-            //expression = "[Peak Center Mass] > " + lowMass + " and [Peak Center Mass] < " + highMass;
-
-            //selectedPeaks = eePairsList.Select(expression);
-
-            //foreach (DataRow row in selectedPeaks)
-            //{
-
-            //    row["Proteoform Family"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
-
-            //}
-            //eePairsList.AcceptChanges();
-
-            //Lollipop.experimentExperimentPairs = eePairsList;
-            //dgv_EE_Pairs.DataSource = null;
-            //FillEEPairsGridView();
-
-            //UpdateFiguresOfMerit();
-
+            dgv_EE_Peaks.AllowUserToAddRows = false;
         }
 
         private void peakListSpecificPeakAcceptanceChanged(object sender, EventArgs e)
