@@ -81,6 +81,7 @@ namespace ProteoformSuiteInternal
                 else return double.MinValue;
             }
         }
+
         public string accession { get; set; } //theoretical for ET, null for EE
         public string name { get; set; } //theoretical for ET, null for EE
         public string fragment { get; set; }
@@ -153,7 +154,7 @@ namespace ProteoformSuiteInternal
 
         /*(this needs to be done at the actual time of forming peaks or else the average is wrong so the peak can be formed out
             of incorrect relations (average shouldn't include relations already grouped into peaks)*/
-                public List<ProteoformRelation> find_nearby_relations(List<ProteoformRelation> ungrouped_relations)
+       public List<ProteoformRelation> find_nearby_relations(List<ProteoformRelation> ungrouped_relations)
         {
             List<ProteoformRelation> nearby_relations = new List<ProteoformRelation>();
             double nearby_deltaM = this.delta_mass;

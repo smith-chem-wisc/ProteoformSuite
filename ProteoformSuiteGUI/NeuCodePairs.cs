@@ -15,7 +15,7 @@ namespace ProteoformSuite
 {
     public partial class NeuCodePairs : Form
     {
-        bool formLoadEvent = true; 
+        bool initial_load = true; 
 
         public NeuCodePairs()
         {
@@ -29,7 +29,7 @@ namespace ProteoformSuite
             InitializeParameterSet();
             GraphNeuCodePairs();
             FillNeuCodePairsDGV();
-            formLoadEvent = false;
+            initial_load = false;
         }
 
         public void FillNeuCodePairsDGV()
@@ -51,8 +51,6 @@ namespace ProteoformSuite
 
             KMaxAcceptable.Minimum = 0; KMaxAcceptable.Maximum = 28; KMaxAcceptable.Value = Lollipop.max_lysine_ct;
             KMinAcceptable.Minimum = 0; KMinAcceptable.Maximum = 28; KMinAcceptable.Value = Lollipop.min_lysine_ct;
-
-
         }
 
         private void FormatNeuCodePairsDGV()
@@ -208,7 +206,7 @@ namespace ProteoformSuite
 
         private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            if (!formLoadEvent)
+            if (!initial_load)
             {
                 Lollipop.min_lysine_ct = KMinAcceptable.Value;
                 //if KMin increased, incorrect values un-accepted
@@ -224,7 +222,7 @@ namespace ProteoformSuite
 
         private void KMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            if (!formLoadEvent)
+            if (!initial_load)
             {
                 Lollipop.max_lysine_ct = KMaxAcceptable.Value;
                 //if KMax is decreased, incorrect values are un-accepted
@@ -240,7 +238,7 @@ namespace ProteoformSuite
 
         private void IRatMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            if (!formLoadEvent)
+            if (!initial_load)
             {
                 Lollipop.min_intensity_ratio = IRatMinAcceptable.Value;
                 //if IMin is increaed, incorrect values are un-accepted
@@ -256,7 +254,7 @@ namespace ProteoformSuite
 
         private void IRatMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            if (!formLoadEvent)
+            if (!initial_load)
             {
                 Lollipop.max_intensity_ratio = IRatMaxAcceptable.Value;
                 //if Imax is decreased, incorrect values are un-accepted

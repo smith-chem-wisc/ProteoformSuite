@@ -114,6 +114,14 @@ namespace ProteoformSuite
             {
                 string method_filename = methodFileOpen.FileName;
                 string[] lines = File.ReadAllLines(method_filename);
+                if (Lollipop.deconResultsFileNames.Count != 0)
+                {
+                    var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?", "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
+                    if (response == DialogResult.Yes) { Lollipop.use_method_files = false; }
+                    if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); Lollipop.use_method_files = true; }
+                    if (response == DialogResult.Cancel) { return; }
+                }
+
                 foreach (string line in lines)
                 {
                     string setting_spec = line.Trim();
@@ -160,13 +168,13 @@ namespace ProteoformSuite
         {
             Parallel.Invoke(
                 () => rawExperimentalComponents.FillRawExpComponentsTable(),
-                () => neuCodePairs.FillNeuCodePairsDGV(),
-                () => neuCodePairs.GraphNeuCodePairs(),
                 () => aggregatedProteoforms.FillAggregatesTable(),
                 () => theoreticalDatabase.FillDataBaseTable("Target"),
                 () => experimentalTheoreticalComparison.FillTablesAndCharts(),
                 () => experimentExperimentComparison.FillTablesAndCharts()
             );
+            if (Lollipop.neucode_labeled) neuCodePairs.GraphNeuCodePairs();
+
         }
 
         public void enable_neuCodeProteoformPairsToolStripMenuItem(bool setting)

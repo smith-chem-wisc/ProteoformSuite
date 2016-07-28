@@ -50,6 +50,7 @@ namespace ProteoformSuite
             dgv_RawExpComp_MI_masses.Columns["scan_range"].HeaderText = "Scan Range";
             dgv_RawExpComp_MI_masses.Columns["rt_range"].HeaderText = "RT Range";
             dgv_RawExpComp_MI_masses.Columns["num_charge_states"].HeaderText = "No. Charge States";
+            dgv_RawExpComp_MI_masses.Columns["accepted"].HeaderText = "Accepted";
 
             dgv_RawExpComp_MI_masses.AllowUserToAddRows = false;
             dgv_RawExpComp_MI_masses.Columns["corrected_mass"].Visible = false;

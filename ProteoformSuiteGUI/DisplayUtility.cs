@@ -52,8 +52,8 @@ namespace ProteoformSuite
             ct.Series[series].Points.Clear();
             ct.Series[series].XValueMember = "delta_mass";
             ct.Series[series].YValueMembers = "unadjusted_group_count";
-            List<ProteoformRelation> et_relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
-            ct.DataSource = et_relations_ordered;
+            List<ProteoformRelation> relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
+            ct.DataSource = relations_ordered;
             ct.DataBind();
 
             ct.ChartAreas[0].AxisY.StripLines.Clear();

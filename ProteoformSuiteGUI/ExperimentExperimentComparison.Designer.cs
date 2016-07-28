@@ -391,8 +391,8 @@
             // 
             // ct_EE_peakList
             // 
-            chartArea1.Name = "ChartArea1";
-            this.ct_EE_peakList.ChartAreas.Add(chartArea1);
+            chartArea2.Name = "ChartArea1";
+            this.ct_EE_peakList.ChartAreas.Add(chartArea2);
             this.ct_EE_peakList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_EE_peakList.Enabled = false;
             legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;

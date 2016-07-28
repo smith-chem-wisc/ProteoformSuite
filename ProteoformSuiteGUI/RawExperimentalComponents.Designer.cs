@@ -46,6 +46,7 @@ namespace ProteoformSuite
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -56,11 +57,12 @@ namespace ProteoformSuite
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.dgv_RawExpComp_IndChgSts);
-            this.splitContainer1.Size = new System.Drawing.Size(1076, 565);
-            this.splitContainer1.SplitterDistance = 285;
+            this.splitContainer1.Size = new System.Drawing.Size(717, 367);
+            this.splitContainer1.SplitterDistance = 185;
+            this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
             // 
-            // dgv_RawExpProt_MI_masses
+            // dgv_RawExpComp_MI_masses
             // 
             this.dgv_RawExpComp_MI_masses.AllowUserToOrderColumns = true;
             this.dgv_RawExpComp_MI_masses.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader;
@@ -68,30 +70,33 @@ namespace ProteoformSuite
             this.dgv_RawExpComp_MI_masses.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_RawExpComp_MI_masses.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_RawExpComp_MI_masses.Location = new System.Drawing.Point(0, 0);
+            this.dgv_RawExpComp_MI_masses.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.dgv_RawExpComp_MI_masses.Name = "dgv_RawExpComp_MI_masses";
             this.dgv_RawExpComp_MI_masses.RowTemplate.Height = 28;
-            this.dgv_RawExpComp_MI_masses.Size = new System.Drawing.Size(1072, 281);
+            this.dgv_RawExpComp_MI_masses.Size = new System.Drawing.Size(713, 181);
             this.dgv_RawExpComp_MI_masses.TabIndex = 0;
             this.dgv_RawExpComp_MI_masses.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_RawExpComp_MI_masses_CellContentClick);
             // 
-            // dgv_RawExpProt_IndChgSts
+            // dgv_RawExpComp_IndChgSts
             // 
             this.dgv_RawExpComp_IndChgSts.AllowUserToOrderColumns = true;
             this.dgv_RawExpComp_IndChgSts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_RawExpComp_IndChgSts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_RawExpComp_IndChgSts.Location = new System.Drawing.Point(0, 0);
+            this.dgv_RawExpComp_IndChgSts.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.dgv_RawExpComp_IndChgSts.Name = "dgv_RawExpComp_IndChgSts";
             this.dgv_RawExpComp_IndChgSts.RowTemplate.Height = 28;
-            this.dgv_RawExpComp_IndChgSts.Size = new System.Drawing.Size(1072, 272);
+            this.dgv_RawExpComp_IndChgSts.Size = new System.Drawing.Size(713, 175);
             this.dgv_RawExpComp_IndChgSts.TabIndex = 0;
             // 
-            // RawExperimentalProteoforms
+            // RawExperimentalComponents
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1076, 565);
+            this.ClientSize = new System.Drawing.Size(717, 367);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.Name = "RawExperimentalComponents";
             this.Text = "Raw Experimental Components";
             this.Load += new System.EventHandler(this.RawExperimentalComponents_Load);
@@ -102,6 +107,7 @@ namespace ProteoformSuite
             ((System.ComponentModel.ISupportInitialize)(this.dgv_RawExpComp_MI_masses)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_RawExpComp_IndChgSts)).EndInit();
             this.ResumeLayout(false);
+
         }
 
         #endregion
