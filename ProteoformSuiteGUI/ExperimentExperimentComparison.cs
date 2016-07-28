@@ -43,10 +43,7 @@ namespace ProteoformSuite
             FormatEEPeakListGridView();
             GraphEERelations();
             GraphEEPeaks();
-
-            List<DeltaMassPeak> big_peaks = Lollipop.ee_peaks.Where(p => p.accepted).ToList();
-            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.mass_difference_group.Count).Sum().ToString();
-            tb_TotalPeaks.Text = big_peaks.Count.ToString();
+            updateFiguresOfMerit();
         }
 
         private void RunTheGamut()
@@ -72,6 +69,13 @@ namespace ProteoformSuite
             dgv_EE_Peaks.Rows.Clear();
         }
         
+        private void updateFiguresOfMerit()
+        {
+            List<DeltaMassPeak> big_peaks = Lollipop.ee_peaks.Where(p => p.peak_accepted).ToList();
+            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.mass_difference_group.Count).Sum().ToString();
+            tb_TotalPeaks.Text = big_peaks.Count.ToString();
+        }
+
         private void FillEEPairsGridView()
         {
             DisplayUtility.FillDataGridView(dgv_EE_Relations, Lollipop.ee_relations);
@@ -86,8 +90,7 @@ namespace ProteoformSuite
         }
         private void GraphEEPeaks()
         {
-            DisplayUtility.GraphRelationsChart(ct_EE_peakList, Lollipop.ee_relations, "relations");
-            // DisplayUtility.GraphRelationsChart(ct_ET_peakList, Lollipop.ed_relations, "decoys");
+            DisplayUtility.GraphDeltaMassPeaks(ct_EE_peakList, Lollipop.ee_peaks, Lollipop.ee_relations);
         }
 
         private void dgv_EE_Peak_List_CellClick(object sender, MouseEventArgs e)
@@ -98,6 +101,7 @@ namespace ProteoformSuite
                 ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
                 DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_EE_Peaks.Rows[clickedRow].DataBoundItem;
                 DisplayUtility.GraphSelectedDeltaMassPeak(ct_EE_peakList, selected_peak);
+                ct_EE_peakList.ChartAreas[0].AxisY.Maximum = Convert.ToInt32(selected_peak.group_count * 1.2); //this automatically scales the vertical axis to the peak height plus 20%
             }
         }
 
@@ -144,21 +148,6 @@ namespace ProteoformSuite
             dgv_EE_Relations.AllowUserToAddRows = false;
         }
 
-        private void FormatEEPeakListGridView()
-        {
-            //making all columns invisible first - faster
-            foreach (DataGridViewColumn column in dgv_EE_Peaks.Columns) { column.Visible = false; }
-
-            dgv_EE_Peaks.Columns["group_count"].Visible = true;
-            dgv_EE_Peaks.Columns["group_adjusted_deltaM"].Visible = true;
-            dgv_EE_Peaks.Columns["peak_accepted"].Visible = true;
-
-            dgv_EE_Peaks.Columns["group_count"].HeaderText = "Peak Center Count";
-            dgv_EE_Peaks.Columns["group_adjusted_deltaM"].HeaderText = "Peak Center Delta Mass";
-            dgv_EE_Peaks.Columns["peak_accepted"].HeaderText = "Peak Accepted";
-
-            dgv_EE_Peaks.AllowUserToAddRows = false;
-        }
         private void InitializeParameterSet()
         {
             nUD_EE_Upper_Bound.Minimum = 0;
@@ -200,46 +189,25 @@ namespace ProteoformSuite
 
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
         {
+            updateFiguresOfMerit();
+        }
 
-            //double averageDeltaMass = Convert.ToDouble(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 2].Value);
-            //int peakCount = Convert.ToInt32(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex - 1].Value);
-            //dgv_EE_Peak_List.EndEdit();
-            //dgv_EE_Peak_List.Update();
+        private void FormatEEPeakListGridView()
+        {
+            //making all columns invisible first - faster
+            foreach (DataGridViewColumn column in dgv_EE_Peaks.Columns) { column.Visible = false; }
 
-            //double lowMass = averageDeltaMass - Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
-            //double highMass = averageDeltaMass + Convert.ToDouble(nUD_PeakWidthBase.Value) / 2;
+            dgv_EE_Peaks.Columns["group_count"].Visible = true;
+            dgv_EE_Peaks.Columns["group_adjusted_deltaM"].Visible = true;
+            dgv_EE_Peaks.Columns["peak_accepted"].Visible = true;
+            dgv_EE_Peaks.Columns["possiblePeakAssignments_string"].Visible = true;
 
-            //string expression = "[Average Delta Mass] > " + lowMass + " and [Average Delta Mass] < " + highMass;
+            dgv_EE_Peaks.Columns["group_count"].HeaderText = "Peak Center Count";
+            dgv_EE_Peaks.Columns["group_adjusted_deltaM"].HeaderText = "Peak Center Delta Mass";
+            dgv_EE_Peaks.Columns["peak_accepted"].HeaderText = "Peak Accepted";
+            dgv_EE_Peaks.Columns["possiblePeakAssignments_string"].HeaderText = "Peak Assignment";
 
-            //DataRow[] selectedPeaks = eePeakList.Select(expression);
-
-            //foreach (DataRow row in selectedPeaks)
-            //{
-            //    row["Acceptable"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
-            //}
-            //eePeakList.AcceptChanges();
-            //Lollipop.etPeakList = eePeakList;
-            //dgv_EE_Peak_List.Update();
-            //dgv_EE_Peak_List.Refresh();
-
-            //expression = "[Peak Center Mass] > " + lowMass + " and [Peak Center Mass] < " + highMass;
-
-            //selectedPeaks = eePairsList.Select(expression);
-
-            //foreach (DataRow row in selectedPeaks)
-            //{
-
-            //    row["Proteoform Family"] = Convert.ToBoolean(dgv_EE_Peak_List.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
-
-            //}
-            //eePairsList.AcceptChanges();
-
-            //Lollipop.experimentExperimentPairs = eePairsList;
-            //dgv_EE_Pairs.DataSource = null;
-            //FillEEPairsGridView();
-
-            //UpdateFiguresOfMerit();
-
+            dgv_EE_Peaks.AllowUserToAddRows = false;
         }
 
         private void peakListSpecificPeakAcceptanceChanged(object sender, EventArgs e)

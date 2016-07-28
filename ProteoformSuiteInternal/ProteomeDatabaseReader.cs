@@ -12,7 +12,7 @@ using System.Xml.Linq;
 //Inspired by the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
 namespace ProteoformSuiteInternal
 {
-    class ProteomeDatabaseReader
+    public class ProteomeDatabaseReader
     {
         private static Dictionary<string, char> aminoAcidCodes;
         public static string oldPtmlistFilePath;

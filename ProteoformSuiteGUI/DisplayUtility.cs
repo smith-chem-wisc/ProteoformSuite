@@ -18,7 +18,7 @@ namespace ProteoformSuite
         {
             SortableBindingList<object> sbl = new SortableBindingList<object>(someList);
             dgv.DataSource = sbl;
-            dgv.ReadOnly = true;
+            dgv.ReadOnly = false;
             dgv.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
             dgv.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
@@ -52,28 +52,33 @@ namespace ProteoformSuite
             ct.Series[series].XValueMember = "delta_mass";
             ct.Series[series].YValueMembers = "unadjusted_group_count";
             List<ProteoformRelation> et_relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
-                ct.DataSource = et_relations_ordered;
-                ct.DataBind();
+            ct.DataSource = et_relations_ordered;
+            ct.DataBind();
 
-                ct.ChartAreas[0].AxisY.StripLines.Clear();
-                StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count };
-                ct.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+            ct.ChartAreas[0].AxisY.StripLines.Clear();
+            StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count };
+            ct.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
 
-                ct.ChartAreas[0].AxisX.Title = "Delta m/z";
-                ct.ChartAreas[0].AxisY.Title = "Nearby Count";
+            ct.ChartAreas[0].AxisX.Title = "Delta m/z";
+            ct.ChartAreas[0].AxisY.Title = "Nearby Count";
         }
 
-        public static void GraphDeltaMassPeaks(Chart ct, List<DeltaMassPeak> peaks)
+        public static void GraphDeltaMassPeaks(Chart ct, List<DeltaMassPeak> peaks, List<ProteoformRelation> relations)
         {
-            List<DeltaMassPeak> ee_peaks_ordered = peaks.OrderByDescending(r => r.group_adjusted_deltaM).ToList();
-            ct.DataSource = ee_peaks_ordered;
-            ct.DataBind();
-            ct.Series["Peak Count"].XValueMember = "group_adjusted_deltaM";
-            ct.Series["Peak Count"].YValueMembers = "group_count";
-            ct.Series["Decoy Count"].XValueMember = "group_adjusted_deltaM";
-            ct.Series["Decoy Count"].YValueMembers = "decoy_count";
+            List<DeltaMassPeak> peaks_ordered = peaks.OrderByDescending(r => r.group_adjusted_deltaM).ToList();
+            foreach (DeltaMassPeak peak in peaks_ordered)
+            {
+                ct.Series["Peak Count"].Points.AddXY(peak.group_adjusted_deltaM, peak.group_count);
+                ct.Series["Decoy Count"].Points.AddXY(peak.group_adjusted_deltaM, peak.decoy_count);
+            }
+
+            List<ProteoformRelation> relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
+            foreach (ProteoformRelation relation in relations_ordered)
+            {
+                ct.Series["Nearby Relations"].Points.AddXY(relation.delta_mass, relation.unadjusted_group_count);
+            }
             ct.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
-            if (ee_peaks_ordered.Count > 0) GraphSelectedDeltaMassPeak(ct, ee_peaks_ordered[0]);
+            if (peaks_ordered.Count > 0) GraphSelectedDeltaMassPeak(ct, peaks_ordered[0]);
         }
 
         public static void GraphSelectedDeltaMassPeak(Chart ct, DeltaMassPeak peak)
@@ -89,8 +94,10 @@ namespace ProteoformSuite
             ct.ChartAreas[0].AxisX.StripLines.Add(lowerPeakBound_stripline);
             ct.ChartAreas[0].AxisX.StripLines.Add(upperPeakBound_stripline);
 
+            //ct.ChartAreas[0].AxisY.Maximum = Convert.ToInt32(peak.group_count * 1.2 + 1); //this automatically scales the vertical axis to the peak height plus 20%
+
             ct.ChartAreas[0].AxisX.Title = "Delta m/z";
-            ct.ChartAreas[0].AxisY.Title = "Nearby Count";
+            ct.ChartAreas[0].AxisY.Title = "Count";
         }
     }
 }

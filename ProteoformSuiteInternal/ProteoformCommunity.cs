@@ -108,7 +108,7 @@ namespace ProteoformSuiteInternal
         {
             //PARALELL PROBLEM
             //Parallel.ForEach<ProteoformRelation>(relations, relation => relation.set_nearby_group(relations));
-            foreach(ProteoformRelation relation in relations)
+            foreach (ProteoformRelation relation in relations)
             {
                 relation.set_nearby_group(relations);
             }
@@ -126,7 +126,7 @@ namespace ProteoformSuiteInternal
         public Dictionary<string, List<ProteoformRelation>> relate_ed()
         {
             Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
-            Parallel.ForEach<KeyValuePair<string, List<TheoreticalProteoform>>>(this.decoy_proteoforms, decoys =>
+            Parallel.ForEach(decoy_proteoforms, decoys =>
             {
                 ed_relations[decoys.Key] = relate_et(experimental_proteoforms.ToArray(), decoys.Value.ToArray(), ProteoformComparison.ed);
             });
@@ -175,7 +175,7 @@ namespace ProteoformSuiteInternal
                 relations_outside_no_mans = exclusive_relation_group(relations_outside_no_mans, grouped_relations);
             }
             //PARALLEL PROBLEM
-           // Parallel.ForEach<DeltaMassPeak>(peaks, relation_group => relation_group.calculate_fdr(decoy_relations));
+            // Parallel.ForEach<DeltaMassPeak>(peaks, relation_group => relation_group.calculate_fdr(decoy_relations));
             foreach (DeltaMassPeak relation_group in peaks)
             {
                 relation_group.calculate_fdr(decoy_relations);

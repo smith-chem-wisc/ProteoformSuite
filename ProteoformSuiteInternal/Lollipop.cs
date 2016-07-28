@@ -147,7 +147,7 @@ namespace ProteoformSuiteInternal
         static Protein[] proteins;
 
         static ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
-        static Dictionary<string, Modification> uniprotModificationTable;
+        public static Dictionary<string, Modification> uniprotModificationTable;
         static Dictionary<char, double> aaIsotopeMassList;
 
         public static void get_theoretical_proteoforms()

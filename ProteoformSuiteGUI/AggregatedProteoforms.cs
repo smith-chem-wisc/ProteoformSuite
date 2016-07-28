@@ -22,6 +22,7 @@ namespace ProteoformSuite
         {
             this.InitializeSettings();
             if (Lollipop.proteoform_community.experimental_proteoforms.Count == 0) Lollipop.aggregate_proteoforms();
+            updateFiguresOfMerit();
             this.FillAggregatesTable();
             FormatAggregatesTable();
         }
@@ -132,6 +133,11 @@ namespace ProteoformSuite
             }
         }
 
+        private void updateFiguresOfMerit()
+        {
+            tb_totalAggregatedProteoforms.Text = Lollipop.proteoform_community.experimental_proteoforms.Count.ToString();
+        }
+
         private void dgv_AcceptNeuCdLtProteoforms_CellContentClick(object sender, EventArgs e)
         {
             //code for if acceptable boolean is changed by user. 
@@ -141,24 +147,28 @@ namespace ProteoformSuite
         {
             Lollipop.mass_tolerance = nUP_mass_tolerance.Value;
             Lollipop.aggregate_proteoforms();
+            updateFiguresOfMerit();
         }
 
         private void nUD_RetTimeToleranace_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.retention_time_tolerance = nUD_RetTimeToleranace.Value;
             Lollipop.aggregate_proteoforms();
+            updateFiguresOfMerit();
         }
 
         private void nUD_Missed_Monos_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.missed_monos = nUD_Missed_Monos.Value;
             Lollipop.aggregate_proteoforms();
+            updateFiguresOfMerit();
         }
 
         private void nUD_Missed_Ks_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.missed_lysines = nUD_Missed_Ks.Value;
             Lollipop.aggregate_proteoforms();
+            updateFiguresOfMerit();
         }
 
     }

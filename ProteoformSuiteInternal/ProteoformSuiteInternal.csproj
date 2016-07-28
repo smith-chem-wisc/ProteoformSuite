@@ -45,11 +45,13 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AminoAcidMasses.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="DeltaMassPeak.cs" />
+    <Compile Include="ExcelReader.cs" />
     <Compile Include="Lollipop.cs" />
     <Compile Include="Modification.cs" />
     <Compile Include="NeuCodePair.cs" />
