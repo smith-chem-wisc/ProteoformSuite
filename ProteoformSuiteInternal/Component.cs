@@ -21,6 +21,7 @@ namespace ProteoformSuiteInternal
         public double rt_apex { get; set; }
         public double weighted_monoisotopic_mass { get; set; }
         public double corrected_mass { get; set; }
+        public bool accepted { get; set; }  //should have option where user can "uncheck" accepeted box
         public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
         public int num_charge_states
         {
@@ -44,6 +45,7 @@ namespace ProteoformSuiteInternal
             this.scan_range = component_cells[8].InnerText;
             this.rt_range = component_cells[9].InnerText;
             this.rt_apex = Convert.ToDouble(component_cells[10].InnerText);
+            this.accepted = true;
             this.file_origin = filename;
         }
         public Component(Component c)
@@ -64,6 +66,7 @@ namespace ProteoformSuiteInternal
             this.num_detected_intervals = c.num_detected_intervals;
             this.num_charge_states_fromFile = c.num_charge_states_fromFile;
             this.intensity_sum_olcs = c.intensity_sum_olcs;
+            this.accepted = c.accepted;
         }
 
         public double calculate_sum_intensity()
