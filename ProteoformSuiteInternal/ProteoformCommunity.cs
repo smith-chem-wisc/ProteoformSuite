@@ -47,27 +47,71 @@ namespace ProteoformSuiteInternal
 
             if (Lollipop.neucode_labeled)
             {
-                List<ProteoformRelation> relations = new List<ProteoformRelation>(
-                from pf1 in pfs1
-                from pf2 in pfs2
-                where pf1.lysine_count == pf2.lysine_count &&
-                    pf1.modified_mass - pf2.modified_mass >= Lollipop.et_low_mass_difference && //use if this step is rate-limiting, otherwise, just process them all
-                    pf1.modified_mass - pf2.modified_mass <= Lollipop.et_high_mass_difference //use if this step is rate-limiting, otherwise, just process them all
-                select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
-            );
+                List<ProteoformRelation> relations = new List<ProteoformRelation>();
+                foreach (var pf1 in pfs1)
+                {
+                    List<Proteoform> candidatePf2s = pfs2.Where(b => (b.lysine_count == pf1.lysine_count) 
+                        && (pf1.modified_mass - b.modified_mass) >= Lollipop.et_low_mass_difference 
+                        && (pf1.modified_mass - b.modified_mass) <= Lollipop.et_high_mass_difference).ToList();
+
+                    if (candidatePf2s.Count > 0)
+                    {
+                        List<string> accessions = new List<string>();
+
+                        foreach (Proteoform candidate in candidatePf2s)
+                        {
+                            if (!accessions.Contains(candidate.accession))
+                            {
+                                accessions.Add(candidate.accession);
+                            }
+                        }
+
+                        foreach (string accession in accessions)
+                        {
+                            List<Proteoform> accCandidates = candidatePf2s.Where(x => x.accession == accession).ToList();
+
+                            accCandidates.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
+                            var bestPf2 = accCandidates.First();
+                            relations.Add(new ProteoformRelation(pf1, bestPf2, relation_type, pf1.modified_mass - bestPf2.modified_mass));
+                        }
+
+                    }        
+                }
                 count_nearby_relations(relations.Where(p => p.outside_no_mans_land).ToList()); //only make peaks out of relations outside no-mans-land
                 return relations;
             }
             else
             {
-                List<ProteoformRelation> relations = new List<ProteoformRelation>(
-                from pf1 in pfs1
-                from pf2 in pfs2
-                where pf1.modified_mass - pf2.modified_mass >= Lollipop.et_low_mass_difference && //use if this step is rate-limiting, otherwise, just process them all
-                    pf1.modified_mass - pf2.modified_mass <= Lollipop.et_high_mass_difference//use if this step is rate-limiting, otherwise, just process them all
-                select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
-            );
-                count_nearby_relations(relations.Where(p => p.outside_no_mans_land).ToList());  //only make peaks out of relations outside no-mans-land
+                List<ProteoformRelation> relations = new List<ProteoformRelation>();
+                foreach (var pf1 in pfs1)
+                {
+                    List<Proteoform> candidatePf2s = pfs2.Where(b => (pf1.modified_mass - b.modified_mass) >= Lollipop.et_low_mass_difference
+                        && (pf1.modified_mass - b.modified_mass) <= Lollipop.et_high_mass_difference).ToList();
+
+                    if (candidatePf2s.Count > 0)
+                    {
+                        List<string> accessions = new List<string>();
+
+                        foreach (Proteoform candidate in candidatePf2s)
+                        {
+                            if (!accessions.Contains(candidate.accession))
+                            {
+                                accessions.Add(candidate.accession);
+                            }
+                        }
+
+                        foreach (string accession in accessions)
+                        {
+                            List<Proteoform> accCandidates = candidatePf2s.Where(x => x.accession == accession).ToList();
+
+                            accCandidates.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
+                            var bestPf2 = accCandidates.First();
+                            relations.Add(new ProteoformRelation(pf1, bestPf2, relation_type, pf1.modified_mass - bestPf2.modified_mass));
+                        }
+
+                    }
+                }
+                count_nearby_relations(relations.Where(p => p.outside_no_mans_land).ToList()); //only make peaks out of relations outside no-mans-land
                 return relations;
             }
         }

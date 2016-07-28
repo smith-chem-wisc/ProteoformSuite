@@ -154,6 +154,7 @@ namespace ProteoformSuiteInternal
     public class TheoreticalProteoform : Proteoform
     {
         public string name { get; set; }
+        public string description { get; set; }
         public string fragment { get; set; }
         public int begin { get; set; }
         public int end { get; set; }
@@ -170,9 +171,10 @@ namespace ProteoformSuiteInternal
         }
 
 
-        public TheoreticalProteoform(string accession, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<Ptm> ptm_list, double ptm_mass, double modified_mass, bool is_target) : base(accession, modified_mass, lysine_count, is_target)
+        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<Ptm> ptm_list, double ptm_mass, double modified_mass, bool is_target) : base(accession, modified_mass, lysine_count, is_target)
         {
             this.accession = accession;
+            this.description = description;
             this.name = name;
             this.fragment = fragment;
             this.begin = begin;
