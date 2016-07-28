@@ -31,8 +31,11 @@ namespace ProteoformSuite
         public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
         {
             InitializeParameterSet();
-            if (Lollipop.et_relations.Count == 0) Lollipop.make_et_relationships();
-            this.FillTablesAndCharts();
+            if (Lollipop.et_relations.Count == 0)
+            {
+                Lollipop.make_et_relationships();
+                this.FillTablesAndCharts();
+            }
             initial_load = false;
         }
 
@@ -49,8 +52,8 @@ namespace ProteoformSuite
         {
             FillETPeakListTable();
             FillETRelationsGridView();
-            FormatETRelationsGridView();
-            FormatETPeakListGridView();
+            DisplayUtility.FormatRelationsGridView(dgv_ET_Pairs, true);
+            DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List);
             GraphETRelations();
             GraphETPeaks();
             updateFiguresOfMerit();       
@@ -76,10 +79,6 @@ namespace ProteoformSuite
             List<DeltaMassPeak> big_peaks = Lollipop.et_peaks.Where(p => p.peak_accepted).ToList();
             tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.mass_difference_group.Count).Sum().ToString();
             tb_TotalPeaks.Text = big_peaks.Count.ToString();
-
-            //decoy figures of merit still missing
-            //tb_DecoyAverage = ?;
-            //tb_DecoyStdDev = ?
         }
 
         private void FillETRelationsGridView()
@@ -96,7 +95,7 @@ namespace ProteoformSuite
         }
         private void GraphETPeaks()
         {
-            DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, Lollipop.et_relations);
+            DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, "Peak Count", "Median Decoy Count", Lollipop.et_relations, "Nearby Relations");
         }
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
@@ -105,70 +104,10 @@ namespace ProteoformSuite
             {
                 ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
                 DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
-                DisplayUtility.GraphSelectedDeltaMassPeak(ct_ET_peakList, selected_peak);
-                ct_ET_peakList.ChartAreas[0].AxisY.Maximum = Convert.ToInt32(selected_peak.group_count * 1.2); //this automatically scales the vertical axis to the peak height plus 20%
+                DisplayUtility.GraphSelectedDeltaMassPeak(ct_ET_peakList, selected_peak, Lollipop.et_relations);
             }
         }
         
-        private void FormatETRelationsGridView()
-        {
-            //round table values
-            dgv_ET_Pairs.Columns["group_adjusted_deltaM"].DefaultCellStyle.Format = "0.####";
-            dgv_ET_Pairs.Columns["proteoform_mass_1"].DefaultCellStyle.Format = "0.####";
-            dgv_ET_Pairs.Columns["proteoform_mass_2"].DefaultCellStyle.Format = "0.####";
-            dgv_ET_Pairs.Columns["agg_intensity_1"].DefaultCellStyle.Format = "0.##";
-            dgv_ET_Pairs.Columns["agg_RT_1"].DefaultCellStyle.Format = "0.##";
-            dgv_ET_Pairs.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
-
-            //set column header
-            dgv_ET_Pairs.Columns["group_adjusted_deltaM"].HeaderText = "Peak Center Delta Mass";
-            dgv_ET_Pairs.Columns["group_count"].HeaderText = "Peak Center Count";
-            dgv_ET_Pairs.Columns["accession"].HeaderText = "Accession";
-            dgv_ET_Pairs.Columns["fragment"].HeaderText = "Fragment";
-            dgv_ET_Pairs.Columns["ptm_list"].HeaderText = "PTM Description";
-            dgv_ET_Pairs.Columns["proteoform_mass_1"].HeaderText = "Experimental Aggregated Proteoform Mass";
-            dgv_ET_Pairs.Columns["proteoform_mass_2"].HeaderText = "Theoretical Proteoform Mass";
-            dgv_ET_Pairs.Columns["agg_intensity_1"].HeaderText = "Experimental Aggregated Intensity";
-            dgv_ET_Pairs.Columns["agg_RT_1"].HeaderText = "Experimental Aggregated RT";
-            dgv_ET_Pairs.Columns["lysine_count"].HeaderText = "Lysine Count";
-            dgv_ET_Pairs.Columns["num_observations_1"].HeaderText = "Number Experimental Observations";
-            dgv_ET_Pairs.Columns["delta_mass"].HeaderText = "Delta Mass";
-            dgv_ET_Pairs.Columns["accepted"].DisplayIndex = 19;
-            dgv_ET_Pairs.Columns["delta_mass"].DisplayIndex = 17; //column ordering is nicer 
-            dgv_ET_Pairs.Columns["name"].HeaderText = "Name";
-            dgv_ET_Pairs.Columns["unadjusted_group_count"].HeaderText = "Unadjusted Group Count";
-            dgv_ET_Pairs.Columns["unadjusted_group_count"].DisplayIndex = 14;
-            dgv_ET_Pairs.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
-            dgv_ET_Pairs.Columns["accepted"].HeaderText = "Accepted";
-
-            //making these columns invisible
-            dgv_ET_Pairs.Columns["peak"].Visible = false;
-            dgv_ET_Pairs.Columns["agg_intensity_2"].Visible = false;
-            dgv_ET_Pairs.Columns["agg_RT_2"].Visible = false;
-            dgv_ET_Pairs.Columns["num_observations_2"].Visible = false;
-            if (!Lollipop.neucode_labeled) { dgv_ET_Pairs.Columns["lysine_count"].Visible = false; }
-
-            dgv_ET_Pairs.AllowUserToAddRows = false;
-        }
-
-        private void FormatETPeakListGridView()
-        {
-            //making all columns invisible first - faster
-            foreach (DataGridViewColumn column in dgv_ET_Peak_List.Columns) { column.Visible = false; }
-
-            dgv_ET_Peak_List.Columns["group_count"].Visible = true;
-            dgv_ET_Peak_List.Columns["group_adjusted_deltaM"].Visible = true;
-            dgv_ET_Peak_List.Columns["peak_accepted"].Visible = true;
-            dgv_ET_Peak_List.Columns["possiblePeakAssignments_string"].Visible = true;
-
-            dgv_ET_Peak_List.Columns["group_count"].HeaderText = "Peak Center Count";
-            dgv_ET_Peak_List.Columns["group_adjusted_deltaM"].HeaderText = "Peak Center Delta Mass";
-            dgv_ET_Peak_List.Columns["peak_accepted"].HeaderText = "Peak Accepted";
-            dgv_ET_Peak_List.Columns["possiblePeakAssignments_string"].HeaderText = "Peak Assignment";
-
-            dgv_ET_Peak_List.AllowUserToAddRows = false;
-        }
-
         Point? ct_ET_Histogram_prevPosition = null;
         Point? ct_ET_peakList_prevPosition = null;
         ToolTip ct_ET_Histogram_tt = new ToolTip();
@@ -187,7 +126,6 @@ namespace ProteoformSuite
             updateFiguresOfMerit(); //I'm not sure if this is necessary here.
 
             //boolean accepted in proteoform relation must change in response to DeltaMassPeak change.
-
         }
 
         private void peakListSpecificPeakAcceptanceChanged(object sender, EventArgs e)
@@ -269,60 +207,39 @@ namespace ProteoformSuite
         // scaling for axes of displayed ET Histogram of all ET pairs
         private void yMaxET_ValueChanged(object sender, EventArgs e)
         {
-            if (yMaxET.Value > yMinET.Value)
-                ct_ET_Histogram.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxET.Value.ToString());
+            ct_ET_Histogram.ChartAreas[0].AxisY.Maximum = Convert.ToDouble(yMaxET.Value);
         }
         private void yMinET_ValueChanged(object sender, EventArgs e)
         {
-            if (yMinET.Value < yMaxET.Value)
-                ct_ET_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinET.Value.ToString());
+            ct_ET_Histogram.ChartAreas[0].AxisY.Minimum = Convert.ToDouble(yMinET.Value);
         }
         private void xMinET_ValueChanged(object sender, EventArgs e)
-        {   if (xMinET.Value < xMaxET.Value)
-                ct_ET_Histogram.ChartAreas[0].AxisX.Minimum = double.Parse(xMinET.Value.ToString());
+        {
+            ct_ET_Histogram.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(xMinET.Value);
         }
         private void xMaxET_ValueChanged(object sender, EventArgs e)
         {
-            if (xMaxET.Value> xMinET.Value)
-                ct_ET_Histogram.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxET.Value.ToString());
+            ct_ET_Histogram.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(xMaxET.Value);
         }
 
         // bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load)
-            {
-                Lollipop.no_mans_land_lowerBound = Convert.ToDouble(nUD_NoManLower.Value);
-               // RunTheGamut();
-            }              
+            if (!initial_load) Lollipop.no_mans_land_lowerBound = Convert.ToDouble(nUD_NoManLower.Value);          
         }
         private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load)
-            {
-                Lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value);
-               // RunTheGamut();
-            }            
+            if (!initial_load) Lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value);     
         }
-
         // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
         private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e) 
         {
-            if (!initial_load)
-            {
-                Lollipop.peak_width_base = Convert.ToDouble(nUD_PeakWidthBase.Value);
-               // RunTheGamut();
-            }               
+            if (!initial_load) Lollipop.peak_width_base = Convert.ToDouble(nUD_PeakWidthBase.Value);          
         }
-
         // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e) 
         {     
-            if (!initial_load)
-            {
-                Lollipop.min_peak_count = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
-                //RunTheGamut();
-            }     
+            if (!initial_load) Lollipop.min_peak_count = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);  
         }
 
         private void ET_update_Click(object sender, EventArgs e)

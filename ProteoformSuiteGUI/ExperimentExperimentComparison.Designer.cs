@@ -213,6 +213,11 @@
             // yMaxEE
             // 
             this.yMaxEE.Location = new System.Drawing.Point(62, 18);
+            this.yMaxEE.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.yMaxEE.Name = "yMaxEE";
             this.yMaxEE.Size = new System.Drawing.Size(120, 20);
             this.yMaxEE.TabIndex = 9;
@@ -222,6 +227,11 @@
             // 
             this.xMaxEE.DecimalPlaces = 2;
             this.xMaxEE.Location = new System.Drawing.Point(125, 44);
+            this.xMaxEE.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.xMaxEE.Name = "xMaxEE";
             this.xMaxEE.Size = new System.Drawing.Size(120, 20);
             this.xMaxEE.TabIndex = 11;
@@ -230,6 +240,11 @@
             // yMinEE
             // 
             this.yMinEE.Location = new System.Drawing.Point(62, 70);
+            this.yMinEE.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.yMinEE.Name = "yMinEE";
             this.yMinEE.Size = new System.Drawing.Size(120, 20);
             this.yMinEE.TabIndex = 12;
@@ -266,6 +281,11 @@
             // 
             this.xMinEE.DecimalPlaces = 2;
             this.xMinEE.Location = new System.Drawing.Point(0, 44);
+            this.xMinEE.Minimum = new decimal(new int[] {
+            100,
+            0,
+            0,
+            -2147483648});
             this.xMinEE.Name = "xMinEE";
             this.xMinEE.Size = new System.Drawing.Size(120, 20);
             this.xMinEE.TabIndex = 24;

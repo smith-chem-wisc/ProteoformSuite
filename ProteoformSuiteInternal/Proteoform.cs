@@ -164,10 +164,7 @@ namespace ProteoformSuiteInternal
         public List<Ptm> ptm_list { get; set; } = new List<Ptm>();
         public string ptm_descriptions
         {
-            get
-            {
-                return ptm_list_string();
-            }
+            get { return ptm_list_string(); }
         }
 
 
