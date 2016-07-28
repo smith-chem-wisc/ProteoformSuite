@@ -84,6 +84,7 @@ namespace ProteoformSuite
                 ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
                 DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_EE_Peaks.Rows[clickedRow].DataBoundItem;
                 DisplayUtility.GraphSelectedDeltaMassPeak(ct_EE_peakList, selected_peak);
+                ct_EE_peakList.ChartAreas[0].AxisY.Maximum = Convert.ToInt32(selected_peak.group_count * 1.2); //this automatically scales the vertical axis to the peak height plus 20%
             }
         }
 
@@ -160,7 +161,7 @@ namespace ProteoformSuite
 
         private void xMaxEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
         {
-            if (initial_load)
+            if (!initial_load)
             {
                 double newXMaxEE = double.Parse(xMaxEE.Value.ToString());
                 if (newXMaxEE > double.Parse(xMinEE.Value.ToString()))
@@ -172,7 +173,7 @@ namespace ProteoformSuite
 
         private void yMaxEE_ValueChanged(object sender, EventArgs e) // scaling for y-axis maximum in the histogram of all EE pairs
         {
-            if (initial_load)
+            if (!initial_load)
             {
                 double newYMaxEE = double.Parse(yMaxEE.Value.ToString());
                 if (newYMaxEE > double.Parse(yMinEE.Value.ToString()))
@@ -184,7 +185,7 @@ namespace ProteoformSuite
 
         private void yMinEE_ValueChanged(object sender, EventArgs e) // scaling for y-axis minimum in the histogram of all EE pairs
         {
-            if (initial_load)
+            if (!initial_load)
             {
                 double newYMinEE = double.Parse(yMinEE.Value.ToString());
                 if (newYMinEE < double.Parse(yMaxEE.Value.ToString())) ct_EE_Histogram.ChartAreas[0].AxisY.Minimum = double.Parse(yMinEE.Value.ToString());
@@ -193,7 +194,7 @@ namespace ProteoformSuite
 
         private void xMinEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
         {
-            if (initial_load)
+            if (!initial_load)
             {
                 double newXMinEE = double.Parse(xMinEE.Value.ToString());
                 if (newXMinEE < double.Parse(xMaxEE.Value.ToString())) ct_EE_Histogram.ChartAreas[0].AxisX.Minimum = newXMinEE;
@@ -203,7 +204,7 @@ namespace ProteoformSuite
 
         private void cb_Graph_lowerThreshold_CheckedChanged(object sender, EventArgs e)
         {
-            if (initial_load)
+            if (!initial_load)
             {
                 if (cb_Graph_lowerThreshold.Checked)
                     ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
