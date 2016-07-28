@@ -22,13 +22,14 @@ namespace ProteoformSuiteInternal
         public DeltaMassPeak(ProteoformRelation base_relation) : base(base_relation)
         {
             this.base_relation = base_relation;
+            this.peak_accepted = set_peak_accepted();
             Parallel.ForEach<ProteoformRelation>(base_relation.mass_difference_group, relation =>
             {
+                relation.mass_difference_group = base_relation.mass_difference_group;
                 relation.peak = this;
                 relation.accepted = this.peak_accepted;
             });
             this.possiblePeakAssignments = nearestPTMs(this.group_adjusted_deltaM);
-            this.peak_accepted = set_peak_accepted();
         }
 
         private bool set_peak_accepted()

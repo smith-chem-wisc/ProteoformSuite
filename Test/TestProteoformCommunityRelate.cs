@@ -345,9 +345,9 @@ namespace Test
             Assert.AreEqual(0, rel.delta_mass);
             Assert.IsNull(rel.fragment);
             Assert.AreEqual(0, rel.group_adjusted_deltaM);
-            Assert.AreEqual(1, rel.group_count);
+            //Assert.AreEqual(1, rel.group_count); //I don't think we need these tests anymore w/ way peaks are made -LVS
+            //Assert.AreEqual(1, rel.mass_difference_group.Count);
             Assert.AreEqual(-1, rel.lysine_count);
-            Assert.AreEqual(1, rel.mass_difference_group.Count);
             Assert.IsNull(rel.name);
             Assert.AreEqual(1, rel.num_observations_1);
             Assert.AreEqual(0, rel.num_observations_2);

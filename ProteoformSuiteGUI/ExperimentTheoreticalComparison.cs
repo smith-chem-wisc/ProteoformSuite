@@ -31,21 +31,24 @@ namespace ProteoformSuite
         public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
         {
             InitializeParameterSet();
-            if (Lollipop.et_relations.Count == 0) Lollipop.make_et_relationships();
-            this.FillTablesAndGraphs();
+            if (Lollipop.et_relations.Count == 0)
+            {
+                Lollipop.make_et_relationships();
+                this.FillTablesAndCharts();
+            }
             initial_load = false;
         }
 
         private void RunTheGamut()
         {
             this.Cursor = Cursors.WaitCursor;
-            ClearListsTablesAndGraphs();
+            ClearListsAndTables();
             Lollipop.make_et_relationships();
-            this.FillTablesAndGraphs();
+            this.FillTablesAndCharts();
             this.Cursor = Cursors.Default;
         }
 
-        public void FillTablesAndGraphs()
+        public void FillTablesAndCharts()
         {
             FillETPeakListTable();
             FillETRelationsGridView();
@@ -56,7 +59,7 @@ namespace ProteoformSuite
             updateFiguresOfMerit();       
         }
 
-        private void ClearListsTablesAndGraphs()
+        private void ClearListsAndTables()
         {
             Lollipop.et_relations.Clear();
             Lollipop.et_peaks.Clear();
@@ -101,7 +104,7 @@ namespace ProteoformSuite
             {
                 ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
                 DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
-                DisplayUtility.GraphSelectedDeltaMassPeak(ct_ET_peakList, selected_peak);
+                DisplayUtility.GraphSelectedDeltaMassPeak(ct_ET_peakList, selected_peak, Lollipop.et_relations);
             }
         }
         
@@ -123,7 +126,6 @@ namespace ProteoformSuite
             updateFiguresOfMerit(); //I'm not sure if this is necessary here.
 
             //boolean accepted in proteoform relation must change in response to DeltaMassPeak change.
-
         }
 
         private void peakListSpecificPeakAcceptanceChanged(object sender, EventArgs e)
@@ -143,7 +145,7 @@ namespace ProteoformSuite
             nUD_ET_Lower_Bound.Minimum = -500;
             nUD_ET_Lower_Bound.Maximum = 0;
             if (Lollipop.neucode_labeled) Lollipop.et_low_mass_difference = -250;
-            else Lollipop.et_low_mass_difference = -50;
+            else Lollipop.et_low_mass_difference = -50;              
             nUD_ET_Lower_Bound.Value = Convert.ToDecimal(Lollipop.et_low_mass_difference); // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
 
             nUD_ET_Upper_Bound.Minimum = 0;
@@ -160,13 +162,13 @@ namespace ProteoformSuite
             yMinET.Maximum = yMaxET.Maximum;
             yMinET.Value = 0; // scaling for y-axis of displayed ET Histogram of all ET pairs
 
-            xMinET.Minimum = nUD_ET_Lower_Bound.Value;
+            xMaxET.Minimum = xMinET.Value;
+            xMaxET.Maximum = 250;
+            xMaxET.Value = nUD_ET_Upper_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
+
+            xMinET.Minimum = -250;
             xMinET.Maximum = xMaxET.Value;
             xMinET.Value = nUD_ET_Lower_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
-
-            xMaxET.Minimum = xMinET.Value;
-            xMaxET.Maximum = nUD_ET_Upper_Bound.Value;
-            xMaxET.Value = nUD_ET_Upper_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
             nUD_NoManLower.Minimum = 00m;
             nUD_NoManLower.Maximum = 0.49m;
@@ -225,46 +227,28 @@ namespace ProteoformSuite
         // bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load)
-            {
-                Lollipop.no_mans_land_lowerBound = Convert.ToDouble(nUD_NoManLower.Value);
-                RunTheGamut();
-            }              
+            if (!initial_load) Lollipop.no_mans_land_lowerBound = Convert.ToDouble(nUD_NoManLower.Value);          
         }
         private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load)
-            {
-                Lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value);
-                RunTheGamut();
-            }            
+            if (!initial_load) Lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value);     
         }
-
         // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
         private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e) 
         {
-            if (!initial_load)
-            {
-                Lollipop.peak_width_base = Convert.ToDouble(nUD_PeakWidthBase.Value);
-                RunTheGamut();
-            }               
+            if (!initial_load) Lollipop.peak_width_base = Convert.ToDouble(nUD_PeakWidthBase.Value);          
         }
-
         // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e) 
         {     
-            if (!initial_load)
-            {
-                Lollipop.min_peak_count = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
-                //GraphETRelations(); //we do this hear because the redline threshold needs to be redrawn
-                // FillTablesAndGraphs();
-                RunTheGamut(); //changes what pairs are acceptable... should rerun
-            }     
+            if (!initial_load) Lollipop.min_peak_count = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);  
         }
 
         private void ET_update_Click(object sender, EventArgs e)
         {
             if (!initial_load) RunTheGamut();
+            xMaxET.Value = (decimal)Lollipop.et_high_mass_difference;
+            xMinET.Value = (decimal)Lollipop.et_low_mass_difference;
         }
     }
 }
