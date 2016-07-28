@@ -11,12 +11,12 @@ namespace ProteoformSuiteInternal
         public double peak_width { get; } = Lollipop.peak_width_base;
         public double decoy_count { get; set; }
         public double group_fdr { get; set; }
-        public Boolean peak_accepted { get; set; }
+        public bool peak_accepted { get; set; }
         public List<Modification> possiblePeakAssignments { get; set; }
         public string possiblePeakAssignments_string
         {
-            get {
-                return String.Join("; ", possiblePeakAssignments.Select(m => m.description).ToArray()); } }
+            get { return String.Join("; ", possiblePeakAssignments.Select(m => m.description).ToArray()); }
+        }
         public ProteoformRelation base_relation { get; set; }
 
         public DeltaMassPeak(ProteoformRelation base_relation) : base(base_relation)
@@ -32,7 +32,7 @@ namespace ProteoformSuiteInternal
             this.possiblePeakAssignments = nearestPTMs(this.group_adjusted_deltaM);
         }
 
-        private Boolean set_peak_accepted()
+        private bool set_peak_accepted()
         {
             if (this.base_relation.group_count >= Lollipop.min_peak_count) { return true; }
             else {return false; }
@@ -43,11 +43,9 @@ namespace ProteoformSuiteInternal
             List<Modification> possiblePTMs = new List<Modification>();
             foreach (KeyValuePair<string, Modification> knownMod in Lollipop.uniprotModificationTable)
             {
-                Decimal modMass = Convert.ToDecimal(knownMod.Value.monoisotopic_mass_shift);
-                if (Math.Abs(Convert.ToDecimal(dMass) - modMass) <= Convert.ToDecimal(Lollipop.peak_width_base)/2)
-                {
+                decimal modMass = Convert.ToDecimal(knownMod.Value.monoisotopic_mass_shift);
+                if (Math.Abs(Convert.ToDecimal(dMass) - modMass) <= Convert.ToDecimal(Lollipop.peak_width_base) / 2)
                     possiblePTMs.Add(knownMod.Value);
-                }
             }
             return possiblePTMs;
         }
