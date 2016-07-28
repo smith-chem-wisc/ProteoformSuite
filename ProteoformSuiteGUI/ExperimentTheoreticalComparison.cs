@@ -97,6 +97,9 @@ namespace ProteoformSuite
         {
             DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, "Peak Count", "Median Decoy Count", Lollipop.et_relations, "Nearby Relations");
         }
+
+
+
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
             int clickedRow = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
@@ -106,8 +109,46 @@ namespace ProteoformSuite
                 DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
                 DisplayUtility.GraphSelectedDeltaMassPeak(ct_ET_peakList, selected_peak, Lollipop.et_relations);
             }
+            else
+            {
+                if(e.Button == MouseButtons.Right && clickedRow >= 0 && clickedRow < Lollipop.et_relations.Count)
+                {
+                    ContextMenuStrip my_menu = new ContextMenuStrip();
+                    int position_xy_mouse_row = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
+
+                    DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
+
+                    //MessageBox.Show("Right at row: " + position_xy_mouse_row.ToString());
+
+                    if (position_xy_mouse_row > 0)
+                    {
+                        my_menu.Items.Add("Increase Experimenal Mass 1.0015 Da").Name = "IncreaseMass";
+                        my_menu.Items.Add("Decrease Experimenal Mass 1.0015 Da").Name = "DecreaseMass";
+                    }
+
+                    my_menu.Show(dgv_ET_Peak_List, new Point(e.X, e.Y));
+
+                    //event menu click
+                    my_menu.ItemClicked += new ToolStripItemClickedEventHandler((s,ev)=>my_menu_ItemClicked(s,ev,selected_peak));
+                }
+            }
         }
         
+        void my_menu_ItemClicked(object sender,ToolStripItemClickedEventArgs e, DeltaMassPeak peak)
+        {
+            MessageBox.Show(e.ClickedItem.Name.ToString());
+            switch (e.ClickedItem.Name.ToString())
+            {
+                case "IncreaseMass":
+                    MessageBox.Show("increase: " + peak.delta_mass.ToString());
+                    break;
+                case "DecreaseMass":
+                    MessageBox.Show("decrease: " + peak.delta_mass.ToString());
+                    break;
+
+            }
+        }
+
         Point? ct_ET_Histogram_prevPosition = null;
         Point? ct_ET_peakList_prevPosition = null;
         ToolTip ct_ET_Histogram_tt = new ToolTip();
