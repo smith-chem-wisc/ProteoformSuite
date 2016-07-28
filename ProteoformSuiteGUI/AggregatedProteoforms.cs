@@ -133,8 +133,6 @@ namespace ProteoformSuite
 
             if (!Lollipop.neucode_labeled)
             {
-                dgv_AcceptNeuCdLtProteoforms.Columns["lysine_count"].Visible = false;
-               // dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].Visible = false;
                 dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].Visible = false;
             }
             else
