@@ -114,6 +114,14 @@ namespace ProteoformSuite
             {
                 string method_filename = methodFileOpen.FileName;
                 string[] lines = File.ReadAllLines(method_filename);
+                if (Lollipop.deconResultsFileNames.Count != 0)
+                {
+                    var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?", "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
+                    if (response == DialogResult.Yes) { Lollipop.use_method_files = false; }
+                    if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); Lollipop.use_method_files = true; }
+                    if (response == DialogResult.Cancel) { return; }
+                }
+
                 foreach (string line in lines)
                 {
                     string setting_spec = line.Trim();
@@ -139,7 +147,7 @@ namespace ProteoformSuite
                     () => Lollipop.make_ee_relationships()
                 );
                 File.WriteAllText(working_directory + "\\raw_experimental_components.tsv", Lollipop.raw_component_results());
-                File.WriteAllText(working_directory + "\\raw_neucode_pairs.tsv", Lollipop.raw_neucode_pair_results());
+                if (Lollipop.neucode_labeled) File.WriteAllText(working_directory + "\\raw_neucode_pairs.tsv", Lollipop.raw_neucode_pair_results());
                 File.WriteAllText(working_directory + "\\aggregated_experimental_proteoforms.tsv", Lollipop.aggregated_experimental_proteoform_results());         
                 File.WriteAllText(working_directory + "\\experimental_theoretical_relationships.tsv", Lollipop.et_relations_results());
                 File.WriteAllText(working_directory + "\\experimental_decoy_relationships.tsv", Lollipop.ed_relations_results());
@@ -156,12 +164,12 @@ namespace ProteoformSuite
         {
             Parallel.Invoke(
                 () => rawExperimentalComponents.FillRawExpComponentsTable(),
-                () => neuCodePairs.FillNeuCodePairsDGV(),
-                () => neuCodePairs.GraphNeuCodePairs(),
                 () => aggregatedProteoforms.FillAggregatesTable(),
                 () => theoreticalDatabase.FillDataBaseTable("Target"),
                 () => experimentalTheoreticalComparison.FillTablesAndCharts()
             );
+            if (Lollipop.neucode_labeled) neuCodePairs.GraphNeuCodePairs();
+
         }
 
         public void enable_neuCodeProteoformPairsToolStripMenuItem(bool setting)

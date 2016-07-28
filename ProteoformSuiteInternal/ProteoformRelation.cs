@@ -58,7 +58,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public int unadjusted_group_count { get; set; } //"running sum"
+        //fields only for dgv
         public string accession { get; set; } //theoretical for ET, null for EE
         public string name { get; set; } //theoretical for ET, null for EE
         public string fragment { get; set; }
@@ -71,7 +71,10 @@ namespace ProteoformSuiteInternal
         public double agg_RT_2 { get; set; } //0 for ET, experiment_2 for EE
         public int num_observations_1 { get; set; }
         public int num_observations_2 { get; set; } //0 for ET
+
+        //keep these fields for proteoform relation
         public int lysine_count { get; set; }
+        public int unadjusted_group_count { get; set; } //"running sum"
         public double group_adjusted_deltaM { get; set; }
         public int group_count { get; set; }
         public bool outside_no_mans_land { get; set; }
@@ -135,7 +138,7 @@ namespace ProteoformSuiteInternal
 
         /*(this needs to be done at the actual time of forming peaks or else the average is wrong so the peak can be formed out
             of incorrect relations (average shouldn't include relations already grouped into peaks)*/
-                public List<ProteoformRelation> find_nearby_relations(List<ProteoformRelation> ungrouped_relations)
+       public List<ProteoformRelation> find_nearby_relations(List<ProteoformRelation> ungrouped_relations)
         {
             List<ProteoformRelation> nearby_relations = new List<ProteoformRelation>();
             double nearby_deltaM = this.delta_mass;
