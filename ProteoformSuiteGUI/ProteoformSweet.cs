@@ -120,13 +120,14 @@ namespace ProteoformSuite
                     Lollipop.load_setting(setting_spec);
                 }
 
-                string working_directory;
-                MessageBox.Show("Choose a results folder.");
-                DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
-                if (results_folder == DialogResult.OK)
-                    working_directory = this.resultsFolderOpen.SelectedPath;
-                else
-                    working_directory = Path.GetDirectoryName(Lollipop.deconResultsFileNames[0]);
+                // For connectivity testing --
+                //string working_directory;
+                //MessageBox.Show("Choose a results folder.");
+                //DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
+                //if (results_folder == DialogResult.OK)
+                //    working_directory = this.resultsFolderOpen.SelectedPath;
+                //else
+                //    working_directory = Path.GetDirectoryName(Lollipop.deconResultsFileNames[0]);
 
                 MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
 
@@ -138,15 +139,18 @@ namespace ProteoformSuite
                     () => Lollipop.make_et_relationships(),
                     () => Lollipop.make_ee_relationships()
                 );
-                File.WriteAllText(working_directory + "\\raw_experimental_components.tsv", Lollipop.raw_component_results());
-                File.WriteAllText(working_directory + "\\raw_neucode_pairs.tsv", Lollipop.raw_neucode_pair_results());
-                File.WriteAllText(working_directory + "\\aggregated_experimental_proteoforms.tsv", Lollipop.aggregated_experimental_proteoform_results());         
-                File.WriteAllText(working_directory + "\\experimental_theoretical_relationships.tsv", Lollipop.et_relations_results());
-                File.WriteAllText(working_directory + "\\experimental_decoy_relationships.tsv", Lollipop.ed_relations_results());
-                File.WriteAllText(working_directory + "\\experimental_experimental_relationships.tsv", Lollipop.ee_relations_results());
-                File.WriteAllText(working_directory + "\\experimental_false_relationships.tsv", Lollipop.ef_relations_results());
-                File.WriteAllText(working_directory + "\\experimental_theoretical_peaks.tsv", Lollipop.et_peak_results());
-                File.WriteAllText(working_directory + "\\experimental_experimental_peaks.tsv", Lollipop.ee_peak_results());
+
+                // For connectivity testing --
+                //File.WriteAllText(working_directory + "\\raw_experimental_components.tsv", Lollipop.raw_component_results());
+                //File.WriteAllText(working_directory + "\\raw_neucode_pairs.tsv", Lollipop.raw_neucode_pair_results());
+                //File.WriteAllText(working_directory + "\\aggregated_experimental_proteoforms.tsv", Lollipop.aggregated_experimental_proteoform_results());         
+                //File.WriteAllText(working_directory + "\\experimental_theoretical_relationships.tsv", Lollipop.et_relations_results());
+                //File.WriteAllText(working_directory + "\\experimental_decoy_relationships.tsv", Lollipop.ed_relations_results());
+                //File.WriteAllText(working_directory + "\\experimental_experimental_relationships.tsv", Lollipop.ee_relations_results());
+                //File.WriteAllText(working_directory + "\\experimental_false_relationships.tsv", Lollipop.ef_relations_results());
+                //File.WriteAllText(working_directory + "\\experimental_theoretical_peaks.tsv", Lollipop.et_peak_results());
+                //File.WriteAllText(working_directory + "\\experimental_experimental_peaks.tsv", Lollipop.ee_peak_results());
+
                 prepare_figures_and_tables();
                 MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
             }
