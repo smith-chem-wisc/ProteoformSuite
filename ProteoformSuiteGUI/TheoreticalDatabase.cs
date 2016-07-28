@@ -99,6 +99,7 @@ namespace ProteoformSuite
             dgv_Database.Columns["ptm_mass"].HeaderText = "PTM Mass";
             dgv_Database.Columns["ptm_descriptions"].HeaderText = "PTM Description";
             dgv_Database.Columns["accession"].HeaderText = "Accession";
+            dgv_Database.Columns["description"].HeaderText = "Description";
             dgv_Database.Columns["modified_mass"].HeaderText = "Modified Mass";
             dgv_Database.Columns["lysine_count"].HeaderText = "Lysine Count";
 

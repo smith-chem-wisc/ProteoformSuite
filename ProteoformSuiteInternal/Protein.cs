@@ -6,6 +6,7 @@ namespace ProteoformSuiteInternal
     public class Protein
     {
         public string accession { get; set; }
+        public string description { get; set; }
         public string name { get; set; }
         public string fragment { get; set; }
         public int begin { get; set; }
@@ -15,19 +16,20 @@ namespace ProteoformSuiteInternal
 
         public Protein(string accession, string name, string fragment, int begin, int end, string sequence, Dictionary<int, List<Modification>> positionsAndPtms)
         {
-            this.accession = accession;
+            this.accession = accession;          
             this.name = name;
             this.fragment = fragment.Replace(' ', '-');
+            this.description = accession + "_" + fragment;
             this.begin = begin;
             this.end = end;
             this.sequence = sequence;
             this.ptms_by_position = positionsAndPtms;
         }
 
-        public override string ToString()
-        {
-            return this.accession + "_" + this.name + "_" + this.fragment;
-        }
+        //public override string ToString()
+        //{
+        //    return this.accession + "_" + this.name + "_" + this.fragment;
+        //}
     }
 
     public class ProteinSequenceGroup : Protein

@@ -401,5 +401,17 @@ namespace ProteoformSuite
             //folderPath = dr.ToString();
             //folderPath = textBox1.ToString();
         }
+
+        private void InitializeComponent()
+        {
+            this.SuspendLayout();
+            // 
+            // ProteoformFamilyAssignment
+            // 
+            this.ClientSize = new System.Drawing.Size(937, 708);
+            this.Name = "ProteoformFamilyAssignment";
+            this.ResumeLayout(false);
+
+        }
     }
 }
