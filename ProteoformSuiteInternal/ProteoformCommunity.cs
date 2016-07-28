@@ -157,14 +157,15 @@ namespace ProteoformSuiteInternal
         public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
         {
             List<ProteoformRelation> grouped_relations = new List<ProteoformRelation>();
-            List<ProteoformRelation> relations_outside_no_mans = relations.Where(r => r.outside_no_mans_land).ToList();
+            //order by E intensity, then by descending unadjusted_group_count (running sum) before forming peaks
+            List<ProteoformRelation> relations_outside_no_mans = relations.OrderByDescending(r => r.unadjusted_group_count).ThenByDescending(r => r.agg_intensity_1).Where(r => r.outside_no_mans_land).ToList();
             //analyze relations outside of no-man's-land
-            //List<ProteoformRelation> remaining_relations = exclusive_relation_group(relations_in_no_mans, );
             List<DeltaMassPeak> peaks = new List<DeltaMassPeak>();
             while (relations_outside_no_mans.Count > 0)
             {
                 ProteoformRelation top_relation = relations_outside_no_mans[0];
-                List<ProteoformRelation> mass_differences_in_peak = top_relation.accept_exclusive(grouped_relations);
+                List<ProteoformRelation> mass_differences_in_peak = top_relation.find_nearby_relations(relations_outside_no_mans);
+                //List<ProteoformRelation> mass_differences_in_peak = top_relation.accept_exclusive(grouped_relations);
                 if (top_relation.relation_type == ProteoformComparison.ee || top_relation.relation_type == ProteoformComparison.et)
                 {
                     peaks.Add(new DeltaMassPeak(top_relation));
@@ -189,7 +190,7 @@ namespace ProteoformSuiteInternal
 
         private List<ProteoformRelation> exclusive_relation_group(List<ProteoformRelation> relations, List<ProteoformRelation> grouped_relations)
         {
-            return relations.Except(grouped_relations).OrderByDescending(r => r.unadjusted_group_count).ToList();
+            return relations.Except(grouped_relations).OrderByDescending(r => r.unadjusted_group_count).ThenByDescending(r => r.agg_intensity_1).ToList();
         }
 
         //CONSTRUCTING FAMILIES

@@ -160,7 +160,7 @@ namespace ProteoformSuite
                 () => neuCodePairs.GraphNeuCodePairs(),
                 () => aggregatedProteoforms.FillAggregatesTable(),
                 () => theoreticalDatabase.FillDataBaseTable("Target"),
-                () => experimentalTheoreticalComparison.FillTablesAndGraphs()
+                () => experimentalTheoreticalComparison.FillTablesAndCharts()
             );
         }
 

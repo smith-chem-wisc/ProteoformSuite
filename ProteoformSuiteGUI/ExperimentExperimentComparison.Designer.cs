@@ -153,6 +153,7 @@
             0,
             0,
             0});
+            this.nUD_EE_Upper_Bound.ValueChanged += new System.EventHandler(this.nUD_EE_Upper_Bound_ValueChanged);
             // 
             // nUD_PeakWidthBase
             // 
@@ -166,6 +167,7 @@
             0,
             0,
             262144});
+            this.nUD_PeakWidthBase.ValueChanged += new System.EventHandler(this.nUD_PeakWidthBase_ValueChanged);
             // 
             // nUD_PeakCountMinThreshold
             // 
@@ -178,6 +180,7 @@
             0,
             0,
             0});
+            this.nUD_PeakCountMinThreshold.ValueChanged += new System.EventHandler(this.nUD_PeakCountMinThreshold_ValueChanged);
             // 
             // nUD_NoManLower
             // 
@@ -191,6 +194,7 @@
             0,
             0,
             131072});
+            this.nUD_NoManLower.ValueChanged += new System.EventHandler(this.nUD_NoManLower_ValueChanged);
             // 
             // nUD_NoManUpper
             // 
@@ -204,6 +208,7 @@
             0,
             0,
             131072});
+            this.nUD_NoManUpper.ValueChanged += new System.EventHandler(this.nUD_NoManUpper_ValueChanged);
             // 
             // yMaxEE
             // 
@@ -366,8 +371,8 @@
             // 
             // ct_EE_peakList
             // 
-            chartArea2.Name = "ChartArea1";
-            this.ct_EE_peakList.ChartAreas.Add(chartArea2);
+            chartArea1.Name = "ChartArea1";
+            this.ct_EE_peakList.ChartAreas.Add(chartArea1);
             this.ct_EE_peakList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_EE_peakList.Enabled = false;
             legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;

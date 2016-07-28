@@ -31,14 +31,15 @@ namespace ProteoformSuite
         {
             InitializeParameterSet();
             if (Lollipop.ee_relations.Count == 0) Lollipop.make_ee_relationships();
-            initial_load = false;
             this.FillTablesAndCharts();
+            initial_load = false;
         }
 
         public void FillTablesAndCharts()
         {
             FillEEPeakListTable();
             FillEEPairsGridView();
+            FormatEERelationsGridView();
             FormatEEPeakListGridView();
             GraphEERelations();
             GraphEEPeaks();
@@ -48,11 +49,26 @@ namespace ProteoformSuite
         private void RunTheGamut()
         {
             this.Cursor = Cursors.WaitCursor;
+            ClearListsAndTables();
+            Lollipop.make_ee_relationships();
             this.FillTablesAndCharts();
-            xMaxEE.Value = nUD_EE_Upper_Bound.Value;
             this.Cursor = Cursors.Default;
         }
 
+        private void ClearListsAndTables()
+        {
+            Lollipop.ee_relations.Clear();
+            Lollipop.ee_peaks.Clear();
+            Lollipop.ef_relations.Clear();
+            Lollipop.proteoform_community.relations_in_peaks.Clear();
+            Lollipop.proteoform_community.delta_mass_peaks.Clear();
+
+            dgv_EE_Relations.DataSource = null;
+            dgv_EE_Peaks.DataSource = null;
+            dgv_EE_Relations.Rows.Clear();
+            dgv_EE_Peaks.Rows.Clear();
+        }
+        
         private void updateFiguresOfMerit()
         {
             List<DeltaMassPeak> big_peaks = Lollipop.ee_peaks.Where(p => p.peak_accepted).ToList();
@@ -76,10 +92,11 @@ namespace ProteoformSuite
         {
             DisplayUtility.GraphDeltaMassPeaks(ct_EE_peakList, Lollipop.ee_peaks, Lollipop.ee_relations);
         }
+
         private void dgv_EE_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
             int clickedRow = dgv_EE_Peaks.HitTest(e.X, e.Y).RowIndex;
-            if (e.Button == MouseButtons.Left && clickedRow >= 0 && clickedRow < Lollipop.et_relations.Count)
+            if (e.Button == MouseButtons.Left && clickedRow >= 0 && clickedRow < Lollipop.ee_relations.Count)
             {
                 ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
                 DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_EE_Peaks.Rows[clickedRow].DataBoundItem;
@@ -88,11 +105,54 @@ namespace ProteoformSuite
             }
         }
 
+        private void FormatEERelationsGridView()
+        {
+            //round table values
+            dgv_EE_Relations.Columns["group_adjusted_deltaM"].DefaultCellStyle.Format = "0.#####";
+            dgv_EE_Relations.Columns["proteoform_mass_1"].DefaultCellStyle.Format = "0.#####";
+            dgv_EE_Relations.Columns["proteoform_mass_2"].DefaultCellStyle.Format = "0.#####";
+            dgv_EE_Relations.Columns["agg_intensity_1"].DefaultCellStyle.Format = "0.##";
+            dgv_EE_Relations.Columns["agg_intensity_2"].DefaultCellStyle.Format = "0.##";
+            dgv_EE_Relations.Columns["agg_RT_1"].DefaultCellStyle.Format = "0.##";
+            dgv_EE_Relations.Columns["agg_RT_2"].DefaultCellStyle.Format = "0.##";
+            dgv_EE_Relations.Columns["delta_mass"].DefaultCellStyle.Format = "0.#####";
+
+
+            //set column header
+            dgv_EE_Relations.Columns["group_adjusted_deltaM"].HeaderText = "Peak Center Delta Mass";
+            dgv_EE_Relations.Columns["group_count"].HeaderText = "Peak Center Count";
+            dgv_EE_Relations.Columns["proteoform_mass_1"].HeaderText = "Heavy Experimental Aggregated Proteoform Mass";
+            dgv_EE_Relations.Columns["proteoform_mass_2"].HeaderText = "Light Experimental Aggregarted Proteoform Mass";
+            dgv_EE_Relations.Columns["agg_intensity_1"].HeaderText = "Heavy Experimental Aggregated Intensity";
+            dgv_EE_Relations.Columns["agg_intensity_2"].HeaderText = "Light Experimental Aggregated Intensity";
+            dgv_EE_Relations.Columns["agg_RT_1"].HeaderText = "Heavy Experimental Aggregated RT";
+            dgv_EE_Relations.Columns["agg_RT_2"].HeaderText = "Light Experimental Aggregated RT";
+            dgv_EE_Relations.Columns["lysine_count"].HeaderText = "Lysine Count";
+            dgv_EE_Relations.Columns["num_observations_1"].HeaderText = "Number Heavy Experimental Observations";
+            dgv_EE_Relations.Columns["num_observations_2"].HeaderText = "Number Light Experimental Observations";
+            dgv_EE_Relations.Columns["delta_mass"].HeaderText = "Delta Mass";
+            dgv_EE_Relations.Columns["delta_mass"].DisplayIndex = 15; //column ordering
+            dgv_EE_Relations.Columns["unadjusted_group_count"].HeaderText = "Unadjusted Group Count";
+            dgv_EE_Relations.Columns["unadjusted_group_count"].DisplayIndex = 14;
+            dgv_EE_Relations.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
+            dgv_EE_Relations.Columns["accepted"].HeaderText = "Accepeted";
+
+            //making these columns invisible
+            dgv_EE_Relations.Columns["accession"].Visible = false;
+            dgv_EE_Relations.Columns["peak"].Visible = false;
+            dgv_EE_Relations.Columns["name"].Visible = false;
+            dgv_EE_Relations.Columns["fragment"].Visible = false;
+            dgv_EE_Relations.Columns["ptm_list"].Visible = false;
+            if (!Lollipop.neucode_labeled) { dgv_EE_Relations.Columns["lysine_count"].Visible = false; }
+
+            dgv_EE_Relations.AllowUserToAddRows = false;
+        }
+
         private void InitializeParameterSet()
         {
             nUD_EE_Upper_Bound.Minimum = 0;
             nUD_EE_Upper_Bound.Maximum = 500;
-            //nUD_EE_Upper_Bound.Value = 500; // maximum mass difference in Da allowed between experimental pairs
+            nUD_EE_Upper_Bound.Value = (decimal)Lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pairs
 
             yMaxEE.Minimum = 0;
             yMaxEE.Maximum = 1000;
@@ -103,8 +163,8 @@ namespace ProteoformSuite
             yMinEE.Value = 0; // scaling for y-axis minimum in the histogram of all EE pairs
 
             xMaxEE.Minimum = xMinEE.Value;
-            xMaxEE.Maximum = nUD_EE_Upper_Bound.Value;
-            xMaxEE.Value = nUD_EE_Upper_Bound.Value; // scaling for x-axis maximum in the histogram of all EE pairs
+            xMaxEE.Maximum = 500;
+            xMaxEE.Value = (decimal)Lollipop.ee_max_mass_difference; // scaling for x-axis maximum in the histogram of all EE pairs
 
             xMinEE.Minimum = 0;
             xMinEE.Maximum = xMaxEE.Value;
@@ -228,6 +288,52 @@ namespace ProteoformSuite
         private void EE_update_Click(object sender, EventArgs e)
         {
             RunTheGamut();
+            xMaxEE.Value = (decimal)Lollipop.ee_max_mass_difference;
+        }
+
+        private void nUD_EE_Upper_Bound_ValueChanged(object sender, EventArgs e)
+        {
+            if (!initial_load)
+            {
+                Lollipop.ee_max_mass_difference = Convert.ToDouble(nUD_EE_Upper_Bound.Value);
+                //RunTheGamut();
+            }
+        }
+
+        private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e)
+        {
+            if (!initial_load)
+            {
+                Lollipop.peak_width_base = Convert.ToDouble(nUD_PeakWidthBase.Value);
+               // RunTheGamut();
+            }
+        }
+
+        private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
+        {
+            if (!initial_load)
+            {
+                Lollipop.min_peak_count = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
+               // RunTheGamut();
+            }
+        }
+
+        private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
+        {
+            if (!initial_load)
+            {
+                Lollipop.no_mans_land_lowerBound = Convert.ToDouble(nUD_NoManLower.Value);
+               // RunTheGamut();
+            }
+        }
+
+        private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
+        {
+            if (!initial_load)
+            {
+                Lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value); 
+               // RunTheGamut();
+            }
         }
     }
 }
