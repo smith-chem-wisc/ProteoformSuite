@@ -13,6 +13,8 @@ namespace ProteoformSuite
 {
     public partial class AggregatedProteoforms : Form
     {
+        bool initial_load = true;
+
         public AggregatedProteoforms()
         {
             InitializeComponent();
@@ -25,6 +27,16 @@ namespace ProteoformSuite
             updateFiguresOfMerit();
             this.FillAggregatesTable();
             FormatAggregatesTable();
+            initial_load = false;
+        }
+
+        private void RunTheGamut()
+        {
+            ClearListsAndTables();
+            Lollipop.aggregate_proteoforms();
+            this.FillAggregatesTable();
+            FormatAggregatesTable();
+            updateFiguresOfMerit();
         }
 
         private void InitializeSettings()
@@ -114,28 +126,37 @@ namespace ProteoformSuite
             dgv_AcceptNeuCdLtProteoforms.Columns["scan_range"].HeaderText = "Scan Range";
             dgv_AcceptNeuCdLtProteoforms.Columns["rt_range"].HeaderText = "RT Range";
             dgv_AcceptNeuCdLtProteoforms.Columns["num_charge_states"].HeaderText = "No. Charge States";
-            dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].HeaderText = "Intensity Ratio";
-            dgv_AcceptNeuCdLtProteoforms.Columns["lysine_count"].HeaderText = "Lysine Count";
             dgv_AcceptNeuCdLtProteoforms.Columns["accepted"].HeaderText = "Accepted";
             dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].HeaderText = "Intensity Sum for Overlapping Charge States";
-            dgv_AcceptNeuCdLtProteoforms.Columns["id_light"].HeaderText = "ID Light";
-            dgv_AcceptNeuCdLtProteoforms.Columns["id_heavy"].HeaderText = "ID Heavy";
-
             dgv_AcceptNeuCdLtProteoforms.AllowUserToAddRows = false;
+            dgv_AcceptNeuCdLtProteoforms.Columns["id"].Visible = false;
 
             if (!Lollipop.neucode_labeled)
             {
                 dgv_AcceptNeuCdLtProteoforms.Columns["lysine_count"].Visible = false;
-                dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].Visible = false;
+               // dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].Visible = false;
                 dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].Visible = false;
-                dgv_AcceptNeuCdLtProteoforms.Columns["id"].Visible = false;
-
+            }
+            else
+            {
+                dgv_AcceptNeuCdLtProteoforms.Columns["lysine_count"].HeaderText = "Lysine Count";
+                dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].HeaderText = "Intensity Ratio";
+                dgv_AcceptNeuCdLtProteoforms.Columns["id_light"].HeaderText = "ID Light";
+                dgv_AcceptNeuCdLtProteoforms.Columns["id_heavy"].HeaderText = "ID Heavy";
             }
         }
 
         private void updateFiguresOfMerit()
         {
             tb_totalAggregatedProteoforms.Text = Lollipop.proteoform_community.experimental_proteoforms.Count.ToString();
+        }
+
+        private void ClearListsAndTables()
+        {
+            Lollipop.proteoform_community.experimental_proteoforms.Clear();
+
+            dgv_AcceptNeuCdLtProteoforms.DataSource = null;
+            dgv_AcceptNeuCdLtProteoforms.Rows.Clear();
         }
 
         private void dgv_AcceptNeuCdLtProteoforms_CellContentClick(object sender, EventArgs e)
@@ -145,30 +166,38 @@ namespace ProteoformSuite
 
         private void nUP_mass_tolerance_ValueChanged(object sender, EventArgs e)
         {
-            Lollipop.mass_tolerance = nUP_mass_tolerance.Value;
-            Lollipop.aggregate_proteoforms();
-            updateFiguresOfMerit();
+            if (!initial_load)
+            {
+                Lollipop.mass_tolerance = nUP_mass_tolerance.Value;
+                RunTheGamut();
+            }
         }
 
         private void nUD_RetTimeToleranace_ValueChanged(object sender, EventArgs e)
         {
-            Lollipop.retention_time_tolerance = nUD_RetTimeToleranace.Value;
-            Lollipop.aggregate_proteoforms();
-            updateFiguresOfMerit();
+            if (!initial_load)
+            {
+                Lollipop.retention_time_tolerance = nUD_RetTimeToleranace.Value;
+                RunTheGamut();
+            }
         }
 
         private void nUD_Missed_Monos_ValueChanged(object sender, EventArgs e)
         {
-            Lollipop.missed_monos = nUD_Missed_Monos.Value;
-            Lollipop.aggregate_proteoforms();
-            updateFiguresOfMerit();
+            if (!initial_load)
+            {
+                Lollipop.missed_monos = nUD_Missed_Monos.Value;
+                RunTheGamut();
+            }
         }
 
         private void nUD_Missed_Ks_ValueChanged(object sender, EventArgs e)
         {
-            Lollipop.missed_lysines = nUD_Missed_Ks.Value;
-            Lollipop.aggregate_proteoforms();
-            updateFiguresOfMerit();
+            if (!initial_load)
+            {
+                Lollipop.missed_lysines = nUD_Missed_Ks.Value;
+                RunTheGamut();
+            }
         }
 
     }

@@ -131,11 +131,11 @@ namespace ProteoformSuite
             dgv_EE_Relations.Columns["num_observations_1"].HeaderText = "Number Heavy Experimental Observations";
             dgv_EE_Relations.Columns["num_observations_2"].HeaderText = "Number Light Experimental Observations";
             dgv_EE_Relations.Columns["delta_mass"].HeaderText = "Delta Mass";
-            dgv_EE_Relations.Columns["delta_mass"].DisplayIndex = 15; //column ordering
+            dgv_EE_Relations.Columns["accepted"].DisplayIndex = 19;
+            dgv_EE_Relations.Columns["delta_mass"].DisplayIndex = 17; //column ordering
             dgv_EE_Relations.Columns["unadjusted_group_count"].HeaderText = "Unadjusted Group Count";
-            dgv_EE_Relations.Columns["unadjusted_group_count"].DisplayIndex = 14;
             dgv_EE_Relations.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
-            dgv_EE_Relations.Columns["accepted"].HeaderText = "Accepeted";
+            dgv_EE_Relations.Columns["accepted"].HeaderText = "Accepted";
 
             //making these columns invisible
             dgv_EE_Relations.Columns["accession"].Visible = false;

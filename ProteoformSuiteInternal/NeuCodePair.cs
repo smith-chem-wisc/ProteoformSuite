@@ -13,7 +13,7 @@ namespace ProteoformSuiteInternal
         public int id_heavy { get; set; }
         public double intensity_ratio { get; set; }
         public int lysine_count { get; set; }
-        public bool accepted { get; set; }
+        //public bool accepted { get; set; } //moved this to Component
        
 
         public NeuCodePair(Component neuCodeLight, Component neuCodeHeavy, double mass_difference, List<int> overlapping_charge_states, bool light_is_lower) : base(neuCodeLight)
