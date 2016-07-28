@@ -94,7 +94,7 @@ namespace ProteoformSuite
             ct.ChartAreas[0].AxisX.StripLines.Add(lowerPeakBound_stripline);
             ct.ChartAreas[0].AxisX.StripLines.Add(upperPeakBound_stripline);
 
-            //ct.ChartAreas[0].AxisY.Maximum = Convert.ToInt32(peak.group_count * 1.2 + 1); //this automatically scales the vertical axis to the peak height plus 20%
+            ct.ChartAreas[0].AxisY.Maximum = Convert.ToInt32(peak.group_count * 1.2 + 1); //this automatically scales the vertical axis to the peak height plus 20%
 
             ct.ChartAreas[0].AxisX.Title = "Delta m/z";
             ct.ChartAreas[0].AxisY.Title = "Count";
