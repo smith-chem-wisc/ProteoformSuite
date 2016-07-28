@@ -52,7 +52,7 @@ namespace ProteoformSuite
         {
             FillETPeakListTable();
             FillETRelationsGridView();
-            DisplayUtility.FormatRelationsGridView(dgv_ET_Pairs);
+            DisplayUtility.FormatRelationsGridView(dgv_ET_Pairs, true);
             DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List);
             GraphETRelations();
             GraphETPeaks();

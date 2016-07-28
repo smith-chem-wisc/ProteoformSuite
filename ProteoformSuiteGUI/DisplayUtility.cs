@@ -108,7 +108,7 @@ namespace ProteoformSuite
             ct.ChartAreas[0].AxisY.Title = "Count";
         }
 
-        public static void FormatRelationsGridView(DataGridView dgv)
+        public static void FormatRelationsGridView(DataGridView dgv, bool includes_theoretical)
         {
             //round table values
             dgv.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
@@ -125,25 +125,44 @@ namespace ProteoformSuite
             dgv.Columns["accepted"].HeaderText = "Accepted";
             dgv.Columns["peak_center_deltaM"].HeaderText = "Peak Center Delta Mass";
             dgv.Columns["peak_center_count"].HeaderText = "Peak Center Count";
-            dgv.Columns["accession"].HeaderText = "Accession";
-            dgv.Columns["fragment"].HeaderText = "Fragment";
-            dgv.Columns["ptm_list"].HeaderText = "PTM Description";
             dgv.Columns["proteoform_mass_1"].HeaderText = "Experimental Aggregated Proteoform Mass";
-            dgv.Columns["proteoform_mass_2"].HeaderText = "Theoretical Proteoform Mass";
             dgv.Columns["agg_intensity_1"].HeaderText = "Experimental Aggregated Intensity";
             dgv.Columns["agg_RT_1"].HeaderText = "Experimental Aggregated RT";
             dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
             dgv.Columns["num_observations_1"].HeaderText = "Number Experimental Observations";
-            dgv.Columns["name"].HeaderText = "Name";
             dgv.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
+
+            //ET formatting
+            if (includes_theoretical)
+            {
+                dgv.Columns["proteoform_mass_2"].HeaderText = "Theoretical Proteoform Mass";
+                dgv.Columns["accession"].HeaderText = "Accession";
+                dgv.Columns["fragment"].HeaderText = "Fragment";
+                dgv.Columns["ptm_list"].HeaderText = "PTM Description";
+                dgv.Columns["name"].HeaderText = "Name";
+                dgv.Columns["agg_intensity_2"].Visible = false;
+                dgv.Columns["agg_RT_2"].Visible = false;
+                dgv.Columns["num_observations_2"].Visible = false;
+            }
+
+            //EE formatting
+            else
+            {
+                dgv.Columns["agg_RT_2"].HeaderText = "Light Experimental Aggregated RT";
+                dgv.Columns["agg_intensity_2"].HeaderText = "Light Experimental Aggregated Intensity";
+                dgv.Columns["proteoform_mass_2"].HeaderText = "Light Experimental Aggregated Intensity";
+                dgv.Columns["num_observations_2"].HeaderText = "Number Light Experimental Observations";
+                dgv.Columns["accession"].Visible = false;
+                dgv.Columns["peak"].Visible = false;
+                dgv.Columns["name"].Visible = false;
+                dgv.Columns["fragment"].Visible = false;
+                dgv.Columns["ptm_list"].Visible = false;
+            }
 
             //making these columns invisible
             dgv.Columns["group_adjusted_deltaM"].Visible = false;
             dgv.Columns["group_count"].Visible = false;
             dgv.Columns["peak"].Visible = false;
-            dgv.Columns["agg_intensity_2"].Visible = false;
-            dgv.Columns["agg_RT_2"].Visible = false;
-            dgv.Columns["num_observations_2"].Visible = false;
             if (!Lollipop.neucode_labeled) { dgv.Columns["lysine_count"].Visible = false; }
 
             dgv.AllowUserToAddRows = false;
