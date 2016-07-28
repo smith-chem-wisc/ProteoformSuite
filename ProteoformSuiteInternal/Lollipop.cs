@@ -289,10 +289,10 @@ namespace ProteoformSuiteInternal
 
         //ET,ED,EE,EF COMPARISONS
 
-        
-        public static double ee_max_mass_difference=200; //TODO: implement this in ProteoformFamilies and elsewhere
-        public static double et_low_mass_difference=-50;
-        public static double et_high_mass_difference=150;
+
+        public static double ee_max_mass_difference = 250; //TODO: implement this in ProteoformFamilies and elsewhere
+        public static double et_low_mass_difference=-250;
+        public static double et_high_mass_difference=250;
         public static double no_mans_land_lowerBound = 0.22;
         public static double no_mans_land_upperBound = 0.88;
         public static double peak_width_base = 0.0150;
@@ -312,11 +312,6 @@ namespace ProteoformSuiteInternal
             //    () => et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et),
             //    () => ed_relations = Lollipop.proteoform_community.relate_ed()
             //);
-            if (!neucode_labeled)
-            {
-                et_low_mass_difference = -100;
-                et_high_mass_difference = 200;
-            }
             et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
             ed_relations = Lollipop.proteoform_community.relate_ed();
             et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
@@ -329,14 +324,8 @@ namespace ProteoformSuiteInternal
             //    () => ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.et),
             //    () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
             //);
-            if (!neucode_labeled)
-            {
-                ee_max_mass_difference = 250;
-            }
-
             ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
             ef_relations = proteoform_community.relate_unequal_ee_lysine_counts();
-
             ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
