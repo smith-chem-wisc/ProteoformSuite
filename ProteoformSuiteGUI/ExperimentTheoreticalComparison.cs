@@ -133,7 +133,8 @@ namespace ProteoformSuite
             dgv_ET_Pairs.Columns["lysine_count"].HeaderText = "Lysine Count";
             dgv_ET_Pairs.Columns["num_observations_1"].HeaderText = "Number Experimental Observations";
             dgv_ET_Pairs.Columns["delta_mass"].HeaderText = "Delta Mass";
-            dgv_ET_Pairs.Columns["delta_mass"].DisplayIndex = 15; //column ordering is nicer 
+            dgv_ET_Pairs.Columns["accepted"].DisplayIndex = 19;
+            dgv_ET_Pairs.Columns["delta_mass"].DisplayIndex = 17; //column ordering is nicer 
             dgv_ET_Pairs.Columns["name"].HeaderText = "Name";
             dgv_ET_Pairs.Columns["unadjusted_group_count"].HeaderText = "Unadjusted Group Count";
             dgv_ET_Pairs.Columns["unadjusted_group_count"].DisplayIndex = 14;
@@ -224,10 +225,10 @@ namespace ProteoformSuite
             yMinET.Value = 0; // scaling for y-axis of displayed ET Histogram of all ET pairs
 
             xMaxET.Minimum = xMinET.Value;
-            xMaxET.Maximum = 250;
+            xMaxET.Maximum = 500;
             xMaxET.Value = nUD_ET_Upper_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
-            xMinET.Minimum = -250;
+            xMinET.Minimum = -500;
             xMinET.Maximum = xMaxET.Value;
             xMinET.Value = nUD_ET_Lower_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
@@ -253,8 +254,7 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.et_low_mass_difference = Convert.ToDouble(nUD_ET_Lower_Bound.Value);
-                RunTheGamut();
-                xMinET.Value = Convert.ToDecimal(nUD_ET_Lower_Bound.Value);
+                //RunTheGamut();
             }          
         }
         private void nUD_ET_Upper_Bound_ValueChanged(object sender, EventArgs e) // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
@@ -262,8 +262,7 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.et_high_mass_difference = Convert.ToDouble(nUD_ET_Upper_Bound.Value);
-                RunTheGamut();
-                xMaxET.Value = Convert.ToDecimal(nUD_ET_Upper_Bound.Value);
+               // RunTheGamut();
             }
         }
 

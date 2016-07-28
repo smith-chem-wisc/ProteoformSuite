@@ -32,11 +32,12 @@ namespace ProteoformSuiteInternal
         public static bool neucode_labeled = true;
         public static void process_raw_components(Func<string, IEnumerable<Component>> componentReader)
         {
-            //POTENTIAL PARALLEL PROBLEM - DIDN'T TEST
-            Parallel.ForEach<string>(Lollipop.deconResultsFileNames, filename =>
-            {
-                var thread = new Thread(
-                    () =>
+            //PARALLEL PROBLEM -> causes load and run to crash
+            //Parallel.ForEach<string>(Lollipop.deconResultsFileNames, filename =>
+            //{
+            //    var thread = new Thread(
+            //        () =>
+            foreach(string filename in Lollipop.deconResultsFileNames)
                     {
                         IEnumerable<Component> readComponents = componentReader(filename);
                         List<Component> raw_components = new List<Component>(readComponents);
@@ -49,10 +50,10 @@ namespace ProteoformSuiteInternal
                             find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
                         }
                     }    
-                    );
-                thread.Start();
-                thread.Join();
-            });
+                   // );
+               // thread.Start();
+                //thread.Join();
+           // });
         }
 
 
@@ -374,7 +375,8 @@ namespace ProteoformSuiteInternal
         public static string method_toString()
         {
             return String.Join(System.Environment.NewLine, new string[] {
-                "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("\t", Lollipop.deconResultsFileNames.ToArray<string>()),
+                "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("; ", Lollipop.deconResultsFileNames.ToArray<string>()),
+                "LoadDeconvolutionResults|neucode_labeled\t" + neucode_labeled.ToString(),
                 "NeuCodePairs|max_intensity_ratio\t" + max_intensity_ratio.ToString(),
                 "NeuCodePairs|min_intensity_ratio\t" + min_intensity_ratio.ToString(),
                 "NeuCodePairs|max_lysine_ct\t" + max_lysine_ct.ToString(),
@@ -406,21 +408,14 @@ namespace ProteoformSuiteInternal
             });
         }
 
+        public static bool use_method_files = true;
         public static void load_setting(string setting_spec)
         {
             string[] fields = setting_spec.Split('\t');
             switch (fields[0])
             {
-                case "LoadDeconvolutionResults|deconvolution_file_names":
-                    //if (Lollipop.deconResultsFileNames.Count != 0)
-                    //{
-                    //    var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?", "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
-                    //    if (response == DialogResult.Yes) { break; }
-                    //    if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); }
-                    //    if (response == DialogResult.Cancel) { return; }
-                    //}
-                    foreach (string filename in fields) { if (filename != "LoadDeconvolutionResults|deconvolution_file_names") Lollipop.deconResultsFileNames.Add(filename); }
-                    break;
+                case "LoadDeconvolutionResults|deconvolution_file_names": if (use_method_files) {foreach (string filename in fields[1].Split(';')) { Lollipop.deconResultsFileNames.Add(filename); }} break;
+                case "LoadDeconvolutionResults|neucode_labeled": if (use_method_files) { neucode_labeled = Convert.ToBoolean(fields[1]); } break;
                 case "NeuCodePairs|max_intensity_ratio": max_intensity_ratio = Convert.ToDecimal(fields[1]); break;
                 case "NeuCodePairs|min_intensity_ratio": min_intensity_ratio = Convert.ToDecimal(fields[1]); break;
                 case "NeuCodePairs|max_lysine_ct": max_lysine_ct = Convert.ToDecimal(fields[1]); break;

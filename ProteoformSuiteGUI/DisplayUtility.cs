@@ -51,8 +51,8 @@ namespace ProteoformSuite
         {
             ct.Series[series].XValueMember = "delta_mass";
             ct.Series[series].YValueMembers = "unadjusted_group_count";
-            List<ProteoformRelation> et_relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
-            ct.DataSource = et_relations_ordered;
+            List<ProteoformRelation> relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
+            ct.DataSource = relations_ordered;
             ct.DataBind();
 
             ct.ChartAreas[0].AxisY.StripLines.Clear();
@@ -73,10 +73,11 @@ namespace ProteoformSuite
             }
 
             List<ProteoformRelation> relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
-            foreach (ProteoformRelation relation in relations_ordered)
-            {
-                ct.Series["Nearby Relations"].Points.AddXY(relation.delta_mass, relation.unadjusted_group_count);
-            }
+            ct.Series["Nearby Relations"].XValueMember = "delta_mass";
+            ct.Series["Nearby Relations"].YValueMembers = "unadjusted_group_count";
+            ct.DataSource = relations_ordered;
+            ct.DataBind();
+
             ct.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
             if (peaks_ordered.Count > 0) GraphSelectedDeltaMassPeak(ct, peaks_ordered[0]);
         }
