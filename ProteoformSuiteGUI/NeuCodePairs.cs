@@ -46,11 +46,11 @@ namespace ProteoformSuite
 
         private void InitializeParameterSet()
         {
-            IRatMaxAcceptable.Minimum = 0; IRatMaxAcceptable.Maximum = 20; IRatMaxAcceptable.Value = Lollipop.max_intensity_ratio;
-            IRatMinAcceptable.Minimum = 0; IRatMinAcceptable.Maximum = 20; IRatMinAcceptable.Value = Lollipop.min_intensity_ratio;
+            IRatMaxAcceptable.Minimum = -20; IRatMaxAcceptable.Maximum = 20; IRatMaxAcceptable.Value = Lollipop.max_intensity_ratio;
+            IRatMinAcceptable.Minimum = -20; IRatMinAcceptable.Maximum = 20; IRatMinAcceptable.Value = Lollipop.min_intensity_ratio;
 
-            KMaxAcceptable.Minimum = 0; KMaxAcceptable.Maximum = 28; KMaxAcceptable.Value = Lollipop.max_lysine_ct;
-            KMinAcceptable.Minimum = 0; KMinAcceptable.Maximum = 28; KMinAcceptable.Value = Lollipop.min_lysine_ct;
+            KMaxAcceptable.Minimum = -28; KMaxAcceptable.Maximum = 28; KMaxAcceptable.Value = Lollipop.max_lysine_ct;
+            KMinAcceptable.Minimum = -28; KMinAcceptable.Maximum = 28; KMinAcceptable.Value = Lollipop.min_lysine_ct;
         }
 
         private void FormatNeuCodePairsDGV()
@@ -110,10 +110,10 @@ namespace ProteoformSuite
             ct_IntensityRatio.Series["intensityRatio"].XValueMember = "intRatio";
             ct_IntensityRatio.Series["intensityRatio"].YValueMembers = "numPairsAtThisIntRatio";
 
-            yMaxIRat.Minimum = 0; yMaxIRat.Maximum = ymax; yMaxIRat.Value = ymax;
-            yMinIRat.Minimum = 0; yMinIRat.Maximum = ymax; yMinIRat.Value = 0;
-            xMaxIRat.Minimum = 0; xMaxIRat.Maximum = 20; xMaxIRat.Value = 20;
-            xMinIRat.Minimum = 0; xMinIRat.Maximum = 20; xMinIRat.Value = 0;
+            yMaxIRat.Minimum = -ymax; yMaxIRat.Maximum = ymax; yMaxIRat.Value = ymax;
+            yMinIRat.Minimum = -ymax; yMinIRat.Maximum = ymax; yMinIRat.Value = 0;
+            xMaxIRat.Minimum = -20; xMaxIRat.Maximum = 20; xMaxIRat.Value = 20;
+            xMinIRat.Minimum = -20; xMinIRat.Maximum = 20; xMinIRat.Value = 0;
 
             ct_IntensityRatio.ChartAreas[0].AxisX.Title = "Intensity Ratio of a Pair";
             ct_IntensityRatio.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";
@@ -139,10 +139,10 @@ namespace ProteoformSuite
             ct_LysineCount.Series["lysineCount"].XValueMember = "numLysines";
             ct_LysineCount.Series["lysineCount"].YValueMembers = "numPairsAtThisLysCt";
 
-            yMaxKCt.Minimum = 0; yMaxKCt.Maximum = ymax; yMaxKCt.Value = ymax;
-            yMinKCt.Minimum = 0; yMinKCt.Maximum = ymax; yMinKCt.Value = 0;
-            xMaxKCt.Minimum = 0;                         xMaxKCt.Value = 28;
-            xMinKCt.Minimum = 0; xMinKCt.Maximum = 28; xMinKCt.Value = 0;
+            yMaxKCt.Minimum = -ymax; yMaxKCt.Maximum = ymax; yMaxKCt.Value = ymax;
+            yMinKCt.Minimum = -ymax; yMinKCt.Maximum = ymax; yMinKCt.Value = 0;
+            xMaxKCt.Minimum = -28;                         xMaxKCt.Value = 28;
+            xMinKCt.Minimum = -28; xMinKCt.Maximum = 28; xMinKCt.Value = 0;
 
             ct_LysineCount.ChartAreas[0].AxisX.Title = "Lysine Count";
             ct_LysineCount.ChartAreas[0].AxisY.Title = "Number of NeuCode Pairs";            
