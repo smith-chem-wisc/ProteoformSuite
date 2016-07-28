@@ -98,6 +98,9 @@ namespace ProteoformSuite
         {
             DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, Lollipop.et_relations);
         }
+
+
+
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
             int clickedRow = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
@@ -108,8 +111,46 @@ namespace ProteoformSuite
                 DisplayUtility.GraphSelectedDeltaMassPeak(ct_ET_peakList, selected_peak);
                 ct_ET_peakList.ChartAreas[0].AxisY.Maximum = Convert.ToInt32(selected_peak.group_count * 1.2); //this automatically scales the vertical axis to the peak height plus 20%
             }
+            else
+            {
+                if(e.Button == MouseButtons.Right && clickedRow >= 0 && clickedRow < Lollipop.et_relations.Count)
+                {
+                    ContextMenuStrip my_menu = new ContextMenuStrip();
+                    int position_xy_mouse_row = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
+
+                    DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
+
+                    //MessageBox.Show("Right at row: " + position_xy_mouse_row.ToString());
+
+                    if (position_xy_mouse_row > 0)
+                    {
+                        my_menu.Items.Add("Increase Experimenal Mass 1.0015 Da").Name = "IncreaseMass";
+                        my_menu.Items.Add("Decrease Experimenal Mass 1.0015 Da").Name = "DecreaseMass";
+                    }
+
+                    my_menu.Show(dgv_ET_Peak_List, new Point(e.X, e.Y));
+
+                    //event menu click
+                    my_menu.ItemClicked += new ToolStripItemClickedEventHandler((s,ev)=>my_menu_ItemClicked(s,ev,selected_peak));
+                }
+            }
         }
         
+        void my_menu_ItemClicked(object sender,ToolStripItemClickedEventArgs e, DeltaMassPeak peak)
+        {
+            MessageBox.Show(e.ClickedItem.Name.ToString());
+            switch (e.ClickedItem.Name.ToString())
+            {
+                case "IncreaseMass":
+                    MessageBox.Show("increase: " + peak.delta_mass.ToString());
+                    break;
+                case "DecreaseMass":
+                    MessageBox.Show("decrease: " + peak.delta_mass.ToString());
+                    break;
+
+            }
+        }
+
         private void FormatETRelationsGridView()
         {
             //round table values
