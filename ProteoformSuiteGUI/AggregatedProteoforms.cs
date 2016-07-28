@@ -138,11 +138,6 @@ namespace ProteoformSuite
             tb_totalAggregatedProteoforms.Text = Lollipop.proteoform_community.experimental_proteoforms.Count.ToString();
         }
 
-        private void updateFiguresOfMerit()
-        {
-            tb_totalAggregatedProteoforms.Text = Lollipop.proteoform_community.experimental_proteoforms.Count.ToString();
-        }
-
         private void dgv_AcceptNeuCdLtProteoforms_CellContentClick(object sender, EventArgs e)
         {
             //code for if acceptable boolean is changed by user. 
