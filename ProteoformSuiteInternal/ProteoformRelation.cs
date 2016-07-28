@@ -138,7 +138,11 @@ namespace ProteoformSuiteInternal
 
         /*(this needs to be done at the actual time of forming peaks or else the average is wrong so the peak can be formed out
             of incorrect relations (average shouldn't include relations already grouped into peaks)*/
+<<<<<<< HEAD
        public List<ProteoformRelation> find_nearby_relations(List<ProteoformRelation> ungrouped_relations)
+=======
+                public List<ProteoformRelation> find_nearby_relations(List<ProteoformRelation> ungrouped_relations)
+>>>>>>> 72c89d4579886eca45d7ac6c73aa684e7f6c0950
         {
             List<ProteoformRelation> nearby_relations = new List<ProteoformRelation>();
             double nearby_deltaM = this.delta_mass;

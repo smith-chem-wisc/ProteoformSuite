@@ -128,6 +128,7 @@ namespace ProteoformSuite
             dgv_AcceptNeuCdLtProteoforms.Columns["num_charge_states"].HeaderText = "No. Charge States";
             dgv_AcceptNeuCdLtProteoforms.Columns["accepted"].HeaderText = "Accepted";
             dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].HeaderText = "Intensity Sum for Overlapping Charge States";
+<<<<<<< HEAD
             dgv_AcceptNeuCdLtProteoforms.AllowUserToAddRows = false;
             dgv_AcceptNeuCdLtProteoforms.Columns["id"].Visible = false;
 
@@ -141,6 +142,20 @@ namespace ProteoformSuite
                 dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].HeaderText = "Intensity Ratio";
                 dgv_AcceptNeuCdLtProteoforms.Columns["id_light"].HeaderText = "ID Light";
                 dgv_AcceptNeuCdLtProteoforms.Columns["id_heavy"].HeaderText = "ID Heavy";
+=======
+            dgv_AcceptNeuCdLtProteoforms.Columns["id_light"].HeaderText = "ID Light";
+            dgv_AcceptNeuCdLtProteoforms.Columns["id_heavy"].HeaderText = "ID Heavy";
+
+            dgv_AcceptNeuCdLtProteoforms.AllowUserToAddRows = false;
+
+            if (!Lollipop.neucode_labeled)
+            {
+                dgv_AcceptNeuCdLtProteoforms.Columns["lysine_count"].Visible = false;
+                dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].Visible = false;
+                dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].Visible = false;
+                dgv_AcceptNeuCdLtProteoforms.Columns["id"].Visible = false;
+
+>>>>>>> 72c89d4579886eca45d7ac6c73aa684e7f6c0950
             }
         }
 

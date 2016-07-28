@@ -133,10 +133,15 @@ namespace ProteoformSuite
             dgv_ET_Pairs.Columns["lysine_count"].HeaderText = "Lysine Count";
             dgv_ET_Pairs.Columns["num_observations_1"].HeaderText = "Number Experimental Observations";
             dgv_ET_Pairs.Columns["delta_mass"].HeaderText = "Delta Mass";
+<<<<<<< HEAD
             dgv_ET_Pairs.Columns["accepted"].DisplayIndex = 19;
             dgv_ET_Pairs.Columns["delta_mass"].DisplayIndex = 17; //column ordering is nicer 
+=======
+            dgv_ET_Pairs.Columns["delta_mass"].DisplayIndex = 15; //column ordering is nicer 
+>>>>>>> 72c89d4579886eca45d7ac6c73aa684e7f6c0950
             dgv_ET_Pairs.Columns["name"].HeaderText = "Name";
             dgv_ET_Pairs.Columns["unadjusted_group_count"].HeaderText = "Unadjusted Group Count";
+            dgv_ET_Pairs.Columns["unadjusted_group_count"].DisplayIndex = 14;
             dgv_ET_Pairs.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
             dgv_ET_Pairs.Columns["accepted"].HeaderText = "Accepted";
 
@@ -224,10 +229,17 @@ namespace ProteoformSuite
             yMinET.Value = 0; // scaling for y-axis of displayed ET Histogram of all ET pairs
 
             xMaxET.Minimum = xMinET.Value;
+<<<<<<< HEAD
             xMaxET.Maximum = 500;
             xMaxET.Value = nUD_ET_Upper_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
             xMinET.Minimum = -500;
+=======
+            xMaxET.Maximum = 250;
+            xMaxET.Value = nUD_ET_Upper_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
+
+            xMinET.Minimum = -250;
+>>>>>>> 72c89d4579886eca45d7ac6c73aa684e7f6c0950
             xMinET.Maximum = xMaxET.Value;
             xMinET.Value = nUD_ET_Lower_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
