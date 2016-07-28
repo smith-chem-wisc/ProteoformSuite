@@ -168,37 +168,30 @@ namespace ProteoformSuite
         {
             ct_LysineCount.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxKCt.Value.ToString());
         }
-
         private void yMinKCt_ValueChanged(object sender, EventArgs e)
         {
             ct_LysineCount.ChartAreas[0].AxisY.Minimum = double.Parse(yMinKCt.Value.ToString());
         }
-
         private void xMinKCt_ValueChanged(object sender, EventArgs e)
         {
             ct_LysineCount.ChartAreas[0].AxisX.Minimum = double.Parse(xMinKCt.Value.ToString());
         }
-
         private void xMaxKCt_ValueChanged(object sender, EventArgs e)
         {
             ct_LysineCount.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxKCt.Value.ToString());
         }
-
         private void yMaxIRat_ValueChanged(object sender, EventArgs e)
         {
             ct_IntensityRatio.ChartAreas[0].AxisY.Maximum = double.Parse(yMaxIRat.Value.ToString());
         }
-
         private void yMinIRat_ValueChanged(object sender, EventArgs e)
         {
             ct_IntensityRatio.ChartAreas[0].AxisY.Minimum = double.Parse(yMinIRat.Value.ToString());
         }
-
         private void xMinIRat_ValueChanged(object sender, EventArgs e)
         {
             ct_IntensityRatio.ChartAreas[0].AxisX.Minimum = double.Parse(xMinIRat.Value.ToString());
         }
-
         private void xMaxIRat_ValueChanged(object sender, EventArgs e)
         {
             ct_IntensityRatio.ChartAreas[0].AxisX.Maximum = double.Parse(xMaxIRat.Value.ToString());
@@ -209,58 +202,63 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.min_lysine_ct = KMinAcceptable.Value;
-                //if KMin increased, incorrect values un-accepted
-                List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count < Lollipop.min_lysine_ct).ToList();
+
+                // If KMin increased, incorrect values un-accepted
+                List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count < Lollipop.min_lysine_ct).ToList(); 
                 Parallel.ForEach(selected_pf, p => { p.accepted = false; });
-                //if Kmin is decreased, correct values are re-accepted.  
+
+                // If Kmin is decreased, correct values are re-accepted.  
                 List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count > Lollipop.min_lysine_ct
                     && p.lysine_count < Lollipop.max_lysine_ct).ToList();
                 Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
                 dgv_RawExpNeuCodePairs.Refresh();
             }
         }
-
         private void KMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
             if (!initial_load)
             {
                 Lollipop.max_lysine_ct = KMaxAcceptable.Value;
-                //if KMax is decreased, incorrect values are un-accepted
+
+                // If KMax is decreased, incorrect values are un-accepted
                 List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count > Lollipop.max_lysine_ct).ToList();
                 Parallel.ForEach(selected_pf, p => { p.accepted = false; });
-                //if Kmax  is increased, correct values are re-accepted.  
+                
+                // If Kmax  is increased, correct values are re-accepted.  
                 List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count < Lollipop.max_lysine_ct
                    && p.lysine_count > Lollipop.min_lysine_ct).ToList();
                 Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
                 dgv_RawExpNeuCodePairs.Refresh();
             }
         }
-
         private void IRatMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
             if (!initial_load)
             {
                 Lollipop.min_intensity_ratio = IRatMinAcceptable.Value;
-                //if IMin is increaed, incorrect values are un-accepted
+
+                // If IMin is increaed, incorrect values are un-accepted
                 List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio < Convert.ToDouble(Lollipop.min_intensity_ratio)).ToList();
                 Parallel.ForEach(selected_pf, p => { p.accepted = false; });
-                //if IMin is decreased, correct values are re-accepted
+                
+                // If IMin is decreased, correct values are re-accepted
                 List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio)
                    && p.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio)).ToList();
                 Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
                 dgv_RawExpNeuCodePairs.Refresh();
             }
         }
-
         private void IRatMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
             if (!initial_load)
             {
                 Lollipop.max_intensity_ratio = IRatMaxAcceptable.Value;
-                //if Imax is decreased, incorrect values are un-accepted
+
+                // If Imax is decreased, incorrect values are un-accepted
                 List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio > Convert.ToDouble(Lollipop.max_intensity_ratio)).ToList();
                 Parallel.ForEach(selected_pf, p => { p.accepted = false; });
-                //if Imax is increased, correct values are re-accepted
+                
+                // If Imax is increased, correct values are re-accepted
                 List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio)
                   && p.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio)).ToList();
                 Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
