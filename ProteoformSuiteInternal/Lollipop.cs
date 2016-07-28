@@ -255,9 +255,9 @@ namespace ProteoformSuiteInternal
                 double proteoform_mass = unmodified_mass + group.mass;
                 string ptm_description = group.ptm_combination.ToString();
                 if (string.IsNullOrEmpty(decoy_database_name))
-                    proteoform_community.add(new TheoreticalProteoform(accession + "_" + prot.fragment + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
+                    proteoform_community.add(new TheoreticalProteoform(accession, prot.description + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
                 else
-                    proteoform_community.add(new TheoreticalProteoform(accession + "_" + prot.fragment + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
+                    proteoform_community.add(new TheoreticalProteoform(accession, prot.description + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
 
                 listMemberNumber++;
             } //);
