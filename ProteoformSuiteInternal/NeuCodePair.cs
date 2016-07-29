@@ -5,8 +5,8 @@ namespace ProteoformSuiteInternal
 {
     public class NeuCodePair : Component
     {
-        Component neuCodeLight;
-        Component neuCodeHeavy;
+        public Component neuCodeLight;
+        public Component neuCodeHeavy;
         public List<int> overlapping_charge_states { get; set; }
 
         public int id_light { get; set; }
@@ -27,10 +27,10 @@ namespace ProteoformSuiteInternal
             int diff_integer = Convert.ToInt32(Math.Round(mass_difference / 1.0015 - 0.5, 0, MidpointRounding.AwayFromZero)); 
             double firstCorrection;
 
-            if (light_is_lower) { firstCorrection = neuCodeLight.weighted_monoisotopic_mass + diff_integer * 1.0015; }
-            else  { firstCorrection = neuCodeLight.weighted_monoisotopic_mass - (diff_integer + 1) * 1.0015; }
+            if (light_is_lower) { firstCorrection = neuCodeLight.corrected_mass + diff_integer * 1.0015; }
+            else  { firstCorrection = neuCodeLight.corrected_mass - (diff_integer + 1) * 1.0015; }
 
-            this.lysine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.weighted_monoisotopic_mass - firstCorrection) / 0.036015372, 0, MidpointRounding.AwayFromZero)));
+            this.lysine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.corrected_mass - firstCorrection) / 0.036015372, 0, MidpointRounding.AwayFromZero)));
             this.intensity_ratio = neuCodeLight.intensity_sum_olcs / neuCodeHeavy.intensity_sum_olcs; //ratio of overlapping charge states
 
             //marking pair as accepted or not when it's created
@@ -39,7 +39,7 @@ namespace ProteoformSuiteInternal
                  { this.accepted = true; }
             else { this.accepted = false; }
 
-            this.corrected_mass = this.weighted_monoisotopic_mass + Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * 1.0015;
+            this.corrected_mass = this.corrected_mass + Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * 1.0015;
         }
 
         new public string as_tsv_row()
