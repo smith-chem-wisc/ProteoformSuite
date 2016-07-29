@@ -54,10 +54,10 @@ namespace Test
 
             ProteoformRelation base_relation = new ProteoformRelation(pf3, pf4, relation_type2, delta_mass2);
 
-            base_relation.nearby_relations = base_relation.find_nearby_relations(theList);
+            base_relation.nearby_relations = base_relation.set_nearby_group(theList);
 
             Console.WriteLine("Creating deltaMassPeak");
-            DeltaMassPeak deltaMassPeak = new DeltaMassPeak(base_relation);
+            DeltaMassPeak deltaMassPeak = new DeltaMassPeak(base_relation, theList);
             Console.WriteLine("Created deltaMassPeak");
 
             Assert.AreEqual(0, deltaMassPeak.peak_group_fdr);

@@ -32,8 +32,8 @@ namespace ProteoformSuiteInternal
 
         public List<Proteoform> get_connected_proteoforms()
         {
-            //return relationships.Where(r => r.peak.accepted).SelectMany(r => r.connected_proteoforms).ToList();
-            return relationships.SelectMany(r => r.connected_proteoforms).ToList();
+            return relationships.Where(r => r.peak.peak_accepted).SelectMany(r => r.connected_proteoforms).ToList();
+            //return relationships.SelectMany(r => r.connected_proteoforms).ToList();
         }
     }
 

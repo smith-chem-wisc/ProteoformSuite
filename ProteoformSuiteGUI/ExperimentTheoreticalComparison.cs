@@ -76,7 +76,7 @@ namespace ProteoformSuite
         private void updateFiguresOfMerit()
         {
             List<DeltaMassPeak> big_peaks = Lollipop.et_peaks.Where(p => p.peak_accepted).ToList();
-            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.peak_group.Count).Sum().ToString();
+            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.grouped_relations.Count).Sum().ToString();
             tb_TotalPeaks.Text = big_peaks.Count.ToString();
         }
 
@@ -174,9 +174,6 @@ namespace ProteoformSuite
                 dgv_ET_Peak_List.Update();
             }
         }
-
-        private void splitContainer3_Panel2_Paint(object sender, PaintEventArgs e)
-        { }
 
         private void InitializeParameterSet()
         {

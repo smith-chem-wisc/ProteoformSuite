@@ -41,6 +41,7 @@ namespace ProteoformSuiteInternal
     public class ProteoformRelation : MassDifference
     {
         public DeltaMassPeak peak { get; set; }
+        public int nearby_relations_count { get; set; } //"running sum"
         private List<ProteoformRelation> _nearby_relations;
         public List<ProteoformRelation> nearby_relations
         {
@@ -51,14 +52,14 @@ namespace ProteoformSuiteInternal
                 this.nearby_relations_count = value.Count;
             }
         }
-        public int nearby_relations_count { get; set; } //"running sum"
+        public static bool mass_difference_is_outside_no_mans_land(double delta_mass)
+        {
+            return Math.Abs(delta_mass - Math.Truncate(delta_mass)) >= Lollipop.no_mans_land_upperBound ||
+                Math.Abs(delta_mass - Math.Truncate(delta_mass)) <= Lollipop.no_mans_land_lowerBound;
+        }
         public bool outside_no_mans_land
         {
-            get
-            {
-                return Math.Abs(this.delta_mass - Math.Truncate(this.delta_mass)) >= Lollipop.no_mans_land_upperBound ||
-              Math.Abs(this.delta_mass - Math.Truncate(this.delta_mass)) <= Lollipop.no_mans_land_lowerBound;
-            }
+            get { return ProteoformRelation.mass_difference_is_outside_no_mans_land(this.delta_mass); }
         }
         public int lysine_count { get; set; }
         public bool accepted { get; set; }
@@ -67,7 +68,6 @@ namespace ProteoformSuiteInternal
         public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass) : base(pf1, pf2, relation_type, delta_mass)
         {
             this.relation_type = relation_type;
-            this.group_adjusted_deltaM = delta_mass;
             if (Lollipop.neucode_labeled) this.lysine_count = pf1.lysine_count;
         }
 
@@ -77,24 +77,24 @@ namespace ProteoformSuiteInternal
             this.nearby_relations = relation.nearby_relations;
         }
 
-        public void set_nearby_group(List<ProteoformRelation> all_relations)
+        public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_relations)
         {
             double lower_limit_of_peak_width = this.delta_mass - Lollipop.peak_width_base / 2;
             double upper_limit_of_peak_width = this.delta_mass + Lollipop.peak_width_base / 2;
-            this.nearby_relations_count = all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width
-                && relation.delta_mass <= upper_limit_of_peak_width).ToList().Count;
+            this.nearby_relations = all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width
+                && relation.delta_mass <= upper_limit_of_peak_width).ToList();
+            return this.nearby_relations;
         }
 
-        
 
         // FOR DATAGRIDVIEW DISPLAY
         public int peak_center_count
         {
-            get { if (this.peak != null) return this.peak.peak_group_count; else return -1000000; }
+            get { if (this.peak != null) return this.peak.peak_relation_group_count; else return -1000000; }
         }
         public double peak_center_deltaM
         {
-            get { if (this.peak != null) return peak.peak_group_deltaM; else return -1000000; }
+            get { if (this.peak != null) return peak.peak_deltaM_average; else return -1000000; }
         }
 
         // For DataGridView display of proteoform1
@@ -157,13 +157,12 @@ namespace ProteoformSuiteInternal
 
         public string as_tsv_row()
         {
-            return String.Join("\t", new List<string> { this.connected_proteoforms[0].accession.ToString(), this.connected_proteoforms[1].accession.ToString(), this.delta_mass.ToString(), this.group_adjusted_deltaM.ToString(),
-                this.group_count.ToString() });
+            return String.Join("\t", new List<string> { this.connected_proteoforms[0].accession.ToString(), this.connected_proteoforms[1].accession.ToString(), this.delta_mass.ToString(),  this.nearby_relations_count.ToString() });
         }
 
         public static string get_tsv_header()
         {
-            return String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_accession", "delta_mass", "group_adjusted_deltaM", "group_count" });
+            return String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_accession", "delta_mass", "nearby_relations" });
         }
     }
 }

@@ -344,7 +344,6 @@ namespace Test
             Assert.AreEqual(0, rel.agg_RT_2);
             Assert.AreEqual(0, rel.delta_mass);
             Assert.IsNull(rel.fragment);
-            Assert.AreEqual(0, rel.group_adjusted_deltaM);
             Assert.AreEqual(1, rel.nearby_relations_count);  //shows that calculate_unadjusted_group_count works
             //Assert.AreEqual(1, rel.mass_difference_group.Count);  //I don't think we need this test anymore w/ way peaks are made -LVS
             Assert.AreEqual(-1, rel.lysine_count);
