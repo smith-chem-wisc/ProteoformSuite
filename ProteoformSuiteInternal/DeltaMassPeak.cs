@@ -18,6 +18,7 @@ namespace ProteoformSuiteInternal
                 _grouped_relations = value;
                 this.peak_relation_group_count = value.Count;
                 this.peak_deltaM_average = value.Select(r => r.delta_mass).Average();
+                this.peak_accepted = this.peak_relation_group_count >= Lollipop.min_peak_count;
             }
         }
         public double peak_deltaM_average { get; set; }
@@ -36,10 +37,9 @@ namespace ProteoformSuiteInternal
         {
             this.base_relation = base_relation;
             this.find_nearby_relations(relations_to_group);
-            this.peak_accepted = this.peak_relation_group_count >= Lollipop.min_peak_count;
-            foreach (ProteoformRelation relation in base_relation.nearby_relations)
+            
+            foreach (ProteoformRelation relation in this.grouped_relations)
             {
-                relation.nearby_relations = base_relation.nearby_relations;
                 relation.peak = this;
                 relation.accepted = this.peak_accepted;
             }

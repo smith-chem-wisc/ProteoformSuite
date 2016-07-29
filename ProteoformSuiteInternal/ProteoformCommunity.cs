@@ -133,7 +133,7 @@ namespace ProteoformSuiteInternal
                 new_peak.calculate_fdr(decoy_relations);
                 peaks.Add(new_peak);
 
-                List<ProteoformRelation> mass_differences_in_peak = new_peak.find_nearby_relations(remaining_relations_outside_no_mans);
+                List<ProteoformRelation> mass_differences_in_peak = new_peak.grouped_relations;
                 relations_in_peaks.AddRange(mass_differences_in_peak);
                 grouped_relations.AddRange(mass_differences_in_peak);
                 remaining_relations_outside_no_mans = exclusive_relation_group(remaining_relations_outside_no_mans, grouped_relations);

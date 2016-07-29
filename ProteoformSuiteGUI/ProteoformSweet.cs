@@ -24,6 +24,7 @@ namespace ProteoformSuite
         ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
         ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
         ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
+        ResultsSummary resultsSummary = new ResultsSummary();
         List<Form> forms;
         //  Initialize Forms END
 
@@ -37,6 +38,7 @@ namespace ProteoformSuite
             InitializeForms();
             this.WindowState = FormWindowState.Maximized;
             this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            showForm(loadDeconvolutionResults);
         }
 
         public void InitializeForms()
@@ -44,7 +46,7 @@ namespace ProteoformSuite
             forms = new List<Form>(new Form[] {
                 loadDeconvolutionResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
                 theoreticalDatabase, experimentalTheoreticalComparison, experimentExperimentComparison,
-                proteoformFamilies
+                proteoformFamilies, resultsSummary
             });
         }
 
@@ -64,12 +66,7 @@ namespace ProteoformSuite
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentalTheoreticalComparison); }
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentExperimentComparison); }
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e) { showForm(proteoformFamilies); }
-
-        private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ResultsSummary resultsSummary = new ResultsSummary();
-            showForm(resultsSummary);
-        }
+        private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e) { showForm(resultsSummary); }
 
         private void generateMethodToolStripMenuItem_Click(object sender, EventArgs e)
         {
