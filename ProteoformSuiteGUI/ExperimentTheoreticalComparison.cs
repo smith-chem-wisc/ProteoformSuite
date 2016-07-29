@@ -98,8 +98,6 @@ namespace ProteoformSuite
             DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, "Peak Count", "Median Decoy Count", Lollipop.et_relations, "Nearby Relations");
         }
 
-
-
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
             int clickedRow = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;

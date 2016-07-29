@@ -108,6 +108,59 @@ namespace ProteoformSuite
             ct.ChartAreas[0].AxisY.Title = "Count";
         }
 
+        public static void FormatAggregatesTable(DataGridView dgv)
+        {
+            //round table values
+            dgv.Columns["agg_mass"].DefaultCellStyle.Format = "0.####";
+            dgv.Columns["agg_intensity"].DefaultCellStyle.Format = "0.####";
+            dgv.Columns["agg_rt"].DefaultCellStyle.Format = "0.##";
+            dgv.Columns["modified_mass"].DefaultCellStyle.Format = "0.####";
+
+            //set column header
+            dgv.Columns["agg_mass"].HeaderText = "Aggregated Mass";
+            dgv.Columns["agg_intensity"].HeaderText = "Aggregated Intensity";
+            dgv.Columns["agg_rt"].HeaderText = "Aggregated RT";
+            dgv.Columns["observation_count"].HeaderText = "Observation Count";
+            dgv.Columns["accession"].HeaderText = "Experimental Proteoform ID";
+            dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
+
+            //making these columns invisible. (irrelevent for agg proteoforms)
+            dgv.Columns["is_target"].Visible = false;
+            dgv.Columns["is_decoy"].Visible = false;
+            dgv.Columns["modified_mass"].Visible = false;
+            if (!Lollipop.neucode_labeled) { dgv.Columns["lysine_count"].Visible = false; }
+
+
+            dgv.AllowUserToAddRows = false;
+        }
+
+        public static void FormatTheoreticalProteoformTable(DataGridView dgv)
+        {
+            //round table values
+            dgv.Columns["unmodified_mass"].DefaultCellStyle.Format = "0.####";
+            dgv.Columns["ptm_mass"].DefaultCellStyle.Format = "0.####";
+            dgv.Columns["modified_mass"].DefaultCellStyle.Format = "0.####";
+
+            //set column header
+            dgv.Columns["name"].HeaderText = "Name";
+            dgv.Columns["fragment"].HeaderText = "Fragment";
+            dgv.Columns["begin"].HeaderText = "Begin";
+            dgv.Columns["end"].HeaderText = "End";
+            dgv.Columns["unmodified_mass"].HeaderText = "Unmodified Mass";
+            dgv.Columns["ptm_mass"].HeaderText = "PTM Mass";
+            dgv.Columns["ptm_descriptions"].HeaderText = "PTM Description";
+            dgv.Columns["accession"].HeaderText = "Accession";
+            dgv.Columns["description"].HeaderText = "Description";
+            dgv.Columns["modified_mass"].HeaderText = "Modified Mass";
+            dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
+
+            //making these columns invisible.
+            dgv.Columns["is_target"].Visible = false;
+            dgv.Columns["is_decoy"].Visible = false;
+
+            dgv.AllowUserToAddRows = false;
+        }
+
         public static void FormatRelationsGridView(DataGridView dgv, bool includes_theoretical)
         {
             //round table values

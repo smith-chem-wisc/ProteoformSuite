@@ -28,23 +28,20 @@ namespace ProteoformSuiteInternal
 
         public void add(ExperimentalProteoform pf)
         {
-            if (pf != null) this.experimental_proteoforms.Add(pf);
+            this.experimental_proteoforms.Add(pf);
         }
         public void add(TheoreticalProteoform pf)
         {
-            if (pf != null) this.theoretical_proteoforms.Add(pf);
+            this.theoretical_proteoforms.Add(pf);
         }
         public void add(TheoreticalProteoform pf, string decoy_database)
         {
-            if (pf != null) this.decoy_proteoforms[decoy_database].Add(pf);
+            this.decoy_proteoforms[decoy_database].Add(pf);
         }
 
         //BUILDING RELATIONSHIPS
         public List<ProteoformRelation> relate_et(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
         {
-            pfs1 = pfs1.Where(p => p != null).ToArray(); //this should be the set of experimental values
-            pfs2 = pfs2.Where(p => p != null).ToArray(); //this should be the set of theoretical values
-
             if (Lollipop.neucode_labeled)
             {
                 List<ProteoformRelation> relations = new List<ProteoformRelation>();
@@ -89,9 +86,6 @@ namespace ProteoformSuiteInternal
 
         public List<ProteoformRelation> relate_ee(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
         {
-            pfs1 = pfs1.Where(p => p != null).ToArray(); //this should be the set of experimental values
-            pfs2 = pfs2.Where(p => p != null).ToArray(); //this should be the set of experimental values
-
             if (Lollipop.neucode_labeled)
             {
                 List<ProteoformRelation> relations = new List<ProteoformRelation>(
@@ -173,7 +167,8 @@ namespace ProteoformSuiteInternal
         {
             //order by E intensity, then by descending unadjusted_group_count (running sum) before forming peaks, and analyze only relations outside of no-man's-land
             List<ProteoformRelation> grouped_relations = new List<ProteoformRelation>();
-            List<ProteoformRelation> relations_outside_no_mans = relations.OrderByDescending(r => r.unadjusted_group_count).ThenByDescending(r => r.agg_intensity_1).Where(r => r.outside_no_mans_land).ToList();
+            List<ProteoformRelation> relations_outside_no_mans = relations.OrderByDescending(r => r.unadjusted_group_count).
+                ThenByDescending(r => r.agg_intensity_1).Where(r => r.outside_no_mans_land).ToList(); // Group count is the primary sort
             List<DeltaMassPeak> peaks = new List<DeltaMassPeak>();
             while (relations_outside_no_mans.Count > 0)
             {
@@ -208,25 +203,28 @@ namespace ProteoformSuiteInternal
         }
 
         //CONSTRUCTING FAMILIES
-        //public void construct_families()
-        //{
-        //    List<Proteoform> inducted = new List<Proteoform>();
-        //    List<Proteoform> remaining = new List<Proteoform>(this.experimental_proteoforms);
-        //    while (remaining.Count > 0)
-        //    {
-        //        ProteoformFamily new_family = new ProteoformFamily(construct_family(new List<Proteoform> { remaining[0] }));
-        //        this.families.Add(new_family);
-        //        inducted.AddRange(new_family.proteoforms);
-        //        remaining = remaining.Except(inducted).ToList();
-        //    }
-        //}
+        public void construct_families()
+        {
+            List<Proteoform> inducted = new List<Proteoform>();
+            List<Proteoform> remaining = new List<Proteoform>(this.experimental_proteoforms);
+            int family_id = 1;
+            while (remaining.Count > 0)
+            {
+                ProteoformFamily new_family = new ProteoformFamily(construct_family(new List<Proteoform> { remaining[0] }));
+                this.families.Add(new_family);
+                inducted.AddRange(new_family.proteoforms);
+                remaining = remaining.Except(inducted).ToList();
+                family_id++;
+            }
+        }
 
-        //public List<Proteoform> construct_family(List<Proteoform> seed)
-        //{
-        //    List<Proteoform> expanded_seed = seed.SelectMany(p => p.get_connected_proteoforms()).ToList();
-        //    if (expanded_seed.Except(seed).Count() == 0) return seed;
-        //    else return construct_family(expanded_seed);
-        //}
+        public List<Proteoform> construct_family(List<Proteoform> seed)
+        {
+            List<Proteoform> seed_expansion = seed.SelectMany(p => p.get_connected_proteoforms().Except(seed)).ToList();
+            if (seed_expansion.Except(seed).Count() == 0) return seed;
+            seed.AddRange(seed_expansion);
+            return construct_family(seed);
+        }
 
         //MISC
         public void Clear()

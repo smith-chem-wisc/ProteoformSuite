@@ -83,34 +83,6 @@ namespace ProteoformSuite
                 DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
         }
 
-        public void FormatDataBaseTable()
-        {
-            //round table values
-            dgv_Database.Columns["unmodified_mass"].DefaultCellStyle.Format = "0.####";
-            dgv_Database.Columns["ptm_mass"].DefaultCellStyle.Format = "0.####";
-            dgv_Database.Columns["modified_mass"].DefaultCellStyle.Format = "0.####";
-
-            //set column header
-            dgv_Database.Columns["name"].HeaderText = "Name";
-            dgv_Database.Columns["fragment"].HeaderText = "Fragment";
-            dgv_Database.Columns["begin"].HeaderText = "Begin";
-            dgv_Database.Columns["end"].HeaderText = "End";
-            dgv_Database.Columns["unmodified_mass"].HeaderText = "Unmodified Mass";
-            dgv_Database.Columns["ptm_mass"].HeaderText = "PTM Mass";
-            dgv_Database.Columns["ptm_descriptions"].HeaderText = "PTM Description";
-            dgv_Database.Columns["accession"].HeaderText = "Accession";
-            dgv_Database.Columns["description"].HeaderText = "Description";
-            dgv_Database.Columns["modified_mass"].HeaderText = "Modified Mass";
-            dgv_Database.Columns["lysine_count"].HeaderText = "Lysine Count";
-
-            //making these columns invisible.
-            dgv_Database.Columns["is_target"].Visible = false;
-            dgv_Database.Columns["is_decoy"].Visible = false;
-
-            dgv_Database.AllowUserToAddRows = false;
-
-        }
-
         private void btn_GetUniProtXML_Click(object sender, EventArgs e)
         {
             DialogResult dr = this.openXmlDialog.ShowDialog();
@@ -187,30 +159,21 @@ namespace ProteoformSuite
             List<string> databases = new List<string>();
             databases.Add("Target");
             if (Lollipop.proteoform_community.decoy_proteoforms.Keys.Count > 0)
-            {
                 foreach (string name in Lollipop.proteoform_community.decoy_proteoforms.Keys)
-                {
                     databases.Add(name);
-                }
-            }
 
             cmbx_DisplayWhichDB.DataSource = databases.ToList();
             DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
-            FormatDataBaseTable();
-
+            DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
         private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)
         {         
             string table = cmbx_DisplayWhichDB.SelectedItem.ToString();
             if(table == "Target")
-            {
                 DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
-            }
             else
-            {
                 DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
-            }
         }
 
         //public void FillDataBaseTable(string table)
@@ -230,47 +193,38 @@ namespace ProteoformSuite
         {
             Lollipop.combine_identical_sequences = ckbx_aggregateProteoforms.Checked;
         }
-
         private void ckbx_OxidMeth_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.methionine_oxidation = ckbx_OxidMeth.Checked;
         }
-
         private void ckbx_Carbam_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.carbamidomethylation = ckbx_Carbam.Checked;
         }
-
         private void ckbx_Meth_Cleaved_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.methionine_cleavage = ckbx_Meth_Cleaved.Checked;
         }
-
         private void btn_NaturalIsotopes_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.natural_lysine_isotope_abundance = btn_NaturalIsotopes.Checked;
         }
-
         private void btn_NeuCode_Lt_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.neucode_light_lysine = btn_NeuCode_Lt.Checked;
         }
-
         private void btn_NeuCode_Hv_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.neucode_heavy_lysine = btn_NeuCode_Hv.Checked;
         }
-
         private void nUD_MaxPTMs_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.max_ptms = Convert.ToInt32(nUD_MaxPTMs.Value);
         }
-
         private void nUD_NumDecoyDBs_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.decoy_databases = Convert.ToInt32(nUD_NumDecoyDBs.Value);
         }
-
         private void nUD_MinPeptideLength_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.min_peptide_length = Convert.ToInt32(nUD_MinPeptideLength.Value);
