@@ -63,7 +63,6 @@ namespace ProteoformSuite
         {
             Lollipop.et_relations.Clear();
             Lollipop.et_peaks.Clear();
-            Lollipop.edList.Clear();
             Lollipop.ed_relations.Clear();
             Lollipop.proteoform_community.relations_in_peaks.Clear();
             Lollipop.proteoform_community.delta_mass_peaks.Clear();
@@ -77,7 +76,7 @@ namespace ProteoformSuite
         private void updateFiguresOfMerit()
         {
             List<DeltaMassPeak> big_peaks = Lollipop.et_peaks.Where(p => p.peak_accepted).ToList();
-            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.mass_difference_group.Count).Sum().ToString();
+            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.peak_group.Count).Sum().ToString();
             tb_TotalPeaks.Text = big_peaks.Count.ToString();
         }
 

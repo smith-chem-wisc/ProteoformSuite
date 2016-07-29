@@ -11,15 +11,6 @@ namespace ProteoformSuiteInternal
 {
     public class Lollipop
     {
-        public static ProteoformCommunity proteoform_community = new ProteoformCommunity();
-        public static DataSet experimentDecoyPairs = new DataSet();
-        public static DataTable edList = new DataTable();
-        public static DataTable eePeakList = new DataTable();
-        public static DataTable EE_Parent = new DataTable();
-        public static DataSet ProteoformFamiliesET = new DataSet();
-        public static DataSet ProteoformFamiliesEE = new DataSet();
-        public static DataTable ProteoformFamilyMetrics = new DataTable();
-
         public static void get_experimental_proteoforms(Func<string, IEnumerable<Component>> componentReader)
         {
             Lollipop.process_raw_components(componentReader);
@@ -97,6 +88,7 @@ namespace ProteoformSuiteInternal
         }
 
         //AGGREGATED PROTEOFORMS
+        public static ProteoformCommunity proteoform_community = new ProteoformCommunity();
         public static decimal mass_tolerance = 3; //ppm
         public static decimal retention_time_tolerance = 3; //min
         public static decimal missed_monos = 3;
@@ -156,7 +148,6 @@ namespace ProteoformSuiteInternal
             //Clear out data from potential previous runs
             Lollipop.proteoform_community.theoretical_proteoforms.Clear();
             Lollipop.proteoform_community.decoy_proteoforms.Clear();
-            Lollipop.ProteoformFamiliesET = new DataSet();
             ProteomeDatabaseReader.oldPtmlistFilePath = ptmlist_filepath;
             uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
             aaIsotopeMassList = new AminoAcidMasses(methionine_oxidation, carbamidomethylation).AA_Masses;

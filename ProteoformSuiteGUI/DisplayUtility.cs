@@ -70,17 +70,17 @@ namespace ProteoformSuite
             ct.Series[decoy_series].Points.Clear();
             ct.Series[relations_series].Points.Clear();
 
-            List<DeltaMassPeak> peaks_ordered = peaks.OrderBy(r => r.group_adjusted_deltaM).ToList();
+            List<DeltaMassPeak> peaks_ordered = peaks.OrderBy(r => r.peak_group_deltaM).ToList();
             foreach (DeltaMassPeak peak in peaks_ordered)
             {
-                ct.Series[peak_series].Points.AddXY(peak.group_adjusted_deltaM, peak.group_count);
-                ct.Series[decoy_series].Points.AddXY(peak.group_adjusted_deltaM, peak.decoy_count);
+                ct.Series[peak_series].Points.AddXY(peak.peak_group_deltaM, peak.peak_group_count);
+                ct.Series[decoy_series].Points.AddXY(peak.peak_group_deltaM, peak.decoy_count);
             }
 
             List<ProteoformRelation> relations_ordered = relations.OrderBy(r => r.delta_mass).ToList();
             foreach (ProteoformRelation relation in relations_ordered)
             {
-                ct.Series[relations_series].Points.AddXY(relation.delta_mass, relation.unadjusted_group_count);
+                ct.Series[relations_series].Points.AddXY(relation.delta_mass, relation.nearby_relations_count);
             }
             ct.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
             if (peaks_ordered.Count > 0) GraphSelectedDeltaMassPeak(ct, peaks_ordered[0], relations);
@@ -89,19 +89,20 @@ namespace ProteoformSuite
         public static void GraphSelectedDeltaMassPeak(Chart ct, DeltaMassPeak peak, List<ProteoformRelation> relations)
         {
             ct.ChartAreas[0].AxisY.StripLines.Clear();
-            ct.ChartAreas[0].AxisX.Minimum = peak.group_adjusted_deltaM - Lollipop.peak_width_base;
-            ct.ChartAreas[0].AxisX.Maximum = peak.group_adjusted_deltaM + Lollipop.peak_width_base;
+            ct.ChartAreas[0].AxisX.Minimum = peak.peak_group_deltaM - Lollipop.peak_width_base;
+            ct.ChartAreas[0].AxisX.Maximum = peak.peak_group_deltaM + Lollipop.peak_width_base;
 
             ct.ChartAreas[0].AxisX.StripLines.Clear();
             double stripline_tolerance = Lollipop.peak_width_base * 0.5;
-            StripLine lowerPeakBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = peak.group_adjusted_deltaM - stripline_tolerance };
-            StripLine upperPeakBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = peak.group_adjusted_deltaM + stripline_tolerance };
+            StripLine lowerPeakBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = peak.peak_group_deltaM - stripline_tolerance };
+            StripLine upperPeakBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = peak.peak_group_deltaM + stripline_tolerance };
             ct.ChartAreas[0].AxisX.StripLines.Add(lowerPeakBound_stripline);
             ct.ChartAreas[0].AxisX.StripLines.Add(upperPeakBound_stripline);
 
             ct.ChartAreas[0].AxisY.Maximum = Math.Max(
-                Convert.ToInt32(peak.group_count * 1.2 + 1), 
-                Convert.ToInt32(relations.Where(r => r.delta_mass >= peak.group_adjusted_deltaM - Lollipop.peak_width_base && r.delta_mass <= peak.group_adjusted_deltaM + Lollipop.peak_width_base).Select(r => r.unadjusted_group_count).Max())
+                Convert.ToInt32(peak.peak_group_count * 1.2 + 1), 
+                Convert.ToInt32(relations.Where(r => r.delta_mass >= peak.peak_group_deltaM - Lollipop.peak_width_base 
+                    && r.delta_mass <= peak.peak_group_deltaM + Lollipop.peak_width_base).Select(r => r.nearby_relations_count).Max())
             ); //this automatically scales the vertical axis to the peak height plus 20%, also accounting for the nearby trace of unadjusted relation group counts
 
             ct.ChartAreas[0].AxisX.Title = "Delta m/z";

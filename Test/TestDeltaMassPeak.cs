@@ -54,13 +54,13 @@ namespace Test
 
             ProteoformRelation base_relation = new ProteoformRelation(pf3, pf4, relation_type2, delta_mass2);
 
-            base_relation.mass_difference_group = base_relation.find_nearby_relations(theList);
+            base_relation.nearby_relations = base_relation.find_nearby_relations(theList);
 
             Console.WriteLine("Creating deltaMassPeak");
             DeltaMassPeak deltaMassPeak = new DeltaMassPeak(base_relation);
             Console.WriteLine("Created deltaMassPeak");
 
-            Assert.AreEqual(0, deltaMassPeak.group_fdr);
+            Assert.AreEqual(0, deltaMassPeak.peak_group_fdr);
 
             Dictionary<string, List<ProteoformRelation>> decoy_relations = new Dictionary<string, List<ProteoformRelation>>();
 
@@ -75,7 +75,7 @@ namespace Test
 
             deltaMassPeak.calculate_fdr(decoy_relations);
 
-            Assert.AreEqual(0.25, deltaMassPeak.group_fdr);
+            Assert.AreEqual(0.25, deltaMassPeak.peak_group_fdr);
         }
 
     }
