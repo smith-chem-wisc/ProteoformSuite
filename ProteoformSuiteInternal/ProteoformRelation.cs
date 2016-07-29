@@ -169,11 +169,11 @@ namespace ProteoformSuiteInternal
             this.group_count = nearby_relations.Count;
             this.mass_difference_group = nearby_relations;
 
-            Parallel.ForEach<ProteoformRelation>(mass_difference_group, mass_difference =>
+            foreach (ProteoformRelation mass_difference in mass_difference_group)
             {
                 mass_difference.connected_proteoforms[0].relationships.Add(mass_difference);
                 mass_difference.connected_proteoforms[1].relationships.Add(mass_difference);
-            });
+            }
 
             return this.mass_difference_group;
         }

@@ -20,6 +20,12 @@ namespace ProteoformSuiteInternal
         public string rt_range { get; set; }
         public double rt_apex { get; set; }
         public double weighted_monoisotopic_mass { get; set; }
+        public double _manual_mass_shift { get; set; } = 0;
+        public double manual_mass_shift {
+            get { return _manual_mass_shift; }
+            set { _manual_mass_shift = value;
+                this.calculate_weighted_monoisotopic_mass();
+            } }
         public double corrected_mass { get; set; }
         public bool accepted { get; set; }  //should have option where user can "uncheck" accepeted box
         public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
@@ -55,7 +61,8 @@ namespace ProteoformSuiteInternal
             this.monoisotopic_mass = c.monoisotopic_mass;
             this.weighted_monoisotopic_mass = c.weighted_monoisotopic_mass;
             this.corrected_mass = c.corrected_mass;
-            this.intensity_sum = c.intensity_sum = c.intensity_sum;
+            //this.manual_mass_shift = c.manual_mass_shift;
+            this.intensity_sum = c.intensity_sum;
             this.delta_mass = c.delta_mass;
             this.relative_abundance = c.relative_abundance;
             this.fract_abundance = c.fract_abundance;
@@ -84,7 +91,7 @@ namespace ProteoformSuiteInternal
         public void calculate_weighted_monoisotopic_mass()
         {
             this.weighted_monoisotopic_mass = this.charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum();
-            this.corrected_mass = this.weighted_monoisotopic_mass;
+            this.corrected_mass = this.weighted_monoisotopic_mass + this.manual_mass_shift;
         }
 
         public void add_charge_state(List<Cell> charge_row)

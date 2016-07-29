@@ -109,6 +109,7 @@ namespace ProteoformSuite
         }
 
         public static void FormatRelationsGridView(DataGridView dgv, bool includes_theoretical)
+
         {
             //round table values
             dgv.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
