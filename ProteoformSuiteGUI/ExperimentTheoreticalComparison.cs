@@ -63,7 +63,6 @@ namespace ProteoformSuite
         {
             Lollipop.et_relations.Clear();
             Lollipop.et_peaks.Clear();
-            Lollipop.edList.Clear();
             Lollipop.ed_relations.Clear();
             Lollipop.proteoform_community.relations_in_peaks.Clear();
             Lollipop.proteoform_community.delta_mass_peaks.Clear();
@@ -77,7 +76,7 @@ namespace ProteoformSuite
         private void updateFiguresOfMerit()
         {
             List<DeltaMassPeak> big_peaks = Lollipop.et_peaks.Where(p => p.peak_accepted).ToList();
-            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.mass_difference_group.Count).Sum().ToString();
+            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.grouped_relations.Count).Sum().ToString();
             tb_TotalPeaks.Text = big_peaks.Count.ToString();
         }
 
@@ -97,8 +96,6 @@ namespace ProteoformSuite
         {
             DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, "Peak Count", "Median Decoy Count", Lollipop.et_relations, "Nearby Relations");
         }
-
-
 
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
@@ -147,7 +144,7 @@ namespace ProteoformSuite
         private void massShifter(DeltaMassPeak peak, int shift)
         {
             List<ExperimentalProteoform> expProtList = new List<ExperimentalProteoform>();
-            foreach (ProteoformRelation relation in Lollipop.et_relations.Where(p => p.group_adjusted_deltaM == peak.group_adjusted_deltaM).ToList())
+            foreach (ProteoformRelation relation in Lollipop.et_relations.Where(p => p.peak == peak).ToList())
             {
                 if (relation.connected_proteoforms[0] is ExperimentalProteoform)
                 {
@@ -180,14 +177,14 @@ namespace ProteoformSuite
 
                     foreach (ProteoformSuiteInternal.Component rawComponent in Lollipop.raw_experimental_components.Where(cp => neuCodeComponents.Contains(cp)).ToList())
                     {
-                        rawComponent.manual_mass_shift = rawComponent.manual_mass_shift + (shift * Lollipop.monoisotopicUnitMass);
+                        rawComponent.manual_mass_shift = rawComponent.manual_mass_shift + (shift * Lollipop.MONOISOTOPIC_UNIT_MASS);
                     }
                 }
                 else //unlabeled
                 {
                     foreach (ProteoformSuiteInternal.Component rawComponent in Lollipop.raw_experimental_components.Where(p => epComponents.Contains(p)).ToList())
                     {
-                        rawComponent.manual_mass_shift = rawComponent.manual_mass_shift + (shift * Lollipop.monoisotopicUnitMass);
+                        rawComponent.manual_mass_shift = rawComponent.manual_mass_shift + (shift * Lollipop.MONOISOTOPIC_UNIT_MASS);
                     }
                 }
             }
@@ -229,9 +226,6 @@ namespace ProteoformSuite
                 dgv_ET_Peak_List.Update();
             }
         }
-
-        private void splitContainer3_Panel2_Paint(object sender, PaintEventArgs e)
-        { }
 
         private void InitializeParameterSet()
         {

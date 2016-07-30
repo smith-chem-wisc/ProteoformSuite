@@ -83,8 +83,7 @@ namespace ProteoformSuite
         private void InitializeOpenFileDialog()
         {
             // Set the file dialog to filter for graphics files.
-            this.openFileDialog1.Filter =
-                "Excel (*.xlsx)|*.xlsx";
+            this.openFileDialog1.Filter = "Excel (*.xlsx)|*.xlsx";
 
             // Allow the user to select multiple images.
             this.openFileDialog1.Multiselect = true;

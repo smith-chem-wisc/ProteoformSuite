@@ -23,7 +23,8 @@ namespace ProteoformSuite
         TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase();
         ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
         ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
-        //ProteoformFamilyAssignment proteoformFamilyAssignment = new ProteoformFamilyAssignment();
+        ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
+        ResultsSummary resultsSummary = new ResultsSummary();
         List<Form> forms;
         //  Initialize Forms END
 
@@ -37,6 +38,7 @@ namespace ProteoformSuite
             InitializeForms();
             this.WindowState = FormWindowState.Maximized;
             this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            showForm(loadDeconvolutionResults);
         }
 
         public void InitializeForms()
@@ -44,7 +46,7 @@ namespace ProteoformSuite
             forms = new List<Form>(new Form[] {
                 loadDeconvolutionResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
                 theoreticalDatabase, experimentalTheoreticalComparison, experimentExperimentComparison,
-                //proteoformFamilyAssignment
+                proteoformFamilies, resultsSummary
             });
         }
 
@@ -63,16 +65,8 @@ namespace ProteoformSuite
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e) { showForm(theoreticalDatabase); }
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentalTheoreticalComparison); }
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentExperimentComparison); }
-        private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //showForm(proteoformFamilyAssignment);
-        }
-
-        private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ResultsSummary resultsSummary = new ResultsSummary();
-            showForm(resultsSummary);
-        }
+        private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e) { showForm(proteoformFamilies); }
+        private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e) { showForm(resultsSummary); }
 
         private void generateMethodToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -147,6 +141,7 @@ namespace ProteoformSuite
                     () => Lollipop.make_et_relationships(),
                     () => Lollipop.make_ee_relationships()
                 );
+                Lollipop.proteoform_community.construct_families();
 
                 // For connectivity testing --
                 //File.WriteAllText(working_directory + "\\raw_experimental_components.tsv", Lollipop.raw_component_results());
@@ -170,6 +165,7 @@ namespace ProteoformSuite
                 () => rawExperimentalComponents.FillRawExpComponentsTable(),
                 () => aggregatedProteoforms.FillAggregatesTable(),
                 () => theoreticalDatabase.FillDataBaseTable("Target"),
+                () => theoreticalDatabase.initialize_table_bindinglist(),
                 () => experimentalTheoreticalComparison.FillTablesAndCharts(),
                 () => experimentExperimentComparison.FillTablesAndCharts()
             );

@@ -11,16 +11,7 @@ namespace ProteoformSuiteInternal
 {
     public class Lollipop
     {
-        public const double monoisotopicUnitMass = 1.0015;
-
-        public static ProteoformCommunity proteoform_community = new ProteoformCommunity();
-        public static DataSet experimentDecoyPairs = new DataSet();
-        public static DataTable edList = new DataTable();
-        public static DataTable eePeakList = new DataTable();
-        public static DataTable EE_Parent = new DataTable();
-        public static DataSet ProteoformFamiliesET = new DataSet();
-        public static DataSet ProteoformFamiliesEE = new DataSet();
-        public static DataTable ProteoformFamilyMetrics = new DataTable();
+        public const double MONOISOTOPIC_UNIT_MASS = 1.0015;
 
         public static void get_experimental_proteoforms(Func<string, IEnumerable<Component>> componentReader)
         {
@@ -92,6 +83,7 @@ namespace ProteoformSuiteInternal
         }
 
         //AGGREGATED PROTEOFORMS
+        public static ProteoformCommunity proteoform_community = new ProteoformCommunity();
         public static decimal mass_tolerance = 3; //ppm
         public static decimal retention_time_tolerance = 3; //min
         public static decimal missed_monos = 3;
@@ -151,7 +143,6 @@ namespace ProteoformSuiteInternal
             //Clear out data from potential previous runs
             Lollipop.proteoform_community.theoretical_proteoforms.Clear();
             Lollipop.proteoform_community.decoy_proteoforms.Clear();
-            Lollipop.ProteoformFamiliesET = new DataSet();
             ProteomeDatabaseReader.oldPtmlistFilePath = ptmlist_filepath;
             uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
             aaIsotopeMassList = new AminoAcidMasses(methionine_oxidation, carbamidomethylation).AA_Masses;
@@ -301,9 +292,14 @@ namespace ProteoformSuiteInternal
 
         public static void make_et_relationships()
         {
-            et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
-            ed_relations = Lollipop.proteoform_community.relate_ed();
-            et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
+            //PARALLEL PROBLEM
+            //Parallel.Invoke(
+            //    () => et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et),
+            //    () => ed_relations = Lollipop.proteoform_community.relate_ed()
+            //);
+            Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
+            Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
+            Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
         public static void make_ee_relationships()
@@ -313,9 +309,9 @@ namespace ProteoformSuiteInternal
             //    () => ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.et),
             //    () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
             //);
-            ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
-            ef_relations = proteoform_community.relate_unequal_ee_lysine_counts();
-            ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
+            Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
+            Lollipop.ef_relations = proteoform_community.relate_unequal_ee_lysine_counts();
+            Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
         //PROTEOFORM FAMILIES
