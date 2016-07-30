@@ -51,7 +51,7 @@ namespace ProteoformSuite
         {
             ct.Series[series].Points.Clear();
             ct.Series[series].XValueMember = "delta_mass";
-            ct.Series[series].YValueMembers = "unadjusted_group_count";
+            ct.Series[series].YValueMembers = "nearby_relations_count";
             List<ProteoformRelation> relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
             ct.DataSource = relations_ordered;
             ct.DataBind();
@@ -70,17 +70,17 @@ namespace ProteoformSuite
             ct.Series[decoy_series].Points.Clear();
             ct.Series[relations_series].Points.Clear();
 
-            List<DeltaMassPeak> peaks_ordered = peaks.OrderBy(r => r.group_adjusted_deltaM).ToList();
+            List<DeltaMassPeak> peaks_ordered = peaks.OrderBy(r => r.peak_deltaM_average).ToList();
             foreach (DeltaMassPeak peak in peaks_ordered)
             {
-                ct.Series[peak_series].Points.AddXY(peak.group_adjusted_deltaM, peak.group_count);
-                ct.Series[decoy_series].Points.AddXY(peak.group_adjusted_deltaM, peak.decoy_count);
+                ct.Series[peak_series].Points.AddXY(peak.peak_deltaM_average, peak.peak_relation_group_count);
+                ct.Series[decoy_series].Points.AddXY(peak.peak_deltaM_average, peak.decoy_relation_count);
             }
 
             List<ProteoformRelation> relations_ordered = relations.OrderBy(r => r.delta_mass).ToList();
             foreach (ProteoformRelation relation in relations_ordered)
             {
-                ct.Series[relations_series].Points.AddXY(relation.delta_mass, relation.unadjusted_group_count);
+                ct.Series[relations_series].Points.AddXY(relation.delta_mass, relation.nearby_relations_count);
             }
             ct.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
             if (peaks_ordered.Count > 0) GraphSelectedDeltaMassPeak(ct, peaks_ordered[0], relations);
@@ -89,23 +89,77 @@ namespace ProteoformSuite
         public static void GraphSelectedDeltaMassPeak(Chart ct, DeltaMassPeak peak, List<ProteoformRelation> relations)
         {
             ct.ChartAreas[0].AxisY.StripLines.Clear();
-            ct.ChartAreas[0].AxisX.Minimum = peak.group_adjusted_deltaM - Lollipop.peak_width_base;
-            ct.ChartAreas[0].AxisX.Maximum = peak.group_adjusted_deltaM + Lollipop.peak_width_base;
+            ct.ChartAreas[0].AxisX.Minimum = peak.peak_deltaM_average - Lollipop.peak_width_base;
+            ct.ChartAreas[0].AxisX.Maximum = peak.peak_deltaM_average + Lollipop.peak_width_base;
 
             ct.ChartAreas[0].AxisX.StripLines.Clear();
             double stripline_tolerance = Lollipop.peak_width_base * 0.5;
-            StripLine lowerPeakBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = peak.group_adjusted_deltaM - stripline_tolerance };
-            StripLine upperPeakBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = peak.group_adjusted_deltaM + stripline_tolerance };
+            StripLine lowerPeakBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = peak.peak_deltaM_average - stripline_tolerance };
+            StripLine upperPeakBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = peak.peak_deltaM_average + stripline_tolerance };
             ct.ChartAreas[0].AxisX.StripLines.Add(lowerPeakBound_stripline);
             ct.ChartAreas[0].AxisX.StripLines.Add(upperPeakBound_stripline);
 
-            ct.ChartAreas[0].AxisY.Maximum = Math.Max(
-                Convert.ToInt32(peak.group_count * 1.2 + 1), 
-                Convert.ToInt32(relations.Where(r => r.delta_mass >= peak.group_adjusted_deltaM - Lollipop.peak_width_base && r.delta_mass <= peak.group_adjusted_deltaM + Lollipop.peak_width_base).Select(r => r.unadjusted_group_count).Max())
+            ct.ChartAreas[0].AxisY.Maximum = 1 + Math.Max(
+                Convert.ToInt32(peak.peak_relation_group_count * 1.2), 
+                Convert.ToInt32(relations.Where(r => r.delta_mass >= peak.peak_deltaM_average - Lollipop.peak_width_base 
+                    && r.delta_mass <= peak.peak_deltaM_average + Lollipop.peak_width_base).Select(r => r.nearby_relations_count).Max())
             ); //this automatically scales the vertical axis to the peak height plus 20%, also accounting for the nearby trace of unadjusted relation group counts
 
             ct.ChartAreas[0].AxisX.Title = "Delta m/z";
             ct.ChartAreas[0].AxisY.Title = "Count";
+        }
+
+        public static void FormatAggregatesTable(DataGridView dgv)
+        {
+            //round table values
+            dgv.Columns["agg_mass"].DefaultCellStyle.Format = "0.####";
+            dgv.Columns["agg_intensity"].DefaultCellStyle.Format = "0.####";
+            dgv.Columns["agg_rt"].DefaultCellStyle.Format = "0.##";
+            dgv.Columns["modified_mass"].DefaultCellStyle.Format = "0.####";
+
+            //set column header
+            dgv.Columns["agg_mass"].HeaderText = "Aggregated Mass";
+            dgv.Columns["agg_intensity"].HeaderText = "Aggregated Intensity";
+            dgv.Columns["agg_rt"].HeaderText = "Aggregated RT";
+            dgv.Columns["observation_count"].HeaderText = "Observation Count";
+            dgv.Columns["accession"].HeaderText = "Experimental Proteoform ID";
+            dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
+
+            //making these columns invisible. (irrelevent for agg proteoforms)
+            dgv.Columns["is_target"].Visible = false;
+            dgv.Columns["is_decoy"].Visible = false;
+            dgv.Columns["modified_mass"].Visible = false;
+            if (!Lollipop.neucode_labeled) { dgv.Columns["lysine_count"].Visible = false; }
+
+
+            dgv.AllowUserToAddRows = false;
+        }
+
+        public static void FormatTheoreticalProteoformTable(DataGridView dgv)
+        {
+            //round table values
+            dgv.Columns["unmodified_mass"].DefaultCellStyle.Format = "0.####";
+            dgv.Columns["ptm_mass"].DefaultCellStyle.Format = "0.####";
+            dgv.Columns["modified_mass"].DefaultCellStyle.Format = "0.####";
+
+            //set column header
+            dgv.Columns["name"].HeaderText = "Name";
+            dgv.Columns["fragment"].HeaderText = "Fragment";
+            dgv.Columns["begin"].HeaderText = "Begin";
+            dgv.Columns["end"].HeaderText = "End";
+            dgv.Columns["unmodified_mass"].HeaderText = "Unmodified Mass";
+            dgv.Columns["ptm_mass"].HeaderText = "PTM Mass";
+            dgv.Columns["ptm_descriptions"].HeaderText = "PTM Description";
+            dgv.Columns["accession"].HeaderText = "Accession";
+            dgv.Columns["description"].HeaderText = "Description";
+            dgv.Columns["modified_mass"].HeaderText = "Modified Mass";
+            dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
+
+            //making these columns invisible.
+            dgv.Columns["is_target"].Visible = false;
+            dgv.Columns["is_decoy"].Visible = false;
+
+            dgv.AllowUserToAddRows = false;
         }
 
         public static void FormatRelationsGridView(DataGridView dgv, bool includes_theoretical)
@@ -122,7 +176,7 @@ namespace ProteoformSuite
             //set column header
             dgv.Columns["delta_mass"].HeaderText = "Delta Mass";
             dgv.Columns["delta_mass"].DisplayIndex = 18;
-            dgv.Columns["unadjusted_group_count"].HeaderText = "Nearby Relation Count";
+            dgv.Columns["nearby_relations_count"].HeaderText = "Nearby Relation Count";
             dgv.Columns["accepted"].HeaderText = "Accepted";
             dgv.Columns["peak_center_deltaM"].HeaderText = "Peak Center Delta Mass";
             dgv.Columns["peak_center_count"].HeaderText = "Peak Center Count";
@@ -161,8 +215,6 @@ namespace ProteoformSuite
             }
 
             //making these columns invisible
-            dgv.Columns["group_adjusted_deltaM"].Visible = false;
-            dgv.Columns["group_count"].Visible = false;
             dgv.Columns["peak"].Visible = false;
             if (!Lollipop.neucode_labeled) { dgv.Columns["lysine_count"].Visible = false; }
 
@@ -174,15 +226,24 @@ namespace ProteoformSuite
             //making all columns invisible first - faster
             foreach (DataGridViewColumn column in dgv.Columns) { column.Visible = false; }
 
-            dgv.Columns["group_count"].Visible = true;
-            dgv.Columns["group_adjusted_deltaM"].Visible = true;
-            dgv.Columns["peak_accepted"].Visible = true;
-            dgv.Columns["possiblePeakAssignments_string"].Visible = true;
+            dgv.Columns["peak_deltaM_average"].DefaultCellStyle.Format = "0.####";
+            dgv.Columns["peak_group_fdr"].DefaultCellStyle.Format = "0.##";
 
-            dgv.Columns["group_count"].HeaderText = "Peak Center Count";
-            dgv.Columns["group_adjusted_deltaM"].HeaderText = "Peak Center Delta Mass";
+            dgv.Columns["peak_relation_group_count"].HeaderText = "Peak Center Count";
+            dgv.Columns["decoy_relation_count"].HeaderText = "Decoy Count under Peak";
+            dgv.Columns["peak_deltaM_average"].HeaderText = "Peak Center Delta Mass";
+            dgv.Columns["peak_group_fdr"].HeaderText = "Peak FDR";
             dgv.Columns["peak_accepted"].HeaderText = "Peak Accepted";
             dgv.Columns["possiblePeakAssignments_string"].HeaderText = "Peak Assignment";
+            dgv.Columns["peak_width"].HeaderText = "Peak Width";
+
+            dgv.Columns["peak_relation_group_count"].Visible = true;
+            dgv.Columns["decoy_relation_count"].Visible = true;
+            dgv.Columns["peak_deltaM_average"].Visible = true;
+            dgv.Columns["peak_group_fdr"].Visible = true;
+            dgv.Columns["peak_accepted"].Visible = true;
+            dgv.Columns["possiblePeakAssignments_string"].Visible = true;
+            dgv.Columns["peak_width"].Visible = false;
 
             dgv.AllowUserToAddRows = false;
         }

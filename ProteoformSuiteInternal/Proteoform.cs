@@ -12,7 +12,7 @@ namespace ProteoformSuiteInternal
         public int lysine_count { get; set; } = -1;
         public bool is_target { get; set; } = true;
         public bool is_decoy { get; set; } = false;
-        public List<MassDifference> relationships { get; set; } = new List<MassDifference>();
+        public List<ProteoformRelation> relationships { get; set; } = new List<ProteoformRelation>();
 
         public Proteoform(string accession, double modified_mass, int lysine_count, bool is_target)
         {
@@ -32,7 +32,8 @@ namespace ProteoformSuiteInternal
 
         public List<Proteoform> get_connected_proteoforms()
         {
-            return relationships.SelectMany(r => r.connected_proteoforms).ToList();
+            return relationships.Where(r => r.peak.peak_accepted).SelectMany(r => r.connected_proteoforms).ToList();
+            //return relationships.SelectMany(r => r.connected_proteoforms).ToList();
         }
     }
 
