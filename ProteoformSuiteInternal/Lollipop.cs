@@ -11,6 +11,8 @@ namespace ProteoformSuiteInternal
 {
     public class Lollipop
     {
+        public const double MONOISOTOPIC_UNIT_MASS = 1.0015;
+
         public static void get_experimental_proteoforms(Func<string, IEnumerable<Component>> componentReader)
         {
             Lollipop.process_raw_components(componentReader);
@@ -23,28 +25,19 @@ namespace ProteoformSuiteInternal
         public static bool neucode_labeled = true;
         public static void process_raw_components(Func<string, IEnumerable<Component>> componentReader)
         {
-            //PARALLEL PROBLEM -> causes load and run to crash
-            //Parallel.ForEach<string>(Lollipop.deconResultsFileNames, filename =>
-            //{
-            //    var thread = new Thread(
-            //        () =>
             foreach(string filename in Lollipop.deconResultsFileNames)
-                    {
-                        IEnumerable<Component> readComponents = componentReader(filename);
-                        List<Component> raw_components = new List<Component>(readComponents);
-                        raw_experimental_components.AddRange(raw_components);
+            {
+                IEnumerable<Component> readComponents = componentReader(filename);
+                List<Component> raw_components = new List<Component>(readComponents);
+                raw_experimental_components.AddRange(raw_components);
 
-                        if (neucode_labeled)
-                        {
-                            HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
-                            foreach (string scan_range in scan_ranges)
-                            find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
-                        }
-                    }    
-                   // );
-               // thread.Start();
-                //thread.Join();
-           // });
+                if (neucode_labeled)
+                {
+                    HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
+                    foreach (string scan_range in scan_ranges)
+                    find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
+                }
+            }    
         }
 
 
@@ -57,6 +50,8 @@ namespace ProteoformSuiteInternal
 
         public static void find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange)
         {
+            
+
             //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
             List<Component> components = components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
             foreach (Component lower_component in components)
@@ -101,7 +96,7 @@ namespace ProteoformSuiteInternal
             //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
             //If no NeuCodePairs exist, e.g. for an experiment without labeling, the raw components are used instead.
             //Uses an ordered list, so that the proteoform with max intensity is always chosen first
-            Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
+            //Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
             Component[] remaining_proteoforms;
             //only aggregate accepatable neucode pairs
             if (neucode_labeled) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true).ToArray();
@@ -280,8 +275,6 @@ namespace ProteoformSuiteInternal
         }
 
         //ET,ED,EE,EF COMPARISONS
-
-
         public static double ee_max_mass_difference = 250; //TODO: implement this in ProteoformFamilies and elsewhere
         public static double et_low_mass_difference=-250;
         public static double et_high_mass_difference=250;

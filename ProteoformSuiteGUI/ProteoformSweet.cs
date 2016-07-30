@@ -165,6 +165,7 @@ namespace ProteoformSuite
                 () => rawExperimentalComponents.FillRawExpComponentsTable(),
                 () => aggregatedProteoforms.FillAggregatesTable(),
                 () => theoreticalDatabase.FillDataBaseTable("Target"),
+                () => theoreticalDatabase.initialize_table_bindinglist(),
                 () => experimentalTheoreticalComparison.FillTablesAndCharts(),
                 () => experimentExperimentComparison.FillTablesAndCharts()
             );

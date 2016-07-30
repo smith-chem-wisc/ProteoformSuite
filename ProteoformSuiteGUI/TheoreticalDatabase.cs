@@ -156,15 +156,18 @@ namespace ProteoformSuite
         private void btn_Make_Databases_Click(object sender, EventArgs e)
         {
             Lollipop.get_theoretical_proteoforms();
-            List<string> databases = new List<string>();
-            databases.Add("Target");
+            
+            DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+            DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
+        }
+
+        public void initialize_table_bindinglist()
+        {
+            List<string> databases = new List<string> { "Target" };
             if (Lollipop.proteoform_community.decoy_proteoforms.Keys.Count > 0)
                 foreach (string name in Lollipop.proteoform_community.decoy_proteoforms.Keys)
                     databases.Add(name);
-
-            cmbx_DisplayWhichDB.DataSource = databases.ToList();
-            DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
-            DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
+            cmbx_DisplayWhichDB.DataSource = new BindingList<string>(databases.ToList());
         }
 
         private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)
