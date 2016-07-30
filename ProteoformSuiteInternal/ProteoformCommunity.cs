@@ -46,7 +46,7 @@ namespace ProteoformSuiteInternal
             foreach (Proteoform pf1 in pfs1)
             {
                 IEnumerable<Proteoform> candidate_pfs2 = pfs2.
-                    Where(pf2 => !Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count
+                    Where(pf2 => (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
                         && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
                         && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference);
                         //&& ProteoformRelation.mass_difference_is_outside_no_mans_land(Math.Abs(pf1.modified_mass - pf2.modified_mass));
@@ -69,7 +69,7 @@ namespace ProteoformSuiteInternal
                 from pf1 in pfs1
                 from pf2 in pfs2
                 where pf1.modified_mass > pf2.modified_mass
-                where !Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count
+                where (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
                 where pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference
                 //where ProteoformRelation.mass_difference_is_outside_no_mans_land(pf1.modified_mass - pf2.modified_mass)
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
