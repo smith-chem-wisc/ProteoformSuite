@@ -54,13 +54,21 @@ namespace ProteoformSuite
             ProteoformFamily selected_family = (ProteoformFamily)this.dgv_proteoform_families.Rows[row_index].DataBoundItem;
             if (dgv_proteoform_families.Columns[column_index].Name == "theoretical_count")
             {
-                DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.theoretical_proteoforms);
-                DisplayUtility.FormatTheoreticalProteoformTable(dgv_proteoform_family_members);
+                if (selected_family.theoretical_count > 0) 
+                {
+                    DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.theoretical_proteoforms);
+                    DisplayUtility.FormatTheoreticalProteoformTable(dgv_proteoform_family_members);
+                }
+                else dgv_proteoform_family_members.Rows.Clear();
             }
-            else if (dgv_proteoform_families.Columns[column_index].Name == "experimental_count")
+            else if (dgv_proteoform_families.Columns[column_index].Name == "experimental_count" && selected_family.experimental_count > 0)
             {
-                DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.experimental_proteoforms);
-                DisplayUtility.FormatAggregatesTable(dgv_proteoform_family_members);
+                if (selected_family.experimental_count > 0)
+                {
+                    DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.experimental_proteoforms);
+                    DisplayUtility.FormatAggregatesTable(dgv_proteoform_family_members);
+                }
+                else dgv_proteoform_family_members.Rows.Clear();
             }
         }
     }

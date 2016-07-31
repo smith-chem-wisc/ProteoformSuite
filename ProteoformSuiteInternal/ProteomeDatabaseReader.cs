@@ -14,45 +14,39 @@ namespace ProteoformSuiteInternal
 {
     public class ProteomeDatabaseReader
     {
-        private static Dictionary<string, char> aminoAcidCodes;
         public static string oldPtmlistFilePath;
         public Dictionary<string, Modification> ModTable { get; set; }
+        private static Dictionary<string, char> aminoAcidCodes = new Dictionary<string, char>()
+        {
+            {"Alanine", 'A'},
+            {"Arginine", 'R'},
+            {"Asparagine", 'N'},
+            {"Aspartate", 'D'},
+            {"Cysteine", 'C'},
+            {"Glutamate", 'E'},
+            {"Glutamine", 'Q'},
+            {"Glycine", 'G'},
+            {"Histidine", 'H'},
+            {"Isoleucine", 'I'},
+            {"Leucine", 'L'},
+            {"Lysine", 'K'},
+            {"Methionine", 'M'},
+            {"Phenylalanine", 'F'},
+            {"Proline", 'P'},
+            {"Serine", 'S'},
+            {"Threonine", 'T'},
+            {"Tryptophan", 'W'},
+            {"Tyrosine", 'Y'},
+            {"Valine", 'V'},
+            {"Undefined", 'X'}, // we'll have to deal with this at some point.
+            {"Selenocysteine", 'U'}
+        };
 
         public Dictionary<string, Modification> ReadUniprotPtmlist()
         {
             string ptmFilePath = GetPtmlistPath_AfterFileRefresh();
             int modCount = File.ReadAllText(ptmFilePath).Split(new string[] { "//" }, StringSplitOptions.None).Length - 2; //There will be an extra element from the legend
-            InitializeAminoAcidCodes();
-            Dictionary<string, Modification> ModTable = new Dictionary<string, Modification>();
-            ModTable = LoadUniprotModifications(ptmFilePath, modCount);
-            return ModTable;
-        }
-
-        private static void InitializeAminoAcidCodes()
-        {
-            aminoAcidCodes = new Dictionary<string, char>();
-            aminoAcidCodes.Add("Alanine", 'A');
-            aminoAcidCodes.Add("Arginine", 'R');
-            aminoAcidCodes.Add("Asparagine", 'N');
-            aminoAcidCodes.Add("Aspartate", 'D');
-            aminoAcidCodes.Add("Cysteine", 'C');
-            aminoAcidCodes.Add("Glutamate", 'E');
-            aminoAcidCodes.Add("Glutamine", 'Q');
-            aminoAcidCodes.Add("Glycine", 'G');
-            aminoAcidCodes.Add("Histidine", 'H');
-            aminoAcidCodes.Add("Isoleucine", 'I');
-            aminoAcidCodes.Add("Leucine", 'L');
-            aminoAcidCodes.Add("Lysine", 'K');
-            aminoAcidCodes.Add("Methionine", 'M');
-            aminoAcidCodes.Add("Phenylalanine", 'F');
-            aminoAcidCodes.Add("Proline", 'P');
-            aminoAcidCodes.Add("Serine", 'S');
-            aminoAcidCodes.Add("Threonine", 'T');
-            aminoAcidCodes.Add("Tryptophan", 'W');
-            aminoAcidCodes.Add("Tyrosine", 'Y');
-            aminoAcidCodes.Add("Valine", 'V');
-            aminoAcidCodes.Add("Undefined", 'X'); // we'll have to deal with this at some point.
-            aminoAcidCodes.Add("Selenocysteine", 'U');
+            return LoadUniprotModifications(ptmFilePath, modCount);
         }
 
         static Dictionary<string, Modification> LoadUniprotModifications(string path, int numDiffMods)
@@ -135,7 +129,6 @@ namespace ProteoformSuiteInternal
         public static Protein[] ReadUniprotXml(string uniprotXmlFile, Dictionary<string, Modification> uniprot_modification_table, int minPeptideLength, bool fixedMethionineCleavage)
         {
             ConcurrentBag<Protein> bag_protein_list = new ConcurrentBag<Protein>();
-            List<Protein> protein_list = new List<Protein>();
             using (var stream = new FileStream(uniprotXmlFile, FileMode.Open))
             {
                 Stream uniprotXmlFileStream;
@@ -242,11 +235,10 @@ namespace ProteoformSuiteInternal
                 } //}); 
                 
             }
-            foreach (Protein p in bag_protein_list)
-            {
-                protein_list.Add(p);
-            }
-            return protein_list.ToArray();
+
+            List<Protein> proteins = new List<Protein>();
+            foreach (Protein p in bag_protein_list) proteins.Add(p);
+            return proteins.ToArray();
         }
 
         private static string GetAttribute(XElement element, string attribute_name)
