@@ -39,6 +39,7 @@ namespace ProteoformSuite
             dgv_proteoform_families.Columns["theoretical_count"].HeaderText = "Theoretical Proteoforms";
             dgv_proteoform_families.Columns["relation_count"].HeaderText = "Relation Count";
             dgv_proteoform_families.Columns["accession_list"].HeaderText = "Accessions";
+            dgv_proteoform_families.Columns["relations"].Visible = false;
         }
 
         private void dgv_proteoform_families_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -61,12 +62,21 @@ namespace ProteoformSuite
                 }
                 else dgv_proteoform_family_members.Rows.Clear();
             }
-            else if (dgv_proteoform_families.Columns[column_index].Name == "experimental_count" && selected_family.experimental_count > 0)
+            else if (dgv_proteoform_families.Columns[column_index].Name == "experimental_count")
             {
                 if (selected_family.experimental_count > 0)
                 {
                     DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.experimental_proteoforms);
                     DisplayUtility.FormatAggregatesTable(dgv_proteoform_family_members);
+                }
+                else dgv_proteoform_family_members.Rows.Clear();
+            }
+            else if (dgv_proteoform_families.Columns[column_index].Name == "relation_count")
+            {
+                if (selected_family.relation_count > 0)
+                {
+                    DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.relations);
+                    DisplayUtility.FormatRelationsGridView(dgv_proteoform_family_members, false, false);
                 }
                 else dgv_proteoform_family_members.Rows.Clear();
             }

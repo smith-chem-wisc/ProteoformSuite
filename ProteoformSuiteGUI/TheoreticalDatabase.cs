@@ -21,6 +21,7 @@ namespace ProteoformSuite
         OpenFileDialog openPtmlistDialog = new OpenFileDialog();
         public bool gotPTMlistFilePath = false;
         public bool gotXMLFilePath = false;
+        bool initial_load = true;
 
         public TheoreticalDatabase()
         {
@@ -33,6 +34,7 @@ namespace ProteoformSuite
             InitializeOpenXmlDialog();
             InitializeOpenPtmlistDialog();
             InitializeSettings();
+            initial_load = false;
         }
 
         private void InitializeSettings()
@@ -171,12 +173,15 @@ namespace ProteoformSuite
         }
 
         private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)
-        {         
-            string table = cmbx_DisplayWhichDB.SelectedItem.ToString();
-            if(table == "Target")
-                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
-            else
-                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
+        {
+            if (!initial_load)
+            {
+                string table = cmbx_DisplayWhichDB.SelectedItem.ToString();
+                if (table == "Target")
+                    DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+                else
+                    DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
+            }
         }
 
         //public void FillDataBaseTable(string table)

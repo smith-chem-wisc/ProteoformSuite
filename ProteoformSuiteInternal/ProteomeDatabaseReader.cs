@@ -236,9 +236,9 @@ namespace ProteoformSuiteInternal
                 
             }
 
-            List<Protein> proteins = new List<Protein>();
-            foreach (Protein p in bag_protein_list) proteins.Add(p);
-            return proteins.ToArray();
+            //List<Protein> proteins = new List<Protein>();
+            //foreach (Protein p in bag_protein_list) proteins.Add(p);
+            return bag_protein_list.ToArray();
         }
 
         private static string GetAttribute(XElement element, string attribute_name)
