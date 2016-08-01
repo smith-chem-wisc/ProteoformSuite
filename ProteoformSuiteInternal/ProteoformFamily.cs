@@ -15,6 +15,10 @@ namespace ProteoformSuiteInternal
         public List<TheoreticalProteoform> theoretical_proteoforms { get; set; }
         public int theoretical_count { get; set; }
         public int relation_count { get; set; }
+        public HashSet<ProteoformRelation> relations
+        {
+            get { return new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships)); }
+        }
         public List<Proteoform> _proteoforms;
         public List<Proteoform> proteoforms
         {
