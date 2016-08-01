@@ -52,7 +52,7 @@ namespace ProteoformSuite
         {
             FillETPeakListTable();
             FillETRelationsGridView();
-            DisplayUtility.FormatRelationsGridView(dgv_ET_Pairs, true);
+            DisplayUtility.FormatRelationsGridView(dgv_ET_Pairs, true, false);
             DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List);
             GraphETRelations();
             GraphETPeaks();
@@ -63,7 +63,6 @@ namespace ProteoformSuite
         {
             Lollipop.et_relations.Clear();
             Lollipop.et_peaks.Clear();
-            Lollipop.edList.Clear();
             Lollipop.ed_relations.Clear();
             Lollipop.proteoform_community.relations_in_peaks.Clear();
             Lollipop.proteoform_community.delta_mass_peaks.Clear();
@@ -77,7 +76,7 @@ namespace ProteoformSuite
         private void updateFiguresOfMerit()
         {
             List<DeltaMassPeak> big_peaks = Lollipop.et_peaks.Where(p => p.peak_accepted).ToList();
-            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.mass_difference_group.Count).Sum().ToString();
+            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.grouped_relations.Count).Sum().ToString();
             tb_TotalPeaks.Text = big_peaks.Count.ToString();
         }
 
@@ -98,8 +97,6 @@ namespace ProteoformSuite
             DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, "Peak Count", "Median Decoy Count", Lollipop.et_relations, "Nearby Relations");
         }
 
-
-
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
             int clickedRow = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
@@ -113,40 +110,92 @@ namespace ProteoformSuite
             {
                 if(e.Button == MouseButtons.Right && clickedRow >= 0 && clickedRow < Lollipop.et_relations.Count)
                 {
-                    ContextMenuStrip my_menu = new ContextMenuStrip();
+                    ContextMenuStrip ET_peak_List_Menu = new ContextMenuStrip();
                     int position_xy_mouse_row = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
 
                     DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
 
-                    //MessageBox.Show("Right at row: " + position_xy_mouse_row.ToString());
-
                     if (position_xy_mouse_row > 0)
                     {
-                        my_menu.Items.Add("Increase Experimenal Mass 1.0015 Da").Name = "IncreaseMass";
-                        my_menu.Items.Add("Decrease Experimenal Mass 1.0015 Da").Name = "DecreaseMass";
+                        ET_peak_List_Menu.Items.Add("Increase Experimenal Mass 1.0015 Da").Name = "IncreaseMass";
+                        ET_peak_List_Menu.Items.Add("Decrease Experimenal Mass 1.0015 Da").Name = "DecreaseMass";
                     }
-
-                    my_menu.Show(dgv_ET_Peak_List, new Point(e.X, e.Y));
+                    ET_peak_List_Menu.Show(dgv_ET_Peak_List, new Point(e.X, e.Y));
 
                     //event menu click
-                    my_menu.ItemClicked += new ToolStripItemClickedEventHandler((s,ev)=>my_menu_ItemClicked(s,ev,selected_peak));
+                    ET_peak_List_Menu.ItemClicked += new ToolStripItemClickedEventHandler((s,ev)=> ET_peak_List_Menu_ItemClicked(s,ev,selected_peak));
                 }
             }
         }
         
-        void my_menu_ItemClicked(object sender,ToolStripItemClickedEventArgs e, DeltaMassPeak peak)
+        void ET_peak_List_Menu_ItemClicked(object sender,ToolStripItemClickedEventArgs e, DeltaMassPeak peak)
         {
-            MessageBox.Show(e.ClickedItem.Name.ToString());
             switch (e.ClickedItem.Name.ToString())
             {
                 case "IncreaseMass":
-                    MessageBox.Show("increase: " + peak.delta_mass.ToString());
+                    massShifter(peak, 1);
                     break;
                 case "DecreaseMass":
-                    MessageBox.Show("decrease: " + peak.delta_mass.ToString());
+                    massShifter(peak, -1);
                     break;
-
             }
+        }
+
+        private void massShifter(DeltaMassPeak peak, int shift)
+        {
+            List<ExperimentalProteoform> expProtList = new List<ExperimentalProteoform>();
+            foreach (ProteoformRelation relation in Lollipop.et_relations.Where(p => p.peak == peak).ToList())
+            {
+                if (relation.connected_proteoforms[0] is ExperimentalProteoform)
+                {
+                    expProtList.Add(relation.connected_proteoforms[0] as ExperimentalProteoform);
+                }
+            }
+
+            foreach (ExperimentalProteoform ep in Lollipop.proteoform_community.experimental_proteoforms.Where(ex => expProtList.Contains(ex)))
+            {
+                List<ProteoformSuiteInternal.Component> epComponents = new List<ProteoformSuiteInternal.Component>();
+
+                foreach (ProteoformSuiteInternal.Component comp in ep.aggregated_components)
+                {
+                    epComponents.Add(comp);
+                }
+
+                if (Lollipop.neucode_labeled)
+                {
+                    List<ProteoformSuiteInternal.Component> neuCodeComponents = new List<ProteoformSuiteInternal.Component>();
+
+                    foreach (ProteoformSuiteInternal.Component rawComponent in Lollipop.raw_neucode_pairs.Where(p => epComponents.Contains(p)).Select(p => p.neuCodeLight))
+                    {
+                        neuCodeComponents.Add(rawComponent);
+                    }
+
+                    foreach (ProteoformSuiteInternal.Component rawComponent in Lollipop.raw_neucode_pairs.Where(p => epComponents.Contains(p)).Select(p => p.neuCodeHeavy))
+                    {
+                        neuCodeComponents.Add(rawComponent);
+                    }
+
+                    foreach (ProteoformSuiteInternal.Component rawComponent in Lollipop.raw_experimental_components.Where(cp => neuCodeComponents.Contains(cp)).ToList())
+                    {
+                        rawComponent.manual_mass_shift = rawComponent.manual_mass_shift + (shift * Lollipop.MONOISOTOPIC_UNIT_MASS);
+                    }
+                }
+                else //unlabeled
+                {
+                    foreach (ProteoformSuiteInternal.Component rawComponent in Lollipop.raw_experimental_components.Where(p => epComponents.Contains(p)).ToList())
+                    {
+                        rawComponent.manual_mass_shift = rawComponent.manual_mass_shift + (shift * Lollipop.MONOISOTOPIC_UNIT_MASS);
+                    }
+                }
+            }
+
+            Lollipop.raw_neucode_pairs.Clear();
+            HashSet<string> scan_ranges = new HashSet<string>(Lollipop.raw_experimental_components.Select(c => c.scan_range));
+            foreach (string scan_range in scan_ranges)
+                Lollipop.find_neucode_pairs(Lollipop.raw_experimental_components.Where(c => c.scan_range == scan_range));
+
+            Lollipop.aggregate_proteoforms();
+            RunTheGamut();
         }
 
         Point? ct_ET_Histogram_prevPosition = null;
@@ -177,9 +226,6 @@ namespace ProteoformSuite
                 dgv_ET_Peak_List.Update();
             }
         }
-
-        private void splitContainer3_Panel2_Paint(object sender, PaintEventArgs e)
-        { }
 
         private void InitializeParameterSet()
         {

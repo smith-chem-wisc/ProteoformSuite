@@ -26,7 +26,7 @@ namespace ProteoformSuite
             if (Lollipop.proteoform_community.experimental_proteoforms.Count == 0) Lollipop.aggregate_proteoforms();
             updateFiguresOfMerit();
             this.FillAggregatesTable();
-            FormatAggregatesTable();
+            DisplayUtility.FormatAggregatesTable(dgv_AggregatedProteoforms);
             initial_load = false;
         }
 
@@ -35,7 +35,7 @@ namespace ProteoformSuite
             ClearListsAndTables();
             Lollipop.aggregate_proteoforms();
             this.FillAggregatesTable();
-            FormatAggregatesTable();
+            DisplayUtility.FormatAggregatesTable(dgv_AggregatedProteoforms);
             updateFiguresOfMerit();
         }
 
@@ -62,41 +62,20 @@ namespace ProteoformSuite
         {
             DisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, Lollipop.proteoform_community.experimental_proteoforms);
         }
-
-        private void FormatAggregatesTable()
-        {
-            //round table values
-            dgv_AggregatedProteoforms.Columns["agg_mass"].DefaultCellStyle.Format = "0.####";
-            dgv_AggregatedProteoforms.Columns["agg_intensity"].DefaultCellStyle.Format = "0.####";
-            dgv_AggregatedProteoforms.Columns["agg_rt"].DefaultCellStyle.Format = "0.##";
-            dgv_AggregatedProteoforms.Columns["modified_mass"].DefaultCellStyle.Format = "0.####";
-            
-            //set column header
-            dgv_AggregatedProteoforms.Columns["agg_mass"].HeaderText = "Aggregated Mass";
-            dgv_AggregatedProteoforms.Columns["agg_intensity"].HeaderText = "Aggregated Intensity";
-            dgv_AggregatedProteoforms.Columns["agg_rt"].HeaderText = "Aggregated RT";
-            dgv_AggregatedProteoforms.Columns["observation_count"].HeaderText = "Observation Count";
-            dgv_AggregatedProteoforms.Columns["accession"].HeaderText = "Experimental Proteoform ID";
-            dgv_AggregatedProteoforms.Columns["lysine_count"].HeaderText = "Lysine Count";
-
-            //making these columns invisible. (irrelevent for agg proteoforms)
-            dgv_AggregatedProteoforms.Columns["is_target"].Visible = false; 
-            dgv_AggregatedProteoforms.Columns["is_decoy"].Visible = false;
-            dgv_AggregatedProteoforms.Columns["modified_mass"].Visible = false;
-            if (!Lollipop.neucode_labeled) { dgv_AggregatedProteoforms.Columns["lysine_count"].Visible = false; }
-
-
-            dgv_AggregatedProteoforms.AllowUserToAddRows = false;
-        }
-
+     
         private void dgv_AggregatedProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if(e.RowIndex >= 0)
-            {
-                ExperimentalProteoform selected_pf = (ExperimentalProteoform)this.dgv_AggregatedProteoforms.Rows[e.RowIndex].DataBoundItem;
-                DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, selected_pf.aggregated_components);
-                Format_dgv_AcceptNeuCdLtProteoforms();
-            }
+            if (e.RowIndex >= 0) display_light_proteoforms(e.RowIndex);
+        }
+        private void dgv_AggregatedProteoforms_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex >= 0) display_light_proteoforms(e.RowIndex);
+        }
+        private void display_light_proteoforms(int row_index)
+        {
+            ExperimentalProteoform selected_pf = (ExperimentalProteoform)this.dgv_AggregatedProteoforms.Rows[row_index].DataBoundItem;
+            DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, selected_pf.aggregated_components);
+            Format_dgv_AcceptNeuCdLtProteoforms();
         }
 
         private void Format_dgv_AcceptNeuCdLtProteoforms()
@@ -171,7 +150,6 @@ namespace ProteoformSuite
                 RunTheGamut();
             }
         }
-
         private void nUD_RetTimeToleranace_ValueChanged(object sender, EventArgs e)
         {
             if (!initial_load)
@@ -180,7 +158,6 @@ namespace ProteoformSuite
                 RunTheGamut();
             }
         }
-
         private void nUD_Missed_Monos_ValueChanged(object sender, EventArgs e)
         {
             if (!initial_load)
@@ -189,7 +166,6 @@ namespace ProteoformSuite
                 RunTheGamut();
             }
         }
-
         private void nUD_Missed_Ks_ValueChanged(object sender, EventArgs e)
         {
             if (!initial_load)
@@ -198,6 +174,5 @@ namespace ProteoformSuite
                 RunTheGamut();
             }
         }
-
     }
 }
