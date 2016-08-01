@@ -67,7 +67,6 @@ namespace ProteoformSuiteInternal
         
         public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass) : base(pf1, pf2, relation_type, delta_mass)
         {
-            this.relation_type = relation_type;
             if (Lollipop.neucode_labeled) this.lysine_count = pf1.lysine_count;
         }
 
@@ -95,6 +94,17 @@ namespace ProteoformSuiteInternal
         public double peak_center_deltaM
         {
             get { if (this.peak != null) return peak.peak_deltaM_average; else return -1000000; }
+        }
+        public string relation_type_string
+        {
+            get
+            {
+                if (this.relation_type == ProteoformComparison.et) return "Experimental-Theoretical";
+                else if (this.relation_type == ProteoformComparison.ee) return "Experimental-Experimental";
+                else if (this.relation_type == ProteoformComparison.ed) return "Experimental-Decoy";
+                else if (this.relation_type == ProteoformComparison.ef) return "Experimental-Unequal Lysine Count";
+                else return "";
+            }
         }
 
         // For DataGridView display of proteoform1

@@ -162,7 +162,7 @@ namespace ProteoformSuite
             dgv.AllowUserToAddRows = false;
         }
 
-        public static void FormatRelationsGridView(DataGridView dgv, bool includes_theoretical)
+        public static void FormatRelationsGridView(DataGridView dgv, bool mask_experimental, bool mask_theoretical)
 
         {
             //round table values
@@ -188,31 +188,35 @@ namespace ProteoformSuite
             dgv.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
 
             //ET formatting
-            if (includes_theoretical)
+            dgv.Columns["proteoform_mass_2"].HeaderText = "Theoretical Proteoform Mass";
+            dgv.Columns["accession"].HeaderText = "Accession";
+            dgv.Columns["fragment"].HeaderText = "Fragment";
+            dgv.Columns["ptm_list"].HeaderText = "PTM Description";
+            dgv.Columns["name"].HeaderText = "Name";
+            if (mask_experimental)
             {
-                dgv.Columns["proteoform_mass_2"].HeaderText = "Theoretical Proteoform Mass";
-                dgv.Columns["accession"].HeaderText = "Accession";
-                dgv.Columns["fragment"].HeaderText = "Fragment";
-                dgv.Columns["ptm_list"].HeaderText = "PTM Description";
-                dgv.Columns["name"].HeaderText = "Name";
                 dgv.Columns["agg_intensity_2"].Visible = false;
                 dgv.Columns["agg_RT_2"].Visible = false;
                 dgv.Columns["num_observations_2"].Visible = false;
+                dgv.Columns["relation_type_string"].Visible = false;
             }
 
             //EE formatting
-            else
+            dgv.Columns["agg_RT_2"].HeaderText = "Light Experimental Aggregated RT";
+            dgv.Columns["agg_intensity_2"].HeaderText = "Light Experimental Aggregated Intensity";
+            dgv.Columns["proteoform_mass_2"].HeaderText = "Light Experimental Aggregated Intensity";
+            dgv.Columns["num_observations_2"].HeaderText = "Number Light Experimental Observations";
+            if (mask_theoretical)
             {
-                dgv.Columns["agg_RT_2"].HeaderText = "Light Experimental Aggregated RT";
-                dgv.Columns["agg_intensity_2"].HeaderText = "Light Experimental Aggregated Intensity";
-                dgv.Columns["proteoform_mass_2"].HeaderText = "Light Experimental Aggregated Intensity";
-                dgv.Columns["num_observations_2"].HeaderText = "Number Light Experimental Observations";
                 dgv.Columns["accession"].Visible = false;
-                dgv.Columns["peak"].Visible = false;
                 dgv.Columns["name"].Visible = false;
                 dgv.Columns["fragment"].Visible = false;
                 dgv.Columns["ptm_list"].Visible = false;
+                dgv.Columns["relation_type_string"].Visible = false;
             }
+
+            //ProteoformFamilies formatting
+            dgv.Columns["relation_type_string"].HeaderText = "Relation Type";
 
             //making these columns invisible
             dgv.Columns["peak"].Visible = false;

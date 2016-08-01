@@ -110,10 +110,14 @@ namespace ProteoformSuite
                 string[] lines = File.ReadAllLines(method_filename);
                 if (Lollipop.deconResultsFileNames.Count != 0)
                 {
-                    var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?", "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
-                    if (response == DialogResult.Yes) { Lollipop.use_method_files = false; }
-                    if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); Lollipop.use_method_files = true; }
-                    if (response == DialogResult.Cancel) { return; }
+                    var response1 = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?", "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
+                    if (response1 == DialogResult.Cancel) return;
+                    else if (response1 == DialogResult.Yes) Lollipop.use_method_files = false;
+                    else if (response1 == DialogResult.No)
+                    {
+                        Lollipop.deconResultsFileNames.Clear();
+                        Lollipop.use_method_files = true;
+                    }
                 }
 
                 foreach (string line in lines)
@@ -131,7 +135,8 @@ namespace ProteoformSuite
                 //else
                 //    working_directory = Path.GetDirectoryName(Lollipop.deconResultsFileNames[0]);
 
-                MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
+                var response2 = MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.", "Method Load", MessageBoxButtons.OKCancel);
+                if (response2 == DialogResult.Cancel) return;
 
                 Parallel.Invoke( 
                     () => Lollipop.get_experimental_proteoforms((b)=>new ExcelReader().read_components_from_xlsx(b)),
