@@ -17,7 +17,7 @@ namespace ProteoformSuiteInternal
         //needed for functioning open results - user can update/rerun modules and program doesn't crash.
         public static bool opened_results = false; //set to true if previously saved tsv's are read into program
         public static bool updated_theoretical = false;
-        public static bool opened_results_originally = false; //stays true if results every opened
+        public static bool opened_results_originally = false; //stays true if results ever opened
 
 
         public static void get_experimental_proteoforms(Func<string, IEnumerable<Component>> componentReader)
