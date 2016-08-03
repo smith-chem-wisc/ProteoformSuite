@@ -17,6 +17,7 @@ namespace ProteoformSuiteInternal
         //needed for functioning open results - user can update/rerun modules and program doesn't crash.
         public static bool opened_results = false; //set to true if previously saved tsv's are read into program
         public static bool updated_theoretical = false;
+        public static bool updated_agg = false;
         public static bool opened_results_originally = false; //stays true if results ever opened
 
 
@@ -95,6 +96,7 @@ namespace ProteoformSuiteInternal
         public static decimal missed_lysines = 1;
         public static void aggregate_proteoforms()
         {
+            Lollipop.updated_agg = true;
             if (Lollipop.proteoform_community.experimental_proteoforms.Count > 0)
                 Lollipop.proteoform_community.experimental_proteoforms.Clear();
 
@@ -196,7 +198,7 @@ namespace ProteoformSuiteInternal
                 bool isMetCleaved = (methionine_cleavage && p.begin == 0 && p.sequence.Substring(0, 1) == "M");
                 int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
                 string seq = p.sequence.Substring(startPosAfterCleavage, (p.sequence.Length - startPosAfterCleavage));
-                EnterTheoreticalProteformFamily(seq, p, p.accession, isMetCleaved, null);
+                EnterTheoreticalProteformFamily(seq, p, p.accession, isMetCleaved, -100);
             }
         }
 
@@ -222,12 +224,12 @@ namespace ProteoformSuiteInternal
                     string hunk = giantProtein.Substring(prevLength, hunkLength);
                     prevLength += hunkLength;
 
-                    EnterTheoreticalProteformFamily(hunk, p, p.accession + "_DECOY_" + decoyNumber, isMetCleaved, decoy_database_name);
+                    EnterTheoreticalProteformFamily(hunk, p, p.accession + "_DECOY_" + decoyNumber, isMetCleaved, decoyNumber);
                 }
             }
         }
 
-        private static void EnterTheoreticalProteformFamily(string seq, Protein prot, string accession, bool isMetCleaved, string decoy_database_name)
+        private static void EnterTheoreticalProteformFamily(string seq, Protein prot, string accession, bool isMetCleaved, int decoy_number)
         {
             //Calculate the properties of this sequence
             double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
@@ -245,10 +247,10 @@ namespace ProteoformSuiteInternal
                 double ptm_mass = group.mass;
                 double proteoform_mass = unmodified_mass + group.mass;
                 string ptm_description = group.ptm_combination.ToString();
-                if (string.IsNullOrEmpty(decoy_database_name))
+                if (decoy_number < 0 ) 
                     proteoform_community.add(new TheoreticalProteoform(accession, prot.description + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
                 else
-                    proteoform_community.add(new TheoreticalProteoform(accession, prot.description + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), decoy_database_name);
+                    proteoform_community.add(new TheoreticalProteoform(accession, prot.description + "_" + listMemberNumber.ToString() + "_DECOY" + "_" + decoy_number.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), "DecoyDatabase_" + decoy_number);
 
                 listMemberNumber++;
             } //);

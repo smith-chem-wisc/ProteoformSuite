@@ -24,7 +24,6 @@ namespace ProteoformSuite
         ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
         ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
         ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
-        ResultsSummary resultsSummary = new ResultsSummary(); 
         List<Form> forms;
         //  Initialize Forms END
 
@@ -48,7 +47,7 @@ namespace ProteoformSuite
             forms = new List<Form>(new Form[] {
                 loadDeconvolutionResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
                 theoreticalDatabase, experimentalTheoreticalComparison, experimentExperimentComparison,
-                proteoformFamilies, resultsSummary
+                proteoformFamilies
             });
         }
 
@@ -69,7 +68,12 @@ namespace ProteoformSuite
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentalTheoreticalComparison); }
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentExperimentComparison); }
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e) { showForm(proteoformFamilies); }
-        private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e) { showForm(resultsSummary); }
+
+        private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ResultsSummary resultsSummary = new ResultsSummary(); //want to update/rerun every time page is opened
+            showForm(resultsSummary);
+        }
 
         private void generateMethodToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -110,6 +114,9 @@ namespace ProteoformSuite
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
                 string method_filename = methodFileOpen.FileName;
+                ResultsSummary.loadDescription = method_filename;
+
+
                 string[] lines = File.ReadAllLines(method_filename);
                 if (Lollipop.deconResultsFileNames.Count != 0)
                 {
@@ -216,7 +223,7 @@ namespace ProteoformSuite
 
             Lollipop.opened_results = true;
             Lollipop.opened_results_originally = true;
-
+            ResultsSummary.loadDescription = working_directory;
             //cannot parallelize bc results dependent on one another for certain objects
             Results.read_raw_components(working_directory);
 

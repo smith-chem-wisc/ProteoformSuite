@@ -51,8 +51,8 @@ namespace ProteoformSuiteInternal
         private int _observation_count;
         public int observation_count
         {
-            set { if (Lollipop.opened_results) _observation_count = value; }
-            get { if (Lollipop.opened_results) { return _observation_count; }
+            set { _observation_count = value; }
+            get { if (!Lollipop.updated_agg) { return _observation_count; }
                 else { return aggregated_components.Count; } }
         }
 

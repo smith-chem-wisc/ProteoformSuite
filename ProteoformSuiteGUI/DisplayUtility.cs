@@ -187,13 +187,13 @@ namespace ProteoformSuite
             dgv.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
 
             //ET formatting
-            dgv.Columns["proteoform_mass_2"].HeaderText = "Theoretical Proteoform Mass";
             dgv.Columns["accession"].HeaderText = "Accession";
             dgv.Columns["fragment"].HeaderText = "Fragment";
             dgv.Columns["ptm_list"].HeaderText = "PTM Description";
             dgv.Columns["name"].HeaderText = "Name";
             if (mask_experimental)
             {
+                dgv.Columns["proteoform_mass_2"].HeaderText = "Theoretical Proteoform Mass";
                 dgv.Columns["agg_intensity_2"].Visible = false;
                 dgv.Columns["agg_RT_2"].Visible = false;
                 dgv.Columns["num_observations_2"].Visible = false;
@@ -203,10 +203,10 @@ namespace ProteoformSuite
             //EE formatting
             dgv.Columns["agg_RT_2"].HeaderText = "Light Experimental Aggregated RT";
             dgv.Columns["agg_intensity_2"].HeaderText = "Light Experimental Aggregated Intensity";
-            dgv.Columns["proteoform_mass_2"].HeaderText = "Light Experimental Aggregated Intensity";
             dgv.Columns["num_observations_2"].HeaderText = "Number Light Experimental Observations";
             if (mask_theoretical)
             {
+                dgv.Columns["proteoform_mass_2"].HeaderText = "Light Experimental Aggregated Mass";
                 dgv.Columns["accession"].Visible = false;
                 dgv.Columns["name"].Visible = false;
                 dgv.Columns["fragment"].Visible = false;

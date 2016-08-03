@@ -89,11 +89,11 @@ namespace ProteoformSuiteInternal
         // FOR DATAGRIDVIEW DISPLAY
         public int peak_center_count
         {
-            get { if (this.peak != null) return this.peak.peak_relation_group_count; else return 0; }
+            get { if (this.peak != null) return this.peak.peak_relation_group_count; else return -1000000; }
         }
         public double peak_center_deltaM
         {
-            get { if (this.peak != null) return peak.peak_deltaM_average; else return 0; }
+            get { if (this.peak != null) return peak.peak_deltaM_average; else return -1000000; }
         }
         public string relation_type_string
         {
@@ -165,14 +165,17 @@ namespace ProteoformSuiteInternal
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).ptm_descriptions; } catch { return null; } }
         }
 
-        public string as_tsv_row()
+        public string as_tsv_row(ProteoformComparison relation_type)
         {
-            return String.Join("\t", new List<string> { this.connected_proteoforms[0].accession.ToString(), this.connected_proteoforms[1].accession.ToString(), this.delta_mass.ToString(),  this.nearby_relations_count.ToString() });
+           if (relation_type == ProteoformComparison.ee) return String.Join("\t", new List<string> { this.connected_proteoforms[0].accession.ToString(), this.connected_proteoforms[1].accession.ToString(), this.delta_mass.ToString(),  this.nearby_relations_count.ToString() });
+           else return String.Join("\t", new List<string> { this.connected_proteoforms[0].accession.ToString(), ((TheoreticalProteoform)this.connected_proteoforms[1]).description.ToString(), this.delta_mass.ToString(), this.nearby_relations_count.ToString() });
         }
 
-        public static string get_tsv_header()
+        public static string get_tsv_header(ProteoformComparison relation_type)
         {
-            return String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_accession", "delta_mass", "nearby_relations" });
+            if (relation_type == ProteoformComparison.ee) return String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_accession", "delta_mass", "nearby_relations" });
+            else return String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_description", "delta_mass", "nearby_relations" });
+            //multiple theoreticals have same accession, not same description
         }
     }
 }
