@@ -72,7 +72,7 @@ namespace ProteoformSuiteInternal
             this.num_detected_intervals = c.num_detected_intervals;
             this.num_charge_states_fromFile = c.num_charge_states_fromFile;
             this.intensity_sum_olcs = c.intensity_sum_olcs;
-            this.accepted = true;
+            this.accepted = c.accepted;
         }
 
         public double calculate_sum_intensity()

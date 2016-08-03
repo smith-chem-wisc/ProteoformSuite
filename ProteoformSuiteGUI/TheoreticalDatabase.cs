@@ -35,7 +35,7 @@ namespace ProteoformSuite
             InitializeOpenPtmlistDialog();
             InitializeSettings();
 
-            if (Lollipop.opened_results)
+            if (Lollipop.opened_results_originally)
             {
                 DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
                 this.initialize_table_bindinglist();

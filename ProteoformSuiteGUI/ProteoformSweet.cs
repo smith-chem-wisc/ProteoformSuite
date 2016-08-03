@@ -211,6 +211,7 @@ namespace ProteoformSuite
             DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
             if (results_folder == DialogResult.OK)
                 working_directory = this.resultsFolderOpen.SelectedPath;
+            else if (results_folder == DialogResult.Cancel) { return; }
             else
                 working_directory = Path.GetDirectoryName(Lollipop.deconResultsFileNames[0]);
 
