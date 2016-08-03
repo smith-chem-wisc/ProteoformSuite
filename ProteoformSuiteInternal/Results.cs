@@ -197,6 +197,8 @@ namespace ProteoformSuiteInternal
                 {
                     if (relation_type == ProteoformComparison.et) relation = Lollipop.et_relations.Where(p => p.connected_proteoforms[0].accession == p1[i].Trim().TrimEnd(',') && p.connected_proteoforms[1].accession == p2[i].Trim().TrimEnd(',')).ToList();
                     else if (relation_type == ProteoformComparison.ee) relation = Lollipop.ee_relations.Where(p => p.connected_proteoforms[0].accession == p1[i].Trim().TrimEnd(',') && p.connected_proteoforms[1].accession == p2[i].Trim().TrimEnd(',')).ToList();
+                    relation[0].connected_proteoforms[0].relationships.Add(relation[0]);
+                    relation[0].connected_proteoforms[1].relationships.Add(relation[0]);
                     relations_in_peak.Add(relation[0]);
                 }
 
