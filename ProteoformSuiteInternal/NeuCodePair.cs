@@ -34,25 +34,35 @@ namespace ProteoformSuiteInternal
             this.intensity_ratio = neuCodeLight.intensity_sum_olcs / neuCodeHeavy.intensity_sum_olcs; //ratio of overlapping charge states
 
             //marking pair as accepted or not when it's created
-            if (this.lysine_count > Lollipop.min_lysine_ct && this.lysine_count < Lollipop.max_lysine_ct
-                && this.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio) && this.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio))
-                 { this.accepted = true; }
-            else { this.accepted = false; }
+            set_accepted();
 
             this.corrected_mass = this.corrected_mass + Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * 1.0015;
         }
 
+        public void set_accepted()
+        {
+            if (this.lysine_count > Lollipop.min_lysine_ct && this.lysine_count < Lollipop.max_lysine_ct
+              && this.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio) && this.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio))
+            { this.accepted = true; }
+            else { this.accepted = false; }
+        }
+
+        public NeuCodePair(Component neucodeHeavy, Component neucodeLight) : base(neucodeLight) //need this to open and read in tsv files
+        {
+            this.neuCodeHeavy = neucodeHeavy;
+            this.neuCodeLight = neucodeLight;
+        }
         new public string as_tsv_row()
         {
-            return String.Join("\t", new List<string> { this.id.ToString(), this.intensity_sum.ToString(), this.weighted_monoisotopic_mass.ToString(), this.corrected_mass.ToString(), this.rt_apex.ToString(),
-                this.neuCodeHeavy.id.ToString(), this.neuCodeHeavy.intensity_sum.ToString(), this.neuCodeHeavy.weighted_monoisotopic_mass.ToString(), this.intensity_ratio.ToString(), this.lysine_count.ToString(),
+            return String.Join("\t", new List<string> { this.id.ToString(), this.intensity_sum_olcs.ToString(), this.weighted_monoisotopic_mass.ToString(), this.corrected_mass.ToString(), this.rt_apex.ToString(),
+                this.neuCodeHeavy.id.ToString(), this.neuCodeHeavy.intensity_sum_olcs.ToString(), this.neuCodeHeavy.weighted_monoisotopic_mass.ToString(), this.intensity_ratio.ToString(), this.lysine_count.ToString(),
                 this.file_origin.ToString() });
         }
 
         new public static string get_tsv_header()
         {
-            return String.Join("\t", new List<string> { "light_id", "light_intensity", "light_weighted_monoisotopic_mass", "light_corrected_mass", "light_apexRt",
-                "heavy_id", "heavy_intensity", "heavy_weighted_monoisotopic_mass", "intensity_ratio", "lysine_count", "file_origin" });
+            return String.Join("\t", new List<string> { "light_id", "light_intensity (overlapping charge states)", "light_weighted_monoisotopic_mass", "light_corrected_mass", "light_apexRt",
+                "heavy_id", "heavy_intensity (overlapping charge states)", "heavy_weighted_monoisotopic_mass", "intensity_ratio", "lysine_count", "file_origin" });
         }
     }
 }

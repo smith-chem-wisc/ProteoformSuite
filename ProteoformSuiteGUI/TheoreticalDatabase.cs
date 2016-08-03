@@ -30,10 +30,17 @@ namespace ProteoformSuite
 
         public void TheoreticalDatabase_Load(object sender, EventArgs e)
         {
-            btn_Make_Databases.Enabled = false;
+           btn_Make_Databases.Enabled = false;
             InitializeOpenXmlDialog();
             InitializeOpenPtmlistDialog();
             InitializeSettings();
+
+            if (Lollipop.opened_results)
+            {
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+                this.initialize_table_bindinglist();
+                DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
+            }
             initial_load = false;
         }
 

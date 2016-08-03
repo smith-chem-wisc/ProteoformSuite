@@ -73,7 +73,7 @@ namespace ProteoformSuiteInternal
         public ProteoformRelation(ProteoformRelation relation) : base(relation.connected_proteoforms[0], relation.connected_proteoforms[1], relation.relation_type, relation.delta_mass)
         {
             this.peak = relation.peak;
-            this.nearby_relations = relation.nearby_relations;
+            if (!Lollipop.opened_results) this.nearby_relations = relation.nearby_relations;
         }
 
         public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_relations)
@@ -89,11 +89,11 @@ namespace ProteoformSuiteInternal
         // FOR DATAGRIDVIEW DISPLAY
         public int peak_center_count
         {
-            get { if (this.peak != null) return this.peak.peak_relation_group_count; else return -1000000; }
+            get { if (this.peak != null) return this.peak.peak_relation_group_count; else return 0; }
         }
         public double peak_center_deltaM
         {
-            get { if (this.peak != null) return peak.peak_deltaM_average; else return -1000000; }
+            get { if (this.peak != null) return peak.peak_deltaM_average; else return 0; }
         }
         public string relation_type_string
         {
@@ -135,19 +135,6 @@ namespace ProteoformSuiteInternal
                 else
                     return ((TheoreticalProteoform)connected_proteoforms[1]).modified_mass;
             }
-<<<<<<< HEAD
-            this.group_count = nearby_relations.Count;
-            this.mass_difference_group = nearby_relations;
-
-            Parallel.ForEach<ProteoformRelation>(this.mass_difference_group, mass_difference =>
-            {
-                mass_difference.connected_proteoforms[0].relationships.Add(mass_difference);
-                mass_difference.connected_proteoforms[1].relationships.Add(mass_difference);
-            });
-
-            return this.mass_difference_group;
-=======
->>>>>>> 437daa6fb61d591f27aa871c1f3f7bcb2b279d71
         }
         public double agg_intensity_2
         {

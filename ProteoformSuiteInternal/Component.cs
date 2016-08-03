@@ -27,15 +27,14 @@ namespace ProteoformSuiteInternal
                 this.calculate_weighted_monoisotopic_mass();
             } }
         public double corrected_mass { get; set; }
-        public bool accepted { get; set; }  //should have option where user can "uncheck" accepeted box
         public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
         public int num_charge_states
         {
             get { return this.charge_states.Count; }
         }
         private int num_detected_intervals { get; set; }
-        private int num_charge_states_fromFile { get; set; }
-
+        public int num_charge_states_fromFile { get; set; }
+        public bool accepted { get; set; }
         public Component()
         { }
         public Component(List<Cell> component_cells, string filename)
@@ -51,8 +50,8 @@ namespace ProteoformSuiteInternal
             this.scan_range = component_cells[8].InnerText;
             this.rt_range = component_cells[9].InnerText;
             this.rt_apex = Convert.ToDouble(component_cells[10].InnerText);
-            this.accepted = true;
             this.file_origin = filename;
+            this.accepted = true;
         }
         public Component(Component c)
         {
@@ -73,7 +72,7 @@ namespace ProteoformSuiteInternal
             this.num_detected_intervals = c.num_detected_intervals;
             this.num_charge_states_fromFile = c.num_charge_states_fromFile;
             this.intensity_sum_olcs = c.intensity_sum_olcs;
-            this.accepted = c.accepted;
+            this.accepted = true;
         }
 
         public double calculate_sum_intensity()
@@ -101,16 +100,34 @@ namespace ProteoformSuiteInternal
 
         public string as_tsv_row()
         {
-            return String.Join("\t", new List<string> { this.id.ToString(), this.monoisotopic_mass.ToString(), this.weighted_monoisotopic_mass.ToString(), this.intensity_sum.ToString(), this.num_charge_states.ToString(),
-                this.delta_mass.ToString(), this.relative_abundance.ToString(), this.fract_abundance.ToString(), this.scan_range.ToString(), this.rt_apex.ToString(),
+            if (Lollipop.neucode_labeled)
+            {
+                return String.Join("\t", new List<string> { this.id.ToString(), this.monoisotopic_mass.ToString(), this.weighted_monoisotopic_mass.ToString(), this. corrected_mass.ToString(), this.intensity_sum.ToString(), this.num_charge_states.ToString(),
+                this.delta_mass.ToString(), this.relative_abundance.ToString(), this.fract_abundance.ToString(), this.scan_range.ToString(), this.rt_range.ToString(),
+                this.rt_apex.ToString(), this.intensity_sum_olcs.ToString(), this.file_origin.ToString() });
+            }
+            else
+            {
+                return String.Join("\t", new List<string> { this.id.ToString(), this.monoisotopic_mass.ToString(), this.weighted_monoisotopic_mass.ToString(), this.corrected_mass.ToString(), this.intensity_sum.ToString(), this.num_charge_states.ToString(),
+                this.delta_mass.ToString(), this.relative_abundance.ToString(), this.fract_abundance.ToString(), this.scan_range.ToString(), this.rt_range.ToString(),
                 this.rt_apex.ToString(), this.file_origin.ToString() });
+            }
         }
 
         public static string get_tsv_header()
         {
-            return String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "intensity_sum", "num_charge_states",
-                "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_apex",
+            if (Lollipop.neucode_labeled)
+            {
+                return String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "corrected_mass", "intensity_sum", "num_charge_states",
+                "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range",
+                "rt_apex", "intensity_sum_olcs", "file_origin" });
+            }
+            else
+            {
+                return String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "corrected_mass", "intensity_sum", "num_charge_states",
+                "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range",
                 "rt_apex", "file_origin" });
+            }
         }
     }
 

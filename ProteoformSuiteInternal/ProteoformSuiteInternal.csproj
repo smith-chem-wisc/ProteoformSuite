@@ -55,7 +55,6 @@
     <Compile Include="Component.cs" />
     <Compile Include="DeltaMassPeak.cs" />
     <Compile Include="ExcelReader.cs" />
-    <Compile Include="ExcelWriter.cs" />
     <Compile Include="Lollipop.cs" />
     <Compile Include="Modification.cs" />
     <Compile Include="NeuCodePair.cs" />
@@ -67,6 +66,7 @@
     <Compile Include="ProteoformRelation.cs" />
     <Compile Include="ProteomeDatabaseReader.cs" />
     <Compile Include="RandomExtensions.cs" />
+    <Compile Include="Results.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -31,6 +31,8 @@ namespace ProteoformSuite
         OpenFileDialog methodFileOpen = new OpenFileDialog();
         SaveFileDialog methodFileSave = new SaveFileDialog();
 
+        Form current_form; 
+
         public ProteoformSweet()
         {
             InitializeComponent();
@@ -53,6 +55,7 @@ namespace ProteoformSuite
             form.MdiParent = this;
             form.Show();
             form.WindowState = FormWindowState.Maximized;
+            current_form = form;
         }
         
         // tool strip clicks
@@ -148,22 +151,39 @@ namespace ProteoformSuite
                     () => Lollipop.make_ee_relationships()
                 );
 
-                // For connectivity testing --
-                //File.WriteAllText(working_directory + "\\raw_experimental_components.tsv", Lollipop.raw_component_results());
-                //File.WriteAllText(working_directory + "\\raw_neucode_pairs.tsv", Lollipop.raw_neucode_pair_results());
-                //File.WriteAllText(working_directory + "\\aggregated_experimental_proteoforms.tsv", Lollipop.aggregated_experimental_proteoform_results());
-                //File.WriteAllText(working_directory + "\\experimental_theoretical_relationships.tsv", Lollipop.et_relations_results());
-                //File.WriteAllText(working_directory + "\\experimental_decoy_relationships.tsv", Lollipop.ed_relations_results());
-                //File.WriteAllText(working_directory + "\\experimental_experimental_relationships.tsv", Lollipop.ee_relations_results());
-                //File.WriteAllText(working_directory + "\\experimental_false_relationships.tsv", Lollipop.ef_relations_results());
-                //File.WriteAllText(working_directory + "\\experimental_theoretical_peaks.tsv", Lollipop.et_peak_results());
-                //File.WriteAllText(working_directory + "\\experimental_experimental_peaks.tsv", Lollipop.ee_peak_results());
-                
-                ExcelWriter.
-
+                save_tsv_files(working_directory, true);
                 prepare_figures_and_tables();
+                this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
                 MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
             }
+        }
+
+        private void save_tsv_files (string working_directory, bool save_all)
+        {
+            if (current_form == rawExperimentalComponents || save_all)
+                File.WriteAllText(working_directory + "\\raw_experimental_components.tsv", Results.raw_component_results());
+            if (current_form == neuCodePairs || save_all)
+                File.WriteAllText(working_directory + "\\raw_neucode_pairs.tsv", Results.raw_neucode_pair_results());
+            if (current_form == aggregatedProteoforms || save_all)
+                File.WriteAllText(working_directory + "\\aggregated_experimental_proteoforms.tsv", Results.aggregated_experimental_proteoform_results());
+            if (current_form == theoreticalDatabase || save_all)
+            {
+                File.WriteAllText(working_directory + "\\theoretical_proteoforms.tsv", Results.theoretical_proteoforms_results());
+                File.WriteAllText(working_directory + "\\decoy_proteoforms.tsv", Results.decoy_proteoforms_results());
+            }
+            if (current_form == experimentalTheoreticalComparison || save_all)
+            {
+                File.WriteAllText(working_directory + "\\experimental_theoretical_relationships.tsv", Results.et_relations_results());
+                File.WriteAllText(working_directory + "\\experimental_decoy_relationships.tsv", Results.ed_relations_results());
+                File.WriteAllText(working_directory + "\\experimental_theoretical_peaks.tsv", Results.et_peak_results());
+            }
+            if (current_form == experimentExperimentComparison || save_all)
+            {
+                File.WriteAllText(working_directory + "\\experimental_experimental_relationships.tsv", Results.ee_relations_results());
+                File.WriteAllText(working_directory + "\\experimental_false_relationships.tsv", Results.ef_relations_results());
+                File.WriteAllText(working_directory + "\\experimental_experimental_peaks.tsv", Results.ee_peak_results());
+            }
+            else { return; }
         }
 
         private void prepare_figures_and_tables()
@@ -186,17 +206,66 @@ namespace ProteoformSuite
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("openToolStripMenuItem_Click");
+            string working_directory;
+            MessageBox.Show("Please select a folder with saved results files.");
+            DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
+            if (results_folder == DialogResult.OK)
+                working_directory = this.resultsFolderOpen.SelectedPath;
+            else
+                working_directory = Path.GetDirectoryName(Lollipop.deconResultsFileNames[0]);
+
+            DialogResult response = MessageBox.Show("Are these results neucode labeled?", "Neucode Labeled", MessageBoxButtons.YesNo);
+            if (response == DialogResult.Yes) { Lollipop.neucode_labeled = true; }
+            if (response == DialogResult.No) { Lollipop.neucode_labeled = false; }
+            this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
+
+            Lollipop.opened_results = true;
+            Lollipop.opened_results_originally = true;
+
+            //cannot parallelize bc results dependent on one another for certain objects
+            Results.read_raw_components(working_directory);
+
+            if (Lollipop.neucode_labeled) Results.read_raw_neucode_pairs(working_directory);
+            Results.read_aggregated_proteoforms(working_directory);
+            Results.read_theoretical_proteoforms(working_directory);
+            Results.read_decoy_proteoforms(working_directory);
+            Results.read_experimental_decoy_relationships(working_directory);
+            Results.read_experimental_theoretical_relationships(working_directory);
+            Results.read_peaks(working_directory, ProteoformComparison.et);
+            Results.read_experimental_false_relationships(working_directory);
+            Results.read_experimental_experimental_relationships(working_directory);
+            Results.read_peaks(working_directory, ProteoformComparison.ee);
+            MessageBox.Show("Files successfully read in.");
+
+            Lollipop.opened_results = false;
         }
+
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("saveToolStripMenuItem_Click");
+            string working_directory;
+            if (current_form == loadDeconvolutionResults) { return; }
+            MessageBox.Show("Choose a results folder.");
+            DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
+            if (results_folder == DialogResult.OK)
+                working_directory = this.resultsFolderOpen.SelectedPath;
+            else
+                working_directory = Path.GetDirectoryName(Lollipop.deconResultsFileNames[0]);
+            save_tsv_files(working_directory, false);
+            MessageBox.Show("Successfully saved the currently displayed page.");
         }
 
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("saveAsToolStripMenuItem_Click");
+            string working_directory;
+            MessageBox.Show("Choose a results folder.");
+            DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
+            if (results_folder == DialogResult.OK)
+                working_directory = this.resultsFolderOpen.SelectedPath;
+            else
+                working_directory = Path.GetDirectoryName(Lollipop.deconResultsFileNames[0]);
+            save_tsv_files(working_directory, true);
+            MessageBox.Show("Successfully saved all pages.");
         }
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)

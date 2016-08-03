@@ -34,8 +34,8 @@ namespace ProteoformSuite
             if (Lollipop.et_relations.Count == 0)
             {
                 Lollipop.make_et_relationships();
-                this.FillTablesAndCharts();
             }
+            this.FillTablesAndCharts();
             initial_load = false;
         }
 

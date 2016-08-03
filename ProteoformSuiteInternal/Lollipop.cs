@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.ComponentModel; // needed for bindinglist
 using System.Data;
@@ -12,6 +13,12 @@ namespace ProteoformSuiteInternal
     public class Lollipop
     {
         public const double MONOISOTOPIC_UNIT_MASS = 1.0015;
+
+        //needed for functioning open results - user can update/rerun modules and program doesn't crash.
+        public static bool opened_results = false; //set to true if previously saved tsv's are read into program
+        public static bool updated_theoretical = false;
+        public static bool opened_results_originally = false; //stays true if results every opened
+
 
         public static void get_experimental_proteoforms(Func<string, IEnumerable<Component>> componentReader)
         {
@@ -50,8 +57,6 @@ namespace ProteoformSuiteInternal
 
         public static void find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange)
         {
-            
-
             //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
             List<Component> components = components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
             foreach (Component lower_component in components)
@@ -100,7 +105,7 @@ namespace ProteoformSuiteInternal
             Component[] remaining_proteoforms;
             //only aggregate accepatable neucode pairs
             if (neucode_labeled) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true).ToArray();
-            else remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).ToArray();
+            else remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true).ToArray();
 
             int count = 1;
             while (remaining_proteoforms.Length > 0)
@@ -133,13 +138,13 @@ namespace ProteoformSuiteInternal
         //public static List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
         //public static Dictionary<string, List<TheoreticalProteoform>> decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>>();
         static Protein[] proteins;
-
         static ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
         public static Dictionary<string, Modification> uniprotModificationTable;
         static Dictionary<char, double> aaIsotopeMassList;
 
         public static void get_theoretical_proteoforms()
         {
+            updated_theoretical = true; 
             //Clear out data from potential previous runs
             Lollipop.proteoform_community.theoretical_proteoforms.Clear();
             Lollipop.proteoform_community.decoy_proteoforms.Clear();
@@ -297,6 +302,7 @@ namespace ProteoformSuiteInternal
             //    () => et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et),
             //    () => ed_relations = Lollipop.proteoform_community.relate_ed()
             //);
+
             Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
             Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
             Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
@@ -309,6 +315,7 @@ namespace ProteoformSuiteInternal
             //    () => ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.et),
             //    () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
             //);
+
             Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
             Lollipop.ef_relations = proteoform_community.relate_unequal_ee_lysine_counts();
             Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
@@ -317,43 +324,7 @@ namespace ProteoformSuiteInternal
         //PROTEOFORM FAMILIES
         public static double maximum_delta_mass_peak_fdr = 25;
 
-        //RESULTS OUTPUT
-        public static string raw_component_results()
-        {
-            return Component.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, Lollipop.raw_experimental_components.Where(c => c != null).Select(c => c.as_tsv_row()));
-        }
-        public static string raw_neucode_pair_results()
-        {
-            return NeuCodePair.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, Lollipop.raw_neucode_pairs.Select(p => p.as_tsv_row()));
-        }
-        public static string aggregated_experimental_proteoform_results()
-        {
-            return ExperimentalProteoform.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, Lollipop.proteoform_community.experimental_proteoforms.Select(p => p.as_tsv_row()));
-        }
-        public static string et_relations_results()
-        {
-            return ProteoformRelation.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, et_relations.Select(r => r.as_tsv_row()));
-        }
-        public static string et_peak_results()
-        {
-            return DeltaMassPeak.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, et_peaks.Select(r => r.as_tsv_row()));
-        }
-        public static string ed_relations_results()
-        {
-            return ProteoformRelation.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, ed_relations.Values.ToList()[0].Select(r => r.as_tsv_row()));
-        }
-        public static string ee_relations_results()
-        {
-            return ProteoformRelation.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, ee_relations.Select(r => r.as_tsv_row()));
-        }
-        public static string ef_relations_results()
-        {
-            return ProteoformRelation.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, ef_relations.Select(r => r.as_tsv_row()));
-        }
-        public static string ee_peak_results()
-        {
-            return DeltaMassPeak.get_tsv_header() + Environment.NewLine + String.Join(Environment.NewLine, ee_peaks.Select(r => r.as_tsv_row()));
-        }
+
 
         //METHOD FILE
         public static string method_toString()

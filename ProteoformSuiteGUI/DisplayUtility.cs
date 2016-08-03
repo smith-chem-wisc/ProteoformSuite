@@ -175,7 +175,6 @@ namespace ProteoformSuite
 
             //set column header
             dgv.Columns["delta_mass"].HeaderText = "Delta Mass";
-            dgv.Columns["delta_mass"].DisplayIndex = 18;
             dgv.Columns["nearby_relations_count"].HeaderText = "Nearby Relation Count";
             dgv.Columns["accepted"].HeaderText = "Accepted";
             dgv.Columns["peak_center_deltaM"].HeaderText = "Peak Center Delta Mass";
