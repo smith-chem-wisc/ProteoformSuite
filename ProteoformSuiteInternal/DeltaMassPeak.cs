@@ -107,7 +107,7 @@ namespace ProteoformSuiteInternal
             return all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
         }
 
-        new public string as_tsv_row()
+        public string as_tsv_row()
         {
             //gives list of proteoform accessions in the peak
             List<string> accessions_1 = new List<string>();

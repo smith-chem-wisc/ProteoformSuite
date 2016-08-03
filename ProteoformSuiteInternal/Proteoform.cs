@@ -52,7 +52,7 @@ namespace ProteoformSuiteInternal
         public int observation_count
         {
             set { _observation_count = value; }
-            get { if (!Lollipop.updated_agg) { return _observation_count; }
+            get { if (!Lollipop.updated_agg && Lollipop.opened_results_originally) { return _observation_count; }
                 else { return aggregated_components.Count; } }
         }
 
