@@ -69,18 +69,25 @@ namespace Test
             TheoreticalProteoform pf8 = new TheoreticalProteoform("decoy1");
             ProteoformComparison relation_type4 = ProteoformComparison.ed;
             double delta_mass4 = 1;
+            ProteoformRelation decoy_relation = new ProteoformRelation(pf7, pf8, relation_type4, delta_mass4);
 
-            decoy_relations["decoyDatabase1"].Add(new ProteoformRelation(pf7, pf8, relation_type4, delta_mass4));
+            decoy_relations["decoyDatabase1"].Add(decoy_relation);
 
             deltaMassPeak.calculate_fdr(decoy_relations);
+            Assert.AreEqual(0.25, deltaMassPeak.peak_group_fdr); // 1 decoy database, (1 decoy relation, median=1), 4 target relations
 
-            Assert.AreEqual(0.25, deltaMassPeak.peak_group_fdr);
+            decoy_relations["decoyDatabase2"] = new List<ProteoformRelation>();
+            decoy_relations["decoyDatabase2"].Add(decoy_relation);
+            decoy_relations["decoyDatabase2"].Add(decoy_relation);
+
+            deltaMassPeak.calculate_fdr(decoy_relations);
+            Assert.AreEqual(0.375, deltaMassPeak.peak_group_fdr); // 2 decoy databases (1 & 2 decoy relations, median=1.5), 4 target relations
         }
 
         [Test]
         public void TestAcceptDeltaMassPeaks()
         {
-            ProteoformCommunity testMethod = new ProteoformCommunity();
+            ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
 
             //Testing the acceptance of peaks. The FDR is tested above, so I'm not going to work with that here.
@@ -104,12 +111,18 @@ namespace Test
             Assert.AreEqual(3, pr3.nearby_relations_count);
             Assert.AreEqual(3, pr4.nearby_relations_count);
 
-            testMethod.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
-            Assert.AreEqual(1, testMethod.delta_mass_peaks.Count);
-            Assert.AreEqual(3, testMethod.delta_mass_peaks[0].grouped_relations.Count);
+            test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
+            Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
+            DeltaMassPeak peak = test_community.delta_mass_peaks[0];
+            Assert.AreEqual(3, peak.grouped_relations.Count);
+            Assert.AreEqual("unmodified", peak.possiblePeakAssignments_string);
+            peak.possiblePeakAssignments.Add(new Modification());
+            Assert.AreEqual("unmodified; unmodified", peak.possiblePeakAssignments_string);
 
             //Test that the relations in the peak are added to each of the proteoforms referenced in the peak
-
+            Assert.True(pf3.relationships.Contains(pr2));
+            Assert.True(pf4.relationships.Contains(pr2) && pf4.relationships.Contains(pr3));
+            Assert.True(pf5.relationships.Contains(pr3) && pf5.relationships.Contains(pr4));
         }
     }
 }

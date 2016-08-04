@@ -27,7 +27,8 @@ namespace Test
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs);
             DeltaMassPeak peak = new DeltaMassPeak(prs[0], prs);
             test_community.delta_mass_peaks = new List<DeltaMassPeak> { peak };
-            test_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1 };
+            test_community.add(pf1);
+            test_community.add(pf2);
             test_community.construct_families();
             Assert.AreEqual("T1", test_community.families.First().accession_list);
             Assert.AreEqual(1, test_community.families.Count);

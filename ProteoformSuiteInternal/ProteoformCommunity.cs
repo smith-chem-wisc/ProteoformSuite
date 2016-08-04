@@ -68,14 +68,21 @@ namespace ProteoformSuiteInternal
             List<ProteoformRelation> relations = new List<ProteoformRelation>(
                 from pf1 in pfs1
                 from pf2 in pfs2
-                where pf1.modified_mass > pf2.modified_mass
-                where (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
-                where pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference
-                //where ProteoformRelation.mass_difference_is_outside_no_mans_land(pf1.modified_mass - pf2.modified_mass)
+                where allowed_ee_relation(pf1, pf2)
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
             count_nearby_relations(relations);  //putative counts include no-mans land
             return relations;
+        }
+
+        public bool allowed_ee_relation(Proteoform pf1, Proteoform pf2)
+        {
+            return pf1.modified_mass >= pf2.modified_mass
+                && pf1 != pf2
+                && (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
+                && pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference;
+                //where ProteoformRelation.mass_difference_is_outside_no_mans_land(pf1.modified_mass - pf2.modified_mass)
+                //putative counts include no-mans land, currently
         }
 
         private static void count_nearby_relations(List<ProteoformRelation> all_relations)
@@ -101,14 +108,12 @@ namespace ProteoformSuiteInternal
             Proteoform[] pfs2 = this.experimental_proteoforms.ToArray();
             foreach (ExperimentalProteoform pf1 in pfs1)
             {
-                int num_equal_lysines = pfs2.Where(p => p.lysine_count == pf1.lysine_count).Count();
+                int num_equal_lysines = pfs2.Where(pf2 => allowed_ee_relation(pf1, pf2)).Count(); //number that would be chosen with equal lysine counts from a randomized set
                 new Random().Shuffle(pfs2);
-                List<ProteoformRelation> ef_relation_addition = new List<ProteoformRelation>(
-                    from pf2 in pfs2
+                List<ProteoformRelation> ef_relation_addition = pfs2
                         .Where(p => p.lysine_count != pf1.lysine_count && Math.Abs(pf1.modified_mass - p.modified_mass) <= Lollipop.ee_max_mass_difference)
-                        .Take(pfs2.Where(p => p.lysine_count == pf1.lysine_count).Count()) // take only the number that would be chosen with equal lysine counts from a randomized set
-                    select new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass)
-                );
+                        .Take(num_equal_lysines)
+                        .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass)).ToList();
                 count_nearby_relations(ef_relation_addition);
                 ef_relations.AddRange(ef_relation_addition);
             }
@@ -174,14 +179,6 @@ namespace ProteoformSuiteInternal
             if (seed_expansion.Except(seed).Count() == 0) return seed;
             seed.AddRange(seed_expansion);
             return construct_family(seed);
-        }
-
-        //MISC
-        public void Clear()
-        {
-            this.experimental_proteoforms.Clear();
-            this.theoretical_proteoforms.Clear();
-            this.decoy_proteoforms.Clear();
         }
     }
 }
