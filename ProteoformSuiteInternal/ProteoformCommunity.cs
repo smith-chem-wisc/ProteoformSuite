@@ -175,13 +175,5 @@ namespace ProteoformSuiteInternal
             seed.AddRange(seed_expansion);
             return construct_family(seed);
         }
-
-        //MISC
-        public void Clear()
-        {
-            this.experimental_proteoforms.Clear();
-            this.theoretical_proteoforms.Clear();
-            this.decoy_proteoforms.Clear();
-        }
     }
 }
