@@ -15,7 +15,6 @@ namespace Test
             Environment.CurrentDirectory = TestContext.CurrentContext.TestDirectory;
         }
 
-
         [Test]
         public void TestDeltaMassPeakConstructor()
         {
@@ -78,5 +77,39 @@ namespace Test
             Assert.AreEqual(0.25, deltaMassPeak.peak_group_fdr);
         }
 
+        [Test]
+        public void TestAcceptDeltaMassPeaks()
+        {
+            ProteoformCommunity testMethod = new ProteoformCommunity();
+            Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
+
+            //Testing the acceptance of peaks. The FDR is tested above, so I'm not going to work with that here.
+            //Four proteoforms, three relations (linear), middle one isn't accepted; should give 2 families
+            Lollipop.min_peak_count = 2;
+            ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
+            ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
+            ExperimentalProteoform pf5 = new ExperimentalProteoform("E3");
+            ExperimentalProteoform pf6 = new ExperimentalProteoform("E4");
+
+            ProteoformComparison comparison34 = ProteoformComparison.ee;
+            ProteoformComparison comparison45 = ProteoformComparison.ee;
+            ProteoformComparison comparison56 = ProteoformComparison.ee;
+            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison34, 0);
+            ProteoformRelation pr3 = new ProteoformRelation(pf4, pf5, comparison45, 0);
+            ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0);
+
+            List<ProteoformRelation> prs2 = new List<ProteoformRelation> { pr2, pr3, pr4 };
+            foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2);
+            Assert.AreEqual(3, pr2.nearby_relations_count);
+            Assert.AreEqual(3, pr3.nearby_relations_count);
+            Assert.AreEqual(3, pr4.nearby_relations_count);
+
+            testMethod.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
+            Assert.AreEqual(1, testMethod.delta_mass_peaks.Count);
+            Assert.AreEqual(3, testMethod.delta_mass_peaks[0].grouped_relations.Count);
+
+            //Test that the relations in the peak are added to each of the proteoforms referenced in the peak
+
+        }
     }
 }
