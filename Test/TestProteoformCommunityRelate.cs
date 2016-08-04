@@ -152,6 +152,57 @@ namespace Test
         }
 
         [Test]
+        public void TestUnabeledProteoformCommunityRelate_EF()
+        {
+            ProteoformCommunity test_community;
+            List<ProteoformRelation> unequal_relations;
+
+            //Two equal, two unequal lysine count. Each should create two unequal relations, so eight relations total
+            //However, it shouldn't compare to itself, so that would make 4 total relations
+            test_community = new ProteoformCommunity();
+            Lollipop.neucode_labeled = true;
+            test_community.add(new ExperimentalProteoform("A1", 1000.0, 1, true));
+            test_community.add(new ExperimentalProteoform("A2", 1000.0, 2, true));
+            test_community.add(new ExperimentalProteoform("A3", 1000.0, 1, true));
+            test_community.add(new ExperimentalProteoform("A4", 1000.0, 2, true));
+            unequal_relations = test_community.relate_unequal_ee_lysine_counts();
+            Assert.AreNotEqual(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2]);
+            Assert.False(test_community.allowed_ee_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[0]));
+            Assert.AreNotEqual(test_community.experimental_proteoforms[0].lysine_count, test_community.experimental_proteoforms[1].lysine_count);
+            Assert.False(test_community.allowed_ee_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[1]));
+            Assert.True(test_community.allowed_ee_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2]));
+            Assert.False(test_community.allowed_ee_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[3]));
+            Assert.AreEqual(4, unequal_relations.Count);
+
+            //Two equal, two unequal lysine count. But one each has mass_difference > 250, so no relations
+            test_community = new ProteoformCommunity();
+            test_community.add(new ExperimentalProteoform("A1", 1000.0, 1, true));
+            test_community.add(new ExperimentalProteoform("A2", 1000.0, 2, true));
+            test_community.add(new ExperimentalProteoform("A3", 2000.0, 1, true));
+            test_community.add(new ExperimentalProteoform("A4", 2000.0, 2, true));
+            unequal_relations = test_community.relate_unequal_ee_lysine_counts();
+            Assert.AreEqual(0, unequal_relations.Count);
+
+            //None equal lysine count (apart from itself), four unequal lysine count. Each should create no unequal relations, so no relations total
+            test_community = new ProteoformCommunity();
+            test_community.add(new ExperimentalProteoform("A1", 1000.0, 1, true));
+            test_community.add(new ExperimentalProteoform("A2", 1000.0, 2, true));
+            test_community.add(new ExperimentalProteoform("A3", 1000.0, 3, true));
+            test_community.add(new ExperimentalProteoform("A4", 1000.0, 4, true));
+            unequal_relations = test_community.relate_unequal_ee_lysine_counts();
+            Assert.AreEqual(0, unequal_relations.Count);
+
+            //All equal, no unequal lysine count because there's an empty list of unequal lysine-count proteoforms. Each should create no unequal relations, so no relations total
+            test_community = new ProteoformCommunity();
+            test_community.add(new ExperimentalProteoform("A1", 1000.0, 1, true));
+            test_community.add(new ExperimentalProteoform("A2", 1000.0, 1, true));
+            test_community.add(new ExperimentalProteoform("A3", 1000.0, 1, true));
+            test_community.add(new ExperimentalProteoform("A4", 1000.0, 1, true));
+            unequal_relations = test_community.relate_unequal_ee_lysine_counts();
+            Assert.AreEqual(0, unequal_relations.Count);
+        }        
+
+        [Test]
         public void TestNeuCodeLabeledProteoformCommunityRelate_ET()
         {
             Lollipop.neucode_labeled = true;
