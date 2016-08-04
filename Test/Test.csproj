@@ -85,6 +85,7 @@
     <Compile Include="TestDeltaMassPeak.cs" />
     <Compile Include="TestProcessRawComponents.cs" />
     <Compile Include="TestProteoformCommunityRelate.cs" />
+    <Compile Include="TestProteoformFamilies.cs" />
     <Compile Include="TestTheoreticalDatabaseCreate.cs" />
   </ItemGroup>
   <ItemGroup>
