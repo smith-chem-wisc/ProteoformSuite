@@ -129,7 +129,7 @@
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(164, 13);
             this.label4.TabIndex = 8;
-            this.label4.Text = "Deconvolution Reuslt Filesnames";
+            this.label4.Text = "Deconvolution Results Filenames";
             // 
             // lb_deconResults
             // 
