@@ -30,10 +30,17 @@ namespace ProteoformSuite
 
         public void TheoreticalDatabase_Load(object sender, EventArgs e)
         {
-            btn_Make_Databases.Enabled = false;
+           btn_Make_Databases.Enabled = false;
             InitializeOpenXmlDialog();
             InitializeOpenPtmlistDialog();
             InitializeSettings();
+
+            if (Lollipop.opened_results_originally)
+            {
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+                this.initialize_table_bindinglist();
+                DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
+            }
             initial_load = false;
         }
 
@@ -42,7 +49,11 @@ namespace ProteoformSuite
             if (Lollipop.neucode_labeled)
                 btn_NeuCode_Lt.Checked = true;
             else
+            {
+                btn_NeuCode_Lt.Checked = false;
                 btn_NaturalIsotopes.Checked = true;
+            }
+            
 
             ckbx_OxidMeth.Checked = Lollipop.methionine_oxidation;
             ckbx_Carbam.Checked = Lollipop.carbamidomethylation;

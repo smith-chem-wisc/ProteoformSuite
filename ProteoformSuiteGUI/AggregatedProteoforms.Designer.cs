@@ -42,6 +42,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.dgv_AcceptNeuCdLtProteoforms = new System.Windows.Forms.DataGridView();
+            this.button_update = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AggregatedProteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -103,6 +104,7 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.button_update);
             this.splitContainer2.Panel1.Controls.Add(this.label5);
             this.splitContainer2.Panel1.Controls.Add(this.tb_totalAggregatedProteoforms);
             this.splitContainer2.Panel1.Controls.Add(this.nUD_Missed_Ks);
@@ -135,7 +137,7 @@
             // tb_totalAggregatedProteoforms
             // 
             this.tb_totalAggregatedProteoforms.Location = new System.Drawing.Point(170, 138);
-            this.tb_totalAggregatedProteoforms.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tb_totalAggregatedProteoforms.Margin = new System.Windows.Forms.Padding(2);
             this.tb_totalAggregatedProteoforms.Name = "tb_totalAggregatedProteoforms";
             this.tb_totalAggregatedProteoforms.Size = new System.Drawing.Size(81, 20);
             this.tb_totalAggregatedProteoforms.TabIndex = 8;
@@ -235,6 +237,17 @@
             this.dgv_AcceptNeuCdLtProteoforms.TabIndex = 0;
             this.dgv_AcceptNeuCdLtProteoforms.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_AcceptNeuCdLtProteoforms_CellContentClick);
             // 
+            // button_update
+            // 
+            this.button_update.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.button_update.Location = new System.Drawing.Point(0, 167);
+            this.button_update.Name = "button_update";
+            this.button_update.Size = new System.Drawing.Size(272, 23);
+            this.button_update.TabIndex = 2;
+            this.button_update.Text = "Update";
+            this.button_update.UseVisualStyleBackColor = true;
+            this.button_update.Click += new System.EventHandler(this.button_update_Click);
+            // 
             // AggregatedProteoforms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -281,5 +294,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tb_totalAggregatedProteoforms;
+        private System.Windows.Forms.Button button_update;
     }
 }

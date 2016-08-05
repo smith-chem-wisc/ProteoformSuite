@@ -42,10 +42,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lbDeconResults.FormattingEnabled = true;
             this.lbDeconResults.Location = new System.Drawing.Point(0, 0);
-            this.lbDeconResults.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.lbDeconResults.Margin = new System.Windows.Forms.Padding(2);
             this.lbDeconResults.Name = "lbDeconResults";
             this.lbDeconResults.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-            this.lbDeconResults.Size = new System.Drawing.Size(755, 381);
+            this.lbDeconResults.Size = new System.Drawing.Size(755, 394);
             this.lbDeconResults.Sorted = true;
             this.lbDeconResults.TabIndex = 0;
             this.lbDeconResults.SelectedIndexChanged += new System.EventHandler(this.lbDeconResults_SelectedIndexChanged);
@@ -54,7 +54,7 @@
             // 
             this.btnDeconResultsAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnDeconResultsAdd.Location = new System.Drawing.Point(9, 424);
-            this.btnDeconResultsAdd.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnDeconResultsAdd.Margin = new System.Windows.Forms.Padding(2);
             this.btnDeconResultsAdd.Name = "btnDeconResultsAdd";
             this.btnDeconResultsAdd.Size = new System.Drawing.Size(69, 29);
             this.btnDeconResultsAdd.TabIndex = 1;
@@ -66,7 +66,7 @@
             // 
             this.btnDeconResultsRemove.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.btnDeconResultsRemove.Location = new System.Drawing.Point(355, 424);
-            this.btnDeconResultsRemove.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnDeconResultsRemove.Margin = new System.Windows.Forms.Padding(2);
             this.btnDeconResultsRemove.Name = "btnDeconResultsRemove";
             this.btnDeconResultsRemove.Size = new System.Drawing.Size(69, 29);
             this.btnDeconResultsRemove.TabIndex = 2;
@@ -78,7 +78,7 @@
             // 
             this.btnDeconResultsClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDeconResultsClear.Location = new System.Drawing.Point(671, 424);
-            this.btnDeconResultsClear.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnDeconResultsClear.Margin = new System.Windows.Forms.Padding(2);
             this.btnDeconResultsClear.Name = "btnDeconResultsClear";
             this.btnDeconResultsClear.Size = new System.Drawing.Size(69, 29);
             this.btnDeconResultsClear.TabIndex = 3;
@@ -91,7 +91,7 @@
             this.cb_neuCodeLabeled.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cb_neuCodeLabeled.Checked = true;
             this.cb_neuCodeLabeled.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_neuCodeLabeled.Location = new System.Drawing.Point(9, 386);
+            this.cb_neuCodeLabeled.Location = new System.Drawing.Point(12, 402);
             this.cb_neuCodeLabeled.Name = "cb_neuCodeLabeled";
             this.cb_neuCodeLabeled.Size = new System.Drawing.Size(112, 17);
             this.cb_neuCodeLabeled.TabIndex = 4;
@@ -110,7 +110,7 @@
             this.Controls.Add(this.btnDeconResultsRemove);
             this.Controls.Add(this.btnDeconResultsAdd);
             this.Controls.Add(this.lbDeconResults);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "LoadDeconvolutionResults";
             this.Text = "LoadDeconvolutionResults";
             this.Load += new System.EventHandler(this.LoadDeconvolutionResults_Load);

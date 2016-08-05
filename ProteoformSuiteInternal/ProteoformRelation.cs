@@ -64,7 +64,7 @@ namespace ProteoformSuiteInternal
         public int lysine_count { get; set; }
         public bool accepted { get; set; }
 
-        
+
         public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass) : base(pf1, pf2, relation_type, delta_mass)
         {
             if (Lollipop.neucode_labeled) this.lysine_count = pf1.lysine_count;
@@ -73,7 +73,7 @@ namespace ProteoformSuiteInternal
         public ProteoformRelation(ProteoformRelation relation) : base(relation.connected_proteoforms[0], relation.connected_proteoforms[1], relation.relation_type, relation.delta_mass)
         {
             this.peak = relation.peak;
-            this.nearby_relations = relation.nearby_relations;
+            if (!Lollipop.opened_results) this.nearby_relations = relation.nearby_relations;
         }
 
         public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_relations)
@@ -148,9 +148,13 @@ namespace ProteoformSuiteInternal
         {
             get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).observation_count; } catch { return 0; } }
         }
-        public string accession
+        public string accession_2
         {
-            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).accession; } catch { return null; } }
+            get { try { return (connected_proteoforms[1]).accession; } catch { return null; } }
+        }
+        public string accession_1
+        {
+            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).accession; } catch { return null; } }
         }
         public string name
         {
@@ -165,14 +169,17 @@ namespace ProteoformSuiteInternal
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).ptm_descriptions; } catch { return null; } }
         }
 
-        public string as_tsv_row()
+        public string as_tsv_row(ProteoformComparison relation_type)
         {
-            return String.Join("\t", new List<string> { this.connected_proteoforms[0].accession.ToString(), this.connected_proteoforms[1].accession.ToString(), this.delta_mass.ToString(),  this.nearby_relations_count.ToString() });
+           if (relation_type == ProteoformComparison.ee) return String.Join("\t", new List<string> { this.connected_proteoforms[0].accession.ToString(), this.connected_proteoforms[1].accession.ToString(), this.delta_mass.ToString(),  this.nearby_relations_count.ToString() });
+           else return String.Join("\t", new List<string> { this.connected_proteoforms[0].accession.ToString(), ((TheoreticalProteoform)this.connected_proteoforms[1]).description.ToString(), this.delta_mass.ToString(), this.nearby_relations_count.ToString() });
         }
 
-        public static string get_tsv_header()
+        public static string get_tsv_header(ProteoformComparison relation_type)
         {
-            return String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_accession", "delta_mass", "nearby_relations" });
+            if (relation_type == ProteoformComparison.ee) return String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_accession", "delta_mass", "nearby_relations" });
+            else return String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_description", "delta_mass", "nearby_relations" });
+            //multiple theoreticals have same accession, not same description
         }
     }
 }

@@ -24,7 +24,8 @@ namespace ProteoformSuite
         int numEEPairs;
         int numEEPeaks;
         int numTheoreticalProteoforms;
-      //  string loadAndRunMethod;
+        int numFamilies;
+        public static string loadDescription = null; //set in GUI
         
 
         public ResultsSummary()
@@ -39,7 +40,7 @@ namespace ProteoformSuite
 
         }
 
-        private void createResultsSummary()
+        public void createResultsSummary()
         {
             deconResultsFileNames = Lollipop.deconResultsFileNames;
             numRawExpComponents = Lollipop.raw_experimental_components.Count;
@@ -51,12 +52,12 @@ namespace ProteoformSuite
             numEEPairs = Lollipop.ee_relations.Count;
             numEEPeaks = Lollipop.ee_peaks.Count;
             numTheoreticalProteoforms = Lollipop.proteoform_community.theoretical_proteoforms.Count;
-
+            numFamilies = Lollipop.proteoform_community.families.Count;
         }
 
-        private void displayResultsSummary()
+        public void displayResultsSummary()
         {
-            lb_deconResults.DataSource = deconResultsFileNames;
+            lb_deconResults.DataSource = deconResultsFileNames; 
             tb_RawExperimentalComponents.Text = numRawExpComponents.ToString();
             tb_neucodePairs.Text = numNeucodePairs.ToString();
             tb_experimentalProteoforms.Text = numExperimentalProteoforms.ToString();
@@ -66,7 +67,9 @@ namespace ProteoformSuite
             tb_EEPairs.Text = numEEPairs.ToString();
             tb_EEPeaks.Text = numEEPeaks.ToString();
             tb_theoreticalProteoforms.Text = numTheoreticalProteoforms.ToString();
-
+            tb_families.Text = numFamilies.ToString();
+            if (loadDescription == null) { tb_load_description.Visible = false; label11.Visible = false; }
+            else { tb_load_description.Text = loadDescription.ToString() ; }
         }
     }
 }

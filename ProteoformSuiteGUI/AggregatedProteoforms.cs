@@ -65,11 +65,11 @@ namespace ProteoformSuite
      
         private void dgv_AggregatedProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0) display_light_proteoforms(e.RowIndex);
+            if (e.RowIndex >= 0 && !Lollipop.opened_results_originally) display_light_proteoforms(e.RowIndex);
         }
         private void dgv_AggregatedProteoforms_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.RowIndex >= 0) display_light_proteoforms(e.RowIndex);
+            if (e.RowIndex >= 0 && !Lollipop.opened_results_originally) display_light_proteoforms(e.RowIndex);
         }
         private void display_light_proteoforms(int row_index)
         {
@@ -147,7 +147,6 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.mass_tolerance = nUP_mass_tolerance.Value;
-                RunTheGamut();
             }
         }
         private void nUD_RetTimeToleranace_ValueChanged(object sender, EventArgs e)
@@ -155,7 +154,6 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.retention_time_tolerance = nUD_RetTimeToleranace.Value;
-                RunTheGamut();
             }
         }
         private void nUD_Missed_Monos_ValueChanged(object sender, EventArgs e)
@@ -163,7 +161,6 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.missed_monos = nUD_Missed_Monos.Value;
-                RunTheGamut();
             }
         }
         private void nUD_Missed_Ks_ValueChanged(object sender, EventArgs e)
@@ -171,8 +168,12 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.missed_lysines = nUD_Missed_Ks.Value;
-                RunTheGamut();
             }
+        }
+
+        private void button_update_Click(object sender, EventArgs e)
+        {
+            RunTheGamut();
         }
     }
 }

@@ -48,9 +48,12 @@ namespace ProteoformSuiteInternal
         public double agg_mass { get; set; } = 0;
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
+        private int _observation_count;
         public int observation_count
         {
-            get { return aggregated_components.Count; }
+            set { _observation_count = value; }
+            get { if (!Lollipop.updated_agg && Lollipop.opened_results_originally) { return _observation_count; }
+                else { return aggregated_components.Count; } }
         }
 
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession)
@@ -61,14 +64,7 @@ namespace ProteoformSuiteInternal
             this.calculate_properties();
         }
 
-        //for Tests
-        public ExperimentalProteoform(string accession) : base(accession)
-        {
-            this.aggregated_components = new List<Component>() { root };
-            this.accession = accession;
-        }
-        //for Tests
-        public ExperimentalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession, modified_mass, lysine_count, is_target)
+        public ExperimentalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession)
         {
             this.aggregated_components = new List<Component>() { root };
             this.accession = accession;
@@ -79,6 +75,13 @@ namespace ProteoformSuiteInternal
                 this.is_target = false;
                 this.is_decoy = true;
             }
+        }
+
+        //for Tests
+        public ExperimentalProteoform(string accession) : base(accession)
+        {
+            this.aggregated_components = new List<Component>() { root };
+            this.accession = accession;
         }
 
         private void calculate_properties()
@@ -218,6 +221,43 @@ namespace ProteoformSuiteInternal
                 return "unmodified";
             else
                 return string.Join("; ", ptm_list.Select(ptm => ptm.modification.description));
+        }
+
+        //use this if reading in theoretical/decoy databases. 
+        public void set_ptm_list(string descriptions)
+        {
+            if (Lollipop.opened_results && !Lollipop.updated_theoretical)
+            {
+                string[] ptm_descriptions = descriptions.Split(';');
+                foreach (string description in ptm_descriptions)
+                {
+                    description.Trim();
+                    description.TrimEnd(';');
+                    Modification mod = new Modification(description);
+                    Ptm ptm = new Ptm(0, mod);
+                    this.ptm_list.Add(ptm);
+                }
+            }
+        }
+
+        public string as_tsv_row(string decoy_database)
+        {
+            if (is_target)
+            return String.Join("\t", new List<string> { this.accession.ToString(), this.modified_mass.ToString(), this.lysine_count.ToString(), this.is_target.ToString(), this.is_decoy.ToString(),
+                this.description.ToString(), this.name.ToString(), this.fragment.ToString(), this.begin.ToString(), this.end.ToString(), this.unmodified_mass.ToString(), ptm_descriptions.ToString(), this. ptm_mass.ToString() });
+            else
+                return String.Join("\t", new List<string> { this.accession.ToString(), this.modified_mass.ToString(), this.lysine_count.ToString(), this.is_target.ToString(), this.is_decoy.ToString(),
+                this.description.ToString(), this.name.ToString(), this.fragment.ToString(), this.begin.ToString(), this.end.ToString(), this.unmodified_mass.ToString(), ptm_descriptions.ToString(), this. ptm_mass.ToString(), decoy_database.ToString()});
+        }
+
+        public static string get_tsv_header(bool is_target)
+        {
+            if (is_target)
+                return String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
+                "description", "name", "fragment", "begin", "end", "unmodified_mass", "ptm_list", "ptm_mass" });
+            else
+                return  String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
+                "description", "name", "fragment", "begin", "end", "unmodified_mass", "ptm_list", "ptm_mass", "decoy_database" });
         }
     }
 }

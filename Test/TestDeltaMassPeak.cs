@@ -89,6 +89,7 @@ namespace Test
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
+            Lollipop.updated_theoretical = true;
 
             //Testing the acceptance of peaks. The FDR is tested above, so I'm not going to work with that here.
             //Four proteoforms, three relations (linear), middle one isn't accepted; should give 2 families
