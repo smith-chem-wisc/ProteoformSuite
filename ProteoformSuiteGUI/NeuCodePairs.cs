@@ -202,15 +202,7 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.min_lysine_ct = KMinAcceptable.Value;
-
-                // If KMin increased, incorrect values un-accepted
-                List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count < Lollipop.min_lysine_ct).ToList(); 
-                Parallel.ForEach(selected_pf, p => { p.accepted = false; });
-
-                // If Kmin is decreased, correct values are re-accepted.  
-                List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count > Lollipop.min_lysine_ct
-                    && p.lysine_count < Lollipop.max_lysine_ct).ToList();
-                Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
+                Parallel.ForEach(Lollipop.raw_neucode_pairs, p => p.set_accepted());
                 dgv_RawExpNeuCodePairs.Refresh();
             }
         }
@@ -219,15 +211,7 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.max_lysine_ct = KMaxAcceptable.Value;
-
-                // If KMax is decreased, incorrect values are un-accepted
-                List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count > Lollipop.max_lysine_ct).ToList();
-                Parallel.ForEach(selected_pf, p => { p.accepted = false; });
-                
-                // If Kmax  is increased, correct values are re-accepted.  
-                List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count < Lollipop.max_lysine_ct
-                   && p.lysine_count > Lollipop.min_lysine_ct).ToList();
-                Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
+                Parallel.ForEach(Lollipop.raw_neucode_pairs, p => p.set_accepted());
                 dgv_RawExpNeuCodePairs.Refresh();
             }
         }
@@ -236,15 +220,7 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.min_intensity_ratio = IRatMinAcceptable.Value;
-
-                // If IMin is increaed, incorrect values are un-accepted
-                List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio < Convert.ToDouble(Lollipop.min_intensity_ratio)).ToList();
-                Parallel.ForEach(selected_pf, p => { p.accepted = false; });
-                
-                // If IMin is decreased, correct values are re-accepted
-                List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio)
-                   && p.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio)).ToList();
-                Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
+                Parallel.ForEach(Lollipop.raw_neucode_pairs, p => p.set_accepted());
                 dgv_RawExpNeuCodePairs.Refresh();
             }
         }
@@ -253,15 +229,7 @@ namespace ProteoformSuite
             if (!initial_load)
             {
                 Lollipop.max_intensity_ratio = IRatMaxAcceptable.Value;
-
-                // If Imax is decreased, incorrect values are un-accepted
-                List<NeuCodePair> selected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio > Convert.ToDouble(Lollipop.max_intensity_ratio)).ToList();
-                Parallel.ForEach(selected_pf, p => { p.accepted = false; });
-                
-                // If Imax is increased, correct values are re-accepted
-                List<NeuCodePair> unselected_pf = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio)
-                  && p.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio)).ToList();
-                Parallel.ForEach(unselected_pf, p => { p.accepted = true; });
+                Parallel.ForEach(Lollipop.raw_neucode_pairs, p => p.set_accepted());
                 dgv_RawExpNeuCodePairs.Refresh();
             }
         }

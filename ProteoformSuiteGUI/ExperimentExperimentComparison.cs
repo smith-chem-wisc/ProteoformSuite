@@ -32,10 +32,14 @@ namespace ProteoformSuite
             InitializeParameterSet();
             if (Lollipop.ee_relations.Count == 0)
             {
+                InitializeMassWindow();
                 Lollipop.make_ee_relationships();
-                this.FillTablesAndCharts();
             }
+            this.FillTablesAndCharts();
             initial_load = false;
+
+
+
         }
 
         public void FillTablesAndCharts()
@@ -107,12 +111,17 @@ namespace ProteoformSuite
             }
         }
 
-        private void InitializeParameterSet()
+        private void InitializeMassWindow()
         {
             nUD_EE_Upper_Bound.Minimum = 0;
             nUD_EE_Upper_Bound.Maximum = 500;
-            nUD_EE_Upper_Bound.Value = (decimal)Lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pairs
+            if (Lollipop.neucode_labeled) Lollipop.ee_max_mass_difference = 150;
+            else Lollipop.ee_max_mass_difference = 250;
+            nUD_EE_Upper_Bound.Value = (decimal)Lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
+        }
 
+        private void InitializeParameterSet()
+        {
             yMaxEE.Minimum = 0;
             yMaxEE.Maximum = 1000;
             yMaxEE.Value = 100; // scaling for y-axis maximum in the histogram of all EE pairs
@@ -162,7 +171,7 @@ namespace ProteoformSuite
 
         private void xMaxEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
         {
-            ct_EE_Histogram.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(yMaxEE.Value);
+            ct_EE_Histogram.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(xMaxEE.Value);
         }
         private void yMaxEE_ValueChanged(object sender, EventArgs e) // scaling for y-axis maximum in the histogram of all EE pairs
         {

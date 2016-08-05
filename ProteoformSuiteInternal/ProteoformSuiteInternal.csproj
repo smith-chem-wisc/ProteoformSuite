@@ -63,6 +63,7 @@
     <Compile Include="ProteoformRelation.cs" />
     <Compile Include="ProteomeDatabaseReader.cs" />
     <Compile Include="RandomExtensions.cs" />
+    <Compile Include="Results.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

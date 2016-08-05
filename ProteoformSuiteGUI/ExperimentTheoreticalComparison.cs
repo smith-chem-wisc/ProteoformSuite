@@ -45,9 +45,10 @@ namespace ProteoformSuite
             InitializeParameterSet();
             if (Lollipop.et_relations.Count == 0)
             {
+                InitializeMassWindow();
                 Lollipop.make_et_relationships();
-                this.FillTablesAndCharts();
             }
+            this.FillTablesAndCharts();
             initial_load = false;
         }
 
@@ -261,12 +262,13 @@ namespace ProteoformSuite
             }
         }
 
-        private void InitializeParameterSet()
+        private void InitializeMassWindow()
         {
+            //only do this if ET hasn't already been run
             nUD_ET_Lower_Bound.Minimum = -500;
             nUD_ET_Lower_Bound.Maximum = 0;
             if (Lollipop.neucode_labeled) Lollipop.et_low_mass_difference = -250;
-            else Lollipop.et_low_mass_difference = -50;              
+            else Lollipop.et_low_mass_difference = -50;
             nUD_ET_Lower_Bound.Value = Convert.ToDecimal(Lollipop.et_low_mass_difference); // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
 
             nUD_ET_Upper_Bound.Minimum = 0;
@@ -274,6 +276,11 @@ namespace ProteoformSuite
             if (Lollipop.neucode_labeled) Lollipop.et_high_mass_difference = 250;
             else Lollipop.et_high_mass_difference = 150;
             nUD_ET_Upper_Bound.Value = Convert.ToDecimal(Lollipop.et_high_mass_difference); // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
+
+        }
+
+        private void InitializeParameterSet()
+        {
 
             yMaxET.Minimum = 0;
             yMaxET.Maximum = 1000;

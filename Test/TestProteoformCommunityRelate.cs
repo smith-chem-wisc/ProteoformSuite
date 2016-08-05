@@ -388,7 +388,7 @@ namespace Test
 
 
             Assert.IsFalse(rel.accepted);
-            Assert.AreEqual("decoyProteoform1", rel.accession);
+            Assert.AreEqual("decoyProteoform1", rel.connected_proteoforms[1].accession);
             Assert.AreEqual(0, rel.agg_intensity_1);
             Assert.AreEqual(0, rel.agg_intensity_2);
             Assert.AreEqual(0, rel.agg_RT_1);

@@ -29,6 +29,11 @@ namespace ProteoformSuiteInternal
             this.average_mass_shift = averageMassShift;
         }
 
+        public Modification(string description)
+        {
+            this.description = description;
+        }
+
         public override string ToString()
         {
             return "Description=" + this.description + " Accession=" + this.accession +
