@@ -90,7 +90,7 @@ namespace ProteoformSuiteInternal
             if (nearby_decoy_counts.Count % 2 == 0) //is even
             {
                 int middle = nearby_decoy_counts.Count / 2;
-                median_false_peak_count = (double)nearby_decoy_counts[middle] + (double)nearby_decoy_counts[middle + 1];
+                median_false_peak_count = 0.5 * ((double)nearby_decoy_counts[middle] + (double)nearby_decoy_counts[middle - 1]);
             }
             else
             {

@@ -17,17 +17,29 @@ namespace ProteoformSuite
     {
         bool initial_load = true;
 
+        public event ETPeakAcceptabilityChangedEventHandler ETPeakAcceptabilityChanged; 
+
         public ExperimentTheoreticalComparison()
         {
             InitializeComponent();
             this.dgv_ET_Peak_List.MouseClick += new MouseEventHandler(dgv_ET_Peak_List_CellClick);
             this.ct_ET_Histogram.MouseMove += new MouseEventHandler(ct_ET_Histogram_MouseMove);
             this.ct_ET_peakList.MouseMove += new MouseEventHandler(ct_ET_peakList_MouseMove);
-            dgv_ET_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(peakListSpecificPeakAcceptanceChanged); //makes the change immediate and automatic
-            dgv_ET_Peak_List.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
+            dgv_ET_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(ET_Peak_List_DirtyStateChanged); //makes the change immediate and automatic
+            //dgv_ET_Peak_List.CellValueChanged += new DataGridViewCellEventHandler(ET_Peak_List_CellVAlueChanged); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
+
+            ETPeakAcceptabilityChanged += ExperimentTheoreticalComparison_ETPeakAcceptabilityChanged;
         }
 
-        
+        protected void ExperimentTheoreticalComparison_ETPeakAcceptabilityChanged(object sender, ETPeakAcceptabilityChangedEventArgs e)
+        {
+            foreach (ProteoformRelation pRelation in Lollipop.et_relations.Where(p=>e.ETPeak.grouped_relations.Contains(p)))
+            {
+                pRelation.accepted = e.IsPeakAcceptable;
+            }
+            FillTablesAndCharts();
+        }
+
         public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
         {
             InitializeParameterSet();
@@ -51,13 +63,17 @@ namespace ProteoformSuite
 
         public void FillTablesAndCharts()
         {
+            this.dgv_ET_Peak_List.CurrentCellDirtyStateChanged -= this.ET_Peak_List_DirtyStateChanged;//remove event handler on form load and table refresh event
+            //this.dgv_ET_Peak_List.CellValueChanged -= this.ET_Peak_List_CellVAlueChanged;//remove event handler on form load and table refresh event
             FillETPeakListTable();
             FillETRelationsGridView();
             DisplayUtility.FormatRelationsGridView(dgv_ET_Pairs, true, false);
             DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List);
             GraphETRelations();
             GraphETPeaks();
-            updateFiguresOfMerit();       
+            updateFiguresOfMerit();
+            this.dgv_ET_Peak_List.CurrentCellDirtyStateChanged += this.ET_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event
+            //this.dgv_ET_Peak_List.CellValueChanged += this.ET_Peak_List_CellVAlueChanged;//re-instate event handler after form load and table refresh event       
         }
 
         private void ClearListsAndTables()
@@ -92,6 +108,10 @@ namespace ProteoformSuite
         private void GraphETRelations()
         {
             DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Lollipop.et_relations, "relations");
+
+            ct_ET_Histogram.ChartAreas[0].RecalculateAxesScale();
+
+            //ct_ET_Histogram.ChartAreas[0].AxisY.Maximum = Convert.ToDouble(Lollipop.et_relations.OrderBy(o => o.peak_center_count).ToList()[0].peak_center_count)*1.1D;
         }
         private void GraphETPeaks()
         {
@@ -211,20 +231,34 @@ namespace ProteoformSuite
         {
             DisplayUtility.tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_peakList, ct_ET_peakList_prevPosition);
         }
-     
-        private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
-        {
-            updateFiguresOfMerit(); //I'm not sure if this is necessary here.
 
-            //boolean accepted in proteoform relation must change in response to DeltaMassPeak change.
-        }
 
-        private void peakListSpecificPeakAcceptanceChanged(object sender, EventArgs e)
+        private void ET_Peak_List_DirtyStateChanged(object sender, EventArgs e)
         {
             if (dgv_ET_Peak_List.IsCurrentCellDirty)
             {
-                dgv_ET_Peak_List.EndEdit();
-                dgv_ET_Peak_List.Update();
+                dgv_ET_Peak_List.CommitEdit(DataGridViewDataErrorContexts.Commit);
+
+                int columnIndex = dgv_ET_Peak_List.CurrentCell.ColumnIndex;
+                int rowIndex = dgv_ET_Peak_List.CurrentCell.RowIndex;
+
+                string columnName = dgv_ET_Peak_List.Columns[columnIndex].Name;
+
+                if (columnName == "peak_accepted")
+                {
+                    bool acceptibilityStatus = Convert.ToBoolean(dgv_ET_Peak_List.Rows[rowIndex].Cells[columnIndex].Value);
+                    DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[rowIndex].DataBoundItem;
+                    ETPeakAcceptabilityChangedEventArgs ETAcceptabilityChangedEventData = new ETPeakAcceptabilityChangedEventArgs(acceptibilityStatus, selected_peak);
+                    ONETAcceptibilityChanged(ETAcceptabilityChangedEventData);
+                }
+            }
+        }
+
+        protected virtual void ONETAcceptibilityChanged(ETPeakAcceptabilityChangedEventArgs e)
+        {
+            if (ETPeakAcceptabilityChanged != null)
+            {
+                ETPeakAcceptabilityChanged(this, e);
             }
         }
 
@@ -343,4 +377,35 @@ namespace ProteoformSuite
             xMinET.Value = (decimal)Lollipop.et_low_mass_difference;
         }
     }
+
+    public class ETPeakAcceptabilityChangedEventArgs : EventArgs
+    {
+        private bool _isPeakAcceptable;
+        private DeltaMassPeak _ETPeak;
+
+        public bool IsPeakAcceptable
+        {
+            get
+            {
+                return this._isPeakAcceptable;
+            }
+        }
+
+        public DeltaMassPeak ETPeak
+        {
+            get
+            {
+                return this._ETPeak;
+            }
+        }
+
+        public ETPeakAcceptabilityChangedEventArgs(bool IsPeakAcceptable, DeltaMassPeak ETPeak)
+        {
+            this._isPeakAcceptable = IsPeakAcceptable; //True if peak is acceptable
+            this._ETPeak = ETPeak;
+        }
+    }
+
+    public delegate void ETPeakAcceptabilityChangedEventHandler(object sender, ETPeakAcceptabilityChangedEventArgs e);
+
 }
