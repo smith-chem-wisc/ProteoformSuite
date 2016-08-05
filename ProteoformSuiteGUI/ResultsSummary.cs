@@ -40,7 +40,7 @@ namespace ProteoformSuite
 
         }
 
-        private void createResultsSummary()
+        public void createResultsSummary()
         {
             deconResultsFileNames = Lollipop.deconResultsFileNames;
             numRawExpComponents = Lollipop.raw_experimental_components.Count;
@@ -55,9 +55,9 @@ namespace ProteoformSuite
             numFamilies = Lollipop.proteoform_community.families.Count;
         }
 
-        private void displayResultsSummary()
+        public void displayResultsSummary()
         {
-            lb_deconResults.DataSource = deconResultsFileNames;
+            lb_deconResults.DataSource = deconResultsFileNames; 
             tb_RawExperimentalComponents.Text = numRawExpComponents.ToString();
             tb_neucodePairs.Text = numNeucodePairs.ToString();
             tb_experimentalProteoforms.Text = numExperimentalProteoforms.ToString();

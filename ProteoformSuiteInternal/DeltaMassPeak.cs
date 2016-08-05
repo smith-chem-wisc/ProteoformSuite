@@ -29,7 +29,7 @@ namespace ProteoformSuiteInternal
         public List<Modification> possiblePeakAssignments { get; set; }
         public string possiblePeakAssignments_string
         {
-            get { return String.Join(", ", possiblePeakAssignments.Select(m => m.description).ToArray()); }
+            get { return String.Join("; ", possiblePeakAssignments.Select(m => m.description).ToArray()); }
         }
         public ProteoformRelation base_relation { get; set; }
 

@@ -24,6 +24,7 @@ namespace ProteoformSuite
         ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
         ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
         ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
+        ResultsSummary resultsSummary = new ResultsSummary();
         List<Form> forms;
         //  Initialize Forms END
 
@@ -71,7 +72,8 @@ namespace ProteoformSuite
 
         private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            ResultsSummary resultsSummary = new ResultsSummary(); //want to update/rerun every time page is opened
+            resultsSummary.createResultsSummary();
+            resultsSummary.displayResultsSummary();
             showForm(resultsSummary);
         }
 
@@ -99,6 +101,7 @@ namespace ProteoformSuite
 
         private void saveMethod()
         {
+            MessageBox.Show("Choose a folder to save the method.");
             DialogResult dr = this.methodFileSave.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
@@ -108,7 +111,7 @@ namespace ProteoformSuite
             }
         }
 
-        private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
+        private string[] openMethod()
         {
             DialogResult dr = this.methodFileOpen.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
@@ -118,32 +121,46 @@ namespace ProteoformSuite
 
 
                 string[] lines = File.ReadAllLines(method_filename);
-                if (Lollipop.deconResultsFileNames.Count != 0)
-                {
-                    var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?", "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
-                    if (response == DialogResult.Yes) { Lollipop.use_method_files = false; }
-                    if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); Lollipop.use_method_files = true; }
-                    if (response == DialogResult.Cancel) { return; }
-                }
+                return lines;
+            }
+            else return null;
+        }
 
-                foreach (string line in lines)
-                {
-                    string setting_spec = line.Trim();
-                    Lollipop.load_setting(setting_spec);
-                }
+        private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Choose a method file.");
+            string[] lines = openMethod();
+            if (lines == null) { return; }
 
-                // For connectivity testing --
-                string working_directory;
+            if (Lollipop.deconResultsFileNames.Count != 0)
+            {
+                var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?", "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
+                if (response == DialogResult.Yes) { Lollipop.use_method_files = false; }
+                if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); Lollipop.use_method_files = true; }
+                if (response == DialogResult.Cancel) { return; }
+            }
+
+            foreach (string line in lines)
+            {
+                string setting_spec = line.Trim();
+                Lollipop.load_setting(setting_spec);
+            }
+        
+        // For connectivity testing --
+        string working_directory;
                 MessageBox.Show("Choose a results folder.");
                 DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
                 if (results_folder == DialogResult.OK)
                     working_directory = this.resultsFolderOpen.SelectedPath;
+                else if (results_folder == DialogResult.Cancel) { return;  }
                 else
                     working_directory = Path.GetDirectoryName(Lollipop.deconResultsFileNames[0]);
 
                 MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
 
-                Parallel.Invoke( 
+                clear_lists();
+
+                    Parallel.Invoke( 
                     () => Lollipop.get_experimental_proteoforms((b)=>new ExcelReader().read_components_from_xlsx(b)),
                     () => Lollipop.get_theoretical_proteoforms()
                 );
@@ -156,7 +173,25 @@ namespace ProteoformSuite
                 prepare_figures_and_tables();
                 this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
                 MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
-            }
+            
+        }
+
+        private void clear_lists()
+        {
+            Lollipop.raw_experimental_components.Clear();
+            Lollipop.raw_neucode_pairs.Clear();
+            Lollipop.proteoform_community.experimental_proteoforms.Clear();
+            Lollipop.proteoform_community.theoretical_proteoforms.Clear();
+            Lollipop.et_relations.Clear();
+            Lollipop.et_peaks.Clear();
+            Lollipop.ee_relations.Clear();
+            Lollipop.ee_peaks.Clear();
+            Lollipop.proteoform_community.families.Clear();
+            Lollipop.ed_relations.Clear();
+            Lollipop.proteoform_community.relations_in_peaks.Clear();
+            Lollipop.proteoform_community.delta_mass_peaks.Clear();
+            Lollipop.ef_relations.Clear();
+            Lollipop.proteoform_community.decoy_proteoforms.Clear();
         }
 
         private void save_tsv_files (string working_directory, bool save_all)
@@ -208,25 +243,31 @@ namespace ProteoformSuite
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string working_directory;
-            MessageBox.Show("Please select a folder with saved results files.");
+            MessageBox.Show("Please choose a folder with saved results files.");
             DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
             if (results_folder == DialogResult.OK)
                 working_directory = this.resultsFolderOpen.SelectedPath;
             else if (results_folder == DialogResult.Cancel) { return; }
             else
                 working_directory = Path.GetDirectoryName(Lollipop.deconResultsFileNames[0]);
+            MessageBox.Show("Choose the method file corresponding to the results files.");
+            string[] lines = openMethod();
+            if (lines == null) { return; }
+            foreach (string line in lines)
+            {
+                string setting_spec = line.Trim();
+                Lollipop.load_setting(setting_spec);
+            }
 
-            DialogResult response = MessageBox.Show("Are these results neucode labeled?", "Neucode Labeled", MessageBoxButtons.YesNo);
-            if (response == DialogResult.Yes) { Lollipop.neucode_labeled = true; }
-            if (response == DialogResult.No) { Lollipop.neucode_labeled = false; }
-            this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
+            MessageBox.Show("Successfully loaded method. Will load in results now.\n\nMay show as non-responsive.");
 
             Lollipop.opened_results = true;
             Lollipop.opened_results_originally = true;
             ResultsSummary.loadDescription = working_directory;
-            //cannot parallelize bc results dependent on one another for certain objects
-            Results.read_raw_components(working_directory);
 
+            //cannot parallelize bc results dependent on one another for certain objects
+            //clear_lists();
+            Results.read_raw_components(working_directory);
             if (Lollipop.neucode_labeled) Results.read_raw_neucode_pairs(working_directory);
             Results.read_aggregated_proteoforms(working_directory);
             Results.read_theoretical_proteoforms(working_directory);
@@ -259,6 +300,7 @@ namespace ProteoformSuite
 
         private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            saveMethod();
             string working_directory;
             MessageBox.Show("Choose a results folder.");
             DialogResult results_folder = this.resultsFolderOpen.ShowDialog();

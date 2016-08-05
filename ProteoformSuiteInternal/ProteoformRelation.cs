@@ -148,9 +148,13 @@ namespace ProteoformSuiteInternal
         {
             get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).observation_count; } catch { return 0; } }
         }
-        public string accession
+        public string accession_2
         {
-            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).accession; } catch { return null; } }
+            get { try { return (connected_proteoforms[1]).accession; } catch { return null; } }
+        }
+        public string accession_1
+        {
+            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).accession; } catch { return null; } }
         }
         public string name
         {

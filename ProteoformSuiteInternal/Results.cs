@@ -94,7 +94,7 @@ namespace ProteoformSuiteInternal
             {
                 string[] line = lines[x].Split('\t');
                 List<Ptm> ptm_list = new List<Ptm>();
-                TheoreticalProteoform theoretical_proteoform = new TheoreticalProteoform(line[0], line[5], line[6], line[7], Convert.ToInt16(line[8]), Convert.ToInt16(line[9]), Convert.ToDouble(line[10]), Convert.ToInt16(line[2]), ptm_list, Convert.ToDouble(line[12]), Convert.ToDouble(line[1]), true);
+                TheoreticalProteoform theoretical_proteoform = new TheoreticalProteoform(line[0], line[5], line[6], line[7], Convert.ToInt32(line[8]), Convert.ToInt32(line[9]), Convert.ToDouble(line[10]), Convert.ToInt32(line[2]), ptm_list, Convert.ToDouble(line[12]), Convert.ToDouble(line[1]), true);
                 theoretical_proteoform.set_ptm_list(line[11]);
                 lock (lockThread) Lollipop.proteoform_community.theoretical_proteoforms.Add(theoretical_proteoform);
             });
@@ -107,7 +107,7 @@ namespace ProteoformSuiteInternal
             {
                 string[] line = lines[x].Split('\t');
                 List<Ptm> ptm_list = new List<Ptm>();
-                TheoreticalProteoform decoy_proteoform = new TheoreticalProteoform(line[0], line[5], line[6], line[7], Convert.ToInt16(line[8]), Convert.ToInt16(line[9]), Convert.ToDouble(line[10]), Convert.ToInt16(line[2]), ptm_list, Convert.ToDouble(line[12]), Convert.ToDouble(line[1]), false);
+                TheoreticalProteoform decoy_proteoform = new TheoreticalProteoform(line[0], line[5], line[6], line[7], Convert.ToInt32(line[8]), Convert.ToInt32(line[9]), Convert.ToDouble(line[10]), Convert.ToInt32(line[2]), ptm_list, Convert.ToDouble(line[12]), Convert.ToDouble(line[1]), false);
                 decoy_proteoform.set_ptm_list(line[11]);
                 lock (lockThread)
                 {

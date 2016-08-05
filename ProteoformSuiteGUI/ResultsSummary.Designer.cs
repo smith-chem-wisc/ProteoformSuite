@@ -110,7 +110,7 @@
             this.tb_uniprotXmlDatabase.Location = new System.Drawing.Point(183, 267);
             this.tb_uniprotXmlDatabase.Name = "tb_uniprotXmlDatabase";
             this.tb_uniprotXmlDatabase.ReadOnly = true;
-            this.tb_uniprotXmlDatabase.Size = new System.Drawing.Size(444, 20);
+            this.tb_uniprotXmlDatabase.Size = new System.Drawing.Size(555, 20);
             this.tb_uniprotXmlDatabase.TabIndex = 7;
             // 
             // label3

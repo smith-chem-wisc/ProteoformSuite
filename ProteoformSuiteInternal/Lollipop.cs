@@ -20,7 +20,6 @@ namespace ProteoformSuiteInternal
         public static bool updated_agg = false;
         public static bool opened_results_originally = false; //stays true if results ever opened
 
-
         public static void get_experimental_proteoforms(Func<string, IEnumerable<Component>> componentReader)
         {
             Lollipop.process_raw_components(componentReader);
@@ -45,7 +44,7 @@ namespace ProteoformSuiteInternal
                     foreach (string scan_range in scan_ranges)
                     find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
                 }
-            }    
+            }
         }
 
 
@@ -86,6 +85,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
+
         }
 
         //AGGREGATED PROTEOFORMS
@@ -121,7 +121,7 @@ namespace ProteoformSuiteInternal
                 count += 1;
             }
             Lollipop.proteoform_community.experimental_proteoforms = Lollipop.proteoform_community.experimental_proteoforms.Where(p => p != null).ToList();
-        }
+        } 
 
         //THEORETICAL DATABASE
         public static bool methionine_oxidation = false;

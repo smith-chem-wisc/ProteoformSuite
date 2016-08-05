@@ -106,6 +106,13 @@ namespace ProteoformSuite
         {
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(cb_neuCodeLabeled.Checked);
             Lollipop.neucode_labeled = cb_neuCodeLabeled.Checked;
+            Lollipop.neucode_light_lysine = cb_neuCodeLabeled.Checked;
+            Lollipop.natural_lysine_isotope_abundance = !cb_neuCodeLabeled.Checked;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

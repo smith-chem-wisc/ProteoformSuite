@@ -49,7 +49,11 @@ namespace ProteoformSuite
             if (Lollipop.neucode_labeled)
                 btn_NeuCode_Lt.Checked = true;
             else
+            {
+                btn_NeuCode_Lt.Checked = false;
                 btn_NaturalIsotopes.Checked = true;
+            }
+            
 
             ckbx_OxidMeth.Checked = Lollipop.methionine_oxidation;
             ckbx_Carbam.Checked = Lollipop.carbamidomethylation;
