@@ -97,38 +97,6 @@ namespace ProteoformSuiteInternal
         {
             this.charge_states.Add(new ChargeState(charge_row));
         }
-
-        public string as_tsv_row()
-        {
-            if (Lollipop.neucode_labeled)
-            {
-                return String.Join("\t", new List<string> { this.id.ToString(), this.monoisotopic_mass.ToString(), this.weighted_monoisotopic_mass.ToString(), this. corrected_mass.ToString(), this.intensity_sum.ToString(), this.num_charge_states.ToString(),
-                this.delta_mass.ToString(), this.relative_abundance.ToString(), this.fract_abundance.ToString(), this.scan_range.ToString(), this.rt_range.ToString(),
-                this.rt_apex.ToString(), this.intensity_sum_olcs.ToString(), this.file_origin.ToString() });
-            }
-            else
-            {
-                return String.Join("\t", new List<string> { this.id.ToString(), this.monoisotopic_mass.ToString(), this.weighted_monoisotopic_mass.ToString(), this.corrected_mass.ToString(), this.intensity_sum.ToString(), this.num_charge_states.ToString(),
-                this.delta_mass.ToString(), this.relative_abundance.ToString(), this.fract_abundance.ToString(), this.scan_range.ToString(), this.rt_range.ToString(),
-                this.rt_apex.ToString(), this.file_origin.ToString() });
-            }
-        }
-
-        public static string get_tsv_header()
-        {
-            if (Lollipop.neucode_labeled)
-            {
-                return String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "corrected_mass", "intensity_sum", "num_charge_states",
-                "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range",
-                "rt_apex", "intensity_sum_olcs", "file_origin" });
-            }
-            else
-            {
-                return String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "corrected_mass", "intensity_sum", "num_charge_states",
-                "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range",
-                "rt_apex", "file_origin" });
-            }
-        }
     }
 
     public class ChargeState

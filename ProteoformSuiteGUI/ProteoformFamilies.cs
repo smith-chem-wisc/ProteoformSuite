@@ -24,7 +24,7 @@ namespace ProteoformSuite
             fill_proteoform_families();
         }
 
-        private void fill_proteoform_families()
+        public void fill_proteoform_families()
         {
             DisplayUtility.FillDataGridView(dgv_proteoform_families, Lollipop.proteoform_community.families);
             format_families_dgv();
