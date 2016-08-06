@@ -106,30 +106,5 @@ namespace ProteoformSuiteInternal
             double upper_limit_of_peak_width = this.peak_deltaM_average + Lollipop.peak_width_base / 2;
             return all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
         }
-
-        public string as_tsv_row()
-        {
-            //gives list of proteoform accessions in the peak
-            List<string> accessions_1 = new List<string>();
-            List<string> accessions_2 = new List<string>();
-            foreach (ProteoformRelation p in this.grouped_relations)
-            {
-                accessions_1.Add(p.connected_proteoforms[0].accession);
-                accessions_2.Add(p.connected_proteoforms[1].accession);
-            }
-            string accessions_1_string = string.Join<string>(", ", accessions_1);
-            string accessions_2_string = string.Join<string>(", ", accessions_2);
-            return String.Join("\t", new List<string> {accessions_1_string.ToString(), accessions_2_string.ToString(), this.peak_deltaM_average.ToString(),
-                this.peak_relation_group_count.ToString(), this.decoy_relation_count.ToString(), peak_group_fdr.ToString(), possiblePeakAssignments_string.ToString() });
-        }
-
-        public static string get_tsv_header(bool et)
-        {
-            if (et)
-                return String.Join("\t", new List<string> { "experimental_accessions", "theoretical_accessions", "peak_deltaM_average", "peak_relation_group_count", "decoy_relation_count", "peak_group_fdr", "peak_assignment" });
-            else
-                return String.Join("\t", new List<string> { "experimental_1_accessions", "experimental_2_accessions", "peak_deltaM_average", "peak_relation_group_count", "decoy_relation_count", "peak_group_fdr", "peak_assignment" });
-
-        }
     }
 }

@@ -168,18 +168,5 @@ namespace ProteoformSuiteInternal
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).ptm_descriptions; } catch { return null; } }
         }
-
-        public string as_tsv_row(ProteoformComparison relation_type)
-        {
-           if (relation_type == ProteoformComparison.ee) return String.Join("\t", new List<string> { this.connected_proteoforms[0].accession.ToString(), this.connected_proteoforms[1].accession.ToString(), this.delta_mass.ToString(),  this.nearby_relations_count.ToString() });
-           else return String.Join("\t", new List<string> { this.connected_proteoforms[0].accession.ToString(), ((TheoreticalProteoform)this.connected_proteoforms[1]).description.ToString(), this.delta_mass.ToString(), this.nearby_relations_count.ToString() });
-        }
-
-        public static string get_tsv_header(ProteoformComparison relation_type)
-        {
-            if (relation_type == ProteoformComparison.ee) return String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_accession", "delta_mass", "nearby_relations" });
-            else return String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_description", "delta_mass", "nearby_relations" });
-            //multiple theoreticals have same accession, not same description
-        }
     }
 }

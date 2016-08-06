@@ -141,18 +141,6 @@ namespace ProteoformSuiteInternal
             }
             return false;
         }
-
-        public string as_tsv_row()
-        {
-            return String.Join("\t", new List<string> { this.accession.ToString(), this.modified_mass.ToString(), this.lysine_count.ToString(), this.is_target.ToString(), this.is_decoy.ToString(),
-                this.agg_mass.ToString(), this.agg_intensity.ToString(), this.agg_rt.ToString(), this.observation_count.ToString() });
-        }
-
-        public static string get_tsv_header()
-        {
-            return String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
-                "agg_mass", "agg_intensity", "agg_rt", "observation_count" });
-        }
     }
 
     public class TheoreticalProteoform : Proteoform
@@ -238,26 +226,6 @@ namespace ProteoformSuiteInternal
                     this.ptm_list.Add(ptm);
                 }
             }
-        }
-
-        public string as_tsv_row(string decoy_database)
-        {
-            if (is_target)
-            return String.Join("\t", new List<string> { this.accession.ToString(), this.modified_mass.ToString(), this.lysine_count.ToString(), this.is_target.ToString(), this.is_decoy.ToString(),
-                this.description.ToString(), this.name.ToString(), this.fragment.ToString(), this.begin.ToString(), this.end.ToString(), this.unmodified_mass.ToString(), ptm_descriptions.ToString(), this. ptm_mass.ToString() });
-            else
-                return String.Join("\t", new List<string> { this.accession.ToString(), this.modified_mass.ToString(), this.lysine_count.ToString(), this.is_target.ToString(), this.is_decoy.ToString(),
-                this.description.ToString(), this.name.ToString(), this.fragment.ToString(), this.begin.ToString(), this.end.ToString(), this.unmodified_mass.ToString(), ptm_descriptions.ToString(), this. ptm_mass.ToString(), decoy_database.ToString()});
-        }
-
-        public static string get_tsv_header(bool is_target)
-        {
-            if (is_target)
-                return String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
-                "description", "name", "fragment", "begin", "end", "unmodified_mass", "ptm_list", "ptm_mass" });
-            else
-                return  String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
-                "description", "name", "fragment", "begin", "end", "unmodified_mass", "ptm_list", "ptm_mass", "decoy_database" });
         }
     }
 }

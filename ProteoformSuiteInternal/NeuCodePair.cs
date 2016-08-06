@@ -52,17 +52,5 @@ namespace ProteoformSuiteInternal
             this.neuCodeHeavy = neucodeHeavy;
             this.neuCodeLight = neucodeLight;
         }
-        new public string as_tsv_row()
-        {
-            return String.Join("\t", new List<string> { this.id.ToString(), this.intensity_sum_olcs.ToString(), this.weighted_monoisotopic_mass.ToString(), this.corrected_mass.ToString(), this.rt_apex.ToString(),
-                this.neuCodeHeavy.id.ToString(), this.neuCodeHeavy.intensity_sum_olcs.ToString(), this.neuCodeHeavy.weighted_monoisotopic_mass.ToString(), this.intensity_ratio.ToString(), this.lysine_count.ToString(),
-                this.file_origin.ToString() });
-        }
-
-        new public static string get_tsv_header()
-        {
-            return String.Join("\t", new List<string> { "light_id", "light_intensity (overlapping charge states)", "light_weighted_monoisotopic_mass", "light_corrected_mass", "light_apexRt",
-                "heavy_id", "heavy_intensity (overlapping charge states)", "heavy_weighted_monoisotopic_mass", "intensity_ratio", "lysine_count", "file_origin" });
-        }
     }
 }
