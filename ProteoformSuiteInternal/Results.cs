@@ -12,11 +12,11 @@ namespace ProteoformSuiteInternal
     //to read in or save results for each module
     public class Results
     {
-        //RESULTS INPUT
         static Object lockThread = new object(); //used so that parallel for loops can be used to add to list without addint @ same time
-        public static void read_raw_components(string working_directory)
+
+        // RAW COMPONENT I/O
+        public static void read_raw_components(string[] lines)
         {
-            string[] lines = File.ReadAllLines(working_directory + "\\raw_experimental_components.tsv");
             Parallel.For(1, lines.Length, x =>
             {
                 string[] line = lines[x].Split('\t');
@@ -42,12 +42,38 @@ namespace ProteoformSuiteInternal
                 component.accepted = true;
                 lock (lockThread) { Lollipop.raw_experimental_components.Add(component); }
             });
-
         }
 
-        public static void read_raw_neucode_pairs(string working_directory)
+        public static string raw_component_results()
         {
-            string[] lines = File.ReadAllLines(working_directory + "\\raw_neucode_pairs.tsv");
+            string tsv_header;
+            if (Lollipop.neucode_labeled)
+                tsv_header = String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "corrected_mass", "intensity_sum", "num_charge_states",
+                        "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range", "rt_apex", "intensity_sum_olcs", "file_origin" });
+            else
+                tsv_header = String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "corrected_mass", "intensity_sum", "num_charge_states",
+                        "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range", "rt_apex", "file_origin" });
+            string results_rows = String.Join(Environment.NewLine, Lollipop.raw_experimental_components.Select(c => component_as_tsv_row(c)));
+            return tsv_header + Environment.NewLine + results_rows;
+        }
+
+        public static string component_as_tsv_row(Component c)
+        {
+            if (Lollipop.neucode_labeled)
+                return String.Join("\t", new List<string> { c.id.ToString(), c.monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(), c. corrected_mass.ToString(),
+                    c.intensity_sum.ToString(), c.num_charge_states.ToString(),
+                    c.delta_mass.ToString(), c.relative_abundance.ToString(), c.fract_abundance.ToString(), c.scan_range.ToString(), c.rt_range.ToString(),
+                    c.rt_apex.ToString(), c.intensity_sum_olcs.ToString(), c.file_origin.ToString() });
+            else
+                return String.Join("\t", new List<string> { c.id.ToString(), c.monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(), c.corrected_mass.ToString(),
+                    c.intensity_sum.ToString(), c.num_charge_states.ToString(),
+                    c.delta_mass.ToString(), c.relative_abundance.ToString(), c.fract_abundance.ToString(), c.scan_range.ToString(), c.rt_range.ToString(),
+                    c.rt_apex.ToString(), c.file_origin.ToString() });
+        }
+
+        // RAW NEUCODE PAIR I/O
+        public static void read_raw_neucode_pairs(string[] lines)
+        {
             Parallel.For(1, lines.Length, x =>
             {
                 string[] line = lines[x].Split('\t');
@@ -71,9 +97,24 @@ namespace ProteoformSuiteInternal
             });
         }
 
-        public static void read_aggregated_proteoforms(string working_directory)
+        public static string raw_neucode_pair_results()
         {
-            string[] lines = File.ReadAllLines(working_directory + "\\aggregated_experimental_proteoforms.tsv");
+            string tsv_header = String.Join("\t", new List<string> { "light_id", "light_intensity (overlapping charge states)", "light_weighted_monoisotopic_mass", "light_corrected_mass", "light_apexRt",
+                "heavy_id", "heavy_intensity (overlapping charge states)", "heavy_weighted_monoisotopic_mass", "intensity_ratio", "lysine_count", "file_origin" });
+            string results_rows = String.Join(Environment.NewLine, Lollipop.raw_neucode_pairs.Select(n => neucode_pair_as_tsv_row(n)));
+            return tsv_header + Environment.NewLine + results_rows;
+        }
+
+        public static string neucode_pair_as_tsv_row(NeuCodePair n)
+        {
+            return String.Join("\t", new List<string> { n.id.ToString(), n.intensity_sum_olcs.ToString(), n.weighted_monoisotopic_mass.ToString(), n.corrected_mass.ToString(), n.rt_apex.ToString(),
+                    n.neuCodeHeavy.id.ToString(), n.neuCodeHeavy.intensity_sum_olcs.ToString(), n.neuCodeHeavy.weighted_monoisotopic_mass.ToString(), n.intensity_ratio.ToString(), n.lysine_count.ToString(),
+                    n.file_origin.ToString() });
+        }
+
+        // AGGREGATED PROTEOFORM I/O
+        public static void read_aggregated_proteoforms(string[] lines)
+        {
             Parallel.For(1, lines.Length, x =>
             {
                 string[] line = lines[x].Split('\t');
@@ -87,9 +128,23 @@ namespace ProteoformSuiteInternal
             });
         }
 
-        public static void read_theoretical_proteoforms(string working_directory)
+        public static string aggregated_experimental_proteoform_results()
         {
-            string[] lines = File.ReadAllLines(working_directory + "\\theoretical_proteoforms.tsv");
+            string tsv_header = String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
+                "agg_mass", "agg_intensity", "agg_rt", "observation_count" });
+            string results_rows = String.Join(Environment.NewLine, Lollipop.proteoform_community.experimental_proteoforms.Select(e => aggregated_experimental_proteoform_as_tsv_row(e)));
+            return tsv_header + Environment.NewLine + results_rows;
+        }
+
+        public static string aggregated_experimental_proteoform_as_tsv_row(ExperimentalProteoform e)
+        {
+            return String.Join("\t", new List<string> { e.accession.ToString(), e.modified_mass.ToString(), e.lysine_count.ToString(), e.is_target.ToString(), e.is_decoy.ToString(),
+                    e.agg_mass.ToString(), e.agg_intensity.ToString(), e.agg_rt.ToString(), e.observation_count.ToString() });
+        }
+
+        // THEORETICAL PROTEOFORM I/O
+        public static void read_theoretical_proteoforms(string[] lines)
+        {
             Parallel.For(1, lines.Length, x =>
             {
                 string[] line = lines[x].Split('\t');
@@ -100,9 +155,8 @@ namespace ProteoformSuiteInternal
             });
         }
 
-        public static void read_decoy_proteoforms(string working_directory)
+        public static void read_decoy_proteoforms(string[] lines)
         {
-            string[] lines = File.ReadAllLines(working_directory + "\\decoy_proteoforms.tsv");
             Parallel.For(1, lines.Length, x =>
             {
                 string[] line = lines[x].Split('\t');
@@ -122,69 +176,127 @@ namespace ProteoformSuiteInternal
             });
         }
 
-        public static void read_experimental_theoretical_relationships(string working_directory)
+        public static string theoretical_proteoforms_results(bool target)
         {
-            string[] lines = File.ReadAllLines(working_directory + "\\experimental_theoretical_relationships.tsv");
+            string tsv_header = String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
+                "description", "name", "fragment", "begin", "end", "unmodified_mass", "ptm_list", "ptm_mass" });
+            if (target)
+            {
+                return tsv_header + Environment.NewLine +
+                    String.Join(Environment.NewLine, Lollipop.proteoform_community.theoretical_proteoforms.Select(t => theoretical_proteoform_as_tsv_row(t, null)));
+            }
+            else
+            {
+                tsv_header += "\tdecoy_database";
+                string decoy_results = tsv_header + Environment.NewLine;
+                for (int decoyDatabaseNum = 0; decoyDatabaseNum < Lollipop.decoy_databases; decoyDatabaseNum++)
+                    decoy_results += String.Join(Environment.NewLine, Lollipop.proteoform_community.decoy_proteoforms["DecoyDatabase_" + decoyDatabaseNum].Select(p => theoretical_proteoform_as_tsv_row(p, "DecoyDatabase_" + decoyDatabaseNum))) + Environment.NewLine;
+                return decoy_results;
+            }
+        }
+
+        public static string theoretical_proteoform_as_tsv_row(object x, string decoy_database)
+        {
+            TheoreticalProteoform t = (TheoreticalProteoform)x;
+            string row = String.Join("\t", new List<string> { t.accession.ToString(), t.modified_mass.ToString(), t.lysine_count.ToString(), t.is_target.ToString(), t.is_decoy.ToString(),
+                t.description.ToString(), t.name.ToString(), t.fragment.ToString(), t.begin.ToString(), t.end.ToString(), t.unmodified_mass.ToString(), t.ptm_descriptions.ToString(), t. ptm_mass.ToString() });
+            if (decoy_database == null) return row;
+            else return row + "\t" + decoy_database;
+        }
+
+        // PROTEOFORM RELATION I/O
+        public static void read_relationships(string[] lines, ProteoformComparison relation_type)
+        {
             Parallel.For(1, lines.Length, x =>
             {
                 string[] line = lines[x].Split('\t');
-                List<ExperimentalProteoform> experimental = Lollipop.proteoform_community.experimental_proteoforms.Where(c => c.accession.Equals((line[0]))).ToList();
-                List<TheoreticalProteoform> theoretical = Lollipop.proteoform_community.theoretical_proteoforms.Where(c => c.description.Equals(line[1])).ToList();
-                ProteoformRelation relation = new ProteoformRelation(experimental[0], theoretical[0], ProteoformComparison.et, Convert.ToDouble(line[2]));
-                relation.nearby_relations_count = Convert.ToInt16(line[3]);
-                lock (lockThread) { Lollipop.et_relations.Add(relation); }
+                switch(relation_type)
+                {
+                    case ProteoformComparison.et:
+                    {
+                        ExperimentalProteoform experimental = Lollipop.proteoform_community.experimental_proteoforms.Where(c => c.accession.Equals((line[0]))).First();
+                        TheoreticalProteoform theoretical = Lollipop.proteoform_community.theoretical_proteoforms.Where(c => c.description.Equals(line[1])).First();
+                        ProteoformRelation relation = new ProteoformRelation(experimental, theoretical, ProteoformComparison.et, Convert.ToDouble(line[2]));
+                        relation.nearby_relations_count = Convert.ToInt16(line[3]);
+                        lock (lockThread) { Lollipop.et_relations.Add(relation); }
+                        break;
+                    }
+                    case ProteoformComparison.ed:
+                    {
+                        ExperimentalProteoform experimental = Lollipop.proteoform_community.experimental_proteoforms.Where(c => c.accession.Equals((line[0]))).First();
+                        string[] decoy_accession = line[1].Split('_'); //determine which decoy database
+                        int decoyDatabaseNum = Convert.ToInt16(decoy_accession[5]);
+                        TheoreticalProteoform decoy = Lollipop.proteoform_community.decoy_proteoforms["DecoyDatabase_" + decoyDatabaseNum].Where(c => c.description.Equals((line[1]))).First();
+                        ProteoformRelation relation = new ProteoformRelation(experimental, decoy, ProteoformComparison.ed, Convert.ToDouble(line[2]));
+                        relation.nearby_relations_count = Convert.ToInt16(line[3]);
+                        lock (lockThread) { Lollipop.ed_relations["DecoyDatabase_" + decoyDatabaseNum].Add(relation); }
+                        break;
+                    }
+                    case ProteoformComparison.ee:
+                    case ProteoformComparison.ef:
+                    {
+                        ExperimentalProteoform experimental_1 = Lollipop.proteoform_community.experimental_proteoforms.Where(c => c.accession.Equals((line[0]))).First();
+                        ExperimentalProteoform experimental_2 = Lollipop.proteoform_community.experimental_proteoforms.Where(c => c.accession.Equals((line[1]))).First();
+                        ProteoformRelation relation = new ProteoformRelation(experimental_1, experimental_2, relation_type, Convert.ToDouble(line[2]));
+                        relation.nearby_relations_count = Convert.ToInt16(line[3]);
+                        if (relation_type == ProteoformComparison.ef)
+                            lock (lockThread) { Lollipop.ef_relations.Add(relation); }
+                        else
+                            lock (lockThread) { Lollipop.ee_relations.Add(relation); }
+                        break;
+                    }
+                }
             });
         }
 
-        public static void read_experimental_decoy_relationships(string working_directory)
+        public static string relation_results(ProteoformComparison relation_type)
         {
-            string[] lines = File.ReadAllLines(working_directory + "\\experimental_decoy_relationships.tsv");
-            Parallel.For(1, lines.Length, x =>
+            string tsv_header = "";
+            string results_rows = "";
+            switch (relation_type)
             {
-                string[] line = lines[x].Split('\t');
-                List<ExperimentalProteoform> experimental = Lollipop.proteoform_community.experimental_proteoforms.Where(c => c.accession.Equals((line[0]))).ToList();
-                string[] decoy_accession = line[1].Split('_'); //determine which decoy database
-                int decoyDatabaseNum = Convert.ToInt16(decoy_accession[5]);
-                List<TheoreticalProteoform> decoy = Lollipop.proteoform_community.decoy_proteoforms["DecoyDatabase_" + decoyDatabaseNum].Where(c => c.description.Equals((line[1]))).ToList();
-                ProteoformRelation relation = new ProteoformRelation(experimental[0], decoy[0], ProteoformComparison.ed, Convert.ToDouble(line[2]));
-                relation.nearby_relations_count = Convert.ToInt16(line[3]);
-                lock (lockThread) { Lollipop.ed_relations["DecoyDatabase_" + decoyDatabaseNum].Add(relation); }
-            });
+                case ProteoformComparison.et:
+                    tsv_header = String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_description", "delta_mass", "nearby_relations" });
+                    results_rows = String.Join(Environment.NewLine, Lollipop.et_relations.Select(r => relation_as_tsv_row(r, relation_type)));
+                    break;
+                case ProteoformComparison.ed:
+                    tsv_header = String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_description", "delta_mass", "nearby_relations" });
+                    results_rows = String.Join(Environment.NewLine, Lollipop.ed_relations.Values.First().Select(r => relation_as_tsv_row(r, relation_type)));
+                    break;
+                case ProteoformComparison.ee:
+                    tsv_header = String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_accession", "delta_mass", "nearby_relations" });
+                    results_rows = String.Join(Environment.NewLine, Lollipop.ee_relations.Select(r => relation_as_tsv_row(r, relation_type)));
+                    break;
+                case ProteoformComparison.ef:
+                    tsv_header = String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_accession", "delta_mass", "nearby_relations" });
+                    results_rows = String.Join(Environment.NewLine, Lollipop.ef_relations.Select(r => relation_as_tsv_row(r, relation_type)));
+                    break;
+            }
+            return tsv_header + Environment.NewLine + results_rows;
         }
 
-        public static void read_experimental_experimental_relationships(string working_directory)
+        public static string relation_as_tsv_row(ProteoformRelation r, ProteoformComparison relation_type)
         {
-            string[] lines = File.ReadAllLines(working_directory + "\\experimental_experimental_relationships.tsv");
-            Parallel.For(1, lines.Length, x =>
+            string tsv_row = "";
+            switch (relation_type)
             {
-                string[] line = lines[x].Split('\t');
-                List<ExperimentalProteoform> experimental_1 = Lollipop.proteoform_community.experimental_proteoforms.Where(c => c.accession.Equals((line[0]))).ToList();
-                List<ExperimentalProteoform> experimental_2 = Lollipop.proteoform_community.experimental_proteoforms.Where(c => c.accession.Equals((line[1]))).ToList();
-                ProteoformRelation relation = new ProteoformRelation(experimental_1[0], experimental_2[0], ProteoformComparison.ee, Convert.ToDouble(line[2]));
-                relation.nearby_relations_count = Convert.ToInt16(line[3]);
-                lock (lockThread) { Lollipop.ee_relations.Add(relation); }
-            });
+                case ProteoformComparison.et:
+                case ProteoformComparison.ed:
+                    tsv_row = String.Join("\t", new List<string> { r.connected_proteoforms[0].accession.ToString(), ((TheoreticalProteoform)r.connected_proteoforms[1]).description.ToString(),
+                        r.delta_mass.ToString(), r.nearby_relations_count.ToString() });
+                    break;
+                case ProteoformComparison.ee:
+                case ProteoformComparison.ef:
+                    tsv_row = String.Join("\t", new List<string> { r.connected_proteoforms[0].accession.ToString(), r.connected_proteoforms[1].accession.ToString(), r.delta_mass.ToString(),
+                        r.nearby_relations_count.ToString() });
+                    break;
+            }
+            return tsv_row;
         }
 
-        public static void read_experimental_false_relationships(string working_directory)
+        // DELTA MASS PEAK I/O
+        public static void read_peaks(string[] lines, ProteoformComparison relation_type)
         {
-            string[] lines = File.ReadAllLines(working_directory + "\\experimental_false_relationships.tsv");
-            Parallel.For(1, lines.Length, x =>
-            {
-                string[] line = lines[x].Split('\t');
-                List<ExperimentalProteoform> experimental_1 = Lollipop.proteoform_community.experimental_proteoforms.Where(c => c.accession.Equals((line[0]))).ToList();
-                List<ExperimentalProteoform> experimental_2 = Lollipop.proteoform_community.experimental_proteoforms.Where(c => c.accession.Equals((line[1]))).ToList();
-                ProteoformRelation relation = new ProteoformRelation(experimental_1[0], experimental_2[0], ProteoformComparison.ef, Convert.ToDouble(line[2]));
-                relation.nearby_relations_count = Convert.ToInt16(line[3]);
-                lock (lockThread) { Lollipop.ef_relations.Add(relation); }
-            });
-        }
-
-        public static void read_peaks(string working_directory, ProteoformComparison relation_type)
-        {
-            string[] lines = new string[0];
-            if (relation_type == ProteoformComparison.et) lines = File.ReadAllLines(working_directory + "\\experimental_theoretical_peaks.tsv");
-            else if (relation_type == ProteoformComparison.ee) lines = File.ReadAllLines(working_directory + "\\experimental_experimental_peaks.tsv");
             Parallel.For(1, lines.Length, x =>
             {
                 string[] line = lines[x].Split('\t');
@@ -220,158 +332,31 @@ namespace ProteoformSuiteInternal
             });
         }
 
-
-        //RESULTS OUTPUT
-        public static string get_results(IEnumerable<object> objects)
+        public static string peak_results(ProteoformComparison relation_type)
         {
-            string header = get_tsv_header(objects.GetType().GetGenericArguments()[0]);
-            if (objects.Count() == 0)
-                return header;
-            else
-                return header + Environment.NewLine + String.Join(Environment.NewLine, objects.Select(o => as_tsv_row(o)));
-        }
-        public static string get_results(IEnumerable<object> objects, ProteoformComparison relation_type)
-        {
-            string header = get_tsv_header(objects.GetType().GetGenericArguments()[0], relation_type);
-            if (objects.Count() == 0)
-                return header;
-            else
-                return header + Environment.NewLine + String.Join(Environment.NewLine, objects.Select(o => as_tsv_row(o, relation_type)));
-        }
-
-        public static string raw_component_results() { return get_results(Lollipop.raw_experimental_components); }
-        public static string raw_neucode_pair_results() { return get_results(Lollipop.raw_neucode_pairs); }
-        public static string aggregated_experimental_proteoform_results() { return get_results(Lollipop.proteoform_community.experimental_proteoforms); }
-        public static string et_relations_results() { return get_results(Lollipop.et_relations, ProteoformComparison.et); }
-        public static string ed_relations_results() { return get_results(Lollipop.ed_relations.Values.ToList()[0], ProteoformComparison.ed); }
-        public static string ee_relations_results() { return get_results(Lollipop.ee_relations, ProteoformComparison.ee); }
-        public static string ef_relations_results() { return get_results(Lollipop.ef_relations, ProteoformComparison.ef); }
-        public static string et_peak_results() { return get_results(Lollipop.et_peaks, ProteoformComparison.et); }
-        public static string ee_peak_results() { return get_results(Lollipop.ee_peaks, ProteoformComparison.ee); }
-        public static string theoretical_proteoforms_results()
-        {
-            return get_tsv_header(typeof(TheoreticalProteoform)) + Environment.NewLine +
-                String.Join(Environment.NewLine, Lollipop.proteoform_community.theoretical_proteoforms.Select(t => as_tsv_row(t, null)));
-        }
-        public static string decoy_proteoforms_results()
-        {
-            //put all decoy databases in one tsv file
-            string decoy_results = get_tsv_header(typeof(TheoreticalProteoform), false) + Environment.NewLine;
-            for (int decoyDatabaseNum = 0; decoyDatabaseNum < Lollipop.decoy_databases; decoyDatabaseNum++)
-                decoy_results += String.Join(Environment.NewLine, Lollipop.proteoform_community.decoy_proteoforms["DecoyDatabase_" + decoyDatabaseNum].Select(p => as_tsv_row(p, "DecoyDatabase_" + decoyDatabaseNum))) + Environment.NewLine;
-            return decoy_results;
+            string tsv_header = "";
+            string results_rows = "";
+            switch (relation_type)
+            {
+                case ProteoformComparison.et:
+                    tsv_header = String.Join("\t", new List<string> { "experimental_accessions", "theoretical_accessions", "peak_deltaM_average", "peak_relation_group_count",
+                        "decoy_relation_count", "peak_group_fdr", "peak_assignment" });
+                    results_rows = String.Join(Environment.NewLine, Lollipop.et_peaks.Select(p => peak_as_tsv_row(p, relation_type)));
+                    break;
+                case ProteoformComparison.ee:
+                    tsv_header = String.Join("\t", new List<string> { "experimental_1_accessions", "experimental_2_accessions", "peak_deltaM_average", "peak_relation_group_count",
+                        "decoy_relation_count", "peak_group_fdr", "peak_assignment" });
+                    results_rows = String.Join(Environment.NewLine, Lollipop.ee_peaks.Select(p => peak_as_tsv_row(p, relation_type)));
+                    break;
+            }
+            return tsv_header + Environment.NewLine + results_rows;
         }
 
-        // TSV STRINGS
-        public static string get_tsv_header(Type type)
+        public static string peak_as_tsv_row(DeltaMassPeak p, ProteoformComparison relation_type)
         {
-            if (type == typeof(Component))
-            {
-                if (Lollipop.neucode_labeled)
-                    return String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "corrected_mass", "intensity_sum", "num_charge_states",
-                        "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range", "rt_apex", "intensity_sum_olcs", "file_origin" });
-                else
-                    return String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "corrected_mass", "intensity_sum", "num_charge_states",
-                        "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range", "rt_apex", "file_origin" });
-            }
-            else if (type == typeof(NeuCodePair))
-                return String.Join("\t", new List<string> { "light_id", "light_intensity (overlapping charge states)", "light_weighted_monoisotopic_mass", "light_corrected_mass", "light_apexRt",
-                "heavy_id", "heavy_intensity (overlapping charge states)", "heavy_weighted_monoisotopic_mass", "intensity_ratio", "lysine_count", "file_origin" });
-            else if (type == typeof(ExperimentalProteoform))
-                return String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
-                "agg_mass", "agg_intensity", "agg_rt", "observation_count" });
-            else return "";
-        }
-        public static string as_tsv_row(object x)
-        {
-            if (x.GetType() == typeof(Component))
-            {
-                Component c = (Component)x;
-                if (Lollipop.neucode_labeled)
-                    return String.Join("\t", new List<string> { c.id.ToString(), c.monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(), c. corrected_mass.ToString(), c.intensity_sum.ToString(), c.num_charge_states.ToString(),
-                    c.delta_mass.ToString(), c.relative_abundance.ToString(), c.fract_abundance.ToString(), c.scan_range.ToString(), c.rt_range.ToString(),
-                    c.rt_apex.ToString(), c.intensity_sum_olcs.ToString(), c.file_origin.ToString() });
-                else
-                    return String.Join("\t", new List<string> { c.id.ToString(), c.monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(), c.corrected_mass.ToString(), c.intensity_sum.ToString(), c.num_charge_states.ToString(),
-                    c.delta_mass.ToString(), c.relative_abundance.ToString(), c.fract_abundance.ToString(), c.scan_range.ToString(), c.rt_range.ToString(),
-                    c.rt_apex.ToString(), c.file_origin.ToString() });
-            }
-            else if (x.GetType() == typeof(NeuCodePair))
-            {
-                NeuCodePair n = (NeuCodePair)x;
-                return String.Join("\t", new List<string> { n.id.ToString(), n.intensity_sum_olcs.ToString(), n.weighted_monoisotopic_mass.ToString(), n.corrected_mass.ToString(), n.rt_apex.ToString(),
-                    n.neuCodeHeavy.id.ToString(), n.neuCodeHeavy.intensity_sum_olcs.ToString(), n.neuCodeHeavy.weighted_monoisotopic_mass.ToString(), n.intensity_ratio.ToString(), n.lysine_count.ToString(),
-                    n.file_origin.ToString() });
-            }
-            else if (x.GetType() == typeof(ExperimentalProteoform))
-            {
-                ExperimentalProteoform e = (ExperimentalProteoform)x;
-                return String.Join("\t", new List<string> { e.accession.ToString(), e.modified_mass.ToString(), e.lysine_count.ToString(), e.is_target.ToString(), e.is_decoy.ToString(),
-                    e.agg_mass.ToString(), e.agg_intensity.ToString(), e.agg_rt.ToString(), e.observation_count.ToString() });
-            }
-            else return "";
-        }
-
-        public static string get_tsv_header(Type type, bool is_target)
-        {
-            if (type != typeof(TheoreticalProteoform)) return "";
-            if (is_target)
-                return String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
-                "description", "name", "fragment", "begin", "end", "unmodified_mass", "ptm_list", "ptm_mass" });
-            else
-                return String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
-                "description", "name", "fragment", "begin", "end", "unmodified_mass", "ptm_list", "ptm_mass", "decoy_database" });
-        }
-        public static string as_tsv_row(object x, string decoy_database)
-        {
-            if (x.GetType() != typeof(TheoreticalProteoform)) return "";
-            TheoreticalProteoform t = (TheoreticalProteoform)x;
-            string row = String.Join("\t", new List<string> { t.accession.ToString(), t.modified_mass.ToString(), t.lysine_count.ToString(), t.is_target.ToString(), t.is_decoy.ToString(),
-                    t.description.ToString(), t.name.ToString(), t.fragment.ToString(), t.begin.ToString(), t.end.ToString(), t.unmodified_mass.ToString(), t.ptm_descriptions.ToString(), t. ptm_mass.ToString() });
-            if (decoy_database == null) return row;
-            else return row + "\t" + decoy_database;
-        }
-
-        public static string get_tsv_header(Type type, ProteoformComparison relation_type)
-        {
-            if (type == typeof(ProteoformRelation))
-            {
-                if (relation_type == ProteoformComparison.ee || relation_type == ProteoformComparison.ef) return String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_accession", "delta_mass", "nearby_relations" });
-                else if (relation_type == ProteoformComparison.et || relation_type == ProteoformComparison.ed) return String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_description", "delta_mass", "nearby_relations" });
-                else return "Error: Did not recognize ProteoformRelation type.";
-                //multiple theoreticals have same accession, not same description
-            }
-            else if (type != typeof(DeltaMassPeak))
-            {
-                if (relation_type == ProteoformComparison.et)
-                    return String.Join("\t", new List<string> { "experimental_accessions", "theoretical_accessions", "peak_deltaM_average", "peak_relation_group_count", "decoy_relation_count", "peak_group_fdr", "peak_assignment" });
-                else if (relation_type == ProteoformComparison.ee)
-                    return String.Join("\t", new List<string> { "experimental_1_accessions", "experimental_2_accessions", "peak_deltaM_average", "peak_relation_group_count", "decoy_relation_count", "peak_group_fdr", "peak_assignment" });
-                else return "Error: Did not recognize DeltaMassPeak type.";
-            }
-            else return "";
-        }
-        public static string as_tsv_row(object x, ProteoformComparison relation_type)
-        {
-            if (x.GetType() == typeof(ProteoformRelation))
-            {
-                ProteoformRelation r = (ProteoformRelation)x;
-                if (relation_type == ProteoformComparison.ee || relation_type == ProteoformComparison.ef)
-                    return String.Join("\t", new List<string> { r.connected_proteoforms[0].accession.ToString(), r.connected_proteoforms[1].accession.ToString(), r.delta_mass.ToString(), r.nearby_relations_count.ToString() });
-                else if (relation_type == ProteoformComparison.et || relation_type == ProteoformComparison.ed)
-                    return String.Join("\t", new List<string> { r.connected_proteoforms[0].accession.ToString(), ((TheoreticalProteoform)r.connected_proteoforms[1]).description.ToString(), r.delta_mass.ToString(), r.nearby_relations_count.ToString() });
-                else return "Error: Did not recognize ProteoformRelation type.";
-            }
-            else if (x.GetType() != typeof(DeltaMassPeak))
-            {
-                //gives list of proteoform accessions in the peak
-                DeltaMassPeak p = (DeltaMassPeak)x;
-                string accessions_1_string = String.Join(", ", p.grouped_relations.Select(r => r.connected_proteoforms[0].accession));
-                string accessions_2_string = String.Join(", ", p.grouped_relations.Select(r => r.connected_proteoforms[1].accession));
-                return String.Join("\t", new List<string> {accessions_1_string, accessions_2_string, p.peak_deltaM_average.ToString(),
-                    p.peak_relation_group_count.ToString(), p.decoy_relation_count.ToString(), p.peak_group_fdr.ToString(), p.possiblePeakAssignments_string });
-            }
-            else return "";
+            string accessions_1_string = String.Join(", ", p.grouped_relations.Select(r => r.connected_proteoforms[0].accession));
+            string accessions_2_string = String.Join(", ", p.grouped_relations.Select(r => r.connected_proteoforms[1].accession));
+            return String.Join("\t", new List<string> {accessions_1_string, accessions_2_string, p.peak_deltaM_average.ToString(), p.peak_relation_group_count.ToString(), p.decoy_relation_count.ToString(), p.peak_group_fdr.ToString(), p.possiblePeakAssignments_string });
         }
     }
 }

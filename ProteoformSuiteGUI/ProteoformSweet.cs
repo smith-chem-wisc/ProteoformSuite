@@ -102,17 +102,17 @@ namespace ProteoformSuite
 
             //cannot parallelize bc results dependent on one another for certain objects
             MessageBox.Show("Will load in results now.\n\nMay show as non-responsive.");
-            Results.read_raw_components(working_directory);
-            if (Lollipop.neucode_labeled) Results.read_raw_neucode_pairs(working_directory);
-            Results.read_aggregated_proteoforms(working_directory);
-            Results.read_theoretical_proteoforms(working_directory);
-            Results.read_decoy_proteoforms(working_directory);
-            Results.read_experimental_decoy_relationships(working_directory);
-            Results.read_experimental_theoretical_relationships(working_directory);
-            Results.read_peaks(working_directory, ProteoformComparison.et);
-            Results.read_experimental_false_relationships(working_directory);
-            Results.read_experimental_experimental_relationships(working_directory);
-            Results.read_peaks(working_directory, ProteoformComparison.ee);
+            Results.read_raw_components(File.ReadAllLines(working_directory + "\\raw_experimental_components.tsv"));
+            if (Lollipop.neucode_labeled) Results.read_raw_neucode_pairs(File.ReadAllLines(working_directory + "\\raw_neucode_pairs.tsv"));
+            Results.read_aggregated_proteoforms(File.ReadAllLines(working_directory + "\\aggregated_experimental_proteoforms.tsv"));
+            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\theoretical_proteoforms.tsv"));
+            Results.read_decoy_proteoforms(File.ReadAllLines(working_directory + "\\decoy_proteoforms.tsv"));
+            Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_theoretical_relationships.tsv"), ProteoformComparison.et);
+            Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_decoy_relationships.tsv"), ProteoformComparison.ed);
+            Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_experimental_relationships.tsv"), ProteoformComparison.ee);
+            Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_false_relationships.tsv"), ProteoformComparison.ef);
+            Results.read_peaks(File.ReadAllLines(working_directory + "\\experimental_theoretical_peaks.tsv"), ProteoformComparison.et);
+            Results.read_peaks(File.ReadAllLines(working_directory + "\\experimental_experimental_peaks.tsv"), ProteoformComparison.ee);
             MessageBox.Show("Files successfully read in.");
 
             Lollipop.opened_results = false;
@@ -172,20 +172,20 @@ namespace ProteoformSuite
             }
             if (current_form == theoreticalDatabase || save_all)
             {
-                File.WriteAllText(working_directory + "\\theoretical_proteoforms.tsv", Results.theoretical_proteoforms_results());
-                File.WriteAllText(working_directory + "\\decoy_proteoforms.tsv", Results.decoy_proteoforms_results());
+                File.WriteAllText(working_directory + "\\theoretical_proteoforms.tsv", Results.theoretical_proteoforms_results(true));
+                File.WriteAllText(working_directory + "\\decoy_proteoforms.tsv", Results.theoretical_proteoforms_results(false));
             }
             if (current_form == experimentalTheoreticalComparison || save_all)
             {
-                File.WriteAllText(working_directory + "\\experimental_theoretical_relationships.tsv", Results.et_relations_results());
-                File.WriteAllText(working_directory + "\\experimental_decoy_relationships.tsv", Results.ed_relations_results());
-                File.WriteAllText(working_directory + "\\experimental_theoretical_peaks.tsv", Results.et_peak_results());
+                File.WriteAllText(working_directory + "\\experimental_theoretical_relationships.tsv", Results.relation_results(ProteoformComparison.et));
+                File.WriteAllText(working_directory + "\\experimental_decoy_relationships.tsv", Results.relation_results(ProteoformComparison.ed));
+                File.WriteAllText(working_directory + "\\experimental_theoretical_peaks.tsv", Results.peak_results(ProteoformComparison.et));
             }
             if (current_form == experimentExperimentComparison || save_all)
             {
-                File.WriteAllText(working_directory + "\\experimental_experimental_relationships.tsv", Results.ee_relations_results());
-                File.WriteAllText(working_directory + "\\experimental_false_relationships.tsv", Results.ef_relations_results());
-                File.WriteAllText(working_directory + "\\experimental_experimental_peaks.tsv", Results.ee_peak_results());
+                File.WriteAllText(working_directory + "\\experimental_experimental_relationships.tsv", Results.relation_results(ProteoformComparison.ee));
+                File.WriteAllText(working_directory + "\\experimental_false_relationships.tsv", Results.relation_results(ProteoformComparison.ef));
+                File.WriteAllText(working_directory + "\\experimental_experimental_peaks.tsv", Results.peak_results(ProteoformComparison.ee));
             }
         }
 
