@@ -17,9 +17,10 @@ namespace ProteoformSuiteInternal
         // RAW COMPONENT I/O
         public static void read_raw_components(string[] lines)
         {
-            Parallel.For(1, lines.Length, x =>
+            //Parallel.For(1, lines.Length, x =>
+            for (int i = 1; i < lines.Length; i++)
             {
-                string[] line = lines[x].Split('\t');
+                string[] line = lines[i].Split('\t');
                 Component component = new Component();
                 component.id = Convert.ToInt16(line[0]);
                 component.monoisotopic_mass = Convert.ToDouble(line[1]);
@@ -40,8 +41,10 @@ namespace ProteoformSuiteInternal
                 }
                 else { component.file_origin = line[12]; }
                 component.accepted = true;
-                lock (lockThread) { Lollipop.raw_experimental_components.Add(component); }
-            });
+                //lock (lockThread) { Lollipop.raw_experimental_components.Add(component); }
+                Lollipop.raw_experimental_components.Add(component);
+            }
+            //});
         }
 
         public static string raw_component_results()
@@ -57,7 +60,7 @@ namespace ProteoformSuiteInternal
             return tsv_header + Environment.NewLine + results_rows;
         }
 
-        public static string component_as_tsv_row(Component c)
+        private static string component_as_tsv_row(Component c)
         {
             if (Lollipop.neucode_labeled)
                 return String.Join("\t", new List<string> { c.id.ToString(), c.monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(), c. corrected_mass.ToString(),
@@ -105,7 +108,7 @@ namespace ProteoformSuiteInternal
             return tsv_header + Environment.NewLine + results_rows;
         }
 
-        public static string neucode_pair_as_tsv_row(NeuCodePair n)
+        private static string neucode_pair_as_tsv_row(NeuCodePair n)
         {
             return String.Join("\t", new List<string> { n.id.ToString(), n.intensity_sum_olcs.ToString(), n.weighted_monoisotopic_mass.ToString(), n.corrected_mass.ToString(), n.rt_apex.ToString(),
                     n.neuCodeHeavy.id.ToString(), n.neuCodeHeavy.intensity_sum_olcs.ToString(), n.neuCodeHeavy.weighted_monoisotopic_mass.ToString(), n.intensity_ratio.ToString(), n.lysine_count.ToString(),
@@ -136,7 +139,7 @@ namespace ProteoformSuiteInternal
             return tsv_header + Environment.NewLine + results_rows;
         }
 
-        public static string aggregated_experimental_proteoform_as_tsv_row(ExperimentalProteoform e)
+        private static string aggregated_experimental_proteoform_as_tsv_row(ExperimentalProteoform e)
         {
             return String.Join("\t", new List<string> { e.accession.ToString(), e.modified_mass.ToString(), e.lysine_count.ToString(), e.is_target.ToString(), e.is_decoy.ToString(),
                     e.agg_mass.ToString(), e.agg_intensity.ToString(), e.agg_rt.ToString(), e.observation_count.ToString() });
@@ -191,7 +194,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public static string theoretical_proteoform_as_tsv_row(object x, string decoy_database)
+        private static string theoretical_proteoform_as_tsv_row(object x, string decoy_database)
         {
             TheoreticalProteoform t = (TheoreticalProteoform)x;
             string row = String.Join("\t", new List<string> { t.accession.ToString(), t.modified_mass.ToString(), t.lysine_count.ToString(), t.is_target.ToString(), t.is_decoy.ToString(),
@@ -277,7 +280,7 @@ namespace ProteoformSuiteInternal
             return tsv_header + Environment.NewLine + results_rows;
         }
 
-        public static string relation_as_tsv_row(ProteoformRelation r, ProteoformComparison relation_type)
+        private static string relation_as_tsv_row(ProteoformRelation r, ProteoformComparison relation_type)
         {
             string tsv_row = "";
             switch (relation_type)
@@ -354,7 +357,7 @@ namespace ProteoformSuiteInternal
             return tsv_header + Environment.NewLine + results_rows;
         }
 
-        public static string peak_as_tsv_row(DeltaMassPeak p, ProteoformComparison relation_type)
+        private static string peak_as_tsv_row(DeltaMassPeak p, ProteoformComparison relation_type)
         {
             string accessions_1_string = String.Join(", ", p.grouped_relations.Select(r => r.connected_proteoforms[0].accession));
             string accessions_2_string = String.Join(", ", p.grouped_relations.Select(r => r.connected_proteoforms[1].accession));
