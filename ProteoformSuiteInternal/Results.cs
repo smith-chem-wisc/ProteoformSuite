@@ -165,13 +165,9 @@ namespace ProteoformSuiteInternal
                 decoy_proteoform.set_ptm_list(line[11]);
                 lock (lockThread)
                 {
-                    if (Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(line[13])) Lollipop.proteoform_community.add(decoy_proteoform, line[13]);
-                    else
-                    {
+                    if (!Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(line[13]))
                         Lollipop.proteoform_community.decoy_proteoforms.Add(line[13], new List<TheoreticalProteoform>());
-                        Lollipop.ed_relations.Add(line[13], new List<ProteoformRelation>());
-                        Lollipop.proteoform_community.add(decoy_proteoform, line[13]);
-                    }
+                    Lollipop.proteoform_community.add(decoy_proteoform, line[13]);
                 }
             });
         }
@@ -229,7 +225,12 @@ namespace ProteoformSuiteInternal
                         TheoreticalProteoform decoy = Lollipop.proteoform_community.decoy_proteoforms["DecoyDatabase_" + decoyDatabaseNum].Where(c => c.description.Equals((line[1]))).First();
                         ProteoformRelation relation = new ProteoformRelation(experimental, decoy, ProteoformComparison.ed, Convert.ToDouble(line[2]));
                         relation.nearby_relations_count = Convert.ToInt16(line[3]);
-                        lock (lockThread) { Lollipop.ed_relations["DecoyDatabase_" + decoyDatabaseNum].Add(relation); }
+                        lock (lockThread)
+                        {
+                            if (!Lollipop.ed_relations.ContainsKey("DecoyDatabase_" + decoyDatabaseNum))
+                                Lollipop.ed_relations.Add("DecoyDatabase_" + decoyDatabaseNum, new List<ProteoformRelation>());
+                            Lollipop.ed_relations["DecoyDatabase_" + decoyDatabaseNum].Add(relation);
+                        }
                         break;
                     }
                     case ProteoformComparison.ee:
@@ -261,7 +262,8 @@ namespace ProteoformSuiteInternal
                     break;
                 case ProteoformComparison.ed:
                     tsv_header = String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_description", "delta_mass", "nearby_relations" });
-                    results_rows = String.Join(Environment.NewLine, Lollipop.ed_relations.Values.First().Select(r => relation_as_tsv_row(r, relation_type)));
+                    for (int decoyDatabaseNum = 0; decoyDatabaseNum < Lollipop.decoy_databases; decoyDatabaseNum++)
+                        results_rows += String.Join(Environment.NewLine, Lollipop.ed_relations["DecoyDatabase_" + decoyDatabaseNum].Select(r => relation_as_tsv_row(r, relation_type)));
                     break;
                 case ProteoformComparison.ee:
                     tsv_header = String.Join("\t", new List<string> { "proteoform1_accession", "proteoform2_accession", "delta_mass", "nearby_relations" });
