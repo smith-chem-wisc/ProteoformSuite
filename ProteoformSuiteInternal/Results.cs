@@ -378,6 +378,8 @@ namespace ProteoformSuiteInternal
 
         private static string family_as_tsv_row(ProteoformFamily f)
         {
+            //Probably {family_id, proteoform1_id, delta_mass, proteoform2_id} for each relation
+            //This could be placed directly into Cytoscape
             return "";
         }
     }
