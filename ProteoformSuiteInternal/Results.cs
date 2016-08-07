@@ -358,5 +358,27 @@ namespace ProteoformSuiteInternal
             string accessions_2_string = String.Join(", ", p.grouped_relations.Select(r => r.connected_proteoforms[1].accession));
             return String.Join("\t", new List<string> {accessions_1_string, accessions_2_string, p.peak_deltaM_average.ToString(), p.peak_relation_group_count.ToString(), p.decoy_relation_count.ToString(), p.peak_group_fdr.ToString(), p.possiblePeakAssignments_string });
         }
+
+        // PROTEOFORM FAMILY I/O
+        public static void read_families(string[] lines)
+        {
+            Parallel.For(1, lines.Length, x =>
+            {
+                string[] line = lines[x].Split('\t');
+                lock (lockThread) { }
+            });
+        }
+
+        public static string family_results()
+        {
+            string tsv_header = "";
+            string results_rows = "";
+            return tsv_header + Environment.NewLine + results_rows;
+        }
+
+        private static string family_as_tsv_row(ProteoformFamily f)
+        {
+            return "";
+        }
     }
 }

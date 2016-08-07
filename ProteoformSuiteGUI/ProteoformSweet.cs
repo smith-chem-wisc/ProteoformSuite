@@ -113,6 +113,7 @@ namespace ProteoformSuite
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_false_relationships.tsv"), ProteoformComparison.ef);
             Results.read_peaks(File.ReadAllLines(working_directory + "\\experimental_theoretical_peaks.tsv"), ProteoformComparison.et);
             Results.read_peaks(File.ReadAllLines(working_directory + "\\experimental_experimental_peaks.tsv"), ProteoformComparison.ee);
+            Results.read_families(File.ReadAllLines(working_directory + "\\proteoform_families.tsv"))
             MessageBox.Show("Files successfully read in.");
 
             Lollipop.opened_results = false;
@@ -186,6 +187,10 @@ namespace ProteoformSuite
                 File.WriteAllText(working_directory + "\\experimental_experimental_relationships.tsv", Results.relation_results(ProteoformComparison.ee));
                 File.WriteAllText(working_directory + "\\experimental_false_relationships.tsv", Results.relation_results(ProteoformComparison.ef));
                 File.WriteAllText(working_directory + "\\experimental_experimental_peaks.tsv", Results.peak_results(ProteoformComparison.ee));
+            }
+            if (current_form == proteoformFamilies || save_all)
+            {
+                File.WriteAllText(working_directory + "\\proteoform_families.tsv", Results.family_results());
             }
         }
 
