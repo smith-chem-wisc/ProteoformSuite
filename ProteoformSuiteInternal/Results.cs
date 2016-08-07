@@ -17,10 +17,9 @@ namespace ProteoformSuiteInternal
         // RAW COMPONENT I/O
         public static void read_raw_components(string[] lines)
         {
-            //Parallel.For(1, lines.Length, x =>
-            for (int i = 1; i < lines.Length; i++)
+            Parallel.For(1, lines.Length, x =>
             {
-                string[] line = lines[i].Split('\t');
+                string[] line = lines[x].Split('\t');
                 Component component = new Component();
                 component.id = Convert.ToInt16(line[0]);
                 component.monoisotopic_mass = Convert.ToDouble(line[1]);
@@ -41,10 +40,8 @@ namespace ProteoformSuiteInternal
                 }
                 else { component.file_origin = line[12]; }
                 component.accepted = true;
-                //lock (lockThread) { Lollipop.raw_experimental_components.Add(component); }
-                Lollipop.raw_experimental_components.Add(component);
-            }
-            //});
+                lock (lockThread) { Lollipop.raw_experimental_components.Add(component); }
+            });
         }
 
         public static string raw_component_results()
@@ -80,11 +77,9 @@ namespace ProteoformSuiteInternal
             Parallel.For(1, lines.Length, x =>
             {
                 string[] line = lines[x].Split('\t');
-                List<Component> neucode_light = Lollipop.raw_experimental_components.Where(c => c.id == Convert.ToInt16(line[0])).ToList();
-                List<Component> neucode_heavy = Lollipop.raw_experimental_components.Where(c => c.id == Convert.ToInt16(line[5])).ToList();
-                NeuCodePair neucode_pair = new NeuCodePair(neucode_heavy[0], neucode_light[0]);
-                neucode_pair.id_light = Convert.ToInt16(line[0]);
-                neucode_pair.id_heavy = Convert.ToInt16(line[5]);
+                Component neucode_light = Lollipop.raw_experimental_components.Where(c => c.id == Convert.ToInt16(line[0])).First();
+                Component neucode_heavy = Lollipop.raw_experimental_components.Where(c => c.id == Convert.ToInt16(line[5])).First();
+                NeuCodePair neucode_pair = new NeuCodePair(neucode_light, neucode_heavy);
                 neucode_pair.intensity_ratio = Convert.ToDouble(line[8]);
                 neucode_pair.lysine_count = Convert.ToInt32(line[9]);
                 neucode_pair.file_origin = line[10];
@@ -102,8 +97,8 @@ namespace ProteoformSuiteInternal
 
         public static string raw_neucode_pair_results()
         {
-            string tsv_header = String.Join("\t", new List<string> { "light_id", "light_intensity (overlapping charge states)", "light_weighted_monoisotopic_mass", "light_corrected_mass", "light_apexRt",
-                "heavy_id", "heavy_intensity (overlapping charge states)", "heavy_weighted_monoisotopic_mass", "intensity_ratio", "lysine_count", "file_origin" });
+            string tsv_header = String.Join("\t", new List<string> { "light_id", "light_intensity_(overlapping_charge_states)", "light_weighted_monoisotopic_mass", "light_corrected_mass", "light_apexRt",
+                "heavy_id", "heavy_intensity_(overlapping_charge_states)", "heavy_weighted_monoisotopic_mass", "intensity_ratio", "lysine_count", "file_origin" });
             string results_rows = String.Join(Environment.NewLine, Lollipop.raw_neucode_pairs.Select(n => neucode_pair_as_tsv_row(n)));
             return tsv_header + Environment.NewLine + results_rows;
         }
@@ -126,7 +121,7 @@ namespace ProteoformSuiteInternal
                 aggregated_proteoform.agg_mass = Convert.ToDouble(line[5]);
                 aggregated_proteoform.agg_intensity = Convert.ToDouble(line[6]);
                 aggregated_proteoform.agg_rt = Convert.ToDouble(line[7]);
-                aggregated_proteoform.observation_count = Convert.ToInt16(line[8]);
+                aggregated_proteoform.aggregated_components = (from id in line[9].Split(',') from c in Lollipop.raw_experimental_components where c.id == Convert.ToInt16(id) select c).ToList();
                 lock (lockThread) { Lollipop.proteoform_community.experimental_proteoforms.Add(aggregated_proteoform); }
             });
         }
@@ -134,7 +129,7 @@ namespace ProteoformSuiteInternal
         public static string aggregated_experimental_proteoform_results()
         {
             string tsv_header = String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
-                "agg_mass", "agg_intensity", "agg_rt", "observation_count" });
+                "agg_mass", "agg_intensity", "agg_rt", "observation_count", "component_list" });
             string results_rows = String.Join(Environment.NewLine, Lollipop.proteoform_community.experimental_proteoforms.Select(e => aggregated_experimental_proteoform_as_tsv_row(e)));
             return tsv_header + Environment.NewLine + results_rows;
         }
@@ -142,7 +137,7 @@ namespace ProteoformSuiteInternal
         private static string aggregated_experimental_proteoform_as_tsv_row(ExperimentalProteoform e)
         {
             return String.Join("\t", new List<string> { e.accession.ToString(), e.modified_mass.ToString(), e.lysine_count.ToString(), e.is_target.ToString(), e.is_decoy.ToString(),
-                    e.agg_mass.ToString(), e.agg_intensity.ToString(), e.agg_rt.ToString(), e.observation_count.ToString() });
+                    e.agg_mass.ToString(), e.agg_intensity.ToString(), e.agg_rt.ToString(), e.observation_count.ToString(), String.Join(",", e.aggregated_components.Select(c => c.id)) });
         }
 
         // THEORETICAL PROTEOFORM I/O

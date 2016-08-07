@@ -48,12 +48,9 @@ namespace ProteoformSuiteInternal
         public double agg_mass { get; set; } = 0;
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
-        private int _observation_count;
         public int observation_count
         {
-            set { _observation_count = value; }
-            get { if (!Lollipop.updated_agg && Lollipop.opened_results_originally) { return _observation_count; }
-                else { return aggregated_components.Count; } }
+            get { return aggregated_components.Count; }
         }
 
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession)

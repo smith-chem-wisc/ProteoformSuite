@@ -96,7 +96,6 @@ namespace ProteoformSuiteInternal
         public static decimal missed_lysines = 1;
         public static void aggregate_proteoforms()
         {
-            Lollipop.updated_agg = true;
             if (Lollipop.proteoform_community.experimental_proteoforms.Count > 0)
                 Lollipop.proteoform_community.experimental_proteoforms.Clear();
 
