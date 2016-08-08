@@ -233,21 +233,12 @@ namespace ProteoformSuite
             if (dgv_ET_Peak_List.IsCurrentCellDirty)
             {
                 dgv_ET_Peak_List.CommitEdit(DataGridViewDataErrorContexts.Commit);
-<<<<<<< HEAD
 
                 int columnIndex = dgv_ET_Peak_List.CurrentCell.ColumnIndex;
                 int rowIndex = dgv_ET_Peak_List.CurrentCell.RowIndex;
 
                 string columnName = dgv_ET_Peak_List.Columns[columnIndex].Name;
 
-=======
-
-                int columnIndex = dgv_ET_Peak_List.CurrentCell.ColumnIndex;
-                int rowIndex = dgv_ET_Peak_List.CurrentCell.RowIndex;
-
-                string columnName = dgv_ET_Peak_List.Columns[columnIndex].Name;
-
->>>>>>> 05610fdeb19bfcfd79b9c335e8db7e97c09c7805
                 if (columnName == "peak_accepted")
                 {
                     bool acceptibilityStatus = Convert.ToBoolean(dgv_ET_Peak_List.Rows[rowIndex].Cells[columnIndex].Value);
