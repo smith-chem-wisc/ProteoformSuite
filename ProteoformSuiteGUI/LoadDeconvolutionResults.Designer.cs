@@ -72,24 +72,24 @@
             this.lbDeconResults.FormattingEnabled = true;
             this.lbDeconResults.ItemHeight = 20;
             this.lbDeconResults.Location = new System.Drawing.Point(0, 0);
-<<<<<<< HEAD
+
             this.lbDeconResults.Margin = new System.Windows.Forms.Padding(2);
             this.lbDeconResults.Name = "lbDeconResults";
             this.lbDeconResults.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
             this.lbDeconResults.Size = new System.Drawing.Size(755, 394);
-            this.lbDeconResults.Name = "lbDeconResults";
-            this.lbDeconResults.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
-=======
-            this.lbDeconResults.Name = "lbDeconResults";
-            this.lbDeconResults.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
->>>>>>> 05610fdeb19bfcfd79b9c335e8db7e97c09c7805
+
             this.lbDeconResults.Size = new System.Drawing.Size(1486, 444);
+
+            this.lbDeconResults.Name = "lbDeconResults";
+            this.lbDeconResults.SelectionMode = System.Windows.Forms.SelectionMode.MultiExtended;
+            this.lbDeconResults.Size = new System.Drawing.Size(1486, 444);
+
             this.lbDeconResults.Sorted = true;
             this.lbDeconResults.TabIndex = 1;
             // 
             // splitContainer2
             // 
-<<<<<<< HEAD
+
             this.btnDeconResultsAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnDeconResultsAdd.Location = new System.Drawing.Point(9, 424);
             this.btnDeconResultsAdd.Margin = new System.Windows.Forms.Padding(2);
@@ -98,17 +98,22 @@
             this.btnDeconResultsAdd.TabIndex = 1;
             this.btnDeconResultsAdd.Text = "Add";
             this.btnDeconResultsAdd.UseVisualStyleBackColor = true;
+
             this.btnDeconResultsAdd.Click += new System.EventHandler(this.btnDeconResultsAdd_Click_1);
-=======
->>>>>>> 05610fdeb19bfcfd79b9c335e8db7e97c09c7805
+
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+
             // 
             // splitContainer2.Panel1
             // 
-<<<<<<< HEAD
+
+            // 
+            // splitContainer2.Panel1
+            // 
+
             this.btnDeconResultsRemove.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.btnDeconResultsRemove.Location = new System.Drawing.Point(355, 424);
             this.btnDeconResultsRemove.Margin = new System.Windows.Forms.Padding(2);
@@ -124,6 +129,7 @@
             this.btnDeconResultsClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnDeconResultsClear.Location = new System.Drawing.Point(671, 424);
             this.btnDeconResultsClear.Margin = new System.Windows.Forms.Padding(2);
+
             this.splitContainer2.Panel1.Controls.Add(this.lbCorrectionFiles);
             // 
             // splitContainer2.Panel2
@@ -149,7 +155,6 @@
             // 
             // btnDeconResultsClear
             // 
-=======
             this.splitContainer2.Panel1.Controls.Add(this.lbCorrectionFiles);
             // 
             // splitContainer2.Panel2
@@ -175,9 +180,10 @@
             // 
             // btnDeconResultsClear
             // 
->>>>>>> 05610fdeb19bfcfd79b9c335e8db7e97c09c7805
+
             this.btnDeconResultsClear.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.btnDeconResultsClear.Location = new System.Drawing.Point(607, 62);
+
             this.btnDeconResultsClear.Name = "btnDeconResultsClear";
             this.btnDeconResultsClear.Size = new System.Drawing.Size(168, 58);
             this.btnDeconResultsClear.TabIndex = 9;
@@ -223,12 +229,11 @@
             this.cb_neuCodeLabeled.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.cb_neuCodeLabeled.Checked = true;
             this.cb_neuCodeLabeled.CheckState = System.Windows.Forms.CheckState.Checked;
-<<<<<<< HEAD
-            this.cb_neuCodeLabeled.Location = new System.Drawing.Point(12, 402);
-=======
->>>>>>> 05610fdeb19bfcfd79b9c335e8db7e97c09c7805
+
+
             this.cb_neuCodeLabeled.Location = new System.Drawing.Point(16, 14);
             this.cb_neuCodeLabeled.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+
             this.cb_neuCodeLabeled.Name = "cb_neuCodeLabeled";
             this.cb_neuCodeLabeled.Size = new System.Drawing.Size(168, 26);
             this.cb_neuCodeLabeled.TabIndex = 5;
@@ -242,16 +247,15 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1486, 889);
             this.ControlBox = false;
-<<<<<<< HEAD
             this.Controls.Add(this.cb_neuCodeLabeled);
             this.Controls.Add(this.btnDeconResultsClear);
             this.Controls.Add(this.btnDeconResultsRemove);
             this.Controls.Add(this.btnDeconResultsAdd);
             this.Controls.Add(this.lbDeconResults);
             this.Margin = new System.Windows.Forms.Padding(2);
-=======
->>>>>>> 05610fdeb19bfcfd79b9c335e8db7e97c09c7805
+
             this.Controls.Add(this.splitContainer1);
+
             this.Name = "LoadDeconvolutionResults";
             this.Text = "LoadDeconvolutionResults";
             this.Load += new System.EventHandler(this.LoadDeconvolutionResults_Load);

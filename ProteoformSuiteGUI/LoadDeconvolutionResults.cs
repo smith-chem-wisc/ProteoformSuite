@@ -32,7 +32,6 @@ namespace ProteoformSuite
             lbCorrectionFiles.Sorted = true;
             lbCorrectionFiles.SelectionMode = SelectionMode.MultiExtended;
             lbCorrectionFiles.DataSource = Lollipop.correctionFactorFilenames;
-<<<<<<< HEAD
         }
 
         private bool FirstLineOK (string fileName)
@@ -47,28 +46,20 @@ namespace ProteoformSuite
             
         }
 
-        private void cb_neuCodeLabeled_CheckedChanged(object sender, EventArgs e)
-        {
-=======
-        }
+//        private void cb_neuCodeLabeled_CheckedChanged(object sender, EventArgs e)
+//        {
+//=======
+//        }
 
-        private bool FirstLineOK (string fileName)
-        {
-            bool fileOK = true;
-
-            return fileOK;
-        }
-
-        private void lbDeconResults_SelectedIndexChanged(object sender, EventArgs e)
-        {
+        //private void lbDeconResults_SelectedIndexChanged(object sender, EventArgs e)
+        //{
             
-        }
+        //}
 
-        private void cb_neuCodeLabeled_CheckedChanged(object sender, EventArgs e)
-        {
->>>>>>> 05610fdeb19bfcfd79b9c335e8db7e97c09c7805
+        //private void cb_neuCodeLabeled_CheckedChanged(object sender, EventArgs e)
+        //{
 
-        }
+        //}
 
         private void btnDeconResultsAdd_Click_1(object sender, EventArgs e)
         {
@@ -86,7 +77,7 @@ namespace ProteoformSuite
                 {
                     try
                     {
-                        if (!Lollipop.deconResultsFileNames.Contains(file) && FirstLineOK(file))
+                        if (!Lollipop.deconResultsFileNames.Contains(file))
                             Lollipop.deconResultsFileNames.Add(file);
                     }
                     catch (SecurityException ex)
@@ -133,7 +124,7 @@ namespace ProteoformSuite
                 {
                     try
                     {
-                        if (!Lollipop.correctionFactorFilenames.Contains(file) && FirstLineOK(file))
+                        if (!Lollipop.correctionFactorFilenames.Contains(file))
                             Lollipop.correctionFactorFilenames.Add(file);
                     }
                     catch (SecurityException ex)

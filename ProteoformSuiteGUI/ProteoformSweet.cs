@@ -144,7 +144,6 @@ namespace ProteoformSuite
             MessageBox.Show("Successfully saved the currently displayed page.");
         }
 
-<<<<<<< HEAD
         private void save_tsv(string working_directory, bool save_all)
         {
             if (current_form == rawExperimentalComponents || save_all)
@@ -175,7 +174,6 @@ namespace ProteoformSuite
                 File.WriteAllText(working_directory + "\\experimental_experimental_relationships.tsv", Results.ee_relations_results());
                 File.WriteAllText(working_directory + "\\experimental_false_relationships.tsv", Results.ef_relations_results());
                 File.WriteAllText(working_directory + "\\experimental_experimental_peaks.tsv", Results.ee_peak_results());
-=======
                 // For connectivity testing --
                 //string working_directory;
                 //MessageBox.Show("Choose a results folder.");
@@ -211,7 +209,6 @@ namespace ProteoformSuite
 
                 prepare_figures_and_tables();
                 MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
->>>>>>> 05610fdeb19bfcfd79b9c335e8db7e97c09c7805
             }
         }
 
