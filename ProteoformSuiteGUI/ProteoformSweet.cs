@@ -139,7 +139,7 @@ namespace ProteoformSuite
                 if (response2 == DialogResult.Cancel) return;
 
                 Parallel.Invoke( 
-                    () => Lollipop.get_experimental_proteoforms((b)=>new ExcelReader().read_components_from_xlsx(b)),
+                    () => Lollipop.get_experimental_proteoforms((b)=>new ExcelReader().read_components_from_xlsx(b, Lollipop.correctionFactors)),
                     () => Lollipop.get_theoretical_proteoforms()
                 );
                 Parallel.Invoke(
