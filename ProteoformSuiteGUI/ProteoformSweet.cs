@@ -144,6 +144,7 @@ namespace ProteoformSuite
             MessageBox.Show("Successfully saved the currently displayed page.");
         }
 
+<<<<<<< 2807a6cb9c343001d4fd3bc3da60608e458c252c
         private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string working_directory;
@@ -154,6 +155,44 @@ namespace ProteoformSuite
             saveMethod(working_directory + "\\_method.txt");
             save_tsv(working_directory, true);
             MessageBox.Show("Successfully saved all pages.");
+=======
+                // For connectivity testing --
+                //string working_directory;
+                //MessageBox.Show("Choose a results folder.");
+                //DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
+                //if (results_folder == DialogResult.OK)
+                //    working_directory = this.resultsFolderOpen.SelectedPath;
+                //else
+                //    working_directory = Path.GetDirectoryName(Lollipop.deconResultsFileNames[0]);
+
+                var response2 = MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.", "Method Load", MessageBoxButtons.OKCancel);
+                if (response2 == DialogResult.Cancel) return;
+
+                Parallel.Invoke( 
+                    () => Lollipop.get_experimental_proteoforms((b)=>new ExcelReader().read_components_from_xlsx(b, Lollipop.correctionFactors)),
+                    () => Lollipop.get_theoretical_proteoforms()
+                );
+                Parallel.Invoke(
+                    () => Lollipop.make_et_relationships(),
+                    () => Lollipop.make_ee_relationships()
+                );
+                Lollipop.proteoform_community.construct_families();
+
+                // For connectivity testing --
+                //File.WriteAllText(working_directory + "\\raw_experimental_components.tsv", Lollipop.raw_component_results());
+                //File.WriteAllText(working_directory + "\\raw_neucode_pairs.tsv", Lollipop.raw_neucode_pair_results());
+                //File.WriteAllText(working_directory + "\\aggregated_experimental_proteoforms.tsv", Lollipop.aggregated_experimental_proteoform_results());         
+                //File.WriteAllText(working_directory + "\\experimental_theoretical_relationships.tsv", Lollipop.et_relations_results());
+                //File.WriteAllText(working_directory + "\\experimental_decoy_relationships.tsv", Lollipop.ed_relations_results());
+                //File.WriteAllText(working_directory + "\\experimental_experimental_relationships.tsv", Lollipop.ee_relations_results());
+                //File.WriteAllText(working_directory + "\\experimental_false_relationships.tsv", Lollipop.ef_relations_results());
+                //File.WriteAllText(working_directory + "\\experimental_theoretical_peaks.tsv", Lollipop.et_peak_results());
+                //File.WriteAllText(working_directory + "\\experimental_experimental_peaks.tsv", Lollipop.ee_peak_results());
+
+                prepare_figures_and_tables();
+                MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
+            }
+>>>>>>> added lockmass calibration and fixed scan-range
         }
 
         private void save_tsv(string working_directory, bool save_all)

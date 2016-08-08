@@ -28,23 +28,36 @@ namespace ProteoformSuite
             t.RemoveAll();
             Point pos = e.Location;
             if (p.HasValue && pos == p.Value) return;
-            HitTestResult[] results = c.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);
-            foreach (HitTestResult result in results)
-            {
-                if (result.ChartElementType == ChartElementType.DataPoint)
-                {
-                    DataPoint prop = result.Object as DataPoint;
-                    if (prop != null)
-                    {
-                        double pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
-                        double pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
 
-                        // check if the cursor is really close to the point (2 pixels around the point)
-                        if (Math.Abs(pos.X - pointXPixel) < 2) //&& Math.Abs(pos.Y - pointYPixel) < 2)
-                            t.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], c, pos.X, pos.Y - 15);
+            HitTestResult[] results = new HitTestResult[4];
+
+            try
+            {
+                results = c.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);
+
+                foreach (HitTestResult result in results)
+                {
+                    if (result.ChartElementType == ChartElementType.DataPoint)
+                    {
+                        DataPoint prop = result.Object as DataPoint;
+                        if (prop != null)
+                        {
+                            double pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                            double pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                            // check if the cursor is really close to the point (2 pixels around the point)
+                            if (Math.Abs(pos.X - pointXPixel) < 2) //&& Math.Abs(pos.Y - pointYPixel) < 2)
+                                t.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], c, pos.X, pos.Y - 15);
+                        }
                     }
                 }
             }
+            catch
+            {
+
+            }
+
+           
         }
 
         public static void GraphRelationsChart(Chart ct, List<ProteoformRelation> relations, string series)
@@ -63,11 +76,14 @@ namespace ProteoformSuite
             ct.ChartAreas[0].AxisX.Title = "Delta Mass (Da)";
             ct.ChartAreas[0].AxisY.Title = "Nearby Count";
 
+<<<<<<< 2807a6cb9c343001d4fd3bc3da60608e458c252c
             ct.ChartAreas[0].AxisX.MinorGrid.Enabled = false;
             ct.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
             ct.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
             ct.ChartAreas[0].AxisY.MinorGrid.Enabled = false;
             ct.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
+=======
+>>>>>>> added lockmass calibration and fixed scan-range
         }
 
         public static void GraphDeltaMassPeaks(Chart ct, List<DeltaMassPeak> peaks, string peak_series, string decoy_series, List<ProteoformRelation> relations, string relations_series)

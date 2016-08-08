@@ -26,7 +26,6 @@ namespace ProteoformSuite
             this.ct_ET_Histogram.MouseMove += new MouseEventHandler(ct_ET_Histogram_MouseMove);
             this.ct_ET_peakList.MouseMove += new MouseEventHandler(ct_ET_peakList_MouseMove);
             dgv_ET_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(ET_Peak_List_DirtyStateChanged); //makes the change immediate and automatic
-            //dgv_ET_Peak_List.CellValueChanged += new DataGridViewCellEventHandler(ET_Peak_List_CellVAlueChanged); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
 
             ETPeakAcceptabilityChanged += ExperimentTheoreticalComparison_ETPeakAcceptabilityChanged;
         }
@@ -64,7 +63,6 @@ namespace ProteoformSuite
         public void FillTablesAndCharts()
         {
             this.dgv_ET_Peak_List.CurrentCellDirtyStateChanged -= this.ET_Peak_List_DirtyStateChanged;//remove event handler on form load and table refresh event
-            //this.dgv_ET_Peak_List.CellValueChanged -= this.ET_Peak_List_CellVAlueChanged;//remove event handler on form load and table refresh event
             FillETPeakListTable();
             FillETRelationsGridView();
             DisplayUtility.FormatRelationsGridView(dgv_ET_Pairs, true, false);
@@ -72,8 +70,7 @@ namespace ProteoformSuite
             GraphETRelations();
             GraphETPeaks();
             updateFiguresOfMerit();
-            this.dgv_ET_Peak_List.CurrentCellDirtyStateChanged += this.ET_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event
-            //this.dgv_ET_Peak_List.CellValueChanged += this.ET_Peak_List_CellVAlueChanged;//re-instate event handler after form load and table refresh event       
+            this.dgv_ET_Peak_List.CurrentCellDirtyStateChanged += this.ET_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event 
         }
 
         private void ClearListsAndTables()
@@ -110,8 +107,6 @@ namespace ProteoformSuite
             DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Lollipop.et_relations, "relations");
 
             ct_ET_Histogram.ChartAreas[0].RecalculateAxesScale();
-
-            //ct_ET_Histogram.ChartAreas[0].AxisY.Maximum = Convert.ToDouble(Lollipop.et_relations.OrderBy(o => o.peak_center_count).ToList()[0].peak_center_count)*1.1D;
         }
         private void GraphETPeaks()
         {
