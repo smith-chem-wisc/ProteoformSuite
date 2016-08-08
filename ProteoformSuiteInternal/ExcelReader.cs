@@ -105,8 +105,6 @@ namespace ProteoformSuiteInternal
                                             select s.correction).ToList();
                 }
 
-                int j = 4;
-
                 if (allCorrectionFactors.Count() > 0)
                 {
                     return allCorrectionFactors.Average();
