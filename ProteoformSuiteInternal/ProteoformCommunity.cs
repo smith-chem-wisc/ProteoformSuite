@@ -63,7 +63,7 @@ namespace ProteoformSuiteInternal
             return relations;
         }
 
-        public List<ProteoformRelation> relate_ee(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
+        public List<ProteoformRelation> relate_ee(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2, ProteoformComparison relation_type)
         {
             List<ProteoformRelation> relations = new List<ProteoformRelation>(
                 from pf1 in pfs1
@@ -75,12 +75,13 @@ namespace ProteoformSuiteInternal
             return relations;
         }
 
-        public bool allowed_ee_relation(Proteoform pf1, Proteoform pf2)
+        public bool allowed_ee_relation(ExperimentalProteoform pf1, ExperimentalProteoform pf2)
         {
             return pf1.modified_mass >= pf2.modified_mass
                 && pf1 != pf2
                 && (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
-                && pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference;
+                && pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference
+                && Math.Abs(pf1.agg_rt - pf2.agg_rt) <= Lollipop.ee_max_RetentionTime_difference;
                 //where ProteoformRelation.mass_difference_is_outside_no_mans_land(pf1.modified_mass - pf2.modified_mass)
                 //putative counts include no-mans land, currently
         }
@@ -104,8 +105,8 @@ namespace ProteoformSuiteInternal
         public List<ProteoformRelation> relate_unequal_ee_lysine_counts()
         {
             List<ProteoformRelation> ef_relations = new List<ProteoformRelation>();
-            Proteoform[] pfs1 = this.experimental_proteoforms.ToArray();
-            Proteoform[] pfs2 = this.experimental_proteoforms.ToArray();
+            ExperimentalProteoform[] pfs1 = this.experimental_proteoforms.ToArray();
+            ExperimentalProteoform[] pfs2 = this.experimental_proteoforms.ToArray();
             foreach (ExperimentalProteoform pf1 in pfs1)
             {
                 int num_equal_lysines = pfs2.Where(pf2 => allowed_ee_relation(pf1, pf2)).Count(); //number that would be chosen with equal lysine counts from a randomized set

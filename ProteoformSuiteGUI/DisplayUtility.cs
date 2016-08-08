@@ -198,7 +198,6 @@ namespace ProteoformSuite
             dgv.Columns["peak_center_count"].HeaderText = "Peak Center Count";
             dgv.Columns["proteoform_mass_1"].HeaderText = "Experimental Aggregated Proteoform Mass";
             dgv.Columns["agg_intensity_1"].HeaderText = "Experimental Aggregated Intensity";
-            dgv.Columns["agg_RT_1"].HeaderText = "Experimental Aggregated RT";
             dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
             dgv.Columns["num_observations_1"].HeaderText = "Number Experimental Observations";
             dgv.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
@@ -219,7 +218,8 @@ namespace ProteoformSuite
             }
 
             //EE formatting
-            dgv.Columns["agg_RT_2"].HeaderText = "Light Experimental Aggregated RT";
+            dgv.Columns["agg_RT_1"].HeaderText = "Aggregated RT-1";
+            dgv.Columns["agg_RT_2"].HeaderText = "Aggregated RT-2";
             dgv.Columns["agg_intensity_2"].HeaderText = "Light Experimental Aggregated Intensity";
             dgv.Columns["num_observations_2"].HeaderText = "Number Light Experimental Observations";
             if (mask_theoretical)
