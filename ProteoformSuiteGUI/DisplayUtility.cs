@@ -28,23 +28,36 @@ namespace ProteoformSuite
             t.RemoveAll();
             Point pos = e.Location;
             if (p.HasValue && pos == p.Value) return;
-            HitTestResult[] results = c.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);
-            foreach (HitTestResult result in results)
-            {
-                if (result.ChartElementType == ChartElementType.DataPoint)
-                {
-                    DataPoint prop = result.Object as DataPoint;
-                    if (prop != null)
-                    {
-                        double pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
-                        double pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
 
-                        // check if the cursor is really close to the point (2 pixels around the point)
-                        if (Math.Abs(pos.X - pointXPixel) < 2) //&& Math.Abs(pos.Y - pointYPixel) < 2)
-                            t.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], c, pos.X, pos.Y - 15);
+            HitTestResult[] results = new HitTestResult[4];
+
+            try
+            {
+                results = c.HitTest(pos.X, pos.Y, false, ChartElementType.DataPoint);
+
+                foreach (HitTestResult result in results)
+                {
+                    if (result.ChartElementType == ChartElementType.DataPoint)
+                    {
+                        DataPoint prop = result.Object as DataPoint;
+                        if (prop != null)
+                        {
+                            double pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
+                            double pointYPixel = result.ChartArea.AxisY.ValueToPixelPosition(prop.YValues[0]);
+
+                            // check if the cursor is really close to the point (2 pixels around the point)
+                            if (Math.Abs(pos.X - pointXPixel) < 2) //&& Math.Abs(pos.Y - pointYPixel) < 2)
+                                t.Show("X=" + prop.XValue + ", Y=" + prop.YValues[0], c, pos.X, pos.Y - 15);
+                        }
                     }
                 }
             }
+            catch
+            {
+
+            }
+
+           
         }
 
         public static void GraphRelationsChart(Chart ct, List<ProteoformRelation> relations, string series)

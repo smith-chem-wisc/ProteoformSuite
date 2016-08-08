@@ -17,8 +17,9 @@ namespace Test
         [Test]
         public void testProcessRawComponents()
         {
+            Lollipop.correctionFactors = null;
             Lollipop.raw_experimental_components.Clear(); //for if neucode test is run first
-            Func<string, IEnumerable<Component>> componentReader = c => new ExcelReader().read_components_from_xlsx(c);
+            Func<string, IEnumerable<Component>> componentReader = c => new ExcelReader().read_components_from_xlsx(c, Lollipop.correctionFactors);
             Lollipop.deconResultsFileNames = new System.ComponentModel.BindingList<string>();
             Lollipop.deconResultsFileNames.Add("UnitTestFiles\\noisy.xlsx");
             Lollipop.neucode_labeled = true;

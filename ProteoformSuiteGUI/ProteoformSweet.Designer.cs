@@ -97,7 +97,7 @@
             this.saveAllToolStripMenuItem.Name = "saveAllToolStripMenuItem";
             this.saveAllToolStripMenuItem.Size = new System.Drawing.Size(115, 22);
             this.saveAllToolStripMenuItem.Text = "Save All";
-            this.saveAllToolStripMenuItem.Click += new System.EventHandler(this.saveAllToolStripMenuItem_Click);
+            this.saveAllToolStripMenuItem.Click += new System.EventHandler(this.saveMethodToolStripMenuItem1_Click);
             // 
             // printToolStripMenuItem
             // 

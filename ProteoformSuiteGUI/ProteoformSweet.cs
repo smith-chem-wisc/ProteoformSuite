@@ -144,18 +144,6 @@ namespace ProteoformSuite
             MessageBox.Show("Successfully saved the currently displayed page.");
         }
 
-        private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string working_directory;
-            MessageBox.Show("Choose a folder for the method and results files.");
-            DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
-            if (results_folder == DialogResult.OK) working_directory = this.resultsFolderOpen.SelectedPath;
-            else return;
-            saveMethod(working_directory + "\\_method.txt");
-            save_tsv(working_directory, true);
-            MessageBox.Show("Successfully saved all pages.");
-        }
-
         private void save_tsv(string working_directory, bool save_all)
         {
             if (current_form == rawExperimentalComponents || save_all)
@@ -231,7 +219,7 @@ namespace ProteoformSuite
 
             clear_lists();
             Parallel.Invoke( 
-                () => Lollipop.get_experimental_proteoforms((b)=>new ExcelReader().read_components_from_xlsx(b)),
+                () => Lollipop.get_experimental_proteoforms((b)=>new ExcelReader().read_components_from_xlsx(b,null)),//add correction factors in place of null
                 () => Lollipop.get_theoretical_proteoforms());
             Parallel.Invoke(
                 () => Lollipop.make_et_relationships(),

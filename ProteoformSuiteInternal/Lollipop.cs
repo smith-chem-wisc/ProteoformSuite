@@ -28,8 +28,22 @@ namespace ProteoformSuiteInternal
 
         //RAW EXPERIMENTAL COMPONENTS
         public static BindingList<string> deconResultsFileNames = new BindingList<string>();
+        public static BindingList<string> correctionFactorFilenames = new BindingList<string>();
+        public static List<Correction> correctionFactors = new List<Correction>();
         public static List<Component> raw_experimental_components = new List<Component>();
         public static bool neucode_labeled = true;
+
+        public static void process_correction_factor_corrections(Func<string, IEnumerable<Correction>> correctionReader)
+        {
+            
+            foreach (string  filename in Lollipop.correctionFactorFilenames)
+            {
+                Correction c = new Correction();
+                IEnumerable<Correction> readCorrections = correctionReader(filename);
+                correctionFactors.AddRange(c.CorrectionFactorInterpolation(readCorrections));
+            }
+        }
+
         public static void process_raw_components(Func<string, IEnumerable<Component>> componentReader)
         {
             foreach(string filename in Lollipop.deconResultsFileNames)
