@@ -32,6 +32,7 @@ namespace ProteoformSuite
             lbCorrectionFiles.Sorted = true;
             lbCorrectionFiles.SelectionMode = SelectionMode.MultiExtended;
             lbCorrectionFiles.DataSource = Lollipop.correctionFactorFilenames;
+<<<<<<< HEAD
         }
 
         private bool FirstLineOK (string fileName)
@@ -48,6 +49,24 @@ namespace ProteoformSuite
 
         private void cb_neuCodeLabeled_CheckedChanged(object sender, EventArgs e)
         {
+=======
+        }
+
+        private bool FirstLineOK (string fileName)
+        {
+            bool fileOK = true;
+
+            return fileOK;
+        }
+
+        private void lbDeconResults_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void cb_neuCodeLabeled_CheckedChanged(object sender, EventArgs e)
+        {
+>>>>>>> 05610fdeb19bfcfd79b9c335e8db7e97c09c7805
 
         }
 

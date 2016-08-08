@@ -76,11 +76,14 @@ namespace ProteoformSuite
             ct.ChartAreas[0].AxisX.Title = "Delta Mass (Da)";
             ct.ChartAreas[0].AxisY.Title = "Nearby Count";
 
-            ct.ChartAreas[0].AxisX.MinorGrid.Enabled = false;
-            ct.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
-            ct.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
-            ct.ChartAreas[0].AxisY.MinorGrid.Enabled = false;
-            ct.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
+//<<<<<<< HEAD
+//            ct.ChartAreas[0].AxisX.MinorGrid.Enabled = false;
+//            ct.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+//            ct.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
+//            ct.ChartAreas[0].AxisY.MinorGrid.Enabled = false;
+//            ct.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
+//=======
+//>>>>>>> 05610fdeb19bfcfd79b9c335e8db7e97c09c7805
         }
 
         public static void GraphDeltaMassPeaks(Chart ct, List<DeltaMassPeak> peaks, string peak_series, string decoy_series, List<ProteoformRelation> relations, string relations_series)

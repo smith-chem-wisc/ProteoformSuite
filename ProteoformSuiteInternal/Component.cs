@@ -47,6 +47,7 @@ namespace ProteoformSuiteInternal
             this.delta_mass = Convert.ToDouble(cellStrings[5]);
             this.relative_abundance = Convert.ToDouble(cellStrings[6]);
             this.fract_abundance = Convert.ToDouble(cellStrings[7]);
+<<<<<<< HEAD
             this.scan_range = cellStrings[8];
             this.rt_range = cellStrings[9];
             this.rt_apex = Convert.ToDouble(cellStrings[10]);
@@ -58,6 +59,8 @@ namespace ProteoformSuiteInternal
             this.delta_mass = Convert.ToDouble(cellStrings[5]);
             this.relative_abundance = Convert.ToDouble(cellStrings[6]);
             this.fract_abundance = Convert.ToDouble(cellStrings[7]);
+=======
+>>>>>>> 05610fdeb19bfcfd79b9c335e8db7e97c09c7805
             //this.scan_range = Array.ConvertAll<string, int>(component_cells[8].Split('-').ToArray(),int.Parse);
             this.scan_range = cellStrings[8];
             this.rt_range = cellStrings[9];
@@ -109,6 +112,23 @@ namespace ProteoformSuiteInternal
         public void add_charge_state(List<string> charge_row, double correction)
         {
             this.charge_states.Add(new ChargeState(charge_row, correction));
+<<<<<<< HEAD
+=======
+        }
+
+        public string as_tsv_row()
+        {
+            return String.Join("\t", new List<string> { this.id.ToString(), this.monoisotopic_mass.ToString(), this.weighted_monoisotopic_mass.ToString(), this.intensity_sum.ToString(), this.num_charge_states.ToString(),
+                this.delta_mass.ToString(), this.relative_abundance.ToString(), this.fract_abundance.ToString(), this.scan_range.ToString(), this.rt_apex.ToString(),
+                this.rt_apex.ToString(), this.file_origin.ToString() });
+        }
+
+        public static string get_tsv_header()
+        {
+            return String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "intensity_sum", "num_charge_states",
+                "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_apex",
+                "rt_apex", "file_origin" });
+>>>>>>> 05610fdeb19bfcfd79b9c335e8db7e97c09c7805
         }
     }
 
@@ -121,6 +141,7 @@ namespace ProteoformSuiteInternal
         public double calculated_mass { get; set; }
 
         public ChargeState(List<string> charge_row, double correction)
+<<<<<<< HEAD
         {
             this.charge_count = Convert.ToInt32(charge_row[0]);
             this.intensity = Convert.ToDouble(charge_row[1]);
@@ -131,6 +152,18 @@ namespace ProteoformSuiteInternal
 
         public double CorrectCalculatedMass(double mzCorrection)
         {
+=======
+        {
+            this.charge_count = Convert.ToInt32(charge_row[0]);
+            this.intensity = Convert.ToDouble(charge_row[1]);
+            this.mz_centroid = Convert.ToDouble(charge_row[2]);
+            this.reported_mass = Convert.ToDouble(charge_row[3]);
+            this.calculated_mass = CorrectCalculatedMass(correction);
+        }
+
+        public double CorrectCalculatedMass(double mzCorrection)
+        {
+>>>>>>> 05610fdeb19bfcfd79b9c335e8db7e97c09c7805
             return (this.charge_count * (this.mz_centroid + mzCorrection - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
         }
 
