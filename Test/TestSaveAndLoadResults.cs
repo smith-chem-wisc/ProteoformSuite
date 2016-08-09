@@ -117,6 +117,7 @@ namespace Test
         [Test]
         public void resultsIn_match_resultsOut_theoretical_protoeoforms()
         {
+            // Create a couple theoretical proteoforms and try writing them to strings, and then reading those back into the data structure
             TheoreticalProteoform pf1 = new TheoreticalProteoform("target1");
             TheoreticalProteoform pf2 = new TheoreticalProteoform("target2");
             pf1.description = "something1";
@@ -147,36 +148,49 @@ namespace Test
             string[] theoretical_proteoform_results = Results.theoretical_proteoforms_results(true).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.AreEqual(3, theoretical_proteoform_results.Length);
             Lollipop.proteoform_community.theoretical_proteoforms.Clear();
-            Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() }, { "test", new Modification("test", "test", "test", "1", new char[] { 'X' }, 2.345, 2.344) } };
-            Results.read_theoretical_proteoforms(theoretical_proteoform_results, true);
+            Lollipop.uniprotModificationTable = new Dictionary<string, Modification> {
+                { "unmodified", new Modification() },
+                { "test", new Modification("test", "test", "test", "1", new char[] { 'X' }, 2.345, 2.344) }
+            };
+            Results.read_theoretical_proteoforms(theoretical_proteoform_results);
             TheoreticalProteoform qf1 = Lollipop.proteoform_community.theoretical_proteoforms[0];
             TheoreticalProteoform qf2 = Lollipop.proteoform_community.theoretical_proteoforms[1];
-            Assert.AreEqual(pf1.accession, qf1.accession);
-            Assert.AreEqual(pf2.accession, qf2.accession);
-            Assert.AreEqual(pf1.name, qf1.name);
-            Assert.AreEqual(pf2.name, qf2.name);
-            Assert.AreEqual(pf1.description, qf1.description);
-            Assert.AreEqual(pf2.description, qf2.description);
-            Assert.AreEqual(pf1.fragment, qf1.fragment);
-            Assert.AreEqual(pf2.fragment, qf2.fragment);
-            Assert.AreEqual(pf1.begin, qf1.begin);
-            Assert.AreEqual(pf2.begin, qf2.begin);
-            Assert.AreEqual(pf1.end, qf1.end);
-            Assert.AreEqual(pf1.end, qf1.end);
-            Assert.AreEqual(pf1.unmodified_mass, qf1.unmodified_mass);
-            Assert.AreEqual(pf2.unmodified_mass, qf2.unmodified_mass);
-            Assert.AreEqual(pf1.modified_mass, qf1.modified_mass);
-            Assert.AreEqual(pf2.modified_mass, qf2.modified_mass);
-            Assert.AreEqual(pf1.lysine_count, qf1.lysine_count);
-            Assert.AreEqual(pf2.lysine_count, qf2.lysine_count);
-            Assert.AreEqual(pf1.is_target, qf1.is_target);
-            Assert.AreEqual(pf2.is_target, qf2.is_target);
-            Assert.AreEqual(pf1.is_decoy, qf1.is_decoy);
-            Assert.AreEqual(pf2.is_decoy, qf2.is_decoy);
-            Assert.AreEqual(pf1.ptm_mass, qf1.ptm_mass);
-            Assert.AreEqual(pf2.ptm_mass, qf2.ptm_mass);
-            Assert.AreEqual(pf1.ptm_list_string(), qf1.ptm_list_string());
-            Assert.AreEqual(pf2.ptm_list_string(), qf2.ptm_list_string());
+            compare_theoreticals(pf1, qf1);
+            compare_theoreticals(pf2, qf2);
+
+            // Load these into the decoy database and test that out
+            Lollipop.decoy_databases = 2;
+            Lollipop.proteoform_community.decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>> {
+                { Lollipop.DECOY_PREFIX + "0", new List<TheoreticalProteoform>() { pf1 } },
+                { Lollipop.DECOY_PREFIX + "1", new List<TheoreticalProteoform>() { pf2 } }
+            };
+            string[] decoy_proteoform_results = Results.theoretical_proteoforms_results(false).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            Assert.AreEqual(3, decoy_proteoform_results.Length);
+            Lollipop.proteoform_community.decoy_proteoforms.Clear();
+            Results.read_theoretical_proteoforms(decoy_proteoform_results);
+            Assert.IsTrue(Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(Lollipop.DECOY_PREFIX + "0"));
+            Assert.IsTrue(Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(Lollipop.DECOY_PREFIX + "1"));
+            qf1 = Lollipop.proteoform_community.decoy_proteoforms[Lollipop.DECOY_PREFIX + "0"].First();
+            qf2 = Lollipop.proteoform_community.decoy_proteoforms[Lollipop.DECOY_PREFIX + "1"].First();
+            compare_theoreticals(pf1, qf1);
+            compare_theoreticals(pf2, qf2);
+        }
+
+        private void compare_theoreticals(TheoreticalProteoform pf, TheoreticalProteoform qf)
+        {
+            Assert.AreEqual(pf.accession, qf.accession);
+            Assert.AreEqual(pf.name, qf.name);
+            Assert.AreEqual(pf.description, qf.description);
+            Assert.AreEqual(pf.fragment, qf.fragment);
+            Assert.AreEqual(pf.begin, qf.begin);
+            Assert.AreEqual(pf.end, qf.end);
+            Assert.AreEqual(pf.unmodified_mass, qf.unmodified_mass);
+            Assert.AreEqual(pf.modified_mass, qf.modified_mass);
+            Assert.AreEqual(pf.lysine_count, qf.lysine_count);
+            Assert.AreEqual(pf.is_target, qf.is_target);
+            Assert.AreEqual(pf.is_decoy, qf.is_decoy);
+            Assert.AreEqual(pf.ptm_mass, qf.ptm_mass);
+            Assert.AreEqual(pf.ptm_list_string(), qf.ptm_list_string());
         }
     }
 }

@@ -145,6 +145,7 @@ namespace ProteoformSuiteInternal
         public static bool neucode_heavy_lysine = false;
         public static int max_ptms = 3;
         public static int decoy_databases = 1;
+        public static string DECOY_PREFIX = "DecoyDatabase_";
         public static int min_peptide_length = 7;
         public static double ptmset_mass_tolerance = 0.00001;
         public static bool combine_identical_sequences = true;
@@ -220,7 +221,7 @@ namespace ProteoformSuiteInternal
             for (int decoyNumber = 0; decoyNumber < Lollipop.decoy_databases; decoyNumber++)
             {
                 string giantProtein = GetOneGiantProtein(proteins, methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
-                string decoy_database_name = "DecoyDatabase_" + decoyNumber;
+                string decoy_database_name = DECOY_PREFIX + decoyNumber;
                 Lollipop.proteoform_community.decoy_proteoforms.Add(decoy_database_name, new List<TheoreticalProteoform>());
                 Protein[] shuffled_proteins = new Protein[proteins.Length];
                 shuffled_proteins = proteins;
@@ -263,7 +264,7 @@ namespace ProteoformSuiteInternal
                         unmodified_mass, lysine_count, ptm_set, proteoform_mass, true));
                 else
                     proteoform_community.add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
-                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, false), "DecoyDatabase_" + decoy_number);
+                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, false), DECOY_PREFIX + decoy_number);
                 listMemberNumber++;
             } //);
         }

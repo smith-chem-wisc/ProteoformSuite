@@ -141,20 +141,25 @@ namespace ProteoformSuiteInternal
         }
 
         // THEORETICAL PROTEOFORM I/O
-        public static void read_theoretical_proteoforms(string[] lines, bool target)
+        public static void read_theoretical_proteoforms(string[] lines)
         {
+            string[] header = lines[0].Split('\t');
             Parallel.For(1, lines.Length, x =>
             {
                 string[] line = lines[x].Split('\t');
-                PtmSet ptm_set = new PtmSet(new List<Ptm>(from ptm_description in line[11].Split(';') select new Ptm(-1, Lollipop.uniprotModificationTable[ptm_description.Trim().TrimEnd(';')])));
-                TheoreticalProteoform theoretical_proteoform = new TheoreticalProteoform(line[0], line[5], line[6], line[7], Convert.ToInt32(line[8]), Convert.ToInt32(line[9]), Convert.ToDouble(line[10]), Convert.ToInt32(line[2]), ptm_set, Convert.ToDouble(line[1]), target);
-                if (target) lock (lockThread) 
-                    Lollipop.proteoform_community.theoretical_proteoforms.Add(theoretical_proteoform);
-                else lock (lockThread)
+                if (line.Length == header.Length)
                 {
-                    if (!Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(line[13]))
-                        Lollipop.proteoform_community.decoy_proteoforms.Add(line[13], new List<TheoreticalProteoform>());
-                    Lollipop.proteoform_community.add(theoretical_proteoform, line[13]);
+                    PtmSet ptm_set = new PtmSet(new List<Ptm>(from ptm_description in line[11].Split(';') select new Ptm(-1, Lollipop.uniprotModificationTable[ptm_description.Trim().TrimEnd(';')])));
+                    TheoreticalProteoform theoretical_proteoform = new TheoreticalProteoform(line[0], line[5], line[6], line[7], Convert.ToInt32(line[8]), Convert.ToInt32(line[9]), Convert.ToDouble(line[10]), Convert.ToInt32(line[2]), ptm_set, Convert.ToDouble(line[1]), Convert.ToBoolean(line[3]));
+                    string database = line[13];
+                    if (database == "Target") lock (lockThread)
+                        Lollipop.proteoform_community.theoretical_proteoforms.Add(theoretical_proteoform);
+                    else lock (lockThread)
+                    {
+                        if (!Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(line[13]))
+                            Lollipop.proteoform_community.decoy_proteoforms.Add(line[13], new List<TheoreticalProteoform>());
+                        Lollipop.proteoform_community.add(theoretical_proteoform, line[13]);
+                    }
                 }
             });
         }
@@ -162,7 +167,7 @@ namespace ProteoformSuiteInternal
         public static string theoretical_proteoforms_results(bool target)
         {
             string tsv_header = String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
-                "description", "name", "fragment", "begin", "end", "unmodified_mass", "ptm_list", "ptm_mass" });
+                "description", "name", "fragment", "begin", "end", "unmodified_mass", "ptm_list", "ptm_mass", "database_name" });
             if (target)
             {
                 return tsv_header + Environment.NewLine +
@@ -170,20 +175,17 @@ namespace ProteoformSuiteInternal
             }
             else
             {
-                tsv_header += "\tdecoy_database";
-                string decoy_results = tsv_header + Environment.NewLine;
-                for (int decoyDatabaseNum = 0; decoyDatabaseNum < Lollipop.decoy_databases; decoyDatabaseNum++)
-                    decoy_results += String.Join(Environment.NewLine, Lollipop.proteoform_community.decoy_proteoforms["DecoyDatabase_" + decoyDatabaseNum].Select(p => theoretical_proteoform_as_tsv_row(p, "DecoyDatabase_" + decoyDatabaseNum))) + Environment.NewLine;
+                string decoy_results = tsv_header;
+                for (int decoyDatabaseNum = 0; decoyDatabaseNum < Lollipop.proteoform_community.decoy_proteoforms.Keys.Count; decoyDatabaseNum++)
+                    decoy_results += Environment.NewLine + String.Join(Environment.NewLine, Lollipop.proteoform_community.decoy_proteoforms[Lollipop.DECOY_PREFIX + decoyDatabaseNum].Select(p => theoretical_proteoform_as_tsv_row(p, Lollipop.DECOY_PREFIX + decoyDatabaseNum)));
                 return decoy_results;
             }
         }
 
         private static string theoretical_proteoform_as_tsv_row(TheoreticalProteoform t, string database)
         {
-            string row = String.Join("\t", new List<string> { t.accession.ToString(), t.modified_mass.ToString(), t.lysine_count.ToString(), t.is_target.ToString(), t.is_decoy.ToString(),
-                t.description.ToString(), t.name.ToString(), t.fragment.ToString(), t.begin.ToString(), t.end.ToString(), t.unmodified_mass.ToString(), t.ptm_descriptions.ToString(), t.ptm_mass.ToString() });
-            if (database == "Target") return row;
-            else return row + "\t" + database;
+            return String.Join("\t", new List<string> { t.accession.ToString(), t.modified_mass.ToString(), t.lysine_count.ToString(), t.is_target.ToString(), t.is_decoy.ToString(),
+                t.description.ToString(), t.name.ToString(), t.fragment.ToString(), t.begin.ToString(), t.end.ToString(), t.unmodified_mass.ToString(), t.ptm_descriptions.ToString(), t.ptm_mass.ToString(), database });
         }
 
         // PROTEOFORM RELATION I/O
