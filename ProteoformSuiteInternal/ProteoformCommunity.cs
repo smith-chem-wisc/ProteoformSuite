@@ -13,6 +13,8 @@ namespace ProteoformSuiteInternal
         public List<ProteoformRelation> relations_in_peaks = new List<ProteoformRelation>();
         public List<DeltaMassPeak> delta_mass_peaks = new List<DeltaMassPeak>();
         public List<ProteoformFamily> families = new List<ProteoformFamily>();
+        public static double maximum_delta_mass_peak_fdr = 25;
+
 
         //INITIALIZATION of PROTEOFORMS
         //public void add(string accession, NeuCodePair candidate)

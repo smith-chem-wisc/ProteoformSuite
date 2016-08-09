@@ -57,21 +57,8 @@ namespace Test
             Assert.AreEqual(2, Lollipop.raw_experimental_components.Count);
             Component d1 = Lollipop.raw_experimental_components[0];
             Component d2 = Lollipop.raw_experimental_components[1];
-            Assert.AreEqual(c1.id, d1.id);
-            Assert.AreEqual(c1.monoisotopic_mass, d1.monoisotopic_mass);
-            Assert.AreEqual(c1.weighted_monoisotopic_mass, d1.weighted_monoisotopic_mass);
-            Assert.AreEqual(c1.corrected_mass, d1.corrected_mass);
-            Assert.AreEqual(c1.intensity_sum, d1.intensity_sum);
-            //Assert.AreEqual(c1.num_charge_states_fromFile, d1.num_charge_states_fromFile);
-            Assert.AreEqual(c1.delta_mass, d1.delta_mass);
-            Assert.AreEqual(c1.relative_abundance, d1.relative_abundance);
-            Assert.AreEqual(c1.fract_abundance, d1.fract_abundance);
-            Assert.AreEqual(c1.scan_range, d1.scan_range);
-            Assert.AreEqual(c1.rt_range, d1.rt_range);
-            Assert.AreEqual(c1.rt_apex, d1.rt_apex);
-            Assert.AreEqual(c1.intensity_sum_olcs, d1.intensity_sum_olcs);
-            Assert.AreEqual(c1.file_origin, d1.file_origin);
-            Assert.AreEqual(c1.accepted, d1.accepted);
+            compare_components(c1, d1);
+            compare_components(c2, d2);
 
             // Construct a couple neucode pairs, check that they are the same before and after results output
             NeuCodePair n1 = new NeuCodePair(c1, c2);
@@ -112,6 +99,25 @@ namespace Test
             Assert.AreEqual(e.aggregated_components[0].id, f.aggregated_components[0].id);
             Assert.AreEqual(e.aggregated_components[1].id, f.aggregated_components[1].id);
             Assert.AreEqual(e.observation_count, f.observation_count);
+        }
+
+        public void compare_components(Component c, Component d)
+        {
+            Assert.AreEqual(c.id, d.id);
+            Assert.AreEqual(c.monoisotopic_mass, d.monoisotopic_mass);
+            Assert.AreEqual(c.weighted_monoisotopic_mass, d.weighted_monoisotopic_mass);
+            Assert.AreEqual(c.corrected_mass, d.corrected_mass);
+            Assert.AreEqual(c.intensity_sum, d.intensity_sum);
+            //Assert.AreEqual(c.num_charge_states_fromFile, d.num_charge_states_fromFile);
+            Assert.AreEqual(c.delta_mass, d.delta_mass);
+            Assert.AreEqual(c.relative_abundance, d.relative_abundance);
+            Assert.AreEqual(c.fract_abundance, d.fract_abundance);
+            Assert.AreEqual(c.scan_range, d.scan_range);
+            Assert.AreEqual(c.rt_range, d.rt_range);
+            Assert.AreEqual(c.rt_apex, d.rt_apex);
+            Assert.AreEqual(c.intensity_sum_olcs, d.intensity_sum_olcs);
+            Assert.AreEqual(c.file_origin, d.file_origin);
+            Assert.AreEqual(c.accepted, d.accepted);
         }
 
         [Test]
