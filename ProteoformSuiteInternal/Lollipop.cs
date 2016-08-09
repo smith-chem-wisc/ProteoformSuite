@@ -28,8 +28,22 @@ namespace ProteoformSuiteInternal
 
         //RAW EXPERIMENTAL COMPONENTS
         public static BindingList<string> deconResultsFileNames = new BindingList<string>();
+        public static BindingList<string> correctionFactorFilenames = new BindingList<string>();
+        public static List<Correction> correctionFactors = new List<Correction>();
         public static List<Component> raw_experimental_components = new List<Component>();
         public static bool neucode_labeled = true;
+
+        public static void process_correction_factor_corrections(Func<string, IEnumerable<Correction>> correctionReader)
+        {
+            
+            foreach (string  filename in Lollipop.correctionFactorFilenames)
+            {
+                Correction c = new Correction();
+                IEnumerable<Correction> readCorrections = correctionReader(filename);
+                correctionFactors.AddRange(c.CorrectionFactorInterpolation(readCorrections));
+            }
+        }
+
         public static void process_raw_components(Func<string, IEnumerable<Component>> componentReader)
         {
             foreach(string filename in Lollipop.deconResultsFileNames)
@@ -282,6 +296,7 @@ namespace ProteoformSuiteInternal
         //ET,ED,EE,EF COMPARISONS
         public static double ee_max_mass_difference = 250; //TODO: implement this in ProteoformFamilies and elsewhere
         public static double et_low_mass_difference=-250;
+        public static double ee_max_RetentionTime_difference = 2.5D;
         public static double et_high_mass_difference=250;
         public static double no_mans_land_lowerBound = 0.22;
         public static double no_mans_land_upperBound = 0.88;

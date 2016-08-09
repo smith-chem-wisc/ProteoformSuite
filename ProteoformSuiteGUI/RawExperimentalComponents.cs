@@ -19,8 +19,13 @@ namespace ProteoformSuite
 
         public void load_raw_components()
         {
+            if (Lollipop.correctionFactors.Count == 0 && Lollipop.correctionFactorFilenames.Count > 0)
+                Lollipop.process_correction_factor_corrections((b) => new CorretionFactorReader().read_components_from_txt(b));
+            else
+                Lollipop.correctionFactors = null;
+
             if (Lollipop.raw_experimental_components.Count == 0)
-                Lollipop.process_raw_components((b) => new ExcelReader().read_components_from_xlsx(b));
+                Lollipop.process_raw_components((b) => new ExcelReader().read_components_from_xlsx(b,Lollipop.correctionFactors));
             this.FillRawExpComponentsTable();
         }
 
