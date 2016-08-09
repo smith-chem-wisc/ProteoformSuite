@@ -29,13 +29,25 @@ namespace ProteoformSuiteInternal
                         string[] parts = line.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
                         correction.file_origin = fn;
                         correction.scan_number = Convert.ToInt32(parts[0].ToString());
+
+                        //two corrections can be available for each scan. The correction in column 3 is preferred
+                        //if column three is NaN, then column 2 is selected.
+                        //if column 2 is also NaN, then the correction for the scan will be interpolated from adjacent scans
+
                         try
                         {
-                            correction.correction = Convert.ToDouble(parts[1].ToString());
+                            correction.correction = Convert.ToDouble(parts[2].ToString());
                         }
                         catch
                         {
-                            correction.correction = double.NaN;
+                            try
+                            {
+                                correction.correction = Convert.ToDouble(parts[1].ToString());
+                            }
+                            catch
+                            {
+                                correction.correction = Double.NaN;
+                            }                           
                         }
                         raw_correctionFactors_in_file.Add(correction);
                     }
