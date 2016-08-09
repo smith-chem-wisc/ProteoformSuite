@@ -46,21 +46,6 @@ namespace ProteoformSuite
             
         }
 
-//        private void cb_neuCodeLabeled_CheckedChanged(object sender, EventArgs e)
-//        {
-//=======
-//        }
-
-        //private void lbDeconResults_SelectedIndexChanged(object sender, EventArgs e)
-        //{
-            
-        //}
-
-        //private void cb_neuCodeLabeled_CheckedChanged(object sender, EventArgs e)
-        //{
-
-        //}
-
         private void btnDeconResultsAdd_Click_1(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
@@ -110,7 +95,7 @@ namespace ProteoformSuite
         private void btn_AddCorrectionFactors_Click_1(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog2 = new OpenFileDialog();
-            openFileDialog2.Filter = "txt files (*.txt)|*.txt";
+            openFileDialog2.Filter = "txt files (*.txt; *.tsv)|*.txt; *.tsv";
 
 
             openFileDialog2.Multiselect = true;
