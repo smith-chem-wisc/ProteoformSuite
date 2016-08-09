@@ -167,6 +167,7 @@ namespace ProteoformSuiteInternal
             this.fragment = fragment;
             this.begin = begin;
             this.end = end;
+            this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
         }
 

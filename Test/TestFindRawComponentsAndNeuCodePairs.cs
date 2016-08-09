@@ -44,8 +44,8 @@ namespace Test
             Assert.AreEqual(Math.Round(2127.5113, 4), Math.Round(c1.delta_mass, 4));
             Assert.AreEqual(Math.Round(54.97795307, 8), Math.Round(c1.relative_abundance, 8));
             Assert.AreEqual(Math.Round(1.141297566, 8), Math.Round(c1.fract_abundance, 8));
-            //Assert.AreEqual("413-415", c1.scan_range);
-            //Assert.AreEqual("56.250-56.510", c1.rt_range);
+            Assert.AreEqual("413-415", c1.scan_range);
+            Assert.AreEqual("56.250-56.510", c1.rt_range);
             Assert.AreEqual(Math.Round(56.3809775, 7), Math.Round(c1.rt_apex, 7));
 
             //testing intensity ratio

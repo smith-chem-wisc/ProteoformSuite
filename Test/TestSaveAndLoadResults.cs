@@ -10,7 +10,7 @@ namespace Test
 {
     [TestFixture]
     public class TestSaveAndLoadResults
-    {
+    { 
         [Test]
         public void resultsIn_match_resultsOut_component_neucodepair_aggregatedproteoform()
         {
@@ -121,6 +121,8 @@ namespace Test
             TheoreticalProteoform pf2 = new TheoreticalProteoform("target2");
             pf1.description = "something1";
             pf2.description = "something2";
+            pf1.name = "name1";
+            pf2.name = "name2";
             pf1.fragment = "fragment1";
             pf2.fragment = "fragment2";
             pf1.begin = 1;
@@ -145,11 +147,14 @@ namespace Test
             string[] theoretical_proteoform_results = Results.theoretical_proteoforms_results(true).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.AreEqual(3, theoretical_proteoform_results.Length);
             Lollipop.proteoform_community.theoretical_proteoforms.Clear();
+            Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() }, { "test", new Modification("test", "test", "test", "1", new char[] { 'X' }, 2.345, 2.344) } };
             Results.read_theoretical_proteoforms(theoretical_proteoform_results, true);
             TheoreticalProteoform qf1 = Lollipop.proteoform_community.theoretical_proteoforms[0];
             TheoreticalProteoform qf2 = Lollipop.proteoform_community.theoretical_proteoforms[1];
             Assert.AreEqual(pf1.accession, qf1.accession);
             Assert.AreEqual(pf2.accession, qf2.accession);
+            Assert.AreEqual(pf1.name, qf1.name);
+            Assert.AreEqual(pf2.name, qf2.name);
             Assert.AreEqual(pf1.description, qf1.description);
             Assert.AreEqual(pf2.description, qf2.description);
             Assert.AreEqual(pf1.fragment, qf1.fragment);
