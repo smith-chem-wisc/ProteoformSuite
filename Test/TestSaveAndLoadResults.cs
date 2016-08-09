@@ -161,17 +161,17 @@ namespace Test
             // Load these into the decoy database and test that out
             Lollipop.decoy_databases = 2;
             Lollipop.proteoform_community.decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>> {
-                { Lollipop.DECOY_PREFIX + "0", new List<TheoreticalProteoform>() { pf1 } },
-                { Lollipop.DECOY_PREFIX + "1", new List<TheoreticalProteoform>() { pf2 } }
+                { Lollipop.decoy_database_name_prefix + "0", new List<TheoreticalProteoform>() { pf1 } },
+                { Lollipop.decoy_database_name_prefix + "1", new List<TheoreticalProteoform>() { pf2 } }
             };
             string[] decoy_proteoform_results = Results.theoretical_proteoforms_results(false).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.AreEqual(3, decoy_proteoform_results.Length);
             Lollipop.proteoform_community.decoy_proteoforms.Clear();
             Results.read_theoretical_proteoforms(decoy_proteoform_results);
-            Assert.IsTrue(Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(Lollipop.DECOY_PREFIX + "0"));
-            Assert.IsTrue(Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(Lollipop.DECOY_PREFIX + "1"));
-            qf1 = Lollipop.proteoform_community.decoy_proteoforms[Lollipop.DECOY_PREFIX + "0"].First();
-            qf2 = Lollipop.proteoform_community.decoy_proteoforms[Lollipop.DECOY_PREFIX + "1"].First();
+            Assert.IsTrue(Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(Lollipop.decoy_database_name_prefix + "0"));
+            Assert.IsTrue(Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(Lollipop.decoy_database_name_prefix + "1"));
+            qf1 = Lollipop.proteoform_community.decoy_proteoforms[Lollipop.decoy_database_name_prefix + "0"].First();
+            qf2 = Lollipop.proteoform_community.decoy_proteoforms[Lollipop.decoy_database_name_prefix + "1"].First();
             compare_theoreticals(pf1, qf1);
             compare_theoreticals(pf2, qf2);
         }
