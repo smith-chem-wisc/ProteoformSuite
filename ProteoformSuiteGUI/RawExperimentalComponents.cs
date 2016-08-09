@@ -14,6 +14,11 @@ namespace ProteoformSuite
 
         public void RawExperimentalComponents_Load(object sender, EventArgs e)
         {
+            load_raw_components();
+        }
+
+        public void load_raw_components()
+        {
             if (Lollipop.raw_experimental_components.Count == 0)
                 Lollipop.process_raw_components((b) => new ExcelReader().read_components_from_xlsx(b));
             this.FillRawExpComponentsTable();

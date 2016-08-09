@@ -92,7 +92,7 @@ namespace ProteoformSuite
 
             MessageBox.Show("Choose the method file corresponding to the results files.");
             openMethod();
-
+            
             Lollipop.opened_results = true;
             Lollipop.opened_results_originally = true;
             ResultsSummary.loadDescription = working_directory;
@@ -105,15 +105,15 @@ namespace ProteoformSuite
             Results.read_raw_components(File.ReadAllLines(working_directory + "\\raw_experimental_components.tsv"));
             if (Lollipop.neucode_labeled) Results.read_raw_neucode_pairs(File.ReadAllLines(working_directory + "\\raw_neucode_pairs.tsv"));
             Results.read_aggregated_proteoforms(File.ReadAllLines(working_directory + "\\aggregated_experimental_proteoforms.tsv"));
-            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\theoretical_proteoforms.tsv"));
-            Results.read_decoy_proteoforms(File.ReadAllLines(working_directory + "\\decoy_proteoforms.tsv"));
+            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\theoretical_proteoforms.tsv"), true);
+            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\decoy_proteoforms.tsv"), false);
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_theoretical_relationships.tsv"), ProteoformComparison.et);
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_decoy_relationships.tsv"), ProteoformComparison.ed);
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_experimental_relationships.tsv"), ProteoformComparison.ee);
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_false_relationships.tsv"), ProteoformComparison.ef);
             Results.read_peaks(File.ReadAllLines(working_directory + "\\experimental_theoretical_peaks.tsv"), ProteoformComparison.et);
             Results.read_peaks(File.ReadAllLines(working_directory + "\\experimental_experimental_peaks.tsv"), ProteoformComparison.ee);
-            Results.read_families(File.ReadAllLines(working_directory + "\\proteoform_families.tsv"))
+            Results.read_families(File.ReadAllLines(working_directory + "\\proteoform_families.tsv"));
             MessageBox.Show("Files successfully read in.");
 
             Lollipop.opened_results = false;
@@ -235,9 +235,8 @@ namespace ProteoformSuite
             MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
 
             clear_lists();
-            Parallel.Invoke( 
-                () => Lollipop.get_experimental_proteoforms((b)=>new ExcelReader().read_components_from_xlsx(b)),
-                () => Lollipop.get_theoretical_proteoforms());
+            rawExperimentalComponents.load_raw_components();
+            Lollipop.get_theoretical_proteoforms();
             Parallel.Invoke(
                 () => Lollipop.make_et_relationships(),
                 () => Lollipop.make_ee_relationships());

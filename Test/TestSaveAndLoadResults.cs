@@ -12,7 +12,7 @@ namespace Test
     public class TestSaveAndLoadResults
     {
         [Test]
-        public void results_in_match_results_out_for_component_neucodepair_aggregatedproteoform()
+        public void resultsIn_match_resultsOut_component_neucodepair_aggregatedproteoform()
         {
             // Create a couple raw components, make strings, read those strings, and make sure the components match
             Component c1 = new Component();
@@ -112,6 +112,66 @@ namespace Test
             Assert.AreEqual(e.aggregated_components[0].id, f.aggregated_components[0].id);
             Assert.AreEqual(e.aggregated_components[1].id, f.aggregated_components[1].id);
             Assert.AreEqual(e.observation_count, f.observation_count);
+        }
+
+        [Test]
+        public void resultsIn_match_resultsOut_theoretical_protoeoforms()
+        {
+            TheoreticalProteoform pf1 = new TheoreticalProteoform("target1");
+            TheoreticalProteoform pf2 = new TheoreticalProteoform("target2");
+            pf1.description = "something1";
+            pf2.description = "something2";
+            pf1.fragment = "fragment1";
+            pf2.fragment = "fragment2";
+            pf1.begin = 1;
+            pf2.begin = 2;
+            pf1.end = 100;
+            pf2.end = 99;
+            pf1.unmodified_mass = 1001.0;
+            pf2.unmodified_mass = 999.0;
+            pf1.ptm_set = new PtmSet(new List<Ptm> { new Ptm(1, new Modification("test", "test", "test", "1", new char[] { 'X' }, 2.345, 2.344)) });
+            pf2.ptm_set = new PtmSet( new List<Ptm> { new Ptm() });
+            Assert.AreEqual(2.345, pf1.ptm_set.mass);
+            Assert.AreEqual(0, pf2.ptm_set.mass);
+            pf1.modified_mass = pf1.unmodified_mass + pf1.ptm_set.mass;
+            pf2.modified_mass = pf2.unmodified_mass + pf2.ptm_set.mass;
+            pf1.lysine_count = 7;
+            pf2.lysine_count = 8;
+            pf1.is_target = true;
+            pf2.is_target = true;
+            pf1.is_decoy = false;
+            pf2.is_decoy = false;
+            Lollipop.proteoform_community.theoretical_proteoforms = new List<TheoreticalProteoform> { pf1, pf2 };
+            string[] theoretical_proteoform_results = Results.theoretical_proteoforms_results(true).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            Assert.AreEqual(3, theoretical_proteoform_results.Length);
+            Lollipop.proteoform_community.theoretical_proteoforms.Clear();
+            Results.read_theoretical_proteoforms(theoretical_proteoform_results, true);
+            TheoreticalProteoform qf1 = Lollipop.proteoform_community.theoretical_proteoforms[0];
+            TheoreticalProteoform qf2 = Lollipop.proteoform_community.theoretical_proteoforms[1];
+            Assert.AreEqual(pf1.accession, qf1.accession);
+            Assert.AreEqual(pf2.accession, qf2.accession);
+            Assert.AreEqual(pf1.description, qf1.description);
+            Assert.AreEqual(pf2.description, qf2.description);
+            Assert.AreEqual(pf1.fragment, qf1.fragment);
+            Assert.AreEqual(pf2.fragment, qf2.fragment);
+            Assert.AreEqual(pf1.begin, qf1.begin);
+            Assert.AreEqual(pf2.begin, qf2.begin);
+            Assert.AreEqual(pf1.end, qf1.end);
+            Assert.AreEqual(pf1.end, qf1.end);
+            Assert.AreEqual(pf1.unmodified_mass, qf1.unmodified_mass);
+            Assert.AreEqual(pf2.unmodified_mass, qf2.unmodified_mass);
+            Assert.AreEqual(pf1.modified_mass, qf1.modified_mass);
+            Assert.AreEqual(pf2.modified_mass, qf2.modified_mass);
+            Assert.AreEqual(pf1.lysine_count, qf1.lysine_count);
+            Assert.AreEqual(pf2.lysine_count, qf2.lysine_count);
+            Assert.AreEqual(pf1.is_target, qf1.is_target);
+            Assert.AreEqual(pf2.is_target, qf2.is_target);
+            Assert.AreEqual(pf1.is_decoy, qf1.is_decoy);
+            Assert.AreEqual(pf2.is_decoy, qf2.is_decoy);
+            Assert.AreEqual(pf1.ptm_mass, qf1.ptm_mass);
+            Assert.AreEqual(pf2.ptm_mass, qf2.ptm_mass);
+            Assert.AreEqual(pf1.ptm_list_string(), qf1.ptm_list_string());
+            Assert.AreEqual(pf2.ptm_list_string(), qf2.ptm_list_string());
         }
     }
 }

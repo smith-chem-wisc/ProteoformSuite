@@ -30,7 +30,7 @@ namespace ProteoformSuite
 
         public void TheoreticalDatabase_Load(object sender, EventArgs e)
         {
-           btn_Make_Databases.Enabled = false;
+            btn_Make_Databases.Enabled = false;
             InitializeOpenXmlDialog();
             InitializeOpenPtmlistDialog();
             InitializeSettings();

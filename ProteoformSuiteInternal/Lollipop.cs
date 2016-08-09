@@ -240,17 +240,16 @@ namespace ProteoformSuiteInternal
 
             //PARALLEL PROBLEM
             //Parallel.ForEach<PtmSet>(unique_ptm_groups, group =>
-            foreach (PtmSet group in unique_ptm_groups)
+            foreach (PtmSet ptm_set in unique_ptm_groups)
             {
-                List<Ptm> ptm_list = group.ptm_combination.ToList();
-                double ptm_mass = group.mass;
-                double proteoform_mass = unmodified_mass + group.mass;
-                string ptm_description = group.ptm_combination.ToString();
+                double proteoform_mass = unmodified_mass + ptm_set.mass;
+                string protein_description = prot.description + "_" + listMemberNumber.ToString();
                 if (decoy_number < 0 ) 
-                    proteoform_community.add(new TheoreticalProteoform(accession, prot.description + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
+                    proteoform_community.add(new TheoreticalProteoform(accession, protein_description, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
+                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, true));
                 else
-                    proteoform_community.add(new TheoreticalProteoform(accession, prot.description + "_" + listMemberNumber.ToString() + "_DECOY" + "_" + decoy_number.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), "DecoyDatabase_" + decoy_number);
-
+                    proteoform_community.add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
+                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, false), "DecoyDatabase_" + decoy_number);
                 listMemberNumber++;
             } //);
         }
