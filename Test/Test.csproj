@@ -78,6 +78,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestCorrectionFactorInterpolation.cs" />
     <Compile Include="TestFindNeuCodePairs.cs" />
     <Compile Include="TestModification.cs" />
     <Compile Include="TestAminoAcidMasses.cs" />

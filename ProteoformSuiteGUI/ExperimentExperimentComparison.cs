@@ -37,9 +37,6 @@ namespace ProteoformSuite
             }
             this.FillTablesAndCharts();
             initial_load = false;
-
-
-
         }
 
         public void FillTablesAndCharts()
@@ -237,6 +234,11 @@ namespace ProteoformSuite
         private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
         {
             if (!initial_load) Lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value); 
+        }
+
+        private void nUD_MaxRetTimeDifference_ValueChanged(object sender, EventArgs e)
+        {
+            if (!initial_load) Lollipop.ee_max_RetentionTime_difference = Convert.ToDouble(nUD_MaxRetTimeDifference.Value);
         }
     }
 }
