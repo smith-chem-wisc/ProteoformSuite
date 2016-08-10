@@ -91,7 +91,8 @@ namespace ProteoformSuite
             else return;
 
             MessageBox.Show("Choose the method file corresponding to the results files.");
-            openMethod();
+            bool successful_open = openMethod();
+            if (!successful_open) return;
             
             Lollipop.opened_results = true;
             Lollipop.opened_results_originally = true;
@@ -119,7 +120,7 @@ namespace ProteoformSuite
             Lollipop.opened_results = false;
         }
 
-        private void openMethod()
+        private bool openMethod()
         {
             DialogResult dr = this.methodFileOpen.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
@@ -130,7 +131,9 @@ namespace ProteoformSuite
                 {
                     Lollipop.load_setting(setting_spec.Trim());
                 }
+                return true;
             }
+            return false;
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -223,7 +226,8 @@ namespace ProteoformSuite
 
         private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Choose a method file.");
+            var result = MessageBox.Show("Choose a method file.", "Method Load and Run", MessageBoxButtons.OKCancel);
+            if (result == DialogResult.Cancel) return;
             if (Lollipop.deconResultsFileNames.Count != 0)
             {
                 var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?", "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
@@ -231,7 +235,8 @@ namespace ProteoformSuite
                 if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); Lollipop.use_method_files = true; }
                 if (response == DialogResult.Cancel) { return; }
             }
-            openMethod();
+            bool successful_opening = openMethod();
+            if (!successful_opening) return;
             MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
 
             clear_lists();

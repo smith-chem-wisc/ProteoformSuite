@@ -51,7 +51,6 @@
     <Compile Include="AminoAcidMasses.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Correction.cs" />
-    <Compile Include="CorrectionFactorReader.cs" />
     <Compile Include="DeltaMassPeak.cs" />
     <Compile Include="ExcelReader.cs" />
     <Compile Include="Lollipop.cs" />

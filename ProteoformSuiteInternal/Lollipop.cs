@@ -36,9 +36,8 @@ namespace ProteoformSuiteInternal
         public static void process_raw_components()
         {
             ExcelReader componentReader = new ExcelReader();
-            CorrectionFactorReader correctionReader = new CorrectionFactorReader();
             if (correctionFactorFilenames.Count > 0)
-                correctionFactors = Lollipop.correctionFactorFilenames.SelectMany(filename => Correction.CorrectionFactorInterpolation(correctionReader.read_components_from_txt(filename))).ToList();
+                correctionFactors = Lollipop.correctionFactorFilenames.SelectMany(filename => Correction.CorrectionFactorInterpolation(read_corrections(filename))).ToList();
             foreach (string filename in Lollipop.deconResultsFileNames)
             {
                 List<Component> raw_components = componentReader.read_components_from_xlsx(filename, correctionFactors).ToList();
@@ -50,6 +49,33 @@ namespace ProteoformSuiteInternal
                     foreach (string scan_range in scan_ranges)
                     find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
                 }
+            }
+        }
+
+        public static IEnumerable<Correction> read_corrections(string filename)
+        {
+            string[] correction_lines = File.ReadAllLines(filename);
+            string file_origin = correction_lines[0].Trim();
+            for (int i = 1; i < correction_lines.Length; i++)
+            {
+                string[] parts = correction_lines[i].Split('\t');
+                if (parts.Length < 3) continue;
+                int scan_number = Convert.ToInt32(parts[0]);
+                double correction = Double.NaN;
+
+                //two corrections can be available for each scan. The correction in column 3 is preferred
+                //if column three is NaN, then column 2 is selected.
+                //if column 2 is also NaN, then the correction for the scan will be interpolated from adjacent scans
+                try { correction = Convert.ToDouble(parts[2]); }
+                catch {
+                    try { correction = Convert.ToDouble(parts[1]); }
+                    catch { }
+                }
+
+
+                //correction = Convert.ToDouble(parts[2]);
+                //if (Double.IsNaN(correction)) correction = Convert.ToDouble(parts[1]);
+                yield return new Correction(file_origin, scan_number, correction);
             }
         }
 
