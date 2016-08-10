@@ -44,7 +44,7 @@ namespace ProteoformSuiteInternal
     public class ExperimentalProteoform : Proteoform
     {
         private Component root;
-        public List<Component> aggregated_components;
+        public List<Component> aggregated_components { get; set; } = new List<Component>();
         public double agg_mass { get; set; } = 0;
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
@@ -56,7 +56,6 @@ namespace ProteoformSuiteInternal
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession)
         {
             this.root = root;
-            this.aggregated_components = new List<Component>() { root };
             this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p)));
             this.calculate_properties();
         }
@@ -88,7 +87,7 @@ namespace ProteoformSuiteInternal
                 this.agg_intensity = aggregated_components.Select(p => p.intensity_sum_olcs).Sum();
                 this.agg_rt = aggregated_components.Select(p => p.rt_apex * p.intensity_sum_olcs / this.agg_intensity).Sum();
                 this.agg_mass = aggregated_components.Select(p =>
-                    (p.corrected_mass + Math.Round((this.root.corrected_mass - p.corrected_mass), 0) * 1.0015) //mass + mass shift
+                    (p.corrected_mass + Math.Round((this.root.corrected_mass - p.corrected_mass), 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) //mass + mass shift
                     * p.intensity_sum_olcs / this.agg_intensity).Sum();
             }
             else
@@ -96,7 +95,7 @@ namespace ProteoformSuiteInternal
                 this.agg_intensity = aggregated_components.Select(p => p.intensity_sum).Sum();
                 this.agg_rt = aggregated_components.Select(p => p.rt_apex * p.intensity_sum / this.agg_intensity).Sum();
                 this.agg_mass = aggregated_components.Select(p =>
-                    (p.corrected_mass + Math.Round((this.root.corrected_mass - p.corrected_mass), 0) * 1.0015) //mass + mass shift
+                    (p.corrected_mass + Math.Round((this.root.corrected_mass - p.corrected_mass), 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) //mass + mass shift
                     * p.intensity_sum / this.agg_intensity).Sum();
             }
             if (root is NeuCodePair) this.lysine_count = ((NeuCodePair)this.root).lysine_count;
@@ -126,13 +125,14 @@ namespace ProteoformSuiteInternal
         private bool tolerable_mass(Component candidate)
         {
             int max_missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
-            List<int> missed_monoisotopics = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
-            foreach (int m in missed_monoisotopics)
+            List<int> missed_monoisotopics_range = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
+            foreach (int missed_mono_count in missed_monoisotopics_range)
             {
-                double shift = m * 1.0015;
-                double mass_tolerance = (this.root.corrected_mass + shift) / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance);
-                double low = this.root.corrected_mass + shift - mass_tolerance;
-                double high = this.root.corrected_mass + shift + mass_tolerance;
+                double shift = missed_mono_count * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                double shifted_mass = this.root.corrected_mass + shift;
+                double mass_tolerance = shifted_mass / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance);
+                double low = shifted_mass - mass_tolerance;
+                double high = shifted_mass + mass_tolerance;
                 bool tolerable_mass = candidate.corrected_mass >= low && candidate.corrected_mass <= high;
                 if (tolerable_mass) return true; //Return a true result immediately; acts as an OR between these conditions
             }

@@ -139,7 +139,6 @@ namespace ProteoformSuiteInternal
             {
                 Component root = remaining_proteoforms[0];
                 List<Component> tmp_remaining_proteoforms = remaining_proteoforms.ToList();
-                tmp_remaining_proteoforms.Remove(root);
                 ExperimentalProteoform new_pf = new ExperimentalProteoform("E_" + count, root, tmp_remaining_proteoforms, true);
                 Lollipop.proteoform_community.add(new_pf);
                 remaining_proteoforms = tmp_remaining_proteoforms.Except(new_pf.aggregated_components).ToArray();
