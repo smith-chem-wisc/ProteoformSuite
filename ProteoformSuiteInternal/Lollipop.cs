@@ -55,7 +55,7 @@ namespace ProteoformSuiteInternal
         public static IEnumerable<Correction> read_corrections(string filename)
         {
             string[] correction_lines = File.ReadAllLines(filename);
-            string file_origin = correction_lines[0].Trim();
+            string file_origin = correction_lines[0];
             for (int i = 1; i < correction_lines.Length; i++)
             {
                 string[] parts = correction_lines[i].Split('\t');
@@ -66,15 +66,8 @@ namespace ProteoformSuiteInternal
                 //two corrections can be available for each scan. The correction in column 3 is preferred
                 //if column three is NaN, then column 2 is selected.
                 //if column 2 is also NaN, then the correction for the scan will be interpolated from adjacent scans
-                try { correction = Convert.ToDouble(parts[2]); }
-                catch {
-                    try { correction = Convert.ToDouble(parts[1]); }
-                    catch { }
-                }
-
-
-                //correction = Convert.ToDouble(parts[2]);
-                //if (Double.IsNaN(correction)) correction = Convert.ToDouble(parts[1]);
+                correction = Convert.ToDouble(parts[2]);
+                if (Double.IsNaN(correction)) correction = Convert.ToDouble(parts[1]);
                 yield return new Correction(file_origin, scan_number, correction);
             }
         }
