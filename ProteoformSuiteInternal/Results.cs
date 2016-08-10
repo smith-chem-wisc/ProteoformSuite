@@ -37,9 +37,13 @@ namespace ProteoformSuiteInternal
                 {
                     component.intensity_sum_olcs = Convert.ToDouble(line[12]);
                     component.file_origin = line[13];
+                    component.accepted = Convert.ToBoolean(line[14]);
                 }
-                else { component.file_origin = line[12]; }
-                component.accepted = true;
+                else
+                {
+                    component.file_origin = line[12];
+                    component.accepted = Convert.ToBoolean(line[13]);
+                }
                 lock (lockThread) { Lollipop.raw_experimental_components.Add(component); }
             });
         }
@@ -49,10 +53,10 @@ namespace ProteoformSuiteInternal
             string tsv_header;
             if (Lollipop.neucode_labeled)
                 tsv_header = String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "corrected_mass", "intensity_sum", "num_charge_states",
-                        "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range", "rt_apex", "intensity_sum_olcs", "file_origin" });
+                        "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range", "rt_apex", "intensity_sum_olcs", "file_origin", "accepted" });
             else
                 tsv_header = String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "corrected_mass", "intensity_sum", "num_charge_states",
-                        "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range", "rt_apex", "file_origin" });
+                        "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range", "rt_apex", "file_origin", "accepted" });
             string results_rows = String.Join(Environment.NewLine, Lollipop.raw_experimental_components.Select(c => component_as_tsv_row(c)));
             return tsv_header + Environment.NewLine + results_rows;
         }
@@ -63,12 +67,12 @@ namespace ProteoformSuiteInternal
                 return String.Join("\t", new List<string> { c.id.ToString(), c.monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(), c. corrected_mass.ToString(),
                     c.intensity_sum.ToString(), c.num_charge_states.ToString(),
                     c.delta_mass.ToString(), c.relative_abundance.ToString(), c.fract_abundance.ToString(), c.scan_range.ToString(), c.rt_range.ToString(),
-                    c.rt_apex.ToString(), c.intensity_sum_olcs.ToString(), c.file_origin.ToString() });
+                    c.rt_apex.ToString(), c.intensity_sum_olcs.ToString(), c.file_origin.ToString(), c.accepted.ToString() });
             else
                 return String.Join("\t", new List<string> { c.id.ToString(), c.monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(), c.corrected_mass.ToString(),
                     c.intensity_sum.ToString(), c.num_charge_states.ToString(),
                     c.delta_mass.ToString(), c.relative_abundance.ToString(), c.fract_abundance.ToString(), c.scan_range.ToString(), c.rt_range.ToString(),
-                    c.rt_apex.ToString(), c.file_origin.ToString() });
+                    c.rt_apex.ToString(), c.file_origin.ToString(), c.accepted.ToString() });
         }
 
         // RAW NEUCODE PAIR I/O

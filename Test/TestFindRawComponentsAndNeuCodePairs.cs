@@ -25,7 +25,7 @@ namespace Test
             Lollipop.deconResultsFileNames = new System.ComponentModel.BindingList<string>();
             Lollipop.deconResultsFileNames.Add("UnitTestFiles\\noisy.xlsx");
             Lollipop.neucode_labeled = true;
-            Lollipop.process_raw_components(componentReader);
+            Lollipop.process_raw_components();
             Assert.AreEqual(224, Lollipop.raw_experimental_components.Count);
 
             //Check the validity of one component read from the Excel file

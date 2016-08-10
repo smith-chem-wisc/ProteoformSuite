@@ -19,13 +19,8 @@ namespace ProteoformSuite
 
         public void load_raw_components()
         {
-            if (Lollipop.correctionFactors.Count == 0 && Lollipop.correctionFactorFilenames.Count > 0)
-                Lollipop.process_correction_factor_corrections((b) => new CorretionFactorReader().read_components_from_txt(b));
-            else
-                Lollipop.correctionFactors = null;
-
             if (Lollipop.raw_experimental_components.Count == 0)
-                Lollipop.process_raw_components((b) => new ExcelReader().read_components_from_xlsx(b,Lollipop.correctionFactors));
+                Lollipop.process_raw_components(); //Includes reading correction factors if present
             this.FillRawExpComponentsTable();
         }
 
@@ -61,10 +56,12 @@ namespace ProteoformSuite
             dgv_RawExpComp_MI_masses.Columns["rt_range"].HeaderText = "RT Range";
             dgv_RawExpComp_MI_masses.Columns["num_charge_states"].HeaderText = "No. Charge States";
             dgv_RawExpComp_MI_masses.Columns["accepted"].HeaderText = "Accepted";
+            dgv_RawExpComp_MI_masses.Columns["manual_mass_shift"].HeaderText = "Manual Mass Shift";
 
             dgv_RawExpComp_MI_masses.AllowUserToAddRows = false;
             dgv_RawExpComp_MI_masses.Columns["corrected_mass"].Visible = false;
             dgv_RawExpComp_MI_masses.Columns["intensity_sum_olcs"].Visible = false;
+            dgv_RawExpComp_MI_masses.Columns["_manual_mass_shift"].Visible = false;
         }
 
         private void dgv_RawExpComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -87,9 +84,11 @@ namespace ProteoformSuite
             //set column header
             dgv_RawExpComp_IndChgSts.Columns["intensity"].HeaderText = "Intensity";
             dgv_RawExpComp_IndChgSts.Columns["mz_centroid"].HeaderText = "Centroid m/z";
+            dgv_RawExpComp_IndChgSts.Columns["mz_correction"].HeaderText = "Lock-Mass Correction (m/z)";
             dgv_RawExpComp_IndChgSts.Columns["calculated_mass"].HeaderText = "Calculated Mass";
             dgv_RawExpComp_IndChgSts.Columns["charge_count"].HeaderText = "Charge Count";
 
+            if (Lollipop.correctionFactorFilenames.Count == 0) dgv_RawExpComp_IndChgSts.Columns["mz_correction"].Visible = false;
             dgv_RawExpComp_IndChgSts.AllowUserToAddRows = false;
         }
     }

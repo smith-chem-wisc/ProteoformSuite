@@ -16,58 +16,43 @@ namespace Test
         [Test]
         public void testCorrectionFactorInterpolation()
         {
-            Correction c = new Correction();
+            Correction correction1 = new Correction("filename.txt", 1, Double.NaN);
+            Correction correction2 = new Correction("filename.txt", 2, Double.NaN);
+            Correction correction3 = new Correction("filename.txt", 3, 4D);
+            Correction correction4 = new Correction("filename.txt", 4, Double.NaN);
+            Correction correction5 = new Correction("filename.txt", 5, 6D);
+            Correction correction6 = new Correction("filename.txt", 6, Double.NaN);
+            List<Correction> correctionFactorTestList = new List<Correction> { correction1, correction2, correction3, correction4, correction5, correction6 };
+            List<Correction> interpolated = Correction.CorrectionFactorInterpolation(correctionFactorTestList);
 
-            List<Correction> correctionFactorTestList = new List<Correction>();
-
-            Correction correction1 = new Correction();
-            correction1.correction = Double.NaN;
-            correction1.file_origin = "filename.txt";
-            correction1.scan_number = 1;
-            correctionFactorTestList.Add(correction1);
-
-            Correction correction2 = new Correction();
-            correction2.correction = Double.NaN;
-            correction2.file_origin = "filename.txt";
-            correction2.scan_number = 2;
-            correctionFactorTestList.Add(correction2);
-
-            Correction correction3 = new Correction();
-            correction3.correction = 4D;
-            correction3.file_origin = "filename.txt";
-            correction3.scan_number = 3;
-            correctionFactorTestList.Add(correction3);
-
-            Correction correction4 = new Correction();
-            correction4.correction = Double.NaN;
-            correction4.file_origin = "filename.txt";
-            correction4.scan_number = 4;
-            correctionFactorTestList.Add(correction4);
-
-            Correction correction5 = new Correction();
-            correction5.correction = 6D;
-            correction5.file_origin = "filename.txt";
-            correction5.scan_number = 5;
-            correctionFactorTestList.Add(correction5);
-
-            Correction correction6 = new Correction();
-            correction6.correction = Double.NaN;
-            correction6.file_origin = "filename.txt";
-            correction6.scan_number = 6;
-            correctionFactorTestList.Add(correction6);
-
-            correctionFactorTestList = c.CorrectionFactorInterpolation(correctionFactorTestList);
-
-            foreach(Correction corr in correctionFactorTestList)
+            foreach(Correction corr in interpolated)
             {
                 Assert.AreEqual(Double.IsNaN(corr.correction), false);//checking to see that all values are defined.
             }
 
-            Assert.AreEqual(correctionFactorTestList.First().correction, 4D); // checking to see if the first undefined values were given the first defined value
-            Assert.AreEqual(correctionFactorTestList.Last().correction, 6D); //checing to see if undefined values at the end of the list are given last defined value
-            Assert.AreEqual((from s in correctionFactorTestList where s.scan_number == 4 select s).First().correction, 5D);//checking to see that undefined values in the middle of the list are given average
-
+            Assert.AreEqual(interpolated.First().correction, 4D); // checking to see if the first undefined values were given the first defined value
+            Assert.AreEqual(interpolated.Last().correction, 6D); //checing to see if undefined values at the end of the list are given last defined value
+            Assert.AreEqual(interpolated.Where(s => s.scan_number == 4).First().correction, 5D);//checking to see that undefined values in the middle of the list are given average
         }
-        
+
+        [Test]
+        public void correction_factors_into_chargestates()
+        {
+            string filename = "filename.txt";
+            string scan_range = "1-3";
+            Component c = new Component();
+            c.file_origin = filename;
+            c.scan_range = scan_range;
+            Correction correction1 = new Correction(filename, 1, Double.NaN);
+            Correction correction2 = new Correction(filename, 2, Double.NaN);
+            Correction correction3 = new Correction(filename, 3, 4D);
+            List<Correction> corrections = Correction.CorrectionFactorInterpolation(new List<Correction> { correction1, correction2, correction3 });
+            string charge_count = "1";
+            string intensity = "1001.1";
+            string mz_centroid = "123.2";
+            string reported_mass = "125.0";
+            c.add_charge_state(new List<string> { charge_count, intensity, mz_centroid, reported_mass }, new ExcelReader().GetCorrectionFactor(filename, scan_range, corrections));
+            Assert.AreEqual(c.charge_states.First().mz_correction, 4D);
+        }
     }
 }

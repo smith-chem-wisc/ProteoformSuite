@@ -22,11 +22,15 @@ namespace ProteoformSuite
 
         public void AggregatedProteoforms_Load(object sender, EventArgs e)
         {
-            this.InitializeSettings();
+            InitializeSettings();
+            aggregate_proteoforms();
+            FillAggregatesTable();
+        }
+
+        public void aggregate_proteoforms()
+        {
             if (Lollipop.proteoform_community.experimental_proteoforms.Count == 0) Lollipop.aggregate_proteoforms();
             updateFiguresOfMerit();
-            this.FillAggregatesTable();
-            DisplayUtility.FormatAggregatesTable(dgv_AggregatedProteoforms);
             initial_load = false;
         }
 
@@ -34,8 +38,7 @@ namespace ProteoformSuite
         {
             ClearListsAndTables();
             Lollipop.aggregate_proteoforms();
-            this.FillAggregatesTable();
-            DisplayUtility.FormatAggregatesTable(dgv_AggregatedProteoforms);
+            FillAggregatesTable();
             updateFiguresOfMerit();
         }
 
@@ -61,8 +64,9 @@ namespace ProteoformSuite
         public void FillAggregatesTable()
         {
             DisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, Lollipop.proteoform_community.experimental_proteoforms);
+            DisplayUtility.FormatAggregatesTable(dgv_AggregatedProteoforms);
         }
-     
+
         private void dgv_AggregatedProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && !Lollipop.opened_results_originally) display_light_proteoforms(e.RowIndex);

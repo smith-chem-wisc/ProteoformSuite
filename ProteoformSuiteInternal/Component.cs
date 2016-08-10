@@ -21,11 +21,13 @@ namespace ProteoformSuiteInternal
         public double rt_apex { get; set; }
         public double weighted_monoisotopic_mass { get; set; }
         public double _manual_mass_shift { get; set; } = 0;
-        public double manual_mass_shift {
+        public double manual_mass_shift
+        {
             get { return _manual_mass_shift; }
             set { _manual_mass_shift = value;
                 this.calculate_weighted_monoisotopic_mass();
-            } }
+            }
+        }
         public double corrected_mass { get; set; }
         public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
         public int num_charge_states
@@ -112,6 +114,7 @@ namespace ProteoformSuiteInternal
         public int charge_count { get; set; }
         public double intensity { get; set; }
         public double mz_centroid { get; set; }
+        public double mz_correction { get; set; }
         public double reported_mass { get; set; }
         public double calculated_mass { get; set; }
 
@@ -124,9 +127,10 @@ namespace ProteoformSuiteInternal
             this.calculated_mass = CorrectCalculatedMass(correction);
         }
 
-        public double CorrectCalculatedMass(double mzCorrection)
+        public double CorrectCalculatedMass(double mz_correction)
         {
-            return (this.charge_count * (this.mz_centroid + mzCorrection - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
+            this.mz_correction = mz_correction;
+            return (this.charge_count * (this.mz_centroid + mz_correction - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
         }
 
         public override string ToString()

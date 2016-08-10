@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
-    public class CorretionFactorReader
+    public class CorrectionFactorReader
     {
         private List<Correction> raw_correctionFactors_in_file = new List<Correction>();
 
@@ -33,7 +33,7 @@ namespace ProteoformSuiteInternal
                         //two corrections can be available for each scan. The correction in column 3 is preferred
                         //if column three is NaN, then column 2 is selected.
                         //if column 2 is also NaN, then the correction for the scan will be interpolated from adjacent scans
-
+                        
                         try
                         {
                             correction.correction = Convert.ToDouble(parts[2].ToString());

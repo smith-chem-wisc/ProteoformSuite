@@ -20,37 +20,28 @@ namespace ProteoformSuiteInternal
         public static bool updated_agg = false;
         public static bool opened_results_originally = false; //stays true if results ever opened
 
-        public static void get_experimental_proteoforms(Func<string, IEnumerable<Component>> componentReader)
-        {
-            Lollipop.process_raw_components(componentReader);
-            Lollipop.aggregate_proteoforms();
-        }
+        //public static void get_experimental_proteoforms(Func<string, IEnumerable<Component>> componentReader, Func<string, IEnumerable<Correction>> correctionReader)
+        //{
+        //    Lollipop.process_raw_components(componentReader);
+        //    Lollipop.aggregate_proteoforms();
+        //}
 
 
         //RAW EXPERIMENTAL COMPONENTS
         public static BindingList<string> deconResultsFileNames = new BindingList<string>();
         public static BindingList<string> correctionFactorFilenames = new BindingList<string>();
-        public static List<Correction> correctionFactors = new List<Correction>();
+        public static List<Correction> correctionFactors = null;
         public static List<Component> raw_experimental_components = new List<Component>();
         public static bool neucode_labeled = true;
-
-        public static void process_correction_factor_corrections(Func<string, IEnumerable<Correction>> correctionReader)
+        public static void process_raw_components()
         {
-            
-            foreach (string  filename in Lollipop.correctionFactorFilenames)
+            ExcelReader componentReader = new ExcelReader();
+            CorrectionFactorReader correctionReader = new CorrectionFactorReader();
+            if (correctionFactorFilenames.Count > 0)
+                correctionFactors = Lollipop.correctionFactorFilenames.SelectMany(filename => Correction.CorrectionFactorInterpolation(correctionReader.read_components_from_txt(filename))).ToList();
+            foreach (string filename in Lollipop.deconResultsFileNames)
             {
-                Correction c = new Correction();
-                IEnumerable<Correction> readCorrections = correctionReader(filename);
-                correctionFactors.AddRange(c.CorrectionFactorInterpolation(readCorrections));
-            }
-        }
-
-        public static void process_raw_components(Func<string, IEnumerable<Component>> componentReader)
-        {
-            foreach(string filename in Lollipop.deconResultsFileNames)
-            {
-                IEnumerable<Component> readComponents = componentReader(filename);
-                List<Component> raw_components = new List<Component>(readComponents);
+                List<Component> raw_components = componentReader.read_components_from_xlsx(filename, correctionFactors).ToList();
                 raw_experimental_components.AddRange(raw_components);
 
                 if (neucode_labeled)

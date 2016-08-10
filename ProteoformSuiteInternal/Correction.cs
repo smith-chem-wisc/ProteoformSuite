@@ -12,13 +12,22 @@ namespace ProteoformSuiteInternal
         public int scan_number { get; set; }
         public double correction { get; set; }
 
-        public List<Correction> CorrectionFactorInterpolation(IEnumerable<Correction> cFactors)
+        public Correction()
+        { }
+        public Correction(string file_origin, int scan_number, double correction)
+        {
+            this.file_origin = file_origin;
+            this.scan_number = scan_number;
+            this.correction = correction;
+        }
+
+        public static List<Correction> CorrectionFactorInterpolation(IEnumerable<Correction> cFactors)
         {
             cFactors = cFactors.OrderBy(p => p.scan_number);
             //double firstValue = (from s in cFactors
             //                     where s.correction != Double.NaN
             //                     select s).First().correction;
-            
+
             Correction corrInHand = cFactors.First();
 
             double lowCorrection = 0;
@@ -77,26 +86,20 @@ namespace ProteoformSuiteInternal
                 }
             }
             //Do something with the last one
-            if(Double.IsNaN(corrInHand.correction))//if undefined
+            if (Double.IsNaN(corrInHand.correction))//if undefined
             {
                 corrInHand.correction = lowCorrection;
             }
 
             return new List<Correction>(cFactors);
         }
-
-        private Correction GetNext(IEnumerable<Correction> correctionList, Correction currentCorrection)
+        private static Correction GetNext(IEnumerable<Correction> correctionList, Correction currentCorrection)
         {
             return correctionList.SkipWhile(x => !x.Equals(currentCorrection)).Skip(1).First();
         }
-
-        private Correction GetPrevious(IEnumerable<Correction> correctionList, Correction currentCorrection)
+        private static Correction GetPrevious(IEnumerable<Correction> correctionList, Correction currentCorrection)
         {
             return correctionList.TakeWhile(x => !x.Equals(currentCorrection)).Last();
         }
-
     }
-
-    
-
 }

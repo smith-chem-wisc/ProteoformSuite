@@ -236,11 +236,11 @@ namespace ProteoformSuite
 
             clear_lists();
             rawExperimentalComponents.load_raw_components();
-            Lollipop.get_theoretical_proteoforms();
-            Parallel.Invoke(
-                () => Lollipop.make_et_relationships(),
-                () => Lollipop.make_ee_relationships());
-            Lollipop.proteoform_community.construct_families();
+            aggregatedProteoforms.aggregate_proteoforms();
+            theoreticalDatabase.make_databases();
+            Lollipop.make_et_relationships();
+            Lollipop.make_ee_relationships();
+            proteoformFamilies.construct_families();
             prepare_figures_and_tables();
             this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
             MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
