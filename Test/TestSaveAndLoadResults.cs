@@ -55,10 +55,9 @@ namespace Test
             Lollipop.raw_experimental_components.Clear();
             Results.read_raw_components(component_results); // read the results strings
             Assert.AreEqual(2, Lollipop.raw_experimental_components.Count);
-            Component d1 = Lollipop.raw_experimental_components[0];
-            Component d2 = Lollipop.raw_experimental_components[1];
-            compare_components(c1, d1);
-            compare_components(c2, d2);
+            //Parallel.For used for reading the results strings does not produce a stable order, so compare based on ID
+            compare_components(c1, Lollipop.raw_experimental_components.Find(d => d.id == c1.id));
+            compare_components(c2, Lollipop.raw_experimental_components.Find(d => d.id == c2.id));
 
             // Construct a couple neucode pairs, check that they are the same before and after results output
             NeuCodePair n1 = new NeuCodePair(c1, c2);
@@ -72,8 +71,9 @@ namespace Test
             Assert.AreEqual(3, neucode_results.Length);
             Lollipop.raw_neucode_pairs.Clear();
             Results.read_raw_neucode_pairs(neucode_results);
-            NeuCodePair m1 = Lollipop.raw_neucode_pairs[0];
-            NeuCodePair m2 = Lollipop.raw_neucode_pairs[1];
+            //Parallel.For used for reading the results strings does not produce a stable order, so compare based on ID
+            NeuCodePair m1 = Lollipop.raw_neucode_pairs.Find(m => m.id == n1.id);
+            NeuCodePair m2 = Lollipop.raw_neucode_pairs.Find(m => m.id == n2.id);
             Assert.AreEqual(n1.id_light, m1.id_light);
             Assert.AreEqual(n1.id_heavy, m1.id_heavy);
             Assert.AreEqual(n1.intensity_ratio, m1.intensity_ratio);
@@ -96,8 +96,8 @@ namespace Test
             Assert.AreEqual(e.agg_intensity, f.agg_intensity);
             Assert.AreEqual(e.agg_mass, f.agg_mass);
             Assert.AreEqual(e.agg_rt, f.agg_rt);
-            Assert.AreEqual(e.aggregated_components[0].id, f.aggregated_components[0].id);
-            Assert.AreEqual(e.aggregated_components[1].id, f.aggregated_components[1].id);
+            Assert.Contains(e.aggregated_components[0].id, (System.Collections.ICollection)f.aggregated_components.Select(c => c.id));
+            Assert.Contains(e.aggregated_components[1].id, (System.Collections.ICollection)f.aggregated_components.Select(c => c.id));
             Assert.AreEqual(e.observation_count, f.observation_count);
         }
 
@@ -154,18 +154,19 @@ namespace Test
             string[] theoretical_proteoform_results = Results.theoretical_proteoforms_results(true).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.AreEqual(3, theoretical_proteoform_results.Length);
             Lollipop.proteoform_community.theoretical_proteoforms.Clear();
-            Lollipop.uniprotModificationTable = new Dictionary<string, Modification> {
+            Lollipop.uniprotModificationTable = new Dictionary<string, Modification>
+            {
                 { "unmodified", new Modification() },
                 { "test", new Modification("test", "test", "test", "1", new char[] { 'X' }, 2.345, 2.344) }
             };
             Results.read_theoretical_proteoforms(theoretical_proteoform_results);
-            TheoreticalProteoform qf1 = Lollipop.proteoform_community.theoretical_proteoforms[0];
-            TheoreticalProteoform qf2 = Lollipop.proteoform_community.theoretical_proteoforms[1];
-            compare_theoreticals(new List<TheoreticalProteoform> { pf1, pf2 }, new List<TheoreticalProteoform> { qf1, qf2 });
+            compare_theoreticals(pf1, Lollipop.proteoform_community.theoretical_proteoforms.Find(qf => qf.accession == pf1.accession));
+            compare_theoreticals(pf2, Lollipop.proteoform_community.theoretical_proteoforms.Find(qf => qf.accession == pf2.accession));
 
             // Load these into the decoy database and test that out
             Lollipop.decoy_databases = 2;
-            Lollipop.proteoform_community.decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>> {
+            Lollipop.proteoform_community.decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>>
+            {
                 { Lollipop.decoy_database_name_prefix + "0", new List<TheoreticalProteoform>() { pf1 } },
                 { Lollipop.decoy_database_name_prefix + "1", new List<TheoreticalProteoform>() { pf2 } }
             };
@@ -175,26 +176,27 @@ namespace Test
             Results.read_theoretical_proteoforms(decoy_proteoform_results);
             Assert.IsTrue(Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(Lollipop.decoy_database_name_prefix + "0"));
             Assert.IsTrue(Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(Lollipop.decoy_database_name_prefix + "1"));
-            qf1 = Lollipop.proteoform_community.decoy_proteoforms[Lollipop.decoy_database_name_prefix + "0"].First();
-            qf2 = Lollipop.proteoform_community.decoy_proteoforms[Lollipop.decoy_database_name_prefix + "1"].First();
-            compare_theoreticals(new List<TheoreticalProteoform> { pf1, pf2 }, new List<TheoreticalProteoform> { qf1, qf2 });
+            TheoreticalProteoform qf1 = Lollipop.proteoform_community.decoy_proteoforms[Lollipop.decoy_database_name_prefix + "0"].First();
+            TheoreticalProteoform qf2 = Lollipop.proteoform_community.decoy_proteoforms[Lollipop.decoy_database_name_prefix + "1"].First();
+            compare_theoreticals(pf1, qf1);
+            compare_theoreticals(pf2, qf2);
         }
 
-        private void compare_theoreticals(List<TheoreticalProteoform> pfs, List<TheoreticalProteoform> qfs)
+        private void compare_theoreticals(TheoreticalProteoform pf, TheoreticalProteoform qf)
         {
-            Assert.IsTrue(pfs.Select(p => p.accession).Contains(qfs[0].accession) && pfs.Select(p => p.accession).Contains(qfs[1].accession));
-            Assert.IsTrue(pfs.Select(p => p.name).Contains(qfs[0].name) && pfs.Select(p => p.name).Contains(qfs[1].name));
-            Assert.IsTrue(pfs.Select(p => p.description).Contains(qfs[0].description) && pfs.Select(p => p.description).Contains(qfs[1].description));
-            Assert.IsTrue(pfs.Select(p => p.fragment).Contains(qfs[0].fragment) && pfs.Select(p => p.fragment).Contains(qfs[1].fragment));
-            Assert.IsTrue(pfs.Select(p => p.begin).Contains(qfs[0].begin) && pfs.Select(p => p.begin).Contains(qfs[1].begin));
-            Assert.IsTrue(pfs.Select(p => p.end).Contains(qfs[0].end) && pfs.Select(p => p.end).Contains(qfs[1].end));
-            Assert.IsTrue(pfs.Select(p => p.unmodified_mass).Contains(qfs[0].unmodified_mass) && pfs.Select(p => p.unmodified_mass).Contains(qfs[1].unmodified_mass));
-            Assert.IsTrue(pfs.Select(p => p.modified_mass).Contains(qfs[0].modified_mass) && pfs.Select(p => p.modified_mass).Contains(qfs[1].modified_mass));
-            Assert.IsTrue(pfs.Select(p => p.lysine_count).Contains(qfs[0].lysine_count) && pfs.Select(p => p.lysine_count).Contains(qfs[1].lysine_count));
-            Assert.IsTrue(pfs.Select(p => p.is_target).Contains(qfs[0].is_target) && pfs.Select(p => p.is_target).Contains(qfs[1].is_target));
-            Assert.IsTrue(pfs.Select(p => p.is_decoy).Contains(qfs[0].is_decoy) && pfs.Select(p => p.is_decoy).Contains(qfs[1].is_decoy));
-            Assert.IsTrue(pfs.Select(p => p.ptm_mass).Contains(qfs[0].ptm_mass) && pfs.Select(p => p.ptm_mass).Contains(qfs[1].ptm_mass));
-            Assert.IsTrue(pfs.Select(p => p.ptm_list_string()).Contains(qfs[0].ptm_list_string()) && pfs.Select(p => p.ptm_list_string()).Contains(qfs[1].ptm_list_string()));
+            Assert.AreEqual(pf.accession, qf.accession);
+            Assert.AreEqual(pf.name, qf.name);
+            Assert.AreEqual(pf.description, qf.description);
+            Assert.AreEqual(pf.fragment, qf.fragment);
+            Assert.AreEqual(pf.begin, qf.begin);
+            Assert.AreEqual(pf.end, qf.end);
+            Assert.AreEqual(pf.unmodified_mass, qf.unmodified_mass);
+            Assert.AreEqual(pf.modified_mass, qf.modified_mass);
+            Assert.AreEqual(pf.lysine_count, qf.lysine_count);
+            Assert.AreEqual(pf.is_target, qf.is_target);
+            Assert.AreEqual(pf.is_decoy, qf.is_decoy);
+            Assert.AreEqual(pf.ptm_mass, qf.ptm_mass);
+            Assert.AreEqual(pf.ptm_list_string(), qf.ptm_list_string());
         }
     }
 }
