@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -96,8 +97,7 @@ namespace Test
             Assert.AreEqual(e.agg_intensity, f.agg_intensity);
             Assert.AreEqual(e.agg_mass, f.agg_mass);
             Assert.AreEqual(e.agg_rt, f.agg_rt);
-            Assert.Contains(e.aggregated_components[0].id, (System.Collections.ICollection)f.aggregated_components.Select(c => c.id));
-            Assert.Contains(e.aggregated_components[1].id, (System.Collections.ICollection)f.aggregated_components.Select(c => c.id));
+            foreach (Component c in e.aggregated_components) Assert.IsTrue(f.aggregated_components.Select(d => d.id).Contains(c.id));
             Assert.AreEqual(e.observation_count, f.observation_count);
         }
 
