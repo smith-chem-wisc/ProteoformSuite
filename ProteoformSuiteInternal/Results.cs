@@ -15,6 +15,7 @@ namespace ProteoformSuiteInternal
         static Object lockThread = new object(); //used so that parallel for loops can be used to add to list without addint @ same time
 
         // RAW COMPONENT I/O
+        // Note: the parallel for loops do not preserve ordering
         public static void read_raw_components(string[] lines)
         {
             Parallel.For(1, lines.Length, x =>
