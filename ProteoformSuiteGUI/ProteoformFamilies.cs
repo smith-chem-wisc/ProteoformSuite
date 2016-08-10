@@ -20,8 +20,13 @@ namespace ProteoformSuite
 
         private void ProteoformFamilies_Load(object sender, EventArgs e)
         {
-            if (Lollipop.proteoform_community.families.Count == 0) Lollipop.proteoform_community.construct_families();
+            construct_families();
             fill_proteoform_families();
+        }
+
+        public void construct_families()
+        {
+            if (Lollipop.proteoform_community.families.Count == 0) Lollipop.proteoform_community.construct_families();
         }
 
         public void fill_proteoform_families()
