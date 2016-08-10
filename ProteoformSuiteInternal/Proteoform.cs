@@ -48,12 +48,9 @@ namespace ProteoformSuiteInternal
         public double agg_mass { get; set; } = 0;
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
-        private int _observation_count;
         public int observation_count
         {
-            set { _observation_count = value; }
-            get { if (!Lollipop.updated_agg && Lollipop.opened_results_originally) { return _observation_count; }
-                else { return aggregated_components.Count; } }
+            get { return aggregated_components.Count; }
         }
 
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession)
@@ -151,16 +148,18 @@ namespace ProteoformSuiteInternal
         public int begin { get; set; }
         public int end { get; set; }
         public double unmodified_mass { get; set; }
-        public double ptm_mass { get; set; }
         private string sequence { get; set; }
-        public List<Ptm> ptm_list { get; set; } = new List<Ptm>();
+        public PtmSet ptm_set { get; set; } = new PtmSet(new List<Ptm>());
+        public List<Ptm> ptm_list { get { return ptm_set.ptm_combination.ToList(); } }
+        public double ptm_mass { get { return ptm_set.mass; } }
         public string ptm_descriptions
         {
             get { return ptm_list_string(); }
         }
 
 
-        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<Ptm> ptm_list, double ptm_mass, double modified_mass, bool is_target) : base(accession, modified_mass, lysine_count, is_target)
+        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, PtmSet ptm_set, double modified_mass, bool is_target) : 
+            base(accession, modified_mass, lysine_count, is_target)
         {
             this.accession = accession;
             this.description = description;
@@ -168,9 +167,8 @@ namespace ProteoformSuiteInternal
             this.fragment = fragment;
             this.begin = begin;
             this.end = end;
+            this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
-            this.ptm_list = ptm_list;
-            this.ptm_mass = ptm_mass;
         }
 
         //for Tests
@@ -209,23 +207,6 @@ namespace ProteoformSuiteInternal
                 return "unmodified";
             else
                 return string.Join("; ", ptm_list.Select(ptm => ptm.modification.description));
-        }
-
-        //use this if reading in theoretical/decoy databases. 
-        public void set_ptm_list(string descriptions)
-        {
-            if (Lollipop.opened_results && !Lollipop.updated_theoretical)
-            {
-                string[] ptm_descriptions = descriptions.Split(';');
-                foreach (string description in ptm_descriptions)
-                {
-                    description.Trim();
-                    description.TrimEnd(';');
-                    Modification mod = new Modification(description);
-                    Ptm ptm = new Ptm(0, mod);
-                    this.ptm_list.Add(ptm);
-                }
-            }
         }
     }
 }

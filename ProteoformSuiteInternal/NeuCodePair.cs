@@ -5,8 +5,8 @@ namespace ProteoformSuiteInternal
 {
     public class NeuCodePair : Component
     {
-        public Component neuCodeLight;
-        public Component neuCodeHeavy;
+        public Component neuCodeLight { get; set; }
+        public Component neuCodeHeavy { get; set; }
         public List<int> overlapping_charge_states { get; set; }
 
         public int id_light { get; set; }
@@ -47,10 +47,12 @@ namespace ProteoformSuiteInternal
             else { this.accepted = false; }
         }
 
-        public NeuCodePair(Component neucodeHeavy, Component neucodeLight) : base(neucodeLight) //need this to open and read in tsv files
+        public NeuCodePair(Component neucodeLight, Component neucodeHeavy) : base(neucodeLight) //need this to open and read in tsv files
         {
-            this.neuCodeHeavy = neucodeHeavy;
             this.neuCodeLight = neucodeLight;
+            this.id_light = neuCodeLight.id;
+            this.neuCodeHeavy = neucodeHeavy;
+            this.id_heavy = neucodeHeavy.id;
         }
     }
 }

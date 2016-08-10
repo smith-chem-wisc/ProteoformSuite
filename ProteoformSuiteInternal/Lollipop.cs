@@ -20,36 +20,27 @@ namespace ProteoformSuiteInternal
         public static bool updated_agg = false;
         public static bool opened_results_originally = false; //stays true if results ever opened
 
-        public static void get_experimental_proteoforms(Func<string, IEnumerable<Component>> componentReader)
-        {
-            Lollipop.process_raw_components(componentReader);
-            Lollipop.aggregate_proteoforms();
-        }
+        //public static void get_experimental_proteoforms(Func<string, IEnumerable<Component>> componentReader, Func<string, IEnumerable<Correction>> correctionReader)
+        //{
+        //    Lollipop.process_raw_components(componentReader);
+        //    Lollipop.aggregate_proteoforms();
+        //}
+
 
         //RAW EXPERIMENTAL COMPONENTS
         public static BindingList<string> deconResultsFileNames = new BindingList<string>();
         public static BindingList<string> correctionFactorFilenames = new BindingList<string>();
-        public static List<Correction> correctionFactors = new List<Correction>();
+        public static List<Correction> correctionFactors = null;
         public static List<Component> raw_experimental_components = new List<Component>();
         public static bool neucode_labeled = true;
-
-        public static void process_correction_factor_corrections(Func<string, IEnumerable<Correction>> correctionReader)
+        public static void process_raw_components()
         {
-            
-            foreach (string  filename in Lollipop.correctionFactorFilenames)
+            ExcelReader componentReader = new ExcelReader();
+            if (correctionFactorFilenames.Count > 0)
+                correctionFactors = Lollipop.correctionFactorFilenames.SelectMany(filename => Correction.CorrectionFactorInterpolation(read_corrections(filename))).ToList();
+            foreach (string filename in Lollipop.deconResultsFileNames)
             {
-                Correction c = new Correction();
-                IEnumerable<Correction> readCorrections = correctionReader(filename);
-                correctionFactors.AddRange(c.CorrectionFactorInterpolation(readCorrections));
-            }
-        }
-
-        public static void process_raw_components(Func<string, IEnumerable<Component>> componentReader)
-        {
-            foreach(string filename in Lollipop.deconResultsFileNames)
-            {
-                IEnumerable<Component> readComponents = componentReader(filename);
-                List<Component> raw_components = new List<Component>(readComponents);
+                List<Component> raw_components = componentReader.read_components_from_xlsx(filename, correctionFactors).ToList();
                 raw_experimental_components.AddRange(raw_components);
 
                 if (neucode_labeled)
@@ -58,6 +49,26 @@ namespace ProteoformSuiteInternal
                     foreach (string scan_range in scan_ranges)
                     find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
                 }
+            }
+        }
+
+        public static IEnumerable<Correction> read_corrections(string filename)
+        {
+            string[] correction_lines = File.ReadAllLines(filename);
+            string file_origin = correction_lines[0];
+            for (int i = 1; i < correction_lines.Length; i++)
+            {
+                string[] parts = correction_lines[i].Split('\t');
+                if (parts.Length < 3) continue;
+                int scan_number = Convert.ToInt32(parts[0]);
+                double correction = Double.NaN;
+
+                //two corrections can be available for each scan. The correction in column 3 is preferred
+                //if column three is NaN, then column 2 is selected.
+                //if column 2 is also NaN, then the correction for the scan will be interpolated from adjacent scans
+                correction = Convert.ToDouble(parts[2]);
+                if (Double.IsNaN(correction)) correction = Convert.ToDouble(parts[1]);
+                yield return new Correction(file_origin, scan_number, correction);
             }
         }
 
@@ -102,6 +113,7 @@ namespace ProteoformSuiteInternal
 
         }
 
+
         //AGGREGATED PROTEOFORMS
         public static ProteoformCommunity proteoform_community = new ProteoformCommunity();
         public static decimal mass_tolerance = 3; //ppm
@@ -110,7 +122,6 @@ namespace ProteoformSuiteInternal
         public static decimal missed_lysines = 1;
         public static void aggregate_proteoforms()
         {
-            Lollipop.updated_agg = true;
             if (Lollipop.proteoform_community.experimental_proteoforms.Count > 0)
                 Lollipop.proteoform_community.experimental_proteoforms.Clear();
 
@@ -137,6 +148,7 @@ namespace ProteoformSuiteInternal
             Lollipop.proteoform_community.experimental_proteoforms = Lollipop.proteoform_community.experimental_proteoforms.Where(p => p != null).ToList();
         } 
 
+
         //THEORETICAL DATABASE
         public static bool methionine_oxidation = false;
         public static bool carbamidomethylation = true;
@@ -146,6 +158,7 @@ namespace ProteoformSuiteInternal
         public static bool neucode_heavy_lysine = false;
         public static int max_ptms = 3;
         public static int decoy_databases = 1;
+        public static string decoy_database_name_prefix = "DecoyDatabase_";
         public static int min_peptide_length = 7;
         public static double ptmset_mass_tolerance = 0.00001;
         public static bool combine_identical_sequences = true;
@@ -221,7 +234,7 @@ namespace ProteoformSuiteInternal
             for (int decoyNumber = 0; decoyNumber < Lollipop.decoy_databases; decoyNumber++)
             {
                 string giantProtein = GetOneGiantProtein(proteins, methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
-                string decoy_database_name = "DecoyDatabase_" + decoyNumber;
+                string decoy_database_name = decoy_database_name_prefix + decoyNumber;
                 Lollipop.proteoform_community.decoy_proteoforms.Add(decoy_database_name, new List<TheoreticalProteoform>());
                 Protein[] shuffled_proteins = new Protein[proteins.Length];
                 shuffled_proteins = proteins;
@@ -255,17 +268,16 @@ namespace ProteoformSuiteInternal
 
             //PARALLEL PROBLEM
             //Parallel.ForEach<PtmSet>(unique_ptm_groups, group =>
-            foreach (PtmSet group in unique_ptm_groups)
+            foreach (PtmSet ptm_set in unique_ptm_groups)
             {
-                List<Ptm> ptm_list = group.ptm_combination.ToList();
-                double ptm_mass = group.mass;
-                double proteoform_mass = unmodified_mass + group.mass;
-                string ptm_description = group.ptm_combination.ToString();
+                double proteoform_mass = unmodified_mass + ptm_set.mass;
+                string protein_description = prot.description + "_" + listMemberNumber.ToString();
                 if (decoy_number < 0 ) 
-                    proteoform_community.add(new TheoreticalProteoform(accession, prot.description + "_" + listMemberNumber.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, true));
+                    proteoform_community.add(new TheoreticalProteoform(accession, protein_description, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
+                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, true));
                 else
-                    proteoform_community.add(new TheoreticalProteoform(accession, prot.description + "_" + listMemberNumber.ToString() + "_DECOY" + "_" + decoy_number.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, unmodified_mass, lysine_count, ptm_list, ptm_mass, proteoform_mass, false), "DecoyDatabase_" + decoy_number);
-
+                    proteoform_community.add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
+                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, false), decoy_database_name_prefix + decoy_number);
                 listMemberNumber++;
             } //);
         }
@@ -294,6 +306,7 @@ namespace ProteoformSuiteInternal
             }
             return giantProtein.ToString();
         }
+
 
         //ET,ED,EE,EF COMPARISONS
         public static double ee_max_mass_difference = 250; //TODO: implement this in ProteoformFamilies and elsewhere
@@ -338,9 +351,8 @@ namespace ProteoformSuiteInternal
             Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
-        //PROTEOFORM FAMILIES
-        public static double maximum_delta_mass_peak_fdr = 25;
 
+        //PROTEOFORM FAMILIES -- see ProteoformCommunity
 
 
         //METHOD FILE
@@ -349,6 +361,7 @@ namespace ProteoformSuiteInternal
             return String.Join(System.Environment.NewLine, new string[] {
                 "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("; ", Lollipop.deconResultsFileNames.ToArray<string>()),
                 "LoadDeconvolutionResults|neucode_labeled\t" + neucode_labeled.ToString(),
+                "CorrectionFactors|correction_file_names\t" + String.Join("; ", Lollipop.correctionFactorFilenames.ToArray<string>()),
                 "NeuCodePairs|max_intensity_ratio\t" + max_intensity_ratio.ToString(),
                 "NeuCodePairs|min_intensity_ratio\t" + min_intensity_ratio.ToString(),
                 "NeuCodePairs|max_lysine_ct\t" + max_lysine_ct.ToString(),
@@ -386,8 +399,9 @@ namespace ProteoformSuiteInternal
             string[] fields = setting_spec.Split('\t');
             switch (fields[0])
             {
-                case "LoadDeconvolutionResults|deconvolution_file_names": if (use_method_files) {foreach (string filename in fields[1].Split(';')) { Lollipop.deconResultsFileNames.Add(filename); }} break;
+                case "LoadDeconvolutionResults|deconvolution_file_names": if (use_method_files) { foreach (string filename in fields[1].Split(';')) { Lollipop.deconResultsFileNames.Add(filename); } } break;
                 case "LoadDeconvolutionResults|neucode_labeled": if (use_method_files) { neucode_labeled = Convert.ToBoolean(fields[1]); } break;
+                case "CorrectionFactors|correction_file_names": if (use_method_files) { foreach (string filename in fields[1].Split(';')) { Lollipop.correctionFactorFilenames.Add(filename); } } break;
                 case "NeuCodePairs|max_intensity_ratio": max_intensity_ratio = Convert.ToDecimal(fields[1]); break;
                 case "NeuCodePairs|min_intensity_ratio": min_intensity_ratio = Convert.ToDecimal(fields[1]); break;
                 case "NeuCodePairs|max_lysine_ct": max_lysine_ct = Convert.ToDecimal(fields[1]); break;

@@ -30,7 +30,7 @@ namespace ProteoformSuite
 
         public void TheoreticalDatabase_Load(object sender, EventArgs e)
         {
-           btn_Make_Databases.Enabled = false;
+            btn_Make_Databases.Enabled = false;
             InitializeOpenXmlDialog();
             InitializeOpenPtmlistDialog();
             InitializeSettings();
@@ -157,7 +157,6 @@ namespace ProteoformSuite
                     MessageBox.Show("Cannot display the file: " + ptmlist_filename.Substring(ptmlist_filename.LastIndexOf('\\'))
                         + ". You may not have permission to read the file, or it may be corrupt.\n\nReported error: " + ex.Message);
                 }
-
             }
         }
 
@@ -168,11 +167,15 @@ namespace ProteoformSuite
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)
         {
-            Lollipop.get_theoretical_proteoforms();
-            
+            make_databases(); 
             DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
             this.initialize_table_bindinglist();
             DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
+        }
+
+        public void make_databases()
+        {
+            Lollipop.get_theoretical_proteoforms();
         }
 
         public void initialize_table_bindinglist()

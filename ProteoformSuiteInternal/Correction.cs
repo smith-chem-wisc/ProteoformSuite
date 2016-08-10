@@ -12,91 +12,45 @@ namespace ProteoformSuiteInternal
         public int scan_number { get; set; }
         public double correction { get; set; }
 
-        public List<Correction> CorrectionFactorInterpolation(IEnumerable<Correction> cFactors)
+        public Correction()
+        { }
+        public Correction(string file_origin, int scan_number, double correction)
         {
-            cFactors = cFactors.OrderBy(p => p.scan_number);
-            //double firstValue = (from s in cFactors
-            //                     where s.correction != Double.NaN
-            //                     select s).First().correction;
-            
-            Correction corrInHand = cFactors.First();
-
-            double lowCorrection = 0;
-
-            //Find the first defined correction factor.
-            if (Double.IsNaN(corrInHand.correction))
-            {
-                Correction someCorrection = GetNext(cFactors, corrInHand);
-                while (Double.IsNaN(someCorrection.correction))
-                {
-                    someCorrection = GetNext(cFactors, someCorrection);
-                }
-                lowCorrection = someCorrection.correction;
-            }
-            else
-            {
-                lowCorrection = corrInHand.correction;
-            }
-
-            //copy the first defined correctin factor to all undefinded correction factors at the head of the list.
-            while (Double.IsNaN(corrInHand.correction))
-            {
-                corrInHand.correction = lowCorrection;
-                corrInHand = GetNext(cFactors, corrInHand);
-            }
-
-            //pointer is to the first defined correction factor
-            double hiCorrection = 0;
-
-            while (corrInHand != cFactors.Last())
-            {
-                if (!Double.IsNaN(corrInHand.correction)) // has defined value
-                {
-                    lowCorrection = corrInHand.correction;
-                    corrInHand = GetNext(cFactors, corrInHand);
-                }
-                else // has undefined value. we have to find the next defined value
-                {
-                    Correction nextCorr = GetNext(cFactors, corrInHand);
-                    while (Double.IsNaN(nextCorr.correction) && nextCorr != cFactors.Last())
-                    {
-                        nextCorr = GetNext(cFactors, nextCorr);
-                    }
-                    // we either found one that is defined or we are at the end of the line
-                    if (!Double.IsNaN(nextCorr.correction))//value is defined
-                    {
-                        hiCorrection = nextCorr.correction;
-                        corrInHand.correction = (lowCorrection + hiCorrection) / 2;
-                        corrInHand = GetNext(cFactors, corrInHand);
-                    }
-                    else //we ran out of real estate. no defined value after current
-                    {
-                        corrInHand.correction = lowCorrection;
-                        corrInHand = GetNext(cFactors, corrInHand);
-                    }
-                }
-            }
-            //Do something with the last one
-            if(Double.IsNaN(corrInHand.correction))//if undefined
-            {
-                corrInHand.correction = lowCorrection;
-            }
-
-            return new List<Correction>(cFactors);
+            this.file_origin = file_origin;
+            this.scan_number = scan_number;
+            this.correction = correction;
         }
 
-        private Correction GetNext(IEnumerable<Correction> correctionList, Correction currentCorrection)
+        public static List<Correction> CorrectionFactorInterpolation(IEnumerable<Correction> cFactors)
         {
-            return correctionList.SkipWhile(x => !x.Equals(currentCorrection)).Skip(1).First();
+            List<Correction> correction_factors = cFactors.OrderBy(p => p.scan_number).ToList();
+            bool found_first_defined = false; 
+            double recent_correction = 0;
+            List<Correction> undefined_corrections = new List<Correction>();
+            for (int i = 0; i < correction_factors.Count; i++)
+            {
+                Correction this_correction = correction_factors[i];
+                if (Double.IsNaN(this_correction.correction)) undefined_corrections.Add(this_correction); // Add all undefined corrections to a list for interpolating later
+                else if (!found_first_defined) //Found the first defined correction factor.
+                {
+                    //Copy the first defined correction factor to all undefined correction factors at the head of the list.
+                    found_first_defined = true;
+                    foreach (Correction c in undefined_corrections) c.correction = this_correction.correction;
+                    recent_correction = this_correction.correction;
+                    undefined_corrections.Clear();
+                }
+                else
+                {
+                    //Average this defined correction value and the last one observed, and copy this to each recently seen undefined correction.
+                    double correction_value = (recent_correction + this_correction.correction) / 2;
+                    foreach (Correction c in undefined_corrections) c.correction = correction_value;
+                    recent_correction = this_correction.correction;
+                    undefined_corrections.Clear();
+                }
+            }
+            //We ran out of real estate. Let's do something with any remaining undefined corrections.
+            foreach (Correction c in undefined_corrections) c.correction = recent_correction;
+            return correction_factors;
         }
-
-        private Correction GetPrevious(IEnumerable<Correction> correctionList, Correction currentCorrection)
-        {
-            return correctionList.TakeWhile(x => !x.Equals(currentCorrection)).Last();
-        }
-
     }
-
-    
-
 }

@@ -64,61 +64,41 @@ namespace ProteoformSuiteInternal
             }
             catch (IOException ex) { throw new IOException(ex.Message); }
         }
+
         private static string GetCellValue(SpreadsheetDocument document, Cell cell)
         {
             SharedStringTablePart stringTablePart = document.WorkbookPart.SharedStringTablePart;
             string value = cell.CellValue.InnerXml;
-
             if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString && value != null)
-            {
                 return stringTablePart.SharedStringTable.ChildElements[Int32.Parse(value)].InnerText;
-            }
             else
-            {
                 return value;
-            }
         }
 
-        public double GetCorrectionFactor(string fn, string scan_range, IEnumerable<Correction> correctionFactors)
+        public double GetCorrectionFactor(string filename, string scan_range, IEnumerable<Correction> correctionFactors)
         {
-            if(correctionFactors != null)
+            if(correctionFactors == null) return 0D;
+
+            int[] scans = new int[2] { 0, 0 };
+            try
             {
-                int[] scans = new int[2];
-                try
-                {
-                    scans = System.Array.ConvertAll<string, int>(scan_range.Split('-').ToArray(), int.Parse);
-                }
-                catch
-                {
-                    scans[0] = 0;
-                    scans[1] = 0;
-                }
-
-                IEnumerable<double> allCorrectionFactors = null;
-
-                if (scans[0] > 0 && scans[1] > 0)
-                {
-                    allCorrectionFactors = (from s in correctionFactors
-                                            where s.file_origin == fn
-                                            where s.scan_number >= scans[0]
-                                            where s.scan_number <= scans[1]
-                                            select s.correction).ToList();
-                }
-
-                if (allCorrectionFactors.Count() > 0)
-                {
-                    return allCorrectionFactors.Average();
-                }
-                else
-                {
-                    return 0D;
-                }
+                scans = Array.ConvertAll<string, int>(scan_range.Split('-').ToArray(), int.Parse);
             }
-            else
-            {
-                return 0D;
-            }
-            
+            catch
+            { }
+
+            if (scans[0] <= 0 || scans[1] <= 0) return 0D;
+
+            IEnumerable<double> allCorrectionFactors = 
+                (from s in correctionFactors
+                 where s.file_origin == filename //This is being problematic for me. We should probably check the input or help the user with this. -AC
+                 where s.scan_number >= scans[0]
+                where s.scan_number <= scans[1]
+                select s.correction).ToList();
+
+            if (allCorrectionFactors.Count() <= 0) return 0D;
+
+            return allCorrectionFactors.Average();                
         }
 
         private void add_component(Component c)
