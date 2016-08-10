@@ -91,8 +91,8 @@ namespace ProteoformSuiteInternal
 
             IEnumerable<double> allCorrectionFactors = 
                 (from s in correctionFactors
-                where s.file_origin == filename
-                where s.scan_number >= scans[0]
+                 where s.file_origin == filename //This is being problematic for me. We should probably check the input or help the user with this. -AC
+                 where s.scan_number >= scans[0]
                 where s.scan_number <= scans[1]
                 select s.correction).ToList();
 

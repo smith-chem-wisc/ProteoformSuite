@@ -137,7 +137,5 @@ namespace ProteoformSuiteInternal
         {
             return String.Join("\t", new List<string> { charge_count.ToString(), intensity.ToString() });
         }
-
-
     }
 }
