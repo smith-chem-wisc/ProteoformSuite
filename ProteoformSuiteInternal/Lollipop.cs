@@ -129,11 +129,10 @@ namespace ProteoformSuiteInternal
             //If no NeuCodePairs exist, e.g. for an experiment without labeling, the raw components are used instead.
             //Uses an ordered list, so that the proteoform with max intensity is always chosen first
             //Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
-            Component[] remaining_proteoforms;
-            //only aggregate accepatable neucode pairs
-            if (neucode_labeled) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true).ToArray();
-            else remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true).ToArray();
 
+            // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
+            Component[] remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true).ToArray();
+            
             int count = 1;
             while (remaining_proteoforms.Length > 0)
             {

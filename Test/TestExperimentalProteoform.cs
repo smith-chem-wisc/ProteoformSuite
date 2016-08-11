@@ -16,6 +16,7 @@ namespace Test
         double starter_rt = 50.0;
         int starter_lysine_count = 3;
 
+        // The calculations for unlabeled and neucode components are the same, currently
         public List<Component> generate_neucode_components()
         {
             List<Component> components = new List<Component>();
@@ -36,6 +37,22 @@ namespace Test
             return components;
         }
 
+        public List<Component> generate_unlabeled_components()
+        {
+            List<Component> components = new List<Component>();
+            for (int i = 0; i < 2; i++)
+            {
+                Component c = new Component();
+                c.id = 1;
+                c.corrected_mass = starter_mass;
+                c.intensity_sum_olcs = starter_neucode_intensity;
+                c.rt_apex = starter_rt;
+                c.accepted = true;
+                components.Add(c);
+            }
+            return components;
+        }
+
         [Test]
         public void neucode_proteoform_calculate_properties()
         {
@@ -44,6 +61,21 @@ namespace Test
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
             Assert.AreEqual(3, e.lysine_count);
+            double expected_agg_intensity = components.Count * starter_neucode_intensity;
+            Assert.AreEqual(expected_agg_intensity, e.agg_intensity);
+            double intensity_normalization_factor = components.Count * starter_neucode_intensity / expected_agg_intensity;
+            double expected_agg_mass = starter_mass * intensity_normalization_factor;
+            Assert.AreEqual(starter_mass * intensity_normalization_factor, e.agg_mass);
+            Assert.AreEqual(starter_rt * intensity_normalization_factor, e.agg_rt);
+        }
+
+        [Test]
+        public void unlabeled_proteoform_calculate_properties()
+        {
+            Lollipop.neucode_labeled = false;
+            List<Component> components = generate_unlabeled_components();
+            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, true);
+            Assert.AreEqual(2, e.aggregated_components.Count);
             double expected_agg_intensity = components.Count * starter_neucode_intensity;
             Assert.AreEqual(expected_agg_intensity, e.agg_intensity);
             double intensity_normalization_factor = components.Count * starter_neucode_intensity / expected_agg_intensity;
