@@ -29,7 +29,7 @@ namespace Test
                 light.id = 1;
                 heavy.id = 2;
                 light.corrected_mass = starter_mass;
-                light.intensity_sum_olcs = starter_neucode_intensity;
+                light.intensity_sum_olcs = starter_neucode_intensity; //using the special intensity sum for overlapping charge states in a neucode pair
                 light.rt_apex = starter_rt;
                 light.accepted = true;
                 NeuCodePair n = new NeuCodePair(light, heavy);
@@ -41,10 +41,11 @@ namespace Test
             Assert.AreEqual(5, e.aggregated_components.Count);
             Assert.AreEqual(3, e.lysine_count);
             double expected_agg_intensity = components.Count * starter_neucode_intensity;
-            Assert.AreEqual(e.agg_intensity, expected_agg_intensity);
-            double intensity_normalization_factor = starter_neucode_intensity * components.Count / expected_agg_intensity;
-            Assert.AreEqual(e.agg_mass, starter_mass * intensity_normalization_factor);
-            Assert.AreEqual(e.agg_rt, starter_rt * intensity_normalization_factor);
+            Assert.AreEqual(expected_agg_intensity, e.agg_intensity);
+            double intensity_normalization_factor = components.Count * starter_neucode_intensity / expected_agg_intensity;
+            double expected_agg_mass = starter_mass * intensity_normalization_factor;
+            Assert.AreEqual(starter_mass * intensity_normalization_factor, e.agg_mass);
+            Assert.AreEqual(starter_rt * intensity_normalization_factor, e.agg_rt);
 
             // One within tolerance of the root component, each of the other three are outside for 3 different reasons; should be the root plus one
             components[2].rt_apex = starter_rt - Convert.ToDouble(Lollipop.retention_time_tolerance) - 1;
@@ -65,6 +66,12 @@ namespace Test
             int missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+
+            //Make a monoisotopic error, and test that it removes it before aggregation
+            components[4].corrected_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+            e = new ExperimentalProteoform("E1", components[0], components, true);
+            Assert.AreEqual(expected_agg_mass, e.agg_mass);
+
             // in bounds of lowest monoisotopic tolerance
             components[4].corrected_mass = min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance);
             e = new ExperimentalProteoform("E1", components[0], components, true);
@@ -101,14 +108,14 @@ namespace Test
             // above highest monoisotopic tolerance
             components[4].corrected_mass = max_monoisotopic_mass + 100;
             e = new ExperimentalProteoform("E1", components[0], components, true);
-            Assert.AreEqual(2, e.aggregated_components.Count);
+            Assert.AreEqual(2, e.aggregated_components.Count);            
 
 
             // None within tolerance; should just be the root
             components.Remove(components[1]);
             e = new ExperimentalProteoform("E1", components[0], components, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
-            Assert.AreEqual(e.aggregated_components.First(), components[0]);
+            Assert.AreEqual(components[0], e.aggregated_components.First());
         }
 
         [Test]
@@ -117,26 +124,33 @@ namespace Test
             // All within tolerances of the root component; should be the root plus four
             List<Component> components = new List<Component>();
             double starter_unlabeled_intensity = 100.0;
-            double starter_mass = 1.0;
-            double starter_mass_offset = 0.1;
+            double starter_mass = 1000.0;
             double starter_rt = 50.0;
             for (int i = 0; i < 5; i++)
             {
                 Component c = new Component();
-                c.corrected_mass = starter_mass + starter_mass_offset;
+                c.corrected_mass = starter_mass;
                 c.rt_apex = starter_rt;
-                c.intensity_sum = starter_unlabeled_intensity;
+                c.intensity_sum_olcs = starter_unlabeled_intensity; //using only the regular intensity_sum
                 c.accepted = true;
                 components.Add(c);
             }
             // One within tolerance of the root component, each of the other three are outside for 3 different reasons; should be the root plus one
-            Lollipop.neucode_labeled = true;
+            Lollipop.neucode_labeled = false;
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, true);
-            Assert.AreEqual(e.agg_intensity, components.Count() * starter_unlabeled_intensity);
-            Assert.AreEqual(e.agg_mass, starter_mass + starter_mass_offset * Lollipop.MONOISOTOPIC_UNIT_MASS);
+            Assert.AreEqual(5, e.aggregated_components.Count);
+            double expected_agg_intensity = components.Count * starter_unlabeled_intensity;
+            Assert.AreEqual(expected_agg_intensity, e.agg_intensity);
+            double intensity_normalization_factor = starter_unlabeled_intensity * components.Count / expected_agg_intensity;
+            double expected_agg_mass = starter_mass * intensity_normalization_factor;
+            Assert.AreEqual(starter_mass * intensity_normalization_factor, e.agg_mass);
+            Assert.AreEqual(starter_rt * intensity_normalization_factor, e.agg_rt);
 
-            // None within tolerance; should just be the root
-
+            //Make a monoisotopic error, and test that it removes it before aggregation
+            int missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
+            components[4].corrected_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+            e = new ExperimentalProteoform("E1", components[0], components, true);
+            Assert.AreEqual(expected_agg_mass, e.agg_mass);
         }
     }
 }

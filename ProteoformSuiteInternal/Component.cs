@@ -88,6 +88,7 @@ namespace ProteoformSuiteInternal
         public double calculate_sum_intensity()
         {
             this.intensity_sum = this.charge_states.Select(charge_state => charge_state.intensity).Sum();
+            this.intensity_sum_olcs = this.intensity_sum;
             return this.intensity_sum;
         }
 

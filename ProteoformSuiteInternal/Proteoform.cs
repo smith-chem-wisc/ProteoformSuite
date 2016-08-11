@@ -82,22 +82,10 @@ namespace ProteoformSuiteInternal
 
         private void calculate_properties()
         {
-            if (Lollipop.neucode_labeled)
-            {   //if neucode labeled, use intensity sum for overlapping charge states --> neucode pair. 
-                this.agg_intensity = aggregated_components.Select(p => p.intensity_sum_olcs).Sum();
-                this.agg_rt = aggregated_components.Select(p => p.rt_apex * p.intensity_sum_olcs / this.agg_intensity).Sum();
-                this.agg_mass = aggregated_components.Select(p =>
-                    (p.corrected_mass + Math.Round((this.root.corrected_mass - p.corrected_mass), 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) //mass + mass shift
-                    * p.intensity_sum_olcs / this.agg_intensity).Sum();
-            }
-            else
-            {
-                this.agg_intensity = aggregated_components.Select(p => p.intensity_sum).Sum();
-                this.agg_rt = aggregated_components.Select(p => p.rt_apex * p.intensity_sum / this.agg_intensity).Sum();
-                this.agg_mass = aggregated_components.Select(p =>
-                    (p.corrected_mass + Math.Round((this.root.corrected_mass - p.corrected_mass), 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) //mass + mass shift
-                    * p.intensity_sum / this.agg_intensity).Sum();
-            }
+            //if not neucode labeled, the intensity sum of overlapping charge states was calculated with all charge states.
+            this.agg_intensity = aggregated_components.Select(p => p.intensity_sum_olcs).Sum();
+            this.agg_rt = aggregated_components.Select(p => p.rt_apex * p.intensity_sum_olcs / this.agg_intensity).Sum();
+            this.agg_mass = aggregated_components.Select(p => (p.corrected_mass - Math.Round(p.corrected_mass - this.root.corrected_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * p.intensity_sum_olcs / this.agg_intensity).Sum(); //remove the monoisotopic errors before aggregating masses
             if (root is NeuCodePair) this.lysine_count = ((NeuCodePair)this.root).lysine_count;
             this.modified_mass = this.agg_mass;
         }
