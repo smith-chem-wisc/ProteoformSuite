@@ -56,7 +56,6 @@ namespace ProteoformSuiteInternal
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession)
         {
             this.root = root;
-            if (Lollipop.neucode_labeled)
             this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p)));
             this.calculate_properties();
         }
