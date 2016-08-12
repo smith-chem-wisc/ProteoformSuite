@@ -28,8 +28,11 @@ namespace ProteoformSuiteInternal
 
 
         //RAW EXPERIMENTAL COMPONENTS
-        public static BindingList<string> deconResultsFileNames = new BindingList<string>();
+        //public static BindingList<string> deconResultsFileNames = new BindingList<string>();
+        public static BindingList<inputFile> deconResultsFiles = new BindingList<inputFile>();
+        public static BindingList<inputFile> quantResultsFiles = new BindingList<inputFile>();
         public static BindingList<string> correctionFactorFilenames = new BindingList<string>();
+        public static BindingList<inputFile> calResultsFiles = new BindingList<inputFile>();
         public static List<Correction> correctionFactors = null;
         public static List<Component> raw_experimental_components = new List<Component>();
         public static bool neucode_labeled = true;
@@ -38,9 +41,9 @@ namespace ProteoformSuiteInternal
             ExcelReader componentReader = new ExcelReader();
             if (correctionFactorFilenames.Count > 0)
                 correctionFactors = Lollipop.correctionFactorFilenames.SelectMany(filename => Correction.CorrectionFactorInterpolation(read_corrections(filename))).ToList();
-            foreach (string filename in Lollipop.deconResultsFileNames)
+            foreach (inputFile file in Lollipop.deconResultsFiles)
             {
-                List<Component> raw_components = componentReader.read_components_from_xlsx(filename, correctionFactors).ToList();
+                List<Component> raw_components = componentReader.read_components_from_xlsx(file.path + "\\" + file.filename + file.extension, correctionFactors).ToList();
                 raw_experimental_components.AddRange(raw_components);
 
                 if (neucode_labeled)
@@ -359,7 +362,7 @@ namespace ProteoformSuiteInternal
         public static string method_toString()
         {
             return String.Join(System.Environment.NewLine, new string[] {
-                "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("; ", Lollipop.deconResultsFileNames.ToArray<string>()),
+                "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("; ", (from s in Lollipop.deconResultsFiles select s.filename).ToArray<string>()),
                 "LoadDeconvolutionResults|neucode_labeled\t" + neucode_labeled.ToString(),
                 "CorrectionFactors|correction_file_names\t" + String.Join("; ", Lollipop.correctionFactorFilenames.ToArray<string>()),
                 "NeuCodePairs|max_intensity_ratio\t" + max_intensity_ratio.ToString(),
@@ -399,7 +402,7 @@ namespace ProteoformSuiteInternal
             string[] fields = setting_spec.Split('\t');
             switch (fields[0])
             {
-                case "LoadDeconvolutionResults|deconvolution_file_names": if (use_method_files) { foreach (string filename in fields[1].Split(';')) { Lollipop.deconResultsFileNames.Add(filename); } } break;
+                //case "LoadDeconvolutionResults|deconvolution_file_names": if (use_method_files) { foreach (string filename in fields[1].Split(';')) { Lollipop.deconResultsFileNames.Add(filename); } } break;
                 case "LoadDeconvolutionResults|neucode_labeled": if (use_method_files) { neucode_labeled = Convert.ToBoolean(fields[1]); } break;
                 case "CorrectionFactors|correction_file_names": if (use_method_files) { foreach (string filename in fields[1].Split(';')) { Lollipop.correctionFactorFilenames.Add(filename); } } break;
                 case "NeuCodePairs|max_intensity_ratio": max_intensity_ratio = Convert.ToDecimal(fields[1]); break;

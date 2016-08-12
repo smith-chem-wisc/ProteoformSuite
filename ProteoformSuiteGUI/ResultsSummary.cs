@@ -42,7 +42,7 @@ namespace ProteoformSuite
 
         public void createResultsSummary()
         {
-            deconResultsFileNames = Lollipop.deconResultsFileNames;
+            deconResultsFileNames = new BindingList<string>((from s in Lollipop.deconResultsFiles select s.filename).ToList());
             numRawExpComponents = Lollipop.raw_experimental_components.Count;
             numNeucodePairs = Lollipop.raw_neucode_pairs.Count;
             numExperimentalProteoforms = Lollipop.proteoform_community.experimental_proteoforms.Count;

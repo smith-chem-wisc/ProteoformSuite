@@ -22,8 +22,18 @@ namespace Test
             Lollipop.correctionFactors = null;
             Lollipop.raw_experimental_components.Clear();
             Func<string, IEnumerable<Component>> componentReader = c => new ExcelReader().read_components_from_xlsx(c, Lollipop.correctionFactors);
-            Lollipop.deconResultsFileNames = new System.ComponentModel.BindingList<string>();
-            Lollipop.deconResultsFileNames.Add("UnitTestFiles\\noisy.xlsx");
+            inputFile f = new inputFile();
+            f.extension = ".xlsx";
+            f.filename = "noisy";
+            f.path = "UnitTestFiles\\";
+            f.inputFileType = inputFileType.id;
+            f.lbl = label.neuCode;
+            Lollipop.deconResultsFiles = new System.ComponentModel.BindingList<inputFile>();
+            Lollipop.deconResultsFiles.Add(f);
+
+            //Lollipop.deconResultsFileNames = new System.ComponentModel.BindingList<string>();
+            //Lollipop.deconResultsFileNames.Add("UnitTestFiles\\noisy.xlsx");
+
             Lollipop.neucode_labeled = true;
             Lollipop.process_raw_components();
             Assert.AreEqual(224, Lollipop.raw_experimental_components.Count);

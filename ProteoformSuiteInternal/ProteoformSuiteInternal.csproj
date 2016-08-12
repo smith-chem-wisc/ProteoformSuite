@@ -53,6 +53,7 @@
     <Compile Include="Correction.cs" />
     <Compile Include="DeltaMassPeak.cs" />
     <Compile Include="ExcelReader.cs" />
+    <Compile Include="inputFile.cs" />
     <Compile Include="Lollipop.cs" />
     <Compile Include="Modification.cs" />
     <Compile Include="NeuCodePair.cs" />

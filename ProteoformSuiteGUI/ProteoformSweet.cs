@@ -228,11 +228,11 @@ namespace ProteoformSuite
         {
             var result = MessageBox.Show("Choose a method file.", "Method Load and Run", MessageBoxButtons.OKCancel);
             if (result == DialogResult.Cancel) return;
-            if (Lollipop.deconResultsFileNames.Count != 0)
+            if (Lollipop.deconResultsFiles.Count != 0)
             {
                 var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?", "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
                 if (response == DialogResult.Yes) { Lollipop.use_method_files = false; }
-                if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); Lollipop.use_method_files = true; }
+                if (response == DialogResult.No) { Lollipop.deconResultsFiles.Clear(); Lollipop.use_method_files = true; }
                 if (response == DialogResult.Cancel) { return; }
             }
             bool successful_opening = openMethod();
