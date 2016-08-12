@@ -89,7 +89,10 @@ namespace ProteoformSuiteInternal
             if (root is NeuCodePair) this.lysine_count = ((NeuCodePair)this.root).lysine_count;
             this.modified_mass = this.agg_mass;
         }
-
+        
+        //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on lysine count first, and then aggregated based on mass and retention
+        //time afterwards, which may give a slightly different root for the experimental proteoform because the precursor aggregation may shuffle the intensity order slightly. We haven't observed any negative
+        //impact of this difference as of 160812. -AC
         public bool includes(Component candidate)
         {
             bool does_include = tolerable_rt(candidate) && tolerable_mass(candidate);
