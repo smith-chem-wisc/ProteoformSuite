@@ -92,7 +92,7 @@ namespace ProteoformSuite
             dgv_AcceptNeuCdLtProteoforms.Columns["rt_apex"].DefaultCellStyle.Format = "0.##";
             dgv_AcceptNeuCdLtProteoforms.Columns["relative_abundance"].DefaultCellStyle.Format = "0.####";
             dgv_AcceptNeuCdLtProteoforms.Columns["fract_abundance"].DefaultCellStyle.Format = "0.####";
-            dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum"].DefaultCellStyle.Format = "0.####";
+            dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].DefaultCellStyle.Format = "0.####";
             if (Lollipop.neucode_labeled) { dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].DefaultCellStyle.Format = "0.####"; }
 
 
@@ -104,27 +104,30 @@ namespace ProteoformSuite
             dgv_AcceptNeuCdLtProteoforms.Columns["rt_apex"].HeaderText = "Apex RT";
             dgv_AcceptNeuCdLtProteoforms.Columns["relative_abundance"].HeaderText = "Relative Abundance";
             dgv_AcceptNeuCdLtProteoforms.Columns["fract_abundance"].HeaderText = "Fractional Abundance";
-            dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum"].HeaderText = "Intensity Sum";
+            dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].HeaderText = "Intensity Sum of Overlapping Charge States (of all if unlabeled)";
             dgv_AcceptNeuCdLtProteoforms.Columns["file_origin"].HeaderText = "Filename";
             dgv_AcceptNeuCdLtProteoforms.Columns["scan_range"].HeaderText = "Scan Range";
             dgv_AcceptNeuCdLtProteoforms.Columns["rt_range"].HeaderText = "RT Range";
             dgv_AcceptNeuCdLtProteoforms.Columns["num_charge_states"].HeaderText = "No. Charge States";
             dgv_AcceptNeuCdLtProteoforms.Columns["accepted"].HeaderText = "Accepted";
-            dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].HeaderText = "Intensity Sum for Overlapping Charge States";
+            dgv_AcceptNeuCdLtProteoforms.Columns["manual_mass_shift"].HeaderText = "Manual Mass Shift (Da)";
+
 
             dgv_AcceptNeuCdLtProteoforms.AllowUserToAddRows = false;
             dgv_AcceptNeuCdLtProteoforms.Columns["id"].Visible = false;
+            dgv_AcceptNeuCdLtProteoforms.Columns["_manual_mass_shift"].Visible = false;
+            dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum"].Visible = false;
+            dgv_AcceptNeuCdLtProteoforms.Columns["num_charge_states_fromFile"].Visible = false;
 
-            if (!Lollipop.neucode_labeled)
-            {
-                dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].Visible = false;
-            }
-            else
+
+            if (Lollipop.neucode_labeled)
             {
                 dgv_AcceptNeuCdLtProteoforms.Columns["lysine_count"].HeaderText = "Lysine Count";
                 dgv_AcceptNeuCdLtProteoforms.Columns["intensity_ratio"].HeaderText = "Intensity Ratio";
                 dgv_AcceptNeuCdLtProteoforms.Columns["id_light"].HeaderText = "ID Light";
                 dgv_AcceptNeuCdLtProteoforms.Columns["id_heavy"].HeaderText = "ID Heavy";
+                dgv_AcceptNeuCdLtProteoforms.Columns["neuCodeHeavy"].Visible = false;
+                dgv_AcceptNeuCdLtProteoforms.Columns["neuCodeLight"].Visible = false;
             }
         }
 
