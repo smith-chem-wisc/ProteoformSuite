@@ -29,10 +29,10 @@ namespace ProteoformSuiteInternal
 
         //RAW EXPERIMENTAL COMPONENTS
         //public static BindingList<string> deconResultsFileNames = new BindingList<string>();
-        public static BindingList<inputFile> deconResultsFiles = new BindingList<inputFile>();
-        public static BindingList<inputFile> quantResultsFiles = new BindingList<inputFile>();
+        public static BindingList<InputFile> deconResultsFiles = new BindingList<InputFile>();
+        public static BindingList<InputFile> quantResultsFiles = new BindingList<InputFile>();
         public static BindingList<string> correctionFactorFilenames = new BindingList<string>();
-        public static BindingList<inputFile> calResultsFiles = new BindingList<inputFile>();
+        public static BindingList<InputFile> calResultsFiles = new BindingList<InputFile>();
         public static List<Correction> correctionFactors = null;
         public static List<Component> raw_experimental_components = new List<Component>();
         public static bool neucode_labeled = true;
@@ -41,7 +41,7 @@ namespace ProteoformSuiteInternal
             ExcelReader componentReader = new ExcelReader();
             if (correctionFactorFilenames.Count > 0)
                 correctionFactors = Lollipop.correctionFactorFilenames.SelectMany(filename => Correction.CorrectionFactorInterpolation(read_corrections(filename))).ToList();
-            foreach (inputFile file in Lollipop.deconResultsFiles)
+            foreach (InputFile file in Lollipop.deconResultsFiles)
             {
                 List<Component> raw_components = componentReader.read_components_from_xlsx(file.path + "\\" + file.filename + file.extension, correctionFactors).ToList();
                 raw_experimental_components.AddRange(raw_components);

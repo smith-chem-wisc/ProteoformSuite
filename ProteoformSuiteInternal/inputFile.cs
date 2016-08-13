@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
-    public class inputFile
+    public class InputFile
     {
-        public int biorep { get; set; } = 1;
-        private int _techrep = 1;
-        private string _condition = "no_condition";
+        public int biological_replicate { get; set; } = 1;
+        public int technical_replicate { get; set; } = 1;
+        public string condition { get; set; } = "no_condition";
 
         public bool matchingCalibrationFile { get; set; }
         public string path { get; set; }
@@ -18,30 +18,6 @@ namespace ProteoformSuiteInternal
         public string extension { get; set; }
         public inputFileType inputFileType { get; set; }
         public label lbl { get; set; }
-        //public sampleCategory sample { get; set; }
-
-        public int techrep
-        {
-            get
-            {
-                return _techrep;
-            }
-            set
-            {
-                _techrep = this.techrep;
-            }
-        }
-        public string condition
-        {
-            get
-            {
-                return _condition;
-            }
-            set
-            {
-                _condition = this.condition;
-            }
-        }
     }
 
     public enum inputFileType
@@ -55,46 +31,5 @@ namespace ProteoformSuiteInternal
     {
         neuCode,
         unlabeled
-    }
-
-    public class sampleCategory
-    {
-        private int _biorep = 1;
-        private int _techrep = 1;
-        private string _condition = "no_condition";
-
-        public int biorep
-        {
-            get
-            {
-                return _biorep;
-            }
-            set
-            {
-                _biorep = this.biorep;
-            }
-        }
-        public int techrep
-        {
-            get
-            {
-                return _techrep;
-            }
-            set
-            {
-                _techrep = this.techrep;
-            }
-        }
-        public string condition
-        {
-            get
-            {
-                return _condition;
-            }
-            set
-            {
-                _condition = this.condition;
-            }
-        }
     }
 }

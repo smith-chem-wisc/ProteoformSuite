@@ -22,13 +22,13 @@ namespace Test
             Lollipop.correctionFactors = null;
             Lollipop.raw_experimental_components.Clear();
             Func<string, IEnumerable<Component>> componentReader = c => new ExcelReader().read_components_from_xlsx(c, Lollipop.correctionFactors);
-            inputFile f = new inputFile();
+            InputFile f = new InputFile();
             f.extension = ".xlsx";
             f.filename = "noisy";
             f.path = "UnitTestFiles\\";
             f.inputFileType = inputFileType.id;
             f.lbl = label.neuCode;
-            Lollipop.deconResultsFiles = new System.ComponentModel.BindingList<inputFile>();
+            Lollipop.deconResultsFiles = new System.ComponentModel.BindingList<InputFile>();
             Lollipop.deconResultsFiles.Add(f);
 
             //Lollipop.deconResultsFileNames = new System.ComponentModel.BindingList<string>();

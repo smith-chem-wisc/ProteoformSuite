@@ -15,7 +15,6 @@ using System.Windows.Forms;
 using Excel = Microsoft.Office.Interop.Excel; //Right click Solution/Explorer/References. Then Add  "Reference". Assemblies/Extension/Microsoft.Office.Interop.Excel
 
 
-
 namespace ProteoformSuite
 {
     public partial class LoadDeconvolutionResults : Form
@@ -57,7 +56,7 @@ namespace ProteoformSuite
                 switch (_extension)
                 {
                     case ".xlsx":
-                        inputFile f = new inputFile();
+                        InputFile f = new InputFile();
                         f.path = _path;
                         f.filename = _filename;
                         f.extension = _extension;
@@ -93,7 +92,7 @@ namespace ProteoformSuite
                 switch (_extension)
                 {
                     case ".xlsx":
-                        inputFile f = new inputFile();
+                        InputFile f = new InputFile();
                         f.path = _path;
                         f.filename = _filename;
                         f.extension = _extension;
@@ -130,7 +129,7 @@ namespace ProteoformSuite
                 {
                     case ".txt":
                     case ".tsv":
-                        inputFile f = new inputFile();
+                        InputFile f = new InputFile();
                         f.path = _path;
                         f.filename = _filename;
                         f.extension = _extension;
@@ -169,40 +168,28 @@ namespace ProteoformSuite
             Lollipop.neucode_light_lysine = btn_neucode.Checked;
             Lollipop.natural_lysine_isotope_abundance = !btn_neucode.Checked;
 
-            foreach (inputFile f in Lollipop.deconResultsFiles)
+            foreach (InputFile f in Lollipop.deconResultsFiles)
             {
                 if (btn_neucode.Checked)
-                {
                     f.lbl = label.neuCode;
-                }
                 else
-                {
                     f.lbl = label.unlabeled;
-                }
             }
 
-            foreach (inputFile f in Lollipop.quantResultsFiles)
+            foreach (InputFile f in Lollipop.quantResultsFiles)
             {
                 if (btn_neucode.Checked)
-                {
                     f.lbl = label.neuCode;
-                }
                 else
-                {
                     f.lbl = label.unlabeled;
-                }
             }
 
-            foreach (inputFile f in Lollipop.calResultsFiles)
+            foreach (InputFile f in Lollipop.calResultsFiles)
             {
                 if (btn_neucode.Checked)
-                {
                     f.lbl = label.neuCode;
-                }
                 else
-                {
                     f.lbl = label.unlabeled;
-                }
             }
 
             clb_deconResults.DataSource = null;
@@ -237,7 +224,7 @@ namespace ProteoformSuite
                         string _filename = Path.GetFileNameWithoutExtension(enteredFile);
                         string _extension = Path.GetExtension(enteredFile);
 
-                        inputFile f = new inputFile();
+                        InputFile f = new InputFile();
                         f.path = _path;
                         f.filename = _filename;
                         f.extension = _extension;
@@ -279,7 +266,7 @@ namespace ProteoformSuite
                         string _filename = Path.GetFileNameWithoutExtension(enteredFile);
                         string _extension = Path.GetExtension(enteredFile);
 
-                        inputFile f = new inputFile();
+                        InputFile f = new InputFile();
                         f.path = _path;
                         f.filename = _filename;
                         f.extension = _extension;
@@ -329,7 +316,7 @@ namespace ProteoformSuite
                         string _filename = Path.GetFileNameWithoutExtension(enteredFile);
                         string _extension = Path.GetExtension(enteredFile);
 
-                        inputFile f = new inputFile();
+                        InputFile f = new InputFile();
                         f.path = _path;
                         f.filename = _filename;
                         f.extension = _extension;
@@ -404,7 +391,7 @@ namespace ProteoformSuite
                 switch (_extension)
                 {
                     case ".xlsx":
-                        inputFile f = new inputFile();
+                        InputFile f = new InputFile();
                         f.path = _path;
                         f.filename = _filename;
                         f.extension = _extension;
