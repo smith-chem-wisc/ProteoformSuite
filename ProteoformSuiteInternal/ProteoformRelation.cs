@@ -93,7 +93,7 @@ namespace ProteoformSuiteInternal
         }
         public double peak_center_deltaM
         {
-            get { if (this.peak != null) return peak.peak_deltaM_average; else return -1000000; }
+            get { if (this.peak != null) return peak.peak_deltaM_average; else return Double.NaN; }
         }
         public string relation_type_string
         {
@@ -110,11 +110,11 @@ namespace ProteoformSuiteInternal
         // For DataGridView display of proteoform1
         public double agg_intensity_1
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_intensity; } catch { return -1000000; } }
+            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_intensity; } catch { return Double.NaN; } }
         }
         public double agg_RT_1
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_rt; } catch { return -1000000; } }
+            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_rt; } catch { return Double.NaN; } }
         }
         public int num_observations_1
         {
@@ -122,7 +122,7 @@ namespace ProteoformSuiteInternal
         }
         public double proteoform_mass_1
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_mass; } catch { return -1000000; } }
+            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_mass; } catch { return Double.NaN; } }
         }
 
         // For DataGridView display of proteform2
