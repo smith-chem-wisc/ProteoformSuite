@@ -27,140 +27,15 @@ namespace ProteoformSuite
 
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
         {
-
-            clb_deconResults.Sorted = true;
-            clb_quantResults.Sorted = true;
-            clb_calibResults.Sorted = true;
+            //clb_deconResults.Sorted = true;
+            //clb_quantResults.Sorted = true;
+            //clb_calibResults.Sorted = true;
             //formatDataGridview();
-            btn_neucode.Checked = true;
+            //btn_neucode.Checked = true;
             //DisplayUtility.formatDataFileInputGridView(dgv_deconResults);
         }
 
-        private bool FirstLineOK (string fileName)
-        {
-            bool fileOK = true;
-
-            return fileOK;
-        }
-
-        private void clb_deconResults_DragDrop(object sender, DragEventArgs e)
-        {
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-            foreach (string enteredFile in files)
-            {
-                string _path = Path.GetDirectoryName(enteredFile);
-                string _filename = Path.GetFileNameWithoutExtension(enteredFile);
-                string _extension = Path.GetExtension(enteredFile);
-
-                switch (_extension)
-                {
-                    case ".xlsx":
-                        InputFile f = new InputFile();
-                        f.path = _path;
-                        f.filename = _filename;
-                        f.extension = _extension;
-                        if (btn_neucode.Checked) f.lbl = label.neuCode;
-                        else f.lbl = label.unlabeled;
-                        f.inputFileType = inputFileType.id;
-                        if (!Lollipop.deconResultsFiles.Any(item => item.filename == f.filename)) Lollipop.deconResultsFiles.Add(f);
-
-                        break;
-                    default:
-                        break;
-                }
-            }
-            clb_deconResults.DataSource = (from s in Lollipop.deconResultsFiles select s.filename).ToList();
-            matchFiles();
-        }
-
-        private void clb_deconResults_DragEnter(object sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.All;
-        }
-
-        private void clb_quantResults_DragDrop(object sender, DragEventArgs e)
-        {
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-            foreach (string enteredFile in files)
-            {
-                string _path = Path.GetDirectoryName(enteredFile);
-                string _filename = Path.GetFileNameWithoutExtension(enteredFile);
-                string _extension = Path.GetExtension(enteredFile);
-
-                switch (_extension)
-                {
-                    case ".xlsx":
-                        InputFile f = new InputFile();
-                        f.path = _path;
-                        f.filename = _filename;
-                        f.extension = _extension;
-                        if (btn_neucode.Checked) f.lbl = label.neuCode;
-                        else f.lbl = label.unlabeled;
-                        f.inputFileType = inputFileType.id;
-                        if (!Lollipop.quantResultsFiles.Any(item => item.filename == f.filename)) Lollipop.quantResultsFiles.Add(f);
-
-                        break;
-                    default:
-                        break;
-                }
-            }
-            clb_quantResults.DataSource = (from s in Lollipop.quantResultsFiles select s.filename).ToList();
-            matchFiles();
-        }
-
-        private void clb_quantResults_DragEnter(object sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.All;
-        }
-
-        private void clb_calibResults_DragDrop(object sender, DragEventArgs e)
-        {
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-            foreach (string enteredFile in files)
-            {
-                string _path = Path.GetDirectoryName(enteredFile);
-                string _filename = Path.GetFileNameWithoutExtension(enteredFile);
-                string _extension = Path.GetExtension(enteredFile);
-
-                switch (_extension)
-                {
-                    case ".txt":
-                    case ".tsv":
-                        InputFile f = new InputFile();
-                        f.path = _path;
-                        f.filename = _filename;
-                        f.extension = _extension;
-                        if (btn_neucode.Checked) f.lbl = label.neuCode;
-                        else f.lbl = label.unlabeled;
-                        f.inputFileType = inputFileType.id;
-                        if (!Lollipop.calResultsFiles.Any(item => item.filename == f.filename)) Lollipop.calResultsFiles.Add(f);
-
-                        break;
-                    default:
-                        break;
-                }
-            }
-            clb_calibResults.DataSource = (from s in Lollipop.calResultsFiles select s.filename).ToList();
-            matchFiles();
-        }
-
-        private void clb_calibResults_DragEnter(object sender, DragEventArgs e)
-        {
-            e.Effect = DragDropEffects.All;
-        }
-
-        private void btn_protIdResultsClear_Click(object sender, EventArgs e)
-        {
-            //Lollipop.deconResultsFileNames.Clear();
-            Lollipop.deconResultsFiles.Clear();
-
-            clb_deconResults.DataSource = (from s in Lollipop.deconResultsFiles select s.filename).ToList();
-            matchFiles();
-        }
-
+        
         private void btn_neucode_CheckedChanged(object sender, EventArgs e)
         {
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(btn_neucode.Checked);
@@ -168,299 +43,246 @@ namespace ProteoformSuite
             Lollipop.neucode_light_lysine = btn_neucode.Checked;
             Lollipop.natural_lysine_isotope_abundance = !btn_neucode.Checked;
 
-            foreach (InputFile f in Lollipop.deconResultsFiles)
+            foreach (InputFile f in Lollipop.input_files)
             {
-                if (btn_neucode.Checked)
-                    f.lbl = label.neuCode;
-                else
-                    f.lbl = label.unlabeled;
+                if (btn_neucode.Checked) f.label = Labeling.NeuCode;
+                if (btn_unlabeled.Checked) f.label = Labeling.Unlabeled;
             }
 
-            foreach (InputFile f in Lollipop.quantResultsFiles)
-            {
-                if (btn_neucode.Checked)
-                    f.lbl = label.neuCode;
-                else
-                    f.lbl = label.unlabeled;
-            }
-
-            foreach (InputFile f in Lollipop.calResultsFiles)
-            {
-                if (btn_neucode.Checked)
-                    f.lbl = label.neuCode;
-                else
-                    f.lbl = label.unlabeled;
-            }
-
-            clb_deconResults.DataSource = null;
-            clb_quantResults.DataSource = null;
-            clb_calibResults.DataSource = null;
-
-            clb_deconResults.DataSource = (from s in Lollipop.deconResultsFiles select s.filename).ToList();
-            clb_quantResults.DataSource = (from s in Lollipop.quantResultsFiles select s.filename).ToList(); ;
-            clb_calibResults.DataSource = (from s in Lollipop.calResultsFiles select s.filename).ToList();
-
-            matchFiles();
-
+            match_files();
         }
 
-        private void btn_protIdResultsAdd_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Filter = "Excel Files(.xlsx) | *.xlsx";
 
-            openFileDialog1.Multiselect = true;
-            openFileDialog1.Title = "My Deconvolution 4.0 Results Files";
-
-            DialogResult dr = openFileDialog1.ShowDialog();
-
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                foreach (String enteredFile in openFileDialog1.FileNames)
-                {
-                    try
-                    {
-                        string _path = Path.GetDirectoryName(enteredFile);
-                        string _filename = Path.GetFileNameWithoutExtension(enteredFile);
-                        string _extension = Path.GetExtension(enteredFile);
-
-                        InputFile f = new InputFile();
-                        f.path = _path;
-                        f.filename = _filename;
-                        f.extension = _extension;
-                        if (btn_neucode.Checked) f.lbl = label.neuCode;
-                        else f.lbl = label.unlabeled;
-                        f.inputFileType = inputFileType.id;
-
-                        if(!Lollipop.deconResultsFiles.Any(item => item.filename == f.filename)) Lollipop.deconResultsFiles.Add(f);
-                    }
-                    catch
-                    {
-                        MessageBox.Show("something went wrong with the input");
-                    }
-
-                }
-            }
-
-            clb_deconResults.DataSource = (from s in Lollipop.deconResultsFiles select s.filename).ToList();
-            matchFiles();
-        }
-
-        private void btn_protQuantResultsAdd_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Filter = "Excel Files(.xlsx) | *.xlsx";
-
-            openFileDialog1.Multiselect = true;
-            openFileDialog1.Title = "My Deconvolution 4.0 Results Files";
-
-            DialogResult dr = openFileDialog1.ShowDialog();
-
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                foreach (String enteredFile in openFileDialog1.FileNames)
-                {
-                    try
-                    {
-                        string _path = Path.GetDirectoryName(enteredFile);
-                        string _filename = Path.GetFileNameWithoutExtension(enteredFile);
-                        string _extension = Path.GetExtension(enteredFile);
-
-                        InputFile f = new InputFile();
-                        f.path = _path;
-                        f.filename = _filename;
-                        f.extension = _extension;
-                        if (btn_neucode.Checked) f.lbl = label.neuCode;
-                        else f.lbl = label.unlabeled;
-                        f.inputFileType = inputFileType.quant;
-
-                        if (!Lollipop.quantResultsFiles.Any(item => item.filename == f.filename)) Lollipop.quantResultsFiles.Add(f);
-                    }
-                    catch
-                    {
-                        MessageBox.Show("something went wrong with the input");
-                    }
-
-                }
-            }
-
-            clb_quantResults.DataSource = (from s in Lollipop.quantResultsFiles select s.filename).ToList();
-            matchFiles();
-        }
-
-        private void btn_protQuantResultsClear_Click(object sender, EventArgs e)
-        {
-            Lollipop.quantResultsFiles.Clear();
-            clb_quantResults.DataSource = Lollipop.quantResultsFiles;
-
-            matchFiles();
-        }
-
-        private void btn_protCalibResultsAdd_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Filter = "Text Files (*.txt, *.tsv) | *.txt; *.tsv";
-
-            openFileDialog1.Multiselect = true;
-            openFileDialog1.Title = "My Calibration Results Files";
-
-            DialogResult dr = openFileDialog1.ShowDialog();
-
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                foreach (String enteredFile in openFileDialog1.FileNames)
-                {
-                    try
-                    {
-                        string _path = Path.GetDirectoryName(enteredFile);
-                        string _filename = Path.GetFileNameWithoutExtension(enteredFile);
-                        string _extension = Path.GetExtension(enteredFile);
-
-                        InputFile f = new InputFile();
-                        f.path = _path;
-                        f.filename = _filename;
-                        f.extension = _extension;
-                        if (btn_neucode.Checked) f.lbl = label.neuCode;
-                        else f.lbl = label.unlabeled;
-                        f.inputFileType = inputFileType.calibration;
-
-                        if (!Lollipop.calResultsFiles.Any(item => item.filename == f.filename)) Lollipop.calResultsFiles.Add(f);
-                    }
-                    catch
-                    {
-                        MessageBox.Show("something went wrong with the input");
-                    }
-
-                }
-            }
-
-            clb_calibResults.DataSource = (from s in Lollipop.calResultsFiles select s.filename).ToList();
-            matchFiles();
-        }
-
-        private void btn_protCalibResultsClear_Click(object sender, EventArgs e)
-        {
-            Lollipop.calResultsFiles.Clear();
-            Lollipop.correctionFactorFilenames.Clear();
-            clb_calibResults.DataSource = Lollipop.calResultsFiles;
-
-            matchFiles();
-        }
-
-        private void matchFiles()
-        {
-            foreach (string filename in Lollipop.deconResultsFiles.Select(item => item.filename).ToList())
-            {
-                if (clb_calibResults.Items.Contains(filename))
-                {
-                    int index = clb_deconResults.Items.IndexOf(filename);
-                    clb_deconResults.SetItemCheckState(index, CheckState.Checked);
-                }
-                else
-                {
-                    int index = clb_deconResults.Items.IndexOf(filename);
-                    clb_deconResults.SetItemCheckState(index, CheckState.Unchecked);
-                }
-            }
-
-            foreach (string filename in Lollipop.calResultsFiles.Select(item => item.filename).ToList())
-            {
-                if (clb_deconResults.Items.Contains(filename))
-                {
-                    int index = clb_calibResults.Items.IndexOf(filename);
-                    clb_calibResults.SetItemCheckState(index, CheckState.Checked);
-                }
-                else
-                {
-                    int index = clb_calibResults.Items.IndexOf(filename);
-                    clb_calibResults.SetItemCheckState(index, CheckState.Unchecked);
-                }
-            }
-        }
-
+        // DGV DRAG AND DROP EVENTS
         private void dgv_deconResults_DragDrop(object sender, DragEventArgs e)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-
-            foreach (string enteredFile in files)
-            {
-                string _path = Path.GetDirectoryName(enteredFile);
-                string _filename = Path.GetFileNameWithoutExtension(enteredFile);
-                string _extension = Path.GetExtension(enteredFile);
-
-                switch (_extension)
-                {
-                    case ".xlsx":
-                        InputFile f = new InputFile();
-                        f.path = _path;
-                        f.filename = _filename;
-                        f.extension = _extension;
-                        if (btn_neucode.Checked) f.lbl = label.neuCode;
-                        else f.lbl = label.unlabeled;
-                        f.inputFileType = inputFileType.id;
-                        if (!Lollipop.deconResultsFiles.Any(item => item.filename == f.filename)) Lollipop.deconResultsFiles.Add(f);
-
-                        break;
-                    default:
-                        break;
-                }
-            }
+            enter_input_files(files, new List<string> { ".xlsx" }, Purpose.Identification);
+            match_files();
 
             BindingSource _bindingSource = new BindingSource();
-            dgv_deconResults.DataSource = _bindingSource;
-            _bindingSource.DataSource = Lollipop.deconResultsFiles;
-
-            //DisplayUtility.formatDataFileInputGridView(dgv_deconResults, Lollipop.deconResultsFiles);
-            //dgv_deconResults.DataSource = (from s in Lollipop.deconResultsFiles select s.filename).ToList();
-            //matchFiles();
+            dgv_identificationFiles.DataSource = _bindingSource;
+            _bindingSource.DataSource = Lollipop.identification_files();
         }
+        private void dgv_quantResults_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            enter_input_files(files, new List<string> { ".xlsx" }, Purpose.Quantitation);
+            match_files();
 
+            BindingSource _bindingSource = new BindingSource();
+            dgv_quantitationFiles.DataSource = _bindingSource;
+            _bindingSource.DataSource = Lollipop.quantitation_files();
+        }
+        private void dgv_calibrationResults_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            enter_input_files(files, new List<string> { ".txt", ".tsv" }, Purpose.Calibration);
+            match_files();
+
+            BindingSource _bindingSource = new BindingSource();
+            dgv_calibrationFiles.DataSource = _bindingSource;
+            _bindingSource.DataSource = Lollipop.calibration_files();
+        }
         private void dgv_deconResults_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.All;
         }
-
-        private string BindProperty(object property, string propertyName)
+        private void dgv_calibrationResults_DragEnter(object sender, DragEventArgs e)
         {
-            string retValue;
-
-            retValue = "";
-
-            if (propertyName.Contains("."))
-            {
-                PropertyInfo[] arrayProperties;
-                string leftPropertyName;
-
-                leftPropertyName = propertyName.Substring(0, propertyName.IndexOf("."));
-                arrayProperties = property.GetType().GetProperties();
-
-                foreach (PropertyInfo propertyInfo in arrayProperties)
-                {
-                    if (propertyInfo.Name == leftPropertyName)
-                    {
-                        retValue = BindProperty(propertyInfo.GetValue(property, null), propertyName.Substring(propertyName.IndexOf(".") + 1));
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                Type propertyType;
-                PropertyInfo propertyInfo;
-
-                propertyType = property.GetType();
-                propertyInfo = propertyType.GetProperty(propertyName);
-                retValue = propertyInfo.GetValue(property, null).ToString();
-            }
-
-            return retValue;
+            e.Effect = DragDropEffects.All;
+        }
+        private void dgv_quantResults_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.All;
         }
 
+        private void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, Purpose purpose)
+        {
+            foreach (string enteredFile in files)
+            {
+                string path = Path.GetDirectoryName(enteredFile);
+                string filename = Path.GetFileNameWithoutExtension(enteredFile);
+                string extension = Path.GetExtension(enteredFile);
+                Labeling label = Labeling.Unlabeled;
+                if (btn_neucode.Checked) label = Labeling.NeuCode;
+
+                if (acceptable_extensions.Contains(extension) && !Lollipop.input_files.Where(f => f.purpose == purpose).Any(f => f.filename == filename))
+                {
+                    // Handle the conflict of loading the same deconvolution results into identification and quantitation
+                    if ((purpose == Purpose.Identification || purpose == Purpose.Quantitation) &&
+                        (Lollipop.identification_files().Any(g => g.filename == filename) || Lollipop.quantitation_files().Any(g => g.filename == filename)))
+                    {
+                        var results = MessageBox.Show("Use " + filename + extension + " for " + purpose.ToString() + "?", "Identification/Quantitation Result Conflict", MessageBoxButtons.YesNoCancel);
+                        if (results == DialogResult.No) continue;
+                        if (results == DialogResult.Cancel) return;
+                        else Lollipop.input_files = new BindingList<InputFile>(Lollipop.input_files.Where(h => h.purpose == Purpose.Calibration || h.filename != filename).ToList());
+                    }
+
+                    InputFile file = new InputFile(path, filename, extension, label, purpose);
+                    MessageBox.Show(file.path + "\\" + file.filename + file.extension);
+                    Lollipop.input_files.Add(file);
+                }
+            }
+        }
+
+        private void match_files() //for dgv
+        {
+            // Look for results files with the same filename as a calibration file, and show that they're matched
+            foreach (InputFile file in Lollipop.calibration_files())
+            {
+                if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration).Select(f => f.filename).Contains(file.filename))
+                {
+                    IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.filename == file.filename);
+                    InputFile matching_file = matching_files.First();
+                    if (matching_files.Count() != 1) MessageBox.Show("Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + ".");
+                    file.matched_for_calibration = matching_file.purpose;
+                    file.matchingCalibrationFile = true;
+                    matching_file.matchingCalibrationFile = true;
+                }
+            }
+            foreach (DataGridView dgv in new List<DataGridView> { dgv_identificationFiles, dgv_quantitationFiles, dgv_calibrationFiles })
+            {
+                dgv.Refresh();
+            }
+
+            if (Lollipop.calibration_files().Count() > 0 && !Lollipop.calibration_files().Any(f => f.matchingCalibrationFile))
+                MessageBox.Show("To use calibration files, please give them the same filenames as the deconvolution results to which they correspond.", "Orphaned Calibration Files", MessageBoxButtons.OK);
+        }
+
+
+        // CELL FORMATTING EVENTS
         private void dgv_deconResults_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             //MessageBox.Show("cell formatting" + dgv_deconResults.Columns[e.ColumnIndex].DataPropertyName.ToString());
-            if ((dgv_deconResults.Rows[e.RowIndex].DataBoundItem != null) && (dgv_deconResults.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
-                e.Value = BindProperty(dgv_deconResults.Rows[e.RowIndex].DataBoundItem, dgv_deconResults.Columns[e.ColumnIndex].DataPropertyName);
+            if ((dgv_identificationFiles.Rows[e.RowIndex].DataBoundItem != null) && (dgv_identificationFiles.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+                e.Value = BindProperty(dgv_identificationFiles.Rows[e.RowIndex].DataBoundItem, dgv_identificationFiles.Columns[e.ColumnIndex].DataPropertyName);
+        }
+        private void dgv_quantResults_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            //MessageBox.Show("cell formatting" + dgv_deconResults.Columns[e.ColumnIndex].DataPropertyName.ToString());
+            if ((dgv_quantitationFiles.Rows[e.RowIndex].DataBoundItem != null) && (dgv_quantitationFiles.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+                e.Value = BindProperty(dgv_quantitationFiles.Rows[e.RowIndex].DataBoundItem, dgv_quantitationFiles.Columns[e.ColumnIndex].DataPropertyName);
+        }
+        private void dgv_calibrationResults_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            //MessageBox.Show("cell formatting" + dgv_deconResults.Columns[e.ColumnIndex].DataPropertyName.ToString());
+            if ((dgv_calibrationFiles.Rows[e.RowIndex].DataBoundItem != null) && (dgv_calibrationFiles.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+                e.Value = BindProperty(dgv_calibrationFiles.Rows[e.RowIndex].DataBoundItem, dgv_calibrationFiles.Columns[e.ColumnIndex].DataPropertyName);
+        }
+
+        private string BindProperty(object property, string propertyName)
+        {
+            if (propertyName.Contains("."))
+            {
+                PropertyInfo[] arrayProperties = property.GetType().GetProperties();
+                string firstPropertyName = propertyName.Substring(0, propertyName.IndexOf("."));
+                PropertyInfo firstProperty = arrayProperties.Where(p => p.Name == firstPropertyName).First();
+                return BindProperty(firstProperty.GetValue(property, null), propertyName.Substring(propertyName.IndexOf(".") + 1));
+            }
+            else
+            {
+                Type propertyType = property.GetType();
+                PropertyInfo propertyInfo = propertyType.GetProperty(propertyName);
+                return propertyInfo.GetValue(property, null).ToString();
+            }
+        }
+
+
+        // ADD BUTTONS
+        private void btn_protIdResultsAdd_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Title = "My Deconvolution 4.0 Results Files";
+            openFileDialog1.Filter = "Excel Files(.xlsx) | *.xlsx";
+            openFileDialog1.Multiselect = true;
+
+            DialogResult dr = openFileDialog1.ShowDialog();
+            if (dr == DialogResult.OK)
+                enter_input_files(openFileDialog1.FileNames, new List<string> { ".xlsx" }, Purpose.Identification);
+
+            dgv_identificationFiles.DataSource = Lollipop.identification_files();
+            match_files();
+        }
+        private void btn_protQuantResultsAdd_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Title = "My Deconvolution 4.0 Results Files";
+            openFileDialog1.Filter = "Excel Files(.xlsx) | *.xlsx";
+            openFileDialog1.Multiselect = true;
+
+            DialogResult dr = openFileDialog1.ShowDialog();
+            if (dr == DialogResult.OK)
+                enter_input_files(openFileDialog1.FileNames, new List<string> { ".xlsx" }, Purpose.Quantitation);
+
+            dgv_quantitationFiles.DataSource = Lollipop.quantitation_files();
+            match_files();
+        }
+        private void btn_protCalibResultsAdd_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Title = "My Calibration Results Files";
+            openFileDialog1.Filter = "Text Files (*.txt, *.tsv) | *.txt; *.tsv";
+            openFileDialog1.Multiselect = true;
+
+            DialogResult dr = openFileDialog1.ShowDialog();
+            if (dr == DialogResult.OK)
+                enter_input_files(openFileDialog1.FileNames, new List<string> { ".tsv", ".txt" }, Purpose.Calibration);
+
+            dgv_calibrationFiles.DataSource = Lollipop.calibration_files();
+            match_files();
+        }
+
+        // CLEAR BUTTONS
+        private void btn_protIdResultsClear_Click(object sender, EventArgs e)
+        {
+            Lollipop.input_files = new BindingList<InputFile>(Lollipop.input_files.Except(Lollipop.identification_files()).ToList());
+            dgv_identificationFiles.DataSource = new List<string>();
+            match_files();
+        }
+        private void btn_protQuantResultsClear_Click(object sender, EventArgs e)
+        {
+            Lollipop.input_files = new BindingList<InputFile>(Lollipop.input_files.Except(Lollipop.quantitation_files()).ToList());
+            dgv_quantitationFiles.DataSource = new List<string>();
+            match_files();
+        }
+        private void btn_protCalibResultsClear_Click(object sender, EventArgs e)
+        {
+            Lollipop.input_files = new BindingList<InputFile>(Lollipop.input_files.Except(Lollipop.calibration_files()).ToList());
+            dgv_calibrationFiles.DataSource = new List<string>();
+            match_files();
+        }
+
+
+        // FULL RUN
+        private void btn_fullRun_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Will start the run now.\n\nWill show as non-responsive.");
+            ((ProteoformSweet)MdiParent).full_run();
+            MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
+        }
+
+
+        // INFO BUTTONS
+        private void btn_nextPane_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "The Results menu is what you're looking for.\n\n"+
+                "Stepping through each form will process the data one step at a time (this one is \"Load Deconvolution Results\"). "+
+                "This should help give you an idea of what this program does and what settings you would like to use.\n\nOn the other hand, you have the \"Full Run with Defaults\" button, "+
+                "which plows through each of those processing steps, after which you can view the results in those forms.\n\nBelow, there's another info-button for using presets for a full run.\n\n"+
+                "We hope you enjoy trying Proteoform Suite! Please contact us if you have any questions. The public repository for this program is hosted on GitHub at https://github.com/smith-chem-wisc/proteoform-suite.", "How To Process Results", MessageBoxButtons.OK);
+            ((ProteoformSweet)MdiParent).display_resultsMenu();
+        }
+
+        private void btn_fullRunWithPresets_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(
+                "The Method menu is what you're looking for.\n\n"+
+                "You can save your current presets (or just the defaults).\n\nYou can also \"Load & Run\" presets in a method file and run through all processing steps. If you specify files both here and in the method file, we give you the choice of which to use.\n\n"+
+                "Above is another info-button on how to process results without using presets.\n\n"+
+                "We hope you enjoy trying Proteoform Suite! Please contact us if you have any questions. The public repository for this program is hosted on GitHub at https://github.com/smith-chem-wisc/proteoform-suite.", "How To Use Presets.", MessageBoxButtons.OK);
+            ((ProteoformSweet)MdiParent).display_methodMenu();
         }
     }
 }
