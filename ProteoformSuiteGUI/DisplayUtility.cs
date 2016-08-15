@@ -19,6 +19,7 @@ namespace ProteoformSuite
             SortableBindingList<object> sbl = new SortableBindingList<object>(someList);
             dgv.DataSource = sbl;
             dgv.ReadOnly = false;
+            dgv.AllowUserToAddRows = false;
             dgv.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
             dgv.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
         }
@@ -53,11 +54,7 @@ namespace ProteoformSuite
                 }
             }
             catch
-            {
-
-            }
-
-           
+            { }           
         }
 
         public static void GraphRelationsChart(Chart ct, List<ProteoformRelation> relations, string series)
