@@ -1,6 +1,7 @@
 ﻿using ProteoformSuiteInternal;
 using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ProteoformSuite
@@ -98,7 +99,7 @@ namespace ProteoformSuite
             dgv_RawExpComp_IndChgSts.Columns["calculated_mass"].HeaderText = "Calculated Mass";
             dgv_RawExpComp_IndChgSts.Columns["charge_count"].HeaderText = "Charge Count";
 
-            if (Lollipop.correctionFactorFilenames.Count == 0) dgv_RawExpComp_IndChgSts.Columns["mz_correction"].Visible = false;
+            if (Lollipop.calibration_files().Count() == 0) dgv_RawExpComp_IndChgSts.Columns["mz_correction"].Visible = false;
             dgv_RawExpComp_IndChgSts.AllowUserToAddRows = false;
         }
     }
