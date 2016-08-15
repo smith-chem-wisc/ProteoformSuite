@@ -116,11 +116,11 @@ namespace ProteoformSuite
                         var results = MessageBox.Show("Use " + filename + extension + " for " + purpose.ToString() + "?", "Identification/Quantitation Result Conflict", MessageBoxButtons.YesNoCancel);
                         if (results == DialogResult.No) continue;
                         if (results == DialogResult.Cancel) return;
-                        else Lollipop.input_files = new BindingList<InputFile>(Lollipop.input_files.Where(h => h.purpose == Purpose.Calibration || h.filename != filename).ToList());
+                        else Lollipop.input_files = Lollipop.input_files.Where(h => h.purpose == Purpose.Calibration || h.filename != filename).ToList();
                     }
+                    reload_dgvs();
 
                     InputFile file = new InputFile(path, filename, extension, label, purpose);
-                    MessageBox.Show(file.path + "\\" + file.filename + file.extension);
                     Lollipop.input_files.Add(file);
                 }
             }
@@ -141,13 +141,25 @@ namespace ProteoformSuite
                     matching_file.matchingCalibrationFile = true;
                 }
             }
+            refresh_dgvs();
+
+            if (Lollipop.calibration_files().Count() > 0 && !Lollipop.calibration_files().Any(f => f.matchingCalibrationFile))
+                MessageBox.Show("To use calibration files, please give them the same filenames as the deconvolution results to which they correspond.", "Orphaned Calibration Files", MessageBoxButtons.OK);
+        }
+
+        private void refresh_dgvs()
+        {
             foreach (DataGridView dgv in new List<DataGridView> { dgv_identificationFiles, dgv_quantitationFiles, dgv_calibrationFiles })
             {
                 dgv.Refresh();
             }
+        }
 
-            if (Lollipop.calibration_files().Count() > 0 && !Lollipop.calibration_files().Any(f => f.matchingCalibrationFile))
-                MessageBox.Show("To use calibration files, please give them the same filenames as the deconvolution results to which they correspond.", "Orphaned Calibration Files", MessageBoxButtons.OK);
+        private void reload_dgvs()
+        {
+            DisplayUtility.FillDataGridView(dgv_identificationFiles, Lollipop.identification_files());
+            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantitation_files());
+            DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
         }
 
 
@@ -201,7 +213,7 @@ namespace ProteoformSuite
             if (dr == DialogResult.OK)
                 enter_input_files(openFileDialog1.FileNames, new List<string> { ".xlsx" }, Purpose.Identification);
 
-            dgv_identificationFiles.DataSource = Lollipop.identification_files();
+            DisplayUtility.FillDataGridView(dgv_identificationFiles, Lollipop.identification_files());
             match_files();
         }
         private void btn_protQuantResultsAdd_Click(object sender, EventArgs e)
@@ -215,7 +227,7 @@ namespace ProteoformSuite
             if (dr == DialogResult.OK)
                 enter_input_files(openFileDialog1.FileNames, new List<string> { ".xlsx" }, Purpose.Quantitation);
 
-            dgv_quantitationFiles.DataSource = Lollipop.quantitation_files();
+            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantitation_files());
             match_files();
         }
         private void btn_protCalibResultsAdd_Click(object sender, EventArgs e)
@@ -229,27 +241,27 @@ namespace ProteoformSuite
             if (dr == DialogResult.OK)
                 enter_input_files(openFileDialog1.FileNames, new List<string> { ".tsv", ".txt" }, Purpose.Calibration);
 
-            dgv_calibrationFiles.DataSource = Lollipop.calibration_files();
+            DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
             match_files();
         }
 
         // CLEAR BUTTONS
         private void btn_protIdResultsClear_Click(object sender, EventArgs e)
         {
-            Lollipop.input_files = new BindingList<InputFile>(Lollipop.input_files.Except(Lollipop.identification_files()).ToList());
-            dgv_identificationFiles.DataSource = new List<string>();
+            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.identification_files()).ToList();
+            DisplayUtility.FillDataGridView(dgv_identificationFiles, Lollipop.identification_files());
             match_files();
         }
         private void btn_protQuantResultsClear_Click(object sender, EventArgs e)
         {
-            Lollipop.input_files = new BindingList<InputFile>(Lollipop.input_files.Except(Lollipop.quantitation_files()).ToList());
-            dgv_quantitationFiles.DataSource = new List<string>();
+            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.quantitation_files()).ToList();
+            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantitation_files());
             match_files();
         }
         private void btn_protCalibResultsClear_Click(object sender, EventArgs e)
         {
-            Lollipop.input_files = new BindingList<InputFile>(Lollipop.input_files.Except(Lollipop.calibration_files()).ToList());
-            dgv_calibrationFiles.DataSource = new List<string>();
+            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.calibration_files()).ToList();
+            DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
             match_files();
         }
 
