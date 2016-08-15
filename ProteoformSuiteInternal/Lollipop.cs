@@ -29,7 +29,7 @@ namespace ProteoformSuiteInternal
 
         //RAW EXPERIMENTAL COMPONENTS
         //public static BindingList<string> deconResultsFileNames = new BindingList<string>();
-        public static BindingList<InputFile> input_files = new BindingList<InputFile>();
+        public static List<InputFile> input_files = new List<InputFile>();
         public static IEnumerable<InputFile> identification_files() { return input_files.Where(f => f.purpose == Purpose.Identification); }
         public static IEnumerable<InputFile> quantitation_files() { return input_files.Where(f => f.purpose == Purpose.Quantitation); }
         public static IEnumerable<InputFile> calibration_files() { return input_files.Where(f => f.purpose == Purpose.Calibration); }
