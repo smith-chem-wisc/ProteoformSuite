@@ -228,17 +228,22 @@ namespace ProteoformSuite
         {
             var result = MessageBox.Show("Choose a method file.", "Method Load and Run", MessageBoxButtons.OKCancel);
             if (result == DialogResult.Cancel) return;
-            if (Lollipop.deconResultsFileNames.Count != 0)
+            if (Lollipop.input_files.Count != 0)
             {
                 var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?", "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
                 if (response == DialogResult.Yes) { Lollipop.use_method_files = false; }
-                if (response == DialogResult.No) { Lollipop.deconResultsFileNames.Clear(); Lollipop.use_method_files = true; }
+                if (response == DialogResult.No) { Lollipop.input_files.Clear(); Lollipop.use_method_files = true; }
                 if (response == DialogResult.Cancel) { return; }
             }
             bool successful_opening = openMethod();
             if (!successful_opening) return;
             MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
+            full_run();
+            MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
+        }
 
+        public void full_run()
+        {
             clear_lists();
             rawExperimentalComponents.load_raw_components();
             aggregatedProteoforms.aggregate_proteoforms();
@@ -248,8 +253,8 @@ namespace ProteoformSuite
             proteoformFamilies.construct_families();
             prepare_figures_and_tables();
             this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
-            MessageBox.Show("Successfully ran method. Feel free to explore using the Processing Phase menu.");
         }
+
         private void prepare_figures_and_tables()
         {
             Parallel.Invoke(
@@ -286,6 +291,16 @@ namespace ProteoformSuite
         public void enable_neuCodeProteoformPairsToolStripMenuItem(bool setting)
         {
             neuCodeProteoformPairsToolStripMenuItem.Enabled = setting;
+        }
+
+        public void display_resultsMenu()
+        {
+            resultsToolStripMenuItem.ShowDropDown();
+        }
+
+        public void display_methodMenu()
+        {
+            runMethodToolStripMenuItem.ShowDropDown();
         }
     }
 }

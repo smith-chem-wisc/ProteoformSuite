@@ -269,5 +269,29 @@ namespace ProteoformSuite
 
             dgv.AllowUserToAddRows = false;
         }
+
+        public static void formatDataFileInputGridView(DataGridView dgv, IEnumerable<object> someObject)
+        {
+            SortableBindingList<object> sbl = new SortableBindingList<object>(someObject);
+            
+            dgv.ReadOnly = false;
+            dgv.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
+            dgv.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+
+
+
+            //making all columns invisible first - faster
+            //foreach (DataGridViewColumn column in dgv.Columns) { column.Visible = false; }
+
+            //dgv.Columns["matchingCalibrationFile"].HeaderText = "Calibrate";
+            //dgv.Columns["filename"].HeaderText = "Filename";
+            //dgv.Columns["label"].HeaderText = "NeuCode/Unlabelled";
+            //dgv.Columns["sampleCategory.biorep"].HeaderText = "Biorep";
+            //dgv.Columns["sampleCategory.techrep"].HeaderText = "Techrep";
+            //dgv.Columns["sampleCategory.condition"].HeaderText = "Condition";
+
+            dgv.DataSource = sbl;
+        }
+
     }
 }
