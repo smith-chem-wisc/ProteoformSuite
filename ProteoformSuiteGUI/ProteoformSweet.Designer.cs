@@ -36,7 +36,7 @@
             this.saveAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.processingPhaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadDeconvolutionResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rawExperimentalProteoformsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.neuCodeProteoformPairsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,7 +57,7 @@
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.processingPhaseToolStripMenuItem,
+            this.resultsToolStripMenuItem,
             this.runMethodToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -115,7 +115,7 @@
             // 
             // processingPhaseToolStripMenuItem
             // 
-            this.processingPhaseToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.resultsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadDeconvolutionResultsToolStripMenuItem,
             this.rawExperimentalProteoformsToolStripMenuItem,
             this.neuCodeProteoformPairsToolStripMenuItem,
@@ -125,9 +125,9 @@
             this.experimentExperimentComparisonToolStripMenuItem,
             this.proteoformFamilyAssignmentToolStripMenuItem,
             this.resultsSummaryToolStripMenuItem});
-            this.processingPhaseToolStripMenuItem.Name = "processingPhaseToolStripMenuItem";
-            this.processingPhaseToolStripMenuItem.Size = new System.Drawing.Size(56, 22);
-            this.processingPhaseToolStripMenuItem.Text = "Results";
+            this.resultsToolStripMenuItem.Name = "processingPhaseToolStripMenuItem";
+            this.resultsToolStripMenuItem.Size = new System.Drawing.Size(56, 22);
+            this.resultsToolStripMenuItem.Text = "Results";
             // 
             // loadDeconvolutionResultsToolStripMenuItem
             // 
@@ -242,7 +242,7 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem processingPhaseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resultsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadDeconvolutionResultsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rawExperimentalProteoformsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem neuCodeProteoformPairsToolStripMenuItem;

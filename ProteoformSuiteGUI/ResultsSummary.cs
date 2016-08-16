@@ -14,7 +14,7 @@ namespace ProteoformSuite
     public partial class ResultsSummary : Form
     {
 
-        BindingList<string> deconResultsFileNames = new BindingList<string>();
+        BindingList<string> identificationFileNames = new BindingList<string>();
         int numRawExpComponents;
         int numNeucodePairs;
         int numExperimentalProteoforms;
@@ -42,7 +42,7 @@ namespace ProteoformSuite
 
         public void createResultsSummary()
         {
-            deconResultsFileNames = Lollipop.deconResultsFileNames;
+            identificationFileNames = new BindingList<string>((from s in Lollipop.input_files.Where(f => f.purpose == Purpose.Identification) select s.filename).ToList());
             numRawExpComponents = Lollipop.raw_experimental_components.Count;
             numNeucodePairs = Lollipop.raw_neucode_pairs.Count;
             numExperimentalProteoforms = Lollipop.proteoform_community.experimental_proteoforms.Count;
@@ -57,7 +57,7 @@ namespace ProteoformSuite
 
         public void displayResultsSummary()
         {
-            lb_deconResults.DataSource = deconResultsFileNames; 
+            lb_deconResults.DataSource = identificationFileNames; 
             tb_RawExperimentalComponents.Text = numRawExpComponents.ToString();
             tb_neucodePairs.Text = numNeucodePairs.ToString();
             tb_experimentalProteoforms.Text = numExperimentalProteoforms.ToString();

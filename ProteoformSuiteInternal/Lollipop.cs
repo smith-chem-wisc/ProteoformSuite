@@ -28,19 +28,22 @@ namespace ProteoformSuiteInternal
 
 
         //RAW EXPERIMENTAL COMPONENTS
-        public static BindingList<string> deconResultsFileNames = new BindingList<string>();
-        public static BindingList<string> correctionFactorFilenames = new BindingList<string>();
+        //public static BindingList<string> deconResultsFileNames = new BindingList<string>();
+        public static List<InputFile> input_files = new List<InputFile>();
+        public static IEnumerable<InputFile> identification_files() { return input_files.Where(f => f.purpose == Purpose.Identification); }
+        public static IEnumerable<InputFile> quantitation_files() { return input_files.Where(f => f.purpose == Purpose.Quantitation); }
+        public static IEnumerable<InputFile> calibration_files() { return input_files.Where(f => f.purpose == Purpose.Calibration); }
         public static List<Correction> correctionFactors = null;
         public static List<Component> raw_experimental_components = new List<Component>();
         public static bool neucode_labeled = true;
         public static void process_raw_components()
         {
             ExcelReader componentReader = new ExcelReader();
-            if (correctionFactorFilenames.Count > 0)
-                correctionFactors = Lollipop.correctionFactorFilenames.SelectMany(filename => Correction.CorrectionFactorInterpolation(read_corrections(filename))).ToList();
-            foreach (string filename in Lollipop.deconResultsFileNames)
+            if (input_files.Any(f => f.purpose == Purpose.Calibration))
+                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file.path + "\\" + file.filename + file.extension))).ToList();
+            foreach (InputFile file in identification_files())
             {
-                List<Component> raw_components = componentReader.read_components_from_xlsx(filename, correctionFactors).ToList();
+                List<Component> raw_components = componentReader.read_components_from_xlsx(file.path + "\\" + file.filename + file.extension, correctionFactors).ToList();
                 raw_experimental_components.AddRange(raw_components);
 
                 if (neucode_labeled)
@@ -308,7 +311,7 @@ namespace ProteoformSuiteInternal
 
         //ET,ED,EE,EF COMPARISONS
         public static double ee_max_mass_difference = 250; //TODO: implement this in ProteoformFamilies and elsewhere
-        public static double et_low_mass_difference=-250;
+        public static double et_low_mass_difference = -250;
         public static double ee_max_RetentionTime_difference = 2.5D;
         public static double et_high_mass_difference=250;
         public static double no_mans_land_lowerBound = 0.22;
@@ -357,9 +360,9 @@ namespace ProteoformSuiteInternal
         public static string method_toString()
         {
             return String.Join(System.Environment.NewLine, new string[] {
-                "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("; ", Lollipop.deconResultsFileNames.ToArray<string>()),
+                "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("; ", Lollipop.identification_files().Select(s => s.filename).ToArray<string>()),
                 "LoadDeconvolutionResults|neucode_labeled\t" + neucode_labeled.ToString(),
-                "CorrectionFactors|correction_file_names\t" + String.Join("; ", Lollipop.correctionFactorFilenames.ToArray<string>()),
+                "CorrectionFactors|correction_file_names\t" + String.Join("; ", Lollipop.calibration_files().Select(s => s.filename).ToArray<string>()),
                 "NeuCodePairs|max_intensity_ratio\t" + max_intensity_ratio.ToString(),
                 "NeuCodePairs|min_intensity_ratio\t" + min_intensity_ratio.ToString(),
                 "NeuCodePairs|max_lysine_ct\t" + max_lysine_ct.ToString(),
@@ -397,9 +400,9 @@ namespace ProteoformSuiteInternal
             string[] fields = setting_spec.Split('\t');
             switch (fields[0])
             {
-                case "LoadDeconvolutionResults|deconvolution_file_names": if (use_method_files) { foreach (string filename in fields[1].Split(';')) { Lollipop.deconResultsFileNames.Add(filename); } } break;
+                //case "LoadDeconvolutionResults|deconvolution_file_names": if (use_method_files) { foreach (string filename in fields[1].Split(';')) { Lollipop.deconResultsFileNames.Add(filename); } } break;
                 case "LoadDeconvolutionResults|neucode_labeled": if (use_method_files) { neucode_labeled = Convert.ToBoolean(fields[1]); } break;
-                case "CorrectionFactors|correction_file_names": if (use_method_files) { foreach (string filename in fields[1].Split(';')) { Lollipop.correctionFactorFilenames.Add(filename); } } break;
+                //case "CorrectionFactors|correction_file_names": if (use_method_files) { foreach (string filename in fields[1].Split(';')) { Lollipop.correctionFactorFilenames.Add(filename); } } break;
                 case "NeuCodePairs|max_intensity_ratio": max_intensity_ratio = Convert.ToDecimal(fields[1]); break;
                 case "NeuCodePairs|min_intensity_ratio": min_intensity_ratio = Convert.ToDecimal(fields[1]); break;
                 case "NeuCodePairs|max_lysine_ct": max_lysine_ct = Convert.ToDecimal(fields[1]); break;
