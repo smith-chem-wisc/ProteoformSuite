@@ -33,6 +33,8 @@ namespace ProteoformSuiteInternal
         public static IEnumerable<InputFile> identification_files() { return input_files.Where(f => f.purpose == Purpose.Identification); }
         public static IEnumerable<InputFile> quantitation_files() { return input_files.Where(f => f.purpose == Purpose.Quantitation); }
         public static IEnumerable<InputFile> calibration_files() { return input_files.Where(f => f.purpose == Purpose.Calibration); }
+        public static IEnumerable<InputFile> bottomup_files() { return input_files.Where(f => f.purpose == Purpose.BottomUp); }
+        public static IEnumerable<InputFile> topdown_files() { return input_files.Where(f => f.purpose == Purpose.TopDown); }
         public static List<Correction> correctionFactors = null;
         public static List<Component> raw_experimental_components = new List<Component>();
         public static bool neucode_labeled = true;
@@ -134,8 +136,10 @@ namespace ProteoformSuiteInternal
             //Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
 
             // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
-            Component[] remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true).ToArray();
-            
+            Component[] remaining_proteoforms = new Component[0];
+            if (Lollipop.neucode_labeled) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true).ToArray();
+            else remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true).ToArray();
+
             int count = 1;
             while (remaining_proteoforms.Length > 0)
             {
@@ -168,6 +172,8 @@ namespace ProteoformSuiteInternal
         //public static List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
         //public static Dictionary<string, List<TheoreticalProteoform>> decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>>();
         static Protein[] proteins;
+        public static List<Psm> psm_list = new List<Psm>();
+
         static ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
         public static Dictionary<string, Modification> uniprotModificationTable;
         static Dictionary<char, double> aaIsotopeMassList;
@@ -185,6 +191,13 @@ namespace ProteoformSuiteInternal
             //Read the UniProt-XML and ptmlist
             proteins = ProteomeDatabaseReader.ReadUniprotXml(uniprot_xml_filepath, uniprotModificationTable, min_peptide_length, methionine_cleavage);
             if (combine_identical_sequences) proteins = group_proteins_by_sequence(proteins);
+
+            //Read the Morpheus BU data into PSM list
+            foreach (InputFile file in Lollipop.bottomup_files())
+            {
+                List<Psm> psm_from_file = ProteomeDatabaseReader.ReadpsmFile(file.path + "\\" + file.filename + file.extension);
+                psm_list.AddRange(psm_from_file);
+            }
 
             //PARALLEL PROBLEM
             process_entries();
@@ -273,12 +286,17 @@ namespace ProteoformSuiteInternal
             {
                 double proteoform_mass = unmodified_mass + ptm_set.mass;
                 string protein_description = prot.description + "_" + listMemberNumber.ToString();
+
+                //PSMs in BU data with that protein accession
+                string[] accession_to_search = prot.accession.Split('_');
+                List<Psm> theoretical_psms = psm_list.Where(p => p.protein_description.Contains(accession_to_search[0])).ToList();
+
                 if (decoy_number < 0 ) 
                     proteoform_community.add(new TheoreticalProteoform(accession, protein_description, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
-                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, true));
+                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, theoretical_psms, true));
                 else
                     proteoform_community.add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
-                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, false), decoy_database_name_prefix + decoy_number);
+                        unmodified_mass, lysine_count, ptm_set, proteoform_mass,theoretical_psms, false), decoy_database_name_prefix + decoy_number);
                 listMemberNumber++;
             } //);
         }

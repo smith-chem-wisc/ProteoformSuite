@@ -23,6 +23,7 @@ namespace ProteoformSuite
         {
             InitializeComponent();
             this.dgv_ET_Peak_List.MouseClick += new MouseEventHandler(dgv_ET_Peak_List_CellClick);
+            this.dgv_ET_Pairs.CellMouseClick += new DataGridViewCellMouseEventHandler(dgv_ET_Pairs_CellClick);
             this.ct_ET_Histogram.MouseMove += new MouseEventHandler(ct_ET_Histogram_MouseMove);
             this.ct_ET_peakList.MouseMove += new MouseEventHandler(ct_ET_peakList_MouseMove);
             dgv_ET_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(ET_Peak_List_DirtyStateChanged); //makes the change immediate and automatic
@@ -111,6 +112,21 @@ namespace ProteoformSuite
         private void GraphETPeaks()
         {
             DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, "Peak Count", "Median Decoy Count", Lollipop.et_relations, "Nearby Relations");
+        }
+
+
+        private void dgv_ET_Pairs_CellClick (object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex >= 0 && Lollipop.psm_list.Count > 0)
+            {
+                dgv_psmList.Visible = true;
+                display_psm_list(e.RowIndex);
+            }
+        }
+        private void display_psm_list(int row_index)
+        {
+            ProteoformRelation selected_pf = (ProteoformRelation)this.dgv_ET_Pairs.Rows[row_index].DataBoundItem;
+            DisplayUtility.FillDataGridView(dgv_psmList, ((TheoreticalProteoform)selected_pf.connected_proteoforms[1]).psm_list);
         }
 
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)

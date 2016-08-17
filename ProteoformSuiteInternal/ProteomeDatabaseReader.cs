@@ -241,6 +241,32 @@ namespace ProteoformSuiteInternal
             return bag_protein_list.ToArray();
         }
 
+        //READING IN BOTTOM-UP MORPHEUS FILE
+        public static List<Psm> ReadpsmFile(string filename)
+        {
+            List<Psm> psm_list = new List<Psm>();
+            string[] lines = File.ReadAllLines(filename);
+
+            int i = 1;
+            bool qLessThan1 = true;
+            //only add PSMs with q less than 1
+            while (qLessThan1)
+          {
+                string[] parts = lines[i].Split('\t');
+                //only read in with Q-value < 1%
+                if (Convert.ToDouble(parts[29]) < 1)
+                {
+                    Psm new_psm = new Psm(parts[11].ToString(), parts[0].ToString(), Convert.ToInt32(parts[14]), Convert.ToInt32(parts[15]),
+                        Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]), Convert.ToInt32(parts[1]), 
+                        parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]));
+                    psm_list.Add(new_psm);
+                    i++;
+                }
+                else { qLessThan1 = false; } 
+            }
+            return psm_list;
+        }
+
         private static string GetAttribute(XElement element, string attribute_name)
         {
             XAttribute attribute = element.Attributes().FirstOrDefault(a => a.Name.LocalName == attribute_name);

@@ -240,6 +240,32 @@ namespace ProteoformSuite
             DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
             match_files();
         }
+        private void bt_morpheusBUResultsAdd_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Title = "Morpheus Bottom-Up Results Files";
+            openFileDialog1.Filter = "Text Files (*.tsv) | *.tsv";
+            openFileDialog1.Multiselect = true;
+
+            DialogResult dr = openFileDialog1.ShowDialog();
+            if (dr == DialogResult.OK)
+                enter_input_files(openFileDialog1.FileNames, new List<string> { ".tsv" }, Purpose.BottomUp);
+
+            DisplayUtility.FillDataGridView(dgv_buFiles, Lollipop.bottomup_files());
+        }
+        private void bt_tdResultsAdd_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Title = "ProSight Top-Down Results Files";
+            openFileDialog1.Filter = "Excel Files(.xlsx) | *.xlsx";
+            openFileDialog1.Multiselect = true;
+
+            DialogResult dr = openFileDialog1.ShowDialog();
+            if (dr == DialogResult.OK)
+                enter_input_files(openFileDialog1.FileNames, new List<string> { ".xlsx" }, Purpose.TopDown);
+
+            DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
+        }
 
         // CLEAR BUTTONS
         private void btn_protIdResultsClear_Click(object sender, EventArgs e)
@@ -258,6 +284,18 @@ namespace ProteoformSuite
         {
             Lollipop.input_files = Lollipop.input_files.Except(Lollipop.calibration_files()).ToList();
             DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
+            match_files();
+        }
+        private void bt_morpheusBUResultsClear_Click(object sender, EventArgs e)
+        {
+            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.bottomup_files()).ToList();
+            DisplayUtility.FillDataGridView(dgv_buFiles, Lollipop.bottomup_files());
+            match_files();
+        }
+        private void bt_tdResultsClear_Click(object sender, EventArgs e)
+        {
+            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.topdown_files()).ToList();
+            DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
             match_files();
         }
 

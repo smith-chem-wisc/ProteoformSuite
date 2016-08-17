@@ -147,9 +147,11 @@ namespace ProteoformSuiteInternal
         {
             get { return ptm_list_string(); }
         }
+        public List<Psm> psm_list { get; set; }
+        public int psm_count { get { return psm_list.Count; } }
 
 
-        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, PtmSet ptm_set, double modified_mass, bool is_target) : 
+        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, PtmSet ptm_set, double modified_mass, List<Psm> psm_list, bool is_target) : 
             base(accession, modified_mass, lysine_count, is_target)
         {
             this.accession = accession;
@@ -160,6 +162,7 @@ namespace ProteoformSuiteInternal
             this.end = end;
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
+            this.psm_list = psm_list;
         }
 
         //for Tests
