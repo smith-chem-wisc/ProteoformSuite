@@ -249,17 +249,20 @@ namespace ProteoformSuiteInternal
 
             int i = 1;
             bool qLessThan1 = true;
-            //only add PSMs with q less than 1
+            //only add PSMs with q less than 1. this assumes the tsv is in increasing order of q-value! 
             while (qLessThan1)
           {
                 string[] parts = lines[i].Split('\t');
                 //only read in with Q-value < 1%
-                if (Convert.ToDouble(parts[29]) < 1)
+                if (Convert.ToDouble(parts[30]) < 1)
                 {
-                    Psm new_psm = new Psm(parts[11].ToString(), parts[0].ToString(), Convert.ToInt32(parts[14]), Convert.ToInt32(parts[15]),
-                        Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]), Convert.ToInt32(parts[1]), 
-                        parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]));
-                    psm_list.Add(new_psm);
+                    if (Convert.ToBoolean(parts[26]))
+                    {
+                        Psm new_psm = new Psm(parts[11].ToString(), parts[0].ToString(), Convert.ToInt32(parts[14]), Convert.ToInt32(parts[15]),
+                            Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]), Convert.ToInt32(parts[1]),
+                            parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]));
+                        psm_list.Add(new_psm);
+                    }
                     i++;
                 }
                 else { qLessThan1 = false; } 
