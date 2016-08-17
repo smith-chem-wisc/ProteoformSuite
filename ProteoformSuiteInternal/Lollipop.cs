@@ -206,12 +206,22 @@ namespace ProteoformSuiteInternal
             //    () => process_entries(),
             //    () => process_decoys()
             //);
-
-            //POSSIBLE PARALLEL PROBLEM - DIDN'T TEST DECOY
             Lollipop.proteoform_community.theoretical_proteoforms = Lollipop.proteoform_community.theoretical_proteoforms.ToList();
             Parallel.ForEach<List<TheoreticalProteoform>>(Lollipop.proteoform_community.decoy_proteoforms.Values, decoys =>
                 decoys = decoys.Where(d => d != null).ToList()
             );
+            if (psm_list.Count > 0) { match_psms_and_theoreticals(); }   //if BU data loaded in, match PSMs to theoretical accessions
+        }
+
+        private static void match_psms_and_theoreticals()
+        {
+            Parallel.ForEach<TheoreticalProteoform>(Lollipop.proteoform_community.theoretical_proteoforms, tp =>
+            {
+                //PSMs in BU data with that protein accession
+                string[] accession_to_search = tp.accession.Split('_');
+                tp.psm_list = Lollipop.psm_list.Where(p => p.protein_description.Contains(accession_to_search[0])).ToList();
+            });
+
         }
 
         private static ProteinSequenceGroup[] group_proteins_by_sequence(IEnumerable<Protein> proteins)
@@ -287,16 +297,12 @@ namespace ProteoformSuiteInternal
                 double proteoform_mass = unmodified_mass + ptm_set.mass;
                 string protein_description = prot.description + "_" + listMemberNumber.ToString();
 
-                //PSMs in BU data with that protein accession
-                string[] accession_to_search = prot.accession.Split('_');
-                List<Psm> theoretical_psms = psm_list.Where(p => p.protein_description.Contains(accession_to_search[0])).ToList();
-
                 if (decoy_number < 0 ) 
                     proteoform_community.add(new TheoreticalProteoform(accession, protein_description, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
-                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, theoretical_psms, true));
+                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, true));
                 else
                     proteoform_community.add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
-                        unmodified_mass, lysine_count, ptm_set, proteoform_mass,theoretical_psms, false), decoy_database_name_prefix + decoy_number);
+                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, false), decoy_database_name_prefix + decoy_number);
                 listMemberNumber++;
             } //);
         }
