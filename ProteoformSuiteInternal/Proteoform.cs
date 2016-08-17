@@ -147,6 +147,8 @@ namespace ProteoformSuiteInternal
         {
             get { return ptm_list_string(); }
         }
+        public List<Psm> psm_list { get; set; } = new List<Psm>();
+        public int psm_count { get { return psm_list.Count; } }
 
 
         public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, PtmSet ptm_set, double modified_mass, bool is_target) : 

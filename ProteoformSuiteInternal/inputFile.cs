@@ -38,7 +38,9 @@ namespace ProteoformSuiteInternal
     {
         Identification,
         Quantitation,
-        Calibration
+        Calibration,
+        BottomUp,
+        TopDown
     }
 
     public enum Labeling

@@ -47,11 +47,21 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btn_fullRunWithPresets = new System.Windows.Forms.Button();
             this.btn_nextPane = new System.Windows.Forms.Button();
+            this.dgv_buFiles = new System.Windows.Forms.DataGridView();
+            this.dgv_tdFiles = new System.Windows.Forms.DataGridView();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.bt_morpheusBUResultsAdd = new System.Windows.Forms.Button();
+            this.bt_morpheusBUResultsClear = new System.Windows.Forms.Button();
+            this.bt_tdResultsAdd = new System.Windows.Forms.Button();
+            this.bt_tdResultsClear = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_identificationFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantitationFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_calibrationFiles)).BeginInit();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_buFiles)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_tdFiles)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -102,7 +112,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(500, 13);
+            this.label2.Location = new System.Drawing.Point(313, 13);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(291, 20);
             this.label2.TabIndex = 4;
@@ -112,7 +122,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(989, 13);
+            this.label3.Location = new System.Drawing.Point(610, 13);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(293, 20);
             this.label3.TabIndex = 6;
@@ -120,7 +130,7 @@
             // 
             // btn_protIdResultsClear
             // 
-            this.btn_protIdResultsClear.Location = new System.Drawing.Point(258, 518);
+            this.btn_protIdResultsClear.Location = new System.Drawing.Point(164, 518);
             this.btn_protIdResultsClear.Name = "btn_protIdResultsClear";
             this.btn_protIdResultsClear.Size = new System.Drawing.Size(122, 36);
             this.btn_protIdResultsClear.TabIndex = 7;
@@ -130,7 +140,7 @@
             // 
             // btn_protIdResultsAdd
             // 
-            this.btn_protIdResultsAdd.Location = new System.Drawing.Point(78, 518);
+            this.btn_protIdResultsAdd.Location = new System.Drawing.Point(36, 518);
             this.btn_protIdResultsAdd.Name = "btn_protIdResultsAdd";
             this.btn_protIdResultsAdd.Size = new System.Drawing.Size(122, 36);
             this.btn_protIdResultsAdd.TabIndex = 8;
@@ -140,7 +150,7 @@
             // 
             // btn_protQuantResultsAdd
             // 
-            this.btn_protQuantResultsAdd.Location = new System.Drawing.Point(555, 518);
+            this.btn_protQuantResultsAdd.Location = new System.Drawing.Point(338, 518);
             this.btn_protQuantResultsAdd.Name = "btn_protQuantResultsAdd";
             this.btn_protQuantResultsAdd.Size = new System.Drawing.Size(122, 36);
             this.btn_protQuantResultsAdd.TabIndex = 10;
@@ -150,7 +160,7 @@
             // 
             // btn_protQuantResultsClear
             // 
-            this.btn_protQuantResultsClear.Location = new System.Drawing.Point(759, 518);
+            this.btn_protQuantResultsClear.Location = new System.Drawing.Point(461, 518);
             this.btn_protQuantResultsClear.Name = "btn_protQuantResultsClear";
             this.btn_protQuantResultsClear.Size = new System.Drawing.Size(122, 36);
             this.btn_protQuantResultsClear.TabIndex = 9;
@@ -160,7 +170,7 @@
             // 
             // btn_protCalibResultsAdd
             // 
-            this.btn_protCalibResultsAdd.Location = new System.Drawing.Point(1062, 518);
+            this.btn_protCalibResultsAdd.Location = new System.Drawing.Point(623, 518);
             this.btn_protCalibResultsAdd.Name = "btn_protCalibResultsAdd";
             this.btn_protCalibResultsAdd.Size = new System.Drawing.Size(122, 36);
             this.btn_protCalibResultsAdd.TabIndex = 12;
@@ -170,7 +180,7 @@
             // 
             // btn_protCalibResultsClear
             // 
-            this.btn_protCalibResultsClear.Location = new System.Drawing.Point(1235, 518);
+            this.btn_protCalibResultsClear.Location = new System.Drawing.Point(751, 518);
             this.btn_protCalibResultsClear.Name = "btn_protCalibResultsClear";
             this.btn_protCalibResultsClear.Size = new System.Drawing.Size(122, 36);
             this.btn_protCalibResultsClear.TabIndex = 11;
@@ -186,7 +196,7 @@
             this.dgv_identificationFiles.Location = new System.Drawing.Point(12, 49);
             this.dgv_identificationFiles.Name = "dgv_identificationFiles";
             this.dgv_identificationFiles.RowTemplate.Height = 28;
-            this.dgv_identificationFiles.Size = new System.Drawing.Size(453, 463);
+            this.dgv_identificationFiles.Size = new System.Drawing.Size(296, 463);
             this.dgv_identificationFiles.TabIndex = 13;
             this.dgv_identificationFiles.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_deconResults_CellFormatting);
             this.dgv_identificationFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_deconResults_DragDrop);
@@ -197,9 +207,9 @@
             this.dgv_quantitationFiles.AllowDrop = true;
             this.dgv_quantitationFiles.AllowUserToOrderColumns = true;
             this.dgv_quantitationFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_quantitationFiles.Location = new System.Drawing.Point(504, 49);
+            this.dgv_quantitationFiles.Location = new System.Drawing.Point(314, 49);
             this.dgv_quantitationFiles.Name = "dgv_quantitationFiles";
-            this.dgv_quantitationFiles.Size = new System.Drawing.Size(453, 463);
+            this.dgv_quantitationFiles.Size = new System.Drawing.Size(290, 463);
             this.dgv_quantitationFiles.TabIndex = 14;
             this.dgv_quantitationFiles.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_quantResults_CellFormatting);
             this.dgv_quantitationFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_quantResults_DragDrop);
@@ -210,9 +220,9 @@
             this.dgv_calibrationFiles.AllowDrop = true;
             this.dgv_calibrationFiles.AllowUserToOrderColumns = true;
             this.dgv_calibrationFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_calibrationFiles.Location = new System.Drawing.Point(993, 49);
+            this.dgv_calibrationFiles.Location = new System.Drawing.Point(610, 49);
             this.dgv_calibrationFiles.Name = "dgv_calibrationFiles";
-            this.dgv_calibrationFiles.Size = new System.Drawing.Size(453, 463);
+            this.dgv_calibrationFiles.Size = new System.Drawing.Size(287, 463);
             this.dgv_calibrationFiles.TabIndex = 15;
             this.dgv_calibrationFiles.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_calibrationResults_CellFormatting);
             this.dgv_calibrationFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_calibrationResults_DragDrop);
@@ -259,9 +269,97 @@
             this.btn_nextPane.UseVisualStyleBackColor = true;
             this.btn_nextPane.Click += new System.EventHandler(this.btn_nextPane_Click);
             // 
+            // dgv_buFiles
+            // 
+            this.dgv_buFiles.AllowDrop = true;
+            this.dgv_buFiles.AllowUserToOrderColumns = true;
+            this.dgv_buFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_buFiles.Location = new System.Drawing.Point(903, 49);
+            this.dgv_buFiles.Name = "dgv_buFiles";
+            this.dgv_buFiles.Size = new System.Drawing.Size(287, 463);
+            this.dgv_buFiles.TabIndex = 18;
+            // 
+            // dgv_tdFiles
+            // 
+            this.dgv_tdFiles.AllowDrop = true;
+            this.dgv_tdFiles.AllowUserToOrderColumns = true;
+            this.dgv_tdFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_tdFiles.Location = new System.Drawing.Point(1196, 49);
+            this.dgv_tdFiles.Name = "dgv_tdFiles";
+            this.dgv_tdFiles.Size = new System.Drawing.Size(275, 463);
+            this.dgv_tdFiles.TabIndex = 19;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label4.Location = new System.Drawing.Point(1205, 13);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(248, 20);
+            this.label4.TabIndex = 20;
+            this.label4.Text = "ProSight Top-Down Results (.xlsx)";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(909, 13);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(258, 20);
+            this.label5.TabIndex = 21;
+            this.label5.Text = "Morpheus Bottom-Up Results (.tsv)";
+            // 
+            // bt_morpheusBUResultsAdd
+            // 
+            this.bt_morpheusBUResultsAdd.Location = new System.Drawing.Point(913, 518);
+            this.bt_morpheusBUResultsAdd.Name = "bt_morpheusBUResultsAdd";
+            this.bt_morpheusBUResultsAdd.Size = new System.Drawing.Size(122, 36);
+            this.bt_morpheusBUResultsAdd.TabIndex = 23;
+            this.bt_morpheusBUResultsAdd.Text = "Add";
+            this.bt_morpheusBUResultsAdd.UseVisualStyleBackColor = true;
+            this.bt_morpheusBUResultsAdd.Click += new System.EventHandler(this.bt_morpheusBUResultsAdd_Click);
+            // 
+            // bt_morpheusBUResultsClear
+            // 
+            this.bt_morpheusBUResultsClear.Location = new System.Drawing.Point(1041, 518);
+            this.bt_morpheusBUResultsClear.Name = "bt_morpheusBUResultsClear";
+            this.bt_morpheusBUResultsClear.Size = new System.Drawing.Size(122, 36);
+            this.bt_morpheusBUResultsClear.TabIndex = 22;
+            this.bt_morpheusBUResultsClear.Text = "Clear";
+            this.bt_morpheusBUResultsClear.UseVisualStyleBackColor = true;
+            this.bt_morpheusBUResultsClear.Click += new System.EventHandler(this.bt_morpheusBUResultsClear_Click);
+            // 
+            // bt_tdResultsAdd
+            // 
+            this.bt_tdResultsAdd.Location = new System.Drawing.Point(1209, 518);
+            this.bt_tdResultsAdd.Name = "bt_tdResultsAdd";
+            this.bt_tdResultsAdd.Size = new System.Drawing.Size(122, 36);
+            this.bt_tdResultsAdd.TabIndex = 25;
+            this.bt_tdResultsAdd.Text = "Add";
+            this.bt_tdResultsAdd.UseVisualStyleBackColor = true;
+            this.bt_tdResultsAdd.Click += new System.EventHandler(this.bt_tdResultsAdd_Click);
+            // 
+            // bt_tdResultsClear
+            // 
+            this.bt_tdResultsClear.Location = new System.Drawing.Point(1337, 518);
+            this.bt_tdResultsClear.Name = "bt_tdResultsClear";
+            this.bt_tdResultsClear.Size = new System.Drawing.Size(122, 36);
+            this.bt_tdResultsClear.TabIndex = 24;
+            this.bt_tdResultsClear.Text = "Clear";
+            this.bt_tdResultsClear.UseVisualStyleBackColor = true;
+            this.bt_tdResultsClear.Click += new System.EventHandler(this.bt_tdResultsClear_Click);
+            // 
             // LoadDeconvolutionResults
             // 
             this.ClientSize = new System.Drawing.Size(1471, 736);
+            this.Controls.Add(this.bt_tdResultsAdd);
+            this.Controls.Add(this.bt_tdResultsClear);
+            this.Controls.Add(this.bt_morpheusBUResultsAdd);
+            this.Controls.Add(this.bt_morpheusBUResultsClear);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.dgv_tdFiles);
+            this.Controls.Add(this.dgv_buFiles);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btn_fullRun);
             this.Controls.Add(this.dgv_calibrationFiles);
@@ -284,6 +382,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantitationFiles)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_calibrationFiles)).EndInit();
             this.groupBox2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_buFiles)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_tdFiles)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -310,5 +410,13 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button btn_fullRunWithPresets;
         private System.Windows.Forms.Button btn_nextPane;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button bt_morpheusBUResultsAdd;
+        private System.Windows.Forms.Button bt_morpheusBUResultsClear;
+        private System.Windows.Forms.Button bt_tdResultsAdd;
+        private System.Windows.Forms.Button bt_tdResultsClear;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.DataGridView dgv_tdFiles;
+        private System.Windows.Forms.DataGridView dgv_buFiles;
     }
 }
