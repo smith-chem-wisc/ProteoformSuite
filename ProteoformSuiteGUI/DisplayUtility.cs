@@ -244,7 +244,7 @@ namespace ProteoformSuite
         {
             //making all columns invisible first - faster
             foreach (DataGridViewColumn column in dgv.Columns) { column.Visible = false; }
-
+            dgv.Columns["mass_shifter"].Visible = true;
             dgv.Columns["peak_deltaM_average"].DefaultCellStyle.Format = "0.####";
             dgv.Columns["peak_group_fdr"].DefaultCellStyle.Format = "0.##";
 

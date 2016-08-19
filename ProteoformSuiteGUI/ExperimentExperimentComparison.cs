@@ -20,8 +20,8 @@ namespace ProteoformSuite
         {
             InitializeComponent();
             this.dgv_EE_Peaks.MouseClick += new MouseEventHandler(dgv_EE_Peak_List_CellClick);
-            this.ct_EE_Histogram.MouseMove += new MouseEventHandler(ct_EE_Histogram_MouseMove);
-            this.ct_EE_peakList.MouseMove += new MouseEventHandler(ct_EE_peakList_MouseMove);
+            this.ct_EE_Histogram.MouseClick += new MouseEventHandler(ct_EE_Histogram_MouseClick);
+            this.ct_EE_peakList.MouseClick += new MouseEventHandler(ct_EE_peakList_MouseClick);
             dgv_EE_Peaks.CurrentCellDirtyStateChanged += new EventHandler(peakListSpecificPeakAcceptanceChanged); //makes the change immediate and automatic
             dgv_EE_Peaks.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
         }
@@ -196,13 +196,15 @@ namespace ProteoformSuite
         Point? ct_EE_peakList_prevPosition = null;
         ToolTip ct_EE_Histogram_tt = new ToolTip();
         ToolTip ct_EE_peakList_tt = new ToolTip();
-        private void ct_EE_Histogram_MouseMove(object sender, MouseEventArgs e)
+        private void ct_EE_Histogram_MouseClick(object sender, MouseEventArgs e)
         {
-            DisplayUtility.tooltip_graph_display(ct_EE_peakList_tt, e, ct_EE_Histogram, ct_EE_Histogram_prevPosition);
+            if (e.Button == MouseButtons.Left)
+               DisplayUtility.tooltip_graph_display(ct_EE_Histogram_tt, e, ct_EE_Histogram, ct_EE_Histogram_prevPosition);
         }
-        private void ct_EE_peakList_MouseMove(object sender, MouseEventArgs e)
+        private void ct_EE_peakList_MouseClick(object sender, MouseEventArgs e)
         {
-            DisplayUtility.tooltip_graph_display(ct_EE_peakList_tt, e, ct_EE_peakList, ct_EE_peakList_prevPosition);
+            if (e.Button == MouseButtons.Left)
+              DisplayUtility.tooltip_graph_display(ct_EE_peakList_tt, e, ct_EE_peakList, ct_EE_peakList_prevPosition);
         }
 
         private void EE_update_Click(object sender, EventArgs e)
