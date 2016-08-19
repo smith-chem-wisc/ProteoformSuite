@@ -24,6 +24,7 @@ namespace ProteoformSuite
         ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
         ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
         ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
+        Quantification quantification = new Quantification();
         ResultsSummary resultsSummary = new ResultsSummary();
         List<Form> forms;
         //  Initialize Forms END
@@ -49,7 +50,7 @@ namespace ProteoformSuite
             forms = new List<Form>(new Form[] {
                 loadDeconvolutionResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
                 theoreticalDatabase, experimentalTheoreticalComparison, experimentExperimentComparison,
-                proteoformFamilies
+                proteoformFamilies, quantification
             });
         }
 
@@ -71,6 +72,7 @@ namespace ProteoformSuite
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentalTheoreticalComparison); }
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentExperimentComparison); }
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e) { showForm(proteoformFamilies); }
+        private void quantificationToolStripMenuItem_Click(object sender, EventArgs e) { showForm(quantification); }
 
         private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -301,6 +303,13 @@ namespace ProteoformSuite
         public void display_methodMenu()
         {
             runMethodToolStripMenuItem.ShowDropDown();
+        }
+
+        private void quantificationToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            quantification.MdiParent = this;
+            quantification.WindowState = FormWindowState.Maximized;
+            quantification.Show();
         }
     }
 }
