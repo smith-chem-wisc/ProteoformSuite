@@ -184,6 +184,8 @@ namespace ProteoformSuiteInternal
             //Clear out data from potential previous runs
             Lollipop.proteoform_community.theoretical_proteoforms.Clear();
             Lollipop.proteoform_community.decoy_proteoforms.Clear();
+            Lollipop.psm_list.Clear();
+
             ProteomeDatabaseReader.oldPtmlistFilePath = ptmlist_filepath;
             uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
             aaIsotopeMassList = new AminoAcidMasses(methionine_oxidation, carbamidomethylation).AA_Masses;
