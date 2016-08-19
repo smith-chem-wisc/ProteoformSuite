@@ -66,7 +66,7 @@ namespace ProteoformSuite
             FillETPeakListTable();
             FillETRelationsGridView();
             DisplayUtility.FormatRelationsGridView(dgv_ET_Pairs, true, false);
-            DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List);
+            DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List, false);
             GraphETRelations();
             GraphETPeaks();
             updateFiguresOfMerit();
@@ -101,7 +101,6 @@ namespace ProteoformSuite
         private void FillETPeakListTable()
         {
             DisplayUtility.FillDataGridView(dgv_ET_Peak_List, Lollipop.et_peaks);
-            dgv_ET_Peak_List.Columns["mass_shifter"].ReadOnly = false; //user can say how much they want to change monoisotopic by for each
         }
         private void GraphETRelations()
         {
@@ -176,8 +175,7 @@ namespace ProteoformSuite
                     MessageBox.Show("Could not convert mass shift for peak at delta mass " + peak.delta_mass + ". Please enter an integer.");
                     return;
                 }
-                if (int_mass_shifter > 0) massShifter(peak, int_mass_shifter, false);
-                else if (int_mass_shifter < 0) massShifter(peak,  int_mass_shifter, false);
+                massShifter(peak, int_mass_shifter, false);
             }
                 if (Lollipop.neucode_labeled)
                 {

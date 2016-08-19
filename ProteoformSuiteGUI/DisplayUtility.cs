@@ -240,11 +240,15 @@ namespace ProteoformSuite
             dgv.AllowUserToAddRows = false;
         }
 
-        public static void FormatPeakListGridView(DataGridView dgv)
+        public static void FormatPeakListGridView(DataGridView dgv, bool mask_mass_shifter)
         {
             //making all columns invisible first - faster
             foreach (DataGridViewColumn column in dgv.Columns) { column.Visible = false; }
-            dgv.Columns["mass_shifter"].Visible = true;
+            if (!mask_mass_shifter)
+            {
+                dgv.Columns["mass_shifter"].Visible = true;
+                dgv.Columns["mass_shifter"].ReadOnly = false; //user can say how much they want to change monoisotopic by for each
+            }
             dgv.Columns["peak_deltaM_average"].DefaultCellStyle.Format = "0.####";
             dgv.Columns["peak_group_fdr"].DefaultCellStyle.Format = "0.##";
 
