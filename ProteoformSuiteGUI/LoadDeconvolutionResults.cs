@@ -27,12 +27,7 @@ namespace ProteoformSuite
 
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
         {
-            //clb_deconResults.Sorted = true;
-            //clb_quantResults.Sorted = true;
-            //clb_calibResults.Sorted = true;
-            //formatDataGridview();
-            //btn_neucode.Checked = true;
-            //DisplayUtility.formatDataFileInputGridView(dgv_deconResults);
+            //Nothing happens now because this form is automatically loaded at startup
         }
 
         
@@ -65,10 +60,10 @@ namespace ProteoformSuite
         private void dgv_quantResults_DragDrop(object sender, DragEventArgs e)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            enter_input_files(files, new List<string> { ".xlsx" }, Purpose.Quantitation);
+            enter_input_files(files, new List<string> { ".xlsx" }, Purpose.Quantification);
             match_files();
 
-            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantitation_files());
+            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantification_files());
         }
         private void dgv_calibrationResults_DragDrop(object sender, DragEventArgs e)
         {
@@ -104,8 +99,8 @@ namespace ProteoformSuite
                 if (acceptable_extensions.Contains(extension) && !Lollipop.input_files.Where(f => f.purpose == purpose).Any(f => f.filename == filename))
                 {
                     // Handle the conflict of loading the same deconvolution results into identification and quantitation
-                    if ((purpose == Purpose.Identification || purpose == Purpose.Quantitation) &&
-                        (Lollipop.identification_files().Any(g => g.filename == filename) || Lollipop.quantitation_files().Any(g => g.filename == filename)))
+                    if ((purpose == Purpose.Identification || purpose == Purpose.Quantification) &&
+                        (Lollipop.identification_files().Any(g => g.filename == filename) || Lollipop.quantification_files().Any(g => g.filename == filename)))
                     {
                         var results = MessageBox.Show("Use " + filename + extension + " for " + purpose.ToString() + "?", "Identification/Quantitation Result Conflict", MessageBoxButtons.YesNoCancel);
                         if (results == DialogResult.No) continue;
@@ -154,7 +149,7 @@ namespace ProteoformSuite
         private void reload_dgvs()
         {
             DisplayUtility.FillDataGridView(dgv_identificationFiles, Lollipop.identification_files());
-            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantitation_files());
+            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantification_files());
             DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
         }
 
@@ -221,9 +216,9 @@ namespace ProteoformSuite
 
             DialogResult dr = openFileDialog1.ShowDialog();
             if (dr == DialogResult.OK)
-                enter_input_files(openFileDialog1.FileNames, new List<string> { ".xlsx" }, Purpose.Quantitation);
+                enter_input_files(openFileDialog1.FileNames, new List<string> { ".xlsx" }, Purpose.Quantification);
 
-            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantitation_files());
+            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantification_files());
             match_files();
         }
         private void btn_protCalibResultsAdd_Click(object sender, EventArgs e)
@@ -250,8 +245,8 @@ namespace ProteoformSuite
         }
         private void btn_protQuantResultsClear_Click(object sender, EventArgs e)
         {
-            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.quantitation_files()).ToList();
-            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantitation_files());
+            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.quantification_files()).ToList();
+            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantification_files());
             match_files();
         }
         private void btn_protCalibResultsClear_Click(object sender, EventArgs e)
