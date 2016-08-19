@@ -37,7 +37,7 @@ namespace ProteoformSuiteInternal
     public enum Purpose
     {
         Identification,
-        Quantitation,
+        Quantification,
         Calibration,
         BottomUp,
         TopDown

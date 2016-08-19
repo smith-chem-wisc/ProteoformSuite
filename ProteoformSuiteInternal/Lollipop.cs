@@ -31,12 +31,13 @@ namespace ProteoformSuiteInternal
         //public static BindingList<string> deconResultsFileNames = new BindingList<string>();
         public static List<InputFile> input_files = new List<InputFile>();
         public static IEnumerable<InputFile> identification_files() { return input_files.Where(f => f.purpose == Purpose.Identification); }
-        public static IEnumerable<InputFile> quantitation_files() { return input_files.Where(f => f.purpose == Purpose.Quantitation); }
+        public static IEnumerable<InputFile> quantification_files() { return input_files.Where(f => f.purpose == Purpose.Quantification); }
         public static IEnumerable<InputFile> calibration_files() { return input_files.Where(f => f.purpose == Purpose.Calibration); }
         public static IEnumerable<InputFile> bottomup_files() { return input_files.Where(f => f.purpose == Purpose.BottomUp); }
         public static IEnumerable<InputFile> topdown_files() { return input_files.Where(f => f.purpose == Purpose.TopDown); }
         public static List<Correction> correctionFactors = null;
         public static List<Component> raw_experimental_components = new List<Component>();
+        public static List<Component> raw_quantification_components = new List<Component>();
         public static bool neucode_labeled = true;
         public static void process_raw_components()
         {
@@ -54,6 +55,18 @@ namespace ProteoformSuiteInternal
                     foreach (string scan_range in scan_ranges)
                     find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
                 }
+            }
+        }
+
+        public static void process_raw_quantification_components()
+        {
+            ExcelReader componentReader = new ExcelReader();
+            if (input_files.Any(f => f.purpose == Purpose.Quantification))
+                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file.path + "\\" + file.filename + file.extension))).ToList();
+            foreach (InputFile file in quantification_files())
+            {
+                List<Component> raw_components = componentReader.read_components_from_xlsx(file.path + "\\" + file.filename + file.extension, correctionFactors).ToList();
+                raw_quantification_components.AddRange(raw_components);
             }
         }
 
