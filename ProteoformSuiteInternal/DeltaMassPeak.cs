@@ -26,6 +26,7 @@ namespace ProteoformSuiteInternal
         public double decoy_relation_count { get; set; }
         public double peak_group_fdr { get; set; }
         public bool peak_accepted { get; set; }
+        public string mass_shifter { get; set; } = "0";
         public List<Modification> possiblePeakAssignments { get; set; }
         public string possiblePeakAssignments_string
         {

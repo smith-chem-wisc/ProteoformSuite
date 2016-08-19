@@ -20,8 +20,8 @@ namespace ProteoformSuite
         public NeuCodePairs()
         {
             InitializeComponent();
-            this.ct_IntensityRatio.MouseMove += new MouseEventHandler(ct_IntensityRatio_MouseMove);
-            this.ct_LysineCount.MouseMove += new MouseEventHandler(ct_LysineCount_MouseMove);
+            this.ct_IntensityRatio.MouseClick += new MouseEventHandler(ct_IntensityRatio_MouseClick);
+            this.ct_LysineCount.MouseClick += new MouseEventHandler(ct_LysineCount_MouseClick);
         }
 
         public void NeuCodePairs_Load(object sender, EventArgs e)
@@ -151,17 +151,19 @@ namespace ProteoformSuite
         Point? ct_intensityRatio_prevPosition = null;
         ToolTip ct_intensityRatio_tt = new ToolTip();
 
-        void ct_IntensityRatio_MouseMove(object sender, MouseEventArgs e)
+        void ct_IntensityRatio_MouseClick(object sender, MouseEventArgs e)
         {
-            DisplayUtility.tooltip_graph_display(ct_intensityRatio_tt, e, ct_IntensityRatio, ct_intensityRatio_prevPosition);
+            if (e.Button == MouseButtons.Left)
+                DisplayUtility.tooltip_graph_display(ct_intensityRatio_tt, e, ct_IntensityRatio, ct_intensityRatio_prevPosition);
         }
 
         Point? ct_LysineCount_prevPosition = null;
         ToolTip ct_LysineCount_tt = new ToolTip();
 
-        void ct_LysineCount_MouseMove(object sender, MouseEventArgs e)
+        void ct_LysineCount_MouseClick(object sender, MouseEventArgs e)
         {
-            DisplayUtility.tooltip_graph_display(ct_LysineCount_tt, e, ct_LysineCount, ct_LysineCount_prevPosition);
+            if (e.Button == MouseButtons.Left)
+                DisplayUtility.tooltip_graph_display(ct_LysineCount_tt, e, ct_LysineCount, ct_LysineCount_prevPosition);
         }
 
         private void yMaxKCt_ValueChanged(object sender, EventArgs e)
