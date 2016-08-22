@@ -15,10 +15,10 @@ namespace ProteoformSuiteInternal
         public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction>correctionFactors)
         {
             this.raw_components_in_file.Clear();
-            string filename = file.path + "\\" + file.filename + file.extension;
+            string absolute_path = file.path + "\\" + file.filename + file.extension;
             try
             {
-                using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(filename, false))
+                using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(absolute_path, false))
                 {
                     // Get Data in Sheet1 of Excel file
                     IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
@@ -45,7 +45,7 @@ namespace ProteoformSuiteInternal
                         if (cellStrings.Count > 4) //component row
                         {
                             if (i > 1) add_component(new_component);
-                            new_component = new Component(cellStrings, filename);
+                            new_component = new Component(cellStrings, absolute_path);
                             charge_row_index = 0;
                             scan_range = cellStrings[8];
                         }
