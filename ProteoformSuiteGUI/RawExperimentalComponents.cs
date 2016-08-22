@@ -46,8 +46,8 @@ namespace ProteoformSuite
                     MessageBox.Show(ex.Message);
                 }
             }
-
-            this.FillRawQuantificationComponentsTable();
+            if (Lollipop.raw_quantification_components. Count > 0)
+             this.FillRawQuantificationComponentsTable();
 
         }
 
