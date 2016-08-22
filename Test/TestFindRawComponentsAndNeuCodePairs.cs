@@ -21,7 +21,7 @@ namespace Test
             //reading in test excel file, process raw components before testing neucode pairs.
             Lollipop.correctionFactors = null;
             Lollipop.raw_experimental_components.Clear();
-            Func<string, IEnumerable<Component>> componentReader = c => new ExcelReader().read_components_from_xlsx(c, Lollipop.correctionFactors);
+            Func<InputFile, IEnumerable<Component>> componentReader = c => new ExcelReader().read_components_from_xlsx(c, Lollipop.correctionFactors);
             Lollipop.input_files.Add(new InputFile("UnitTestFiles\\", "noisy", ".xlsx", Labeling.NeuCode, Purpose.Identification));
 
             //Lollipop.deconResultsFileNames = new System.ComponentModel.BindingList<string>();

@@ -12,9 +12,10 @@ namespace ProteoformSuiteInternal
     {
         private List<Component> raw_components_in_file = new List<Component>();
 
-        public List<Component> read_components_from_xlsx(string filename, IEnumerable<Correction>correctionFactors)
+        public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction>correctionFactors)
         {
             this.raw_components_in_file.Clear();
+            string filename = file.path + "\\" + file.filename + file.extension;
             try
             {
                 using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(filename, false))
@@ -55,7 +56,7 @@ namespace ProteoformSuiteInternal
                                 charge_row_index += 1;
                                 continue; //skip charge state headers
                             }
-                            else new_component.add_charge_state(cellStrings, GetCorrectionFactor(filename, scan_range, correctionFactors));
+                            else new_component.add_charge_state(cellStrings, GetCorrectionFactor(file.filename, scan_range, correctionFactors));
                         }
                     }
                     add_component(new_component); //add the final component
@@ -91,7 +92,7 @@ namespace ProteoformSuiteInternal
 
             IEnumerable<double> allCorrectionFactors = 
                 (from s in correctionFactors
-                 where s.file_origin == filename //This is being problematic for me. We should probably check the input or help the user with this. -AC
+                 where s.file_name == filename //the tsv and xlsx weren't matching which is why it wasn't working. use filename w/out path/extensions -LVS
                  where s.scan_number >= scans[0]
                 where s.scan_number <= scans[1]
                 select s.correction).ToList();
