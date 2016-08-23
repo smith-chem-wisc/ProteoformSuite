@@ -275,7 +275,7 @@ namespace ProteoformSuite
             theoreticalDatabase.make_databases();
             Lollipop.make_et_relationships();
             Lollipop.make_ee_relationships();
-           //proteoformFamilies.construct_families();
+           //proteoformFamilies.construct_families();  I have commented this out for now  bc it is slower than the others -LVS
             prepare_figures_and_tables();
             this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
         }

@@ -92,9 +92,9 @@ namespace ProteoformSuite
 
         private void InitializeGeneListDialog()
         {
-            this.openAccessionListDialog.Filter = "List of Genes of Interest (*.txt)|*.txt";
+            this.openAccessionListDialog.Filter = "List of Proteins of Interest (*.txt)|*.txt";
             this.openAccessionListDialog.Multiselect = false;
-            this.openAccessionListDialog.Title = "List of Genes of Interest";
+            this.openAccessionListDialog.Title = "List of Proteins of Interest";
         }
 
         public void FillDataBaseTable(string table)
