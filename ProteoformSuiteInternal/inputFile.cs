@@ -14,12 +14,13 @@ namespace ProteoformSuiteInternal
         // For quantitation files
         public int biological_replicate { get; set; } = 1;
         public int technical_replicate { get; set; } = 1;
-        public string condition { get; set; } = "no_condition";
+        public string lt_condition { get; set; } = "no_condition";
+        public string hv_condition { get; set; } = "no_condition";
 
         public string path { get; set; }
         public string filename { get; set; }
         public string extension { get; set; }
-        public Purpose purpose { get; set; }
+        public Purpose purpose { get; set; } //ID, Quant, Calib, Bottom-Up or Top-Down
         public Labeling label { get; set; }
 
         public InputFile(string path, string filename, string extension, Labeling label, Purpose purpose)
