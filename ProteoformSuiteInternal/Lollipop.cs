@@ -188,6 +188,8 @@ namespace ProteoformSuiteInternal
         public static bool combine_identical_sequences = true;
         public static string uniprot_xml_filepath = "";
         public static string ptmlist_filepath = "";
+        public static string accessions_of_interest_list_filepath = "";
+        public static string interest_type = "Of interest"; //label for proteins of interest. can be changed 
         //public static List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
         //public static Dictionary<string, List<TheoreticalProteoform>> decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>>();
         static Protein[] proteins;
@@ -239,6 +241,10 @@ namespace ProteoformSuiteInternal
                 decoys = decoys.Where(d => d != null).ToList()
             );
             if (psm_list.Count > 0) { match_psms_and_theoreticals(); }   //if BU data loaded in, match PSMs to theoretical accessions
+            if (Lollipop.accessions_of_interest_list_filepath.Length > 0)
+            {
+                mark_accessions_of_interest();
+            }
         }
 
         private static void match_psms_and_theoreticals()
@@ -248,6 +254,16 @@ namespace ProteoformSuiteInternal
                 //PSMs in BU data with that protein accession
                 string[] accession_to_search = tp.accession.Split('_');
                 tp.psm_list = Lollipop.psm_list.Where(p => p.protein_description.Contains(accession_to_search[0])).ToList();
+            });
+        }
+
+        private static void mark_accessions_of_interest()
+        {
+            string[] lines = File.ReadAllLines(Lollipop.accessions_of_interest_list_filepath);
+            Parallel.ForEach<string>(lines, accession =>
+            {
+                List<TheoreticalProteoform> theoreticals = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.accession.Contains(accession)).ToList();
+                foreach(TheoreticalProteoform theoretical in theoreticals) { theoretical.of_interest = Lollipop.interest_type; }
             });
         }
 

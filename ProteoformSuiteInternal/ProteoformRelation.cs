@@ -172,5 +172,9 @@ namespace ProteoformSuiteInternal
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).psm_count.ToString(); } catch { return null; }}
         }
+        public string gene_of_interest
+        {
+            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).of_interest; } catch { return null; } }
+        }
     }
 }
