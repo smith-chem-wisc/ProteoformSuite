@@ -8,15 +8,15 @@ namespace ProteoformSuiteInternal
 {
     public class Correction
     {
-        public string file_origin { get; set; }
+        public string file_name { get; set; }
         public int scan_number { get; set; }
         public double correction { get; set; }
 
         public Correction()
         { }
-        public Correction(string file_origin, int scan_number, double correction)
+        public Correction(string file_name, int scan_number, double correction)
         {
-            this.file_origin = file_origin;
+            this.file_name = file_name;
             this.scan_number = scan_number;
             this.correction = correction;
         }

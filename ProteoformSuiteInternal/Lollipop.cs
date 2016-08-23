@@ -26,7 +26,6 @@ namespace ProteoformSuiteInternal
         //    Lollipop.aggregate_proteoforms();
         //}
 
-
         //RAW EXPERIMENTAL COMPONENTS
         //public static BindingList<string> deconResultsFileNames = new BindingList<string>();
         public static List<InputFile> input_files = new List<InputFile>();
@@ -43,10 +42,10 @@ namespace ProteoformSuiteInternal
         {
             ExcelReader componentReader = new ExcelReader();
             if (input_files.Any(f => f.purpose == Purpose.Calibration))
-                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file.path + "\\" + file.filename + file.extension))).ToList();
+                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file.path + "\\" + file.filename + file.extension, file.filename))).ToList();
             foreach (InputFile file in identification_files())
             {
-                List<Component> raw_components = componentReader.read_components_from_xlsx(file.path + "\\" + file.filename + file.extension, correctionFactors).ToList();
+                List<Component> raw_components = componentReader.read_components_from_xlsx(file, correctionFactors).ToList();
                 raw_experimental_components.AddRange(raw_components);
 
                 if (neucode_labeled)
@@ -62,31 +61,29 @@ namespace ProteoformSuiteInternal
         {
             ExcelReader componentReader = new ExcelReader();
             if (input_files.Any(f => f.purpose == Purpose.Quantification))
-                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file.path + "\\" + file.filename + file.extension))).ToList();
+                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file.path + "\\" + file.filename + file.extension, file.filename))).ToList();
             foreach (InputFile file in quantification_files())
             {
-                List<Component> raw_components = componentReader.read_components_from_xlsx(file.path + "\\" + file.filename + file.extension, correctionFactors).ToList();
+                List<Component> raw_components = componentReader.read_components_from_xlsx(file, correctionFactors).ToList();
                 raw_quantification_components.AddRange(raw_components);
             }
         }
 
-        public static IEnumerable<Correction> read_corrections(string filename)
+        public static IEnumerable<Correction> read_corrections(string filepath, string filename)
         {
-            string[] correction_lines = File.ReadAllLines(filename);
-            string file_origin = correction_lines[0];
+            string[] correction_lines = File.ReadAllLines(filepath);
             for (int i = 1; i < correction_lines.Length; i++)
             {
                 string[] parts = correction_lines[i].Split('\t');
                 if (parts.Length < 3) continue;
                 int scan_number = Convert.ToInt32(parts[0]);
                 double correction = Double.NaN;
-
                 //two corrections can be available for each scan. The correction in column 3 is preferred
                 //if column three is NaN, then column 2 is selected.
                 //if column 2 is also NaN, then the correction for the scan will be interpolated from adjacent scans
                 correction = Convert.ToDouble(parts[2]);
                 if (Double.IsNaN(correction)) correction = Convert.ToDouble(parts[1]);
-                yield return new Correction(file_origin, scan_number, correction);
+                yield return new Correction(filename, scan_number, correction);
             }
         }
 
