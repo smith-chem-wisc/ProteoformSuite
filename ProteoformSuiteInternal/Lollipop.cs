@@ -216,7 +216,14 @@ namespace ProteoformSuiteInternal
             //Read the Morpheus BU data into PSM list
             foreach (InputFile file in Lollipop.bottomup_files())
             {
-                List<Psm> psm_from_file = ProteomeDatabaseReader.ReadpsmFile(file.path + "\\" + file.filename + file.extension);
+                List<Psm> psm_from_file = ProteomeDatabaseReader.ReadBUFile(file.path + "\\" + file.filename + file.extension);
+                psm_list.AddRange(psm_from_file);
+            }
+
+            //Read TD data into PSM list
+            foreach (InputFile file in Lollipop.topdown_files())
+            {
+                List<Psm> psm_from_file = ExcelReader.ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_program);
                 psm_list.AddRange(psm_from_file);
             }
 
@@ -242,7 +249,6 @@ namespace ProteoformSuiteInternal
                 string[] accession_to_search = tp.accession.Split('_');
                 tp.psm_list = Lollipop.psm_list.Where(p => p.protein_description.Contains(accession_to_search[0])).ToList();
             });
-
         }
 
         private static ProteinSequenceGroup[] group_proteins_by_sequence(IEnumerable<Protein> proteins)

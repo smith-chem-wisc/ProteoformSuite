@@ -57,6 +57,19 @@ namespace ProteoformSuite
             { }           
         }
 
+        public static void EditInputFileDGVs(DataGridView dgv, Purpose purpose)
+        {
+            if (purpose == Purpose.TopDown)
+            {
+                DataGridViewComboBoxColumn cmCol = new DataGridViewComboBoxColumn();
+                cmCol.HeaderText = "TD Program";
+                cmCol.DataSource = Enum.GetValues(typeof(TDProgram));
+                cmCol.ValueType = typeof(TDProgram);
+                dgv.Columns.Add(cmCol);
+            }
+        }
+
+
         public static void GraphRelationsChart(Chart ct, List<ProteoformRelation> relations, string series)
         {
             ct.Series[series].Points.Clear();

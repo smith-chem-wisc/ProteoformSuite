@@ -8,6 +8,8 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 //Inspired by the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
 namespace ProteoformSuiteInternal
@@ -242,7 +244,7 @@ namespace ProteoformSuiteInternal
         }
 
         //READING IN BOTTOM-UP MORPHEUS FILE
-        public static List<Psm> ReadpsmFile(string filename)
+        public static List<Psm> ReadBUFile(string filename)
         {
             List<Psm> psm_list = new List<Psm>();
             string[] lines = File.ReadAllLines(filename);
@@ -259,8 +261,8 @@ namespace ProteoformSuiteInternal
                     if (Convert.ToBoolean(parts[26]))
                     {
                         Psm new_psm = new Psm(parts[11].ToString(), parts[0].ToString(), Convert.ToInt32(parts[14]), Convert.ToInt32(parts[15]),
-                            Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]), Convert.ToInt32(parts[1]),
-                            parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]));
+                            Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]),0,
+                            parts[1].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]), PsmType.BottomUp);
                         psm_list.Add(new_psm);
                     }
                     i++;

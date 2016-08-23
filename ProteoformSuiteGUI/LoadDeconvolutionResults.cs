@@ -12,6 +12,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+//using 
 using Excel = Microsoft.Office.Interop.Excel; //Right click Solution/Explorer/References. Then Add  "Reference". Assemblies/Extension/Microsoft.Office.Interop.Excel
 
 
@@ -19,10 +20,12 @@ namespace ProteoformSuite
 {
     public partial class LoadDeconvolutionResults : Form
     {
-
+        
         public LoadDeconvolutionResults()
         {
             InitializeComponent();
+            this.dgv_tdFiles.CurrentCellDirtyStateChanged += new EventHandler(this.dgv_tdFiles_CurrentCellDirtyStateChanged); //makes the change immediate and automatic
+            this.dgv_tdFiles.CellValueChanged += new DataGridViewCellEventHandler(this.dgv_tdFiles_ComboBoxChanged);
         }
 
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
@@ -112,8 +115,8 @@ namespace ProteoformSuite
 
                     InputFile file = new InputFile(path, filename, extension, label, purpose);
                     Lollipop.input_files.Add(file);
-                }
-            }
+                    }
+              }
         }
 
         private void match_files() //for dgv
@@ -150,6 +153,8 @@ namespace ProteoformSuite
             DisplayUtility.FillDataGridView(dgv_identificationFiles, Lollipop.identification_files());
             DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantification_files());
             DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
+            DisplayUtility.FillDataGridView(dgv_buFiles, Lollipop.bottomup_files());
+            DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
         }
 
 
@@ -188,6 +193,21 @@ namespace ProteoformSuite
                 PropertyInfo propertyInfo = propertyType.GetProperty(propertyName);
                 return propertyInfo.GetValue(property, null).ToString();
             }
+        }
+
+        private void dgv_tdFiles_ComboBoxChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 0 && e.RowIndex >= 0) //make sure it's combobox
+            {
+                TDProgram selectedValue = (TDProgram)dgv_tdFiles.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                InputFile selectedFile = (InputFile)this.dgv_tdFiles.Rows[e.RowIndex].DataBoundItem;
+                selectedFile.td_program = selectedValue;
+            }
+        }
+
+        private void dgv_tdFiles_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (dgv_tdFiles.IsCurrentCellDirty) dgv_tdFiles.CommitEdit(DataGridViewDataErrorContexts.Commit);
         }
 
 
@@ -257,8 +277,10 @@ namespace ProteoformSuite
             DialogResult dr = openFileDialog1.ShowDialog();
             if (dr == DialogResult.OK)
                 enter_input_files(openFileDialog1.FileNames, new List<string> { ".xlsx" }, Purpose.TopDown);
-
+            int i = Lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).ToList().Count;
+            if (i == 1) DisplayUtility.EditInputFileDGVs(dgv_tdFiles, Purpose.TopDown);  //adds drop-down column for dataresults first time td file added
             DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
+            for (int j = 0; j < i; j++ ) {InputFile input = (InputFile)dgv_tdFiles.Rows[j].DataBoundItem; dgv_tdFiles.Rows[j].Cells[0].Value = input.td_program; }
         }
 
         // CLEAR BUTTONS
