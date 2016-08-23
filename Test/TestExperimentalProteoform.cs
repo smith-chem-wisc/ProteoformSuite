@@ -15,6 +15,7 @@ namespace Test
         double starter_neucode_intensity = 100.0;
         double starter_rt = 50.0;
         int starter_lysine_count = 3;
+        List<Component> empty_quant_components_list = new List<Component>();
 
         // The calculations for unlabeled and neucode components are the same, currently
         public List<Component> generate_neucode_components()
@@ -57,8 +58,8 @@ namespace Test
         public void neucode_proteoform_calculate_properties()
         {
             Lollipop.neucode_labeled = true;
-            List<Component> components = generate_neucode_components();
-            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, true);
+            List<Component> components = generate_neucode_components();        
+            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
             Assert.AreEqual(3, e.lysine_count);
             double expected_agg_intensity = components.Count * starter_neucode_intensity;
@@ -74,7 +75,7 @@ namespace Test
         {
             Lollipop.neucode_labeled = false;
             List<Component> components = generate_unlabeled_components();
-            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, true);
+            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
             double expected_agg_intensity = components.Count * starter_neucode_intensity;
             Assert.AreEqual(expected_agg_intensity, e.agg_intensity);
@@ -89,7 +90,7 @@ namespace Test
             //Make a monoisotopic error, and test that it removes it before aggregation
             List<Component> components = generate_neucode_components();
             components[4].corrected_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
-            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, true);
+            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             double expected_agg_intensity = components.Count * starter_neucode_intensity;
             double intensity_normalization_factor = components.Count * starter_neucode_intensity / expected_agg_intensity;
             double expected_agg_mass = starter_mass * intensity_normalization_factor;
@@ -101,12 +102,12 @@ namespace Test
         {
             Lollipop.neucode_labeled = true;
             List<Component> components = generate_neucode_components();
-            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, true);
+            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             components[1].rt_apex = starter_rt - Convert.ToDouble(Lollipop.retention_time_tolerance) - 1;
-            e = new ExperimentalProteoform("E1", components[0], components, true);
+            e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
             components[1].rt_apex = starter_rt + Convert.ToDouble(Lollipop.retention_time_tolerance) + 1;
-            e = new ExperimentalProteoform("E1", components[0], components, true);
+            e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
         }
 
@@ -115,12 +116,12 @@ namespace Test
         {
             Lollipop.neucode_labeled = true;
             List<Component> components = generate_neucode_components();
-            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, true);
+            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             ((NeuCodePair)components[1]).lysine_count = starter_lysine_count + Convert.ToInt32(Lollipop.missed_lysines) + 1;
-            e = new ExperimentalProteoform("E1", components[0], components, true);
+            e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
             ((NeuCodePair)components[1]).lysine_count = starter_lysine_count - Convert.ToInt32(Lollipop.missed_lysines) - 1;
-            e = new ExperimentalProteoform("E1", components[0], components, true);
+            e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
         }
 
@@ -137,11 +138,11 @@ namespace Test
 
             // in bounds lowest monoisotopic error
             components[1].corrected_mass = min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance);
-            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, true);
+            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
             // in bounds highest monoisotopic error
             components[1].corrected_mass = max_monoisotopic_mass + max_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance);
-            e = new ExperimentalProteoform("E1", components[0], components, true);
+            e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
         }
 
@@ -155,11 +156,11 @@ namespace Test
 
             // below lowest monoisotopic tolerance
             components[1].corrected_mass = min_monoisotopic_mass - 100;
-            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, true);
+            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
             // above highest monoisotopic tolerance
             components[1].corrected_mass = max_monoisotopic_mass + 100;
-            e = new ExperimentalProteoform("E1", components[0], components, true);
+            e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
         }
 
@@ -173,11 +174,11 @@ namespace Test
 
             // in bounds lowest monoisotopic error
             components[1].corrected_mass = min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance);
-            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, true);
+            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
             // in bounds highest monoisotopic error
             components[1].corrected_mass = max_monoisotopic_mass + max_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance);
-            e = new ExperimentalProteoform("E1", components[0], components, true);
+            e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
         }
 
@@ -191,11 +192,11 @@ namespace Test
 
             // below lowest monoisotopic tolerance
             components[1].corrected_mass = min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance) - Double.MinValue;
-            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, true);
+            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
             // above highest monoisotopic tolerance
             components[1].corrected_mass = max_monoisotopic_mass + max_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance) + Double.MinValue;
-            e = new ExperimentalProteoform("E1", components[0], components, true);
+            e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
         }
 
@@ -203,7 +204,7 @@ namespace Test
         {
             List<Component> components = generate_neucode_components();
             components.Remove(components[1]);
-            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, true);
+            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
             Assert.AreEqual(components[0], e.aggregated_components.First());
         }

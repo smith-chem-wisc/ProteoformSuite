@@ -45,6 +45,8 @@ namespace ProteoformSuiteInternal
     {
         private Component root;
         public List<Component> aggregated_components { get; set; } = new List<Component>();
+        public List<Component> lt_quant_components { get; set; } = new List<Component>();
+        public List<Component> hv_quant_components { get; set; } = new List<Component>();
         public double agg_mass { get; set; } = 0;
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
@@ -53,11 +55,17 @@ namespace ProteoformSuiteInternal
             get { return aggregated_components.Count; }
         }
 
-        public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession)
+        public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession)
         {
             this.root = root;
-            this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p)));
+            this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
             this.calculate_properties();
+            if(quantitative_observations.Count > 0)
+            {
+                this.lt_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, true)));
+                if (Lollipop.neucode_labeled)
+                    this.hv_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, false)));
+            }           
         }
 
         public ExperimentalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession)
@@ -93,34 +101,45 @@ namespace ProteoformSuiteInternal
         //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on lysine count first, and then aggregated based on mass and retention
         //time afterwards, which may give a slightly different root for the experimental proteoform because the precursor aggregation may shuffle the intensity order slightly. We haven't observed any negative
         //impact of this difference as of 160812. -AC
-        public bool includes(Component candidate)
+        public bool includes(Component candidate, Component root)
         {
-            bool does_include = tolerable_rt(candidate) && tolerable_mass(candidate);
-            if (candidate is NeuCodePair) does_include = does_include && tolerable_lysCt((NeuCodePair)candidate);
+            bool does_include = tolerable_rt(candidate, root.rt_apex) && tolerable_mass(candidate, root.corrected_mass);
+            if (candidate is NeuCodePair) does_include = does_include && tolerable_lysCt((NeuCodePair)candidate, ((NeuCodePair)root).lysine_count);
             return does_include;
         }
 
-        private bool tolerable_rt(Component candidate)
+        public bool includes(Component candidate, ExperimentalProteoform root, bool light)
         {
-            return candidate.rt_apex >= this.root.rt_apex - Convert.ToDouble(Lollipop.retention_time_tolerance) &&
-                candidate.rt_apex <= this.root.rt_apex + Convert.ToDouble(Lollipop.retention_time_tolerance);
+            double corrected_mass = root.agg_mass;
+            if (!light)       
+                corrected_mass = corrected_mass + root.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
+            
+            bool does_include = tolerable_rt(candidate, root.agg_rt) && tolerable_mass(candidate, corrected_mass);
+            if (candidate is NeuCodePair) does_include = does_include && tolerable_lysCt((NeuCodePair)candidate, root.lysine_count);
+            return does_include;
         }
 
-        private bool tolerable_lysCt(NeuCodePair candidate)
+        private bool tolerable_rt(Component candidate, double rt_apex)
+        {
+            return candidate.rt_apex >= rt_apex - Convert.ToDouble(Lollipop.retention_time_tolerance) &&
+                candidate.rt_apex <= rt_apex + Convert.ToDouble(Lollipop.retention_time_tolerance);
+        }
+
+        private bool tolerable_lysCt(NeuCodePair candidate, int lysine_count)
         {
             int max_missed_lysines = Convert.ToInt32(Lollipop.missed_lysines);
-            List<int> acceptable_lysineCts = Enumerable.Range(((NeuCodePair)this.root).lysine_count - max_missed_lysines, max_missed_lysines * 2 + 1).ToList();
+            List<int> acceptable_lysineCts = Enumerable.Range(lysine_count - max_missed_lysines, max_missed_lysines * 2 + 1).ToList();
             return acceptable_lysineCts.Contains(candidate.lysine_count);
         }
 
-        private bool tolerable_mass(Component candidate)
+        private bool tolerable_mass(Component candidate, double corrected_mass)
         {
             int max_missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
             List<int> missed_monoisotopics_range = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
             foreach (int missed_mono_count in missed_monoisotopics_range)
             {
                 double shift = missed_mono_count * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                double shifted_mass = this.root.corrected_mass + shift;
+                double shifted_mass = corrected_mass + shift;
                 double mass_tolerance = shifted_mass / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance);
                 double low = shifted_mass - mass_tolerance;
                 double high = shifted_mass + mass_tolerance;
