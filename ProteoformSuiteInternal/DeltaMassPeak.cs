@@ -27,6 +27,8 @@ namespace ProteoformSuiteInternal
         public double peak_group_fdr { get; set; }
         public bool peak_accepted { get; set; }
         public string mass_shifter { get; set; } = "0";
+        public bool missed_mono { get; set; } //can mark EE peak as a missed mono --> see how many E's in ET peaks are missed monos... maybe helpful
+        public int num_missed_monos { get { return grouped_relations.Where(p => ((ExperimentalProteoform)p.connected_proteoforms[0]).missed_mono == true).ToList().Count; } } //want to know ## missed monos in ET peak
         public List<Modification> possiblePeakAssignments { get; set; }
         public string possiblePeakAssignments_string
         {
@@ -38,7 +40,7 @@ namespace ProteoformSuiteInternal
         {
             this.base_relation = base_relation;
 
-            if (!Lollipop.opened_results) this.find_nearby_relations(relations_to_group);
+            if (!Lollipop.opened_results && !Lollipop.opened_results_originally) this.find_nearby_relations(relations_to_group);
             else this.grouped_relations = relations_to_group; 
 
             foreach (ProteoformRelation relation in this.grouped_relations)

@@ -54,6 +54,7 @@ namespace ProteoformSuiteInternal
         {
             get { return aggregated_components.Count; }
         }
+        public bool missed_mono { get; set; } = false;
 
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession)
         {

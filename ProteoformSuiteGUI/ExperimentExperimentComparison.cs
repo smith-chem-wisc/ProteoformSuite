@@ -24,6 +24,7 @@ namespace ProteoformSuite
             this.ct_EE_peakList.MouseClick += new MouseEventHandler(ct_EE_peakList_MouseClick);
             dgv_EE_Peaks.CurrentCellDirtyStateChanged += new EventHandler(peakListSpecificPeakAcceptanceChanged); //makes the change immediate and automatic
             dgv_EE_Peaks.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
+            dgv_EE_Peaks.CellValueChanged += new DataGridViewCellEventHandler(peakListMissedMonoChanged);
         }
 
         bool initial_load = true;
@@ -155,6 +156,18 @@ namespace ProteoformSuite
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
         {
             updateFiguresOfMerit();
+        }
+
+        private void peakListMissedMonoChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (!initial_load)
+            { DeltaMassPeak peak = (DeltaMassPeak)this.dgv_EE_Peaks.Rows[e.RowIndex].DataBoundItem;
+            Parallel.ForEach<ProteoformRelation>(peak.grouped_relations, ee =>
+            {
+                ((ExperimentalProteoform)ee.connected_proteoforms[0]).missed_mono = peak.missed_mono;
+                ((ExperimentalProteoform)ee.connected_proteoforms[1]).missed_mono = peak.missed_mono;
+            });
+            }
         }
 
         private void peakListSpecificPeakAcceptanceChanged(object sender, EventArgs e)

@@ -261,6 +261,7 @@ namespace ProteoformSuite
             {
                 dgv.Columns["mass_shifter"].Visible = true;
                 dgv.Columns["mass_shifter"].ReadOnly = false; //user can say how much they want to change monoisotopic by for each
+                dgv.Columns["num_missed_monos"].Visible = true;
             }
             dgv.Columns["peak_deltaM_average"].DefaultCellStyle.Format = "0.####";
             dgv.Columns["peak_group_fdr"].DefaultCellStyle.Format = "0.##";
@@ -280,7 +281,11 @@ namespace ProteoformSuite
             dgv.Columns["peak_accepted"].Visible = true;
             dgv.Columns["possiblePeakAssignments_string"].Visible = true;
             dgv.Columns["peak_width"].Visible = false;
-
+            if (mask_mass_shifter)
+            {
+                dgv.Columns["missed_mono"].Visible = true;
+                dgv.Columns["missed_mono"].ReadOnly = false;
+            }
             dgv.AllowUserToAddRows = false;
         }
 
