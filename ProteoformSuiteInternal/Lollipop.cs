@@ -193,7 +193,7 @@ namespace ProteoformSuiteInternal
         static Protein[] proteins;
         public static List<Psm> psm_list = new List<Psm>();
 
-        static ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
+        public static ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
         public static Dictionary<string, Modification> uniprotModificationTable;
         static Dictionary<char, double> aaIsotopeMassList;
 

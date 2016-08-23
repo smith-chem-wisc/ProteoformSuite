@@ -213,7 +213,8 @@ namespace ProteoformSuiteInternal
             get { return ptm_list_string(); }
         }
         public List<Psm> psm_list { get; set; } = new List<Psm>();
-        public int psm_count { get { return psm_list.Count; } }
+        private int _psm_count;
+        public int psm_count { set { _psm_count = value; } get { if (!Lollipop.opened_results_originally) return psm_list.Count; else { return _psm_count; } } }
 
 
         public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, PtmSet ptm_set, double modified_mass, bool is_target) : 
