@@ -13,6 +13,7 @@ namespace ProteoformSuiteInternal
     public class Lollipop
     {
         public const double MONOISOTOPIC_UNIT_MASS = 1.0015;
+        public const double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
 
         //needed for functioning open results - user can update/rerun modules and program doesn't crash.
         public static bool opened_results = false; //set to true if previously saved tsv's are read into program
@@ -68,6 +69,7 @@ namespace ProteoformSuiteInternal
                 raw_quantification_components.AddRange(raw_components);
             }
         }
+
 
         public static IEnumerable<Correction> read_corrections(string filepath, string filename)
         {
@@ -125,7 +127,6 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-
         }
 
 
@@ -147,17 +148,29 @@ namespace ProteoformSuiteInternal
 
             // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
             Component[] remaining_proteoforms = new Component[0];
-            if (Lollipop.neucode_labeled) remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true).ToArray();
-            else remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true).ToArray();
+            List<Component> remaining_quant_components = new List<Component>();
+
+            if (Lollipop.neucode_labeled)
+            {
+                remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true).ToArray();
+                remaining_quant_components = Lollipop.raw_quantification_components; 
+            }
+            else
+            {
+                remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true).ToArray();
+                remaining_quant_components = Lollipop.raw_experimental_components; // there are no extra quantitative files for unlablel
+            }
 
             int count = 1;
             while (remaining_proteoforms.Length > 0)
             {
                 Component root = remaining_proteoforms[0];
                 List<Component> tmp_remaining_proteoforms = remaining_proteoforms.ToList();
-                ExperimentalProteoform new_pf = new ExperimentalProteoform("E_" + count, root, tmp_remaining_proteoforms, true);
+                List<Component> tmp_remaining_quant_proteoforms = tmp_remaining_proteoforms;
+                ExperimentalProteoform new_pf = new ExperimentalProteoform("E_" + count, root, tmp_remaining_proteoforms, tmp_remaining_quant_proteoforms, true);
                 Lollipop.proteoform_community.add(new_pf);
                 remaining_proteoforms = tmp_remaining_proteoforms.Except(new_pf.aggregated_components).ToArray();
+                remaining_quant_components = tmp_remaining_quant_proteoforms.Except(new_pf.lt_quant_components).Except(new_pf.hv_quant_components).ToList();
                 count += 1;
             }
             Lollipop.proteoform_community.experimental_proteoforms = Lollipop.proteoform_community.experimental_proteoforms.Where(p => p != null).ToList();

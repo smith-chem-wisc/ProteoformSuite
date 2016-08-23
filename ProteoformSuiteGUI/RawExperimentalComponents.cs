@@ -46,8 +46,8 @@ namespace ProteoformSuite
                     MessageBox.Show(ex.Message);
                 }
             }
-            if (Lollipop.raw_quantification_components. Count > 0)
-             this.FillRawQuantificationComponentsTable();
+
+            this.FillRawQuantificationComponentsTable();
 
         }
 
@@ -151,6 +151,7 @@ namespace ProteoformSuite
                 Format_QuantIndChgSts();
             }
         }
+
 
         private void Format_RawIndChgSts()
         {

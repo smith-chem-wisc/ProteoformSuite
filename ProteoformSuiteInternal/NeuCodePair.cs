@@ -26,19 +26,19 @@ namespace ProteoformSuiteInternal
             this.id_light = neuCodeLight.id;
             this.id_heavy = neuCodeHeavy.id;
 
-            int diff_integer = Convert.ToInt32(Math.Round(mass_difference / 1.0015 - 0.5, 0, MidpointRounding.AwayFromZero)); 
+            int diff_integer = Convert.ToInt32(Math.Round(mass_difference / Lollipop.MONOISOTOPIC_UNIT_MASS - 0.5, 0, MidpointRounding.AwayFromZero)); 
             double firstCorrection;
 
-            if (light_is_lower) { firstCorrection = neuCodeLight.corrected_mass + diff_integer * 1.0015; }
-            else  { firstCorrection = neuCodeLight.corrected_mass - (diff_integer + 1) * 1.0015; }
+            if (light_is_lower) { firstCorrection = neuCodeLight.corrected_mass + diff_integer * Lollipop.MONOISOTOPIC_UNIT_MASS; }
+            else  { firstCorrection = neuCodeLight.corrected_mass - (diff_integer + 1) * Lollipop.MONOISOTOPIC_UNIT_MASS; }
 
-            this.lysine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.corrected_mass - firstCorrection) / 0.036015372, 0, MidpointRounding.AwayFromZero)));
+            this.lysine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.corrected_mass - firstCorrection) / Lollipop.NEUCODE_LYSINE_MASS_SHIFT, 0, MidpointRounding.AwayFromZero)));
             this.intensity_ratio = neuCodeLight.intensity_sum_olcs / neuCodeHeavy.intensity_sum_olcs; //ratio of overlapping charge states
 
             //marking pair as accepted or not when it's created
             set_accepted();
 
-            this.corrected_mass = this.corrected_mass + Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * 1.0015;
+            this.corrected_mass = this.corrected_mass + Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * Lollipop.MONOISOTOPIC_UNIT_MASS;
         }
 
         public void set_accepted()
