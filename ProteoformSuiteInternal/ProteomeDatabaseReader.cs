@@ -8,8 +8,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
+
 
 //Inspired by the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
 namespace ProteoformSuiteInternal
