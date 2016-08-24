@@ -131,30 +131,32 @@ namespace ProteoformSuite
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
             int clickedRow = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
-            if (e.Button == MouseButtons.Left && clickedRow >= 0 && clickedRow < Lollipop.et_relations.Count)
+            int clickedCol = dgv_ET_Peak_List.HitTest(e.X, e.Y).ColumnIndex;
+            if (clickedRow < Lollipop.et_relations.Count && clickedRow >= 0 && clickedCol >=0 && clickedCol < dgv_ET_Peak_List.ColumnCount)
             {
-                ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
-                DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
-                DisplayUtility.GraphSelectedDeltaMassPeak(ct_ET_peakList, selected_peak, Lollipop.et_relations);
-            }
-            else
-            {
-                if (e.Button == MouseButtons.Right && clickedRow >= 0 && clickedRow < Lollipop.et_relations.Count)
+                if (e.Button == MouseButtons.Left)
                 {
-                    ContextMenuStrip ET_peak_List_Menu = new ContextMenuStrip();
-                    int position_xy_mouse_row = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
-
+                    ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
                     DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
-
-                    if (position_xy_mouse_row > 0)
+                    DisplayUtility.GraphSelectedDeltaMassPeak(ct_ET_peakList, selected_peak, Lollipop.et_relations);
+                }
+                else if (e.Button == MouseButtons.Right)
                     {
-                        ET_peak_List_Menu.Items.Add("Increase Experimenal Mass 1.0015 Da").Name = "IncreaseMass";
-                        ET_peak_List_Menu.Items.Add("Decrease Experimenal Mass 1.0015 Da").Name = "DecreaseMass";
-                    }
-                    ET_peak_List_Menu.Show(dgv_ET_Peak_List, new Point(e.X, e.Y));
+                        ContextMenuStrip ET_peak_List_Menu = new ContextMenuStrip();
+                        int position_xy_mouse_row = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
 
-                    //event menu click
-                    ET_peak_List_Menu.ItemClicked += new ToolStripItemClickedEventHandler((s, ev) => ET_peak_List_Menu_ItemClicked(s, ev, selected_peak));
+                        DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
+
+                        if (position_xy_mouse_row > 0)
+                        {
+                            ET_peak_List_Menu.Items.Add("Increase Experimenal Mass 1.0015 Da").Name = "IncreaseMass";
+                            ET_peak_List_Menu.Items.Add("Decrease Experimenal Mass 1.0015 Da").Name = "DecreaseMass";
+                        }
+                        ET_peak_List_Menu.Show(dgv_ET_Peak_List, new Point(e.X, e.Y));
+
+                        //event menu click
+                        ET_peak_List_Menu.ItemClicked += new ToolStripItemClickedEventHandler((s, ev) => ET_peak_List_Menu_ItemClicked(s, ev, selected_peak));
+                    
                 }
             }
         }

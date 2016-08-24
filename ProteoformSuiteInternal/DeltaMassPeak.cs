@@ -40,7 +40,7 @@ namespace ProteoformSuiteInternal
         {
             this.base_relation = base_relation;
 
-            if (!Lollipop.opened_results && !Lollipop.opened_results_originally) this.find_nearby_relations(relations_to_group);
+            if (!Lollipop.opened_results) this.find_nearby_relations(relations_to_group);
             else this.grouped_relations = relations_to_group; 
 
             foreach (ProteoformRelation relation in this.grouped_relations)

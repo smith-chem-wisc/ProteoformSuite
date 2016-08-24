@@ -28,6 +28,7 @@ namespace ProteoformSuite
         }
 
         bool initial_load = true;
+        bool loading;
         public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
         {
             InitializeParameterSet();
@@ -53,11 +54,13 @@ namespace ProteoformSuite
 
         private void RunTheGamut()
         {
+            loading = true;
             this.Cursor = Cursors.WaitCursor;
             ClearListsAndTables();
             Lollipop.make_ee_relationships();
             this.FillTablesAndCharts();
             this.Cursor = Cursors.Default;
+            loading = false;
         }
 
         private void ClearListsAndTables()
@@ -101,7 +104,9 @@ namespace ProteoformSuite
         private void dgv_EE_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
             int clickedRow = dgv_EE_Peaks.HitTest(e.X, e.Y).RowIndex;
-            if (e.Button == MouseButtons.Left && clickedRow >= 0 && clickedRow < Lollipop.ee_relations.Count)
+            int clickedCol = dgv_EE_Peaks.HitTest(e.X, e.Y).ColumnIndex;
+            if (e.Button == MouseButtons.Left && clickedRow >= 0 && clickedRow < Lollipop.ee_relations.Count 
+                && clickedCol < dgv_EE_Peaks.ColumnCount && clickedCol >= 0)
             {
                 ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
                 DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_EE_Peaks.Rows[clickedRow].DataBoundItem;
@@ -160,7 +165,7 @@ namespace ProteoformSuite
 
         private void peakListMissedMonoChanged(object sender, DataGridViewCellEventArgs e)
         {
-            if (!initial_load)
+            if (!initial_load && !loading)
             { DeltaMassPeak peak = (DeltaMassPeak)this.dgv_EE_Peaks.Rows[e.RowIndex].DataBoundItem;
             Parallel.ForEach<ProteoformRelation>(peak.grouped_relations, ee =>
             {
