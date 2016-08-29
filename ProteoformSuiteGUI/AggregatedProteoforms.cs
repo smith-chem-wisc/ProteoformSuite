@@ -114,7 +114,6 @@ namespace ProteoformSuite
 
 
             dgv_AcceptNeuCdLtProteoforms.AllowUserToAddRows = false;
-            dgv_AcceptNeuCdLtProteoforms.Columns["id"].Visible = false;
             dgv_AcceptNeuCdLtProteoforms.Columns["_manual_mass_shift"].Visible = false;
             dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum"].Visible = false;
             dgv_AcceptNeuCdLtProteoforms.Columns["num_charge_states_fromFile"].Visible = false;

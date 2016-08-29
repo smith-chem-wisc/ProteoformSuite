@@ -34,6 +34,7 @@ namespace ProteoformSuite
             btn_Make_Databases.Enabled = false;
             InitializeOpenXmlDialog();
             InitializeOpenPtmlistDialog();
+            InitializeAccessionListDialog();
             InitializeSettings();
 
             if (Lollipop.opened_results_originally)
@@ -90,7 +91,7 @@ namespace ProteoformSuite
             this.openPtmlistDialog.Title = "UniProt PTM List";
         }
 
-        private void InitializeGeneListDialog()
+        private void InitializeAccessionListDialog()
         {
             this.openAccessionListDialog.Filter = "List of Proteins of Interest (*.txt)|*.txt";
             this.openAccessionListDialog.Multiselect = false;

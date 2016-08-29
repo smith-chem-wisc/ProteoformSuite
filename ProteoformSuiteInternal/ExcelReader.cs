@@ -124,7 +124,7 @@ namespace ProteoformSuiteInternal
 
                     if (td_program == TDProgram.NRTDP)
                     {
-                        Psm new_psm = new Psm(cellStrings[4] + cellStrings[5], filename, Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]),
+                        Psm new_psm = new Psm(cellStrings[8] + cellStrings[4], filename, Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]),
                             0, 0, Convert.ToDouble(cellStrings[14]), 0, cellStrings[2], Convert.ToDouble(cellStrings[12]), 0, 0, PsmType.TopDown);
                         psm_list.Add(new_psm);
                     }
