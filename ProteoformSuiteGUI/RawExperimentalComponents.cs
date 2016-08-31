@@ -22,16 +22,19 @@ namespace ProteoformSuite
         {
             if (Lollipop.raw_experimental_components.Count == 0)
             {
-                try
-                {
+                //try
+                //{
+                //    Lollipop.process_raw_components(); //Includes reading correction factors if present
+                //}
+                //catch (Exception ex)
+                //{
+                //    MessageBox.Show(ex.Message);
+                //}
+
                     Lollipop.process_raw_components(); //Includes reading correction factors if present
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
+
             }
-                
+
             this.FillRawExpComponentsTable();
 
 
