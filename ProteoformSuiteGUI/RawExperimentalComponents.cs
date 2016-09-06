@@ -152,7 +152,6 @@ namespace ProteoformSuite
             }
         }
 
-
         private void Format_RawIndChgSts()
         {
             //round table values

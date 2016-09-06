@@ -43,7 +43,7 @@ namespace ProteoformSuiteInternal
         {
             ExcelReader componentReader = new ExcelReader();
             if (input_files.Any(f => f.purpose == Purpose.Calibration))
-                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file.path + "\\" + file.filename + file.extension, file.filename))).ToList();
+                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
             foreach (InputFile file in identification_files())
             {
                 List<Component> raw_components = componentReader.read_components_from_xlsx(file, correctionFactors).ToList();
@@ -62,7 +62,7 @@ namespace ProteoformSuiteInternal
         {
             ExcelReader componentReader = new ExcelReader();
             if (input_files.Any(f => f.purpose == Purpose.Quantification))
-                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file.path + "\\" + file.filename + file.extension, file.filename))).ToList();
+                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
             foreach (InputFile file in quantification_files())
             {
                 List<Component> raw_components = componentReader.read_components_from_xlsx(file, correctionFactors).ToList();
@@ -70,9 +70,11 @@ namespace ProteoformSuiteInternal
             }
         }
 
-
-        public static IEnumerable<Correction> read_corrections(string filepath, string filename)
+        public static IEnumerable<Correction> read_corrections(InputFile file)
         {
+            string filepath = file.path + file.filename + file.extension;
+            string filename = file.filename;
+
             string[] correction_lines = File.ReadAllLines(filepath);
             for (int i = 1; i < correction_lines.Length; i++)
             {
