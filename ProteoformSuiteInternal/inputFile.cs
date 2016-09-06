@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,14 +9,26 @@ namespace ProteoformSuiteInternal
 {
     public class InputFile
     {
+        private static int instanceCounter;
+        //private readonly int instanceId;
+        private int instanceId;
+
+        public int UniqueId
+        {
+            get { return this.instanceId; }
+            set { this.instanceId = value; }
+        }
+
         public bool matchingCalibrationFile { get; set; } = false;
-        public Purpose matched_for_calibration { get; set; } // For calibration file listings
 
         // For quantitation files
         public int biological_replicate { get; set; } = 1;
+        public int fraction { get; set; } = 1;
         public int technical_replicate { get; set; } = 1;
         public string lt_condition { get; set; } = "no_condition";
         public string hv_condition { get; set; } = "no_condition";
+
+        public double totalIntensity { get; set; } = 0;
 
         public string path { get; set; }
         public string filename { get; set; }
@@ -30,7 +43,45 @@ namespace ProteoformSuiteInternal
             this.extension = extension;
             this.label = label;
             this.purpose = purpose;
+            this.instanceId = ++instanceCounter;
         }
+
+        public InputFile(string completePath, Labeling label, Purpose purpose)
+        {
+            this.path = Path.GetDirectoryName(completePath);
+            this.filename = Path.GetFileNameWithoutExtension(completePath);
+            this.extension = Path.GetExtension(completePath);
+            this.label = label;
+            this.purpose = purpose;
+            this.instanceId = ++instanceCounter;
+        }
+
+        public InputFile(int uniqueID, string completePath, Labeling label, Purpose purpose)
+        {
+            this.instanceId = uniqueID;
+            this.path = Path.GetDirectoryName(completePath);
+            this.filename = Path.GetFileNameWithoutExtension(completePath);
+            this.extension = Path.GetExtension(completePath);
+            this.label = label;
+            this.purpose = purpose;           
+        }
+
+        public InputFile(int uniqueID, bool matchingFile, int bioRep, int fraction, int techRep, string ltCond, string hvCond, string completePath, Labeling label, Purpose purpose)
+        {
+            this.instanceId = uniqueID;
+            this.matchingCalibrationFile = matchingFile;
+            this.biological_replicate = bioRep;
+            this.fraction = fraction;
+            this.technical_replicate = techRep;
+            this.lt_condition = ltCond;
+            this.hv_condition = hvCond;
+            this.path = Path.GetDirectoryName(completePath);
+            this.filename = Path.GetFileNameWithoutExtension(completePath);
+            this.extension = Path.GetExtension(completePath);
+            this.label = label;
+            this.purpose = purpose;
+        }
+
         public InputFile()
         { }
     }

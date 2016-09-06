@@ -37,14 +37,19 @@ namespace ProteoformSuiteInternal
                 if (Lollipop.neucode_labeled)
                 {
                     component.intensity_sum_olcs = Convert.ToDouble(line[12]);
-                    component.file_origin = line[13];
+
+                    //component.input_file = Convert.ToInt32(line[13]); input file with matching file ID.
+
                     component.accepted = Convert.ToBoolean(line[14]);
                 }
                 else
                 {
-                    component.file_origin = line[12];
+                    //component.file_origin = line[12];
                     component.accepted = Convert.ToBoolean(line[13]);
                 }
+
+                component.input_file = Lollipop.input_files.Where(s => s.UniqueId == Convert.ToInt32(line[13])).ToList().First();
+
                 lock (lockThread) { Lollipop.raw_experimental_components.Add(component); }
             });
         }
@@ -54,10 +59,10 @@ namespace ProteoformSuiteInternal
             string tsv_header;
             if (Lollipop.neucode_labeled)
                 tsv_header = String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "corrected_mass", "intensity_sum", "num_charge_states",
-                        "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range", "rt_apex", "intensity_sum_olcs", "file_origin", "accepted" });
+                        "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range", "rt_apex", "intensity_sum_olcs", "input_file_ID", "accepted" });
             else
                 tsv_header = String.Join("\t", new List<string> { "id", "monoisotopic_mass", "weighted_monoisotopic_mass", "corrected_mass", "intensity_sum", "num_charge_states",
-                        "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range", "rt_apex", "file_origin", "accepted" });
+                        "delta_mass", "relative_abundance", "fract_abundance", "scan_range", "rt_range", "rt_apex", "input_file_ID", "accepted" });
             string results_rows = String.Join(Environment.NewLine, Lollipop.raw_experimental_components.Select(c => component_as_tsv_row(c)));
             return tsv_header + Environment.NewLine + results_rows;
         }
@@ -68,13 +73,52 @@ namespace ProteoformSuiteInternal
                 return String.Join("\t", new List<string> { c.id.ToString(), c.monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(), c. corrected_mass.ToString(),
                     c.intensity_sum.ToString(), c.num_charge_states.ToString(),
                     c.delta_mass.ToString(), c.relative_abundance.ToString(), c.fract_abundance.ToString(), c.scan_range.ToString(), c.rt_range.ToString(),
-                    c.rt_apex.ToString(), c.intensity_sum_olcs.ToString(), c.file_origin.ToString(), c.accepted.ToString() });
+                    c.rt_apex.ToString(), c.intensity_sum_olcs.ToString(), c.input_file.UniqueId.ToString(), c.accepted.ToString() });
             else
                 return String.Join("\t", new List<string> { c.id.ToString(), c.monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(), c.corrected_mass.ToString(),
                     c.intensity_sum.ToString(), c.num_charge_states.ToString(),
                     c.delta_mass.ToString(), c.relative_abundance.ToString(), c.fract_abundance.ToString(), c.scan_range.ToString(), c.rt_range.ToString(),
-                    c.rt_apex.ToString(), c.file_origin.ToString(), c.accepted.ToString() });
+                    c.rt_apex.ToString(), c.input_file.UniqueId.ToString(), c.accepted.ToString() });
         }
+
+        //INPUT_FILE I/O
+        public static void read_input_files(string[] lines)
+        {
+            Parallel.For(1, lines.Length, x =>
+             {
+                 string[] line = lines[x].Split('\t');
+                 
+                 int uniqueId = Convert.ToInt32(line[0]);
+                 bool matchingCalibrationFile = Convert.ToBoolean(line[1]);
+                 int biological_replicate = Convert.ToInt32(line[2]);
+                 int fraction = Convert.ToInt32(line[3]);
+                 int technical_replicate = Convert.ToInt32(line[4]);
+                 string lt_condition = line[5];
+                 string hv_condition = line[6];
+                 string completePath = line[7] + line[8] + line[9];
+                 Purpose purpose = (Purpose)Enum.Parse(typeof(Purpose), line[10]);
+                 Labeling label = (Labeling)Enum.Parse(typeof(Labeling), line[11]);
+                 InputFile inpfile = new InputFile(uniqueId, matchingCalibrationFile, biological_replicate, fraction, technical_replicate, lt_condition, hv_condition, completePath, label, purpose);
+
+                 lock (lockThread) { Lollipop.input_files.Add(inpfile); }
+             });
+        }
+
+        public static string input_file_results()
+        {
+            string tsv_header = String.Join("\t", new List<string> { "UniqueId", "matching_calibration_file", "biological_replicate", "fraction", "technical_replicate", "lt_condition",
+                "hv_condition", "path", "filename", "extension", "purpose", "label" });
+            string results_rows = String.Join(Environment.NewLine, Lollipop.input_files.Select(n => input_file_as_tsv_row(n)));
+            return tsv_header + Environment.NewLine + results_rows;
+        }
+
+        private static string input_file_as_tsv_row(InputFile n)
+        {
+            return String.Join("\t", new List<string> { n.UniqueId.ToString(), n.matchingCalibrationFile.ToString(), n.biological_replicate.ToString(), n.fraction.ToString(), n.technical_replicate.ToString(), n.lt_condition.ToString(),
+                    n.hv_condition.ToString(), n.path.ToString(), n.filename.ToString(), n.extension.ToString(), n.purpose.ToString(),
+                    n.label.ToString() });
+        }
+
 
         // RAW NEUCODE PAIR I/O
         public static void read_raw_neucode_pairs(string[] lines)
@@ -87,7 +131,7 @@ namespace ProteoformSuiteInternal
                 NeuCodePair neucode_pair = new NeuCodePair(neucode_light, neucode_heavy);
                 neucode_pair.intensity_ratio = Convert.ToDouble(line[8]);
                 neucode_pair.lysine_count = Convert.ToInt32(line[9]);
-                neucode_pair.file_origin = line[10];
+                neucode_pair.input_file = Lollipop.input_files.Where(s=>s.UniqueId == Convert.ToInt32(line[10])).ToList().First();
 
                 if (neucode_pair.lysine_count > Lollipop.min_lysine_ct && neucode_pair.lysine_count < Lollipop.max_lysine_ct
                     && neucode_pair.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio) && neucode_pair.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio))
@@ -103,7 +147,7 @@ namespace ProteoformSuiteInternal
         public static string raw_neucode_pair_results()
         {
             string tsv_header = String.Join("\t", new List<string> { "light_id", "light_intensity_(overlapping_charge_states)", "light_weighted_monoisotopic_mass", "light_corrected_mass", "light_apexRt",
-                "heavy_id", "heavy_intensity_(overlapping_charge_states)", "heavy_weighted_monoisotopic_mass", "intensity_ratio", "lysine_count", "file_origin" });
+                "heavy_id", "heavy_intensity_(overlapping_charge_states)", "heavy_weighted_monoisotopic_mass", "intensity_ratio", "lysine_count", "inputFile_ID" });
             string results_rows = String.Join(Environment.NewLine, Lollipop.raw_neucode_pairs.Select(n => neucode_pair_as_tsv_row(n)));
             return tsv_header + Environment.NewLine + results_rows;
         }
@@ -112,7 +156,7 @@ namespace ProteoformSuiteInternal
         {
             return String.Join("\t", new List<string> { n.id.ToString(), n.intensity_sum_olcs.ToString(), n.weighted_monoisotopic_mass.ToString(), n.corrected_mass.ToString(), n.rt_apex.ToString(),
                     n.neuCodeHeavy.id.ToString(), n.neuCodeHeavy.intensity_sum_olcs.ToString(), n.neuCodeHeavy.weighted_monoisotopic_mass.ToString(), n.intensity_ratio.ToString(), n.lysine_count.ToString(),
-                    n.file_origin.ToString() });
+                    n.input_file.UniqueId.ToString() });
         }
 
         // AGGREGATED PROTEOFORM I/O

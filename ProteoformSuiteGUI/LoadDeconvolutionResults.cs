@@ -126,7 +126,6 @@ namespace ProteoformSuite
                     IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.filename == file.filename);
                     InputFile matching_file = matching_files.First();
                     if (matching_files.Count() != 1) MessageBox.Show("Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + ".");
-                    file.matched_for_calibration = matching_file.purpose;
                     file.matchingCalibrationFile = true;
                     matching_file.matchingCalibrationFile = true;
                 }
