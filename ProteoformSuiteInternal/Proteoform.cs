@@ -33,7 +33,6 @@ namespace ProteoformSuiteInternal
         public List<Proteoform> get_connected_proteoforms()
         {
             return relationships.Where(r => r.peak.peak_accepted).SelectMany(r => r.connected_proteoforms).ToList();
-            //return relationships.SelectMany(r => r.connected_proteoforms).ToList();
         }
     }
 
@@ -47,6 +46,7 @@ namespace ProteoformSuiteInternal
         public List<Component> aggregated_components { get; set; } = new List<Component>();
         public List<Component> lt_quant_components { get; set; } = new List<Component>();
         public List<Component> hv_quant_components { get; set; } = new List<Component>();
+
         public double agg_mass { get; set; } = 0;
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
@@ -79,6 +79,52 @@ namespace ProteoformSuiteInternal
                 this.is_target = false;
                 this.is_decoy = true;
             }
+        }
+
+        public struct qVals
+        {
+            public double ratio { get; set; }
+            public double intensity { get; set; }
+            public double fraction { get; set; }
+        }
+
+        public Tuple<double,double> weightedRatioAndWeightedVariance(List<InputFile> inputFileList) //the inputFileList is a list of "quantitative" input files
+        {
+            List<qVals> quantitativeValues = new List<qVals>();     
+
+            double weightedRatio = 0;
+            double squaredVariance = 0;
+            double variance = 0;
+
+            inputFileList.ForEach(inFile =>
+            {
+                qVals q = new qVals();
+                double numerator = (from s in lt_quant_components where s.input_file == inFile select s.intensity_sum).Sum();
+                double denominator = (from s in hv_quant_components where s.input_file == inFile select s.intensity_sum).Sum();
+                q.ratio = Math.Log((numerator + 0.1) / (denominator + 0.1), 2); //adding 0.1 to deal with missing values
+                q.intensity = numerator + denominator;
+                quantitativeValues.Add(q);
+            });
+
+            double intensitySum = quantitativeValues.Sum(s => s.intensity);
+
+            if (intensitySum > 0)
+            {
+                quantitativeValues.ForEach(q => {
+                    weightedRatio = weightedRatio + q.ratio * q.intensity / intensitySum;
+                    q.fraction = q.intensity / intensitySum;
+                });
+
+                quantitativeValues.ForEach(q => {
+                    squaredVariance = squaredVariance * Math.Pow((q.ratio - weightedRatio),2);
+                });
+            }
+
+            if (squaredVariance > 0)
+                variance = Math.Pow(squaredVariance, 0.5);
+
+            var tUP = new Tuple<double, double>(weightedRatio,variance);
+            return tUP;
         }
 
         //for Tests

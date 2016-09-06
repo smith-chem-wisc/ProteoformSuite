@@ -21,12 +21,6 @@ namespace ProteoformSuiteInternal
         public static bool updated_agg = false;
         public static bool opened_results_originally = false; //stays true if results ever opened
 
-        //public static void get_experimental_proteoforms(Func<string, IEnumerable<Component>> componentReader, Func<string, IEnumerable<Correction>> correctionReader)
-        //{
-        //    Lollipop.process_raw_components(componentReader);
-        //    Lollipop.aggregate_proteoforms();
-        //}
-
         //RAW EXPERIMENTAL COMPONENTS
         //public static BindingList<string> deconResultsFileNames = new BindingList<string>();
         public static List<InputFile> input_files = new List<InputFile>();
@@ -43,7 +37,7 @@ namespace ProteoformSuiteInternal
         {
             ExcelReader componentReader = new ExcelReader();
             if (input_files.Any(f => f.purpose == Purpose.Calibration))
-                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file.path + "\\" + file.filename + file.extension, file.filename))).ToList();
+                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
             foreach (InputFile file in identification_files())
             {
                 List<Component> raw_components = componentReader.read_components_from_xlsx(file, correctionFactors).ToList();
@@ -62,7 +56,7 @@ namespace ProteoformSuiteInternal
         {
             ExcelReader componentReader = new ExcelReader();
             if (input_files.Any(f => f.purpose == Purpose.Quantification))
-                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file.path + "\\" + file.filename + file.extension, file.filename))).ToList();
+                correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
             foreach (InputFile file in quantification_files())
             {
                 List<Component> raw_components = componentReader.read_components_from_xlsx(file, correctionFactors).ToList();
@@ -70,9 +64,11 @@ namespace ProteoformSuiteInternal
             }
         }
 
-
-        public static IEnumerable<Correction> read_corrections(string filepath, string filename)
+        public static IEnumerable<Correction> read_corrections(InputFile file)
         {
+            string filepath = file.path + file.filename + file.extension;
+            string filename = file.filename;
+
             string[] correction_lines = File.ReadAllLines(filepath);
             for (int i = 1; i < correction_lines.Length; i++)
             {
@@ -166,7 +162,7 @@ namespace ProteoformSuiteInternal
             {
                 Component root = remaining_proteoforms[0];
                 List<Component> tmp_remaining_proteoforms = remaining_proteoforms.ToList();
-                List<Component> tmp_remaining_quant_proteoforms = tmp_remaining_proteoforms;
+                List<Component> tmp_remaining_quant_proteoforms = remaining_quant_components;
                 ExperimentalProteoform new_pf = new ExperimentalProteoform("E_" + count, root, tmp_remaining_proteoforms, tmp_remaining_quant_proteoforms, true);
                 Lollipop.proteoform_community.add(new_pf);
                 remaining_proteoforms = tmp_remaining_proteoforms.Except(new_pf.aggregated_components).ToArray();

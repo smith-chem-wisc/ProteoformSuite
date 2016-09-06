@@ -83,7 +83,9 @@ namespace ProteoformSuite
             dgv_RawExpComp_MI_masses.Columns["relative_abundance"].HeaderText = "Relative Abundance";
             dgv_RawExpComp_MI_masses.Columns["fract_abundance"].HeaderText = "Fractional Abundance";
             dgv_RawExpComp_MI_masses.Columns["intensity_sum"].HeaderText = "Intensity Sum";
-            dgv_RawExpComp_MI_masses.Columns["file_origin"].HeaderText = "Filename";
+
+            //dgv_RawExpComp_MI_masses.Columns["file_origin"].HeaderText = "Filename";
+
             dgv_RawExpComp_MI_masses.Columns["id"].HeaderText = "ID";
             dgv_RawExpComp_MI_masses.Columns["scan_range"].HeaderText = "Scan Range";
             dgv_RawExpComp_MI_masses.Columns["rt_range"].HeaderText = "RT Range";
@@ -117,7 +119,9 @@ namespace ProteoformSuite
             dgv_RawQuantComp_MI_masses.Columns["relative_abundance"].HeaderText = "Relative Abundance";
             dgv_RawQuantComp_MI_masses.Columns["fract_abundance"].HeaderText = "Fractional Abundance";
             dgv_RawQuantComp_MI_masses.Columns["intensity_sum"].HeaderText = "Intensity Sum";
-            dgv_RawQuantComp_MI_masses.Columns["file_origin"].HeaderText = "Filename";
+
+            //dgv_RawQuantComp_MI_masses.Columns["file_origin"].HeaderText = "Filename";
+
             dgv_RawQuantComp_MI_masses.Columns["id"].HeaderText = "ID";
             dgv_RawQuantComp_MI_masses.Columns["scan_range"].HeaderText = "Scan Range";
             dgv_RawQuantComp_MI_masses.Columns["rt_range"].HeaderText = "RT Range";

@@ -21,20 +21,53 @@ namespace Test
         public List<Component> generate_neucode_components()
         {
             List<Component> components = new List<Component>();
+            InputFile inFile = new ProteoformSuiteInternal.InputFile("somepath", Labeling.NeuCode, Purpose.Identification);
+            
             for (int i = 0; i < 2; i++)
             {
                 Component light = new Component();
                 Component heavy = new Component();
+                light.input_file = inFile;
+                heavy.input_file = inFile;
                 light.id = 1;
                 heavy.id = 2;
                 light.corrected_mass = starter_mass;
+                heavy.corrected_mass = starter_mass + starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
                 light.intensity_sum_olcs = starter_neucode_intensity; //using the special intensity sum for overlapping charge states in a neucode pair
                 light.rt_apex = starter_rt;
+                heavy.rt_apex = starter_rt;
                 light.accepted = true;
+                heavy.accepted = true;
                 NeuCodePair n = new NeuCodePair(light, heavy);
                 n.lysine_count = starter_lysine_count;
                 components.Add(n);
             }
+            return components;
+        }
+
+        public List<Component> generate_neucode_quantitative_components()
+        {
+            List<Component> components = new List<Component>();
+            InputFile inFile = new ProteoformSuiteInternal.InputFile("somepath", Labeling.NeuCode, Purpose.Quantification);
+
+            Component light = new Component();
+            Component heavy = new Component();
+            light.input_file = inFile;
+            heavy.input_file = inFile;
+            light.id = 1;
+            heavy.id = 2;
+            light.corrected_mass = starter_mass;
+            heavy.corrected_mass = starter_mass + starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
+            light.intensity_sum = starter_neucode_intensity; //using the special intensity sum for overlapping charge states in a neucode pair
+            heavy.intensity_sum = starter_neucode_intensity / 2;
+            light.rt_apex = starter_rt;
+            heavy.rt_apex = starter_rt;
+            light.accepted = true;
+            heavy.accepted = true;
+            //NeuCodePair n = new NeuCodePair(light, heavy);
+            //n.lysine_count = starter_lysine_count;
+            components.Add(light);
+            components.Add(heavy);
             return components;
         }
 
@@ -52,6 +85,23 @@ namespace Test
                 components.Add(c);
             }
             return components;
+        }
+
+        [Test]
+        public void neucode_quantification()
+        {
+            Lollipop.neucode_labeled = true;
+            List<Component> quant_components_list = generate_neucode_quantitative_components();
+            List<Component> components = generate_neucode_components();
+            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, quant_components_list, true);
+            List<InputFile> inFileList = new List<InputFile>();
+            quant_components_list.ForEach(q => {
+                inFileList.Add(q.input_file);
+            });
+
+            Tuple<double, double> wRAWV  = e.weightedRatioAndWeightedVariance(inFileList);
+            Assert.AreEqual(1, Math.Round(wRAWV.Item1)); //Ratio
+            Assert.AreEqual(0, wRAWV.Item2); //Variance
         }
 
         [Test]
@@ -125,7 +175,13 @@ namespace Test
             Assert.AreEqual(1, e.aggregated_components.Count);
         }
 
-        // Maximum number of missed
+        [Test]
+        public void quantification()
+        {
+
+        }
+
+        //Maximum number of missed
         int missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
 
         [Test]

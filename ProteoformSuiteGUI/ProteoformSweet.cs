@@ -105,6 +105,7 @@ namespace ProteoformSuite
 
             //cannot parallelize bc results dependent on one another for certain objects
             MessageBox.Show("Will load in results now.\n\nMay show as non-responsive.");
+            Results.read_input_files(File.ReadAllLines(working_directory + "\\input_files.tsv"));
             Results.read_raw_components(File.ReadAllLines(working_directory + "\\raw_experimental_components.tsv"));
             if (Lollipop.neucode_labeled) Results.read_raw_neucode_pairs(File.ReadAllLines(working_directory + "\\raw_neucode_pairs.tsv"));
             Results.read_aggregated_proteoforms(File.ReadAllLines(working_directory + "\\aggregated_experimental_proteoforms.tsv"));
@@ -164,6 +165,10 @@ namespace ProteoformSuite
 
         private void save_tsv(string working_directory, bool save_all)
         {
+            if (current_form == loadDeconvolutionResults || save_all)
+            {
+                File.WriteAllText(working_directory + "\\input_files.tsv", Results.input_file_results());
+            }
             if (current_form == rawExperimentalComponents || save_all)
             {
                 File.WriteAllText(working_directory + "\\raw_experimental_components.tsv", Results.raw_component_results());

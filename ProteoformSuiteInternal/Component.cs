@@ -8,7 +8,8 @@ namespace ProteoformSuiteInternal
 {
     public class Component
     {
-        public string file_origin { get; set; }
+        //public string file_origin { get; set; }
+        public InputFile input_file { get; set; }
         public int id { get; set; }
         public double monoisotopic_mass { get; set; }
         public double intensity_sum { get; set; }
@@ -39,9 +40,10 @@ namespace ProteoformSuiteInternal
         public bool accepted { get; set; }
         public Component()
         { }
-        public Component(List<string> cellStrings, string filename)
+        public Component(List<string> cellStrings, InputFile input_file)
         {
             this.id = Convert.ToInt32(cellStrings[0]);
+            this.input_file = input_file;
             this.monoisotopic_mass = Convert.ToDouble(cellStrings[1]);
             this.intensity_sum = Convert.ToDouble(cellStrings[2]);
             this.num_charge_states_fromFile = Convert.ToInt32(cellStrings[3]);
@@ -59,13 +61,13 @@ namespace ProteoformSuiteInternal
             this.num_detected_intervals = Convert.ToInt32(cellStrings[4]);
             this.delta_mass = Convert.ToDouble(cellStrings[5]);
             this.relative_abundance = Convert.ToDouble(cellStrings[6]);
-            this.fract_abundance = Convert.ToDouble(cellStrings[7]);
-            this.file_origin = filename;
+            this.fract_abundance = Convert.ToDouble(cellStrings[7]);           
             this.accepted = true;
         }
         public Component(Component c)
         {
-            this.file_origin = c.file_origin;
+            //this.file_origin = c.file_origin;
+            this.input_file = c.input_file;
             this.id = c.id;
             this.monoisotopic_mass = c.monoisotopic_mass;
             this.weighted_monoisotopic_mass = c.weighted_monoisotopic_mass;
@@ -131,7 +133,13 @@ namespace ProteoformSuiteInternal
         public double CorrectCalculatedMass(double mz_correction)
         {
             this.mz_correction = mz_correction;
-            return (this.charge_count * (this.mz_centroid + mz_correction - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
+            //return (this.charge_count * (this.mz_centroid + mz_correction - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
+
+            double correctionFactor = 589.23248 / (589.23248 + mz_correction); //this ratiometric shift from stefan
+
+            return correctionFactor * mz_centroid * charge_count - charge_count * 1.00727645D;
+
+            //return (this.charge_count * (this.mz_centroid * 1 + this.mz_centroid * (correctionFactor - 1 ) - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
         }
 
         public override string ToString()
