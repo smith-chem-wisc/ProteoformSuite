@@ -45,7 +45,8 @@ namespace ProteoformSuiteInternal
         private Component root;
         public List<Component> aggregated_components { get; set; } = new List<Component>();
         public List<Component> lt_quant_components { get; set; } = new List<Component>();
-        public List<Component> hv_quant_components { get; set; } = new List<Component>();       
+        public List<Component> hv_quant_components { get; set; } = new List<Component>();
+
         public double agg_mass { get; set; } = 0;
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;

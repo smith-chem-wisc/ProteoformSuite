@@ -16,8 +16,6 @@ namespace Test
         double starter_rt = 50.0;
         int starter_lysine_count = 3;
         List<Component> empty_quant_components_list = new List<Component>();
-        
-
 
         // The calculations for unlabeled and neucode components are the same, currently
         public List<Component> generate_neucode_components()
@@ -110,7 +108,7 @@ namespace Test
         public void neucode_proteoform_calculate_properties()
         {
             Lollipop.neucode_labeled = true;
-            List<Component> components = generate_neucode_components();
+            List<Component> components = generate_neucode_components();        
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
             Assert.AreEqual(3, e.lysine_count);

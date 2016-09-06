@@ -64,7 +64,6 @@ namespace ProteoformSuiteInternal
             }
         }
 
-
         public static IEnumerable<Correction> read_corrections(InputFile file)
         {
             string filepath = file.path + file.filename + file.extension;

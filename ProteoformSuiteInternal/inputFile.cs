@@ -27,6 +27,7 @@ namespace ProteoformSuiteInternal
         public int technical_replicate { get; set; } = 1;
         public string lt_condition { get; set; } = "no_condition";
         public string hv_condition { get; set; } = "no_condition";
+
         public double totalIntensity { get; set; } = 0;
 
         public string path { get; set; }
