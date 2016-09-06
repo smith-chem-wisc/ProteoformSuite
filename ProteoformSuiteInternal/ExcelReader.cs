@@ -45,7 +45,7 @@ namespace ProteoformSuiteInternal
                         if (cellStrings.Count > 4) //component row
                         {
                             if (i > 1) add_component(new_component);
-                            new_component = new Component(cellStrings, absolute_path);
+                            new_component = new Component(cellStrings, file);
                             charge_row_index = 0;
                             scan_range = cellStrings[8];
                         }

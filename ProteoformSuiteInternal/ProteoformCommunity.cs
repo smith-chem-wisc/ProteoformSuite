@@ -15,19 +15,6 @@ namespace ProteoformSuiteInternal
         public List<ProteoformFamily> families = new List<ProteoformFamily>();
         public static double maximum_delta_mass_peak_fdr = 25;
 
-
-        //INITIALIZATION of PROTEOFORMS
-        //public void add(string accession, NeuCodePair candidate)
-        //{
-        //    foreach(ExperimentalProteoform pf in experimental_proteoforms) //Need to keep order of proteoforms coming in to keep ordering of max intensity; parallelized beforehand
-        //    {
-        //        if (pf.includes(candidate)) pf.add(candidate); return;
-        //    }
-        //    ExperimentalProteoform new_pf = new ExperimentalProteoform(accession, candidate, true);
-        //    //Lollipop.experimental_proteoforms.Add(new_pf);
-        //    this.experimental_proteoforms.Add(new_pf);
-        //}
-
         public void add(ExperimentalProteoform pf)
         {
             this.experimental_proteoforms.Add(pf);

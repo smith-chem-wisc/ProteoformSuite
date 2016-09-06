@@ -16,6 +16,12 @@ namespace Test
         public void resultsIn_match_resultsOut_component_neucodepair_aggregatedproteoform()
         {
             // Create a couple raw components, make strings, read those strings, and make sure the components match
+
+            InputFile f1 = new InputFile(1, "UnitTestFiles\\file1.ext", Labeling.NeuCode, Purpose.Identification);
+            InputFile f2 = new InputFile(2, "UnitTestFiles\\file2.ext", Labeling.NeuCode, Purpose.Identification);
+            Lollipop.input_files.Add(f1);
+            Lollipop.input_files.Add(f2);
+
             Component c1 = new Component();
             Component c2 = new Component();
             c1.id = 1;
@@ -44,17 +50,20 @@ namespace Test
             c2.rt_apex = 62.5;
             c1.intensity_sum_olcs = 99.9;
             c2.intensity_sum_olcs = 199.9;
-            c1.file_origin = "file1";
-            c2.file_origin = "file2";
+            c1.input_file = f1;
+            c2.input_file = f2;
             c1.accepted = true;
             c2.accepted = false;
             Lollipop.raw_experimental_components = new List<Component> { c1, c2 };
             Assert.AreEqual(2, Lollipop.raw_experimental_components.Count);
             Lollipop.neucode_labeled = true;
+            string[] inputFile_results = Results.input_file_results().Split(new string[] { Environment.NewLine }, StringSplitOptions.None); // results strings
             string[] component_results = Results.raw_component_results().Split(new string[] { Environment.NewLine }, StringSplitOptions.None); // results strings
             Assert.AreEqual(3, component_results.Length);
             Lollipop.raw_experimental_components.Clear();
+            Results.read_input_files(inputFile_results);
             Results.read_raw_components(component_results); // read the results strings
+            
             Assert.AreEqual(2, Lollipop.raw_experimental_components.Count);
             //Parallel.For used for reading the results strings does not produce a stable order, so compare based on ID
             compare_components(c1, Lollipop.raw_experimental_components.Find(d => d.id == c1.id));
@@ -116,7 +125,7 @@ namespace Test
             Assert.AreEqual(c.rt_range, d.rt_range);
             Assert.AreEqual(c.rt_apex, d.rt_apex);
             Assert.AreEqual(c.intensity_sum_olcs, d.intensity_sum_olcs);
-            Assert.AreEqual(c.file_origin, d.file_origin);
+            //Assert.AreEqual(c.input_file, d.input_file);
             Assert.AreEqual(c.accepted, d.accepted);
         }
 

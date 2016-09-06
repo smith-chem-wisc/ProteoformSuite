@@ -41,7 +41,8 @@ namespace Test
             string filename = "filename.txt";
             string scan_range = "1-3";
             Component c = new Component();
-            c.file_origin = filename;
+            //c.file_origin = filename;
+            c.input_file = new InputFile();
             c.scan_range = scan_range;
             Correction correction1 = new Correction(filename, 1, Double.NaN);
             Correction correction2 = new Correction(filename, 2, Double.NaN);
