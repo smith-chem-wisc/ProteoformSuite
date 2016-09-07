@@ -221,7 +221,7 @@ namespace ProteoformSuiteInternal
         public static string theoretical_proteoforms_results(bool target)
         {
             string tsv_header = String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
-                "description", "name", "fragment", "begin", "end", "unmodified_mass", "ptm_list", "ptm_mass", "database_name", "psm_count" });
+                "description", "name", "fragment", "begin", "end", "unmodified_mass", "ptm_list", "ptm_mass", "database_name", "BU_psm_count", "TD_psm_count" });
             if (target)
             {
                 return tsv_header + Environment.NewLine +
