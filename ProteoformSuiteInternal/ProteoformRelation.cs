@@ -168,9 +168,17 @@ namespace ProteoformSuiteInternal
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).ptm_descriptions; } catch { return null; } }
         }
-        public string psm_count
+        public int psm_count_BU
         {
-            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).psm_count.ToString(); } catch { return null; }}
+            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).psm_count_BU; } catch { return 0; }}
+        }
+        public int psm_count_TD
+        {
+            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).psm_count_TD; } catch { return 0; } }
+        }
+        public string of_interest
+        {
+            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).of_interest; } catch { return null; } }
         }
     }
 }

@@ -109,6 +109,24 @@ namespace ProteoformSuite
             Results.read_raw_components(File.ReadAllLines(working_directory + "\\raw_experimental_components.tsv"));
             if (Lollipop.neucode_labeled) Results.read_raw_neucode_pairs(File.ReadAllLines(working_directory + "\\raw_neucode_pairs.tsv"));
             Results.read_aggregated_proteoforms(File.ReadAllLines(working_directory + "\\aggregated_experimental_proteoforms.tsv"));
+            //need to read in ptm list
+            try
+            {
+                ProteomeDatabaseReader.oldPtmlistFilePath = working_directory + "\\ptmlist.txt";
+                Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist();
+            }
+            catch
+            {
+                MessageBox.Show("Please select a Uniprot ptm list.");
+                DialogResult dr = this.methodFileOpen.ShowDialog();
+                if (dr == System.Windows.Forms.DialogResult.OK)
+                {
+                    string ptm_list = methodFileOpen.FileName;
+                    ProteomeDatabaseReader.oldPtmlistFilePath = ptm_list;
+                    Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist();
+                }
+                else { return; }
+            }   
             Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\theoretical_proteoforms.tsv"));
             Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\decoy_proteoforms.tsv"));
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_theoretical_relationships.tsv"), ProteoformComparison.et);
@@ -257,7 +275,7 @@ namespace ProteoformSuite
             theoreticalDatabase.make_databases();
             Lollipop.make_et_relationships();
             Lollipop.make_ee_relationships();
-            proteoformFamilies.construct_families();
+           //proteoformFamilies.construct_families();  I have commented this out for now  bc it is slower than the others -LVS
             prepare_figures_and_tables();
             this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
         }
@@ -269,10 +287,13 @@ namespace ProteoformSuite
                 () => aggregatedProteoforms.FillAggregatesTable(),
                 () => theoreticalDatabase.FillDataBaseTable("Target"),
                 () => experimentalTheoreticalComparison.FillTablesAndCharts(),
-                () => experimentExperimentComparison.FillTablesAndCharts(),
-                () => proteoformFamilies.fill_proteoform_families()
+                () => experimentExperimentComparison.FillTablesAndCharts()
             );
-            if (Lollipop.neucode_labeled) neuCodePairs.GraphNeuCodePairs();
+            if (Lollipop.neucode_labeled)
+            {
+                neuCodePairs.GraphNeuCodePairs();
+             //   proteoformFamilies.fill_proteoform_families();
+            }
         }
     
 

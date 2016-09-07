@@ -20,8 +20,9 @@ namespace ProteoformSuiteInternal
         public double precursor_mz { get; set; }
         public int precursor_charge { get; set; }
         public double precursor_mass_error { get; set; }
+        public PsmType psm_type { get; set; }
 
-        public Psm (string sequence, string filename, int start_residue, int stop_residue, double total_intensity, double precursor_intensity, double morpheus_score, int spectrum,string protein_description, double precursor_mz, int precursor_charge, double precursor_mass_error )
+        public Psm (string sequence, string filename, int start_residue, int stop_residue, double total_intensity, double precursor_intensity, double morpheus_score, int spectrum,string protein_description, double precursor_mz, int precursor_charge, double precursor_mass_error, PsmType psm_type )
         {
             this.sequence = sequence;
             this.filename = filename;
@@ -35,6 +36,13 @@ namespace ProteoformSuiteInternal
             this.precursor_mz = precursor_mz;
             this.precursor_charge = precursor_charge;
             this.precursor_mass_error = precursor_mass_error;
+            this.psm_type = psm_type;
         }
+    }
+
+    public enum PsmType
+    {
+        BottomUp,
+        TopDown
     }
 }

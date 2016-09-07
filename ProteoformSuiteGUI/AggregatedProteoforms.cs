@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace ProteoformSuite
 {
@@ -114,7 +115,6 @@ namespace ProteoformSuite
 
 
             dgv_AcceptNeuCdLtProteoforms.AllowUserToAddRows = false;
-            dgv_AcceptNeuCdLtProteoforms.Columns["id"].Visible = false;
             dgv_AcceptNeuCdLtProteoforms.Columns["_manual_mass_shift"].Visible = false;
             dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum"].Visible = false;
             dgv_AcceptNeuCdLtProteoforms.Columns["num_charge_states_fromFile"].Visible = false;
@@ -181,6 +181,32 @@ namespace ProteoformSuite
         private void button_update_Click(object sender, EventArgs e)
         {
             RunTheGamut();
+        }
+
+        SaveFileDialog saveFile = new SaveFileDialog();
+        private void bt_targed_TD_list_Click(object sender, EventArgs e)
+        {            
+            //take max 500-intensities items (hard coded in for now, make changeable parameter later if targeted works well?
+            string[] mz_targets = new string[500];
+
+            //sort by intensity, take 500 highest intensity aggs
+            List<ExperimentalProteoform> agg_by_I = Lollipop.proteoform_community.experimental_proteoforms.OrderByDescending(a => a.agg_intensity).ToList();
+            for (int i = 0; i < 500; i++ )
+            {
+                //take highest intensity charge state of highest intensity raw component
+                List<ProteoformSuiteInternal.Component> raw_by_I = agg_by_I[i].aggregated_components.OrderByDescending(c => c.intensity_sum).ToList();
+                List<ChargeState> cs_by_I = raw_by_I[0].charge_states.OrderByDescending(s => s.intensity).ToList();
+                mz_targets[i] = cs_by_I[0].mz_centroid.ToString();
+            }
+
+            MessageBox.Show("Choose a folder for target m/z list.");
+            DialogResult results_folder = this.saveFile.ShowDialog();
+            string working_directory;
+            if (results_folder == DialogResult.OK) working_directory = this.saveFile.FileName;
+            else return;
+            File.WriteAllLines(working_directory, mz_targets);
+            MessageBox.Show("Successfully saved target m/z list.");
+
         }
     }
 }

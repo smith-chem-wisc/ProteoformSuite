@@ -55,6 +55,7 @@
             this.bt_morpheusBUResultsClear = new System.Windows.Forms.Button();
             this.bt_tdResultsAdd = new System.Windows.Forms.Button();
             this.bt_tdResultsClear = new System.Windows.Forms.Button();
+            this.cb_td_file = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_identificationFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantitationFiles)).BeginInit();
@@ -66,6 +67,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cb_td_file);
             this.groupBox1.Controls.Add(this.btn_unlabeled);
             this.groupBox1.Controls.Add(this.btn_neucode);
             this.groupBox1.Location = new System.Drawing.Point(13, 610);
@@ -293,17 +295,17 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(1205, 13);
+            this.label4.Location = new System.Drawing.Point(1246, 13);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(248, 20);
+            this.label4.Size = new System.Drawing.Size(183, 20);
             this.label4.TabIndex = 20;
-            this.label4.Text = "ProSight Top-Down Results (.xlsx)";
+            this.label4.Text = "Top-Down Results (.xlsx)";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(909, 13);
+            this.label5.Location = new System.Drawing.Point(923, 13);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(258, 20);
             this.label5.TabIndex = 21;
@@ -348,6 +350,17 @@
             this.bt_tdResultsClear.Text = "Clear";
             this.bt_tdResultsClear.UseVisualStyleBackColor = true;
             this.bt_tdResultsClear.Click += new System.EventHandler(this.bt_tdResultsClear_Click);
+            // 
+            // cb_td_file
+            // 
+            this.cb_td_file.AutoSize = true;
+            this.cb_td_file.Location = new System.Drawing.Point(23, 91);
+            this.cb_td_file.Name = "cb_td_file";
+            this.cb_td_file.Size = new System.Drawing.Size(165, 17);
+            this.cb_td_file.TabIndex = 2;
+            this.cb_td_file.Text = "Top-down Deconvolution File";
+            this.cb_td_file.UseVisualStyleBackColor = true;
+            this.cb_td_file.CheckedChanged += new System.EventHandler(this.cb_td_file_CheckedChanged);
             // 
             // LoadDeconvolutionResults
             // 
@@ -418,5 +431,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DataGridView dgv_tdFiles;
         private System.Windows.Forms.DataGridView dgv_buFiles;
+        private System.Windows.Forms.CheckBox cb_td_file;
     }
 }

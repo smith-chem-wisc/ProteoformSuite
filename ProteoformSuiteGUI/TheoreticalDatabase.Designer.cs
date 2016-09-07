@@ -29,6 +29,10 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.tb_interest_label = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.tb_proteins_of_interest_path = new System.Windows.Forms.TextBox();
+            this.bt_proteins_of_interest = new System.Windows.Forms.Button();
             this.ckbx_aggregateProteoforms = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.nUD_MinPeptideLength = new System.Windows.Forms.NumericUpDown();
@@ -72,6 +76,10 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.tb_interest_label);
+            this.splitContainer1.Panel1.Controls.Add(this.label5);
+            this.splitContainer1.Panel1.Controls.Add(this.tb_proteins_of_interest_path);
+            this.splitContainer1.Panel1.Controls.Add(this.bt_proteins_of_interest);
             this.splitContainer1.Panel1.Controls.Add(this.ckbx_aggregateProteoforms);
             this.splitContainer1.Panel1.Controls.Add(this.label4);
             this.splitContainer1.Panel1.Controls.Add(this.nUD_MinPeptideLength);
@@ -94,15 +102,54 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.dgv_Database);
-            this.splitContainer1.Size = new System.Drawing.Size(788, 478);
-            this.splitContainer1.SplitterDistance = 262;
+            this.splitContainer1.Size = new System.Drawing.Size(1370, 753);
+            this.splitContainer1.SplitterDistance = 455;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // tb_interest_label
+            // 
+            this.tb_interest_label.Location = new System.Drawing.Point(239, 124);
+            this.tb_interest_label.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_interest_label.Name = "tb_interest_label";
+            this.tb_interest_label.Size = new System.Drawing.Size(215, 20);
+            this.tb_interest_label.TabIndex = 21;
+            this.tb_interest_label.Visible = false;
+            this.tb_interest_label.TextChanged += new System.EventHandler(this.tb_interest_label_TextChanged);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(155, 104);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(50, 13);
+            this.label5.TabIndex = 20;
+            this.label5.Text = "(optional)";
+            // 
+            // tb_proteins_of_interest_path
+            // 
+            this.tb_proteins_of_interest_path.Location = new System.Drawing.Point(7, 124);
+            this.tb_proteins_of_interest_path.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_proteins_of_interest_path.Name = "tb_proteins_of_interest_path";
+            this.tb_proteins_of_interest_path.Size = new System.Drawing.Size(228, 20);
+            this.tb_proteins_of_interest_path.TabIndex = 19;
+            // 
+            // bt_proteins_of_interest
+            // 
+            this.bt_proteins_of_interest.Location = new System.Drawing.Point(7, 100);
+            this.bt_proteins_of_interest.Margin = new System.Windows.Forms.Padding(2);
+            this.bt_proteins_of_interest.Name = "bt_proteins_of_interest";
+            this.bt_proteins_of_interest.Size = new System.Drawing.Size(144, 20);
+            this.bt_proteins_of_interest.TabIndex = 18;
+            this.bt_proteins_of_interest.Text = "Get Proteins of Interest List";
+            this.bt_proteins_of_interest.UseVisualStyleBackColor = true;
+            this.bt_proteins_of_interest.Click += new System.EventHandler(this.bt_genes_of_interest_Click);
             // 
             // ckbx_aggregateProteoforms
             // 
             this.ckbx_aggregateProteoforms.AutoSize = true;
-            this.ckbx_aggregateProteoforms.Location = new System.Drawing.Point(15, 419);
+            this.ckbx_aggregateProteoforms.Location = new System.Drawing.Point(7, 470);
             this.ckbx_aggregateProteoforms.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_aggregateProteoforms.Name = "ckbx_aggregateProteoforms";
             this.ckbx_aggregateProteoforms.Size = new System.Drawing.Size(203, 17);
@@ -114,7 +161,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(70, 337);
+            this.label4.Location = new System.Drawing.Point(62, 388);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(123, 13);
@@ -123,7 +170,7 @@
             // 
             // nUD_MinPeptideLength
             // 
-            this.nUD_MinPeptideLength.Location = new System.Drawing.Point(17, 334);
+            this.nUD_MinPeptideLength.Location = new System.Drawing.Point(9, 385);
             this.nUD_MinPeptideLength.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_MinPeptideLength.Name = "nUD_MinPeptideLength";
             this.nUD_MinPeptideLength.Size = new System.Drawing.Size(48, 20);
@@ -132,7 +179,7 @@
             // 
             // btn_Make_Databases
             // 
-            this.btn_Make_Databases.Location = new System.Drawing.Point(15, 444);
+            this.btn_Make_Databases.Location = new System.Drawing.Point(7, 495);
             this.btn_Make_Databases.Margin = new System.Windows.Forms.Padding(2);
             this.btn_Make_Databases.Name = "btn_Make_Databases";
             this.btn_Make_Databases.Size = new System.Drawing.Size(207, 22);
@@ -163,7 +210,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(15, 373);
+            this.label3.Location = new System.Drawing.Point(7, 424);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(102, 13);
@@ -173,7 +220,7 @@
             // cmbx_DisplayWhichDB
             // 
             this.cmbx_DisplayWhichDB.FormattingEnabled = true;
-            this.cmbx_DisplayWhichDB.Location = new System.Drawing.Point(17, 388);
+            this.cmbx_DisplayWhichDB.Location = new System.Drawing.Point(9, 439);
             this.cmbx_DisplayWhichDB.Margin = new System.Windows.Forms.Padding(2);
             this.cmbx_DisplayWhichDB.Name = "cmbx_DisplayWhichDB";
             this.cmbx_DisplayWhichDB.Size = new System.Drawing.Size(205, 21);
@@ -183,7 +230,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(70, 311);
+            this.label2.Location = new System.Drawing.Point(62, 362);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(144, 13);
@@ -192,7 +239,7 @@
             // 
             // nUD_NumDecoyDBs
             // 
-            this.nUD_NumDecoyDBs.Location = new System.Drawing.Point(17, 308);
+            this.nUD_NumDecoyDBs.Location = new System.Drawing.Point(9, 359);
             this.nUD_NumDecoyDBs.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_NumDecoyDBs.Name = "nUD_NumDecoyDBs";
             this.nUD_NumDecoyDBs.Size = new System.Drawing.Size(48, 20);
@@ -202,7 +249,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(70, 287);
+            this.label1.Location = new System.Drawing.Point(62, 338);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(130, 13);
@@ -211,7 +258,7 @@
             // 
             // nUD_MaxPTMs
             // 
-            this.nUD_MaxPTMs.Location = new System.Drawing.Point(17, 283);
+            this.nUD_MaxPTMs.Location = new System.Drawing.Point(9, 334);
             this.nUD_MaxPTMs.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_MaxPTMs.Name = "nUD_MaxPTMs";
             this.nUD_MaxPTMs.Size = new System.Drawing.Size(48, 20);
@@ -223,7 +270,7 @@
             this.groupBox1.Controls.Add(this.btn_NeuCode_Hv);
             this.groupBox1.Controls.Add(this.btn_NeuCode_Lt);
             this.groupBox1.Controls.Add(this.btn_NaturalIsotopes);
-            this.groupBox1.Location = new System.Drawing.Point(7, 168);
+            this.groupBox1.Location = new System.Drawing.Point(-1, 219);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -274,7 +321,7 @@
             // ckbx_Meth_Cleaved
             // 
             this.ckbx_Meth_Cleaved.AutoSize = true;
-            this.ckbx_Meth_Cleaved.Location = new System.Drawing.Point(17, 148);
+            this.ckbx_Meth_Cleaved.Location = new System.Drawing.Point(9, 199);
             this.ckbx_Meth_Cleaved.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_Meth_Cleaved.Name = "ckbx_Meth_Cleaved";
             this.ckbx_Meth_Cleaved.Size = new System.Drawing.Size(131, 17);
@@ -286,7 +333,7 @@
             // ckbx_Carbam
             // 
             this.ckbx_Carbam.AutoSize = true;
-            this.ckbx_Carbam.Location = new System.Drawing.Point(17, 122);
+            this.ckbx_Carbam.Location = new System.Drawing.Point(9, 173);
             this.ckbx_Carbam.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_Carbam.Name = "ckbx_Carbam";
             this.ckbx_Carbam.Size = new System.Drawing.Size(129, 17);
@@ -298,7 +345,7 @@
             // ckbx_OxidMeth
             // 
             this.ckbx_OxidMeth.AutoSize = true;
-            this.ckbx_OxidMeth.Location = new System.Drawing.Point(17, 97);
+            this.ckbx_OxidMeth.Location = new System.Drawing.Point(9, 148);
             this.ckbx_OxidMeth.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_OxidMeth.Name = "ckbx_OxidMeth";
             this.ckbx_OxidMeth.Size = new System.Drawing.Size(121, 17);
@@ -338,14 +385,14 @@
             this.dgv_Database.Name = "dgv_Database";
             this.dgv_Database.ReadOnly = true;
             this.dgv_Database.RowTemplate.Height = 28;
-            this.dgv_Database.Size = new System.Drawing.Size(519, 474);
+            this.dgv_Database.Size = new System.Drawing.Size(908, 749);
             this.dgv_Database.TabIndex = 0;
             // 
             // TheoreticalDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(788, 478);
+            this.ClientSize = new System.Drawing.Size(1370, 753);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -392,5 +439,9 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown nUD_MinPeptideLength;
         private System.Windows.Forms.CheckBox ckbx_aggregateProteoforms;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox tb_proteins_of_interest_path;
+        private System.Windows.Forms.Button bt_proteins_of_interest;
+        private System.Windows.Forms.TextBox tb_interest_label;
     }
 }
