@@ -72,7 +72,7 @@ namespace ProteoformSuiteInternal
         {
             int i = 1;
             List<Component> reduced_raw_exp_comps = new List<Component>();
-            foreach (Component comp in raw_experimental_components.Where(f => f.file_origin == filename).ToList())
+            foreach (Component comp in raw_experimental_components.Where(f => (f.input_file.path + "\\" + f.input_file.filename + f.input_file.extension) == filename).ToList())
             {
                 string[] scans = comp.scan_range.Split('-');
                 if (scans[0].Equals(scans[1]) && MS1_scans.Contains(Convert.ToInt32(scans[0])))  //make sure same scan # in range (one scan) and that it's MS1 scan
