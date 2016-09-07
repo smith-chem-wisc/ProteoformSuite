@@ -198,8 +198,13 @@ namespace ProteoformSuiteInternal
                 string[] line = lines[x].Split('\t');
                 if (line.Length == header.Length)
                 {
-                    PtmSet ptm_set = new PtmSet(new List<Ptm>(from ptm_description in line[11].Split(';') select new Ptm(-1, Lollipop.uniprotModificationTable[ptm_description.Trim().TrimEnd(';')])));
+                    PtmSet ptm_set;
+                    List<Ptm> unmodified = new List<Ptm>();
+                    if (line[11] != "unmodified") { ptm_set = new PtmSet(new List<Ptm>(from ptm_description in line[11].Split(';') select new Ptm(-1, Lollipop.uniprotModificationTable[ptm_description.Trim().TrimEnd(';')]))); }
+                    else ptm_set = new PtmSet(unmodified);
                     TheoreticalProteoform theoretical_proteoform = new TheoreticalProteoform(line[0], line[5], line[6], line[7], Convert.ToInt32(line[8]), Convert.ToInt32(line[9]), Convert.ToDouble(line[10]), Convert.ToInt32(line[2]), ptm_set, Convert.ToDouble(line[1]), Convert.ToBoolean(line[3]));
+                    theoretical_proteoform.psm_count_BU = Convert.ToInt32(line[14]);
+                    theoretical_proteoform.psm_count_TD = Convert.ToInt32(line[15]);
                     string database = line[13];
                     if (database == "Target") lock (lockThread)
                         Lollipop.proteoform_community.theoretical_proteoforms.Add(theoretical_proteoform);
@@ -216,7 +221,7 @@ namespace ProteoformSuiteInternal
         public static string theoretical_proteoforms_results(bool target)
         {
             string tsv_header = String.Join("\t", new List<string> { "accession", "modified_mass", "lysine_count", "is_target", "is_decoy",
-                "description", "name", "fragment", "begin", "end", "unmodified_mass", "ptm_list", "ptm_mass", "database_name" });
+                "description", "name", "fragment", "begin", "end", "unmodified_mass", "ptm_list", "ptm_mass", "database_name", "BU_psm_count", "TD_psm_count" });
             if (target)
             {
                 return tsv_header + Environment.NewLine +
@@ -234,7 +239,7 @@ namespace ProteoformSuiteInternal
         private static string theoretical_proteoform_as_tsv_row(TheoreticalProteoform t, string database)
         {
             return String.Join("\t", new List<string> { t.accession.ToString(), t.modified_mass.ToString(), t.lysine_count.ToString(), t.is_target.ToString(), t.is_decoy.ToString(),
-                t.description.ToString(), t.name.ToString(), t.fragment.ToString(), t.begin.ToString(), t.end.ToString(), t.unmodified_mass.ToString(), t.ptm_descriptions.ToString(), t.ptm_mass.ToString(), database });
+                t.description.ToString(), t.name.ToString(), t.fragment.ToString(), t.begin.ToString(), t.end.ToString(), t.unmodified_mass.ToString(), t.ptm_descriptions.ToString(), t.ptm_mass.ToString(), database, t.psm_count_BU.ToString(), t.psm_count_TD.ToString() });
         }
 
         // PROTEOFORM RELATION I/O

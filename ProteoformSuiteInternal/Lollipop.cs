@@ -29,10 +29,13 @@ namespace ProteoformSuiteInternal
         public static IEnumerable<InputFile> calibration_files() { return input_files.Where(f => f.purpose == Purpose.Calibration); }
         public static IEnumerable<InputFile> bottomup_files() { return input_files.Where(f => f.purpose == Purpose.BottomUp); }
         public static IEnumerable<InputFile> topdown_files() { return input_files.Where(f => f.purpose == Purpose.TopDown); }
+        public static IEnumerable<InputFile> topdownID_files() { return input_files.Where(f => f.purpose == Purpose.TopDownIDResults); }
         public static List<Correction> correctionFactors = null;
+        public static List<int> MS1_scans = new List<int>();
         public static List<Component> raw_experimental_components = new List<Component>();
         public static List<Component> raw_quantification_components = new List<Component>();
         public static bool neucode_labeled = true;
+        public static bool td_results = false;
         public static void process_raw_components()
         {
             ExcelReader componentReader = new ExcelReader();
@@ -40,8 +43,21 @@ namespace ProteoformSuiteInternal
                 correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
             foreach (InputFile file in identification_files())
             {
-                List<Component> raw_components = componentReader.read_components_from_xlsx(file, correctionFactors).ToList();
-                raw_experimental_components.AddRange(raw_components);
+                List<Component> raw_components = new List<Component>();
+                raw_components = componentReader.read_components_from_xlsx(file, correctionFactors).ToList();
+                raw_experimental_components.AddRange(raw_components); 
+                if(td_results)
+                {
+                    //Read in MS1 scan #'s for given raw file. 
+                    foreach (InputFile MS1_file in Lollipop.topdownID_files().Where(f => f.filename == file.filename).ToList())
+                    {
+                        string[] lines = File.ReadAllLines(MS1_file.path + "\\" + MS1_file.filename + MS1_file.extension);
+                        foreach (string line in lines)
+                            MS1_scans.Add(Convert.ToInt32(line));
+                        delete_MS2_and_repeats(file.path + "\\" + file.filename + file.extension);
+                    }
+                    MS1_scans.Clear();
+                }
 
                 if (neucode_labeled)
                 {
@@ -51,6 +67,29 @@ namespace ProteoformSuiteInternal
                 }
             }
         }
+
+       private static void delete_MS2_and_repeats(string filename)
+        {
+            int i = 1;
+            List<Component> reduced_raw_exp_comps = new List<Component>();
+            foreach (Component comp in raw_experimental_components.Where(f => (f.input_file.path + "\\" + f.input_file.filename + f.input_file.extension) == filename).ToList())
+            {
+                string[] scans = comp.scan_range.Split('-');
+                if (scans[0].Equals(scans[1]) && MS1_scans.Contains(Convert.ToInt32(scans[0])))  //make sure same scan # in range (one scan) and that it's MS1 scan
+                    {
+                        //if it has the same monoisotopic mass and intensity sum as something else, it's probably a repeat - don't add. 
+                        if (reduced_raw_exp_comps.Where(r => r.monoisotopic_mass == comp.monoisotopic_mass && r.intensity_sum == comp.intensity_sum).ToList().Count == 0)
+                        {
+                            comp.id = i;  //new id
+                            reduced_raw_exp_comps.Add(comp);
+                            i++;
+                        }   
+                    }
+                }
+            Lollipop.raw_experimental_components.Clear();
+            Lollipop.raw_experimental_components = reduced_raw_exp_comps;
+        }
+
 
         public static void process_raw_quantification_components()
         {
@@ -188,12 +227,14 @@ namespace ProteoformSuiteInternal
         public static bool combine_identical_sequences = true;
         public static string uniprot_xml_filepath = "";
         public static string ptmlist_filepath = "";
+        public static string accessions_of_interest_list_filepath = "";
+        public static string interest_type = "Of interest"; //label for proteins of interest. can be changed 
         //public static List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
         //public static Dictionary<string, List<TheoreticalProteoform>> decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>>();
         static Protein[] proteins;
         public static List<Psm> psm_list = new List<Psm>();
 
-        static ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
+        public static ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
         public static Dictionary<string, Modification> uniprotModificationTable;
         static Dictionary<char, double> aaIsotopeMassList;
 
@@ -216,7 +257,14 @@ namespace ProteoformSuiteInternal
             //Read the Morpheus BU data into PSM list
             foreach (InputFile file in Lollipop.bottomup_files())
             {
-                List<Psm> psm_from_file = ProteomeDatabaseReader.ReadpsmFile(file.path + "\\" + file.filename + file.extension);
+                List<Psm> psm_from_file = ProteomeDatabaseReader.ReadBUFile(file.path + "\\" + file.filename + file.extension);
+                psm_list.AddRange(psm_from_file);
+            }
+
+            //Read TD data into PSM list
+            foreach (InputFile file in Lollipop.topdown_files())
+            {
+                List<Psm> psm_from_file = ExcelReader.ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_program);
                 psm_list.AddRange(psm_from_file);
             }
 
@@ -232,6 +280,10 @@ namespace ProteoformSuiteInternal
                 decoys = decoys.Where(d => d != null).ToList()
             );
             if (psm_list.Count > 0) { match_psms_and_theoreticals(); }   //if BU data loaded in, match PSMs to theoretical accessions
+            if (Lollipop.accessions_of_interest_list_filepath.Length > 0)
+            {
+                mark_accessions_of_interest();
+            }
         }
 
         private static void match_psms_and_theoreticals()
@@ -242,7 +294,16 @@ namespace ProteoformSuiteInternal
                 string[] accession_to_search = tp.accession.Split('_');
                 tp.psm_list = Lollipop.psm_list.Where(p => p.protein_description.Contains(accession_to_search[0])).ToList();
             });
+        }
 
+        private static void mark_accessions_of_interest()
+        {
+            string[] lines = File.ReadAllLines(Lollipop.accessions_of_interest_list_filepath);
+            Parallel.ForEach<string>(lines, accession =>
+            {
+                List<TheoreticalProteoform> theoreticals = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.accession.Contains(accession)).ToList();
+                foreach(TheoreticalProteoform theoretical in theoreticals) { theoretical.of_interest = Lollipop.interest_type; }
+            });
         }
 
         private static ProteinSequenceGroup[] group_proteins_by_sequence(IEnumerable<Protein> proteins)

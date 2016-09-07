@@ -131,7 +131,10 @@ namespace ProteoformSuite
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
             int clickedRow = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
-            if (e.Button == MouseButtons.Left && clickedRow >= 0 && clickedRow < Lollipop.et_relations.Count)
+            int clickedCol = dgv_ET_Peak_List.HitTest(e.X, e.Y).ColumnIndex;
+            if (clickedRow < Lollipop.et_relations.Count && clickedRow >= 0 && clickedCol >=0 && clickedCol < dgv_ET_Peak_List.ColumnCount)
+            { 
+            if (e.Button == MouseButtons.Left)
             {
                 ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
                 DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
@@ -156,6 +159,7 @@ namespace ProteoformSuite
                     //event menu click
                     ET_peak_List_Menu.ItemClicked += new ToolStripItemClickedEventHandler((s, ev) => ET_peak_List_Menu_ItemClicked(s, ev, selected_peak));
                 }
+                } 
             }
         }
 
@@ -207,8 +211,10 @@ namespace ProteoformSuite
             List<ExperimentalProteoform> expProtList = new List<ExperimentalProteoform>();
             foreach (ProteoformRelation relation in Lollipop.et_relations.Where(p => p.peak == peak).ToList())
             {
-                if (relation.connected_proteoforms[0] is ExperimentalProteoform)
+                if (relation.connected_proteoforms[0] is ExperimentalProteoform 
+                    && ((ExperimentalProteoform)relation.connected_proteoforms[0]).mass_shifted == false)
                 {
+                    ((ExperimentalProteoform)relation.connected_proteoforms[0]).mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
                     expProtList.Add(relation.connected_proteoforms[0] as ExperimentalProteoform);
                 }
             }

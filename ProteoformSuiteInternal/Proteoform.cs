@@ -54,7 +54,8 @@ namespace ProteoformSuiteInternal
         {
             get { return aggregated_components.Count; }
         }
-
+        public bool missed_mono { get; set; } = false;
+        public bool mass_shifted { get; set; } //make sure in ET if shifting multiple peaks, not shifting same E > once. 
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession)
         {
             this.root = root;
@@ -213,8 +214,11 @@ namespace ProteoformSuiteInternal
             get { return ptm_list_string(); }
         }
         public List<Psm> psm_list { get; set; } = new List<Psm>();
-        public int psm_count { get { return psm_list.Count; } }
-
+        private int _psm_count_BU;
+        private int _psm_count_TD;
+        public int psm_count_BU { set { _psm_count_BU = value; } get { if (!Lollipop.opened_results_originally) return psm_list.Where(p => p.psm_type == PsmType.BottomUp).ToList().Count; else return _psm_count_BU; } } 
+        public int psm_count_TD { set { _psm_count_TD = value; } get { if (!Lollipop.opened_results_originally) return psm_list.Where(p => p.psm_type == PsmType.TopDown).ToList().Count; else return _psm_count_TD; } } 
+        public string of_interest { get; set; } = "";
 
         public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, PtmSet ptm_set, double modified_mass, bool is_target) : 
             base(accession, modified_mass, lysine_count, is_target)

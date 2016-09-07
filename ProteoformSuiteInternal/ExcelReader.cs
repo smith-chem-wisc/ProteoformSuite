@@ -76,6 +76,7 @@ namespace ProteoformSuiteInternal
                 return value;
         }
 
+
         public double GetCorrectionFactor(string filename, string scan_range, IEnumerable<Correction> correctionFactors)
         {
             if(correctionFactors == null) return 0D;
@@ -100,6 +101,42 @@ namespace ProteoformSuiteInternal
             if (allCorrectionFactors.Count() <= 0) return 0D;
 
             return allCorrectionFactors.Average();                
+        }
+
+        //Reading in Top-down excel
+        public static List<Psm> ReadTDFile(string filename, TDProgram td_program)
+        {
+            List<Psm> psm_list = new List<Psm>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(filename, false))
+            {
+                // Get Data in Sheet1 of Excel file
+                IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
+                WorksheetPart worksheet_1 = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
+                SheetData sheet_1 = worksheet_1.Worksheet.Elements<SheetData>().First();
+                List<Row> rowcollection = worksheet_1.Worksheet.Descendants<Row>().ToList();
+                for (int i = 1; i < rowcollection.Count; i++)   //skip first row (headers)
+                {
+                    List<string> cellStrings = new List<string>();
+                    for (int k = 0; k < rowcollection[i].Descendants<Cell>().Count(); k++)
+                    {
+                        cellStrings.Add(GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
+                    }
+
+                    if (td_program == TDProgram.NRTDP)
+                    {
+                        Psm new_psm = new Psm(cellStrings[8] + cellStrings[4], filename, Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]),
+                            0, 0, Convert.ToDouble(cellStrings[14]), 0, cellStrings[2], Convert.ToDouble(cellStrings[12]), 0, 0, PsmType.TopDown);
+                        psm_list.Add(new_psm);
+                    }
+
+                    else if (td_program == TDProgram.ProSight)
+                    {
+                        Psm new_psm = new Psm(cellStrings[6] + cellStrings[8], cellStrings[14], 0, 0, 0, 0, Convert.ToDouble(cellStrings[20]), 0, cellStrings[4], Convert.ToDouble(cellStrings[9]), 0, Convert.ToDouble(cellStrings[11]), PsmType.TopDown);
+                        psm_list.Add(new_psm);
+                    }
+                }
+            }
+            return psm_list;
         }
 
         private void add_component(Component c)

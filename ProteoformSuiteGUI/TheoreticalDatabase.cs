@@ -19,6 +19,7 @@ namespace ProteoformSuite
     {
         OpenFileDialog openXmlDialog = new OpenFileDialog();
         OpenFileDialog openPtmlistDialog = new OpenFileDialog();
+        OpenFileDialog openAccessionListDialog = new OpenFileDialog();
         public bool gotPTMlistFilePath = false;
         public bool gotXMLFilePath = false;
         bool initial_load = true;
@@ -33,6 +34,7 @@ namespace ProteoformSuite
             btn_Make_Databases.Enabled = false;
             InitializeOpenXmlDialog();
             InitializeOpenPtmlistDialog();
+            InitializeAccessionListDialog();
             InitializeSettings();
 
             if (Lollipop.opened_results_originally)
@@ -54,6 +56,7 @@ namespace ProteoformSuite
                 btn_NaturalIsotopes.Checked = true;
             }
             
+            tb_interest_label.Text = "Type a label here. Ex: mitochondrial proteins";
 
             ckbx_OxidMeth.Checked = Lollipop.methionine_oxidation;
             ckbx_Carbam.Checked = Lollipop.carbamidomethylation;
@@ -86,6 +89,13 @@ namespace ProteoformSuite
             this.openPtmlistDialog.Filter = "UniProt PTM List (*.txt)|*.txt";
             this.openPtmlistDialog.Multiselect = false;
             this.openPtmlistDialog.Title = "UniProt PTM List";
+        }
+
+        private void InitializeAccessionListDialog()
+        {
+            this.openAccessionListDialog.Filter = "List of Proteins of Interest (*.txt)|*.txt";
+            this.openAccessionListDialog.Multiselect = false;
+            this.openAccessionListDialog.Title = "List of Proteins of Interest";
         }
 
         public void FillDataBaseTable(string table)
@@ -155,6 +165,34 @@ namespace ProteoformSuite
                 {
                     // Could not load the result file - probably related to Windows file system permissions.
                     MessageBox.Show("Cannot display the file: " + ptmlist_filename.Substring(ptmlist_filename.LastIndexOf('\\'))
+                        + ". You may not have permission to read the file, or it may be corrupt.\n\nReported error: " + ex.Message);
+                }
+            }
+        }
+
+        private void bt_genes_of_interest_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Please select a text file with the accession numbers of your proteins of interest, one per line.");
+            DialogResult dr = this.openAccessionListDialog.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                string accessions_path = openAccessionListDialog.FileName;
+                try
+                {
+                    tb_proteins_of_interest_path.Text = accessions_path;
+                    Lollipop.accessions_of_interest_list_filepath = accessions_path;
+                    tb_interest_label.Visible = true;
+                }
+                catch (SecurityException ex)
+                {
+                    // The user lacks appropriate permissions to read files, discover paths, etc.
+                    MessageBox.Show("Security error. Please contact your administrator for details.\n\nError message: " + ex.Message + "\n\n" +
+                        "Details (send to Support):\n\n" + ex.StackTrace);
+                }
+                catch (Exception ex)
+                {
+                    // Could not load the result file - probably related to Windows file system permissions.
+                    MessageBox.Show("Cannot display the file: " + accessions_path.Substring(accessions_path.LastIndexOf('\\'))
                         + ". You may not have permission to read the file, or it may be corrupt.\n\nReported error: " + ex.Message);
                 }
             }
@@ -238,6 +276,12 @@ namespace ProteoformSuite
         private void nUD_MinPeptideLength_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.min_peptide_length = Convert.ToInt32(nUD_MinPeptideLength.Value);
+        }
+
+        private void tb_interest_label_TextChanged(object sender, EventArgs e)
+        {
+            if (!initial_load)
+                Lollipop.interest_type = tb_interest_label.Text;
         }
     }
 }

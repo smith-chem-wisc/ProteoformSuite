@@ -12,6 +12,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+//using 
 using Excel = Microsoft.Office.Interop.Excel; //Right click Solution/Explorer/References. Then Add  "Reference". Assemblies/Extension/Microsoft.Office.Interop.Excel
 
 
@@ -19,10 +20,12 @@ namespace ProteoformSuite
 {
     public partial class LoadDeconvolutionResults : Form
     {
-
+        
         public LoadDeconvolutionResults()
         {
             InitializeComponent();
+            this.dgv_tdFiles.CurrentCellDirtyStateChanged += new EventHandler(this.dgv_tdFiles_CurrentCellDirtyStateChanged); //makes the change immediate and automatic
+            this.dgv_tdFiles.CellValueChanged += new DataGridViewCellEventHandler(this.dgv_tdFiles_ComboBoxChanged);
         }
 
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
@@ -112,8 +115,8 @@ namespace ProteoformSuite
 
                     InputFile file = new InputFile(path, filename, extension, label, purpose);
                     Lollipop.input_files.Add(file);
-                }
-            }
+                    }
+              }
         }
 
         private void match_files() //for dgv
@@ -121,9 +124,9 @@ namespace ProteoformSuite
             // Look for results files with the same filename as a calibration file, and show that they're matched
             foreach (InputFile file in Lollipop.calibration_files())
             {
-                if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration).Select(f => f.filename).Contains(file.filename))
+                if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.TopDownIDResults).Select(f => f.filename).Contains(file.filename))
                 {
-                    IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.filename == file.filename);
+                    IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.TopDownIDResults && f.filename == file.filename);
                     InputFile matching_file = matching_files.First();
                     if (matching_files.Count() != 1) MessageBox.Show("Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + ".");
                     file.matchingCalibrationFile = true;
@@ -150,6 +153,8 @@ namespace ProteoformSuite
             DisplayUtility.FillDataGridView(dgv_identificationFiles, Lollipop.identification_files());
             DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantification_files());
             DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
+            DisplayUtility.FillDataGridView(dgv_buFiles, Lollipop.bottomup_files());
+            DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
         }
 
 
@@ -188,6 +193,21 @@ namespace ProteoformSuite
                 PropertyInfo propertyInfo = propertyType.GetProperty(propertyName);
                 return propertyInfo.GetValue(property, null).ToString();
             }
+        }
+
+        private void dgv_tdFiles_ComboBoxChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == 0 && e.RowIndex >= 0) //make sure it's combobox
+            {
+                TDProgram selectedValue = (TDProgram)dgv_tdFiles.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                InputFile selectedFile = (InputFile)this.dgv_tdFiles.Rows[e.RowIndex].DataBoundItem;
+                selectedFile.td_program = selectedValue;
+            }
+        }
+
+        private void dgv_tdFiles_CurrentCellDirtyStateChanged(object sender, EventArgs e)
+        {
+            if (dgv_tdFiles.IsCurrentCellDirty) dgv_tdFiles.CommitEdit(DataGridViewDataErrorContexts.Commit);
         }
 
 
@@ -257,8 +277,10 @@ namespace ProteoformSuite
             DialogResult dr = openFileDialog1.ShowDialog();
             if (dr == DialogResult.OK)
                 enter_input_files(openFileDialog1.FileNames, new List<string> { ".xlsx" }, Purpose.TopDown);
-
+            int i = Lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).ToList().Count;
+            if (i == 1) DisplayUtility.EditInputFileDGVs(dgv_tdFiles, Purpose.TopDown);  //adds drop-down column for dataresults first time td file added
             DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
+            for (int j = 0; j < i; j++ ) {InputFile input = (InputFile)dgv_tdFiles.Rows[j].DataBoundItem; dgv_tdFiles.Rows[j].Cells[0].Value = input.td_program; }
         }
 
         // CLEAR BUTTONS
@@ -323,6 +345,43 @@ namespace ProteoformSuite
                 "Above is another info-button on how to process results without using presets.\n\n"+
                 "We hope you enjoy trying Proteoform Suite! Please contact us if you have any questions. The public repository for this program is hosted on GitHub at https://github.com/smith-chem-wisc/proteoform-suite.", "How To Use Presets.", MessageBoxButtons.OK);
             ((ProteoformSweet)MdiParent).display_methodMenu();
+        }
+
+        private void cb_td_file_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.td_results = cb_td_file.Checked;
+            if (Lollipop.td_results)
+            {
+                MessageBox.Show("Please select the a list of scan #'s corresponding to MS1 scans.");
+                OpenFileDialog openFileDialog1 = new OpenFileDialog();
+                openFileDialog1.Title = "MS1 Scans";
+                openFileDialog1.Filter = "MS1 Scans (.txt) | *.txt";
+                openFileDialog1.Multiselect = true; //TODO: ADD THERMO RAW FILE READER OPTION TO FIND MS-1 SCAN #'S IN SUITE?
+                DialogResult dr = openFileDialog1.ShowDialog();
+                if (dr == DialogResult.OK)
+                    enter_input_files(openFileDialog1.FileNames, new List<string> { ".txt" }, Purpose.TopDownIDResults);
+                else { cb_td_file.Checked = false; Lollipop.td_results = false; return; }
+                //Make sure those files matched. 
+                foreach (InputFile file in Lollipop.topdownID_files())
+                {
+                    int matching_files = Lollipop.identification_files().Where(f => f.filename == file.filename).ToList().Count;
+                    if (matching_files > 1)
+                    {
+                        MessageBox.Show("There is more than one results file named " + file.filename + ". Please try again and choose one file per one identification result file.");
+                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.TopDownIDResults); //start over....
+                        cb_td_file.Checked = false; Lollipop.td_results = false;
+                        return;
+                    }
+                    else if (matching_files < 1)
+                    {
+                        MessageBox.Show("There is no matching deconvolution result for the file " + file.filename + ". Please try again and select a file with the same name as the identification result file.");
+                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.TopDownIDResults); //start over....
+                        cb_td_file.Checked = false; Lollipop.td_results = false;
+                        return;
+                    }
+                    else continue;
+                }
+            }
         }
     }
 }
