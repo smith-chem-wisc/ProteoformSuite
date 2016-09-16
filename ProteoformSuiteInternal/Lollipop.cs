@@ -229,9 +229,7 @@ namespace ProteoformSuiteInternal
         public static string ptmlist_filepath = "";
         public static string accessions_of_interest_list_filepath = "";
         public static string interest_type = "Of interest"; //label for proteins of interest. can be changed 
-        //public static List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
-        //public static Dictionary<string, List<TheoreticalProteoform>> decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>>();
-        static Protein[] proteins;
+        public static Protein[] proteins;
         public static List<Psm> psm_list = new List<Psm>();
 
         public static ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
@@ -381,10 +379,10 @@ namespace ProteoformSuiteInternal
 
                 if (decoy_number < 0 ) 
                     proteoform_community.add(new TheoreticalProteoform(accession, protein_description, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
-                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, true));
+                        unmodified_mass, lysine_count, prot.goTerms, ptm_set, proteoform_mass, true));
                 else
                     proteoform_community.add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
-                        unmodified_mass, lysine_count, ptm_set, proteoform_mass, false), decoy_database_name_prefix + decoy_number);
+                        unmodified_mass, lysine_count, prot.goTerms , ptm_set, proteoform_mass, false), decoy_database_name_prefix + decoy_number);
                 listMemberNumber++;
             } //);
         }

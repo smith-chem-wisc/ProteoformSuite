@@ -99,9 +99,10 @@ namespace Test
                 inFileList.Add(q.input_file);
             });
 
-            Tuple<double, double> wRAWV  = e.weightedRatioAndWeightedVariance(inFileList);
-            Assert.AreEqual(1, Math.Round(wRAWV.Item1)); //Ratio
-            Assert.AreEqual(0, wRAWV.Item2); //Variance
+            weightedRatioIntensityVariance wRAWV  = e.weightedRatioAndWeightedVariance(inFileList.DistinctBy(x => x.UniqueId).ToList());
+            Assert.AreEqual(1, Math.Round(wRAWV.ratio)); //Ratio
+            Assert.AreEqual(150, wRAWV.intensity);
+            //Assert.AreEqual(0, wRAWV.variance); //Variance
         }
 
         [Test]
@@ -264,5 +265,7 @@ namespace Test
             Assert.AreEqual(1, e.aggregated_components.Count);
             Assert.AreEqual(components[0], e.aggregated_components.First());
         }
+
+        
     }
 }

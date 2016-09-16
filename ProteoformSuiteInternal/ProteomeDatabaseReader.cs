@@ -157,6 +157,8 @@ namespace ProteoformSuiteInternal
                     string accession = GetChild(entry, "accession").Value;
                     string full_name = GetDescendant(entry, "fullName").Value;
                     IEnumerable<XElement> features = from node in entry.Elements() where node.Name.LocalName == "feature" select node;
+                    IEnumerable<XElement> dbReferences = from node in entry.Elements() where node.Name.LocalName == "dbReference" select node;
+                    List<goTerm> goTerms = new List<goTerm>();
                     XElement sequence_elem = GetChild(entry, "sequence");
                     string sequence = sequence_elem.Value.Replace("\r", null).Replace("\n", null);
                     string fragment = GetAttribute(sequence_elem, "fragment");
@@ -176,6 +178,44 @@ namespace ProteoformSuiteInternal
                     string gene_name = GetChild(GetChild(entry, "gene"), "name").Value;
                     string protein_existence = GetAttribute(GetChild(entry, "proteinExistence"), "type");
                     string sequence_version = GetAttribute(sequence_elem, "version");
+
+                    //Process dbReferences to retrieve Gene Ontology Terms
+                    foreach (XElement dbReference in dbReferences)
+                    {
+                        string dbReference_type = GetAttribute(dbReference, "type");
+                        if(dbReference_type == "GO")
+                        {
+                            goTerm go = new goTerm();
+                            string ID = GetAttribute(dbReference, "id");
+                            go.id = ID.Split(':')[1].ToString();
+                            IEnumerable<XElement> dbProperties = from XElement in dbReference.Elements() where XElement.Name.LocalName == "property" select XElement;
+
+                            foreach (XElement property in dbProperties)
+                            {
+                                string type = GetAttribute(property, "type");
+                                if (type == "term")
+                                {
+                                    string description = GetAttribute(property, "value");
+                                    switch (description.Split(':')[0].ToString())
+                                    {
+                                        case "C":
+                                            go.aspect = aspect.cellularComponent;
+                                            go.description = description.Split(':')[1].ToString();
+                                            break;
+                                        case "F":
+                                            go.aspect = aspect.molecularFunction;
+                                            go.description = description.Split(':')[1].ToString();
+                                            break;
+                                        case "P":
+                                            go.aspect = aspect.biologicalProcess;
+                                            go.description = description.Split(':')[1].ToString();
+                                            break;
+                                    }
+                                    goTerms.Add(go);
+                                }
+                            }                            
+                        }
+                    }
 
                     //Process the modified residues
                     foreach (XElement feature in features)
@@ -201,7 +241,7 @@ namespace ProteoformSuiteInternal
                     }
 
                     //Add the full length protein, and then add the fragments with segments of the above modification dictionary
-                    bag_protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, positionsAndPtms));
+                    bag_protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, goTerms, positionsAndPtms));
                     //MessageBox.Show("added " + new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms).ToString());
 
                     //PARALLEL PROBLEM
@@ -224,7 +264,7 @@ namespace ProteoformSuiteInternal
                                     bool justMetCleavage = fixedMethionineCleavage && feature_begin - 1 == begin && feature_end == end;
                                     string subsequence = sequence.Substring(feature_begin, feature_end - feature_begin + 1);
                                     if (!justMetCleavage && subsequence.Length != sequence.Length && subsequence.Length >= minPeptideLength)
-                                        bag_protein_list.Add(new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence,
+                                        bag_protein_list.Add(new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence, goTerms,
                                             SegmentPtms(positionsAndPtms, feature_begin, feature_end)));
                                 }
                                 break;
