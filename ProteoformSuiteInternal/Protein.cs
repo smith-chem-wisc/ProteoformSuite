@@ -12,9 +12,10 @@ namespace ProteoformSuiteInternal
         public int begin { get; set; }
         public int end { get; set; }
         public string sequence { get; set; }
+        public List<goTerm> goTerms { get; set; }
         public Dictionary<int, List<Modification>> ptms_by_position { get; set; }
 
-        public Protein(string accession, string name, string fragment, int begin, int end, string sequence, Dictionary<int, List<Modification>> positionsAndPtms)
+        public Protein(string accession, string name, string fragment, int begin, int end, string sequence, List<goTerm> goTerms, Dictionary<int, List<Modification>> positionsAndPtms)
         {
             this.accession = accession;          
             this.name = name;
@@ -23,6 +24,7 @@ namespace ProteoformSuiteInternal
             this.begin = begin;
             this.end = end;
             this.sequence = sequence;
+            this.goTerms = goTerms;
             this.ptms_by_position = positionsAndPtms;
         }
 
@@ -37,11 +39,11 @@ namespace ProteoformSuiteInternal
 
         public List<string> accessionList { get; set; } // this is the list of accession numbers for all proteins that share the same sequence. the list gets alphabetical order
 
-        public ProteinSequenceGroup(string accession, string name, string fragment, int begin, int end, string sequence, Dictionary<int, List<Modification>> positionsAndPtms)
-            : base(accession, name, fragment, begin, end, sequence, positionsAndPtms)
+        public ProteinSequenceGroup(string accession, string name, string fragment, int begin, int end, string sequence, List<goTerm> goTerms, Dictionary<int, List<Modification>> positionsAndPtms)
+            : base(accession, name, fragment, begin, end, sequence, goTerms, positionsAndPtms)
         { }
         public ProteinSequenceGroup(List<Protein> proteins)
-            : base(proteins[0].accession + "_G" + proteins.Count(), proteins[0].name, proteins[0].fragment, proteins[0].begin, proteins[0].end, proteins[0].sequence, proteins[0].ptms_by_position)
+            : base(proteins[0].accession + "_G" + proteins.Count(), proteins[0].name, proteins[0].fragment, proteins[0].begin, proteins[0].end, proteins[0].sequence, proteins[0].goTerms, proteins[0].ptms_by_position)
         {
             this.accessionList = proteins.Select(p => p.accession).ToList();
             HashSet<int> all_positions = new HashSet<int>(proteins.SelectMany(p => p.ptms_by_position.Keys).ToList());
