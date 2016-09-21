@@ -106,7 +106,7 @@ namespace ProteoformSuite
             dgv_AcceptNeuCdLtProteoforms.Columns["relative_abundance"].HeaderText = "Relative Abundance";
             dgv_AcceptNeuCdLtProteoforms.Columns["fract_abundance"].HeaderText = "Fractional Abundance";
             dgv_AcceptNeuCdLtProteoforms.Columns["intensity_sum_olcs"].HeaderText = "Intensity Sum of Overlapping Charge States (of all if unlabeled)";
-            dgv_AcceptNeuCdLtProteoforms.Columns["file_origin"].HeaderText = "Filename";
+            dgv_AcceptNeuCdLtProteoforms.Columns["input_file"].HeaderText = "Filename";
             dgv_AcceptNeuCdLtProteoforms.Columns["scan_range"].HeaderText = "Scan Range";
             dgv_AcceptNeuCdLtProteoforms.Columns["rt_range"].HeaderText = "RT Range";
             dgv_AcceptNeuCdLtProteoforms.Columns["num_charge_states"].HeaderText = "No. Charge States";
