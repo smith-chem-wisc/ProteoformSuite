@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cb_td_file = new System.Windows.Forms.CheckBox();
             this.btn_unlabeled = new System.Windows.Forms.RadioButton();
             this.btn_neucode = new System.Windows.Forms.RadioButton();
             this.label1 = new System.Windows.Forms.Label();
@@ -55,7 +56,7 @@
             this.bt_morpheusBUResultsClear = new System.Windows.Forms.Button();
             this.bt_tdResultsAdd = new System.Windows.Forms.Button();
             this.bt_tdResultsClear = new System.Windows.Forms.Button();
-            this.cb_td_file = new System.Windows.Forms.CheckBox();
+            this.bt_openIDResults = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_identificationFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantitationFiles)).BeginInit();
@@ -67,6 +68,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.bt_openIDResults);
             this.groupBox1.Controls.Add(this.cb_td_file);
             this.groupBox1.Controls.Add(this.btn_unlabeled);
             this.groupBox1.Controls.Add(this.btn_neucode);
@@ -76,6 +78,17 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Proteoform Identification Results";
+            // 
+            // cb_td_file
+            // 
+            this.cb_td_file.AutoSize = true;
+            this.cb_td_file.Location = new System.Drawing.Point(23, 91);
+            this.cb_td_file.Name = "cb_td_file";
+            this.cb_td_file.Size = new System.Drawing.Size(165, 17);
+            this.cb_td_file.TabIndex = 2;
+            this.cb_td_file.Text = "Top-down Deconvolution File";
+            this.cb_td_file.UseVisualStyleBackColor = true;
+            this.cb_td_file.CheckedChanged += new System.EventHandler(this.cb_td_file_CheckedChanged);
             // 
             // btn_unlabeled
             // 
@@ -351,16 +364,15 @@
             this.bt_tdResultsClear.UseVisualStyleBackColor = true;
             this.bt_tdResultsClear.Click += new System.EventHandler(this.bt_tdResultsClear_Click);
             // 
-            // cb_td_file
+            // bt_openIDResults
             // 
-            this.cb_td_file.AutoSize = true;
-            this.cb_td_file.Location = new System.Drawing.Point(23, 91);
-            this.cb_td_file.Name = "cb_td_file";
-            this.cb_td_file.Size = new System.Drawing.Size(165, 17);
-            this.cb_td_file.TabIndex = 2;
-            this.cb_td_file.Text = "Top-down Deconvolution File";
-            this.cb_td_file.UseVisualStyleBackColor = true;
-            this.cb_td_file.CheckedChanged += new System.EventHandler(this.cb_td_file_CheckedChanged);
+            this.bt_openIDResults.Location = new System.Drawing.Point(194, 85);
+            this.bt_openIDResults.Name = "bt_openIDResults";
+            this.bt_openIDResults.Size = new System.Drawing.Size(66, 26);
+            this.bt_openIDResults.TabIndex = 26;
+            this.bt_openIDResults.Text = "Open";
+            this.bt_openIDResults.UseVisualStyleBackColor = true;
+            this.bt_openIDResults.Click += new System.EventHandler(this.bt_openIDResults_Click);
             // 
             // LoadDeconvolutionResults
             // 
@@ -432,5 +444,6 @@
         private System.Windows.Forms.DataGridView dgv_tdFiles;
         private System.Windows.Forms.DataGridView dgv_buFiles;
         private System.Windows.Forms.CheckBox cb_td_file;
+        private System.Windows.Forms.Button bt_openIDResults;
     }
 }

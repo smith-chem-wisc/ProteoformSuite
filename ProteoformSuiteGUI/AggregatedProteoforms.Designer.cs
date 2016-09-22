@@ -31,6 +31,7 @@
             this.dgv_AggregatedProteoforms = new System.Windows.Forms.DataGridView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.bt_targed_TD_list = new System.Windows.Forms.Button();
             this.button_update = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.tb_totalAggregatedProteoforms = new System.Windows.Forms.TextBox();
@@ -43,7 +44,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.dgv_AcceptNeuCdLtProteoforms = new System.Windows.Forms.DataGridView();
-            this.bt_targed_TD_list = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AggregatedProteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -125,6 +125,16 @@
             this.splitContainer2.SplitterDistance = 376;
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 0;
+            // 
+            // bt_targed_TD_list
+            // 
+            this.bt_targed_TD_list.Location = new System.Drawing.Point(20, 182);
+            this.bt_targed_TD_list.Name = "bt_targed_TD_list";
+            this.bt_targed_TD_list.Size = new System.Drawing.Size(148, 23);
+            this.bt_targed_TD_list.TabIndex = 10;
+            this.bt_targed_TD_list.Text = "Export Targeted TD List";
+            this.bt_targed_TD_list.UseVisualStyleBackColor = true;
+            this.bt_targed_TD_list.Click += new System.EventHandler(this.bt_targed_TD_list_Click);
             // 
             // button_update
             // 
@@ -249,16 +259,6 @@
             this.dgv_AcceptNeuCdLtProteoforms.Size = new System.Drawing.Size(1012, 328);
             this.dgv_AcceptNeuCdLtProteoforms.TabIndex = 0;
             this.dgv_AcceptNeuCdLtProteoforms.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_AcceptNeuCdLtProteoforms_CellContentClick);
-            // 
-            // bt_targed_TD_list
-            // 
-            this.bt_targed_TD_list.Location = new System.Drawing.Point(20, 182);
-            this.bt_targed_TD_list.Name = "bt_targed_TD_list";
-            this.bt_targed_TD_list.Size = new System.Drawing.Size(148, 23);
-            this.bt_targed_TD_list.TabIndex = 10;
-            this.bt_targed_TD_list.Text = "Export Targed TD List";
-            this.bt_targed_TD_list.UseVisualStyleBackColor = true;
-            this.bt_targed_TD_list.Click += new System.EventHandler(this.bt_targed_TD_list_Click);
             // 
             // AggregatedProteoforms
             // 
