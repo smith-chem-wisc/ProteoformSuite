@@ -56,10 +56,9 @@ namespace ProteoformSuiteInternal
                         foreach (string line in lines)
                             MS1_scans.Add(Convert.ToInt32(line));
                         delete_MS2_and_repeats(file.path + "\\" + file.filename + file.extension);
+                        MS1_scans.Clear();
                     }
-                    MS1_scans.Clear();
                 }
-                if (td_results) { raw_experimental_components.Clear(); raw_experimental_components = reduced_raw_exp_components; }
 
                 if (neucode_labeled)
                 { 
@@ -68,9 +67,12 @@ namespace ProteoformSuiteInternal
                     find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
                 }
             }
+
+            if (td_results) { raw_experimental_components.Clear(); raw_experimental_components = reduced_raw_exp_components; }
+
         }
 
-       private static void delete_MS2_and_repeats(string filename)
+        private static void delete_MS2_and_repeats(string filename)
         {
             int i = 1;
             List<Component> reduced_raw_exp_comps = new List<Component>();
