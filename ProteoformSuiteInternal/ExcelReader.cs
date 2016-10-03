@@ -93,7 +93,7 @@ namespace ProteoformSuiteInternal
 
             IEnumerable<double> allCorrectionFactors = 
                 (from s in correctionFactors
-                 where s.file_name == filename //the tsv and xlsx weren't matching which is why it wasn't working. use filename w/out path/extensions -LVS
+                 where s.file_name == filename
                  where s.scan_number >= scans[0]
                 where s.scan_number <= scans[1]
                 select s.correction).ToList();
