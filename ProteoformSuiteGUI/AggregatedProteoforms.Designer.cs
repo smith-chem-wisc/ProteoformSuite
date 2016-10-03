@@ -134,6 +134,7 @@
             this.bt_targed_TD_list.TabIndex = 10;
             this.bt_targed_TD_list.Text = "Export Targeted TD List";
             this.bt_targed_TD_list.UseVisualStyleBackColor = true;
+            this.bt_targed_TD_list.Visible = false;
             this.bt_targed_TD_list.Click += new System.EventHandler(this.bt_targed_TD_list_Click);
             // 
             // button_update
