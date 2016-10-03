@@ -37,19 +37,16 @@ namespace ProteoformSuiteInternal
                 if (Lollipop.neucode_labeled)
                 {
                     component.intensity_sum_olcs = Convert.ToDouble(line[12]);
-
-                    //component.input_file = Convert.ToInt32(line[13]); input file with matching file ID.
-
+                    component.input_file = Lollipop.input_files.Where(s => s.UniqueId == Convert.ToInt32(line[13])).ToList().First();
                     component.accepted = Convert.ToBoolean(line[14]);
                 }
                 else
                 {
-                    //component.file_origin = line[12];
                     component.intensity_sum_olcs = Convert.ToDouble(line[4]);
+                    component.input_file = Lollipop.input_files.Where(s => s.UniqueId == Convert.ToInt32(line[12])).ToList().First();
                     component.accepted = Convert.ToBoolean(line[13]);
                 }
 
-                component.input_file = Lollipop.input_files.Where(s => s.UniqueId == Convert.ToInt32(line[12])).ToList().First();
 
                 lock (lockThread) { Lollipop.raw_experimental_components.Add(component); }
             });

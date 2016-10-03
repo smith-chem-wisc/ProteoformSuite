@@ -56,7 +56,6 @@
             this.bt_morpheusBUResultsClear = new System.Windows.Forms.Button();
             this.bt_tdResultsAdd = new System.Windows.Forms.Button();
             this.bt_tdResultsClear = new System.Windows.Forms.Button();
-            this.bt_openIDResults = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_identificationFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantitationFiles)).BeginInit();
@@ -68,7 +67,6 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.bt_openIDResults);
             this.groupBox1.Controls.Add(this.cb_td_file);
             this.groupBox1.Controls.Add(this.btn_unlabeled);
             this.groupBox1.Controls.Add(this.btn_neucode);
@@ -364,16 +362,6 @@
             this.bt_tdResultsClear.UseVisualStyleBackColor = true;
             this.bt_tdResultsClear.Click += new System.EventHandler(this.bt_tdResultsClear_Click);
             // 
-            // bt_openIDResults
-            // 
-            this.bt_openIDResults.Location = new System.Drawing.Point(194, 85);
-            this.bt_openIDResults.Name = "bt_openIDResults";
-            this.bt_openIDResults.Size = new System.Drawing.Size(66, 26);
-            this.bt_openIDResults.TabIndex = 26;
-            this.bt_openIDResults.Text = "Open";
-            this.bt_openIDResults.UseVisualStyleBackColor = true;
-            this.bt_openIDResults.Click += new System.EventHandler(this.bt_openIDResults_Click);
-            // 
             // LoadDeconvolutionResults
             // 
             this.ClientSize = new System.Drawing.Size(1471, 736);
@@ -444,6 +432,5 @@
         private System.Windows.Forms.DataGridView dgv_tdFiles;
         private System.Windows.Forms.DataGridView dgv_buFiles;
         private System.Windows.Forms.CheckBox cb_td_file;
-        private System.Windows.Forms.Button bt_openIDResults;
     }
 }
