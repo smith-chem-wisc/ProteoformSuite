@@ -133,12 +133,10 @@ namespace ProteoformSuiteInternal
         public double CorrectCalculatedMass(double mz_correction)
         {
             this.mz_correction = mz_correction;
-            //return (this.charge_count * (this.mz_centroid + mz_correction - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
+            return (this.charge_count * (this.mz_centroid + mz_correction - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
 
-            double correctionFactor = 589.23248 / (589.23248 + mz_correction); //this ratiometric shift from stefan
-
-            return correctionFactor * mz_centroid * charge_count - charge_count * 1.00727645D;
-
+            //double correctionFactor = 589.23248 / (589.23248 + mz_correction); //this ratiometric shift from stefan
+            //return correctionFactor * mz_centroid * charge_count - charge_count * 1.00727645D; //this made calibration worse -LVS
             //return (this.charge_count * (this.mz_centroid * 1 + this.mz_centroid * (correctionFactor - 1 ) - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
         }
 

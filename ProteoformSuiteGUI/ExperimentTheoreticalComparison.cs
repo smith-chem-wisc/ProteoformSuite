@@ -163,24 +163,26 @@ namespace ProteoformSuite
             }
         }
 
-        //shifts any mass shifts that have been changed from 0 when button clicked
-        private void bt_masshifter_Click(object sender, EventArgs e)
+        //shifts any mass shifts that have been changed from 0 in dgv
+        private void shift_masses()
         {
             List<DeltaMassPeak> peaks_to_shift = Lollipop.et_peaks.Where(p => p.mass_shifter != "0" && p.mass_shifter != "").ToList();
-            foreach (DeltaMassPeak peak in peaks_to_shift)
+            if (peaks_to_shift.Count > 0)
             {
-                int int_mass_shifter = 0;
-                try
+                foreach (DeltaMassPeak peak in peaks_to_shift)
                 {
-                    int_mass_shifter = Convert.ToInt32(peak.mass_shifter);
+                    int int_mass_shifter = 0;
+                    try
+                    {
+                        int_mass_shifter = Convert.ToInt32(peak.mass_shifter);
+                    }
+                    catch
+                    {
+                        MessageBox.Show("Could not convert mass shift for peak at delta mass " + peak.delta_mass + ". Please enter an integer.");
+                        return;
+                    }
+                    massShifter(peak, int_mass_shifter, false);
                 }
-                catch
-                {
-                    MessageBox.Show("Could not convert mass shift for peak at delta mass " + peak.delta_mass + ". Please enter an integer.");
-                    return;
-                }
-                massShifter(peak, int_mass_shifter, false);
-            }
                 if (Lollipop.neucode_labeled)
                 {
                     Lollipop.raw_neucode_pairs.Clear();
@@ -189,8 +191,8 @@ namespace ProteoformSuite
                         Lollipop.find_neucode_pairs(Lollipop.raw_experimental_components.Where(c => c.scan_range == scan_range));
                 }
                 Lollipop.aggregate_proteoforms();
-                RunTheGamut();
             }
+        }
         
         //will leave option to change one at a time by right clicking
         void ET_peak_List_Menu_ItemClicked(object sender, ToolStripItemClickedEventArgs e, DeltaMassPeak peak)
@@ -423,7 +425,11 @@ namespace ProteoformSuite
 
         private void ET_update_Click(object sender, EventArgs e)
         {
-            if (!initial_load) RunTheGamut();
+            if (!initial_load)
+            {
+                shift_masses();
+                RunTheGamut();
+            }
             xMaxET.Value = (decimal)Lollipop.et_high_mass_difference;
             xMinET.Value = (decimal)Lollipop.et_low_mass_difference;
         }

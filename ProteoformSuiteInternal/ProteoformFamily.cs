@@ -17,7 +17,7 @@ namespace ProteoformSuiteInternal
         public int relation_count { get; set; }
         public HashSet<ProteoformRelation> relations
         {
-            get { return new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships)); }
+            get { return new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted))); }
         }
         public List<Proteoform> _proteoforms;
         public List<Proteoform> proteoforms
@@ -35,7 +35,7 @@ namespace ProteoformSuiteInternal
                 this.experimental_count = experimental_proteoforms.Count();
                 this.theoretical_proteoforms = value.Where(p => p is TheoreticalProteoform).Select(p => (TheoreticalProteoform)p).ToList();
                 this.theoretical_count = theoretical_proteoforms.Count();
-                this.relation_count = new HashSet<MassDifference>(value.SelectMany(p => p.relationships)).Count();
+                this.relation_count = new HashSet<MassDifference>(value.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted))).Count();
             }
         }
 
