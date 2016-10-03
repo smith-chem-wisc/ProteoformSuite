@@ -33,6 +33,7 @@ namespace ProteoformSuiteInternal
         public static List<Correction> correctionFactors = null;
         public static List<int> MS1_scans = new List<int>();
         public static List<Component> raw_experimental_components = new List<Component>();
+        public static List<Component> reduced_raw_exp_components = new List<Component>(); //for td data
         public static List<Component> raw_quantification_components = new List<Component>();
         public static bool neucode_labeled = true;
         public static bool td_results = false;
@@ -55,20 +56,23 @@ namespace ProteoformSuiteInternal
                         foreach (string line in lines)
                             MS1_scans.Add(Convert.ToInt32(line));
                         delete_MS2_and_repeats(file.path + "\\" + file.filename + file.extension);
+                        MS1_scans.Clear();
                     }
-                    MS1_scans.Clear();
                 }
 
                 if (neucode_labeled)
-                {
+                { 
                     HashSet<string> scan_ranges = new HashSet<string>(raw_components.Select(c => c.scan_range));
                     foreach (string scan_range in scan_ranges)
                     find_neucode_pairs(raw_components.Where(c => c.scan_range == scan_range));
                 }
             }
+
+            if (td_results) { raw_experimental_components.Clear(); raw_experimental_components = reduced_raw_exp_components; }
+
         }
 
-       private static void delete_MS2_and_repeats(string filename)
+        private static void delete_MS2_and_repeats(string filename)
         {
             int i = 1;
             List<Component> reduced_raw_exp_comps = new List<Component>();
@@ -85,9 +89,8 @@ namespace ProteoformSuiteInternal
                             i++;
                         }   
                     }
-                }
-            Lollipop.raw_experimental_components.Clear();
-            Lollipop.raw_experimental_components = reduced_raw_exp_comps;
+           }
+            Lollipop.reduced_raw_exp_components.AddRange(reduced_raw_exp_comps);
         }
 
 
@@ -105,7 +108,7 @@ namespace ProteoformSuiteInternal
 
         public static IEnumerable<Correction> read_corrections(InputFile file)
         {
-            string filepath = file.path + file.filename + file.extension;
+            string filepath = file.path + "\\" + file.filename + file.extension;
             string filename = file.filename;
 
             string[] correction_lines = File.ReadAllLines(filepath);

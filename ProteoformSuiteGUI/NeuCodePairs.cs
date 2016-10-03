@@ -77,7 +77,7 @@ namespace ProteoformSuite
             dgv_RawExpNeuCodePairs.Columns["relative_abundance"].HeaderText = "Light Relative Abundance";
             dgv_RawExpNeuCodePairs.Columns["fract_abundance"].HeaderText = "Light Fractional Abundance";
             dgv_RawExpNeuCodePairs.Columns["intensity_sum_olcs"].HeaderText = "Light Intensity Sum for Overlapping Charge States";
-            dgv_RawExpNeuCodePairs.Columns["file_origin"].HeaderText = "Filename";
+            //dgv_RawExpNeuCodePairs.Columns["file_origin"].HeaderText = "Filename";
             dgv_RawExpNeuCodePairs.Columns["scan_range"].HeaderText = "Scan Range";
             dgv_RawExpNeuCodePairs.Columns["rt_range"].HeaderText = "RT Range";
             dgv_RawExpNeuCodePairs.Columns["num_charge_states"].HeaderText = "No. Charge States";

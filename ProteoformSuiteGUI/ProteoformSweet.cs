@@ -83,7 +83,7 @@ namespace ProteoformSuite
 
 
         // FILE TOOL STRIP
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        private void openAllToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string working_directory;
             MessageBox.Show("Please choose a folder with saved results files.");
@@ -140,6 +140,26 @@ namespace ProteoformSuite
 
             Lollipop.opened_results = false;
         }
+
+        private void openRawComponentsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Please select a raw experimental components file to open.");
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Title = "Raw Experimental Components";
+            openFileDialog1.Filter = "Raw Experimental Components (.tsv) | *.tsv";
+            DialogResult dr = openFileDialog1.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                Labeling label = Labeling.NeuCode;
+                if (!Lollipop.neucode_labeled) label = Labeling.Unlabeled;
+                InputFile inpfile = new InputFile(1, false, 1, 1, 1, "no_condition", "no_condition", openFileDialog1.FileName, label, Purpose.Identification);
+                Lollipop.input_files.Add(inpfile);
+                Results.read_raw_components(File.ReadAllLines(openFileDialog1.FileName));
+                MessageBox.Show("Successfully read in raw experimental components.");
+            }
+            else { return; }
+        }
+
 
         private bool openMethod()
         {
