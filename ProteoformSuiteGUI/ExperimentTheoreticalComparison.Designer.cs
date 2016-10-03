@@ -47,7 +47,6 @@
             this.ct_ET_peakList = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.ET_update = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.bt_masshifter = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.nUD_PeakWidthBase = new System.Windows.Forms.NumericUpDown();
@@ -300,12 +299,11 @@
             // groupBox4
             // 
             this.groupBox4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.groupBox4.Controls.Add(this.bt_masshifter);
             this.groupBox4.Controls.Add(this.label4);
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(31, 22);
+            this.groupBox4.Location = new System.Drawing.Point(31, 23);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -313,17 +311,6 @@
             this.groupBox4.TabIndex = 15;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "ET Peak List Parameters";
-            // 
-            // bt_masshifter
-            // 
-            this.bt_masshifter.Location = new System.Drawing.Point(27, 18);
-            this.bt_masshifter.Name = "bt_masshifter";
-            this.bt_masshifter.Size = new System.Drawing.Size(110, 22);
-            this.bt_masshifter.TabIndex = 33;
-            this.bt_masshifter.Text = "Shift Masses";
-            this.bt_masshifter.UseMnemonic = false;
-            this.bt_masshifter.UseVisualStyleBackColor = true;
-            this.bt_masshifter.Click += new System.EventHandler(this.bt_masshifter_Click);
             // 
             // label4
             // 
@@ -385,7 +372,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(263, 40);
+            this.groupBox3.Location = new System.Drawing.Point(263, 41);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -458,7 +445,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(263, 127);
+            this.groupBox2.Location = new System.Drawing.Point(263, 128);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -546,7 +533,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(31, 127);
+            this.groupBox1.Location = new System.Drawing.Point(31, 128);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -814,6 +801,5 @@
         private System.Windows.Forms.Button ET_update;
         private System.Windows.Forms.SplitContainer splitContainer6;
         private System.Windows.Forms.DataGridView dgv_psmList;
-        private System.Windows.Forms.Button bt_masshifter;
     }
 }
