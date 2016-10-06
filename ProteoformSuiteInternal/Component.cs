@@ -10,7 +10,7 @@ namespace ProteoformSuiteInternal
     {
         //public string file_origin { get; set; }
         public InputFile input_file { get; set; }
-        public int id { get; set; }
+        public string id { get; set; } // deconvolution 4.0 assigns a component id. This is made unique by appending the inputFile id.
         public double monoisotopic_mass { get; set; }
         public double intensity_sum { get; set; }
         public double intensity_sum_olcs { get; set; } //intensity sum for overlapping charge states -> determined when grouped into neucode pairs.
@@ -42,8 +42,11 @@ namespace ProteoformSuiteInternal
         { }
         public Component(List<string> cellStrings, InputFile input_file)
         {
-            this.id = Convert.ToInt32(cellStrings[0]);
+            this.id = Convert.ToInt32(cellStrings[0]).ToString();
             this.input_file = input_file;
+
+            this.id = input_file.UniqueId.ToString() + "_" + Convert.ToInt32(cellStrings[0]);
+
             this.monoisotopic_mass = Convert.ToDouble(cellStrings[1]);
             this.intensity_sum = Convert.ToDouble(cellStrings[2]);
             this.num_charge_states_fromFile = Convert.ToInt32(cellStrings[3]);
@@ -54,7 +57,6 @@ namespace ProteoformSuiteInternal
             this.scan_range = cellStrings[8];
             this.rt_range = cellStrings[9];
             this.rt_apex = Convert.ToDouble(cellStrings[10]);
-            this.id = Convert.ToInt32(cellStrings[0]);
             this.monoisotopic_mass = Convert.ToDouble(cellStrings[1]);
             this.intensity_sum = Convert.ToDouble(cellStrings[2]);
             this.num_charge_states_fromFile = Convert.ToInt32(cellStrings[3]);
@@ -134,10 +136,6 @@ namespace ProteoformSuiteInternal
         {
             this.mz_correction = mz_correction;
             return (this.charge_count * (this.mz_centroid + mz_correction - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
-
-            //double correctionFactor = 589.23248 / (589.23248 + mz_correction); //this ratiometric shift from stefan
-            //return correctionFactor * mz_centroid * charge_count - charge_count * 1.00727645D; //this made calibration worse -LVS
-            //return (this.charge_count * (this.mz_centroid * 1 + this.mz_centroid * (correctionFactor - 1 ) - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
         }
 
         public override string ToString()

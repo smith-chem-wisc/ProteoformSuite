@@ -84,7 +84,7 @@ namespace ProteoformSuiteInternal
                         //if it has the same monoisotopic mass and intensity sum as something else, it's probably a repeat - don't add. 
                         if (reduced_raw_exp_comps.Where(r => r.monoisotopic_mass == comp.monoisotopic_mass && r.intensity_sum == comp.intensity_sum).ToList().Count == 0)
                         {
-                            comp.id = i;  //new id
+                            comp.id = i.ToString();  //new id
                             reduced_raw_exp_comps.Add(comp);
                             i++;
                         }   
