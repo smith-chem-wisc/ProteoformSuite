@@ -157,10 +157,12 @@ namespace ProteoformSuiteInternal
                         if (lower_intensity > 0 && higher_intensity > 0)
                         {
                             NeuCodePair pair;
-                            if (lower_intensity > higher_intensity) 
+                            if (lower_intensity > higher_intensity)
                                 pair = new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower); //lower mass is neucode light
-                            else pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light  
-                            Lollipop.raw_neucode_pairs.Add(pair);
+                            else pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
+                            if ((pair.corrected_mass <= (pair.neuCodeHeavy.corrected_mass + Lollipop.MONOISOTOPIC_UNIT_MASS)) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
+                                && !Lollipop.raw_neucode_pairs.Any(p => p.id_heavy == pair.id_light && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity is probably correct and that that component should not get reuused as a light.
+                                Lollipop.raw_neucode_pairs.Add(pair);
                         }
                     }
                 }
