@@ -12,7 +12,7 @@ namespace ProteoformSuiteInternal
 {
     public class Lollipop
     {
-        public const double MONOISOTOPIC_UNIT_MASS = 1.0015;
+        public const double MONOISOTOPIC_UNIT_MASS = 1.0029; // updated 161007
         public const double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
 
         //needed for functioning open results - user can update/rerun modules and program doesn't crash.
@@ -46,6 +46,7 @@ namespace ProteoformSuiteInternal
             {
                 List<Component> raw_components = new List<Component>();
                 raw_components = componentReader.read_components_from_xlsx(file, correctionFactors).ToList();
+                raw_components = RemoveMonoisotopicDuplicatesFromSameScan(raw_components);
                 raw_experimental_components.AddRange(raw_components); 
                 if(td_results)
                 {
@@ -102,8 +103,46 @@ namespace ProteoformSuiteInternal
             foreach (InputFile file in quantification_files())
             {
                 List<Component> raw_components = componentReader.read_components_from_xlsx(file, correctionFactors).ToList();
+                raw_components = RemoveMonoisotopicDuplicatesFromSameScan(raw_components);
                 raw_quantification_components.AddRange(raw_components);
             }
+        }
+
+        private static List<Component> RemoveMonoisotopicDuplicatesFromSameScan(List<Component> rc)
+        {
+            List<string> scans = rc.Select(c => c.scan_range).Distinct().ToList();
+            List<Component> removeThese = new List<Component>();
+
+            foreach (string scan in scans)
+            {
+                List<Component> scanComps = rc.Where(c => c.scan_range == scan).OrderBy(w => w.weighted_monoisotopic_mass).ToList();
+
+                foreach (Component sc in scanComps)
+                {
+                    List<Component> mmc = scanComps.Where(cp => cp.weighted_monoisotopic_mass >= sc.weighted_monoisotopic_mass + 1.0022 && cp.weighted_monoisotopic_mass <= sc.weighted_monoisotopic_mass + 1.0035).ToList();
+                    if (mmc.Count() > 0)
+                    {
+                        List<ChargeState> combinedChargeStateData = sc.charge_states;
+                        foreach (ChargeState cs in mmc[0].charge_states)
+                        {
+                            if (combinedChargeStateData.Select(c => c.charge_count).ToList().Contains(cs.charge_count))
+                            {
+                                double totalI = cs.intensity;
+                                totalI = totalI + combinedChargeStateData.Where(c => c.charge_count == cs.charge_count).ToList().First().intensity;
+                                combinedChargeStateData.Where(c => c.charge_count == cs.charge_count).ToList().First().intensity = totalI;
+                            }
+                            else
+                            {
+                                combinedChargeStateData.Add(cs);
+                            }
+                        }
+                        sc.charge_states = combinedChargeStateData;
+                    }
+                    removeThese.AddRange(scanComps.Where(cp => cp.weighted_monoisotopic_mass >= sc.weighted_monoisotopic_mass + 1.0022 && cp.weighted_monoisotopic_mass <= sc.weighted_monoisotopic_mass + 1.0035)); //for missed monoisotopics intrascan, the lower mass peak is often the most intense.
+                }
+            }
+
+            return rc.Except(removeThese).ToList();
         }
 
         public static IEnumerable<Correction> read_corrections(InputFile file)
