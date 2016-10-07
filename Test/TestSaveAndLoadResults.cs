@@ -24,8 +24,8 @@ namespace Test
 
             Component c1 = new Component();
             Component c2 = new Component();
-            c1.id = 1;
-            c2.id = 2;
+            c1.id = 1.ToString();
+            c2.id = 2.ToString();
             c1.monoisotopic_mass = 1.0;
             c2.monoisotopic_mass = 2.0;
             c1.weighted_monoisotopic_mass = 1.1;

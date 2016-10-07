@@ -12,7 +12,7 @@ namespace ProteoformSuiteInternal
 {
     public class Lollipop
     {
-        public const double MONOISOTOPIC_UNIT_MASS = 1.0015;
+        public const double MONOISOTOPIC_UNIT_MASS = 1.0029; // updated 161007
         public const double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
 
         //needed for functioning open results - user can update/rerun modules and program doesn't crash.
@@ -46,6 +46,7 @@ namespace ProteoformSuiteInternal
             {
                 List<Component> raw_components = new List<Component>();
                 raw_components = componentReader.read_components_from_xlsx(file, correctionFactors).ToList();
+                raw_components = RemoveMonoisotopicDuplicatesFromSameScan(raw_components);
                 raw_experimental_components.AddRange(raw_components); 
                 if(td_results)
                 {
@@ -84,7 +85,7 @@ namespace ProteoformSuiteInternal
                         //if it has the same monoisotopic mass and intensity sum as something else, it's probably a repeat - don't add. 
                         if (reduced_raw_exp_comps.Where(r => r.monoisotopic_mass == comp.monoisotopic_mass && r.intensity_sum == comp.intensity_sum).ToList().Count == 0)
                         {
-                            comp.id = i;  //new id
+                            comp.id = i.ToString();  //new id
                             reduced_raw_exp_comps.Add(comp);
                             i++;
                         }   
@@ -102,8 +103,46 @@ namespace ProteoformSuiteInternal
             foreach (InputFile file in quantification_files())
             {
                 List<Component> raw_components = componentReader.read_components_from_xlsx(file, correctionFactors).ToList();
+                raw_components = RemoveMonoisotopicDuplicatesFromSameScan(raw_components);
                 raw_quantification_components.AddRange(raw_components);
             }
+        }
+
+        private static List<Component> RemoveMonoisotopicDuplicatesFromSameScan(List<Component> rc)
+        {
+            List<string> scans = rc.Select(c => c.scan_range).Distinct().ToList();
+            List<Component> removeThese = new List<Component>();
+
+            foreach (string scan in scans)
+            {
+                List<Component> scanComps = rc.Where(c => c.scan_range == scan).OrderBy(w => w.weighted_monoisotopic_mass).ToList();
+
+                foreach (Component sc in scanComps)
+                {
+                    List<Component> mmc = scanComps.Where(cp => cp.weighted_monoisotopic_mass >= sc.weighted_monoisotopic_mass + 1.0022 && cp.weighted_monoisotopic_mass <= sc.weighted_monoisotopic_mass + 1.0035).ToList();
+                    if (mmc.Count() > 0)
+                    {
+                        List<ChargeState> combinedChargeStateData = sc.charge_states;
+                        foreach (ChargeState cs in mmc[0].charge_states)
+                        {
+                            if (combinedChargeStateData.Select(c => c.charge_count).ToList().Contains(cs.charge_count))
+                            {
+                                double totalI = cs.intensity;
+                                totalI = totalI + combinedChargeStateData.Where(c => c.charge_count == cs.charge_count).ToList().First().intensity;
+                                combinedChargeStateData.Where(c => c.charge_count == cs.charge_count).ToList().First().intensity = totalI;
+                            }
+                            else
+                            {
+                                combinedChargeStateData.Add(cs);
+                            }
+                        }
+                        sc.charge_states = combinedChargeStateData;
+                    }
+                    removeThese.AddRange(scanComps.Where(cp => cp.weighted_monoisotopic_mass >= sc.weighted_monoisotopic_mass + 1.0022 && cp.weighted_monoisotopic_mass <= sc.weighted_monoisotopic_mass + 1.0035)); //for missed monoisotopics intrascan, the lower mass peak is often the most intense.
+                }
+            }
+
+            return rc.Except(removeThese).ToList();
         }
 
         public static IEnumerable<Correction> read_corrections(InputFile file)
@@ -157,10 +196,12 @@ namespace ProteoformSuiteInternal
                         if (lower_intensity > 0 && higher_intensity > 0)
                         {
                             NeuCodePair pair;
-                            if (lower_intensity > higher_intensity) 
+                            if (lower_intensity > higher_intensity)
                                 pair = new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower); //lower mass is neucode light
-                            else pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light  
-                            Lollipop.raw_neucode_pairs.Add(pair);
+                            else pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
+                            if ((pair.corrected_mass <= (pair.neuCodeHeavy.corrected_mass + Lollipop.MONOISOTOPIC_UNIT_MASS)) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
+                                && !Lollipop.raw_neucode_pairs.Any(p => p.id_heavy == pair.id_light && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity is probably correct and that that component should not get reuused as a light.
+                                Lollipop.raw_neucode_pairs.Add(pair);
                         }
                     }
                 }

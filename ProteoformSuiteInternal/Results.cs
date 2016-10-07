@@ -22,7 +22,7 @@ namespace ProteoformSuiteInternal
             {
                 string[] line = lines[x].Split('\t');
                 Component component = new Component();
-                component.id = Convert.ToInt32(line[0]);
+                component.id = Convert.ToInt32(line[0]).ToString();
                 component.monoisotopic_mass = Convert.ToDouble(line[1]);
                 component.weighted_monoisotopic_mass = Convert.ToDouble(line[2]);
                 component.corrected_mass = Convert.ToDouble(line[3]);
@@ -124,8 +124,8 @@ namespace ProteoformSuiteInternal
             Parallel.For(1, lines.Length, x =>
             {
                 string[] line = lines[x].Split('\t');
-                Component neucode_light = Lollipop.raw_experimental_components.Where(c => c.id == Convert.ToInt16(line[0])).First();
-                Component neucode_heavy = Lollipop.raw_experimental_components.Where(c => c.id == Convert.ToInt16(line[5])).First();
+                Component neucode_light = Lollipop.raw_experimental_components.Where(c => c.id == Convert.ToInt16(line[0]).ToString()).First();
+                Component neucode_heavy = Lollipop.raw_experimental_components.Where(c => c.id == Convert.ToInt16(line[5]).ToString()).First();
                 NeuCodePair neucode_pair = new NeuCodePair(neucode_light, neucode_heavy);
                 neucode_pair.intensity_ratio = Convert.ToDouble(line[8]);
                 neucode_pair.lysine_count = Convert.ToInt32(line[9]);
@@ -168,7 +168,7 @@ namespace ProteoformSuiteInternal
                 aggregated_proteoform.agg_mass = Convert.ToDouble(line[5]);
                 aggregated_proteoform.agg_intensity = Convert.ToDouble(line[6]);
                 aggregated_proteoform.agg_rt = Convert.ToDouble(line[7]);
-                aggregated_proteoform.aggregated_components = (from id in line[9].Split(',') from c in Lollipop.raw_experimental_components where c.id == Convert.ToInt16(id) select c).ToList();
+                aggregated_proteoform.aggregated_components = (from id in line[9].Split(',') from c in Lollipop.raw_experimental_components where c.id == Convert.ToInt16(id).ToString() select c).ToList();
                 lock (lockThread) { Lollipop.proteoform_community.experimental_proteoforms.Add(aggregated_proteoform); }
             });
         }
