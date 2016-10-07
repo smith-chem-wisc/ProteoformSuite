@@ -11,8 +11,8 @@ namespace ProteoformSuiteInternal
         public Component neuCodeHeavy { get; set; }
         public List<int> overlapping_charge_states { get; set; }
 
-        public int id_light { get; set; }
-        public int id_heavy { get; set; }
+        public string id_light { get; set; }
+        public string id_heavy { get; set; }
         public double intensity_ratio { get; set; }
         public int lysine_count { get; set; }
         //public bool accepted { get; set; } //moved this to Component

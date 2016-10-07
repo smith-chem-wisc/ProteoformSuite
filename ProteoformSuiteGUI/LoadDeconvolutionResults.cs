@@ -101,15 +101,18 @@ namespace ProteoformSuite
 
                 if (acceptable_extensions.Contains(extension) && !Lollipop.input_files.Where(f => f.purpose == purpose).Any(f => f.filename == filename))
                 {
-                    // Handle the conflict of loading the same deconvolution results into identification and quantitation
-                    if ((purpose == Purpose.Identification || purpose == Purpose.Quantification) &&
-                        (Lollipop.identification_files().Any(g => g.filename == filename) || Lollipop.quantification_files().Any(g => g.filename == filename)))
-                    {
-                        var results = MessageBox.Show("Use " + filename + extension + " for " + purpose.ToString() + "?", "Identification/Quantitation Result Conflict", MessageBoxButtons.YesNoCancel);
-                        if (results == DialogResult.No) continue;
-                        if (results == DialogResult.Cancel) return;
-                        else Lollipop.input_files = Lollipop.input_files.Where(h => h.purpose == Purpose.Calibration || h.filename != filename).ToList();
-                    }
+                    
+                    // this next section is commented out for testing. allows same files to be used for identification and quantification.
+                    
+                    //// Handle the conflict of loading the same deconvolution results into identification and quantitation
+                    //if ((purpose == Purpose.Identification || purpose == Purpose.Quantification) &&
+                    //    (Lollipop.identification_files().Any(g => g.filename == filename) || Lollipop.quantification_files().Any(g => g.filename == filename)))
+                    //{
+                    //    var results = MessageBox.Show("Use " + filename + extension + " for " + purpose.ToString() + "?", "Identification/Quantitation Result Conflict", MessageBoxButtons.YesNoCancel);
+                    //    if (results == DialogResult.No) continue;
+                    //    if (results == DialogResult.Cancel) return;
+                    //    else Lollipop.input_files = Lollipop.input_files.Where(h => h.purpose == Purpose.Calibration || h.filename != filename).ToList();
+                    //}
 
                     reload_dgvs();
 
