@@ -29,8 +29,8 @@ namespace Test
                 Component heavy = new Component();
                 light.input_file = inFile;
                 heavy.input_file = inFile;
-                light.id = 1;
-                heavy.id = 2;
+                light.id = 1.ToString();
+                heavy.id = 2.ToString();
                 light.corrected_mass = starter_mass;
                 heavy.corrected_mass = starter_mass + starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
                 light.intensity_sum_olcs = starter_neucode_intensity; //using the special intensity sum for overlapping charge states in a neucode pair
@@ -54,8 +54,8 @@ namespace Test
             Component heavy = new Component();
             light.input_file = inFile;
             heavy.input_file = inFile;
-            light.id = 1;
-            heavy.id = 2;
+            light.id = 1.ToString();
+            heavy.id = 2.ToString();
             light.corrected_mass = starter_mass;
             heavy.corrected_mass = starter_mass + starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
             light.intensity_sum = starter_neucode_intensity; //using the special intensity sum for overlapping charge states in a neucode pair
@@ -77,7 +77,7 @@ namespace Test
             for (int i = 0; i < 2; i++)
             {
                 Component c = new Component();
-                c.id = 1;
+                c.id = 1.ToString();
                 c.corrected_mass = starter_mass;
                 c.intensity_sum_olcs = starter_neucode_intensity;
                 c.rt_apex = starter_rt;
