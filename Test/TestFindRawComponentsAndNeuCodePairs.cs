@@ -41,7 +41,7 @@ namespace Test
             Assert.AreEqual("8_1", c1.id); //this line behaving strangely.
             Assert.AreEqual(Math.Round(8982.7258, 4), Math.Round(c1.monoisotopic_mass, 4));
             Assert.AreEqual(Math.Round(32361626.3, 1), Math.Round(c1.intensity_sum, 1));
-            Assert.AreEqual(Math.Round(32135853.39, 2), Math.Round(c1.calculate_sum_intensity(overlapping_charge_states), 2));
+            Assert.AreEqual(Math.Round(32135853.39, 2), Math.Round(c1.calculate_sum_intensity_olcs(overlapping_charge_states), 2));
             Assert.AreEqual(9, c1.num_charge_states_fromFile);
             Assert.AreEqual(Math.Round(2127.5113, 4), Math.Round(c1.delta_mass, 4));
             Assert.AreEqual(Math.Round(54.97795307, 8), Math.Round(c1.relative_abundance, 8));
