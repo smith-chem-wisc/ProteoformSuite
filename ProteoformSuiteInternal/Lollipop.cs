@@ -12,7 +12,7 @@ namespace ProteoformSuiteInternal
 {
     public class Lollipop
     {
-        public const double MONOISOTOPIC_UNIT_MASS = 1.0029; // updated 161007
+        public const double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
         public const double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
 
         //needed for functioning open results - user can update/rerun modules and program doesn't crash.
@@ -119,26 +119,15 @@ namespace ProteoformSuiteInternal
 
                 foreach (Component sc in scanComps)
                 {
-                    List<Component> mmc = scanComps.Where(cp => cp.weighted_monoisotopic_mass >= sc.weighted_monoisotopic_mass + 1.0022 && cp.weighted_monoisotopic_mass <= sc.weighted_monoisotopic_mass + 1.0035).ToList();
+                    List<Component> mmc = scanComps.Where(cp => cp.weighted_monoisotopic_mass >= sc.weighted_monoisotopic_mass + (Lollipop.MONOISOTOPIC_UNIT_MASS - 0.0003) && cp.weighted_monoisotopic_mass <= sc.weighted_monoisotopic_mass + (Lollipop.MONOISOTOPIC_UNIT_MASS + 0.0003)).ToList(); //missed monoisotopic that is one dalton larger
                     if (mmc.Count() > 0)
                     {
-                        List<ChargeState> combinedChargeStateData = sc.charge_states;
-                        foreach (ChargeState cs in mmc[0].charge_states)
+                        foreach(Component c in mmc)
                         {
-                            if (combinedChargeStateData.Select(c => c.charge_count).ToList().Contains(cs.charge_count))
-                            {
-                                double totalI = cs.intensity;
-                                totalI = totalI + combinedChargeStateData.Where(c => c.charge_count == cs.charge_count).ToList().First().intensity;
-                                combinedChargeStateData.Where(c => c.charge_count == cs.charge_count).ToList().First().intensity = totalI;
-                            }
-                            else
-                            {
-                                combinedChargeStateData.Add(cs);
-                            }
+                            sc.mergeTheseComponents(c);
+                            removeThese.Add(c);
                         }
-                        sc.charge_states = combinedChargeStateData;
                     }
-                    removeThese.AddRange(scanComps.Where(cp => cp.weighted_monoisotopic_mass >= sc.weighted_monoisotopic_mass + 1.0022 && cp.weighted_monoisotopic_mass <= sc.weighted_monoisotopic_mass + 1.0035)); //for missed monoisotopics intrascan, the lower mass peak is often the most intense.
                 }
             }
 
@@ -189,8 +178,8 @@ namespace ProteoformSuiteInternal
                         List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
                         List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList<int>();
                         List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
-                        double lower_intensity = lower_component.calculate_sum_intensity(overlapping_charge_states);
-                        double higher_intensity = higher_component.calculate_sum_intensity(overlapping_charge_states);
+                        double lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                        double higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
                         bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
                         
                         if (lower_intensity > 0 && higher_intensity > 0)
