@@ -59,7 +59,6 @@ namespace ProteoformSuiteInternal
         {
             get { return aggregated_components.Count; }
         }
-        public bool missed_mono { get; set; } = false;
         public bool mass_shifted { get; set; } //make sure in ET if shifting multiple peaks, not shifting same E > once. 
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession)
         {
