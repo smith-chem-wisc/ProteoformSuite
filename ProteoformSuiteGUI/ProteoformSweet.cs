@@ -117,22 +117,32 @@ namespace ProteoformSuite
             }
             catch
             {
-                MessageBox.Show("Please select a Uniprot ptm list.");
-                DialogResult dr = this.methodFileOpen.ShowDialog();
-                if (dr == System.Windows.Forms.DialogResult.OK)
+                try
                 {
-                    string ptm_list = methodFileOpen.FileName;
-                    ProteomeDatabaseReader.oldPtmlistFilePath = ptm_list;
+                    ProteomeDatabaseReader.oldPtmlistFilePath = working_directory + "\\ptmlist_new.txt";
                     Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist();
                 }
-                else { return; }
-            }   
-            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\theoretical_proteoforms.tsv"));
-            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\decoy_proteoforms.tsv"));
+                catch
+                {
+                    MessageBox.Show("Please select a Uniprot ptm list.");
+                    DialogResult dr = this.methodFileOpen.ShowDialog();
+                    if (dr == System.Windows.Forms.DialogResult.OK)
+                    {
+                        string ptm_list = methodFileOpen.FileName;
+                        ProteomeDatabaseReader.oldPtmlistFilePath = ptm_list;
+                        Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist();
+                    }
+                    else { return; }
+                }
+            }
+            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\theoretical_proteoforms.tsv"), true);
+            //Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\decoy_proteoforms.tsv"));               
+            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\theoretical_proteoforms.tsv"), true);
+            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\decoy_proteoforms.tsv"), false);
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_theoretical_relationships.tsv"), ProteoformComparison.et);
-            Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_decoy_relationships.tsv"), ProteoformComparison.ed);
+            //Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_decoy_relationships.tsv"), ProteoformComparison.ed);
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_experimental_relationships.tsv"), ProteoformComparison.ee);
-            Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_false_relationships.tsv"), ProteoformComparison.ef);
+            //Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_false_relationships.tsv"), ProteoformComparison.ef);
             Results.read_peaks(File.ReadAllLines(working_directory + "\\experimental_theoretical_peaks.tsv"), ProteoformComparison.et);
             Results.read_peaks(File.ReadAllLines(working_directory + "\\experimental_experimental_peaks.tsv"), ProteoformComparison.ee);
             Results.read_families(File.ReadAllLines(working_directory + "\\proteoform_families.tsv"));
@@ -141,23 +151,52 @@ namespace ProteoformSuite
             Lollipop.opened_results = false;
         }
 
-        private void openRawComponentsToolStripMenuItem_Click(object sender, EventArgs e)
+        private void openCurrentPageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Please select a raw experimental components file to open.");
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Title = "Raw Experimental Components";
-            openFileDialog1.Filter = "Raw Experimental Components (.tsv) | *.tsv";
-            DialogResult dr = openFileDialog1.ShowDialog();
-            if (dr == DialogResult.OK)
+            if (current_form == loadDeconvolutionResults)
             {
-                Labeling label = Labeling.NeuCode;
-                if (!Lollipop.neucode_labeled) label = Labeling.Unlabeled;
-                InputFile inpfile = new InputFile(1, false, 1, 1, 1, "no_condition", "no_condition", openFileDialog1.FileName, label, Purpose.Identification);
-                Lollipop.input_files.Add(inpfile);
-                Results.read_raw_components(File.ReadAllLines(openFileDialog1.FileName));
-                MessageBox.Show("Successfully read in raw experimental components.");
+                MessageBox.Show("Please select a raw experimental components file to open.");
+                OpenFileDialog openFileDialog1 = new OpenFileDialog();
+                openFileDialog1.Title = "Raw Experimental Components";
+                openFileDialog1.Filter = "Raw Experimental Components (.tsv) | *.tsv";
+                DialogResult dr = openFileDialog1.ShowDialog();
+                if (dr == DialogResult.OK)
+                {
+                    Labeling label = Labeling.NeuCode;
+                    if (!Lollipop.neucode_labeled) label = Labeling.Unlabeled;
+                    InputFile inpfile = new InputFile(1, false, 1, 1, 1, "no_condition", "no_condition", openFileDialog1.FileName, label, Purpose.Identification);
+                    Lollipop.input_files.Add(inpfile);
+                    Results.read_raw_components(File.ReadAllLines(openFileDialog1.FileName));
+                    Lollipop.opened_raw_comps = true;
+                    if (Lollipop.neucode_labeled)
+                    {
+                        HashSet<string> scan_ranges = new HashSet<string>(Lollipop.raw_experimental_components.Select(c => c.scan_range));
+                        foreach (string scan_range in scan_ranges)
+                            Lollipop.find_neucode_pairs(Lollipop.raw_experimental_components.Where(c => c.scan_range == scan_range));
+                    }
+                    MessageBox.Show("Successfully read in raw experimental components.");
+                }
+                else { return; }
             }
-            else { return; }
+            else if (current_form == theoreticalDatabase)
+            {
+                MessageBox.Show("Please select a theoretical proteoforms file to open.");
+                OpenFileDialog openFileDialog1 = new OpenFileDialog();
+                openFileDialog1.Title = "Theoretical Proteoforms";
+                openFileDialog1.Filter = "Theoretical Proteoforms (.tsv) | *.tsv";
+                DialogResult dr = openFileDialog1.ShowDialog();
+                if (dr == DialogResult.OK)
+                {
+                    Results.read_theoretical_proteoforms(File.ReadAllLines(openFileDialog1.FileName), true);
+                    theoreticalDatabase.load_dgv();
+                    MessageBox.Show("Successfully read in theoretical proteoforms.");
+                }
+                else { return; }
+            }
+            else
+            {
+                MessageBox.Show("Cannot open this form. Please try open all.");
+            }
         }
 
 
@@ -177,7 +216,7 @@ namespace ProteoformSuite
             return false;
         }
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void saveCurrentPageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string working_directory;
             if (current_form == loadDeconvolutionResults) { return; }
@@ -222,18 +261,18 @@ namespace ProteoformSuite
             if (current_form == theoreticalDatabase || save_all)
             {
                 File.WriteAllText(working_directory + "\\theoretical_proteoforms.tsv", Results.theoretical_proteoforms_results(true));
-                File.WriteAllText(working_directory + "\\decoy_proteoforms.tsv", Results.theoretical_proteoforms_results(false));
+             //   File.WriteAllText(working_directory + "\\decoy_proteoforms.tsv", Results.theoretical_proteoforms_results(false));
             }
             if (current_form == experimentalTheoreticalComparison || save_all)
             {
                 File.WriteAllText(working_directory + "\\experimental_theoretical_relationships.tsv", Results.relation_results(ProteoformComparison.et));
-                File.WriteAllText(working_directory + "\\experimental_decoy_relationships.tsv", Results.relation_results(ProteoformComparison.ed));
+               // File.WriteAllText(working_directory + "\\experimental_decoy_relationships.tsv", Results.relation_results(ProteoformComparison.ed));
                 File.WriteAllText(working_directory + "\\experimental_theoretical_peaks.tsv", Results.peak_results(ProteoformComparison.et));
             }
             if (current_form == experimentExperimentComparison || save_all)
             {
                 File.WriteAllText(working_directory + "\\experimental_experimental_relationships.tsv", Results.relation_results(ProteoformComparison.ee));
-                File.WriteAllText(working_directory + "\\experimental_false_relationships.tsv", Results.relation_results(ProteoformComparison.ef));
+             //   File.WriteAllText(working_directory + "\\experimental_false_relationships.tsv", Results.relation_results(ProteoformComparison.ef));
                 File.WriteAllText(working_directory + "\\experimental_experimental_peaks.tsv", Results.peak_results(ProteoformComparison.ee));
             }
             if (current_form == proteoformFamilies || save_all)
@@ -322,8 +361,8 @@ namespace ProteoformSuite
         {
             Lollipop.raw_experimental_components.Clear();
             Lollipop.raw_neucode_pairs.Clear();
-            Lollipop.proteoform_community.experimental_proteoforms.Clear();
-            Lollipop.proteoform_community.theoretical_proteoforms.Clear();
+            Lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
+            Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             Lollipop.et_relations.Clear();
             Lollipop.et_peaks.Clear();
             Lollipop.ee_relations.Clear();

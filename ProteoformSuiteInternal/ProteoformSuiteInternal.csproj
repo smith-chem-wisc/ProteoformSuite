@@ -54,7 +54,7 @@
     <Compile Include="DeltaMassPeak.cs" />
     <Compile Include="ExcelReader.cs" />
     <Compile Include="ExtensionMethods.cs" />
-    <Compile Include="goTerm.cs" />
+    <Compile Include="GoTerm.cs" />
     <Compile Include="InputFile.cs" />
     <Compile Include="Lollipop.cs" />
     <Compile Include="Modification.cs" />

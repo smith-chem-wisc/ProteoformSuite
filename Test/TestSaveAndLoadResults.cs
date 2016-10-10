@@ -97,10 +97,10 @@ namespace Test
             e.agg_intensity = 1.001;
             e.agg_mass = 1.002;
             e.agg_rt = 1.003;
-            Lollipop.proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { e };
+            Lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[] { e };
             string[] proteoform_results = Results.aggregated_experimental_proteoform_results().Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.AreEqual(2, proteoform_results.Length);
-            Lollipop.proteoform_community.experimental_proteoforms.Clear();
+            Lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
             Results.read_aggregated_proteoforms(proteoform_results);
             ExperimentalProteoform f = Lollipop.proteoform_community.experimental_proteoforms[0];
             Assert.AreEqual(e.agg_intensity, f.agg_intensity);
@@ -163,30 +163,30 @@ namespace Test
             pf2.psm_count_BU = 0;
             pf1.psm_count_TD = 0;
             pf2.psm_count_TD = 0;
-            Lollipop.proteoform_community.theoretical_proteoforms = new List<TheoreticalProteoform> { pf1, pf2 };
+            Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[] { pf1, pf2 };
             string[] theoretical_proteoform_results = Results.theoretical_proteoforms_results(true).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.AreEqual(3, theoretical_proteoform_results.Length);
-            Lollipop.proteoform_community.theoretical_proteoforms.Clear();
+            Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             Lollipop.uniprotModificationTable = new Dictionary<string, Modification>
             {
                 { "unmodified", new Modification() },
                 { "test", new Modification("test", "test", "test", "1", new char[] { 'X' }, 2.345, 2.344) }
             };
-            Results.read_theoretical_proteoforms(theoretical_proteoform_results);
-            compare_theoreticals(pf1, Lollipop.proteoform_community.theoretical_proteoforms.Find(qf => qf.accession == pf1.accession));
-            compare_theoreticals(pf2, Lollipop.proteoform_community.theoretical_proteoforms.Find(qf => qf.accession == pf2.accession));
+            Results.read_theoretical_proteoforms(theoretical_proteoform_results, true);
+            compare_theoreticals(pf1, Lollipop.proteoform_community.theoretical_proteoforms.ToList().Find(qf => qf.accession == pf1.accession));
+            compare_theoreticals(pf2, Lollipop.proteoform_community.theoretical_proteoforms.ToList().Find(qf => qf.accession == pf2.accession));
 
             // Load these into the decoy database and test that out
             Lollipop.decoy_databases = 2;
-            Lollipop.proteoform_community.decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>>
+            Lollipop.proteoform_community.decoy_proteoforms = new Dictionary<string, TheoreticalProteoform[]>
             {
-                { Lollipop.decoy_database_name_prefix + "0", new List<TheoreticalProteoform>() { pf1 } },
-                { Lollipop.decoy_database_name_prefix + "1", new List<TheoreticalProteoform>() { pf2 } }
+                { Lollipop.decoy_database_name_prefix + "0", new TheoreticalProteoform[] { pf1 } },
+                { Lollipop.decoy_database_name_prefix + "1", new TheoreticalProteoform[] { pf2 } }
             };
             string[] decoy_proteoform_results = Results.theoretical_proteoforms_results(false).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.AreEqual(3, decoy_proteoform_results.Length);
             Lollipop.proteoform_community.decoy_proteoforms.Clear();
-            Results.read_theoretical_proteoforms(decoy_proteoform_results);
+            Results.read_theoretical_proteoforms(decoy_proteoform_results, false);
             Assert.IsTrue(Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(Lollipop.decoy_database_name_prefix + "0"));
             Assert.IsTrue(Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(Lollipop.decoy_database_name_prefix + "1"));
             TheoreticalProteoform qf1 = Lollipop.proteoform_community.decoy_proteoforms[Lollipop.decoy_database_name_prefix + "0"].First();

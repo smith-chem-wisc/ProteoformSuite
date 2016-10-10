@@ -39,11 +39,16 @@ namespace ProteoformSuite
 
             if (Lollipop.opened_results_originally)
             {
-                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
-                this.initialize_table_bindinglist();
-                DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
+                load_dgv();
             }
             initial_load = false;
+        }
+
+        public void load_dgv()
+        {
+            DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+            this.initialize_table_bindinglist();
+            DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
         private void InitializeSettings()
@@ -74,7 +79,8 @@ namespace ProteoformSuite
             nUD_MinPeptideLength.Maximum = 20;
             nUD_MinPeptideLength.Value = Lollipop.min_peptide_length;
 
-            ckbx_aggregateProteoforms.Checked = Lollipop.combine_identical_sequences;
+            ckbx_combineIdenticalSequences.Checked = Lollipop.combine_identical_sequences;
+            ckbx_combineTheoreticalsByMass.Checked = Lollipop.combine_theoretical_proteoforms_byMass;
         }
 
         private void InitializeOpenXmlDialog()
@@ -237,9 +243,13 @@ namespace ProteoformSuite
             }
         }
 
-        private void ckbx_aggregateProteoforms_CheckedChanged(object sender, EventArgs e)
+        private void ckbx_combineIdenticalSequences_CheckedChanged(object sender, EventArgs e)
         {
-            Lollipop.combine_identical_sequences = ckbx_aggregateProteoforms.Checked;
+            Lollipop.combine_identical_sequences = ckbx_combineIdenticalSequences.Checked;
+        }
+        private void ckbx_combineTheoreticalsByMass_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.combine_theoretical_proteoforms_byMass = ckbx_combineTheoreticalsByMass.Checked;
         }
         private void ckbx_OxidMeth_CheckedChanged(object sender, EventArgs e)
         {
@@ -277,7 +287,6 @@ namespace ProteoformSuite
         {
             Lollipop.min_peptide_length = Convert.ToInt32(nUD_MinPeptideLength.Value);
         }
-
         private void tb_interest_label_TextChanged(object sender, EventArgs e)
         {
             if (!initial_load)

@@ -18,7 +18,7 @@ namespace Test
             Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
 
             //One accepted ET relation; should give one ProteoformFamily
-            Lollipop.min_peak_count = 1;
+            Lollipop.min_signal_noise = 1;
             ExperimentalProteoform pf1 = new ExperimentalProteoform("E1");
             TheoreticalProteoform pf2 = new TheoreticalProteoform("T1");
             ProteoformComparison comparison = ProteoformComparison.et;
@@ -27,8 +27,8 @@ namespace Test
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs);
             DeltaMassPeak peak = new DeltaMassPeak(prs[0], prs);
             test_community.delta_mass_peaks = new List<DeltaMassPeak> { peak };
-            test_community.add(pf1);
-            test_community.add(pf2);
+            test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
+            test_community.theoretical_proteoforms = new TheoreticalProteoform[] { pf2 };
             test_community.construct_families();
             Assert.AreEqual("T1", test_community.families.First().accession_list);
             Assert.AreEqual(1, test_community.families.Count);
@@ -44,7 +44,7 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
 
-            Lollipop.min_peak_count = 2;
+            Lollipop.min_signal_noise = 2;
             ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
             ExperimentalProteoform pf5 = new ExperimentalProteoform("E3");
@@ -63,11 +63,11 @@ namespace Test
             Assert.AreEqual(3, pr3.nearby_relations_count);
             Assert.AreEqual(3, pr4.nearby_relations_count);
 
-            test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
+            test_community.accept_deltaMass_peaks(prs2);
             Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
             Assert.AreEqual(3, test_community.delta_mass_peaks[0].grouped_relations.Count);
 
-            test_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf3, pf4, pf5, pf6 };
+            test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf3, pf4, pf5, pf6 };
             test_community.construct_families();
             Assert.AreEqual(1, test_community.families.Count);
             Assert.AreEqual("", test_community.families.First().accession_list);
@@ -82,8 +82,10 @@ namespace Test
             //Five experimental proteoforms, four relations (linear), second on not accepted into a peak, one peak; should give 2 families
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
+            Lollipop.ee_max_mass_difference = 20;
+            Lollipop.peak_width_base = 0.015;
+            Lollipop.min_signal_noise = 500; //so that 0 peak accepted, other peak isn't...
 
-            Lollipop.min_peak_count = 2;
             ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
             ExperimentalProteoform pf5 = new ExperimentalProteoform("E3");
@@ -100,18 +102,19 @@ namespace Test
             ProteoformRelation pr5 = new ProteoformRelation(pf6, pf7, comparison67, 0);
 
             List<ProteoformRelation> prs2 = new List<ProteoformRelation> { pr2, pr3, pr4, pr5 };
+            Lollipop.ee_average_noise_level = (double)prs2.Count / ((Lollipop.ee_max_mass_difference) / Lollipop.peak_width_base);
             foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2);
             Assert.AreEqual(3, pr2.nearby_relations_count);
             Assert.AreEqual(1, pr3.nearby_relations_count);
             Assert.AreEqual(3, pr4.nearby_relations_count);
             Assert.AreEqual(3, pr5.nearby_relations_count);
 
-            test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
+            test_community.accept_deltaMass_peaks(prs2);
             Assert.AreEqual(2, test_community.delta_mass_peaks.Count);
             Assert.AreEqual(1, test_community.delta_mass_peaks.Where(peak => peak.peak_accepted).Count());
             Assert.AreEqual(3, test_community.delta_mass_peaks.Where(peak => peak.peak_accepted).First().grouped_relations.Count());
 
-            test_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf3, pf4, pf5, pf6, pf7 };
+            test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf3, pf4, pf5, pf6, pf7 };
             test_community.construct_families();
             Assert.AreEqual(2, test_community.families.Count);
             Assert.AreEqual("", test_community.families[0].accession_list);
