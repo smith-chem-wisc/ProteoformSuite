@@ -77,9 +77,9 @@ namespace Test
             for (int i = 0; i < 2; i++)
             {
                 Component c = new Component();
-                c.id = 1.ToString();
+                c.id = i.ToString();
                 c.corrected_mass = starter_mass;
-                c.intensity_sum_olcs = starter_neucode_intensity;
+                c.intensity_sum = starter_neucode_intensity;
                 c.rt_apex = starter_rt;
                 c.accepted = true;
                 components.Add(c);
