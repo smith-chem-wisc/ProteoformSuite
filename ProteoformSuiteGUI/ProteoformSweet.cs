@@ -127,8 +127,8 @@ namespace ProteoformSuite
                 }
                 else { return; }
             }   
-            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\theoretical_proteoforms.tsv"));
-            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\decoy_proteoforms.tsv"));
+            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\theoretical_proteoforms.tsv"), true);
+            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\decoy_proteoforms.tsv"), false);
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_theoretical_relationships.tsv"), ProteoformComparison.et);
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_decoy_relationships.tsv"), ProteoformComparison.ed);
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_experimental_relationships.tsv"), ProteoformComparison.ee);
@@ -322,8 +322,8 @@ namespace ProteoformSuite
         {
             Lollipop.raw_experimental_components.Clear();
             Lollipop.raw_neucode_pairs.Clear();
-            Lollipop.proteoform_community.experimental_proteoforms.Clear();
-            Lollipop.proteoform_community.theoretical_proteoforms.Clear();
+            Lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
+            Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             Lollipop.et_relations.Clear();
             Lollipop.et_peaks.Clear();
             Lollipop.ee_relations.Clear();

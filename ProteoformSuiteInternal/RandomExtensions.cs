@@ -17,5 +17,13 @@ namespace ProteoformSuiteInternal
                 array[k] = temp;
             }
         }
+
+        public static T[] Slice<T>(this T[] source, int index, int length)  // returns a copy of a hunk of an object array. 
+        {
+            T[] slice = new T[length];
+            Array.Copy(source, index, slice, 0, length);
+            return slice;
+        }
+
     }
 }
