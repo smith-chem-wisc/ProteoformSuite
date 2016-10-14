@@ -45,13 +45,13 @@ namespace ProteoformSuite
             identificationFileNames = new BindingList<string>((from s in Lollipop.input_files.Where(f => f.purpose == Purpose.Identification) select s.filename).ToList());
             numRawExpComponents = Lollipop.raw_experimental_components.Count;
             numNeucodePairs = Lollipop.raw_neucode_pairs.Count;
-            numExperimentalProteoforms = Lollipop.proteoform_community.experimental_proteoforms.Count;
+            numExperimentalProteoforms = Lollipop.proteoform_community.experimental_proteoforms.Count();
             uniprotXmlFile = Lollipop.uniprot_xml_filepath;
             numETPairs = Lollipop.et_relations.Count;
             numETPeaks = Lollipop.et_peaks.Count;
             numEEPairs = Lollipop.ee_relations.Count;
             numEEPeaks = Lollipop.ee_peaks.Count;
-            numTheoreticalProteoforms = Lollipop.proteoform_community.theoretical_proteoforms.Count;
+            numTheoreticalProteoforms = Lollipop.proteoform_community.theoretical_proteoforms.Count();
             numFamilies = Lollipop.proteoform_community.families.Count;
         }
 

@@ -87,95 +87,6 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public class qVals
-        {
-            public double ratio { get; set; }
-            public double intensity { get; set; }
-            public double fraction { get; set; }
-            public List<Component> light { get; set; }
-            public List<Component> heavy { get; set; }
-        }
-
-        public weightedRatioIntensityVariance weightedRatioAndWeightedVariance(List<InputFile> inputFileList) //the inputFileList is a list of "quantitative" input files
-        {
-            List<qVals> quantitativeValues = new List<qVals>();
-            weightedRatioIntensityVariance wRIV = new weightedRatioIntensityVariance();
-
-            double squaredVariance = 0;
-            
-            inputFileList.ForEach(inFile =>
-            {
-                qVals q = new qVals();
-                q.light = (from s in lt_quant_components where s.input_file==inFile select s).ToList();
-                q.heavy = (from s in hv_quant_components where s.input_file == inFile select s).ToList();
-                double numerator = (from s in lt_quant_components where s.input_file == inFile select s.intensity_sum).Sum();
-                double denominator = (from s in hv_quant_components where s.input_file == inFile select s.intensity_sum).Sum();
-                if (numerator == 0)
-                    numerator = numerator + 1000;//adding 1000 to deal with missing values
-                if (denominator == 0)
-                    denominator = denominator + 1000;//adding 1000 to deal with missing values
-                q.ratio = Math.Log(numerator/denominator, 2); 
-                q.intensity = numerator + denominator;
-                
-                if((q.light.Count()+q.heavy.Count())>0)
-                    quantitativeValues.Add(q);
-            });
-
-            wRIV.intensity = quantitativeValues.Sum(s => s.intensity);
-
-            if (wRIV.intensity > 0)
-            {
-                quantitativeValues.ForEach(q => {
-                    wRIV.ratio = wRIV.ratio + q.ratio * q.intensity / wRIV.intensity;
-                    q.fraction = (double)q.intensity / wRIV.intensity;
-                });
-
-                quantitativeValues.ForEach(q => {
-                    squaredVariance = squaredVariance + q.fraction * Math.Pow((q.ratio - wRIV.ratio),2);
-                });
-
-                wRIV.pValue = pValueFromPermutation(quantitativeValues, wRIV.intensity, wRIV.ratio);
-            }
-
-            if (squaredVariance > 0)
-                wRIV.variance = Math.Pow(squaredVariance, 0.5);
-
-            return wRIV;
-        }
-
-        private double pValueFromPermutation(List<qVals> quantitativeValues, double totalIntensity, double realRatio)
-        {
-            double pValue = 0;
-            int maxPermutations = 1000;
-            ConcurrentBag<double> permutedRatios = new ConcurrentBag<double>();
-
-            Parallel.For(0, maxPermutations, i =>
-            {
-                double someRatio = 0;
-                quantitativeValues.ForEach(q =>
-                {
-                    IList<Component> combined = new List<Component>();
-                    combined = q.light.Concat(q.heavy).ToList();
-                    combined.Shuffle();
-                    double numerator = (from s in combined.Take(q.light.Count()) select s.intensity_sum).Sum();
-                    double denominator = (from s in combined.Skip(q.light.Count()).Take(q.heavy.Count()) select s.intensity_sum).Sum();
-
-                    if (numerator == 0)
-                        numerator = numerator + 1000;//adding 1000 to deal with missing values
-                    if (denominator == 0)
-                        denominator = denominator + 1000;//adding 1000 to deal with missing values
-                    someRatio = someRatio + Math.Log(numerator / denominator, 2) * q.intensity / totalIntensity;
-                });
-                permutedRatios.Add(someRatio);
-            });
-
-            if (realRatio > 0)
-                pValue = (double)permutedRatios.Count(x => x > realRatio)/ permutedRatios.Count();
-            else
-                pValue = (double)permutedRatios.Count(x => x < realRatio) / permutedRatios.Count();
-            return pValue;
-        }
-
         //for Tests
         public ExperimentalProteoform(string accession) : base(accession)
         {
@@ -186,15 +97,26 @@ namespace ProteoformSuiteInternal
         private void calculate_properties()
         {
             //if not neucode labeled, the intensity sum of overlapping charge states was calculated with all charge states.
-            this.agg_intensity = aggregated_components.Select(p => p.intensity_sum_olcs).Sum();
-            this.agg_rt = aggregated_components.Select(p => p.rt_apex * p.intensity_sum_olcs / this.agg_intensity).Sum();
-            this.agg_mass = aggregated_components.Select(p => (p.corrected_mass - Math.Round(p.corrected_mass - this.root.corrected_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * p.intensity_sum_olcs / this.agg_intensity).Sum(); //remove the monoisotopic errors before aggregating masses
+            if (Lollipop.neucode_labeled)
+            {
+                this.agg_intensity = aggregated_components.Select(p => p.intensity_sum_olcs).Sum();
+                this.agg_mass = aggregated_components.Select(p => (p.corrected_mass - Math.Round(p.corrected_mass - this.root.corrected_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * p.intensity_sum_olcs / this.agg_intensity).Sum(); //remove the monoisotopic errors before aggregating masses
+                this.agg_rt = aggregated_components.Select(p => p.rt_apex * p.intensity_sum_olcs / this.agg_intensity).Sum();
+            }
+            else
+            {
+                this.agg_intensity = aggregated_components.Select(p => p.intensity_sum).Sum();
+                this.agg_mass = aggregated_components.Select(p => (p.corrected_mass - Math.Round(p.corrected_mass - this.root.corrected_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * p.intensity_sum / this.agg_intensity).Sum(); //remove the monoisotopic errors before aggregating masses
+                this.agg_rt = aggregated_components.Select(p => p.rt_apex * p.intensity_sum / this.agg_intensity).Sum();
+
+            }
             if (root is NeuCodePair) this.lysine_count = ((NeuCodePair)this.root).lysine_count;
             this.modified_mass = this.agg_mass;
         }
-        
-        //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on lysine count first, and then aggregated based on mass and retention
-        //time afterwards, which may give a slightly different root for the experimental proteoform because the precursor aggregation may shuffle the intensity order slightly. We haven't observed any negative
+
+        //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on 
+        //lysine count first, and then aggregated based on mass and retention time afterwards, which may give a slightly different root for the 
+        //experimental proteoform because the precursor aggregation may shuffle the intensity order slightly. We haven't observed any negative
         //impact of this difference as of 160812. -AC
         public bool includes(Component candidate, Component root)
         {
@@ -243,6 +165,92 @@ namespace ProteoformSuiteInternal
             }
             return false;
         }
+
+        //Quantitative Class and Methods
+        public class qVals
+        {
+            public double ratio { get; set; }
+            public double intensity { get; set; }
+            public double fraction { get; set; }
+            public List<Component> light { get; set; }
+            public List<Component> heavy { get; set; }
+        }
+
+        public weightedRatioIntensityVariance weightedRatioAndWeightedVariance(List<InputFile> inputFileList) //the inputFileList is a list of "quantitative" input files
+        {
+            List<qVals> quantitativeValues = new List<qVals>();
+            weightedRatioIntensityVariance wRIV = new weightedRatioIntensityVariance();
+
+            double squaredVariance = 0;
+
+            inputFileList.ForEach(inFile =>
+            {
+                qVals q = new qVals();
+                q.light = (from s in lt_quant_components where s.input_file == inFile select s).ToList();
+                q.heavy = (from s in hv_quant_components where s.input_file == inFile select s).ToList();
+                double numerator = (from s in lt_quant_components where s.input_file == inFile select s.intensity_sum).Sum();
+                double denominator = (from s in hv_quant_components where s.input_file == inFile select s.intensity_sum).Sum();
+                if (numerator == 0)
+                    numerator = numerator + 1000;//adding 1000 to deal with missing values
+                if (denominator == 0)
+                    denominator = denominator + 1000;//adding 1000 to deal with missing values
+                q.ratio = Math.Log(numerator / denominator, 2);
+                q.intensity = numerator + denominator;
+
+                if ((q.light.Count() + q.heavy.Count()) > 0)
+                    quantitativeValues.Add(q);
+            });
+
+            wRIV.intensity = quantitativeValues.Sum(s => s.intensity);
+
+            if (wRIV.intensity > 0)
+            {
+                quantitativeValues.ForEach(q => {
+                    wRIV.ratio = wRIV.ratio + q.ratio * q.intensity / wRIV.intensity;
+                    q.fraction = (double)q.intensity / wRIV.intensity;
+                });
+                quantitativeValues.ForEach(q => {
+                    squaredVariance = squaredVariance + q.fraction * Math.Pow((q.ratio - wRIV.ratio), 2);
+                });
+                wRIV.pValue = pValueFromPermutation(quantitativeValues, wRIV.intensity, wRIV.ratio);
+            }
+
+            if (squaredVariance > 0)
+                wRIV.variance = Math.Pow(squaredVariance, 0.5);
+
+            return wRIV;
+        }
+
+        private double pValueFromPermutation(List<qVals> quantitativeValues, double totalIntensity, double realRatio)
+        {
+            double pValue = 0;
+            int maxPermutations = 1000;
+            ConcurrentBag<double> permutedRatios = new ConcurrentBag<double>();
+
+            Parallel.For(0, maxPermutations, i =>
+            {
+                double someRatio = 0;
+                quantitativeValues.ForEach(q =>
+                {
+                    IList<Component> combined = new List<Component>();
+                    combined = q.light.Concat(q.heavy).ToList();
+                    combined.Shuffle();
+                    double numerator = (from s in combined.Take(q.light.Count()) select s.intensity_sum).Sum();
+                    double denominator = (from s in combined.Skip(q.light.Count()).Take(q.heavy.Count()) select s.intensity_sum).Sum();
+
+                    if (numerator == 0) numerator = numerator + 1000; //adding 1000 to deal with missing values
+                    if (denominator == 0) denominator = denominator + 1000; //adding 1000 to deal with missing values
+                    someRatio = someRatio + Math.Log(numerator / denominator, 2) * q.intensity / totalIntensity;
+                });
+                permutedRatios.Add(someRatio);
+            });
+
+            if (realRatio > 0)
+                pValue = (double)permutedRatios.Count(x => x > realRatio) / permutedRatios.Count();
+            else
+                pValue = (double)permutedRatios.Count(x => x < realRatio) / permutedRatios.Count();
+            return pValue;
+        }
     }
 
     public class TheoreticalProteoform : Proteoform
@@ -254,7 +262,7 @@ namespace ProteoformSuiteInternal
         public int end { get; set; }
         public double unmodified_mass { get; set; }
         private string sequence { get; set; }
-        public List<goTerm> goTerms { get; set; } = null;
+        public List<GoTerm> goTerms { get; set; } = null;
         public PtmSet ptm_set { get; set; } = new PtmSet(new List<Ptm>());
         public List<Ptm> ptm_list { get { return ptm_set.ptm_combination.ToList(); } }
         public double ptm_mass { get { return ptm_set.mass; } }
@@ -269,7 +277,7 @@ namespace ProteoformSuiteInternal
         public int psm_count_TD { set { _psm_count_TD = value; } get { if (!Lollipop.opened_results_originally) return psm_list.Where(p => p.psm_type == PsmType.TopDown).ToList().Count; else return _psm_count_TD; } } 
         public string of_interest { get; set; } = "";
 
-        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<goTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target) : 
+        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target) : 
             base(accession, modified_mass, lysine_count, is_target)
         {
             this.accession = accession;
@@ -318,6 +326,21 @@ namespace ProteoformSuiteInternal
                 return "unmodified";
             else
                 return string.Join("; ", ptm_list.Select(ptm => ptm.modification.description));
+        }
+    }
+
+    public class TheoreticalProteoformGroup : TheoreticalProteoform
+    {
+
+        public List<string> accessionList { get; set; } // this is the list of accession numbers for all proteoforms that share the same modified mass. the list gets alphabetical order
+
+        public TheoreticalProteoformGroup(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target)
+            : base(accession, description, name, fragment, begin, end, unmodified_mass, lysine_count, goTerms, ptm_set, modified_mass, is_target)
+        { }
+        public TheoreticalProteoformGroup(List<TheoreticalProteoform> theoreticals)
+            : base(theoreticals[0].accession + "_T" + theoreticals.Count(), String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.fragment)), theoreticals[0].begin, theoreticals[0].end, theoreticals[0].unmodified_mass, theoreticals[0].lysine_count, theoreticals[0].goTerms, theoreticals[0].ptm_set, theoreticals[0].modified_mass, theoreticals[0].is_target)
+        {
+            this.accessionList = theoreticals.Select(p => p.accession).ToList();
         }
     }
 

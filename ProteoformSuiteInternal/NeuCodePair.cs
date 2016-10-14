@@ -29,8 +29,10 @@ namespace ProteoformSuiteInternal
             int diff_integer = Convert.ToInt32(Math.Round(mass_difference / Lollipop.MONOISOTOPIC_UNIT_MASS - 0.5, 0, MidpointRounding.AwayFromZero)); 
             double firstCorrection;
 
-            if (light_is_lower) { firstCorrection = neuCodeLight.corrected_mass + diff_integer * Lollipop.MONOISOTOPIC_UNIT_MASS; }
-            else  { firstCorrection = neuCodeLight.corrected_mass - (diff_integer + 1) * Lollipop.MONOISOTOPIC_UNIT_MASS; }
+            if (light_is_lower)
+                firstCorrection = neuCodeLight.corrected_mass + diff_integer * Lollipop.MONOISOTOPIC_UNIT_MASS; 
+            else
+                firstCorrection = neuCodeLight.corrected_mass - (diff_integer + 1) * Lollipop.MONOISOTOPIC_UNIT_MASS; 
 
             this.lysine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.corrected_mass - firstCorrection) / Lollipop.NEUCODE_LYSINE_MASS_SHIFT, 0, MidpointRounding.AwayFromZero)));
             this.intensity_ratio = neuCodeLight.intensity_sum_olcs / neuCodeHeavy.intensity_sum_olcs; //ratio of overlapping charge states
@@ -43,10 +45,13 @@ namespace ProteoformSuiteInternal
 
         public void set_accepted()
         {
-            if (this.lysine_count > Lollipop.min_lysine_ct && this.lysine_count < Lollipop.max_lysine_ct
-              && this.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio) && this.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio))
-            { this.accepted = true; }
-            else { this.accepted = false; }
+            if (this.lysine_count > Lollipop.min_lysine_ct 
+             && this.lysine_count < Lollipop.max_lysine_ct
+             && this.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio) 
+             && this.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio))
+                this.accepted = true; 
+            else
+                this.accepted = false;
         }
 
         public NeuCodePair(Component neucodeLight, Component neucodeHeavy) : base(neucodeLight) //need this to open and read in tsv files
