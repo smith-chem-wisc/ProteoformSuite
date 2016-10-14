@@ -164,8 +164,8 @@ namespace Test
             test_community.experimental_proteoforms = new ExperimentalProteoform[] {
                 new ExperimentalProteoform("A1", 1000.0, 1, true),
                 new ExperimentalProteoform("A2", 1000.0, 2, true),
-                new ExperimentalProteoform("A3", 2000.0, 1, true),
-                new ExperimentalProteoform("A4", 2000.0, 2, true)
+                new ExperimentalProteoform("A3", 1000.0, 1, true),
+                new ExperimentalProteoform("A4", 1000.0, 2, true)
             };
             unequal_relations = test_community.relate_unequal_ee_lysine_counts();
             Assert.AreNotEqual(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2]);
