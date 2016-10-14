@@ -15,9 +15,9 @@ namespace ProteoformSuite
     public partial class Quantification : Form
     {
         DataSet quantTables = new DataSet();
-        Dictionary<goTerm, int> goMasterSet = new Dictionary<goTerm, int>();
+        Dictionary<GoTerm, int> goMasterSet = new Dictionary<GoTerm, int>();
         List<Protein> interestingProteins = new List<Protein>();
-        List<goTermNumber> goTermNumbers = new List<goTermNumber>();
+        List<GoTermNumber> goTermNumbers = new List<GoTermNumber>();
 
         public Quantification()
         {
@@ -557,24 +557,24 @@ namespace ProteoformSuite
             return interestingProteins.DistinctBy(p => p.accession).ToList();
         }
 
-        private Dictionary<goTerm, int> getDatabaseGoNumbers(Protein[] proteinList)
+        private Dictionary<GoTerm, int> getDatabaseGoNumbers(Protein[] proteinList)
         {
-            Dictionary<goTerm, int> numbers = new Dictionary<goTerm, int>();
+            Dictionary<GoTerm, int> numbers = new Dictionary<GoTerm, int>();
 
-            List<goTerm> completeGoTermList = new List<goTerm>();
-            List<goTerm> uniqueGoTermList = new List<goTerm>();
+            List<GoTerm> completeGoTermList = new List<GoTerm>();
+            List<GoTerm> uniqueGoTermList = new List<GoTerm>();
             foreach (Protein p in proteinList)
             {
                 completeGoTermList.AddRange(p.goTerms);
             }
 
-            foreach (goTerm t in completeGoTermList)
+            foreach (GoTerm t in completeGoTermList)
             {
                 if (!uniqueGoTermList.Any(item => item.id == t.id))
                     uniqueGoTermList.Add(t);
             }
 
-            foreach (goTerm term in uniqueGoTermList)
+            foreach (GoTerm term in uniqueGoTermList)
             {
                 numbers.Add(term, completeGoTermList.Where(t => t.id == term.id).Count());
             }
@@ -582,21 +582,21 @@ namespace ProteoformSuite
             return numbers;
         }
 
-        private List<goTermNumber> getGoTermNumbers(List<Protein> interestingProteins)
+        private List<GoTermNumber> getGoTermNumbers(List<Protein> interestingProteins)
         {
-            List<goTermNumber> numbers = new List<goTermNumber>();
-            List<goTerm> terms = new List<goTerm>();
+            List<GoTermNumber> numbers = new List<GoTermNumber>();
+            List<GoTerm> terms = new List<GoTerm>();
             foreach (Protein  p in interestingProteins)
             {
-                foreach (goTerm g in p.goTerms)
+                foreach (GoTerm g in p.goTerms)
                 {
                     if (!terms.Any(item => item.id == g.id))
                         terms.Add(g);
                 }
             }
-            foreach (goTerm g in terms)
+            foreach (GoTerm g in terms)
             {
-                goTermNumber gTN = new goTermNumber(g, interestingProteins, goMasterSet);
+                GoTermNumber gTN = new GoTermNumber(g, interestingProteins, goMasterSet);
                 numbers.Add(gTN);
             }
             return numbers;

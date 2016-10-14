@@ -30,7 +30,7 @@ namespace ProteoformSuite
 
         public void aggregate_proteoforms()
         {
-            if (Lollipop.proteoform_community.experimental_proteoforms.Count == 0) Lollipop.aggregate_proteoforms();
+            if (Lollipop.proteoform_community.experimental_proteoforms.Count() == 0) Lollipop.aggregate_proteoforms();
             updateFiguresOfMerit();
             initial_load = false;
         }
@@ -133,12 +133,12 @@ namespace ProteoformSuite
 
         private void updateFiguresOfMerit()
         {
-            tb_totalAggregatedProteoforms.Text = Lollipop.proteoform_community.experimental_proteoforms.Count.ToString();
+            tb_totalAggregatedProteoforms.Text = Lollipop.proteoform_community.experimental_proteoforms.Count().ToString();
         }
 
         private void ClearListsAndTables()
         {
-            Lollipop.proteoform_community.experimental_proteoforms.Clear();
+            Lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
 
             dgv_AcceptNeuCdLtProteoforms.DataSource = null;
             dgv_AcceptNeuCdLtProteoforms.Rows.Clear();
