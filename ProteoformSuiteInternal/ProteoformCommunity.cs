@@ -150,7 +150,7 @@ namespace ProteoformSuiteInternal
             int family_id = 1;
             while (remaining.Count > 0)
             {
-                ProteoformFamily new_family = new ProteoformFamily(construct_family(new List<Proteoform> { remaining[0] }));
+                ProteoformFamily new_family = new ProteoformFamily(construct_family(new List<Proteoform> { remaining[0] }), family_id);
                 this.families.Add(new_family);
                 inducted.AddRange(new_family.proteoforms);
                 remaining = remaining.Except(inducted).ToList();

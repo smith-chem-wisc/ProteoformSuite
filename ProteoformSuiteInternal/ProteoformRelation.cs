@@ -73,7 +73,7 @@ namespace ProteoformSuiteInternal
         public ProteoformRelation(ProteoformRelation relation) : base(relation.connected_proteoforms[0], relation.connected_proteoforms[1], relation.relation_type, relation.delta_mass)
         {
             this.peak = relation.peak;
-            if (!Lollipop.opened_results) this.nearby_relations = relation.nearby_relations;
+            if (!Lollipop.opening_results) this.nearby_relations = relation.nearby_relations;
         }
 
         public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_relations)
@@ -84,7 +84,6 @@ namespace ProteoformSuiteInternal
                 && relation.delta_mass <= upper_limit_of_peak_width).ToList();
             return this.nearby_relations;
         }
-
 
         // FOR DATAGRIDVIEW DISPLAY
         public int peak_center_count
