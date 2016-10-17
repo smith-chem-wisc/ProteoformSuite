@@ -137,7 +137,7 @@
             this.dgv_EE_Peaks.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_EE_Peaks.Location = new System.Drawing.Point(0, 0);
             this.dgv_EE_Peaks.Name = "dgv_EE_Peaks";
-            this.dgv_EE_Peaks.Size = new System.Drawing.Size(209, 281);
+            this.dgv_EE_Peaks.Size = new System.Drawing.Size(208, 281);
             this.dgv_EE_Peaks.TabIndex = 1;
             // 
             // nUD_EE_Upper_Bound
@@ -326,9 +326,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(3, 56);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(109, 13);
+            this.label4.Size = new System.Drawing.Size(71, 13);
             this.label4.TabIndex = 16;
-            this.label4.Text = "Lower Threshold (cts)";
+            this.label4.Text = "Minimum S/N";
             // 
             // label3
             // 
@@ -377,7 +377,7 @@
             series1.Legend = "Legend1";
             series1.Name = "relations";
             this.ct_EE_Histogram.Series.Add(series1);
-            this.ct_EE_Histogram.Size = new System.Drawing.Size(465, 243);
+            this.ct_EE_Histogram.Size = new System.Drawing.Size(466, 243);
             this.ct_EE_Histogram.TabIndex = 16;
             this.ct_EE_Histogram.TabStop = false;
             this.ct_EE_Histogram.Text = "eeHistogram";
@@ -388,7 +388,7 @@
             this.dgv_EE_Relations.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_EE_Relations.Location = new System.Drawing.Point(0, 0);
             this.dgv_EE_Relations.Name = "dgv_EE_Relations";
-            this.dgv_EE_Relations.Size = new System.Drawing.Size(465, 405);
+            this.dgv_EE_Relations.Size = new System.Drawing.Size(466, 405);
             this.dgv_EE_Relations.TabIndex = 2;
             this.dgv_EE_Relations.TabStop = false;
             // 
@@ -440,7 +440,7 @@
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
             this.splitContainer2.Size = new System.Drawing.Size(933, 660);
-            this.splitContainer2.SplitterDistance = 460;
+            this.splitContainer2.SplitterDistance = 459;
             this.splitContainer2.TabIndex = 28;
             // 
             // splitContainer6
@@ -460,7 +460,7 @@
             // splitContainer6.Panel2
             // 
             this.splitContainer6.Panel2.Controls.Add(this.splitContainer5);
-            this.splitContainer6.Size = new System.Drawing.Size(456, 656);
+            this.splitContainer6.Size = new System.Drawing.Size(455, 656);
             this.splitContainer6.SplitterDistance = 29;
             this.splitContainer6.TabIndex = 21;
             // 
@@ -484,7 +484,7 @@
             this.splitContainer5.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox1);
             this.splitContainer5.Panel2MinSize = 100;
-            this.splitContainer5.Size = new System.Drawing.Size(456, 623);
+            this.splitContainer5.Size = new System.Drawing.Size(455, 623);
             this.splitContainer5.SplitterDistance = 285;
             this.splitContainer5.TabIndex = 2;
             // 
@@ -503,8 +503,8 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.ct_EE_peakList);
-            this.splitContainer4.Size = new System.Drawing.Size(456, 285);
-            this.splitContainer4.SplitterDistance = 213;
+            this.splitContainer4.Size = new System.Drawing.Size(455, 285);
+            this.splitContainer4.SplitterDistance = 212;
             this.splitContainer4.TabIndex = 18;
             // 
             // EE_update
@@ -512,7 +512,7 @@
             this.EE_update.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.EE_update.Location = new System.Drawing.Point(0, 307);
             this.EE_update.Name = "EE_update";
-            this.EE_update.Size = new System.Drawing.Size(452, 23);
+            this.EE_update.Size = new System.Drawing.Size(451, 23);
             this.EE_update.TabIndex = 31;
             this.EE_update.Text = "Update";
             this.EE_update.UseMnemonic = false;
@@ -585,7 +585,7 @@
             0,
             65536});
             this.nUD_MaxRetTimeDifference.Location = new System.Drawing.Point(52, 134);
-            this.nUD_MaxRetTimeDifference.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.nUD_MaxRetTimeDifference.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_MaxRetTimeDifference.Maximum = new decimal(new int[] {
             50,
             0,
@@ -627,7 +627,7 @@
             // 
             this.splitContainer3.Panel2.Controls.Add(this.ct_EE_Histogram);
             this.splitContainer3.Panel2MinSize = 100;
-            this.splitContainer3.Size = new System.Drawing.Size(469, 660);
+            this.splitContainer3.Size = new System.Drawing.Size(470, 660);
             this.splitContainer3.SplitterDistance = 409;
             this.splitContainer3.TabIndex = 17;
             // 

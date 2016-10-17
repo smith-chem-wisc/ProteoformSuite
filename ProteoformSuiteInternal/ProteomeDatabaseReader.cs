@@ -110,7 +110,7 @@ namespace ProteoformSuiteInternal
         {
             try
             {
-                string new_ptmlist_filepath = Path.Combine(Path.GetDirectoryName(oldPtmlistFilePath), "ptmlist.new.txt");
+                string new_ptmlist_filepath = Path.Combine(Path.GetDirectoryName(oldPtmlistFilePath), "ptmlist_new.txt");
                 using (WebClient client = new WebClient())
                     client.DownloadFile("http://www.uniprot.org/docs/ptmlist.txt", new_ptmlist_filepath);
                 string old_ptmlist = File.ReadAllText(oldPtmlistFilePath);
@@ -280,35 +280,6 @@ namespace ProteoformSuiteInternal
             //List<Protein> proteins = new List<Protein>();
             //foreach (Protein p in bag_protein_list) proteins.Add(p);
             return bag_protein_list.ToArray();
-        }
-
-        //READING IN BOTTOM-UP MORPHEUS FILE
-        public static List<Psm> ReadBUFile(string filename)
-        {
-            List<Psm> psm_list = new List<Psm>();
-            string[] lines = File.ReadAllLines(filename);
-
-            int i = 1;
-            bool qLessThan1 = true;
-            //only add PSMs with q less than 1. this assumes the tsv is in increasing order of q-value! 
-            while (qLessThan1)
-          {
-                string[] parts = lines[i].Split('\t');
-                //only read in with Q-value < 1%
-                if (Convert.ToDouble(parts[30]) < 1)
-                {
-                    if (Convert.ToBoolean(parts[26]))
-                    {
-                        Psm new_psm = new Psm(parts[11].ToString(), parts[0].ToString(), Convert.ToInt32(parts[14]), Convert.ToInt32(parts[15]),
-                            Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]),Convert.ToInt32(parts[1]),
-                            parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]), PsmType.BottomUp);
-                        psm_list.Add(new_psm);
-                    }
-                    i++;
-                }
-                else { qLessThan1 = false; } 
-            }
-            return psm_list;
         }
 
         private static string GetAttribute(XElement element, string attribute_name)

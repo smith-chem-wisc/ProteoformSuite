@@ -365,7 +365,7 @@ namespace ProteoformSuiteInternal
                 DeltaMassPeak peak = new DeltaMassPeak(relations_in_peak[0], relations_in_peak);
                 peak.peak_relation_group_count = Convert.ToInt16(line[3]);
                 peak.peak_deltaM_average = Convert.ToDouble(line[2]);
-                string[] possible_peak_assignments_string = line[6].Split(',');
+                string[] possible_peak_assignments_string = line[5].Split(',');
                 List<Modification> possible_peak_assignments = new List<Modification>();
                 foreach (string mod in possible_peak_assignments_string)
                 {
@@ -387,13 +387,12 @@ namespace ProteoformSuiteInternal
             switch (relation_type)
             {
                 case ProteoformComparison.et:
-                    tsv_header = String.Join("\t", new List<string> { "experimental_accessions", "theoretical_accessions", "peak_deltaM_average", "peak_relation_group_count",
-                        "decoy_relation_count", "peak_group_fdr", "peak_assignment" });
+                    tsv_header = String.Join("\t", new List<string> { "experimental_accessions", "theoretical_accessions", "peak_deltaM_average", "peak_relation_group_count", "peak_group_fdr", "peak_assignment" });
                     results_rows = String.Join(Environment.NewLine, Lollipop.et_peaks.Select(p => peak_as_tsv_row(p, relation_type)));
                     break;
                 case ProteoformComparison.ee:
-                    tsv_header = String.Join("\t", new List<string> { "experimental_1_accessions", "experimental_2_accessions", "peak_deltaM_average", "peak_relation_group_count",
-                        "decoy_relation_count", "peak_group_fdr", "peak_assignment" });
+                    tsv_header = String.Join("\t", new List<string> { "experimental_1_accessions", "experimental_2_accessions", "peak_deltaM_average", "peak_relation_group_count"
+                        , "peak_group_fdr", "peak_assignment" });
                     results_rows = String.Join(Environment.NewLine, Lollipop.ee_peaks.Select(p => peak_as_tsv_row(p, relation_type)));
                     break;
             }
@@ -404,7 +403,7 @@ namespace ProteoformSuiteInternal
         {
             string accessions_1_string = String.Join(", ", p.grouped_relations.Select(r => r.connected_proteoforms[0].accession));
             string accessions_2_string = String.Join(", ", p.grouped_relations.Select(r => r.connected_proteoforms[1].accession));
-            return String.Join("\t", new List<string> {accessions_1_string, accessions_2_string, p.peak_deltaM_average.ToString(), p.peak_relation_group_count.ToString(), p.decoy_relation_count.ToString(), p.peak_group_fdr.ToString(), p.possiblePeakAssignments_string });
+            return String.Join("\t", new List<string> {accessions_1_string, accessions_2_string, p.peak_deltaM_average.ToString(), p.peak_relation_group_count.ToString(), p.peak_group_fdr.ToString(), p.possiblePeakAssignments_string });
         }
 
         // PROTEOFORM FAMILY I/O

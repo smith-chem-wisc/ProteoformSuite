@@ -24,11 +24,9 @@ namespace ProteoformSuite
             this.ct_EE_peakList.MouseClick += new MouseEventHandler(ct_EE_peakList_MouseClick);
             dgv_EE_Peaks.CurrentCellDirtyStateChanged += new EventHandler(peakListSpecificPeakAcceptanceChanged); //makes the change immediate and automatic
             dgv_EE_Peaks.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
-            dgv_EE_Peaks.CellValueChanged += new DataGridViewCellEventHandler(peakListMissedMonoChanged);
         }
 
         bool initial_load = true;
-        bool loading;
         public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
         {
             InitializeParameterSet();
@@ -54,13 +52,11 @@ namespace ProteoformSuite
 
         private void RunTheGamut()
         {
-            loading = true;
             this.Cursor = Cursors.WaitCursor;
             ClearListsAndTables();
             Lollipop.make_ee_relationships();
             this.FillTablesAndCharts();
             this.Cursor = Cursors.Default;
-            loading = false;
         }
 
         private void ClearListsAndTables()
@@ -155,24 +151,12 @@ namespace ProteoformSuite
 
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
-            nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(Lollipop.min_peak_count);
+            nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(Lollipop.min_signal_noise);
         }
 
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
         {
             updateFiguresOfMerit();
-        }
-
-        private void peakListMissedMonoChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (!initial_load && !loading)
-            { DeltaMassPeak peak = (DeltaMassPeak)this.dgv_EE_Peaks.Rows[e.RowIndex].DataBoundItem;
-            Parallel.ForEach<ProteoformRelation>(peak.grouped_relations, ee =>
-            {
-                ((ExperimentalProteoform)ee.connected_proteoforms[0]).missed_mono = peak.missed_mono;
-                ((ExperimentalProteoform)ee.connected_proteoforms[1]).missed_mono = peak.missed_mono;
-            });
-            }
         }
 
         private void peakListSpecificPeakAcceptanceChanged(object sender, EventArgs e)
@@ -243,7 +227,7 @@ namespace ProteoformSuite
 
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load) Lollipop.min_peak_count = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
+            if (!initial_load) Lollipop.min_signal_noise = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
         }
 
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)

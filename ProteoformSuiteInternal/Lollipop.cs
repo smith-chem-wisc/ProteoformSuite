@@ -20,6 +20,7 @@ namespace ProteoformSuiteInternal
         public static bool updated_theoretical = false;
         public static bool updated_agg = false;
         public static bool opened_results_originally = false; //stays true if results ever opened
+        public static bool opened_raw_comps = false;
 
         //RAW EXPERIMENTAL COMPONENTS
         //public static BindingList<string> deconResultsFileNames = new BindingList<string>();
@@ -170,11 +171,21 @@ namespace ProteoformSuiteInternal
                     {
                         List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
                         List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList<int>();
-                        List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
-                        double lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                        double higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                        double lower_intensity;
+                        double higher_intensity;
+                        List<int> overlapping_charge_states = new List<int>();
+                        if (opened_raw_comps)
+                        {
+                            lower_intensity = lower_component.intensity_sum_olcs;
+                            higher_intensity = higher_component.intensity_sum_olcs;
+                        }
+                        else
+                        {
+                            overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
+                            lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                            higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                        }
                         bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
-                        
                         if (lower_intensity > 0 && higher_intensity > 0)
                         {
                             NeuCodePair pair;
@@ -190,7 +201,6 @@ namespace ProteoformSuiteInternal
                 }
             }
         }
-
 
         //AGGREGATED PROTEOFORMS
         public static ProteoformCommunity proteoform_community = new ProteoformCommunity();
@@ -245,7 +255,7 @@ namespace ProteoformSuiteInternal
         public static bool neucode_light_lysine = true;
         public static bool neucode_heavy_lysine = false;
         public static int max_ptms = 3;
-        public static int decoy_databases = 1;
+        public static int decoy_databases = 0;
         public static string decoy_database_name_prefix = "DecoyDatabase_";
         public static int min_peptide_length = 7;
         public static double ptmset_mass_tolerance = 0.00001;
@@ -280,7 +290,7 @@ namespace ProteoformSuiteInternal
             //Read the Morpheus BU data into PSM list
             foreach (InputFile file in Lollipop.bottomup_files())
             {
-                List<Psm> psm_from_file = ProteomeDatabaseReader.ReadBUFile(file.path + "\\" + file.filename + file.extension);
+                List<Psm> psm_from_file = Lollipop.ReadBUFile(file.path + "\\" + file.filename + file.extension);
                 psm_list.AddRange(psm_from_file);
             }
 
@@ -384,6 +394,36 @@ namespace ProteoformSuiteInternal
             }
         }
 
+        //READING IN BOTTOM-UP MORPHEUS FILE
+        public static List<Psm> ReadBUFile(string filename)
+        {
+            List<Psm> psm_list = new List<Psm>();
+            string[] lines = File.ReadAllLines(filename);
+
+            int i = 1;
+            bool qLessThan1 = true;
+            //only add PSMs with q less than 1. this assumes the tsv is in increasing order of q-value! 
+            while (qLessThan1)
+            {
+                string[] parts = lines[i].Split('\t');
+                //only read in with Q-value < 1%
+                if (Convert.ToDouble(parts[30]) < 1)
+                {
+                    if (Convert.ToBoolean(parts[26]))
+                    {
+                        Psm new_psm = new Psm(parts[11].ToString(), parts[0].ToString(), Convert.ToInt32(parts[14]), Convert.ToInt32(parts[15]),
+                            Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]), Convert.ToInt32(parts[1]),
+                            parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]), PsmType.BottomUp);
+                        psm_list.Add(new_psm);
+                    }
+                    i++;
+                }
+                else { qLessThan1 = false; }
+            }
+            return psm_list;
+        }
+
+        
         private static void EnterTheoreticalProteformFamily(string seq, Protein prot, string accession, bool isMetCleaved, List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number)
         {
             //Calculate the properties of this sequence
@@ -443,7 +483,9 @@ namespace ProteoformSuiteInternal
         public static double no_mans_land_lowerBound = 0.22;
         public static double no_mans_land_upperBound = 0.88;
         public static double peak_width_base = 0.0150;
-        public static double min_peak_count = 8;
+        public static double min_signal_noise = 3;
+        public static double et_average_noise_level;
+        public static double ee_average_noise_level;
         public static int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
         public static List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
         public static List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
@@ -453,29 +495,23 @@ namespace ProteoformSuiteInternal
         public static List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
 
         public static void make_et_relationships()
-        {
-            //PARALLEL PROBLEM
-            //Parallel.Invoke(
-            //    () => et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et),
-            //    () => ed_relations = Lollipop.proteoform_community.relate_ed()
-            //);
-
+        {      
             Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
-            Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
-            Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
+            et_average_noise_level = (double)et_relations.Count / ((et_high_mass_difference - et_low_mass_difference) / peak_width_base);
+            Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations);
+            
+            // Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
+            //Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
         public static void make_ee_relationships()
         {
-            //PARALLEL PROBLEM
-            //Parallel.Invoke(
-            //    () => ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.et),
-            //    () => ef_relations = proteoform_community.relate_unequal_ee_lysine_counts()
-            //);
-
             Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
-            Lollipop.ef_relations = proteoform_community.relate_unequal_ee_lysine_counts();
-            Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
+            ee_average_noise_level = (double)ee_relations.Count / ((ee_max_mass_difference) / peak_width_base);
+            Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations);
+
+            //Lollipop.ef_relations = proteoform_community.relate_unequal_ee_lysine_counts();
+           // Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
 
@@ -516,7 +552,7 @@ namespace ProteoformSuiteInternal
                 "Comparisons|et_high_mass_difference\t" + et_high_mass_difference.ToString(),
                 "Comparisons|relation_group_centering_iterations\t" + relation_group_centering_iterations.ToString(),
                 "Comparisons|peak_width_base\t" + peak_width_base.ToString(),
-                "Comparisons|min_peak_count\t" + min_peak_count.ToString()
+                "Comparisons|min_signal_noise\t" + min_signal_noise.ToString()
             });
         }
 
@@ -552,7 +588,7 @@ namespace ProteoformSuiteInternal
                 case "Comparisons|no_mans_land_lowerBound": no_mans_land_lowerBound = Convert.ToDouble(fields[1]); break;
                 case "Comparisons|no_mans_land_upperBound": no_mans_land_upperBound = Convert.ToDouble(fields[1]); break;
                 case "Comparisons|peak_width_base": peak_width_base = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|min_peak_count": min_peak_count = Convert.ToDouble(fields[1]); break;
+                case "Comparisons|min_signal_noise": min_signal_noise = Convert.ToDouble(fields[1]); break;
             }
         }
     }
