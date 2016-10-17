@@ -160,6 +160,7 @@ namespace ProteoformSuiteInternal
         // AGGREGATED PROTEOFORM I/O
         public static void read_aggregated_proteoforms(string[] lines)
         {
+            List<ExperimentalProteoform> experimental_proteoforms = new List<ExperimentalProteoform>();
             Parallel.For(1, lines.Length, x =>
             {
                 string[] line = lines[x].Split('\t');
@@ -169,8 +170,9 @@ namespace ProteoformSuiteInternal
                 aggregated_proteoform.agg_intensity = Convert.ToDouble(line[6]);
                 aggregated_proteoform.agg_rt = Convert.ToDouble(line[7]);
                 aggregated_proteoform.aggregated_components = (from id in line[9].Split(',') from c in Lollipop.raw_experimental_components where c.id == Convert.ToInt16(id).ToString() select c).ToList();
-                lock (lockThread) { Lollipop.proteoform_community.experimental_proteoforms.Add(aggregated_proteoform); }
+                lock (lockThread) { experimental_proteoforms.Add(aggregated_proteoform); }
             });
+            Lollipop.proteoform_community.experimental_proteoforms = experimental_proteoforms.ToArray();
         }
 
         public static string aggregated_experimental_proteoform_results()
@@ -188,16 +190,18 @@ namespace ProteoformSuiteInternal
         }
 
         // THEORETICAL PROTEOFORM I/O
-        public static void read_theoretical_proteoforms(string[] lines)
+        public static void read_theoretical_proteoforms(string[] lines, bool target)
         {
             string[] header = lines[0].Split('\t');
+            List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
+            Dictionary<string, List<TheoreticalProteoform>> decoy_proteoforms = new Dictionary<string, List<TheoreticalProteoform>>();
             Parallel.For(1, lines.Length, x =>
             {
                 string[] line = lines[x].Split('\t');
                 if (line.Length == header.Length)
                 {
                     PtmSet ptm_set;
-                    List<goTerm> goTerms = new List<goTerm>();
+                    List<GoTerm> goTerms = new List<GoTerm>();
                     List<Ptm> unmodified = new List<Ptm>();
                     if (line[11] != "unmodified") { ptm_set = new PtmSet(new List<Ptm>(from ptm_description in line[11].Split(';') select new Ptm(-1, Lollipop.uniprotModificationTable[ptm_description.Trim().TrimEnd(';')]))); }
                     else ptm_set = new PtmSet(unmodified);
@@ -206,15 +210,16 @@ namespace ProteoformSuiteInternal
                     theoretical_proteoform.psm_count_TD = Convert.ToInt32(line[15]);
                     string database = line[13];
                     if (database == "Target") lock (lockThread)
-                        Lollipop.proteoform_community.theoretical_proteoforms.Add(theoretical_proteoform);
+                        theoretical_proteoforms.Add(theoretical_proteoform);
                     else lock (lockThread)
                     {
-                        if (!Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(line[13]))
-                            Lollipop.proteoform_community.decoy_proteoforms.Add(line[13], new List<TheoreticalProteoform>());
-                        Lollipop.proteoform_community.add(theoretical_proteoform, line[13]);
+                        if (!decoy_proteoforms.ContainsKey(line[13])) decoy_proteoforms.Add(line[13], new List<TheoreticalProteoform>());
+                        decoy_proteoforms[line[13]].Add(theoretical_proteoform);
                     }
                 }
             });
+            if (target) Lollipop.proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
+            else Lollipop.proteoform_community.decoy_proteoforms = decoy_proteoforms.ToDictionary(kv => kv.Key, kv => kv.Value.ToArray());
         }
 
         public static string theoretical_proteoforms_results(bool target)
@@ -420,6 +425,7 @@ namespace ProteoformSuiteInternal
 
         private static string family_as_tsv_row(ProteoformFamily f)
         {
+
             //Probably {family_id, proteoform1_id, delta_mass, proteoform2_id} for each relation
             //This could be placed directly into Cytoscape
             return "";

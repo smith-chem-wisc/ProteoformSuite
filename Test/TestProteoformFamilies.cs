@@ -27,8 +27,8 @@ namespace Test
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs);
             DeltaMassPeak peak = new DeltaMassPeak(prs[0], prs);
             test_community.delta_mass_peaks = new List<DeltaMassPeak> { peak };
-            test_community.add(pf1);
-            test_community.add(pf2);
+            test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
+            test_community.theoretical_proteoforms = new TheoreticalProteoform[] { pf2 };
             test_community.construct_families();
             Assert.AreEqual("T1", test_community.families.First().accession_list);
             Assert.AreEqual(1, test_community.families.Count);
@@ -67,7 +67,7 @@ namespace Test
             Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
             Assert.AreEqual(3, test_community.delta_mass_peaks[0].grouped_relations.Count);
 
-            test_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf3, pf4, pf5, pf6 };
+            test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf3, pf4, pf5, pf6 };
             test_community.construct_families();
             Assert.AreEqual(1, test_community.families.Count);
             Assert.AreEqual("", test_community.families.First().accession_list);
@@ -114,7 +114,7 @@ namespace Test
             Assert.AreEqual(1, test_community.delta_mass_peaks.Where(peak => peak.peak_accepted).Count());
             Assert.AreEqual(3, test_community.delta_mass_peaks.Where(peak => peak.peak_accepted).First().grouped_relations.Count());
 
-            test_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf3, pf4, pf5, pf6, pf7 };
+            test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf3, pf4, pf5, pf6, pf7 };
             test_community.construct_families();
             Assert.AreEqual(2, test_community.families.Count);
             Assert.AreEqual("", test_community.families[0].accession_list);

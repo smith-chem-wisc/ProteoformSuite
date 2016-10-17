@@ -44,12 +44,10 @@ namespace ProteoformSuiteInternal
         public Component()
         { }
 
-
         public Component(List<string> cellStrings, InputFile input_file) // this is used when we read stored data from previous computation.
         {
             this.id = Convert.ToInt32(cellStrings[0]).ToString();
             this.input_file = input_file;
-
             this.id = input_file.UniqueId.ToString() + "_" + Convert.ToInt32(cellStrings[0]);
 
             this.monoisotopic_mass = Convert.ToDouble(cellStrings[1]);
@@ -71,7 +69,7 @@ namespace ProteoformSuiteInternal
             this.fract_abundance = Convert.ToDouble(cellStrings[7]);           
             this.accepted = true;
         }
-        public Component(Component c) // I don't know why we need this.
+        public Component(Component c) // I don't know why we need this. // To open TSV files with saved Component data.
         {
             //this.file_origin = c.file_origin;
             this.input_file = c.input_file;

@@ -33,7 +33,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.tb_proteins_of_interest_path = new System.Windows.Forms.TextBox();
             this.bt_proteins_of_interest = new System.Windows.Forms.Button();
-            this.ckbx_aggregateProteoforms = new System.Windows.Forms.CheckBox();
+            this.ckbx_combineIdenticalSequences = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.nUD_MinPeptideLength = new System.Windows.Forms.NumericUpDown();
             this.btn_Make_Databases = new System.Windows.Forms.Button();
@@ -55,6 +55,7 @@
             this.tb_UniProtXML_Path = new System.Windows.Forms.TextBox();
             this.btn_GetUniProtXML = new System.Windows.Forms.Button();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
+            this.ckbx_combineTheoreticalsByMass = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -76,11 +77,12 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.ckbx_combineTheoreticalsByMass);
             this.splitContainer1.Panel1.Controls.Add(this.tb_interest_label);
             this.splitContainer1.Panel1.Controls.Add(this.label5);
             this.splitContainer1.Panel1.Controls.Add(this.tb_proteins_of_interest_path);
             this.splitContainer1.Panel1.Controls.Add(this.bt_proteins_of_interest);
-            this.splitContainer1.Panel1.Controls.Add(this.ckbx_aggregateProteoforms);
+            this.splitContainer1.Panel1.Controls.Add(this.ckbx_combineIdenticalSequences);
             this.splitContainer1.Panel1.Controls.Add(this.label4);
             this.splitContainer1.Panel1.Controls.Add(this.nUD_MinPeptideLength);
             this.splitContainer1.Panel1.Controls.Add(this.btn_Make_Databases);
@@ -148,15 +150,15 @@
             // 
             // ckbx_aggregateProteoforms
             // 
-            this.ckbx_aggregateProteoforms.AutoSize = true;
-            this.ckbx_aggregateProteoforms.Location = new System.Drawing.Point(7, 470);
-            this.ckbx_aggregateProteoforms.Margin = new System.Windows.Forms.Padding(2);
-            this.ckbx_aggregateProteoforms.Name = "ckbx_aggregateProteoforms";
-            this.ckbx_aggregateProteoforms.Size = new System.Drawing.Size(203, 17);
-            this.ckbx_aggregateProteoforms.TabIndex = 17;
-            this.ckbx_aggregateProteoforms.Text = "Combine Sequence-Identical Proteins";
-            this.ckbx_aggregateProteoforms.UseVisualStyleBackColor = true;
-            this.ckbx_aggregateProteoforms.CheckedChanged += new System.EventHandler(this.ckbx_aggregateProteoforms_CheckedChanged);
+            this.ckbx_combineIdenticalSequences.AutoSize = true;
+            this.ckbx_combineIdenticalSequences.Location = new System.Drawing.Point(7, 470);
+            this.ckbx_combineIdenticalSequences.Margin = new System.Windows.Forms.Padding(2);
+            this.ckbx_combineIdenticalSequences.Name = "ckbx_aggregateProteoforms";
+            this.ckbx_combineIdenticalSequences.Size = new System.Drawing.Size(203, 17);
+            this.ckbx_combineIdenticalSequences.TabIndex = 17;
+            this.ckbx_combineIdenticalSequences.Text = "Combine Sequence-Identical Proteins";
+            this.ckbx_combineIdenticalSequences.UseVisualStyleBackColor = true;
+            this.ckbx_combineIdenticalSequences.CheckedChanged += new System.EventHandler(this.ckbx_combineIdenticalSequences_CheckedChanged);
             // 
             // label4
             // 
@@ -179,7 +181,7 @@
             // 
             // btn_Make_Databases
             // 
-            this.btn_Make_Databases.Location = new System.Drawing.Point(7, 495);
+            this.btn_Make_Databases.Location = new System.Drawing.Point(7, 517);
             this.btn_Make_Databases.Margin = new System.Windows.Forms.Padding(2);
             this.btn_Make_Databases.Name = "btn_Make_Databases";
             this.btn_Make_Databases.Size = new System.Drawing.Size(207, 22);
@@ -388,6 +390,18 @@
             this.dgv_Database.Size = new System.Drawing.Size(908, 749);
             this.dgv_Database.TabIndex = 0;
             // 
+            // ckbx_combineTheoreticalsByMass
+            // 
+            this.ckbx_combineTheoreticalsByMass.AutoSize = true;
+            this.ckbx_combineTheoreticalsByMass.Location = new System.Drawing.Point(7, 491);
+            this.ckbx_combineTheoreticalsByMass.Margin = new System.Windows.Forms.Padding(2);
+            this.ckbx_combineTheoreticalsByMass.Name = "ckbx_combineTheoreticalsByMass";
+            this.ckbx_combineTheoreticalsByMass.Size = new System.Drawing.Size(225, 17);
+            this.ckbx_combineTheoreticalsByMass.TabIndex = 22;
+            this.ckbx_combineTheoreticalsByMass.Text = "Combine Theoretical Proteoforms By Mass";
+            this.ckbx_combineTheoreticalsByMass.UseVisualStyleBackColor = true;
+            this.ckbx_combineTheoreticalsByMass.CheckedChanged += new System.EventHandler(this.ckbx_combineTheoreticalsByMass_CheckedChanged);
+            // 
             // TheoreticalDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -438,10 +452,11 @@
         private System.Windows.Forms.DataGridView dgv_Database;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown nUD_MinPeptideLength;
-        private System.Windows.Forms.CheckBox ckbx_aggregateProteoforms;
+        private System.Windows.Forms.CheckBox ckbx_combineIdenticalSequences;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tb_proteins_of_interest_path;
         private System.Windows.Forms.Button bt_proteins_of_interest;
         private System.Windows.Forms.TextBox tb_interest_label;
+        private System.Windows.Forms.CheckBox ckbx_combineTheoreticalsByMass;
     }
 }

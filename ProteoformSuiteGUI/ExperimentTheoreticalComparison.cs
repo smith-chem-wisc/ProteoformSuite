@@ -151,8 +151,8 @@ namespace ProteoformSuite
 
                     if (position_xy_mouse_row > 0)
                     {
-                        ET_peak_List_Menu.Items.Add("Increase Experimenal Mass 1.0015 Da").Name = "IncreaseMass";
-                        ET_peak_List_Menu.Items.Add("Decrease Experimenal Mass 1.0015 Da").Name = "DecreaseMass";
+                        ET_peak_List_Menu.Items.Add("Increase Experimenal Mass " + Lollipop.MONOISOTOPIC_UNIT_MASS + " Da").Name = "IncreaseMass";
+                        ET_peak_List_Menu.Items.Add("Decrease Experimenal Mass " + Lollipop.MONOISOTOPIC_UNIT_MASS + " Da").Name = "DecreaseMass";
                     }
                     ET_peak_List_Menu.Show(dgv_ET_Peak_List, new Point(e.X, e.Y));
 

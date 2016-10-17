@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
-    public class goTerm
+    public class GoTerm
     {
         public string id { get; set; }
         public string description { get; set; }
@@ -21,9 +21,9 @@ namespace ProteoformSuiteInternal
         biologicalProcess
     }
 
-    public class goTermNumber
+    public class GoTermNumber
     {
-        public goTerm goTerm { get; set; }
+        public GoTerm goTerm { get; set; }
         public string id {get; set;}
         public string description { get; set; }
         public string aspect { get; set; }        
@@ -33,7 +33,7 @@ namespace ProteoformSuiteInternal
         public double logfold { get; set; } // log base2 fold change
         public string proteinInCategoryFromSample { get; set; }
 
-        public goTermNumber(goTerm _goTerm, List<Protein> proteinsInSample, Dictionary<goTerm, int> goMasterSet)
+        public GoTermNumber(GoTerm _goTerm, List<Protein> proteinsInSample, Dictionary<GoTerm, int> goMasterSet)
         {
             goTerm = _goTerm;
             id = _goTerm.id;
@@ -47,7 +47,7 @@ namespace ProteoformSuiteInternal
             pValue = goTerm_pValue(_goTerm, proteinsInSample, goMasterSet, k, f);
         }
 
-        private double getGoTermLogFold(int k, int f, List<Protein> proteinsInSample, Dictionary<goTerm, int> goMasterSet)
+        private double getGoTermLogFold(int k, int f, List<Protein> proteinsInSample, Dictionary<GoTerm, int> goMasterSet)
         {
             int allSampleGoTerms = (from p in proteinsInSample
                                     from g in p.goTerms
@@ -56,7 +56,7 @@ namespace ProteoformSuiteInternal
             double numerator = (double)k / allSampleGoTerms;
 
             int allDataBaseGoTerms = 0;
-            foreach (KeyValuePair<goTerm,int> pair in goMasterSet)
+            foreach (KeyValuePair<GoTerm,int> pair in goMasterSet)
             {
                 allDataBaseGoTerms = allDataBaseGoTerms + pair.Value;
             }
@@ -67,7 +67,7 @@ namespace ProteoformSuiteInternal
                 return 0d;
         }
 
-        private double goTerm_pValue(goTerm _goTerm, List<Protein> proteinsInSample, Dictionary<goTerm, int> goMasterSet, int k, int f)
+        private double goTerm_pValue(GoTerm _goTerm, List<Protein> proteinsInSample, Dictionary<GoTerm, int> goMasterSet, int k, int f)
         {
             int allSampleGoTerms = 0;
 
@@ -77,10 +77,10 @@ namespace ProteoformSuiteInternal
             }
 
             int maxPermutations = 500;
-            List<goTerm> completeDatabaseGoTerms = new List<goTerm>();
+            List<GoTerm> completeDatabaseGoTerms = new List<GoTerm>();
             ConcurrentBag<int> countOfGoTermInSubset = new ConcurrentBag<int>();
 
-            foreach (KeyValuePair<goTerm, int> pair in goMasterSet)
+            foreach (KeyValuePair<GoTerm, int> pair in goMasterSet)
             {
                 for (int i = 0; i < pair.Value; i++)
                 {
@@ -88,9 +88,9 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            IList<goTerm> copyList = new List<goTerm>();
+            IList<GoTerm> copyList = new List<GoTerm>();
             copyList = completeDatabaseGoTerms;
-            List<goTerm> subset = new List<goTerm>();
+            List<GoTerm> subset = new List<GoTerm>();
 
             for (int i = 0; i < maxPermutations; i++)
             {
@@ -105,7 +105,7 @@ namespace ProteoformSuiteInternal
             return (double)(countOfGoTermInSubset.Count(i => i >= k)) /(countOfGoTermInSubset.Count());
         }
 
-        private int sampleGoTermCount(goTerm _goTerm, List<Protein> proteinsInSample)
+        private int sampleGoTermCount(GoTerm _goTerm, List<Protein> proteinsInSample)
         {
             int termCount = 0;
             termCount = (from p in proteinsInSample

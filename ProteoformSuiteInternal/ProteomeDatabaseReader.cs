@@ -158,7 +158,7 @@ namespace ProteoformSuiteInternal
                     string full_name = GetDescendant(entry, "fullName").Value;
                     IEnumerable<XElement> features = from node in entry.Elements() where node.Name.LocalName == "feature" select node;
                     IEnumerable<XElement> dbReferences = from node in entry.Elements() where node.Name.LocalName == "dbReference" select node;
-                    List<goTerm> goTerms = new List<goTerm>();
+                    List<GoTerm> goTerms = new List<GoTerm>();
                     XElement sequence_elem = GetChild(entry, "sequence");
                     string sequence = sequence_elem.Value.Replace("\r", null).Replace("\n", null);
                     string fragment = GetAttribute(sequence_elem, "fragment");
@@ -185,7 +185,7 @@ namespace ProteoformSuiteInternal
                         string dbReference_type = GetAttribute(dbReference, "type");
                         if(dbReference_type == "GO")
                         {
-                            goTerm go = new goTerm();
+                            GoTerm go = new GoTerm();
                             string ID = GetAttribute(dbReference, "id");
                             go.id = ID.Split(':')[1].ToString();
                             IEnumerable<XElement> dbProperties = from XElement in dbReference.Elements() where XElement.Name.LocalName == "property" select XElement;
