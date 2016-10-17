@@ -5,6 +5,7 @@ namespace ProteoformSuiteInternal
 {
     public class ProteoformFamily
     {
+        public int family_id { get; set; }
         public string accession_list
         {
             get { return string.Join("; ", theoretical_proteoforms.Select(p => p.accession)); }
@@ -17,7 +18,7 @@ namespace ProteoformSuiteInternal
         public int relation_count { get; set; }
         public HashSet<ProteoformRelation> relations
         {
-            get { return new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted))); }
+            get { return new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted)), new RelationComparer()); }
         }
         public List<Proteoform> _proteoforms;
         public List<Proteoform> proteoforms
@@ -39,9 +40,24 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public ProteoformFamily(List<Proteoform> proteoforms)
+        public ProteoformFamily(List<Proteoform> proteoforms, int family_id)
         {
             this.proteoforms = proteoforms;
+            this.family_id = family_id;
+        }
+    }
+
+    public class RelationComparer : IEqualityComparer<ProteoformRelation>
+    {
+        public bool Equals(ProteoformRelation r1, ProteoformRelation r2)
+        {
+            return
+                r1.connected_proteoforms[0] == r2.connected_proteoforms[1] && r1.connected_proteoforms[1] == r2.connected_proteoforms[0] ||
+                r1.connected_proteoforms[0] == r2.connected_proteoforms[0] && r1.connected_proteoforms[1] == r2.connected_proteoforms[1];
+        }
+        public int GetHashCode(ProteoformRelation r)
+        {
+            return r.nearby_relations_count;
         }
     }
 }

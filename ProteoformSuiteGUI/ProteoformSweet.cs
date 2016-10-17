@@ -86,6 +86,7 @@ namespace ProteoformSuite
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(proteoformFamilies);
+            proteoformFamilies.initialize_settings();
             proteoformFamilies.construct_families();
         }
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e) { showForm(quantification); }
@@ -108,11 +109,9 @@ namespace ProteoformSuite
             else if (results_folder == DialogResult.Cancel) return;
             else return;
 
-            MessageBox.Show("Choose the method file corresponding to the results files.");
-            bool successful_open = openMethod();
-            if (!successful_open) return;
+            foreach (string setting_spec in File.ReadAllLines(working_directory + "\\_method.txt")) Lollipop.load_setting(setting_spec.Trim());
             
-            Lollipop.opened_results = true;
+            Lollipop.opening_results = true;
             Lollipop.opened_results_originally = true;
             ResultsSummary.loadDescription = working_directory;
 
@@ -138,6 +137,7 @@ namespace ProteoformSuite
                     ProteomeDatabaseReader.oldPtmlistFilePath = working_directory + "\\ptmlist_new.txt";
                     Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist();
                 }
+
                 catch
                 {
                     MessageBox.Show("Please select a Uniprot ptm list.");
@@ -148,15 +148,14 @@ namespace ProteoformSuite
                         ProteomeDatabaseReader.oldPtmlistFilePath = ptm_list;
                         Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist();
                     }
-
-                    else { return; }
+                    else return;
                 }
             }   
 
             Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\theoretical_proteoforms.tsv"), true);
             //Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\decoy_proteoforms.tsv"), false);
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_theoretical_relationships.tsv"), ProteoformComparison.et);
-           // Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_decoy_relationships.tsv"), ProteoformComparison.ed);
+            // Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_decoy_relationships.tsv"), ProteoformComparison.ed);
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_experimental_relationships.tsv"), ProteoformComparison.ee);
             //Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_false_relationships.tsv"), ProteoformComparison.ef);
             Results.read_peaks(File.ReadAllLines(working_directory + "\\experimental_theoretical_peaks.tsv"), ProteoformComparison.et);
@@ -164,7 +163,7 @@ namespace ProteoformSuite
             Results.read_families(File.ReadAllLines(working_directory + "\\proteoform_families.tsv"));
             MessageBox.Show("Files successfully read in.");
 
-            Lollipop.opened_results = false;
+            Lollipop.opening_results = false;
         }
 
         private void openCurrentPageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -223,7 +222,7 @@ namespace ProteoformSuite
                         theoreticalDatabase.load_dgv();
                         MessageBox.Show("Successfully read in theoretical proteoforms."); 
                 }
-                else { return; }
+                else return; 
             }
             else
             {
@@ -269,6 +268,7 @@ namespace ProteoformSuite
             else return;
             saveMethod(working_directory + "\\_method.txt");
             save_tsv(working_directory, true);
+            File.Copy(ProteomeDatabaseReader.oldPtmlistFilePath, working_directory + "\\ptmlist.txt");
             MessageBox.Show("Successfully saved all pages.");
         }
 
@@ -329,9 +329,7 @@ namespace ProteoformSuite
         {
             DialogResult dr = this.methodFileSave.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
-            {
                 saveMethod(methodFileSave.FileName);
-            }
         }
 
         private void saveMethod(string method_filename)
@@ -381,10 +379,7 @@ namespace ProteoformSuite
                 () => experimentExperimentComparison.FillTablesAndCharts()
             );
             if (Lollipop.neucode_labeled)
-            {
                 neuCodePairs.GraphNeuCodePairs();
-             //   proteoformFamilies.fill_proteoform_families();
-            }
         }
     
 

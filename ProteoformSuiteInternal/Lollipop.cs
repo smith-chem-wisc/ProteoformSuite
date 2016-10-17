@@ -17,7 +17,7 @@ namespace ProteoformSuiteInternal
         public const double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
 
         //needed for functioning open results - user can update/rerun modules and program doesn't crash.
-        public static bool opened_results = false; //set to true if previously saved tsv's are read into program
+        public static bool opening_results = false; //set to true if previously saved tsv's are read into program
         public static bool updated_theoretical = false;
         public static bool updated_agg = false;
         public static bool opened_results_originally = false; //stays true if results ever opened
@@ -509,7 +509,8 @@ namespace ProteoformSuiteInternal
             return ((double)relations_list.Count / ((max_mass - min_mass) / peak_width_base));
         }
         //PROTEOFORM FAMILIES -- see ProteoformCommunity
-
+        public static string family_build_folder_path = "";
+        public static int deltaM_edge_display_rounding = 2;
 
         //METHOD FILE
         public static string method_toString()
@@ -545,7 +546,9 @@ namespace ProteoformSuiteInternal
                 "Comparisons|et_high_mass_difference\t" + et_high_mass_difference.ToString(),
                 "Comparisons|relation_group_centering_iterations\t" + relation_group_centering_iterations.ToString(),
                 "Comparisons|peak_width_base\t" + peak_width_base.ToString(),
-                "Comparisons|min_signal_noise\t" + min_signal_noise.ToString()
+                "Comparisons|min_signal_noise\t" + min_signal_noise.ToString(),
+                "Families|family_build_folder_path\t" + family_build_folder_path,
+                "Families|deltaM_edge_display_rounding\t" + deltaM_edge_display_rounding.ToString()
             });
         }
 
@@ -582,6 +585,8 @@ namespace ProteoformSuiteInternal
                 case "Comparisons|no_mans_land_upperBound": no_mans_land_upperBound = Convert.ToDouble(fields[1]); break;
                 case "Comparisons|peak_width_base": peak_width_base = Convert.ToDouble(fields[1]); break;
                 case "Comparisons|min_signal_noise": min_signal_noise = Convert.ToDouble(fields[1]); break;
+                case "Families|family_build_folder_path": family_build_folder_path = fields[1]; break;
+                case "Families|deltaM_edge_display_rounding": deltaM_edge_display_rounding = Convert.ToInt32(fields[1]); break;
             }
         }
     }

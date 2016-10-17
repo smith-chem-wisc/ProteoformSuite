@@ -47,7 +47,7 @@ namespace ProteoformSuiteInternal
         {
             this.base_relation = base_relation;
 
-            if (!Lollipop.opened_results) this.find_nearby_relations(relations_to_group);
+            if (!Lollipop.opening_results) this.find_nearby_relations(relations_to_group);
             else this.grouped_relations = relations_to_group; 
 
             foreach (ProteoformRelation relation in this.grouped_relations)
@@ -55,7 +55,7 @@ namespace ProteoformSuiteInternal
                 relation.peak = this;
                 relation.accepted = this.peak_accepted;
             }
-            if (!Lollipop.opened_results && Lollipop.updated_theoretical) this.possiblePeakAssignments = nearestPTMs(this.peak_deltaM_average);
+            if (!Lollipop.opening_results && Lollipop.updated_theoretical) this.possiblePeakAssignments = nearestPTMs(this.peak_deltaM_average);
         }
 
         /*(this needs to be done at the actual time of forming peaks or else the average is wrong so the peak can be formed out

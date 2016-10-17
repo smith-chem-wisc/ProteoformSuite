@@ -8,11 +8,17 @@ using System.Text;
 using System.Threading.Tasks;
 using ProteoformSuiteInternal;
 using System.Windows.Forms;
+using System.IO;
+using System.Security;
 
 namespace ProteoformSuite
 {
     public partial class ProteoformFamilies : Form
     {
+        OpenFileDialog fileOpener = new OpenFileDialog();
+        FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+        bool got_cyto_temp_folder = false;
+
         public ProteoformFamilies()
         {
             InitializeComponent();
@@ -20,6 +26,11 @@ namespace ProteoformSuite
 
         private void ProteoformFamilies_Load(object sender, EventArgs e)
         { }
+
+        public void initialize_settings()
+        {
+            this.tb_familyBuildFolder.Text = Lollipop.family_build_folder_path;
+        }
 
         public void construct_families()
         {
@@ -97,6 +108,85 @@ namespace ProteoformSuite
                 }
                 else dgv_proteoform_family_members.Rows.Clear();
             }
+        }
+
+        private void btn_browseTempFolder_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = this.folderBrowser.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                string temp_folder_path = folderBrowser.SelectedPath;
+                tb_familyBuildFolder.Text = temp_folder_path; //triggers TextChanged method
+            }
+        }
+
+        private void tb_tempFileFolderPath_TextChanged(object sender, EventArgs e)
+        {
+            string path = tb_familyBuildFolder.Text;
+            Lollipop.family_build_folder_path = path;
+            got_cyto_temp_folder = true;
+            enable_buildAllFamilies_button();
+            enable_buildSelectedFamilies_button();
+        }
+
+        private void enable_buildAllFamilies_button()
+        {
+            if (got_cyto_temp_folder) btn_buildAllFamilies.Enabled = true;
+        }
+        private void enable_buildSelectedFamilies_button()
+        {
+            if (got_cyto_temp_folder && dgv_proteoform_families.SelectedRows.Count > 0) btn_buildSelectedFamilies.Enabled = true;
+        }
+
+        private void btn_buildAllFamilies_Click(object sender, EventArgs e)
+        {
+            bool built = build_families(Lollipop.proteoform_community.families);
+            if (!built) return;
+            MessageBox.Show("Finished building all families.\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
+        }
+
+        private void btn_buildSelectedFamilies_Click(object sender, EventArgs e)
+        {
+            //Check if there are any rows selected
+            int selected_row_sum = 0;
+            for (int i = 0; i < dgv_proteoform_families.SelectedCells.Count; i++) selected_row_sum += dgv_proteoform_families.SelectedCells[i].RowIndex;
+
+            List<ProteoformFamily> families = new List<ProteoformFamily>();
+            if (dgv_proteoform_families.SelectedRows.Count > 0)
+                for (int i = 0; i < dgv_proteoform_families.SelectedRows.Count; i++)
+                    families.Add((ProteoformFamily)dgv_proteoform_families.SelectedRows[i].DataBoundItem);
+            else
+                for (int i = 0; i < dgv_proteoform_families.SelectedCells.Count; i++)
+                    if (dgv_proteoform_families.SelectedCells[i].RowIndex != 0)
+                        families.Add((ProteoformFamily)dgv_proteoform_families.Rows[dgv_proteoform_families.SelectedCells[i].RowIndex].DataBoundItem);
+
+            bool built = build_families(families);
+            if (!built) return;
+
+            string selected_family_string = "Finished building selected famil";
+            if (families.Count() == 1) selected_family_string += "y :";
+            else selected_family_string += "ies :";
+            if (families.Count() > 3) selected_family_string = String.Join(", ", families.Select(f => f.family_id).ToList().Take(3)) + ". . .";
+            else selected_family_string = String.Join(", ", families.Select(f => f.family_id));
+            MessageBox.Show(selected_family_string + ".\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
+        }
+
+        private bool build_families(List<ProteoformFamily> families)
+        {
+            //Check if valid folder
+            if (Lollipop.family_build_folder_path == "" || !Directory.Exists(Lollipop.family_build_folder_path))
+            {
+                MessageBox.Show("Please choose a folder in which the families will be built, so you can load them into Cytoscape.");
+                return false;
+            }
+            string time_stamp = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString();
+            tb_recentTimeStamp.Text = time_stamp;
+            CytoscapeScript c = new CytoscapeScript(families, time_stamp);
+            File.WriteAllText(c.edges_path, c.edge_table);
+            File.WriteAllText(c.nodes_path, c.node_table);
+            File.WriteAllText(c.script_path, c.script);
+            c.write_styles();
+            return true;
         }
 
         private void Families_update_Click(object sender, EventArgs e)
