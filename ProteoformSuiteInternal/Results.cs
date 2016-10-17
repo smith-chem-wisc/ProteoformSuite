@@ -23,6 +23,7 @@ namespace ProteoformSuiteInternal
                 string[] line = lines[x].Split('\t');
                 Component component = new Component();
                 component.id = (line[0]).ToString();
+                component.id = line[0].ToString();
                 component.monoisotopic_mass = Convert.ToDouble(line[1]);
                 component.weighted_monoisotopic_mass = Convert.ToDouble(line[2]);
                 component.corrected_mass = Convert.ToDouble(line[3]);
@@ -130,7 +131,7 @@ namespace ProteoformSuiteInternal
                 NeuCodePair neucode_pair = new NeuCodePair(neucode_light, neucode_heavy);
                 neucode_pair.intensity_ratio = Convert.ToDouble(line[8]);
                 neucode_pair.lysine_count = Convert.ToInt32(line[9]);
-                neucode_pair.input_file = Lollipop.input_files.Where(s=>s.UniqueId == Convert.ToInt32(line[10])).ToList().First();
+                neucode_pair.input_file = Lollipop.input_files.Where(s => s.UniqueId == Convert.ToInt32(line[10])).ToList().First();
 
                 if (neucode_pair.lysine_count > Lollipop.min_lysine_ct && neucode_pair.lysine_count < Lollipop.max_lysine_ct
                     && neucode_pair.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio) && neucode_pair.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio))
@@ -420,17 +421,17 @@ namespace ProteoformSuiteInternal
 
         public static string family_results()
         {
-            string tsv_header = "";
-            string results_rows = "";
+            string tsv_header = "family_id\tproteoform1_accession\tpeak_center_delta_mass\tproteoform2_accession";
+            string results_rows = String.Join(Environment.NewLine, Lollipop.proteoform_community.families.Select(f => family_as_tsv_row(f)));
             return tsv_header + Environment.NewLine + results_rows;
         }
 
         private static string family_as_tsv_row(ProteoformFamily f)
         {
-
             //Probably {family_id, proteoform1_id, delta_mass, proteoform2_id} for each relation
             //This could be placed directly into Cytoscape
-            return "";
+            return String.Join(Environment.NewLine, new List<string>(
+                f.relations.Select(r => String.Join("\t", new List<string> { f.family_id.ToString(), r.accession_1, r.peak_center_deltaM.ToString(), r.accession_2 }))));
         }
     }
 }
