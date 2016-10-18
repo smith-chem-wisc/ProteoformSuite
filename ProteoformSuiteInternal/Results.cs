@@ -22,11 +22,12 @@ namespace ProteoformSuiteInternal
             {
                 string[] line = lines[x].Split('\t');
                 Component component = new Component();
-                component.id = Convert.ToInt32(line[0]).ToString();
+                component.id = (line[0]).ToString();
                 component.monoisotopic_mass = Convert.ToDouble(line[1]);
                 component.weighted_monoisotopic_mass = Convert.ToDouble(line[2]);
                 component.corrected_mass = Convert.ToDouble(line[3]);
                 component.intensity_sum = Convert.ToDouble(line[4]);
+                component.intensity_reported = Convert.ToDouble(line[4]);
                 component.num_charge_states_fromFile = Convert.ToInt16(line[5]);
                 component.delta_mass = Convert.ToDouble(line[6]);
                 component.relative_abundance = Convert.ToDouble(line[7]);
@@ -124,8 +125,8 @@ namespace ProteoformSuiteInternal
             Parallel.For(1, lines.Length, x =>
             {
                 string[] line = lines[x].Split('\t');
-                Component neucode_light = Lollipop.raw_experimental_components.Where(c => c.id == Convert.ToInt16(line[0]).ToString()).First();
-                Component neucode_heavy = Lollipop.raw_experimental_components.Where(c => c.id == Convert.ToInt16(line[5]).ToString()).First();
+                Component neucode_light = Lollipop.raw_experimental_components.Where(c => c.id == (line[0]).ToString()).First();
+                Component neucode_heavy = Lollipop.raw_experimental_components.Where(c => c.id == (line[5]).ToString()).First();
                 NeuCodePair neucode_pair = new NeuCodePair(neucode_light, neucode_heavy);
                 neucode_pair.intensity_ratio = Convert.ToDouble(line[8]);
                 neucode_pair.lysine_count = Convert.ToInt32(line[9]);
@@ -169,7 +170,7 @@ namespace ProteoformSuiteInternal
                 aggregated_proteoform.agg_mass = Convert.ToDouble(line[5]);
                 aggregated_proteoform.agg_intensity = Convert.ToDouble(line[6]);
                 aggregated_proteoform.agg_rt = Convert.ToDouble(line[7]);
-                aggregated_proteoform.aggregated_components = (from id in line[9].Split(',') from c in Lollipop.raw_experimental_components where c.id == Convert.ToInt16(id).ToString() select c).ToList();
+                aggregated_proteoform.aggregated_components = (from id in line[9].Split(',') from c in Lollipop.raw_experimental_components where c.id == (id).ToString() select c).ToList();
                 lock (lockThread) { experimental_proteoforms.Add(aggregated_proteoform); }
             });
             Lollipop.proteoform_community.experimental_proteoforms = experimental_proteoforms.ToArray();
@@ -365,7 +366,7 @@ namespace ProteoformSuiteInternal
                 DeltaMassPeak peak = new DeltaMassPeak(relations_in_peak[0], relations_in_peak);
                 peak.peak_relation_group_count = Convert.ToInt16(line[3]);
                 peak.peak_deltaM_average = Convert.ToDouble(line[2]);
-                string[] possible_peak_assignments_string = line[6].Split(',');
+                string[] possible_peak_assignments_string = line[5].Split(',');
                 List<Modification> possible_peak_assignments = new List<Modification>();
                 foreach (string mod in possible_peak_assignments_string)
                 {
@@ -388,12 +389,12 @@ namespace ProteoformSuiteInternal
             {
                 case ProteoformComparison.et:
                     tsv_header = String.Join("\t", new List<string> { "experimental_accessions", "theoretical_accessions", "peak_deltaM_average", "peak_relation_group_count",
-                        "decoy_relation_count", "peak_group_fdr", "peak_assignment" });
+                        "peak_group_fdr", "peak_assignment" });
                     results_rows = String.Join(Environment.NewLine, Lollipop.et_peaks.Select(p => peak_as_tsv_row(p, relation_type)));
                     break;
                 case ProteoformComparison.ee:
                     tsv_header = String.Join("\t", new List<string> { "experimental_1_accessions", "experimental_2_accessions", "peak_deltaM_average", "peak_relation_group_count",
-                        "decoy_relation_count", "peak_group_fdr", "peak_assignment" });
+                         "peak_group_fdr", "peak_assignment" });
                     results_rows = String.Join(Environment.NewLine, Lollipop.ee_peaks.Select(p => peak_as_tsv_row(p, relation_type)));
                     break;
             }
@@ -404,7 +405,7 @@ namespace ProteoformSuiteInternal
         {
             string accessions_1_string = String.Join(", ", p.grouped_relations.Select(r => r.connected_proteoforms[0].accession));
             string accessions_2_string = String.Join(", ", p.grouped_relations.Select(r => r.connected_proteoforms[1].accession));
-            return String.Join("\t", new List<string> {accessions_1_string, accessions_2_string, p.peak_deltaM_average.ToString(), p.peak_relation_group_count.ToString(), p.decoy_relation_count.ToString(), p.peak_group_fdr.ToString(), p.possiblePeakAssignments_string });
+            return String.Join("\t", new List<string> {accessions_1_string, accessions_2_string, p.peak_deltaM_average.ToString(), p.peak_relation_group_count.ToString(), p.peak_group_fdr.ToString(), p.possiblePeakAssignments_string });
         }
 
         // PROTEOFORM FAMILY I/O
