@@ -86,6 +86,8 @@ namespace ProteoformSuite
             dgv_RawExpComp_MI_masses.Columns["relative_abundance"].HeaderText = "Relative Abundance";
             dgv_RawExpComp_MI_masses.Columns["fract_abundance"].HeaderText = "Fractional Abundance";
             dgv_RawExpComp_MI_masses.Columns["intensity_sum"].HeaderText = "Intensity Sum";
+            dgv_RawExpComp_MI_masses.Columns["intensity_sum_olcs"].HeaderText = "Intensity Sum for Overlapping Charge States";
+
 
             //dgv_RawExpComp_MI_masses.Columns["file_origin"].HeaderText = "Filename";
 
@@ -98,7 +100,10 @@ namespace ProteoformSuite
 
             dgv_RawExpComp_MI_masses.AllowUserToAddRows = false;
             dgv_RawExpComp_MI_masses.Columns["corrected_mass"].Visible = false;
-            dgv_RawExpComp_MI_masses.Columns["intensity_sum_olcs"].Visible = false;
+            if (!Lollipop.neucode_labeled)
+            {
+                dgv_RawExpComp_MI_masses.Columns["intensity_sum_olcs"].Visible = false;
+            }
             dgv_RawExpComp_MI_masses.Columns["_manual_mass_shift"].Visible = false;
         }
 
