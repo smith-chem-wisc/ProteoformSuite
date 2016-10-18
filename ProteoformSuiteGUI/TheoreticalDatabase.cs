@@ -39,11 +39,16 @@ namespace ProteoformSuite
 
             if (Lollipop.opened_results_originally)
             {
-                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
-                this.initialize_table_bindinglist();
-                DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
+                load_dgv();
             }
             initial_load = false;
+        }
+
+        public void load_dgv()
+        {
+            DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+            this.initialize_table_bindinglist();
+            DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
         private void InitializeSettings()

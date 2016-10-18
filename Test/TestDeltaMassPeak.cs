@@ -22,7 +22,9 @@ namespace Test
 
             ProteomeDatabaseReader.oldPtmlistFilePath = "UnitTestFiles\\ptmlist.txt";
             Lollipop.uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
-
+            Lollipop.et_high_mass_difference = 250;
+            Lollipop.et_low_mass_difference = -250;
+            Lollipop.peak_width_base = 0.015;
 
             ExperimentalProteoform pf1 = new ExperimentalProteoform("acession1");
             TheoreticalProteoform pf2 = new TheoreticalProteoform("acession2");
@@ -54,34 +56,41 @@ namespace Test
             ProteoformRelation base_relation = new ProteoformRelation(pf3, pf4, relation_type2, delta_mass2);
 
             base_relation.nearby_relations = base_relation.set_nearby_group(theList);
+            Lollipop.et_average_noise_level = Lollipop.calculate_average_noise(theList, Lollipop.et_high_mass_difference, Lollipop.et_low_mass_difference);
 
             Console.WriteLine("Creating deltaMassPeak");
             DeltaMassPeak deltaMassPeak = new DeltaMassPeak(base_relation, theList);
             Console.WriteLine("Created deltaMassPeak");
 
-            Assert.AreEqual(0, deltaMassPeak.peak_group_fdr);
+            //test for average noise level
+            Assert.AreEqual(Math.Round(1.2e-4, 6), Math.Round(Lollipop.et_average_noise_level, 6));
 
-            Dictionary<string, List<ProteoformRelation>> decoy_relations = new Dictionary<string, List<ProteoformRelation>>();
+            //test for peak fdr
+            Assert.AreEqual(Math.Round(0.00299991, 4), Math.Round(deltaMassPeak.peak_group_fdr, 4));
 
-            decoy_relations["decoyDatabase1"] = new List<ProteoformRelation>();
 
-            ExperimentalProteoform pf7 = new ExperimentalProteoform("experimental1");
-            TheoreticalProteoform pf8 = new TheoreticalProteoform("decoy1");
-            ProteoformComparison relation_type4 = ProteoformComparison.ed;
-            double delta_mass4 = 1;
-            ProteoformRelation decoy_relation = new ProteoformRelation(pf7, pf8, relation_type4, delta_mass4);
+            //tests for when ED was used
+            //Dictionary<string, List<ProteoformRelation>> decoy_relations = new Dictionary<string, List<ProteoformRelation>>();
 
-            decoy_relations["decoyDatabase1"].Add(decoy_relation);
+            //decoy_relations["decoyDatabase1"] = new List<ProteoformRelation>();
 
-            deltaMassPeak.calculate_fdr(decoy_relations);
-            Assert.AreEqual(0.25, deltaMassPeak.peak_group_fdr); // 1 decoy database, (1 decoy relation, median=1), 4 target relations
+            //ExperimentalProteoform pf7 = new ExperimentalProteoform("experimental1");
+            //TheoreticalProteoform pf8 = new TheoreticalProteoform("decoy1");
+            //ProteoformComparison relation_type4 = ProteoformComparison.ed;
+            //double delta_mass4 = 1;
+            //ProteoformRelation decoy_relation = new ProteoformRelation(pf7, pf8, relation_type4, delta_mass4);
 
-            decoy_relations["decoyDatabase2"] = new List<ProteoformRelation>();
-            decoy_relations["decoyDatabase2"].Add(decoy_relation);
-            decoy_relations["decoyDatabase2"].Add(decoy_relation);
+            //decoy_relations["decoyDatabase1"].Add(decoy_relation);
 
-            deltaMassPeak.calculate_fdr(decoy_relations);
-            Assert.AreEqual(0.375, deltaMassPeak.peak_group_fdr); // 2 decoy databases (1 & 2 decoy relations, median=1.5), 4 target relations
+            //deltaMassPeak.calculate_fdr(decoy_relations);
+            //Assert.AreEqual(0.25, deltaMassPeak.peak_group_fdr); // 1 decoy database, (1 decoy relation, median=1), 4 target relations
+
+            //decoy_relations["decoyDatabase2"] = new List<ProteoformRelation>();
+            //decoy_relations["decoyDatabase2"].Add(decoy_relation);
+            //decoy_relations["decoyDatabase2"].Add(decoy_relation);
+
+            //deltaMassPeak.calculate_fdr(decoy_relations);
+            //Assert.AreEqual(0.375, deltaMassPeak.peak_group_fdr); // 2 decoy databases (1 & 2 decoy relations, median=1.5), 4 target relations
         }
 
         [Test]
@@ -93,7 +102,7 @@ namespace Test
 
             //Testing the acceptance of peaks. The FDR is tested above, so I'm not going to work with that here.
             //Four proteoforms, three relations (linear), middle one isn't accepted; should give 2 families
-            Lollipop.min_peak_count = 2;
+            Lollipop.min_signal_noise = 2;
             ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
             ExperimentalProteoform pf5 = new ExperimentalProteoform("E3");
@@ -112,7 +121,7 @@ namespace Test
             Assert.AreEqual(3, pr3.nearby_relations_count);
             Assert.AreEqual(3, pr4.nearby_relations_count);
 
-            test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
+            test_community.accept_deltaMass_peaks(prs2);
             Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
             DeltaMassPeak peak = test_community.delta_mass_peaks[0];
             Assert.AreEqual(3, peak.grouped_relations.Count);
