@@ -45,10 +45,10 @@ namespace ProteoformSuiteInternal
 
         public void set_accepted()
         {
-            if (this.lysine_count > Lollipop.min_lysine_ct 
-             && this.lysine_count < Lollipop.max_lysine_ct
-             && this.intensity_ratio > Convert.ToDouble(Lollipop.min_intensity_ratio) 
-             && this.intensity_ratio < Convert.ToDouble(Lollipop.max_intensity_ratio))
+            if (this.lysine_count >= Lollipop.min_lysine_ct 
+             && this.lysine_count <= Lollipop.max_lysine_ct
+             && this.intensity_ratio >= Convert.ToDouble(Lollipop.min_intensity_ratio) 
+             && this.intensity_ratio <= Convert.ToDouble(Lollipop.max_intensity_ratio))
                 this.accepted = true; 
             else
                 this.accepted = false;
