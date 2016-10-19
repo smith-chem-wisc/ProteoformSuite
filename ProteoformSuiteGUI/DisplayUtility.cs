@@ -80,7 +80,16 @@ namespace ProteoformSuite
             ct.DataBind();
 
             ct.ChartAreas[0].AxisY.StripLines.Clear();
-            StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count };
+            double stripline_value;
+            if (relations[0].connected_proteoforms[1].GetType() == typeof(TheoreticalProteoform))
+            {
+                stripline_value = Lollipop.et_average_noise_level * Lollipop.min_signal_noise;
+            }
+            else
+            {
+                stripline_value = Lollipop.ee_average_noise_level * Lollipop.min_signal_noise;
+            }
+            StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = stripline_value };
             ct.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
 
             ct.ChartAreas[0].AxisX.Title = "Delta Mass (Da)";
@@ -94,11 +103,15 @@ namespace ProteoformSuite
             ct.Series[decoy_series].Points.Clear();
             ct.Series[relations_series].Points.Clear();
 
+            double noise;
+            if (relations[0].connected_proteoforms[1].GetType() == typeof(TheoreticalProteoform)) noise = Lollipop.et_average_noise_level * Lollipop.min_signal_noise;
+            else noise = Lollipop.ee_average_noise_level * Lollipop.min_signal_noise;
             List<DeltaMassPeak> peaks_ordered = peaks.OrderBy(r => r.peak_deltaM_average).ToList();
             foreach (DeltaMassPeak peak in peaks_ordered)
             {
                 ct.Series[peak_series].Points.AddXY(peak.peak_deltaM_average, peak.peak_relation_group_count);
-                ct.Series[decoy_series].Points.AddXY(peak.peak_deltaM_average, peak.decoy_relation_count);
+                ct.Series[decoy_series].Points.AddXY(peak.peak_deltaM_average, noise);
+                 // ct.Series[decoy_series].Points.AddXY(peak.peak_deltaM_average, peak.decoy_relation_count);
             }
 
             List<ProteoformRelation> relations_ordered = relations.OrderBy(r => r.delta_mass).ToList();
@@ -206,10 +219,7 @@ namespace ProteoformSuite
             dgv.Columns["accepted"].HeaderText = "Accepted";
             dgv.Columns["peak_center_deltaM"].HeaderText = "Peak Center Delta Mass";
             dgv.Columns["peak_center_count"].HeaderText = "Peak Center Count";
-            dgv.Columns["proteoform_mass_1"].HeaderText = "Experimental Aggregated Proteoform Mass";
-            dgv.Columns["agg_intensity_1"].HeaderText = "Experimental Aggregated Intensity";
             dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
-            dgv.Columns["num_observations_1"].HeaderText = "Number Experimental Observations";
             dgv.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
 
             //ET formatting
@@ -218,9 +228,13 @@ namespace ProteoformSuite
             dgv.Columns["name"].HeaderText = "Name";
             if (mask_experimental)
             {
+                dgv.Columns["num_observations_1"].HeaderText = "Number Experimental Observations";
                 dgv.Columns["accession_1"].HeaderText = "Experimental Accession";
                 dgv.Columns["accession_2"].HeaderText = "Theoretical Accession";
                 dgv.Columns["proteoform_mass_2"].HeaderText = "Theoretical Proteoform Mass";
+                dgv.Columns["proteoform_mass_1"].HeaderText = "Experimental Aggregated Proteoform Mass";
+                dgv.Columns["agg_intensity_1"].HeaderText = "Experimental Aggregated Intensity";
+                dgv.Columns["agg_RT_1"].HeaderText = "Experimental Aggregated RT";
                 dgv.Columns["agg_intensity_2"].Visible = false;
                 dgv.Columns["agg_RT_2"].Visible = false;
                 dgv.Columns["num_observations_2"].Visible = false;
@@ -228,19 +242,20 @@ namespace ProteoformSuite
             }
 
             //EE formatting
-            dgv.Columns["agg_RT_1"].HeaderText = "Aggregated RT-1";
-            dgv.Columns["agg_RT_2"].HeaderText = "Aggregated RT-2";
-            dgv.Columns["agg_intensity_2"].HeaderText = "Light Experimental Aggregated Intensity";
-            dgv.Columns["num_observations_2"].HeaderText = "Number Light Experimental Observations";
             if (mask_theoretical)
             {
+                dgv.Columns["num_observations_2"].HeaderText = "Number Light Experimental Observations";
+                dgv.Columns["num_observations_1"].HeaderText = "Number Heavy Experimental Observations";
+                dgv.Columns["agg_intensity_2"].HeaderText = "Light Experimental Aggregated Intensity";
+                dgv.Columns["agg_intensity_1"].HeaderText = "Heavy Experimental Aggregated Intensity";
+                dgv.Columns["agg_RT_1"].HeaderText = "Aggregated RT Heavy";
+                dgv.Columns["agg_RT_2"].HeaderText = "Aggregated RT Light";
                 dgv.Columns["accession_1"].HeaderText = "Heavy Experimental Accession";
                 dgv.Columns["accession_2"].HeaderText = "Light Experimental Accession";
+                dgv.Columns["proteoform_mass_1"].HeaderText = "Heavy Experimental Aggregated Mass";
                 dgv.Columns["proteoform_mass_2"].HeaderText = "Light Experimental Aggregated Mass";
                 dgv.Columns["name"].Visible = false;
                 dgv.Columns["fragment"].Visible = false;
-                dgv.Columns["ptm_list"].Visible = false;
-                dgv.Columns["relation_type_string"].Visible = false;
             }
 
             //ProteoformFamilies formatting
@@ -261,13 +276,12 @@ namespace ProteoformSuite
             {
                 dgv.Columns["mass_shifter"].Visible = true;
                 dgv.Columns["mass_shifter"].ReadOnly = false; //user can say how much they want to change monoisotopic by for each
-                dgv.Columns["num_missed_monos"].Visible = true;
             }
             dgv.Columns["peak_deltaM_average"].DefaultCellStyle.Format = "0.####";
             dgv.Columns["peak_group_fdr"].DefaultCellStyle.Format = "0.##";
 
             dgv.Columns["peak_relation_group_count"].HeaderText = "Peak Center Count";
-            dgv.Columns["decoy_relation_count"].HeaderText = "Decoy Count under Peak";
+            //dgv.Columns["decoy_relation_count"].HeaderText = "Decoy Count under Peak";
             dgv.Columns["peak_deltaM_average"].HeaderText = "Peak Center Delta Mass";
             dgv.Columns["peak_group_fdr"].HeaderText = "Peak FDR";
             dgv.Columns["peak_accepted"].HeaderText = "Peak Accepted";
@@ -275,17 +289,12 @@ namespace ProteoformSuite
             dgv.Columns["peak_width"].HeaderText = "Peak Width";
 
             dgv.Columns["peak_relation_group_count"].Visible = true;
-            dgv.Columns["decoy_relation_count"].Visible = true;
+            //dgv.Columns["decoy_relation_count"].Visible = true;
             dgv.Columns["peak_deltaM_average"].Visible = true;
             dgv.Columns["peak_group_fdr"].Visible = true;
             dgv.Columns["peak_accepted"].Visible = true;
             dgv.Columns["possiblePeakAssignments_string"].Visible = true;
             dgv.Columns["peak_width"].Visible = false;
-            if (mask_mass_shifter)
-            {
-                dgv.Columns["missed_mono"].Visible = true;
-                dgv.Columns["missed_mono"].ReadOnly = false;
-            }
             dgv.AllowUserToAddRows = false;
         }
 
