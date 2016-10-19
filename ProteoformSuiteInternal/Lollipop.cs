@@ -1,8 +1,9 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel; // needed for bindinglist
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -22,7 +23,6 @@ namespace ProteoformSuiteInternal
         public static bool opened_results_originally = false; //stays true if results ever opened
 
         //RAW EXPERIMENTAL COMPONENTS
-        //public static BindingList<string> deconResultsFileNames = new BindingList<string>();
         public static List<InputFile> input_files = new List<InputFile>();
         public static IEnumerable<InputFile> identification_files() { return input_files.Where(f => f.purpose == Purpose.Identification); }
         public static IEnumerable<InputFile> quantification_files() { return input_files.Where(f => f.purpose == Purpose.Quantification); }
@@ -39,38 +39,35 @@ namespace ProteoformSuiteInternal
         public static bool td_results = false;
         public static void process_raw_components()
         {
-            ExcelReader componentReader = new ExcelReader();
             if (input_files.Any(f => f.purpose == Purpose.Calibration))
                 correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
-            foreach (InputFile file in identification_files())
+            object sync = new object();
+
+            Parallel.ForEach(input_files.Where(f=>f.purpose==Purpose.Identification), file =>
             {
-                raw_experimental_components = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors));
-                if(td_results)
+                lock (sync)
                 {
-                    //Read in MS1 scan #'s for given raw file. 
-                    foreach (InputFile MS1_file in Lollipop.topdownID_files().Where(f => f.filename == file.filename).ToList())
-                    {
-                        string[] lines = File.ReadAllLines(MS1_file.path + "\\" + MS1_file.filename + MS1_file.extension);
-                        foreach (string line in lines)
-                            MS1_scans.Add(Convert.ToInt32(line));
-                        delete_MS2_and_repeats(file.path + "\\" + file.filename + file.extension);
-                        MS1_scans.Clear();
-                    }
+                    ExcelReader componentReader = new ExcelReader();
+                    raw_experimental_components.AddRange(remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors)));
                 }
-
-                if (neucode_labeled)
-                { 
-                    HashSet<string> scan_ranges = new HashSet<string>(raw_experimental_components.Select(c => c.scan_range));
+            });
+            if (neucode_labeled)
+            {               
+                HashSet<string> input_files = new HashSet<string>(raw_experimental_components.Select(c => c.input_file.UniqueId.ToString()));
+                foreach (string inputFile in input_files)
+                {
+                    HashSet<string> scan_ranges = new HashSet<string>(from comp in raw_experimental_components where comp.input_file.UniqueId.ToString() == inputFile select comp.scan_range);
                     foreach (string scan_range in scan_ranges)
-                        find_neucode_pairs(raw_experimental_components.Where(c => c.scan_range == scan_range));
-                }
+                        find_neucode_pairs(raw_experimental_components.Where(c => c.input_file.UniqueId.ToString() == inputFile && c.scan_range == scan_range));
+                }   
             }
 
-            if (td_results)
-            {
-                raw_experimental_components.Clear();
-                raw_experimental_components = reduced_raw_exp_components;
-            }
+            //if (td_results)
+            //{
+            //    raw_experimental_components.Clear();
+            //    raw_experimental_components = reduced_raw_exp_components;
+            //}
+
         }
 
         private static void delete_MS2_and_repeats(string filename)
