@@ -67,11 +67,27 @@ namespace ProteoformSuite
         public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(loadDeconvolutionResults); }
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(rawExperimentalComponents); }
         private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(neuCodePairs); }
-        private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(aggregatedProteoforms); }
+        private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(aggregatedProteoforms);
+            aggregatedProteoforms.aggregate_proteoforms();
+        }
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e) { showForm(theoreticalDatabase); }
-        private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentalTheoreticalComparison); }
-        private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e) { showForm(experimentExperimentComparison); }
-        private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e) { showForm(proteoformFamilies); }
+        private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(experimentalTheoreticalComparison);
+            experimentalTheoreticalComparison.compare_et();
+        }
+        private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(experimentExperimentComparison);
+            experimentExperimentComparison.compare_et();
+        }
+        private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(proteoformFamilies);
+            proteoformFamilies.construct_families();
+        }
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e) { showForm(quantification); }
 
         private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)

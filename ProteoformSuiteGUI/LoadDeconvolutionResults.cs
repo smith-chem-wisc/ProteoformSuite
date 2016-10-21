@@ -12,7 +12,6 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-//using 
 using Excel = Microsoft.Office.Interop.Excel; //Right click Solution/Explorer/References. Then Add  "Reference". Assemblies/Extension/Microsoft.Office.Interop.Excel
 
 
@@ -29,10 +28,7 @@ namespace ProteoformSuite
         }
 
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
-        {
-            //Nothing happens now because this form is automatically loaded at startup
-        }
-
+        { }
         
         private void btn_neucode_CheckedChanged(object sender, EventArgs e)
         {

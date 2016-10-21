@@ -28,6 +28,8 @@ namespace ProteoformSuite
             this.ct_ET_peakList.MouseClick += new MouseEventHandler(ct_ET_peakList_MouseClick);
             dgv_ET_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(ET_Peak_List_DirtyStateChanged); //makes the change immediate and automatic
             ETPeakAcceptabilityChanged += ExperimentTheoreticalComparison_ETPeakAcceptabilityChanged;
+            InitializeParameterSet();
+            InitializeMassWindow();
         }
 
         protected void ExperimentTheoreticalComparison_ETPeakAcceptabilityChanged(object sender, ETPeakAcceptabilityChangedEventArgs e)
@@ -40,15 +42,11 @@ namespace ProteoformSuite
         }
 
         public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
+        { }
+
+        public void compare_et()
         {
-            InitializeParameterSet();
-            if (Lollipop.et_relations.Count == 0)
-            {
-                InitializeMassWindow();
-                Lollipop.make_et_relationships();
-            }
-            this.FillTablesAndCharts();
-            initial_load = false;
+            if (Lollipop.et_relations.Count == 0) RunTheGamut();
         }
 
         private void RunTheGamut()
@@ -58,6 +56,7 @@ namespace ProteoformSuite
             Lollipop.make_et_relationships();
             this.FillTablesAndCharts();
             this.Cursor = Cursors.Default;
+            initial_load = false;
         }
 
         public void FillTablesAndCharts()
@@ -78,8 +77,11 @@ namespace ProteoformSuite
             Lollipop.et_relations.Clear();
             Lollipop.et_peaks.Clear();
             Lollipop.ed_relations.Clear();
-            Lollipop.proteoform_community.relations_in_peaks.Clear();
-            Lollipop.proteoform_community.delta_mass_peaks.Clear();
+            Lollipop.proteoform_community.families.Clear();
+            foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.ed);
+            foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.ed);
+            Lollipop.proteoform_community.relations_in_peaks.RemoveAll(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.ed);
+            Lollipop.proteoform_community.delta_mass_peaks.RemoveAll(k => k.relation_type == ProteoformComparison.et || k.relation_type == ProteoformComparison.ed);
 
             dgv_ET_Pairs.DataSource = null;
             dgv_ET_Peak_List.DataSource = null;
