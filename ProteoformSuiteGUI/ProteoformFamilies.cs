@@ -19,20 +19,32 @@ namespace ProteoformSuite
         }
 
         private void ProteoformFamilies_Load(object sender, EventArgs e)
-        {
-            construct_families();
-            fill_proteoform_families();
-        }
+        { }
 
         public void construct_families()
         {
-            if (Lollipop.proteoform_community.families.Count == 0) Lollipop.proteoform_community.construct_families();
+            if (Lollipop.proteoform_community.families.Count == 0) run_the_gamut();
         }
 
-        public void fill_proteoform_families()
+        private void run_the_gamut()
+        {
+            this.Cursor = Cursors.WaitCursor;
+            Lollipop.proteoform_community.construct_families();
+            fill_proteoform_families();
+            update_figures_of_merit();
+            this.Cursor = Cursors.Default;
+        }
+
+        private void fill_proteoform_families()
         {
             DisplayUtility.FillDataGridView(dgv_proteoform_families, Lollipop.proteoform_community.families);
             format_families_dgv();
+        }
+
+        private void update_figures_of_merit()
+        {
+            this.tb_TotalFamilies.Text = Lollipop.proteoform_community.families.Count().ToString();
+            this.tb_IdentifiedFamilies.Text = Lollipop.proteoform_community.families.Count(f => f.theoretical_count > 0).ToString();
         }
 
         private void format_families_dgv()
@@ -85,6 +97,12 @@ namespace ProteoformSuite
                 }
                 else dgv_proteoform_family_members.Rows.Clear();
             }
+        }
+
+        private void Families_update_Click(object sender, EventArgs e)
+        {
+            Lollipop.proteoform_community.families.Clear();
+            run_the_gamut();
         }
     }
 }

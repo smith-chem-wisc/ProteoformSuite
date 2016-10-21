@@ -19,28 +19,26 @@ namespace ProteoformSuite
         public AggregatedProteoforms()
         {
             InitializeComponent();
+            InitializeSettings();
         }
 
         public void AggregatedProteoforms_Load(object sender, EventArgs e)
-        {
-            InitializeSettings();
-            aggregate_proteoforms();
-            FillAggregatesTable();
-        }
+        { }
 
         public void aggregate_proteoforms()
         {
-            if (Lollipop.proteoform_community.experimental_proteoforms.Count() == 0) Lollipop.aggregate_proteoforms();
-            updateFiguresOfMerit();
-            initial_load = false;
+            if (Lollipop.proteoform_community.experimental_proteoforms.Count() == 0) RunTheGamut();
         }
 
         private void RunTheGamut()
         {
+            this.Cursor = Cursors.WaitCursor;
             ClearListsAndTables();
             Lollipop.aggregate_proteoforms();
             FillAggregatesTable();
             updateFiguresOfMerit();
+            this.Cursor = Cursors.Default;
+            initial_load = false;
         }
 
         private void InitializeSettings()
