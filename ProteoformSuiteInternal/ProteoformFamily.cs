@@ -12,14 +12,20 @@ namespace ProteoformSuiteInternal
         }
         public int lysine_count { get; set; } = -1;
         public List<ExperimentalProteoform> experimental_proteoforms { get; set; }
-        public int experimental_count { get; set; }
-        public List<TheoreticalProteoform> theoretical_proteoforms { get; set; }
-        public int theoretical_count { get; set; }
-        public int relation_count { get; set; }
-        public HashSet<ProteoformRelation> relations
+        public int experimental_count
         {
-            get { return new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted)), new RelationComparer()); }
+            get { return this.experimental_proteoforms.Count; }
         }
+        public List<TheoreticalProteoform> theoretical_proteoforms { get; set; }
+        public int theoretical_count
+        {
+            get { return this.theoretical_proteoforms.Count; }
+        }
+        public int relation_count
+        {
+            get { return this.relations.Count; }
+        }
+        public HashSet<ProteoformRelation> relations { get; set; }
         public List<Proteoform> _proteoforms;
         public List<Proteoform> proteoforms
         {
@@ -33,10 +39,8 @@ namespace ProteoformSuiteInternal
                 else this.lysine_count = -1;
 
                 this.experimental_proteoforms = value.Where(p => p is ExperimentalProteoform).Select(p => (ExperimentalProteoform)p).ToList();
-                this.experimental_count = experimental_proteoforms.Count();
                 this.theoretical_proteoforms = value.Where(p => p is TheoreticalProteoform).Select(p => (TheoreticalProteoform)p).ToList();
-                this.theoretical_count = theoretical_proteoforms.Count();
-                this.relation_count = new HashSet<MassDifference>(value.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted))).Count();
+                this.relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted)), new RelationComparer());
             }
         }
 

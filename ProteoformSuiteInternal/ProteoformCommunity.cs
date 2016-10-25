@@ -11,6 +11,14 @@ namespace ProteoformSuiteInternal
     {
         public ExperimentalProteoform[] experimental_proteoforms { get; set; } = new ExperimentalProteoform[0];
         public TheoreticalProteoform[] theoretical_proteoforms { get; set; } = new TheoreticalProteoform[0];
+        public bool has_e_proteoforms
+        {
+            get { return experimental_proteoforms.Length > 0; }
+        }
+        public bool has_e_and_t_proteoforms
+        {
+            get { return experimental_proteoforms.Length > 0 && theoretical_proteoforms.Length > 0; }
+        }
         public Dictionary<string, TheoreticalProteoform[]> decoy_proteoforms = new Dictionary<string, TheoreticalProteoform[]>();
         public List<ProteoformRelation> relations_in_peaks = new List<ProteoformRelation>();
         public List<DeltaMassPeak> delta_mass_peaks = new List<DeltaMassPeak>();
