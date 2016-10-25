@@ -218,6 +218,10 @@ namespace ProteoformSuiteInternal
         public static decimal retention_time_tolerance = 3; //min
         public static decimal missed_monos = 3;
         public static decimal missed_lysines = 1;
+        public static double min_rel_abundance = 0;
+        public static int min_agg_count = 0;
+        public static int min_num_CS = 0;
+
         public static void aggregate_proteoforms()
         {
             //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
@@ -236,7 +240,7 @@ namespace ProteoformSuiteInternal
             }
             else
             {
-                remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true).ToArray();
+                remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.relative_abundance >= Lollipop.min_rel_abundance && p.num_charge_states >= Lollipop.min_num_CS).ToArray();
                 remaining_quant_components = Lollipop.raw_experimental_components; // there are no extra quantitative files for unlablel
             }
 
@@ -505,7 +509,7 @@ namespace ProteoformSuiteInternal
 
         public static void make_et_relationships()
         {
-            Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
+            Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.aggregated_components.Count >= Lollipop.min_agg_count).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
             et_average_noise_level = calculate_average_noise(Lollipop.et_relations, Lollipop.et_high_mass_difference, Lollipop.et_low_mass_difference);
             Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations);
         }
