@@ -78,7 +78,7 @@ namespace ProteoformSuiteInternal
 
             int maxPermutations = 500;
             List<GoTerm> completeDatabaseGoTerms = new List<GoTerm>();
-            ConcurrentBag<int> countOfGoTermInSubset = new ConcurrentBag<int>();
+            List<int> countOfGoTermInSubset = new List<int>();
 
             foreach (KeyValuePair<GoTerm, int> pair in goMasterSet)
             {
@@ -88,21 +88,91 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            IList<GoTerm> copyList = new List<GoTerm>();
-            copyList = completeDatabaseGoTerms;
-            List<GoTerm> subset = new List<GoTerm>();
+            List<List<int>> indices = new List<List<int>>();
 
             for (int i = 0; i < maxPermutations; i++)
             {
-                int termCount = 0;              
-                copyList.Shuffle();
-                subset = copyList.Take(allSampleGoTerms).ToList();
+                indices.Add(GenerateRandom(allSampleGoTerms, 0, completeDatabaseGoTerms.Count()));
+            }
+
+            object sync = new object();
+
+            GoTerm[] cDGT = completeDatabaseGoTerms.ToArray();
+
+            Parallel.ForEach(indices, set => 
+            {
+                List<GoTerm> subset = new List<GoTerm>();
+                foreach (int index in set)
+                {
+                    lock (sync)
+                    {
+                        subset.Add(cDGT[index]);
+                    };              
+                }
+
+                int termCount = 0;
                 termCount = (from t in subset
                              where t.id == _goTerm.id
                              select t).ToList().Count();
-                countOfGoTermInSubset.Add(termCount);
-            }
+                lock (sync)
+                {
+                    countOfGoTermInSubset.Add(termCount);
+                };
+            });
+            int someCount = completeDatabaseGoTerms.Count();
+
             return (double)(countOfGoTermInSubset.Count(i => i >= k)) /(countOfGoTermInSubset.Count());
+        }
+
+        static Random random = new Random();
+
+        public static List<int> GenerateRandom(int count, int min, int max)
+        {
+            if (max <= min || count < 0 ||
+                    // max - min > 0 required to avoid overflow
+                    (count > max - min && max - min > 0))
+            {
+                // need to use 64-bit to support big ranges (negative min, positive max)
+                throw new ArgumentOutOfRangeException("Range " + min + " to " + max +
+                        " (" + ((Int64)max - (Int64)min) + " values), or count " + count + " is illegal");
+            }
+
+            // generate count random values.
+            HashSet<int> candidates = new HashSet<int>();
+
+            // start count values before max, and end at max
+            for (int top = max - count; top < max; top++)
+            {
+                // May strike a duplicate.
+                // Need to add +1 to make inclusive generator
+                // +1 is safe even for MaxVal max value because top < max
+                if (!candidates.Add(random.Next(min, top + 1)))
+                {
+                    // collision, add inclusive max.
+                    // which could not possibly have been added before.
+                    candidates.Add(top);
+                }
+            }
+
+            // load them in to a list, to sort
+            List<int> result = candidates.ToList();
+
+            // shuffle the results because HashSet has messed
+            // with the order, and the algorithm does not produce
+            // random-ordered results (e.g. max-1 will never be the first value)
+            for (int i = result.Count - 1; i > 0; i--)
+            {
+                int k = random.Next(i + 1);
+                int tmp = result[k];
+                result[k] = result[i];
+                result[i] = tmp;
+            }
+            return result;
+        }
+
+        public static List<int> GenerateRandom(int count)
+        {
+            return GenerateRandom(count, 0, Int32.MaxValue);
         }
 
         private int sampleGoTermCount(GoTerm _goTerm, List<Protein> proteinsInSample)

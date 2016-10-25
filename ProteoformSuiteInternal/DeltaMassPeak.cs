@@ -18,7 +18,7 @@ namespace ProteoformSuiteInternal
                 _grouped_relations = value;
                 this.peak_relation_group_count = value.Count;
                 this.peak_deltaM_average = value.Select(r => r.delta_mass).Average();
-                if (grouped_relations[0].connected_proteoforms[1].GetType() == typeof(TheoreticalProteoform))
+                if (grouped_relations[0].connected_proteoforms[1] is TheoreticalProteoform)
                 {
                     this.peak_accepted = this.peak_relation_group_count >= Lollipop.min_signal_noise * Lollipop.et_average_noise_level;
                     this.peak_group_fdr = Lollipop.et_average_noise_level / (Lollipop.et_average_noise_level + this.peak_relation_group_count) * 100;

@@ -39,10 +39,10 @@ namespace ProteoformSuite
             rbtn_totalIntensity.CheckedChanged += new EventHandler(datatableSelection_CheckedChange);
             rbtn_variance.CheckedChanged += new EventHandler(datatableSelection_CheckedChange);
             rbtn_pValue.CheckedChanged += new EventHandler(datatableSelection_CheckedChange);
-          
-            nud_pValue.Value = 0.1m;
-            nud_ratio.Value = 1.0m;
-            nud_intensity.Value = 10000;
+
+            nud_pValue.Value = 0.05m;
+            nud_ratio.Value = 2.0m;
+            nud_intensity.Value = 100000;
 
             nud_pValue.ValueChanged += new EventHandler(updateGoTermsTable);
             nud_ratio.ValueChanged += new EventHandler(updateGoTermsTable);
@@ -51,7 +51,10 @@ namespace ProteoformSuite
             cmbx_goAspect.Items.Add(aspect.biologicalProcess);
             cmbx_goAspect.Items.Add(aspect.cellularComponent);
             cmbx_goAspect.Items.Add(aspect.molecularFunction);
-            cmbx_goAspect.SelectedIndex = 0 ;
+
+            cmbx_goAspect.SelectedIndexChanged -= cmbx_goAspect_SelectedIndexChanged; //disable event on load to prevent premature firing
+            cmbx_goAspect.SelectedIndex = 0;
+            cmbx_goAspect.SelectedIndexChanged += cmbx_goAspect_SelectedIndexChanged;
 
             goMasterSet = getDatabaseGoNumbers(Lollipop.proteins);
         }
@@ -60,7 +63,7 @@ namespace ProteoformSuite
         {
             foreach (InputFile inputFile in Lollipop.input_files)
             {
-                 inputFile.totalIntensity = Lollipop.raw_experimental_components.Where(s => s.input_file == inputFile).ToList().Sum(a => a.intensity_sum);
+                inputFile.totalIntensity = Lollipop.raw_experimental_components.Where(s => s.input_file == inputFile).ToList().Sum(a => a.intensity_sum);
             }
         }
 
@@ -70,16 +73,16 @@ namespace ProteoformSuite
                 dt.Reset();
             addColumnsToDataSet();
             addRowsToDataSet();
-            rbtn_neucodeRatio.Checked  = true;
+            rbtn_neucodeRatio.Checked = true;
             dgv_quantification_results.DataSource = quantTables.Tables["ratio"];
             interestingProteins = getInterestingProteins();
             goTermNumbers = getGoTermNumbers(interestingProteins);
             fillGoTermsTable();
         }
 
-        private  void fillGoTermsTable()
+        private void fillGoTermsTable()
         {
-            DisplayUtility.FillDataGridView(dgv_goAnalysis, goTermNumbers.Where(x=>x.goTerm.aspect.ToString() == cmbx_goAspect.SelectedItem.ToString()));
+            DisplayUtility.FillDataGridView(dgv_goAnalysis, goTermNumbers.Where(x => x.goTerm.aspect.ToString() == cmbx_goAspect.SelectedItem.ToString()));
         }
 
         private void updateGoTermsTable(object s, EventArgs e)
@@ -89,7 +92,7 @@ namespace ProteoformSuite
                 interestingProteins = getInterestingProteins();
                 goTermNumbers = getGoTermNumbers(interestingProteins);
                 fillGoTermsTable();
-            }        
+            }
         }
 
         private bool IsEmpty(DataSet dataSet)
@@ -301,17 +304,17 @@ namespace ProteoformSuite
                 variance[0] = eP.accession;
                 pValue[0] = eP.accession;
 
-                ratio[1] = string.Join("; ", eP.family.theoretical_proteoforms.Select(t=> t.accession).ToList());
-                intensity[1] = string.Join("; ", eP.family.theoretical_proteoforms.Select(t=> t.accession).ToList());
-                variance[1] = string.Join("; ", eP.family.theoretical_proteoforms.Select(t=> t.accession).ToList());
-                pValue[1] = string.Join("; ", eP.family.theoretical_proteoforms.Select(t=> t.accession).ToList());
+                ratio[1] = string.Join("; ", eP.family.theoretical_proteoforms.Select(t => t.accession).ToList());
+                intensity[1] = string.Join("; ", eP.family.theoretical_proteoforms.Select(t => t.accession).ToList());
+                variance[1] = string.Join("; ", eP.family.theoretical_proteoforms.Select(t => t.accession).ToList());
+                pValue[1] = string.Join("; ", eP.family.theoretical_proteoforms.Select(t => t.accession).ToList());
 
                 for (int i = 2; i < inputFileLists.Count(); i++)
                 {
-                        ratio[i] = eP.weightedRatioAndWeightedVariance(inputFileLists[i].DistinctBy(x=>x.UniqueId).ToList()).ratio;
-                        intensity[i] = eP.weightedRatioAndWeightedVariance(inputFileLists[i].DistinctBy(x => x.UniqueId).ToList()).intensity;
-                        variance[i] = eP.weightedRatioAndWeightedVariance(inputFileLists[i].DistinctBy(x => x.UniqueId).ToList()).variance;
-                        pValue[i] = eP.weightedRatioAndWeightedVariance(inputFileLists[i].DistinctBy(x => x.UniqueId).ToList()).pValue;
+                    ratio[i] = eP.weightedRatioAndWeightedVariance(inputFileLists[i].DistinctBy(x => x.UniqueId).ToList()).ratio;
+                    intensity[i] = eP.weightedRatioAndWeightedVariance(inputFileLists[i].DistinctBy(x => x.UniqueId).ToList()).intensity;
+                    variance[i] = eP.weightedRatioAndWeightedVariance(inputFileLists[i].DistinctBy(x => x.UniqueId).ToList()).variance;
+                    pValue[i] = eP.weightedRatioAndWeightedVariance(inputFileLists[i].DistinctBy(x => x.UniqueId).ToList()).pValue;
                 }
 
                 quantTables.Tables["ratio"].Rows.Add(ratio);
@@ -331,7 +334,7 @@ namespace ProteoformSuite
 
             if (value > (min + (max - min) / 2)) // positive - green
             {
-                val = (Math.Min(value, max)-middleValue)/(max-middleValue);
+                val = (Math.Min(value, max) - middleValue) / (max - middleValue);
                 g = Convert.ToByte(255 * val);
             }
             else // negative red
@@ -360,7 +363,7 @@ namespace ProteoformSuite
                     else
                     {
                         dgv_quantification_results.Rows[oneCell.RowIndex].Cells[oneCell.ColumnIndex].Style.BackColor = HeatMapColor(d, -1, 1);
-                    }                  
+                    }
                 }
             }
         }
@@ -460,12 +463,12 @@ namespace ProteoformSuite
             {
                 string experimentalProteoform = drow["Experimental_Proteoform"].ToString();
                 double xValue = Convert.ToDouble(drow[cmbx_quantColumns.SelectedItem.ToString()]);
-                string searchExpression = "Experimental_Proteoform = '" + experimentalProteoform +"'";
+                string searchExpression = "Experimental_Proteoform = '" + experimentalProteoform + "'";
                 DataRow[] foundRows = quantTables.Tables["pValue"].Select(searchExpression);
                 string foundValue = foundRows[0][cmbx_quantColumns.SelectedItem.ToString()].ToString();
                 double yValue = Convert.ToDouble(foundValue);
                 if (yValue > 0)
-                    yValue = - Math.Log10(yValue);
+                    yValue = -Math.Log10(yValue);
                 ct_volcano_logFold_logP.Series["Series1"].Points.AddXY(xValue, yValue);
             }
         }
@@ -488,19 +491,25 @@ namespace ProteoformSuite
             string pValueExpression = expression + "<=" + nud_pValue.Value.ToString();
             string intensityExpression = expression + ">=" + nud_intensity.Value.ToString();
 
+            string garbage = expression + ratioExpression + pValueExpression + intensityExpression;
+
             DataRow[] rRows = quantTables.Tables["ratio"].Select(ratioExpression);
             DataRow[] pRows = quantTables.Tables["pValue"].Select(pValueExpression);
             DataRow[] iRows = quantTables.Tables["intensity"].Select(intensityExpression);
+
+            int rcount = rRows.Count();
+            int pcount = rRows.Count();
+            int icount = iRows.Count();
 
             foreach (DataRow rRow in rRows)
             {
                 string value = rRow["Experimental_Proteoform"].ToString();
                 if (value.Length > 0)
                 {
-                    List<string> accessions =  Array.ConvertAll(value.Split(';'), p => p.Trim()).ToList();
+                    List<string> accessions = Array.ConvertAll(value.Split(';'), p => p.Trim()).ToList();
                     foreach (string a in accessions)
                     {
-                        if(a.Length > 0)
+                        if (a.Length > 0)
                             rAccessions.Add(a);
                     }
                 }
@@ -534,27 +543,39 @@ namespace ProteoformSuite
                 }
             }
             allAccessions.AddRange(iAccessions.Distinct());
-            List<string> distinctAccessions = allAccessions.Distinct().ToList();
+            List<string> distinctAccessions = allAccessions.Distinct().ToList(); //here is a list of experimental proteoform accessions that meet the selection criteria of pValue, Intensity and Ratio
 
-            foreach (string acc in distinctAccessions)
+            foreach (string acc in distinctAccessions) // here were getting the accession numbers of the proteins linked to interesting experimental proteoforms
             {
-                if (allAccessions.Where(a => a == acc).Count() == 3)
+                if (allAccessions.Where(a => a == acc).Count() == 3) //this means that the particual experimental proteoform met all three selection criteria
                 {
-                    List<ProteoformFamily> famlist = (from f in Lollipop.proteoform_community.families
-                                from e in f.experimental_proteoforms
-                                where e.accession == acc
-                                select f).ToList();
-
-                    List<string> tlist = famlist.SelectMany(t => t.theoretical_proteoforms.Select(a => a.accession)).ToList();
-
+                    ExperimentalProteoform interestingProteoform = Lollipop.proteoform_community.experimental_proteoforms.Where(iP => iP.accession == acc).FirstOrDefault();
+                    List<ProteoformFamily> famlist = new List<ProteoformFamily>();
+                    if (interestingProteoform != null)
+                        famlist = Lollipop.proteoform_community.families.Where(fam => fam.experimental_proteoforms.Contains(interestingProteoform)).ToList(); // proteoform families containing the selected experimental proteoform
+                    List<TheoreticalProteoform> tpList = new List<TheoreticalProteoform>();
+                    if (famlist.Count() > 0)
+                    {
+                        foreach (ProteoformFamily pf in famlist)
+                        {
+                            if (pf.theoretical_proteoforms.Count() > 0)
+                                tpList.AddRange(famlist.SelectMany(t => t.theoretical_proteoforms));
+                        }
+                    }
+                    List<string> tlist = new List<string>();
+                    if (tpList.Count() > 0)
+                        tlist = tpList.Select(tacc => tacc.accession).ToList();
                     foreach (string accession in tlist)
                     {
-                        interestingProteins.AddRange(Lollipop.proteins.Where(protein => protein.accession == accession).ToList());
+                        string someJunk = accession.Replace("_T", "!").Split('!').FirstOrDefault();
+                        Protein p = Lollipop.proteins.FirstOrDefault(protein => protein.accession == someJunk);
+                        if (p != null)
+                            if (!interestingProteins.Any(theoreticalProtein => theoreticalProtein.accession == p.accession))
+                                interestingProteins.Add(p);
                     }
                 }
-            
             }
-            return interestingProteins.DistinctBy(p => p.accession).ToList();
+            return interestingProteins;
         }
 
         private Dictionary<GoTerm, int> getDatabaseGoNumbers(Protein[] proteinList)
@@ -586,7 +607,7 @@ namespace ProteoformSuite
         {
             List<GoTermNumber> numbers = new List<GoTermNumber>();
             List<GoTerm> terms = new List<GoTerm>();
-            foreach (Protein  p in interestingProteins)
+            foreach (Protein p in interestingProteins)
             {
                 foreach (GoTerm g in p.goTerms)
                 {
