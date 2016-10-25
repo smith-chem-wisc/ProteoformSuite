@@ -63,6 +63,18 @@ namespace ProteoformSuite
             nUD_Missed_Ks.Minimum = 0;
             nUD_Missed_Ks.Maximum = 3;
             nUD_Missed_Ks.Value = Lollipop.missed_lysines;
+
+            nUD_rel_abundance.Minimum = 0;
+            nUD_rel_abundance.Maximum = 100;
+            nUD_rel_abundance.Value = Convert.ToDecimal(Lollipop.min_rel_abundance);
+
+            nUD_min_agg_count.Minimum = 0;
+            nUD_min_agg_count.Maximum = 100;
+            nUD_min_agg_count.Value = Lollipop.min_agg_count;
+
+            nUD_min_num_CS.Minimum = 0;
+            nUD_min_num_CS.Maximum = 20;
+            nUD_min_num_CS.Value = Lollipop.min_num_CS;
         }
 
         public void FillAggregatesTable()
@@ -210,6 +222,30 @@ namespace ProteoformSuite
             File.WriteAllLines(working_directory, mz_targets);
             MessageBox.Show("Successfully saved target m/z list.");
 
+        }
+
+        private void nUD_rel_abundance_ValueChanged(object sender, EventArgs e)
+        {
+            if (!initial_load)
+            {
+                Lollipop.min_rel_abundance = Convert.ToDouble(nUD_rel_abundance.Value);
+            }
+        }
+
+        private void nUD_min_agg_count_ValueChanged(object sender, EventArgs e)
+        {
+            if (!initial_load)
+            {
+                Lollipop.min_agg_count = Convert.ToInt16(nUD_min_agg_count.Value);
+            }
+        }
+
+        private void nUD_min_num_CS_ValueChanged(object sender, EventArgs e)
+        {
+            if (!initial_load)
+            {
+                Lollipop.min_num_CS = Convert.ToInt16(nUD_min_num_CS.Value);
+            }
         }
     }
 }
