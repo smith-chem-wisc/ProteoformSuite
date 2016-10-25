@@ -30,11 +30,12 @@ namespace ProteoformSuite
         public void initialize_settings()
         {
             this.tb_familyBuildFolder.Text = Lollipop.family_build_folder_path;
+            this.nud_decimalRoundingLabels.Value = Convert.ToDecimal(Lollipop.deltaM_edge_display_rounding);
         }
 
         public void construct_families()
         {
-            if (Lollipop.proteoform_community.families.Count == 0) run_the_gamut();
+            if (Lollipop.proteoform_community.families.Count <= 0 && Lollipop.proteoform_community.has_e_proteoforms) run_the_gamut();
         }
 
         private void run_the_gamut()
@@ -193,6 +194,11 @@ namespace ProteoformSuite
         {
             Lollipop.proteoform_community.families.Clear();
             run_the_gamut();
+        }
+
+        private void nud_decimalRoundingLabels_ValueChanged(object sender, EventArgs e)
+        {
+            Lollipop.deltaM_edge_display_rounding = Convert.ToInt32(this.nud_decimalRoundingLabels.Value);
         }
     }
 }

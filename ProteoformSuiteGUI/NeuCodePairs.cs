@@ -22,14 +22,20 @@ namespace ProteoformSuite
             InitializeComponent();
             this.ct_IntensityRatio.MouseClick += new MouseEventHandler(ct_IntensityRatio_MouseClick);
             this.ct_LysineCount.MouseClick += new MouseEventHandler(ct_LysineCount_MouseClick);
+            InitializeParameterSet();
         }
 
         public void NeuCodePairs_Load(object sender, EventArgs e)
+        { }
+
+        public void display_neucode_pairs()
         {
-            InitializeParameterSet();
-            GraphNeuCodePairs();
-            FillNeuCodePairsDGV();
-            initial_load = false;
+            if (Lollipop.raw_neucode_pairs.Count > 0)
+            {
+                GraphNeuCodePairs();
+                FillNeuCodePairsDGV();
+                initial_load = false;
+            }
         }
 
         public void FillNeuCodePairsDGV()

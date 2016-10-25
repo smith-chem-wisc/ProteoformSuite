@@ -14,44 +14,30 @@ namespace ProteoformSuite
         }
 
         public void RawExperimentalComponents_Load(object sender, EventArgs e)
-        {
-            load_raw_components();
-        }
+        { }
 
         public void load_raw_components()
         {
-            if (Lollipop.raw_experimental_components.Count == 0)
+            if (Lollipop.input_files.Any(f => f.purpose == Purpose.Identification))
             {
-                //try
-                //{
-                //    Lollipop.process_raw_components(); //Includes reading correction factors if present
-                //}
-                //catch (Exception ex)
-                //{
-                //    MessageBox.Show(ex.Message);
-                //}
-
+                if (Lollipop.raw_experimental_components.Count == 0)
                     Lollipop.process_raw_components(); //Includes reading correction factors if present
+                this.FillRawExpComponentsTable();
 
-            }
-
-            this.FillRawExpComponentsTable();
-
-
-            if (Lollipop.raw_quantification_components.Count == 0)
-            {
-                try
+                if (Lollipop.raw_quantification_components.Count == 0)
                 {
-                    Lollipop.process_raw_quantification_components(); //Includes reading correction factors if present
+                    try
+                    {
+                        Lollipop.process_raw_quantification_components(); //Includes reading correction factors if present
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
+                if (Lollipop.raw_quantification_components.Count > 0)
+                    this.FillRawQuantificationComponentsTable();
             }
-            if (Lollipop.raw_quantification_components. Count > 0)
-             this.FillRawQuantificationComponentsTable();
-
         }
 
         public void FillRawExpComponentsTable()

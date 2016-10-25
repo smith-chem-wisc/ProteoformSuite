@@ -65,8 +65,16 @@ namespace ProteoformSuite
 
         // RESULTS TOOL STRIP
         public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(loadDeconvolutionResults); }
-        private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(rawExperimentalComponents); }
-        private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(neuCodePairs); }
+        private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(rawExperimentalComponents);
+            rawExperimentalComponents.load_raw_components();
+        }
+        private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(neuCodePairs);
+            neuCodePairs.display_neucode_pairs();
+        }
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(aggregatedProteoforms);
@@ -90,7 +98,6 @@ namespace ProteoformSuite
             proteoformFamilies.construct_families();
         }
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e) { showForm(quantification); }
-
         private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             resultsSummary.createResultsSummary();

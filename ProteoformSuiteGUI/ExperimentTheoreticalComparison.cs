@@ -46,7 +46,7 @@ namespace ProteoformSuite
 
         public void compare_et()
         {
-            if (Lollipop.et_relations.Count == 0) RunTheGamut();
+            if (Lollipop.et_relations.Count <= 0 && Lollipop.proteoform_community.has_e_and_t_proteoforms) RunTheGamut();
         }
 
         private void RunTheGamut()
