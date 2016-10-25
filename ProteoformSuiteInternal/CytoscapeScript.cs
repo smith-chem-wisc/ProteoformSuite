@@ -42,18 +42,18 @@ namespace ProteoformSuiteInternal
 
                 //Load Tables
                 "network import file file=\"" + this.edges_path + "\" firstRowAsColumnNames=true delimiters=\"\\t\" indexColumnSourceInteraction=\"1\" indexColumnTargetInteraction=\"3\" startLoadRow=\"0\" dataTypeList=\"s,s,s,s\"",
-                "command sleep duration=" + Math.Round((1 * sleep_factor), 2).ToString(),
+                "command sleep duration=" + (0.8 + Math.Round((1.0 * sleep_factor), 2)).ToString(),
                 "table import file file =\"" + this.nodes_path + "\" startLoadRow=\"0\" keyColumnIndex=\"1\" DataTypeTargetForNetworkCollection=\"Node Table Columns\" dataTypeList=\"s,s,i\"",
-                "command sleep duration=" + Math.Round((0.2 * sleep_factor), 2).ToString(),
+                "command sleep duration=" + (0.2 + Math.Round((0.2 * sleep_factor), 2)).ToString(),
 
 
                 //Load Settings
                 "vizmap load file file=\"" + this.styles_path + "\"",
                 "command sleep duration=0.5",
                 "vizmap apply styles=\"" + this.style_name + "\"",
-                "command sleep duration=" + Math.Round((1 * sleep_factor), 2).ToString(),
+                "command sleep duration=" + (0.8 + Math.Round((1.0 * sleep_factor), 2)).ToString(),
                 "layout degree-circle",
-                "command sleep duration=" + Math.Round((0.5 * sleep_factor), 2).ToString(),
+                "command sleep duration=" + (0.5 + Math.Round((0.5 * sleep_factor), 2)).ToString(),
                 "view fit content"
             });
         }
@@ -84,7 +84,7 @@ namespace ProteoformSuiteInternal
         private string get_proteoform_shared_name(Proteoform p)
         {
             string result;
-            if (p.GetType() == typeof(ExperimentalProteoform)) result = p.accession + "_" + ((ExperimentalProteoform)p).agg_mass;
+            if (p.GetType() == typeof(ExperimentalProteoform)) result = p.accession + "_" + Math.Round(((ExperimentalProteoform)p).agg_mass, Lollipop.deltaM_edge_display_rounding);
             else if (p.GetType() == typeof(TheoreticalProteoform)) result = p.accession + "_" + ((TheoreticalProteoform)p).ptm_list_string();
             else result = p.accession;
             return result;
@@ -103,7 +103,7 @@ namespace ProteoformSuiteInternal
             foreach (TheoreticalProteoform p in families.SelectMany(f => f.theoretical_proteoforms))
             {
                 string node_type = unmodified_theoretical_label;
-                if (((TheoreticalProteoform)p).ptm_list.Count > 1) node_type = modified_theoretical_label;
+                if (p.ptm_list.Count > 0) node_type = modified_theoretical_label;
                 string observations = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p), node_type, observations }) + Environment.NewLine;
             }

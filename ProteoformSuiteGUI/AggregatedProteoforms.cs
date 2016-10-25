@@ -27,7 +27,12 @@ namespace ProteoformSuite
 
         public void aggregate_proteoforms()
         {
-            if (Lollipop.proteoform_community.experimental_proteoforms.Count() == 0) RunTheGamut();
+            if (ready_to_aggregate() && !Lollipop.proteoform_community.has_e_proteoforms) RunTheGamut();
+        }
+
+        private bool ready_to_aggregate()
+        {
+            return Lollipop.neucode_labeled && Lollipop.raw_neucode_pairs.Count > 0 || Lollipop.raw_experimental_components.Count > 0;
         }
 
         private void RunTheGamut()
