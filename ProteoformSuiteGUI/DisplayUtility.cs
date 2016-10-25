@@ -81,7 +81,7 @@ namespace ProteoformSuite
 
             ct.ChartAreas[0].AxisY.StripLines.Clear();
             double stripline_value;
-            if (relations[0].connected_proteoforms[1].GetType() == typeof(TheoreticalProteoform))
+            if (relations[0].connected_proteoforms[1] is TheoreticalProteoform)
             {
                 stripline_value = Lollipop.et_average_noise_level * Lollipop.min_signal_noise;
             }
@@ -104,7 +104,7 @@ namespace ProteoformSuite
             ct.Series[relations_series].Points.Clear();
 
             double noise;
-            if (relations[0].connected_proteoforms[1].GetType() == typeof(TheoreticalProteoform)) noise = Lollipop.et_average_noise_level * Lollipop.min_signal_noise;
+            if (relations[0].connected_proteoforms[1] is TheoreticalProteoform) noise = Lollipop.et_average_noise_level * Lollipop.min_signal_noise;
             else noise = Lollipop.ee_average_noise_level * Lollipop.min_signal_noise;
             List<DeltaMassPeak> peaks_ordered = peaks.OrderBy(r => r.peak_deltaM_average).ToList();
             foreach (DeltaMassPeak peak in peaks_ordered)
