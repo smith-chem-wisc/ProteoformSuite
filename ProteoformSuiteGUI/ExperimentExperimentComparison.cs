@@ -28,6 +28,7 @@ namespace ProteoformSuite
             dgv_EE_Peaks.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
             InitializeParameterSet();
             InitializeMassWindow();
+            initial_load = false; ;
         }
 
         public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
@@ -45,7 +46,6 @@ namespace ProteoformSuite
             Lollipop.make_ee_relationships();
             this.FillTablesAndCharts();
             this.Cursor = Cursors.Default;
-            initial_load = false;
         }
 
         private void ClearListsAndTables()
@@ -150,11 +150,11 @@ namespace ProteoformSuite
 
             nUD_PeakWidthBase.Minimum = 0.001m;
             nUD_PeakWidthBase.Maximum = 0.5000m;
-            nUD_PeakWidthBase.Value = Convert.ToDecimal(Lollipop.peak_width_base);
+            nUD_PeakWidthBase.Value = Convert.ToDecimal(Lollipop.peak_width_base_ee);
 
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
-            nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(Lollipop.min_signal_noise);
+            nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(Lollipop.min_peak_count_ee);
         }
 
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
@@ -169,6 +169,7 @@ namespace ProteoformSuite
             {
                 dgv_EE_Peaks.EndEdit();
                 dgv_EE_Peaks.Update();
+                dgv_EE_Relations.Refresh();
             }
         }
 
@@ -226,12 +227,22 @@ namespace ProteoformSuite
 
         private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load) Lollipop.peak_width_base = Convert.ToDouble(nUD_PeakWidthBase.Value);
+            if (!initial_load) Lollipop.peak_width_base_ee = Convert.ToDouble(nUD_PeakWidthBase.Value);
         }
 
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load) Lollipop.min_signal_noise = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
+            if (!initial_load)
+            {
+                Lollipop.min_peak_count_ee = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
+                Parallel.ForEach(Lollipop.ee_peaks, p =>
+                    p.peak_accepted = p.peak_relation_group_count >= Lollipop.min_peak_count_ee);
+                dgv_EE_Peaks.Refresh();
+                dgv_EE_Relations.Refresh();
+                ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+                StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count_ee };
+                ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+            }
         }
 
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)

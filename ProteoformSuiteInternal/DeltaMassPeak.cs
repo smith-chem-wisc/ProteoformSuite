@@ -8,7 +8,6 @@ namespace ProteoformSuiteInternal
     //Please see ProteoformRelation class for notes on naming this one.
     public class DeltaMassPeak : ProteoformRelation
     {
-        public double peak_width { get; } = Lollipop.peak_width_base;
         private List<ProteoformRelation> _grouped_relations;
         public List<ProteoformRelation> grouped_relations
         {
@@ -20,21 +19,28 @@ namespace ProteoformSuiteInternal
                 this.peak_deltaM_average = value.Select(r => r.delta_mass).Average();
                 if (grouped_relations[0].connected_proteoforms[1] is TheoreticalProteoform)
                 {
-                    this.peak_accepted = this.peak_relation_group_count >= Lollipop.min_signal_noise * Lollipop.et_average_noise_level;
-                    this.peak_group_fdr = Lollipop.et_average_noise_level / (Lollipop.et_average_noise_level + this.peak_relation_group_count) * 100;
+                    this.peak_accepted = this.peak_relation_group_count >= Lollipop.min_peak_count_et;
                 }
                 else
                 {
-                    this.peak_accepted = this.peak_relation_group_count >= Lollipop.min_signal_noise * Lollipop.ee_average_noise_level; 
-                    this.peak_group_fdr = Lollipop.ee_average_noise_level / (Lollipop.ee_average_noise_level + this.peak_relation_group_count) * 100;
+                    this.peak_accepted = this.peak_relation_group_count >= Lollipop.min_peak_count_ee;
                 }
             }
         }
         public double peak_deltaM_average { get; set; }
         public int peak_relation_group_count { get; set; }
         //public double decoy_relation_count { get; set; }
-        public double peak_group_fdr { get; set; }
-        public bool peak_accepted { get; set; }
+        public double peak_group_fdr { get; set; }  //TODO: determine how to set FDR 
+        public bool _peak_accepted;
+        public bool peak_accepted
+        {
+            get { return _peak_accepted;  }
+            set
+            {
+                _peak_accepted = value;
+                Parallel.ForEach(this.grouped_relations, r => r.accepted = value);
+            }
+        }
         public string mass_shifter { get; set; } = "0";
         public List<Modification> possiblePeakAssignments { get; set; }
         public string possiblePeakAssignments_string
@@ -67,8 +73,11 @@ namespace ProteoformSuiteInternal
                 double center_deltaM;
                 if (i > 0) center_deltaM = peak_deltaM_average;
                 else center_deltaM = this.delta_mass;
-                double lower_limit_of_peak_width = center_deltaM - Lollipop.peak_width_base / 2;
-                double upper_limit_of_peak_width = center_deltaM + Lollipop.peak_width_base / 2;
+                double peak_width_base;
+                if (ungrouped_relations[0].connected_proteoforms[1] is TheoreticalProteoform) peak_width_base = Lollipop.peak_width_base_et;
+                else peak_width_base = Lollipop.peak_width_base_ee;
+                double lower_limit_of_peak_width = center_deltaM - peak_width_base / 2;
+                double upper_limit_of_peak_width = center_deltaM + peak_width_base / 2;
                 this.grouped_relations = ungrouped_relations.
                     Where(relation => relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
             }
@@ -86,7 +95,7 @@ namespace ProteoformSuiteInternal
             foreach (KeyValuePair<string, Modification> knownMod in Lollipop.uniprotModificationTable)
             {
                 decimal modMass = Convert.ToDecimal(knownMod.Value.monoisotopic_mass_shift);
-                if (Math.Abs(Convert.ToDecimal(dMass) - modMass) <= Convert.ToDecimal(Lollipop.peak_width_base) / 2)
+                if (Math.Abs(Convert.ToDecimal(dMass) - modMass) <= Convert.ToDecimal(Lollipop.peak_width_base_et) / 2)
                     possiblePTMs.Add(knownMod.Value);
             }
             return possiblePTMs;
@@ -113,8 +122,8 @@ namespace ProteoformSuiteInternal
 
         public List<ProteoformRelation> find_nearby_decoys(List<ProteoformRelation> all_relations)
         {
-            double lower_limit_of_peak_width = this.peak_deltaM_average - Lollipop.peak_width_base / 2;
-            double upper_limit_of_peak_width = this.peak_deltaM_average + Lollipop.peak_width_base / 2;
+            double lower_limit_of_peak_width = this.peak_deltaM_average - Lollipop.peak_width_base_et / 2;
+            double upper_limit_of_peak_width = this.peak_deltaM_average + Lollipop.peak_width_base_et / 2;
             return all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
         }
     }
