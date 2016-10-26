@@ -64,7 +64,6 @@ namespace ProteoformSuiteInternal
         public int lysine_count { get; set; }
         public bool accepted { get; set; }
 
-
         public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass) : base(pf1, pf2, relation_type, delta_mass)
         {
             if (Lollipop.neucode_labeled) this.lysine_count = pf1.lysine_count;

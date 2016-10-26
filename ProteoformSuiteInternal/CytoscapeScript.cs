@@ -85,7 +85,7 @@ namespace ProteoformSuiteInternal
         {
             string result;
             if (p.GetType() == typeof(ExperimentalProteoform)) result = p.accession + "_" + Math.Round(((ExperimentalProteoform)p).agg_mass, Lollipop.deltaM_edge_display_rounding);
-            else if (p.GetType() == typeof(TheoreticalProteoform)) result = p.accession + "_" + ((TheoreticalProteoform)p).ptm_list_string();
+            else if (p.GetType() == typeof(TheoreticalProteoform)) result = ((TheoreticalProteoform)p).accession + "_" + ((TheoreticalProteoform)p).ptm_list_string();
             else result = p.accession;
             return result;
         }
