@@ -168,7 +168,6 @@ namespace ProteoformSuite
             dgv.Columns["modified_mass"].Visible = false;
             if (!Lollipop.neucode_labeled) { dgv.Columns["lysine_count"].Visible = false; }
 
-
             dgv.AllowUserToAddRows = false;
         }
 
@@ -195,6 +194,8 @@ namespace ProteoformSuite
             //making these columns invisible.
             dgv.Columns["is_target"].Visible = false;
             dgv.Columns["is_decoy"].Visible = false;
+            dgv.Columns["ptm_set"].Visible = false;
+            dgv.Columns["family"].Visible = false;
 
             dgv.AllowUserToAddRows = false;
         }
