@@ -77,8 +77,11 @@ namespace ProteoformSuiteInternal
 
         public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_relations)
         {
-            double lower_limit_of_peak_width = this.delta_mass - Lollipop.peak_width_base / 2;
-            double upper_limit_of_peak_width = this.delta_mass + Lollipop.peak_width_base / 2;
+            double peak_width_base;
+            if (all_relations[0].connected_proteoforms[1] is TheoreticalProteoform) peak_width_base = Lollipop.peak_width_base_et;
+            else peak_width_base = Lollipop.peak_width_base_ee;
+            double lower_limit_of_peak_width = this.delta_mass - peak_width_base / 2;
+            double upper_limit_of_peak_width = this.delta_mass + peak_width_base / 2;
             this.nearby_relations = all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width
                 && relation.delta_mass <= upper_limit_of_peak_width).ToList();
             return this.nearby_relations;
@@ -102,6 +105,7 @@ namespace ProteoformSuiteInternal
                 else if (this.relation_type == ProteoformComparison.ed) return "Experimental-Decoy";
                 else if (this.relation_type == ProteoformComparison.ef) return "Experimental-Unequal Lysine Count";
                 else return "";
+
             }
         }
 
@@ -134,6 +138,7 @@ namespace ProteoformSuiteInternal
                     return ((TheoreticalProteoform)connected_proteoforms[1]).modified_mass;
             }
         }
+
         public double agg_intensity_2
         {
             get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_intensity; } catch { return 0; } }

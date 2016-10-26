@@ -482,10 +482,10 @@ namespace ProteoformSuiteInternal
         public static double et_high_mass_difference=250;
         public static double no_mans_land_lowerBound = 0.22;
         public static double no_mans_land_upperBound = 0.88;
-        public static double peak_width_base = 0.0150;
-        public static double min_signal_noise = 3;
-        public static double et_average_noise_level;
-        public static double ee_average_noise_level;
+        public static double peak_width_base_ee = 0.0150;
+        public static double peak_width_base_et = 0.0150; //need to be separate so you can change one and not other. 
+        public static double min_peak_count_ee = 10;
+        public static double min_peak_count_et = 10;
         public static int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
         public static List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
         public static List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
@@ -497,21 +497,15 @@ namespace ProteoformSuiteInternal
         public static void make_et_relationships()
         {
             Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.aggregated_components.Count >= Lollipop.min_agg_count).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
-            et_average_noise_level = calculate_average_noise(Lollipop.et_relations, Lollipop.et_high_mass_difference, Lollipop.et_low_mass_difference);
             Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations);
         }
 
         public static void make_ee_relationships()
         {
             Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
-            ee_average_noise_level = calculate_average_noise(Lollipop.ee_relations, Lollipop.ee_max_mass_difference, 0);
             Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations);
         }
 
-        public static double calculate_average_noise(List<ProteoformRelation> relations_list, double max_mass, double min_mass)
-        {
-            return ((double)relations_list.Count / ((max_mass - min_mass) / peak_width_base));
-        }
         //PROTEOFORM FAMILIES -- see ProteoformCommunity
         public static string family_build_folder_path = "";
         public static int deltaM_edge_display_rounding = 2;
@@ -549,8 +543,10 @@ namespace ProteoformSuiteInternal
                 "Comparisons|et_low_mass_difference\t" + et_low_mass_difference.ToString(),
                 "Comparisons|et_high_mass_difference\t" + et_high_mass_difference.ToString(),
                 "Comparisons|relation_group_centering_iterations\t" + relation_group_centering_iterations.ToString(),
-                "Comparisons|peak_width_base\t" + peak_width_base.ToString(),
-                "Comparisons|min_signal_noise\t" + min_signal_noise.ToString(),
+                "Comparisons|peak_width_base_ee\t" + peak_width_base_ee.ToString(),
+                "Comparisons|peak_width_base_et\t" + peak_width_base_et.ToString(),
+                "Comparisons|min_peak_count_ee\t" + min_peak_count_ee.ToString(),
+                "Comparisons|min_peak_count_et\t" + min_peak_count_et.ToString(),
                 "Families|family_build_folder_path\t" + family_build_folder_path,
                 "Families|deltaM_edge_display_rounding\t" + deltaM_edge_display_rounding.ToString()
             });
@@ -587,8 +583,10 @@ namespace ProteoformSuiteInternal
                 case "TheoreticalDatabase|min_peptide_length": min_peptide_length = Convert.ToInt32(fields[1]); break;
                 case "Comparisons|no_mans_land_lowerBound": no_mans_land_lowerBound = Convert.ToDouble(fields[1]); break;
                 case "Comparisons|no_mans_land_upperBound": no_mans_land_upperBound = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|peak_width_base": peak_width_base = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|min_signal_noise": min_signal_noise = Convert.ToDouble(fields[1]); break;
+                case "Comparisons|peak_width_base_ee": peak_width_base_ee = Convert.ToDouble(fields[1]); break;
+                case "Comparisons|peak_width_base_et": peak_width_base_et = Convert.ToDouble(fields[1]); break;
+                case "Comparisons|min_peak_count_ee": min_peak_count_ee = Convert.ToDouble(fields[1]); break;
+                case "Comparisons|min_peak_count_et": min_peak_count_et = Convert.ToDouble(fields[1]); break;
                 case "Families|family_build_folder_path": family_build_folder_path = fields[1]; break;
                 case "Families|deltaM_edge_display_rounding": deltaM_edge_display_rounding = Convert.ToInt32(fields[1]); break;
             }
