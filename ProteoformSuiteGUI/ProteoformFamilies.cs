@@ -67,8 +67,12 @@ namespace ProteoformSuite
             dgv_proteoform_families.Columns["experimental_count"].HeaderText = "Experimental Proteoforms";
             dgv_proteoform_families.Columns["theoretical_count"].HeaderText = "Theoretical Proteoforms";
             dgv_proteoform_families.Columns["relation_count"].HeaderText = "Relation Count";
-            dgv_proteoform_families.Columns["accession_list"].HeaderText = "Accessions";
+            dgv_proteoform_families.Columns["accession_list"].HeaderText = "Theoretical Accessions";
+            dgv_proteoform_families.Columns["name_list"].HeaderText = "Theoretical Names";
+            dgv_proteoform_families.Columns["experimentals_list"].HeaderText = "Experimental Accessions";
+            dgv_proteoform_families.Columns["agg_mass_list"].HeaderText = "Experimental Aggregated Masses";
             dgv_proteoform_families.Columns["relations"].Visible = false;
+            dgv_proteoform_families.Columns["proteoforms"].Visible = false;
         }
 
         private void dgv_proteoform_families_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -82,7 +86,7 @@ namespace ProteoformSuite
         private void display_family_members(int row_index, int column_index)
         {
             ProteoformFamily selected_family = (ProteoformFamily)this.dgv_proteoform_families.Rows[row_index].DataBoundItem;
-            if (dgv_proteoform_families.Columns[column_index].Name == "theoretical_count")
+            if (new List<string> { "theoretical_count", "accession_list","name_list" }.Contains(dgv_proteoform_families.Columns[column_index].Name))
             {
                 if (selected_family.theoretical_count > 0) 
                 {
@@ -91,7 +95,7 @@ namespace ProteoformSuite
                 }
                 else dgv_proteoform_family_members.Rows.Clear();
             }
-            else if (dgv_proteoform_families.Columns[column_index].Name == "experimental_count")
+            else if (new List<string> { "experimental_count", "experimentals_list", "agg_mass_list" }.Contains(dgv_proteoform_families.Columns[column_index].Name))
             {
                 if (selected_family.experimental_count > 0)
                 {

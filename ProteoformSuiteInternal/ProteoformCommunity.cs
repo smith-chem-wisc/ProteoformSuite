@@ -162,9 +162,7 @@ namespace ProteoformSuiteInternal
                 this.families.Add(new_family);
                 inducted.AddRange(new_family.proteoforms);
                 remaining = remaining.Except(inducted).ToList();
-                new_family.proteoforms.ForEach(member => {
-                    member.family = new_family;
-                });
+                foreach (Proteoform member in new_family.proteoforms) member.family = new_family;
                 family_id++;
             }
         }
