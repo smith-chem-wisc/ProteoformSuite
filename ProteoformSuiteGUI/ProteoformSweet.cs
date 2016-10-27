@@ -78,18 +78,15 @@ namespace ProteoformSuite
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(aggregatedProteoforms);
-            aggregatedProteoforms.aggregate_proteoforms();
         }
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e) { showForm(theoreticalDatabase); }
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentalTheoreticalComparison);
-            experimentalTheoreticalComparison.compare_et();
         }
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentExperimentComparison);
-            experimentExperimentComparison.compare_et();
         }
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -144,21 +141,11 @@ namespace ProteoformSuite
                     ProteomeDatabaseReader.oldPtmlistFilePath = working_directory + "\\ptmlist_new.txt";
                     Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist();
                 }
-
                 catch
                 {
-                    MessageBox.Show("Please select a Uniprot ptm list.");
-                    DialogResult dr = this.methodFileOpen.ShowDialog();
-                    if (dr == System.Windows.Forms.DialogResult.OK)
-                    {
-                        string ptm_list = methodFileOpen.FileName;
-                        ProteomeDatabaseReader.oldPtmlistFilePath = ptm_list;
-                        Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist();
-                    }
-                    else return;
+                    get_ptm_list();
                 }
-            }   
-
+            }
             Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\theoretical_proteoforms.tsv"), true);
             //Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\decoy_proteoforms.tsv"), false);
             Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_theoretical_relationships.tsv"), ProteoformComparison.et);
@@ -171,6 +158,38 @@ namespace ProteoformSuite
             MessageBox.Show("Files successfully read in.");
 
             Lollipop.opening_results = false;
+        }
+
+        private void get_ptm_list()
+        {
+            MessageBox.Show("Please select a Uniprot ptm list.");
+            DialogResult dr = this.methodFileOpen.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                string ptm_list = methodFileOpen.FileName;
+                ProteomeDatabaseReader.oldPtmlistFilePath = ptm_list;
+                Lollipop.ptmlist_filepath = ptm_list;
+            }
+            else if (dr == DialogResult.Cancel) return;
+            else return;
+        }
+
+        OpenFileDialog openXmlDialog = new OpenFileDialog();
+     
+        private void get_uniprot_xml()
+        {
+            MessageBox.Show("Please select a Uniprot database.");
+            openXmlDialog.Filter = "UniProt XML (*.xml, *.xml.gz)|*.xml;*.xml.gz";
+            openXmlDialog.Multiselect = false;
+            openXmlDialog.Title = "UniProt XML Format Database";
+            DialogResult dr = this.openXmlDialog.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                string uniprotXmlFile = openXmlDialog.FileName;
+ 
+                    Lollipop.uniprot_xml_filepath = uniprotXmlFile;
+                }
+            else { return; }
         }
 
         private void openCurrentPageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -192,6 +211,7 @@ namespace ProteoformSuite
                     {
                         Results.read_raw_components(File.ReadAllLines(openFileDialog1.FileName));
                         Lollipop.opened_raw_comps = true;
+                        Lollipop.min_num_CS = 0;
                         if (Lollipop.neucode_labeled)
                         {
                             HashSet<string> scan_ranges = new HashSet<string>(Lollipop.raw_experimental_components.Select(c => c.scan_range));
@@ -347,33 +367,38 @@ namespace ProteoformSuite
 
         private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (Lollipop.input_files.Count == 0)
+            {
+                MessageBox.Show("Please load in deconvolution result files in order to use load and run.");
+                return;
+            }
             var result = MessageBox.Show("Choose a method file.", "Method Load and Run", MessageBoxButtons.OKCancel);
             if (result == DialogResult.Cancel) return;
-            if (Lollipop.input_files.Count != 0)
-            {
-                var response = MessageBox.Show("Would you like to use the files specified in LoadDeconvolution rather than those referenced in the method file?", "Multiple Deconvolution File References", MessageBoxButtons.YesNoCancel);
-                if (response == DialogResult.Yes) { Lollipop.use_method_files = false; }
-                if (response == DialogResult.No) { Lollipop.input_files.Clear(); Lollipop.use_method_files = true; }
-                if (response == DialogResult.Cancel) { return; }
-            }
+
             bool successful_opening = openMethod();
             if (!successful_opening) return;
             MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
-            full_run();
-            MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
+            bool successful_run = full_run();
+            if (successful_run) { MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu."); }
+            else { MessageBox.Show("Method did not successfully run."); }
         }
 
-        public void full_run()
+        public bool full_run()
         {
             clear_lists();
             rawExperimentalComponents.load_raw_components();
             aggregatedProteoforms.aggregate_proteoforms();
+            if (!File.Exists(Lollipop.uniprot_xml_filepath)) get_uniprot_xml(); 
+            if (!File.Exists(Lollipop.uniprot_xml_filepath)) { return false; } //user hit cancel
+            if (!File.Exists(Lollipop.ptmlist_filepath)) get_ptm_list();
+            if (!File.Exists(Lollipop.ptmlist_filepath)) { return false; } //user hit cancel
             theoreticalDatabase.make_databases();
             Lollipop.make_et_relationships();
             Lollipop.make_ee_relationships();
            //proteoformFamilies.construct_families();  I have commented this out for now  bc it is slower than the others -LVS
             prepare_figures_and_tables();
             this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
+            return true;
         }
 
         private void prepare_figures_and_tables()

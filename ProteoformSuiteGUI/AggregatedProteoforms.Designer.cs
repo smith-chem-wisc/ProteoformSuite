@@ -31,12 +31,13 @@
             this.dgv_AggregatedProteoforms = new System.Windows.Forms.DataGridView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.nUD_min_num_CS = new System.Windows.Forms.NumericUpDown();
+            this.label8 = new System.Windows.Forms.Label();
             this.nUD_min_agg_count = new System.Windows.Forms.NumericUpDown();
             this.label7 = new System.Windows.Forms.Label();
             this.nUD_rel_abundance = new System.Windows.Forms.NumericUpDown();
             this.label6 = new System.Windows.Forms.Label();
-            this.bt_targed_TD_list = new System.Windows.Forms.Button();
-            this.button_update = new System.Windows.Forms.Button();
+            this.bt_aggregate = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.tb_totalAggregatedProteoforms = new System.Windows.Forms.TextBox();
             this.nUD_Missed_Ks = new System.Windows.Forms.NumericUpDown();
@@ -48,8 +49,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.dgv_AcceptNeuCdLtProteoforms = new System.Windows.Forms.DataGridView();
-            this.nUD_min_num_CS = new System.Windows.Forms.NumericUpDown();
-            this.label8 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AggregatedProteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -59,6 +58,7 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_num_CS)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_agg_count)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_rel_abundance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_Missed_Ks)).BeginInit();
@@ -66,7 +66,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_RetTimeToleranace)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUP_mass_tolerance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AcceptNeuCdLtProteoforms)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_num_CS)).BeginInit();
             this.SuspendLayout();
             // 
             // dgv_AggregatedProteoforms
@@ -120,8 +119,7 @@
             this.splitContainer2.Panel1.Controls.Add(this.label7);
             this.splitContainer2.Panel1.Controls.Add(this.nUD_rel_abundance);
             this.splitContainer2.Panel1.Controls.Add(this.label6);
-            this.splitContainer2.Panel1.Controls.Add(this.bt_targed_TD_list);
-            this.splitContainer2.Panel1.Controls.Add(this.button_update);
+            this.splitContainer2.Panel1.Controls.Add(this.bt_aggregate);
             this.splitContainer2.Panel1.Controls.Add(this.label5);
             this.splitContainer2.Panel1.Controls.Add(this.tb_totalAggregatedProteoforms);
             this.splitContainer2.Panel1.Controls.Add(this.nUD_Missed_Ks);
@@ -141,9 +139,28 @@
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 0;
             // 
+            // nUD_min_num_CS
+            // 
+            this.nUD_min_num_CS.Location = new System.Drawing.Point(170, 168);
+            this.nUD_min_num_CS.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
+            this.nUD_min_num_CS.Name = "nUD_min_num_CS";
+            this.nUD_min_num_CS.Size = new System.Drawing.Size(80, 20);
+            this.nUD_min_num_CS.TabIndex = 16;
+            this.nUD_min_num_CS.ValueChanged += new System.EventHandler(this.nUD_min_num_CS_ValueChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(47, 170);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(107, 13);
+            this.label8.TabIndex = 15;
+            this.label8.Text = "Min. # Charge States";
+            // 
             // nUD_min_agg_count
             // 
-            this.nUD_min_agg_count.Location = new System.Drawing.Point(170, 145);
+            this.nUD_min_agg_count.Location = new System.Drawing.Point(170, 190);
             this.nUD_min_agg_count.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_min_agg_count.Name = "nUD_min_agg_count";
             this.nUD_min_agg_count.Size = new System.Drawing.Size(80, 20);
@@ -153,17 +170,17 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(17, 145);
+            this.label7.Location = new System.Drawing.Point(38, 192);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(139, 13);
+            this.label7.Size = new System.Drawing.Size(116, 13);
             this.label7.TabIndex = 13;
-            this.label7.Text = "Min. Agg. Count (Label-free)";
+            this.label7.Text = "Min. Aggregated Count";
             // 
             // nUD_rel_abundance
             // 
             this.nUD_rel_abundance.DecimalPlaces = 3;
-            this.nUD_rel_abundance.Location = new System.Drawing.Point(170, 118);
+            this.nUD_rel_abundance.Location = new System.Drawing.Point(170, 146);
             this.nUD_rel_abundance.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_rel_abundance.Name = "nUD_rel_abundance";
             this.nUD_rel_abundance.Size = new System.Drawing.Size(80, 20);
@@ -173,34 +190,23 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(5, 120);
+            this.label6.Location = new System.Drawing.Point(38, 148);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(163, 13);
+            this.label6.Size = new System.Drawing.Size(127, 13);
             this.label6.TabIndex = 11;
-            this.label6.Text = "Min. Rel. Abundance (Label-free)";
+            this.label6.Text = "Min. Relative Abundance";
             // 
-            // bt_targed_TD_list
+            // bt_aggregate
             // 
-            this.bt_targed_TD_list.Location = new System.Drawing.Point(20, 270);
-            this.bt_targed_TD_list.Name = "bt_targed_TD_list";
-            this.bt_targed_TD_list.Size = new System.Drawing.Size(148, 23);
-            this.bt_targed_TD_list.TabIndex = 10;
-            this.bt_targed_TD_list.Text = "Export Targeted TD List";
-            this.bt_targed_TD_list.UseVisualStyleBackColor = true;
-            this.bt_targed_TD_list.Visible = false;
-            this.bt_targed_TD_list.Click += new System.EventHandler(this.bt_targed_TD_list_Click);
-            // 
-            // button_update
-            // 
-            this.button_update.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.button_update.Location = new System.Drawing.Point(0, 318);
-            this.button_update.Name = "button_update";
-            this.button_update.Size = new System.Drawing.Size(372, 23);
-            this.button_update.TabIndex = 2;
-            this.button_update.Text = "Update";
-            this.button_update.UseVisualStyleBackColor = true;
-            this.button_update.Click += new System.EventHandler(this.button_update_Click);
+            this.bt_aggregate.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.bt_aggregate.Location = new System.Drawing.Point(0, 318);
+            this.bt_aggregate.Name = "bt_aggregate";
+            this.bt_aggregate.Size = new System.Drawing.Size(372, 23);
+            this.bt_aggregate.TabIndex = 2;
+            this.bt_aggregate.Text = "Aggregate";
+            this.bt_aggregate.UseVisualStyleBackColor = true;
+            this.bt_aggregate.Click += new System.EventHandler(this.bt_aggregate_Click);
             // 
             // label5
             // 
@@ -208,13 +214,13 @@
             this.label5.Location = new System.Drawing.Point(17, 230);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(148, 13);
+            this.label5.Size = new System.Drawing.Size(197, 13);
             this.label5.TabIndex = 9;
-            this.label5.Text = "Total Aggregated Proteoforms";
+            this.label5.Text = "Total Accepted Aggregated Proteoforms";
             // 
             // tb_totalAggregatedProteoforms
             // 
-            this.tb_totalAggregatedProteoforms.Location = new System.Drawing.Point(170, 226);
+            this.tb_totalAggregatedProteoforms.Location = new System.Drawing.Point(218, 227);
             this.tb_totalAggregatedProteoforms.Margin = new System.Windows.Forms.Padding(2);
             this.tb_totalAggregatedProteoforms.Name = "tb_totalAggregatedProteoforms";
             this.tb_totalAggregatedProteoforms.Size = new System.Drawing.Size(81, 20);
@@ -313,26 +319,6 @@
             this.dgv_AcceptNeuCdLtProteoforms.RowTemplate.Height = 28;
             this.dgv_AcceptNeuCdLtProteoforms.Size = new System.Drawing.Size(1012, 328);
             this.dgv_AcceptNeuCdLtProteoforms.TabIndex = 0;
-            this.dgv_AcceptNeuCdLtProteoforms.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_AcceptNeuCdLtProteoforms_CellContentClick);
-            // 
-            // nUD_min_num_CS
-            // 
-            this.nUD_min_num_CS.Location = new System.Drawing.Point(185, 176);
-            this.nUD_min_num_CS.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
-            this.nUD_min_num_CS.Name = "nUD_min_num_CS";
-            this.nUD_min_num_CS.Size = new System.Drawing.Size(80, 20);
-            this.nUD_min_num_CS.TabIndex = 16;
-            this.nUD_min_num_CS.ValueChanged += new System.EventHandler(this.nUD_min_num_CS_ValueChanged);
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(0, 178);
-            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(181, 13);
-            this.label8.TabIndex = 15;
-            this.label8.Text = "Min. Num. Charge States (Label-free)";
             // 
             // AggregatedProteoforms
             // 
@@ -355,6 +341,7 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_num_CS)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_agg_count)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_rel_abundance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_Missed_Ks)).EndInit();
@@ -362,7 +349,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_RetTimeToleranace)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUP_mass_tolerance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AcceptNeuCdLtProteoforms)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_num_CS)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -383,8 +369,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tb_totalAggregatedProteoforms;
-        private System.Windows.Forms.Button button_update;
-        private System.Windows.Forms.Button bt_targed_TD_list;
+        private System.Windows.Forms.Button bt_aggregate;
         private System.Windows.Forms.NumericUpDown nUD_rel_abundance;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NumericUpDown nUD_min_agg_count;

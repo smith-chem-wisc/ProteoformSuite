@@ -51,7 +51,7 @@ namespace ProteoformSuiteInternal
         public List<Component> aggregated_components { get; set; } = new List<Component>();
         public List<Component> lt_quant_components { get; set; } = new List<Component>();
         public List<Component> hv_quant_components { get; set; } = new List<Component>();
-
+        public bool accepted { get; set; } = true;
         public double agg_mass { get; set; } = 0;
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
@@ -70,7 +70,7 @@ namespace ProteoformSuiteInternal
                 this.lt_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, true)));
                 if (Lollipop.neucode_labeled)
                     this.hv_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, false)));
-            }           
+            }
         }
 
         public ExperimentalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession)
@@ -111,6 +111,7 @@ namespace ProteoformSuiteInternal
             }
             if (root is NeuCodePair) this.lysine_count = ((NeuCodePair)this.root).lysine_count;
             this.modified_mass = this.agg_mass;
+            this.accepted = this.aggregated_components.Count() >= Lollipop.min_agg_count;
         }
 
         //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on 

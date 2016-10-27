@@ -209,7 +209,7 @@ namespace Test
             Assert.AreEqual(pf.is_target, qf.is_target);
             Assert.AreEqual(pf.is_decoy, qf.is_decoy);
             Assert.AreEqual(pf.ptm_mass, qf.ptm_mass);
-            Assert.AreEqual(pf.ptm_list_string(), qf.ptm_list_string());
+            Assert.AreEqual(pf.ptm_list_string(), qf.ptm_list_string());   
         }
     }
 }
