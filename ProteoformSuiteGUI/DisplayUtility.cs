@@ -78,23 +78,8 @@ namespace ProteoformSuite
             List<ProteoformRelation> relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
             ct.DataSource = relations_ordered;
             ct.DataBind();
-
-            ct.ChartAreas[0].AxisY.StripLines.Clear();
-            double stripline_value;
-            if (relations[0].connected_proteoforms[1] is TheoreticalProteoform)
-            {
-                stripline_value = Lollipop.min_peak_count_et;
-            }
-            else
-            {
-                stripline_value = Lollipop.min_peak_count_ee;
-            }
-            StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = stripline_value };
-            ct.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
-
             ct.ChartAreas[0].AxisX.Title = "Delta Mass (Da)";
             ct.ChartAreas[0].AxisY.Title = "Nearby Count";
-
         }
 
         public static void GraphDeltaMassPeaks(Chart ct, List<DeltaMassPeak> peaks, string peak_series, string decoy_series, List<ProteoformRelation> relations, string relations_series)

@@ -318,9 +318,15 @@ namespace ProteoformSuite
         // FULL RUN
         private void btn_fullRun_Click(object sender, EventArgs e)
         {
+            if (Lollipop.input_files.Count == 0)
+            {
+                MessageBox.Show("Please load in deconvolution result files in order to use load and run.");
+                return;
+            }
             MessageBox.Show("Will start the run now.\n\nWill show as non-responsive.");
-            ((ProteoformSweet)MdiParent).full_run();
-            MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
+            bool successful_run = ((ProteoformSweet)MdiParent).full_run();
+            if (successful_run) MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
+            else { MessageBox.Show("Method did not successfully run."); }
         }
 
 

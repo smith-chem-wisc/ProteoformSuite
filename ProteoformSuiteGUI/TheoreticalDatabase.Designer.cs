@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.ckbx_combineTheoreticalsByMass = new System.Windows.Forms.CheckBox();
             this.tb_interest_label = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.tb_proteins_of_interest_path = new System.Windows.Forms.TextBox();
@@ -55,7 +56,6 @@
             this.tb_UniProtXML_Path = new System.Windows.Forms.TextBox();
             this.btn_GetUniProtXML = new System.Windows.Forms.Button();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
-            this.ckbx_combineTheoreticalsByMass = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -104,10 +104,22 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.dgv_Database);
-            this.splitContainer1.Size = new System.Drawing.Size(1370, 753);
-            this.splitContainer1.SplitterDistance = 455;
+            this.splitContainer1.Size = new System.Drawing.Size(1362, 741);
+            this.splitContainer1.SplitterDistance = 452;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // ckbx_combineTheoreticalsByMass
+            // 
+            this.ckbx_combineTheoreticalsByMass.AutoSize = true;
+            this.ckbx_combineTheoreticalsByMass.Location = new System.Drawing.Point(7, 491);
+            this.ckbx_combineTheoreticalsByMass.Margin = new System.Windows.Forms.Padding(2);
+            this.ckbx_combineTheoreticalsByMass.Name = "ckbx_combineTheoreticalsByMass";
+            this.ckbx_combineTheoreticalsByMass.Size = new System.Drawing.Size(225, 17);
+            this.ckbx_combineTheoreticalsByMass.TabIndex = 22;
+            this.ckbx_combineTheoreticalsByMass.Text = "Combine Theoretical Proteoforms By Mass";
+            this.ckbx_combineTheoreticalsByMass.UseVisualStyleBackColor = true;
+            this.ckbx_combineTheoreticalsByMass.CheckedChanged += new System.EventHandler(this.ckbx_combineTheoreticalsByMass_CheckedChanged);
             // 
             // tb_interest_label
             // 
@@ -148,12 +160,12 @@
             this.bt_proteins_of_interest.UseVisualStyleBackColor = true;
             this.bt_proteins_of_interest.Click += new System.EventHandler(this.bt_genes_of_interest_Click);
             // 
-            // ckbx_aggregateProteoforms
+            // ckbx_combineIdenticalSequences
             // 
             this.ckbx_combineIdenticalSequences.AutoSize = true;
             this.ckbx_combineIdenticalSequences.Location = new System.Drawing.Point(7, 470);
             this.ckbx_combineIdenticalSequences.Margin = new System.Windows.Forms.Padding(2);
-            this.ckbx_combineIdenticalSequences.Name = "ckbx_aggregateProteoforms";
+            this.ckbx_combineIdenticalSequences.Name = "ckbx_combineIdenticalSequences";
             this.ckbx_combineIdenticalSequences.Size = new System.Drawing.Size(203, 17);
             this.ckbx_combineIdenticalSequences.TabIndex = 17;
             this.ckbx_combineIdenticalSequences.Text = "Combine Sequence-Identical Proteins";
@@ -387,26 +399,14 @@
             this.dgv_Database.Name = "dgv_Database";
             this.dgv_Database.ReadOnly = true;
             this.dgv_Database.RowTemplate.Height = 28;
-            this.dgv_Database.Size = new System.Drawing.Size(908, 749);
+            this.dgv_Database.Size = new System.Drawing.Size(903, 737);
             this.dgv_Database.TabIndex = 0;
-            // 
-            // ckbx_combineTheoreticalsByMass
-            // 
-            this.ckbx_combineTheoreticalsByMass.AutoSize = true;
-            this.ckbx_combineTheoreticalsByMass.Location = new System.Drawing.Point(7, 491);
-            this.ckbx_combineTheoreticalsByMass.Margin = new System.Windows.Forms.Padding(2);
-            this.ckbx_combineTheoreticalsByMass.Name = "ckbx_combineTheoreticalsByMass";
-            this.ckbx_combineTheoreticalsByMass.Size = new System.Drawing.Size(225, 17);
-            this.ckbx_combineTheoreticalsByMass.TabIndex = 22;
-            this.ckbx_combineTheoreticalsByMass.Text = "Combine Theoretical Proteoforms By Mass";
-            this.ckbx_combineTheoreticalsByMass.UseVisualStyleBackColor = true;
-            this.ckbx_combineTheoreticalsByMass.CheckedChanged += new System.EventHandler(this.ckbx_combineTheoreticalsByMass_CheckedChanged);
             // 
             // TheoreticalDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1370, 753);
+            this.ClientSize = new System.Drawing.Size(1362, 741);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
             this.Margin = new System.Windows.Forms.Padding(2);

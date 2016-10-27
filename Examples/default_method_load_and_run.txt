@@ -1,5 +1,3 @@
-LoadDeconvolutionResults|deconvolution_file_names	.\..\..\..\Examples\11-01-15_NS_fract6_rep1_2-70-2-10.xlsx
-LoadDeconvolutionResults|neucode_labeled	True
 NeuCodePairs|max_intensity_ratio	6
 NeuCodePairs|min_intensity_ratio	1.4
 NeuCodePairs|max_lysine_ct	26.2
@@ -8,8 +6,11 @@ AggregatedProteoforms|mass_tolerance	3
 AggregatedProteoforms|retention_time_tolerance	3
 AggregatedProteoforms|missed_monos	3
 AggregatedProteoforms|missed_lysines	1
-TheoreticalDatabase|uniprot_xml_filepath	.\..\..\..\Examples\yeast_160126.xml.gz
-TheoreticalDatabase|ptmlist_filepath	.\..\..\..\Examples\ptmlist.txt
+AggregatedProteoforms|min_rel_abundance	0
+AggregatedProteoforms|min_num_CS	1
+AggregatedProteoforms|min_agg_count	1
+TheoreticalDatabase|uniprot_xml_filepath	
+TheoreticalDatabase|ptmlist_filepath	
 TheoreticalDatabase|methionine_oxidation	False
 TheoreticalDatabase|carbamidomethylation	True
 TheoreticalDatabase|methionine_cleavage	True
@@ -17,7 +18,7 @@ TheoreticalDatabase|neucode_light_lysine	True
 TheoreticalDatabase|neucode_heavy_lysine	False
 TheoreticalDatabase|natural_lysine_isotope_abundance	False
 TheoreticalDatabase|max_ptms	3
-TheoreticalDatabase|decoy_databases	1
+TheoreticalDatabase|decoy_databases	0
 TheoreticalDatabase|min_peptide_length	7
 TheoreticalDatabase|combine_identical_sequences	True
 Comparisons|no_mans_land_lowerBound	0.22
@@ -26,5 +27,7 @@ Comparisons|ee_max_mass_difference	250
 Comparisons|et_low_mass_difference	-250
 Comparisons|et_high_mass_difference	250
 Comparisons|relation_group_centering_iterations	2
-Comparisons|peak_width_base	0.015
-Comparisons|min_peak_count	8
+Comparisons|peak_width_base_ee	0.015
+Comparisons|peak_width_base_et	0.015
+Comparisons|min_peak_count_ee	10
+Comparisons|min_peak_count_et	10
