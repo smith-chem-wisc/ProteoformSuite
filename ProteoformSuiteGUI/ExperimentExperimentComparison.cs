@@ -16,7 +16,7 @@ namespace ProteoformSuite
 { 
     public partial class ExperimentExperimentComparison : Form
     {
-        bool initial_load = true;
+        private bool compared_ee = false;
 
         public ExperimentExperimentComparison()
         {
@@ -28,24 +28,23 @@ namespace ProteoformSuite
             dgv_EE_Peaks.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
             InitializeParameterSet();
             InitializeMassWindow();
-            initial_load = false; ;
         }
 
         public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
         { }
 
-        public void compare_et()
+        public void compare_ee()
         {
-            if (Lollipop.ee_relations.Count <= 0 && Lollipop.proteoform_community.has_e_proteoforms) RunTheGamut();
-        }
-
-        private void RunTheGamut()
-        {
-            this.Cursor = Cursors.WaitCursor;
-            ClearListsAndTables();
-            Lollipop.make_ee_relationships();
-            this.FillTablesAndCharts();
-            this.Cursor = Cursors.Default;
+            if (Lollipop.proteoform_community.has_e_proteoforms)
+            {
+                this.Cursor = Cursors.WaitCursor;
+                ClearListsAndTables();
+                Lollipop.make_ee_relationships();
+                this.FillTablesAndCharts();
+                this.Cursor = Cursors.Default;
+                compared_ee = true;
+            }
+            else MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void ClearListsAndTables()
@@ -117,7 +116,7 @@ namespace ProteoformSuite
         {
             nUD_EE_Upper_Bound.Minimum = 0;
             nUD_EE_Upper_Bound.Maximum = 500;
-            if (Lollipop.neucode_labeled) Lollipop.ee_max_mass_difference = 150;
+            if (!Lollipop.neucode_labeled) Lollipop.ee_max_mass_difference = 150;
             else Lollipop.ee_max_mass_difference = 250;
             nUD_EE_Upper_Bound.Value = (decimal)Lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
         }
@@ -155,6 +154,11 @@ namespace ProteoformSuite
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
             nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(Lollipop.min_peak_count_ee);
+
+            nUD_MaxRetTimeDifference.Minimum = 0;
+            nUD_MaxRetTimeDifference.Maximum = 60;
+            nUD_MaxRetTimeDifference.Value = Convert.ToDecimal(Lollipop.ee_max_RetentionTime_difference);
+
         }
 
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
@@ -191,12 +195,9 @@ namespace ProteoformSuite
         }
         private void cb_Graph_lowerThreshold_CheckedChanged(object sender, EventArgs e)
         {
-            if (!initial_load)
-            {
                 if (cb_Graph_lowerThreshold.Checked)
                     ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
                 else if (!cb_Graph_lowerThreshold.Checked) ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
-            }
         }
 
         Point? ct_EE_Histogram_prevPosition = null;
@@ -214,50 +215,50 @@ namespace ProteoformSuite
               DisplayUtility.tooltip_graph_display(ct_EE_peakList_tt, e, ct_EE_peakList, ct_EE_peakList_prevPosition);
         }
 
-        private void EE_update_Click(object sender, EventArgs e)
+        private void bt_compare_EE_Click(object sender, EventArgs e)
         {
-            RunTheGamut();
+            compare_ee();
             xMaxEE.Value = Convert.ToDecimal(Lollipop.ee_max_mass_difference);
         }
 
         private void nUD_EE_Upper_Bound_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load) Lollipop.ee_max_mass_difference = Convert.ToDouble(nUD_EE_Upper_Bound.Value);
+            Lollipop.ee_max_mass_difference = Convert.ToDouble(nUD_EE_Upper_Bound.Value);
         }
 
         private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load) Lollipop.peak_width_base_ee = Convert.ToDouble(nUD_PeakWidthBase.Value);
+             Lollipop.peak_width_base_ee = Convert.ToDouble(nUD_PeakWidthBase.Value);
         }
 
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load)
+            Lollipop.min_peak_count_ee = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
+            if (compared_ee)
             {
-                Lollipop.min_peak_count_ee = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
                 Parallel.ForEach(Lollipop.ee_peaks, p =>
-                    p.peak_accepted = p.peak_relation_group_count >= Lollipop.min_peak_count_ee);
+                p.peak_accepted = p.peak_relation_group_count >= Lollipop.min_peak_count_ee);
                 dgv_EE_Peaks.Refresh();
                 dgv_EE_Relations.Refresh();
+            }
                 ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
                 StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count_ee };
                 ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
-            }
         }
 
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load) Lollipop.no_mans_land_lowerBound = Convert.ToDouble(nUD_NoManLower.Value);
+            Lollipop.no_mans_land_lowerBound = Convert.ToDouble(nUD_NoManLower.Value);
         }
 
         private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load) Lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value); 
+            Lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value); 
         }
 
         private void nUD_MaxRetTimeDifference_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load) Lollipop.ee_max_RetentionTime_difference = Convert.ToDouble(nUD_MaxRetTimeDifference.Value);
+            Lollipop.ee_max_RetentionTime_difference = Convert.ToDouble(nUD_MaxRetTimeDifference.Value);
         }
     }
 }

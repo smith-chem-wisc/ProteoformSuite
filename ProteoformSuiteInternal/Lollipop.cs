@@ -206,8 +206,8 @@ namespace ProteoformSuiteInternal
         public static decimal missed_monos = 3;
         public static decimal missed_lysines = 1;
         public static double min_rel_abundance = 0;
-        public static int min_agg_count = 0;
-        public static int min_num_CS = 0;
+        public static int min_agg_count = 1;
+        public static int min_num_CS = 1;
 
         public static void aggregate_proteoforms()
         {
@@ -222,7 +222,7 @@ namespace ProteoformSuiteInternal
 
             if (Lollipop.neucode_labeled)
             {
-                remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true).ToArray();
+                remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true && p.relative_abundance >= Lollipop.min_rel_abundance && p.num_charge_states >= Lollipop.min_num_CS).ToArray();
                 remaining_quant_components = Lollipop.raw_quantification_components; 
             }
             else
@@ -496,13 +496,13 @@ namespace ProteoformSuiteInternal
 
         public static void make_et_relationships()
         {
-            Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.aggregated_components.Count >= Lollipop.min_agg_count).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
+            Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
             Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations);
         }
 
         public static void make_ee_relationships()
         {
-            Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.ToArray(), ProteoformComparison.ee);
+            Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), ProteoformComparison.ee);
             Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations);
         }
 
@@ -513,10 +513,11 @@ namespace ProteoformSuiteInternal
         //METHOD FILE
         public static string method_toString()
         {
-            return String.Join(System.Environment.NewLine, new string[] {
-                "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("; ", Lollipop.identification_files().Select(s => s.filename).ToArray<string>()),
-                "LoadDeconvolutionResults|neucode_labeled\t" + neucode_labeled.ToString(),
-                "CorrectionFactors|correction_file_names\t" + String.Join("; ", Lollipop.calibration_files().Select(s => s.filename).ToArray<string>()),
+            string method = String.Join(System.Environment.NewLine, new string[] {
+                 //This is too complicated/unnecessary with open/save available
+               // "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("; ", Lollipop.identification_files().Select(s => s.filename).ToArray<string>()),
+               // "LoadDeconvolutionResults|neucode_labeled\t" + neucode_labeled.ToString(),
+              //  "CorrectionFactors|correction_file_names\t" + String.Join("; ", Lollipop.calibration_files().Select(s => s.filename).ToArray<string>()),
                 "NeuCodePairs|max_intensity_ratio\t" + max_intensity_ratio.ToString(),
                 "NeuCodePairs|min_intensity_ratio\t" + min_intensity_ratio.ToString(),
                 "NeuCodePairs|max_lysine_ct\t" + max_lysine_ct.ToString(),
@@ -525,6 +526,9 @@ namespace ProteoformSuiteInternal
                 "AggregatedProteoforms|retention_time_tolerance\t" + retention_time_tolerance.ToString(),
                 "AggregatedProteoforms|missed_monos\t" + missed_monos.ToString(),
                 "AggregatedProteoforms|missed_lysines\t" + missed_lysines.ToString(),
+                "AggregatedProteoforms|min_rel_abundance\t" + min_rel_abundance.ToString(),
+                "AggregatedProteoforms|min_num_CS\t" + min_num_CS.ToString(),
+                "AggregatedProteoforms|min_agg_count\t" + min_agg_count.ToString(),
                 "TheoreticalDatabase|uniprot_xml_filepath\t" + uniprot_xml_filepath,
                 "TheoreticalDatabase|ptmlist_filepath\t" + ptmlist_filepath,
                 "TheoreticalDatabase|methionine_oxidation\t" + methionine_oxidation.ToString(),
@@ -547,9 +551,12 @@ namespace ProteoformSuiteInternal
                 "Comparisons|peak_width_base_et\t" + peak_width_base_et.ToString(),
                 "Comparisons|min_peak_count_ee\t" + min_peak_count_ee.ToString(),
                 "Comparisons|min_peak_count_et\t" + min_peak_count_et.ToString(),
-                "Families|family_build_folder_path\t" + family_build_folder_path,
-                "Families|deltaM_edge_display_rounding\t" + deltaM_edge_display_rounding.ToString()
+                "Comparisons|ee_max_RetentionTime_difference\t" + ee_max_RetentionTime_difference.ToString()
+                //this doesn't seem like it makes sense to be a part of load and run -LVS
+                //"Families|family_build_folder_path\t" + family_build_folder_path, 
+                //"Families|deltaM_edge_display_rounding\t" + deltaM_edge_display_rounding.ToString()    
             });
+            return method; 
         }
 
         public static bool use_method_files = true;
@@ -559,7 +566,7 @@ namespace ProteoformSuiteInternal
             switch (fields[0])
             {
                 //case "LoadDeconvolutionResults|deconvolution_file_names": if (use_method_files) { foreach (string filename in fields[1].Split(';')) { Lollipop.deconResultsFileNames.Add(filename); } } break;
-                case "LoadDeconvolutionResults|neucode_labeled": if (use_method_files) { neucode_labeled = Convert.ToBoolean(fields[1]); } break;
+                //case "LoadDeconvolutionResults|neucode_labeled": if (use_method_files) { neucode_labeled = Convert.ToBoolean(fields[1]); } break;
                 //case "CorrectionFactors|correction_file_names": if (use_method_files) { foreach (string filename in fields[1].Split(';')) { Lollipop.correctionFactorFilenames.Add(filename); } } break;
                 case "NeuCodePairs|max_intensity_ratio": max_intensity_ratio = Convert.ToDecimal(fields[1]); break;
                 case "NeuCodePairs|min_intensity_ratio": min_intensity_ratio = Convert.ToDecimal(fields[1]); break;
@@ -569,8 +576,11 @@ namespace ProteoformSuiteInternal
                 case "AggregatedProteoforms|retention_time_tolerance": retention_time_tolerance = Convert.ToDecimal(fields[1]); break;
                 case "AggregatedProteoforms|missed_monos": missed_monos = Convert.ToDecimal(fields[1]); break;
                 case "AggregatedProteoforms|missed_lysines": missed_lysines = Convert.ToDecimal(fields[1]); break;
-                case "TheoreticalDatabase|uniprot_xml_filepath": uniprot_xml_filepath = fields[1]; break;
-                case "TheoreticalDatabase|ptmlist_filepath": ptmlist_filepath = fields[1]; break;
+                case "AggregatedProteoforms|min_rel_abundance": min_rel_abundance = Convert.ToDouble(fields[1]); break;
+                case "AggregatedProteoforms|min_num_CS": min_num_CS = Convert.ToInt16(fields[1]); break;
+                case "AggregatedProteoforms|min_agg_count": min_agg_count = Convert.ToInt16(fields[1]); break;
+                case "TheoreticalDatabase|uniprot_xml_filepath": if (fields.Length > 1) uniprot_xml_filepath = fields[1]; break; //make sure path listed
+                case "TheoreticalDatabase|ptmlist_filepath": if (fields.Length > 1) ptmlist_filepath = fields[1]; break;
                 case "TheoreticalDatabase|methionine_oxidation": methionine_oxidation = Convert.ToBoolean(fields[1]); break;
                 case "TheoreticalDatabase|carbamidomethylation": carbamidomethylation = Convert.ToBoolean(fields[1]); break;
                 case "TheoreticalDatabase|methionine_cleavage": methionine_cleavage = Convert.ToBoolean(fields[1]); break;
@@ -587,8 +597,12 @@ namespace ProteoformSuiteInternal
                 case "Comparisons|peak_width_base_et": peak_width_base_et = Convert.ToDouble(fields[1]); break;
                 case "Comparisons|min_peak_count_ee": min_peak_count_ee = Convert.ToDouble(fields[1]); break;
                 case "Comparisons|min_peak_count_et": min_peak_count_et = Convert.ToDouble(fields[1]); break;
-                case "Families|family_build_folder_path": family_build_folder_path = fields[1]; break;
-                case "Families|deltaM_edge_display_rounding": deltaM_edge_display_rounding = Convert.ToInt32(fields[1]); break;
+                case "Comparisons|ee_max_RetentionTime_difference": ee_max_RetentionTime_difference = Convert.ToDouble(fields[1]); break;
+                case "Comparisons|ee_max_mass_difference": ee_max_mass_difference = Convert.ToDouble(fields[1]); break;
+                case "Comprisons|et_high_mass_diffrence": et_high_mass_difference = Convert.ToDouble(fields[1]); break;
+                case "Comparisons|et_low_mass_difference": et_low_mass_difference = Convert.ToDouble(fields[1]); break;
+                    // case "Families|family_build_folder_path": family_build_folder_path = fields[1]; break;
+               // case "Families|deltaM_edge_display_rounding": deltaM_edge_display_rounding = Convert.ToInt32(fields[1]); break;
             }
         }
     }

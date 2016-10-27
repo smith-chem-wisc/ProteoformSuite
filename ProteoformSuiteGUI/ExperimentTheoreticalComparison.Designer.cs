@@ -28,13 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
@@ -45,7 +45,7 @@
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.dgv_ET_Peak_List = new System.Windows.Forms.DataGridView();
             this.ct_ET_peakList = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.ET_update = new System.Windows.Forms.Button();
+            this.bt_compare_ET = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -149,7 +149,7 @@
             // 
             // splitContainer3.Panel2
             // 
-            this.splitContainer3.Panel2.Controls.Add(this.ET_update);
+            this.splitContainer3.Panel2.Controls.Add(this.bt_compare_ET);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox4);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox3);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox2);
@@ -254,47 +254,47 @@
             // 
             // ct_ET_peakList
             // 
-            chartArea1.Name = "ChartArea1";
-            this.ct_ET_peakList.ChartAreas.Add(chartArea1);
+            chartArea3.Name = "ChartArea1";
+            this.ct_ET_peakList.ChartAreas.Add(chartArea3);
             this.ct_ET_peakList.Dock = System.Windows.Forms.DockStyle.Fill;
-            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
-            legend1.Name = "Legend1";
-            this.ct_ET_peakList.Legends.Add(legend1);
+            legend2.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
+            legend2.Name = "Legend1";
+            this.ct_ET_peakList.Legends.Add(legend2);
             this.ct_ET_peakList.Location = new System.Drawing.Point(0, 0);
             this.ct_ET_peakList.Name = "ct_ET_peakList";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series1.Legend = "Legend1";
-            series1.MarkerSize = 10;
-            series1.Name = "Peak Count";
-            series1.YValuesPerPoint = 2;
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series2.Legend = "Legend1";
-            series2.Name = "Nearby Relations";
-            series3.ChartArea = "ChartArea1";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series3.Legend = "Legend1";
-            series3.MarkerSize = 10;
-            series3.Name = "Median Decoy Count";
-            this.ct_ET_peakList.Series.Add(series1);
-            this.ct_ET_peakList.Series.Add(series2);
-            this.ct_ET_peakList.Series.Add(series3);
+            series5.ChartArea = "ChartArea1";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series5.Legend = "Legend1";
+            series5.MarkerSize = 10;
+            series5.Name = "Peak Count";
+            series5.YValuesPerPoint = 2;
+            series6.ChartArea = "ChartArea1";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series6.Legend = "Legend1";
+            series6.Name = "Nearby Relations";
+            series7.ChartArea = "ChartArea1";
+            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series7.Legend = "Legend1";
+            series7.MarkerSize = 10;
+            series7.Name = "Median Decoy Count";
+            this.ct_ET_peakList.Series.Add(series5);
+            this.ct_ET_peakList.Series.Add(series6);
+            this.ct_ET_peakList.Series.Add(series7);
             this.ct_ET_peakList.Size = new System.Drawing.Size(264, 369);
             this.ct_ET_peakList.TabIndex = 1;
             this.ct_ET_peakList.Text = "chart1";
             // 
-            // ET_update
+            // bt_compare_ET
             // 
-            this.ET_update.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.ET_update.Location = new System.Drawing.Point(0, 227);
-            this.ET_update.Name = "ET_update";
-            this.ET_update.Size = new System.Drawing.Size(497, 23);
-            this.ET_update.TabIndex = 32;
-            this.ET_update.Text = "Update";
-            this.ET_update.UseMnemonic = false;
-            this.ET_update.UseVisualStyleBackColor = true;
-            this.ET_update.Click += new System.EventHandler(this.ET_update_Click);
+            this.bt_compare_ET.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.bt_compare_ET.Location = new System.Drawing.Point(0, 227);
+            this.bt_compare_ET.Name = "bt_compare_ET";
+            this.bt_compare_ET.Size = new System.Drawing.Size(497, 23);
+            this.bt_compare_ET.TabIndex = 32;
+            this.bt_compare_ET.Text = "Compare Experiment-Theoretical Proteoforms";
+            this.bt_compare_ET.UseMnemonic = false;
+            this.bt_compare_ET.UseVisualStyleBackColor = true;
+            this.bt_compare_ET.Click += new System.EventHandler(this.bt_compare_et_Click);
             // 
             // groupBox4
             // 
@@ -303,7 +303,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(31, 25);
+            this.groupBox4.Location = new System.Drawing.Point(31, 30);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -353,6 +353,11 @@
             this.nUD_PeakWidthBase.Name = "nUD_PeakWidthBase";
             this.nUD_PeakWidthBase.Size = new System.Drawing.Size(80, 20);
             this.nUD_PeakWidthBase.TabIndex = 13;
+            this.nUD_PeakWidthBase.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
             this.nUD_PeakWidthBase.ValueChanged += new System.EventHandler(this.nUD_PeakWidthBase_ValueChanged);
             // 
             // nUD_PeakCountMinThreshold
@@ -372,7 +377,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(263, 43);
+            this.groupBox3.Location = new System.Drawing.Point(263, 48);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -445,7 +450,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(263, 130);
+            this.groupBox2.Location = new System.Drawing.Point(263, 135);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -533,7 +538,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(31, 130);
+            this.groupBox1.Location = new System.Drawing.Point(31, 135);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -567,10 +572,10 @@
             this.nUD_NoManUpper.Size = new System.Drawing.Size(80, 20);
             this.nUD_NoManUpper.TabIndex = 7;
             this.nUD_NoManUpper.Value = new decimal(new int[] {
-            1,
+            5,
             0,
             0,
-            131072});
+            65536});
             this.nUD_NoManUpper.ValueChanged += new System.EventHandler(this.nUD_NoManUpper_ValueChanged);
             // 
             // label2
@@ -687,16 +692,16 @@
             // 
             // ct_ET_Histogram
             // 
-            chartArea2.Name = "ChartArea1";
-            this.ct_ET_Histogram.ChartAreas.Add(chartArea2);
+            chartArea4.Name = "ChartArea1";
+            this.ct_ET_Histogram.ChartAreas.Add(chartArea4);
             this.ct_ET_Histogram.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_ET_Histogram.Location = new System.Drawing.Point(0, 0);
             this.ct_ET_Histogram.Margin = new System.Windows.Forms.Padding(2);
             this.ct_ET_Histogram.Name = "ct_ET_Histogram";
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series4.Name = "relations";
-            this.ct_ET_Histogram.Series.Add(series4);
+            series8.ChartArea = "ChartArea1";
+            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series8.Name = "relations";
+            this.ct_ET_Histogram.Series.Add(series8);
             this.ct_ET_Histogram.Size = new System.Drawing.Size(422, 247);
             this.ct_ET_Histogram.TabIndex = 0;
             this.ct_ET_Histogram.Text = "chart1";
@@ -798,7 +803,7 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart ct_ET_peakList;
         private System.Windows.Forms.SplitContainer splitContainer5;
         private System.Windows.Forms.DataGridView dgv_ET_Peak_List;
-        private System.Windows.Forms.Button ET_update;
+        private System.Windows.Forms.Button bt_compare_ET;
         private System.Windows.Forms.SplitContainer splitContainer6;
         private System.Windows.Forms.DataGridView dgv_psmList;
     }
