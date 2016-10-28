@@ -219,7 +219,7 @@ namespace ProteoformSuite
                         {
                             HashSet<string> scan_ranges = new HashSet<string>(Lollipop.raw_experimental_components.Select(c => c.scan_range));
                             foreach (string scan_range in scan_ranges)
-                                Lollipop.find_neucode_pairs(Lollipop. raw_experimental_components.Where(c => c.scan_range == scan_range));
+                                Lollipop.find_neucode_pairs(Lollipop.raw_experimental_components.Where(c => c.scan_range == scan_range));
                         }
                     }
                     catch

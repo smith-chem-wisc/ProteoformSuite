@@ -15,6 +15,8 @@ namespace ProteoformSuiteInternal
     {
         public const double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
         public const double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
+        public const double PROTON_MASS = 1.007276474;
+
 
         //needed for functioning open results - user can update/rerun modules and program doesn't crash.
         public static bool opening_results = false; //set to true if previously saved tsv's are read into program
@@ -49,8 +51,9 @@ namespace ProteoformSuiteInternal
 
             Parallel.ForEach(input_files.Where(f=>f.purpose==Purpose.Identification), file =>
             {
-                ExcelReader componentReader = new ExcelReader();
-                List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors));
+                ComponentReader componentReader = new ComponentReader();
+                //List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors));
+                List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors);
                 lock (sync)
                 {                   
                     raw_experimental_components.AddRange(someComponents);
@@ -108,33 +111,15 @@ namespace ProteoformSuiteInternal
             object sync = new object();
             Parallel.ForEach(quantification_files(), file => 
             {
-                ExcelReader componentReader = new ExcelReader();
-                List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors));
+                ComponentReader componentReader = new ComponentReader();
+                //List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors));
+                List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors);
                 lock (sync)
                 {
                     raw_quantification_components.AddRange(someComponents);
                 }
             });
 
-        }
-
-        private static List<Component> remove_monoisotopic_duplicates_from_same_scan(List<Component> raw_components)
-        {
-            IEnumerable<string> scans = raw_components.Select(c => c.scan_range).Distinct();
-            List<Component> removeThese = new List<Component>();
-
-            foreach (string scan in scans)
-            {
-                IEnumerable<Component> scanComps = raw_components.Where(c => c.scan_range == scan).OrderBy(w => w.weighted_monoisotopic_mass);
-                foreach (Component sc in scanComps)
-                {
-                    IEnumerable<Component> mmc = scanComps.Where(cp => cp.weighted_monoisotopic_mass >= sc.weighted_monoisotopic_mass + (Lollipop.MONOISOTOPIC_UNIT_MASS - 0.0003) && cp.weighted_monoisotopic_mass <= sc.weighted_monoisotopic_mass + (Lollipop.MONOISOTOPIC_UNIT_MASS + 0.0003)); //missed monoisotopic that is one dalton larger
-                    removeThese.AddRange(mmc);
-                    foreach (Component c in mmc) sc.mergeTheseComponents(c);
-                 }
-            }
-
-            return raw_components.Except(removeThese).ToList();
         }
 
         public static IEnumerable<Correction> read_corrections(InputFile file)
@@ -191,8 +176,8 @@ namespace ProteoformSuiteInternal
                         }
                         else
                         {
-                             lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                             higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                            lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                            higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
                         }
                         bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
                         if (lower_intensity > 0 && higher_intensity > 0)
@@ -204,9 +189,11 @@ namespace ProteoformSuiteInternal
                                 pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
                             if ((pair.corrected_mass <= (pair.neuCodeHeavy.corrected_mass + Lollipop.MONOISOTOPIC_UNIT_MASS)) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
                                 && !Lollipop.raw_neucode_pairs.Any(p => p.id_heavy == pair.id_light && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity is probably correct and that that component should not get reuused as a light.
+
                             {
                                 lock (sync) Lollipop.raw_neucode_pairs.Add(pair);
                             }
+
                         }
                     }
                 }
@@ -329,7 +316,7 @@ namespace ProteoformSuiteInternal
             //Read TD data into PSM list
             foreach (InputFile file in Lollipop.topdown_files())
             {
-                List<Psm> psm_from_file = ExcelReader.ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_program);
+                List<Psm> psm_from_file = ComponentReader.ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_program);
                 psm_list.AddRange(psm_from_file);
             }
 
