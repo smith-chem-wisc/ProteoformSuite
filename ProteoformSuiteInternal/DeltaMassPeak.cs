@@ -29,8 +29,8 @@ namespace ProteoformSuiteInternal
         }
         public double peak_deltaM_average { get; set; }
         public int peak_relation_group_count { get; set; }
-        //public double decoy_relation_count { get; set; }
-        public double peak_group_fdr { get; set; }  //TODO: determine how to set FDR 
+        public double decoy_relation_count { get; set; }
+        public double peak_group_fdr { get; set; }  
         public bool _peak_accepted;
         public bool peak_accepted
         {
@@ -101,24 +101,23 @@ namespace ProteoformSuiteInternal
             return possiblePTMs;
         }
 
-        //old way of calculating FDR based on median of ED pairs in the peak's range
-        //public void calculate_fdr(Dictionary<string, List<ProteoformRelation>> decoy_relations)
-        //{
-        //    List<int> nearby_decoy_counts = new List<int>(from relation_list in decoy_relations.Values select find_nearby_decoys(relation_list).Count);
-        //    nearby_decoy_counts.Sort();
-        //    double median_false_peak_count;
-        //    if (nearby_decoy_counts.Count % 2 == 0) //is even
-        //    {
-        //        int middle = nearby_decoy_counts.Count / 2;
-        //        median_false_peak_count = 0.5 * ((double)nearby_decoy_counts[middle] + (double)nearby_decoy_counts[middle - 1]);
-        //    }
-        //    else
-        //    {
-        //        median_false_peak_count = (double)nearby_decoy_counts[(nearby_decoy_counts.Count - 1) / 2];
-        //    }
-        //    this.decoy_relation_count = median_false_peak_count;
-        //    this.peak_group_fdr = median_false_peak_count / (double)this.peak_relation_group_count;
-        //}
+        public void calculate_fdr(Dictionary<string, List<ProteoformRelation>> decoy_relations)
+        {
+            List<int> nearby_decoy_counts = new List<int>(from relation_list in decoy_relations.Values select find_nearby_decoys(relation_list).Count);
+            nearby_decoy_counts.Sort();
+            double median_false_peak_count;
+            if (nearby_decoy_counts.Count % 2 == 0) //is even
+            {
+                int middle = nearby_decoy_counts.Count / 2;
+                median_false_peak_count = 0.5 * ((double)nearby_decoy_counts[middle] + (double)nearby_decoy_counts[middle - 1]);
+            }
+            else
+            {
+                median_false_peak_count = (double)nearby_decoy_counts[(nearby_decoy_counts.Count - 1) / 2];
+            }
+            this.decoy_relation_count = median_false_peak_count;
+            this.peak_group_fdr = median_false_peak_count / (double)this.peak_relation_group_count;
+        }
 
         public List<ProteoformRelation> find_nearby_decoys(List<ProteoformRelation> all_relations)
         {

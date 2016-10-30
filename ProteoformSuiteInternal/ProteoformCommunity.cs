@@ -114,7 +114,7 @@ namespace ProteoformSuiteInternal
         }
 
         //GROUP and ANALYZE RELATIONS
-        public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations)
+        public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
         {
             //order by E intensity, then by descending unadjusted_group_count (running sum) before forming peaks, and analyze only relations outside of no-man's-land
             List<ProteoformRelation> grouped_relations = new List<ProteoformRelation>();
@@ -128,7 +128,7 @@ namespace ProteoformSuiteInternal
                     throw new Exception("Only EE and ET peaks can be accepted");
 
                 DeltaMassPeak new_peak = new DeltaMassPeak(top_relation, remaining_relations_outside_no_mans);
-                //new_peak.calculate_fdr(decoy_relations);
+                if (Lollipop.decoy_databases > 0) new_peak.calculate_fdr(decoy_relations);
                 peaks.Add(new_peak);
 
                 List<ProteoformRelation> mass_differences_in_peak = new_peak.grouped_relations;
@@ -140,10 +140,11 @@ namespace ProteoformSuiteInternal
             this.delta_mass_peaks.AddRange(peaks);
             return peaks;
         }
-        //public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, List<ProteoformRelation> false_relations)
-        //{
-        //    return accept_deltaMass_peaks(relations, new Dictionary<string, List<ProteoformRelation>> { { "", false_relations } });
-        //}
+
+        public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, List<ProteoformRelation> false_relations)
+        {
+            return accept_deltaMass_peaks(relations, new Dictionary<string, List<ProteoformRelation>> { { "", false_relations } });
+        }
 
         private List<ProteoformRelation> exclusive_relation_group(List<ProteoformRelation> relations, List<ProteoformRelation> grouped_relations)
         {
