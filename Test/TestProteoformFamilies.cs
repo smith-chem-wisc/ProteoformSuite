@@ -63,7 +63,7 @@ namespace Test
             Assert.AreEqual(3, pr3.nearby_relations_count);
             Assert.AreEqual(3, pr4.nearby_relations_count);
 
-            test_community.accept_deltaMass_peaks(prs2);
+            test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
             Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
             Assert.AreEqual(3, test_community.delta_mass_peaks[0].grouped_relations.Count);
 
@@ -109,7 +109,7 @@ namespace Test
             Assert.AreEqual(3, pr4.nearby_relations_count);
             Assert.AreEqual(3, pr5.nearby_relations_count);
 
-            test_community.accept_deltaMass_peaks(prs2);
+            test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
             Assert.AreEqual(2, test_community.delta_mass_peaks.Count);
             Assert.AreEqual(1, test_community.delta_mass_peaks.Where(peak => peak.peak_accepted).Count());
             Assert.AreEqual(3, test_community.delta_mass_peaks.Where(peak => peak.peak_accepted).First().grouped_relations.Count());

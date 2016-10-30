@@ -95,8 +95,7 @@ namespace ProteoformSuite
             foreach (DeltaMassPeak peak in peaks_ordered)
             {
                 ct.Series[peak_series].Points.AddXY(peak.peak_deltaM_average, peak.peak_relation_group_count);
-                ct.Series[decoy_series].Points.AddXY(peak.peak_deltaM_average, peak_threshold);
-                 // ct.Series[decoy_series].Points.AddXY(peak.peak_deltaM_average, peak.decoy_relation_count);
+                ct.Series[decoy_series].Points.AddXY(peak.peak_deltaM_average, peak.decoy_relation_count);
             }
 
             List<ProteoformRelation> relations_ordered = relations.OrderBy(r => r.delta_mass).ToList();
@@ -271,7 +270,7 @@ namespace ProteoformSuite
             dgv.Columns["peak_group_fdr"].DefaultCellStyle.Format = "0.##";
 
             dgv.Columns["peak_relation_group_count"].HeaderText = "Peak Center Count";
-            //dgv.Columns["decoy_relation_count"].HeaderText = "Decoy Count under Peak";
+            dgv.Columns["decoy_relation_count"].HeaderText = "Decoy Count under Peak";
             dgv.Columns["peak_deltaM_average"].HeaderText = "Peak Center Delta Mass";
             dgv.Columns["peak_group_fdr"].HeaderText = "Peak FDR";
             dgv.Columns["peak_accepted"].HeaderText = "Peak Accepted";

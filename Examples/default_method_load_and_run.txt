@@ -31,3 +31,6 @@ Comparisons|peak_width_base_ee	0.015
 Comparisons|peak_width_base_et	0.015
 Comparisons|min_peak_count_ee	10
 Comparisons|min_peak_count_et	10
+Comparisons|ee_max_RetentionTime_difference	2.5
+Families|family_build_folder_path	
+Families|deltaM_edge_display_rounding	2

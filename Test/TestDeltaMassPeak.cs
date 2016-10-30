@@ -62,32 +62,29 @@ namespace Test
             DeltaMassPeak deltaMassPeak = new DeltaMassPeak(base_relation, theList);
             Console.WriteLine("Created deltaMassPeak");
 
-            //tests for when ED was used
 
-            //test for peak fdr
-            // Assert.AreEqual(Math.Round(0.00299991, 4), Math.Round(deltaMassPeak.peak_group_fdr, 4));
-       
-            //Dictionary<string, List<ProteoformRelation>> decoy_relations = new Dictionary<string, List<ProteoformRelation>>();
+            Assert.AreEqual(0, deltaMassPeak.peak_group_fdr);
+            Dictionary<string, List<ProteoformRelation>> decoy_relations = new Dictionary<string, List<ProteoformRelation>>();
 
-            //decoy_relations["decoyDatabase1"] = new List<ProteoformRelation>();
+            decoy_relations["decoyDatabase1"] = new List<ProteoformRelation>();
 
-            //ExperimentalProteoform pf7 = new ExperimentalProteoform("experimental1");
-            //TheoreticalProteoform pf8 = new TheoreticalProteoform("decoy1");
-            //ProteoformComparison relation_type4 = ProteoformComparison.ed;
-            //double delta_mass4 = 1;
-            //ProteoformRelation decoy_relation = new ProteoformRelation(pf7, pf8, relation_type4, delta_mass4);
+            ExperimentalProteoform pf7 = new ExperimentalProteoform("experimental1");
+            TheoreticalProteoform pf8 = new TheoreticalProteoform("decoy1");
+            ProteoformComparison relation_type4 = ProteoformComparison.ed;
+            double delta_mass4 = 1;
+            ProteoformRelation decoy_relation = new ProteoformRelation(pf7, pf8, relation_type4, delta_mass4);
 
-            //decoy_relations["decoyDatabase1"].Add(decoy_relation);
+            decoy_relations["decoyDatabase1"].Add(decoy_relation);
 
-            //deltaMassPeak.calculate_fdr(decoy_relations);
-            //Assert.AreEqual(0.25, deltaMassPeak.peak_group_fdr); // 1 decoy database, (1 decoy relation, median=1), 4 target relations
+            deltaMassPeak.calculate_fdr(decoy_relations);
+            Assert.AreEqual(0.25, deltaMassPeak.peak_group_fdr); // 1 decoy database, (1 decoy relation, median=1), 4 target relations
 
-            //decoy_relations["decoyDatabase2"] = new List<ProteoformRelation>();
-            //decoy_relations["decoyDatabase2"].Add(decoy_relation);
-            //decoy_relations["decoyDatabase2"].Add(decoy_relation);
+            decoy_relations["decoyDatabase2"] = new List<ProteoformRelation>();
+            decoy_relations["decoyDatabase2"].Add(decoy_relation);
+            decoy_relations["decoyDatabase2"].Add(decoy_relation);
 
-            //deltaMassPeak.calculate_fdr(decoy_relations);
-            //Assert.AreEqual(0.375, deltaMassPeak.peak_group_fdr); // 2 decoy databases (1 & 2 decoy relations, median=1.5), 4 target relations
+            deltaMassPeak.calculate_fdr(decoy_relations);
+            Assert.AreEqual(0.375, deltaMassPeak.peak_group_fdr); // 2 decoy databases (1 & 2 decoy relations, median=1.5), 4 target relations
         }
 
         [Test]
@@ -118,7 +115,7 @@ namespace Test
             Assert.AreEqual(3, pr3.nearby_relations_count);
             Assert.AreEqual(3, pr4.nearby_relations_count);
 
-            test_community.accept_deltaMass_peaks(prs2);
+            test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
             Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
             DeltaMassPeak peak = test_community.delta_mass_peaks[0];
             Assert.AreEqual(3, peak.grouped_relations.Count);
