@@ -497,13 +497,15 @@ namespace ProteoformSuiteInternal
         public static void make_et_relationships()
         {
             Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
-            Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations);
+            Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
+            Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
         public static void make_ee_relationships()
         {
             Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.ToArray(), Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), ProteoformComparison.ee);
-            Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations);
+            Lollipop.ef_relations = Lollipop.proteoform_community.relate_unequal_ee_lysine_counts();
+            Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
         //PROTEOFORM FAMILIES -- see ProteoformCommunity
@@ -513,11 +515,7 @@ namespace ProteoformSuiteInternal
         //METHOD FILE
         public static string method_toString()
         {
-            string method = String.Join(System.Environment.NewLine, new string[] {
-                 //This is too complicated/unnecessary with open/save available
-               // "LoadDeconvolutionResults|deconvolution_file_names\t" + String.Join("; ", Lollipop.identification_files().Select(s => s.filename).ToArray<string>()),
-               // "LoadDeconvolutionResults|neucode_labeled\t" + neucode_labeled.ToString(),
-              //  "CorrectionFactors|correction_file_names\t" + String.Join("; ", Lollipop.calibration_files().Select(s => s.filename).ToArray<string>()),
+            string method = String.Join(System.Environment.NewLine, new string[] {            
                 "NeuCodePairs|max_intensity_ratio\t" + max_intensity_ratio.ToString(),
                 "NeuCodePairs|min_intensity_ratio\t" + min_intensity_ratio.ToString(),
                 "NeuCodePairs|max_lysine_ct\t" + max_lysine_ct.ToString(),
@@ -551,10 +549,9 @@ namespace ProteoformSuiteInternal
                 "Comparisons|peak_width_base_et\t" + peak_width_base_et.ToString(),
                 "Comparisons|min_peak_count_ee\t" + min_peak_count_ee.ToString(),
                 "Comparisons|min_peak_count_et\t" + min_peak_count_et.ToString(),
-                "Comparisons|ee_max_RetentionTime_difference\t" + ee_max_RetentionTime_difference.ToString()
-                //this doesn't seem like it makes sense to be a part of load and run -LVS
-                //"Families|family_build_folder_path\t" + family_build_folder_path, 
-                //"Families|deltaM_edge_display_rounding\t" + deltaM_edge_display_rounding.ToString()    
+                "Comparisons|ee_max_RetentionTime_difference\t" + ee_max_RetentionTime_difference.ToString(),
+                "Families|family_build_folder_path\t" + family_build_folder_path, 
+                "Families|deltaM_edge_display_rounding\t" + deltaM_edge_display_rounding.ToString()    
             });
             return method; 
         }
@@ -565,9 +562,6 @@ namespace ProteoformSuiteInternal
             string[] fields = setting_spec.Split('\t');
             switch (fields[0])
             {
-                //case "LoadDeconvolutionResults|deconvolution_file_names": if (use_method_files) { foreach (string filename in fields[1].Split(';')) { Lollipop.deconResultsFileNames.Add(filename); } } break;
-                //case "LoadDeconvolutionResults|neucode_labeled": if (use_method_files) { neucode_labeled = Convert.ToBoolean(fields[1]); } break;
-                //case "CorrectionFactors|correction_file_names": if (use_method_files) { foreach (string filename in fields[1].Split(';')) { Lollipop.correctionFactorFilenames.Add(filename); } } break;
                 case "NeuCodePairs|max_intensity_ratio": max_intensity_ratio = Convert.ToDecimal(fields[1]); break;
                 case "NeuCodePairs|min_intensity_ratio": min_intensity_ratio = Convert.ToDecimal(fields[1]); break;
                 case "NeuCodePairs|max_lysine_ct": max_lysine_ct = Convert.ToDecimal(fields[1]); break;
@@ -601,8 +595,8 @@ namespace ProteoformSuiteInternal
                 case "Comparisons|ee_max_mass_difference": ee_max_mass_difference = Convert.ToDouble(fields[1]); break;
                 case "Comprisons|et_high_mass_diffrence": et_high_mass_difference = Convert.ToDouble(fields[1]); break;
                 case "Comparisons|et_low_mass_difference": et_low_mass_difference = Convert.ToDouble(fields[1]); break;
-                    // case "Families|family_build_folder_path": family_build_folder_path = fields[1]; break;
-               // case "Families|deltaM_edge_display_rounding": deltaM_edge_display_rounding = Convert.ToInt32(fields[1]); break;
+                case "Families|family_build_folder_path": if (fields.Length > 1) family_build_folder_path = fields[1]; break; //still works if no path
+                case "Families|deltaM_edge_display_rounding": deltaM_edge_display_rounding = Convert.ToInt32(fields[1]); break;
             }
         }
     }
