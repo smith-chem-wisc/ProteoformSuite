@@ -46,21 +46,26 @@ namespace ProteoformSuiteInternal
 
             Parallel.ForEach(input_files.Where(f=>f.purpose==Purpose.Identification), file =>
             {
+                ExcelReader componentReader = new ExcelReader();
+                List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors));
                 lock (sync)
-                {
-                    ExcelReader componentReader = new ExcelReader();
-                    raw_experimental_components.AddRange(remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors)));
+                {                   
+                    raw_experimental_components.AddRange(someComponents);
                 }
             });
             if (neucode_labeled)
             {               
                 HashSet<string> input_files = new HashSet<string>(raw_experimental_components.Select(c => c.input_file.UniqueId.ToString()));
-                foreach (string inputFile in input_files)
+                Parallel.ForEach(input_files, inputFile => 
                 {
-                    HashSet<string> scan_ranges = new HashSet<string>(from comp in raw_experimental_components where comp.input_file.UniqueId.ToString() == inputFile select comp.scan_range);
-                    foreach (string scan_range in scan_ranges)
-                        find_neucode_pairs(raw_experimental_components.Where(c => c.input_file.UniqueId.ToString() == inputFile && c.scan_range == scan_range));
-                }   
+                    HashSet<string> scan_ranges = new HashSet<string>();
+                    lock (sync)
+                    {
+                        scan_ranges = new HashSet<string>(from comp in raw_experimental_components where comp.input_file.UniqueId.ToString() == inputFile select comp.scan_range);
+                        foreach (string scan_range in scan_ranges)
+                            find_neucode_pairs(raw_experimental_components.Where(c => c.input_file.UniqueId.ToString() == inputFile && c.scan_range == scan_range));
+                    }                                  
+                });
             }
 
             //if (td_results)
@@ -95,15 +100,19 @@ namespace ProteoformSuiteInternal
 
         public static void process_raw_quantification_components()
         {
-            ExcelReader componentReader = new ExcelReader();
             if (input_files.Any(f => f.purpose == Purpose.Quantification))
                 correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
-            foreach (InputFile file in quantification_files())
+            object sync = new object();
+            Parallel.ForEach(quantification_files(), file => 
             {
-                List<Component> raw_components = componentReader.read_components_from_xlsx(file, correctionFactors).ToList();
-                raw_components = remove_monoisotopic_duplicates_from_same_scan(raw_components);
-                raw_quantification_components.AddRange(raw_components);
-            }
+                ExcelReader componentReader = new ExcelReader();
+                List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors));
+                lock (sync)
+                {
+                    raw_quantification_components.AddRange(someComponents);
+                }
+            });
+
         }
 
         private static List<Component> remove_monoisotopic_duplicates_from_same_scan(List<Component> raw_components)
@@ -156,6 +165,7 @@ namespace ProteoformSuiteInternal
 
         public static void find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange)
         {
+            object sync = new object();
             //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
             List<Component> components = components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
             foreach (Component lower_component in components)
@@ -191,7 +201,10 @@ namespace ProteoformSuiteInternal
                                 pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
                             if ((pair.corrected_mass <= (pair.neuCodeHeavy.corrected_mass + Lollipop.MONOISOTOPIC_UNIT_MASS)) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
                                 && !Lollipop.raw_neucode_pairs.Any(p => p.id_heavy == pair.id_light && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity is probably correct and that that component should not get reuused as a light.
-                                Lollipop.raw_neucode_pairs.Add(pair);
+                                lock (sync)
+                                {
+                                    Lollipop.raw_neucode_pairs.Add(pair);
+                                }                                
                         }
                     }
                 }
