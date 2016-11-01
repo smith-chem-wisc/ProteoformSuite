@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ProteoformSuiteInternal
 {
@@ -32,9 +34,7 @@ namespace ProteoformSuiteInternal
         public static IEnumerable<InputFile> topdown_files() { return input_files.Where(f => f.purpose == Purpose.TopDown); }
         public static IEnumerable<InputFile> topdownID_files() { return input_files.Where(f => f.purpose == Purpose.TopDownIDResults); }
         public static List<Correction> correctionFactors = null;
-        public static List<int> MS1_scans = new List<int>();
         public static List<Component> raw_experimental_components = new List<Component>();
-        public static List<Component> reduced_raw_exp_components = new List<Component>(); //for td data
         public static List<Component> raw_quantification_components = new List<Component>();
         public static bool neucode_labeled = true;
         public static bool td_results = false;
@@ -43,14 +43,13 @@ namespace ProteoformSuiteInternal
             if (input_files.Any(f => f.purpose == Purpose.Calibration))
                 correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
             object sync = new object();
-
             Parallel.ForEach(input_files.Where(f=>f.purpose==Purpose.Identification), file =>
             {
                 ExcelReader componentReader = new ExcelReader();
-                List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors));
+                List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors, MS1_scans(file.filename)));
                 lock (sync)
                 {                   
-                    raw_experimental_components.AddRange(someComponents);
+                   raw_experimental_components.AddRange(someComponents);
                 }
             });
             if (neucode_labeled)
@@ -67,36 +66,7 @@ namespace ProteoformSuiteInternal
                     }                                  
                 });
             }
-
-            //if (td_results)
-            //{
-            //    raw_experimental_components.Clear();
-            //    raw_experimental_components = reduced_raw_exp_components;
-            //}
-
         }
-
-        private static void delete_MS2_and_repeats(string filename)
-        {
-            int i = 1;
-            List<Component> reduced_raw_exp_comps = new List<Component>();
-            foreach (Component comp in raw_experimental_components.Where(f => (f.input_file.path + "\\" + f.input_file.filename + f.input_file.extension) == filename).ToList())
-            {
-                string[] scans = comp.scan_range.Split('-');
-                if (scans[0].Equals(scans[1]) && MS1_scans.Contains(Convert.ToInt32(scans[0])))  //make sure same scan # in range (one scan) and that it's MS1 scan
-                    {
-                        //if it has the same monoisotopic mass and intensity sum as something else, it's probably a repeat - don't add. 
-                        if (reduced_raw_exp_comps.Where(r => r.monoisotopic_mass == comp.monoisotopic_mass && r.intensity_sum == comp.intensity_sum).ToList().Count == 0)
-                        {
-                            comp.id = i.ToString();  //new id
-                            reduced_raw_exp_comps.Add(comp);
-                            i++;
-                        }   
-                    }
-           }
-            Lollipop.reduced_raw_exp_components.AddRange(reduced_raw_exp_comps);
-        }
-
 
         public static void process_raw_quantification_components()
         {
@@ -106,13 +76,12 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(quantification_files(), file => 
             {
                 ExcelReader componentReader = new ExcelReader();
-                List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors));
+                List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors, new List<string>()));
                 lock (sync)
                 {
                     raw_quantification_components.AddRange(someComponents);
                 }
             });
-
         }
 
         private static List<Component> remove_monoisotopic_duplicates_from_same_scan(List<Component> raw_components)
@@ -155,6 +124,16 @@ namespace ProteoformSuiteInternal
             }
         }
 
+        private static List<string> MS1_scans(string filename)
+        {
+            if (td_results)
+            { //find MS1 list corresponding to identification file (will only read in components in MS1 scans)
+                List<InputFile> td_files = topdownID_files().Where(t => t.filename == filename).ToList(); //checked in GUI for 1 matching file
+                string[] td_file = File.ReadAllLines(td_files[0].path + "\\" + td_files[0].filename + td_files[0].extension);
+                return new List<string>(td_file);
+            }
+            else return new List<string>();
+        }
 
         //NEUCODE PAIRS
         public static List<NeuCodePair> raw_neucode_pairs = new List<NeuCodePair>();
@@ -311,7 +290,7 @@ namespace ProteoformSuiteInternal
             //Read TD data into PSM list
             foreach (InputFile file in Lollipop.topdown_files())
             {
-                List<Psm> psm_from_file = ExcelReader.ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_program);
+                List<Psm> psm_from_file = ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_program);
                 psm_list.AddRange(psm_from_file);
             }
 
@@ -356,6 +335,42 @@ namespace ProteoformSuiteInternal
                     i++;
                 }
                 else { qLessThan1 = false; }
+            }
+            return psm_list;
+        }
+
+        //Reading in Top-down excel
+        public static List<Psm> ReadTDFile(string filename, TDProgram td_program)
+        {
+            List<Psm> psm_list = new List<Psm>();
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(filename, false))
+            {
+                // Get Data in Sheet1 of Excel file
+                IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
+                WorksheetPart worksheet_1 = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
+                SheetData sheet_1 = worksheet_1.Worksheet.Elements<SheetData>().First();
+                List<Row> rowcollection = worksheet_1.Worksheet.Descendants<Row>().ToList();
+                for (int i = 1; i < rowcollection.Count; i++)   //skip first row (headers)
+                {
+                    List<string> cellStrings = new List<string>();
+                    for (int k = 0; k < rowcollection[i].Descendants<Cell>().Count(); k++)
+                    {
+                        cellStrings.Add(ExcelReader.GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
+                    }
+
+                    if (td_program == TDProgram.NRTDP)
+                    {
+                        Psm new_psm = new Psm(cellStrings[8] + cellStrings[4], filename, Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]),
+                            0, 0, Convert.ToDouble(cellStrings[14]), 0, cellStrings[2], Convert.ToDouble(cellStrings[12]), 0, 0, PsmType.TopDown);
+                        psm_list.Add(new_psm);
+                    }
+
+                    else if (td_program == TDProgram.ProSight)
+                    {
+                        Psm new_psm = new Psm(cellStrings[6] + cellStrings[8], cellStrings[14], 0, 0, 0, 0, Convert.ToDouble(cellStrings[20]), 0, cellStrings[4], Convert.ToDouble(cellStrings[9]), 0, Convert.ToDouble(cellStrings[11]), PsmType.TopDown);
+                        psm_list.Add(new_psm);
+                    }
+                }
             }
             return psm_list;
         }
