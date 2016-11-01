@@ -11,9 +11,12 @@ namespace ProteoformSuiteInternal
     public class ExcelReader
     {
         private List<Component> raw_components_in_file = new List<Component>();
+        private List<string> MS1_scans = new List<string>();
 
-        public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction>correctionFactors)
+        public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction>correctionFactors, List<string> MS1_scans)
         {
+            this.MS1_scans.Clear();
+            this.MS1_scans = MS1_scans;
             this.raw_components_in_file.Clear();
             string absolute_path = file.path + "\\" + file.filename + file.extension;
             try
@@ -59,14 +62,24 @@ namespace ProteoformSuiteInternal
                             else new_component.add_charge_state(cellStrings, GetCorrectionFactor(file.filename, scan_range, correctionFactors));
                         }
                     }
-                    add_component(new_component); //add the final component
+                        add_component(new_component); //add the final component
                 }
                 return raw_components_in_file;
             }
             catch (IOException ex) { throw new IOException(ex.Message); }
         }
 
-        private static string GetCellValue(SpreadsheetDocument document, Cell cell)
+        private bool acceptable_td_file_component(Component c)
+        {
+            string[] scans = c.scan_range.Split('-');
+            bool same_scan = scans[0] == scans[1];
+            bool MS1_scan = MS1_scans.Contains(scans[0]);
+            bool not_a_repeat = this.raw_components_in_file.Where(r => r.monoisotopic_mass == c.monoisotopic_mass && r.intensity_sum == c.intensity_sum).ToList().Count == 0;
+            if (same_scan && MS1_scan && not_a_repeat) return true;
+            else return false;
+        }
+
+        public static string GetCellValue(SpreadsheetDocument document, Cell cell)
         {
             SharedStringTablePart stringTablePart = document.WorkbookPart.SharedStringTablePart;
             string value = cell.CellValue.InnerXml;
@@ -103,47 +116,11 @@ namespace ProteoformSuiteInternal
             return allCorrectionFactors.Average();                
         }
 
-        //Reading in Top-down excel
-        public static List<Psm> ReadTDFile(string filename, TDProgram td_program)
-        {
-            List<Psm> psm_list = new List<Psm>();
-            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(filename, false))
-            {
-                // Get Data in Sheet1 of Excel file
-                IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
-                WorksheetPart worksheet_1 = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
-                SheetData sheet_1 = worksheet_1.Worksheet.Elements<SheetData>().First();
-                List<Row> rowcollection = worksheet_1.Worksheet.Descendants<Row>().ToList();
-                for (int i = 1; i < rowcollection.Count; i++)   //skip first row (headers)
-                {
-                    List<string> cellStrings = new List<string>();
-                    for (int k = 0; k < rowcollection[i].Descendants<Cell>().Count(); k++)
-                    {
-                        cellStrings.Add(GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
-                    }
-
-                    if (td_program == TDProgram.NRTDP)
-                    {
-                        Psm new_psm = new Psm(cellStrings[8] + cellStrings[4], filename, Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]),
-                            0, 0, Convert.ToDouble(cellStrings[14]), 0, cellStrings[2], Convert.ToDouble(cellStrings[12]), 0, 0, PsmType.TopDown);
-                        psm_list.Add(new_psm);
-                    }
-
-                    else if (td_program == TDProgram.ProSight)
-                    {
-                        Psm new_psm = new Psm(cellStrings[6] + cellStrings[8], cellStrings[14], 0, 0, 0, 0, Convert.ToDouble(cellStrings[20]), 0, cellStrings[4], Convert.ToDouble(cellStrings[9]), 0, Convert.ToDouble(cellStrings[11]), PsmType.TopDown);
-                        psm_list.Add(new_psm);
-                    }
-                }
-            }
-            return psm_list;
-        }
-
         private void add_component(Component c)
         {
             c.calculate_sum_intensity();
             c.calculate_weighted_monoisotopic_mass();
-            this.raw_components_in_file.Add(c);
+            if (!Lollipop.td_results || acceptable_td_file_component(c)) this.raw_components_in_file.Add(c);
         }
     }
 }
