@@ -90,7 +90,7 @@ namespace ProteoformSuite
             {
                 dgv_RawExpComp_MI_masses.Columns["intensity_sum_olcs"].Visible = false;
             }
-            dgv_RawExpComp_MI_masses.Columns["_manual_mass_shift"].Visible = false;
+            dgv_RawExpComp_MI_masses.Columns["manual_mass_shift"].Visible = false;
         }
 
         private void FormatRawQuantificationComponentsTable()

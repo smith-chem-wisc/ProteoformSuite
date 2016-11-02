@@ -38,6 +38,7 @@ namespace ProteoformSuiteInternal
         public static List<Component> raw_quantification_components = new List<Component>();
         public static bool neucode_labeled = true;
         public static bool td_results = false;
+
         public static void process_raw_components()
         {
             if (input_files.Any(f => f.purpose == Purpose.Calibration))
@@ -167,13 +168,13 @@ namespace ProteoformSuiteInternal
         {
             object sync = new object();
             //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
-            List<Component> components = components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
+            List<Component> components = components_in_file_scanrange.OrderBy(c => c.corrected_mass).ToList();
             foreach (Component lower_component in components)
             {
-                IEnumerable<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.weighted_monoisotopic_mass > lower_component.weighted_monoisotopic_mass);
+                IEnumerable<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.corrected_mass > lower_component.corrected_mass);
                 foreach (Component higher_component in higher_mass_components)
                 {
-                    double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
+                    double mass_difference = higher_component.corrected_mass - lower_component.corrected_mass;
                     if (mass_difference < 6)
                     {
                         List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
@@ -201,10 +202,9 @@ namespace ProteoformSuiteInternal
                                 pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
                             if ((pair.corrected_mass <= (pair.neuCodeHeavy.corrected_mass + Lollipop.MONOISOTOPIC_UNIT_MASS)) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
                                 && !Lollipop.raw_neucode_pairs.Any(p => p.id_heavy == pair.id_light && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity is probably correct and that that component should not get reuused as a light.
-                                lock (sync)
-                                {
-                                    Lollipop.raw_neucode_pairs.Add(pair);
-                                }                                
+                            {
+                                lock (sync) Lollipop.raw_neucode_pairs.Add(pair);
+                            }
                         }
                     }
                 }
@@ -241,7 +241,7 @@ namespace ProteoformSuiteInternal
             else
             {
                 remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.relative_abundance >= Lollipop.min_rel_abundance && p.num_charge_states >= Lollipop.min_num_CS).ToArray();
-                remaining_quant_components = Lollipop.raw_experimental_components; // there are no extra quantitative files for unlablel
+                remaining_quant_components = Lollipop.raw_experimental_components; // there are no extra quantitative files for unlableled
             }
 
             int count = 1;
@@ -259,6 +259,22 @@ namespace ProteoformSuiteInternal
             }
             Lollipop.proteoform_community.experimental_proteoforms = experimental_proteoforms.ToArray();
         } 
+
+        //Could be improved. Used for manual mass shifting.
+        //Idea 1: Start with Components -- have them find the most intense nearby component. Then, go through and correct edge cases that aren't correct.
+        //Idea 2: Use the assumption that proteoforms distant to the manual shift will not regroup.
+        //Idea 2.1: Put the shifted proteoforms, plus some range from the min and max masses in there, and reaggregate the components with the aggregate_proteoforms algorithm.
+        public static void regroup_components()
+        {
+            if (Lollipop.neucode_labeled)
+            {
+                Lollipop.raw_neucode_pairs.Clear();
+                HashSet<string> scan_ranges = new HashSet<string>(Lollipop.raw_experimental_components.Select(c => c.scan_range));
+                foreach (string scan_range in scan_ranges)
+                    Lollipop.find_neucode_pairs(Lollipop.raw_experimental_components.Where(c => c.scan_range == scan_range));
+            }
+            Lollipop.aggregate_proteoforms();
+        }
 
 
         //THEORETICAL DATABASE
@@ -490,13 +506,13 @@ namespace ProteoformSuiteInternal
 
         //ET,ED,EE,EF COMPARISONS
         public static double ee_max_mass_difference = 250; //TODO: implement this in ProteoformFamilies and elsewhere
+        public static double ee_max_RetentionTime_difference = 2.5;
         public static double et_low_mass_difference = -250;
-        public static double ee_max_RetentionTime_difference = 2.5D;
-        public static double et_high_mass_difference=250;
+        public static double et_high_mass_difference = 250;
         public static double no_mans_land_lowerBound = 0.22;
         public static double no_mans_land_upperBound = 0.88;
-        public static double peak_width_base_ee = 0.0150;
-        public static double peak_width_base_et = 0.0150; //need to be separate so you can change one and not other. 
+        public static double peak_width_base_ee = 0.015;
+        public static double peak_width_base_et = 0.015; //need to be separate so you can change one and not other. 
         public static double min_peak_count_ee = 10;
         public static double min_peak_count_et = 10;
         public static int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
