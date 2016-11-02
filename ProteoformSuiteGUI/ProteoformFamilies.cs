@@ -49,14 +49,15 @@ namespace ProteoformSuite
 
         private void fill_proteoform_families()
         {
-            DisplayUtility.FillDataGridView(dgv_proteoform_families, Lollipop.proteoform_community.families);
+            DisplayUtility.FillDataGridView(dgv_proteoform_families, Lollipop.proteoform_community.families.OrderByDescending(f => f.relation_count).ToList());
             format_families_dgv();
         }
 
         private void update_figures_of_merit()
         {
-            this.tb_TotalFamilies.Text = Lollipop.proteoform_community.families.Count().ToString();
+            this.tb_TotalFamilies.Text = Lollipop.proteoform_community.families.Count(f => f.proteoforms.Count > 1).ToString();
             this.tb_IdentifiedFamilies.Text = Lollipop.proteoform_community.families.Count(f => f.theoretical_count > 0).ToString();
+            this.tb_singleton_count.Text = Lollipop.proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString();
         }
 
         private void format_families_dgv()
