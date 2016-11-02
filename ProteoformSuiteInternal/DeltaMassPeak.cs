@@ -61,6 +61,7 @@ namespace ProteoformSuiteInternal
                 relation.peak = this;
                 relation.accepted = this.peak_accepted;
             }
+
             if (!Lollipop.opening_results && Lollipop.updated_theoretical) this.possiblePeakAssignments = nearestPTMs(this.peak_deltaM_average);
         }
 
@@ -94,8 +95,8 @@ namespace ProteoformSuiteInternal
             List<Modification> possiblePTMs = new List<Modification>();
             foreach (KeyValuePair<string, Modification> knownMod in Lollipop.uniprotModificationTable)
             {
-                decimal modMass = Convert.ToDecimal(knownMod.Value.monoisotopic_mass_shift);
-                if (Math.Abs(Convert.ToDecimal(dMass) - modMass) <= Convert.ToDecimal(Lollipop.peak_width_base_et) / 2)
+                double modMass = knownMod.Value.monoisotopic_mass_shift;
+                if (Math.Abs(dMass - modMass) <= Lollipop.peak_width_base_et / 2)
                     possiblePTMs.Add(knownMod.Value);
             }
             return possiblePTMs;
@@ -124,6 +125,20 @@ namespace ProteoformSuiteInternal
             double lower_limit_of_peak_width = this.peak_deltaM_average - Lollipop.peak_width_base_et / 2;
             double upper_limit_of_peak_width = this.peak_deltaM_average + Lollipop.peak_width_base_et / 2;
             return all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
+        }
+
+        public void shift_experimental_masses(int shift)
+        {
+            if (this.relation_type != ProteoformComparison.et)
+            {
+                return; //Not currently intended for ee relations
+            }
+            foreach (ProteoformRelation r in this._grouped_relations)
+            {
+                Proteoform p = r.connected_proteoforms[0];
+                if (p is ExperimentalProteoform && ((ExperimentalProteoform)p).mass_shifted == false && Lollipop.proteoform_community.experimental_proteoforms.Contains(p))
+                    ((ExperimentalProteoform)p).shift_masses(shift);
+            }
         }
     }
 }

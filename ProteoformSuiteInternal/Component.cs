@@ -22,11 +22,13 @@ namespace ProteoformSuiteInternal
         public string rt_range { get; set; }
         public double rt_apex { get; set; }
         public double weighted_monoisotopic_mass { get; set; }
-        public double _manual_mass_shift { get; set; } = 0;
+        private double _manual_mass_shift { get; set; } = 0;
         public double manual_mass_shift
         {
             get { return _manual_mass_shift; }
-            set { _manual_mass_shift = value;
+            set
+            {
+                _manual_mass_shift = value;
                 this.calculate_weighted_monoisotopic_mass();
             }
         }
@@ -77,7 +79,7 @@ namespace ProteoformSuiteInternal
             this.monoisotopic_mass = c.monoisotopic_mass;
             this.weighted_monoisotopic_mass = c.weighted_monoisotopic_mass;
             this.corrected_mass = c.corrected_mass;
-            //this.manual_mass_shift = c.manual_mass_shift;
+            //this.manual_mass_shift = c.manual_mass_shift; //This messes up the corrected mass. Because we're not loading in charge states, the weighted monoisotopic mass is 0. This recalculates the corrected mass to 0.
             this.intensity_reported = c.intensity_reported;
             this.intensity_sum = c.intensity_sum;
             this.delta_mass = c.delta_mass;
@@ -156,10 +158,19 @@ namespace ProteoformSuiteInternal
             this.intensity = Convert.ToDouble(charge_row[1]);
             this.mz_centroid = Convert.ToDouble(charge_row[2]);
             this.reported_mass = Convert.ToDouble(charge_row[3]);
-            this.calculated_mass = CorrectCalculatedMass(correction);
+            this.calculated_mass = correct_calculated_mass(correction);
         }
 
-        public double CorrectCalculatedMass(double mz_correction)
+        //For testing
+        public ChargeState(int charge_count, double intensity, double mz_centroid, double mz_correction)
+        {
+            this.charge_count = charge_count;
+            this.intensity = intensity;
+            this.mz_centroid = mz_centroid;
+            this.calculated_mass = correct_calculated_mass(mz_correction);
+        }
+
+        public double correct_calculated_mass(double mz_correction)
         {
             this.mz_correction = mz_correction;
             return (this.charge_count * (this.mz_centroid + mz_correction - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
