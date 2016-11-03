@@ -115,6 +115,7 @@
     <Compile Include="AggregatedProteoforms.Designer.cs">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </Compile>
+    <Compile Include="DGVExcelWriter.cs" />
     <Compile Include="DisplayUtility.cs" />
     <Compile Include="ExperimentExperimentComparison.cs">
       <SubType>Form</SubType>

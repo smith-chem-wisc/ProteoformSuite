@@ -40,6 +40,11 @@ namespace ProteoformSuite
             }
         }
 
+        public DataGridView GetDGV()
+        {
+            return dgv_RawExpComp_MI_masses;
+        }
+
         public void FillRawExpComponentsTable()
         {
             DisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, Lollipop.raw_experimental_components);

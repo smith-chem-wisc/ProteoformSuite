@@ -32,6 +32,7 @@ namespace ProteoformSuite
         FolderBrowserDialog resultsFolderOpen = new FolderBrowserDialog();
         OpenFileDialog methodFileOpen = new OpenFileDialog();
         SaveFileDialog methodFileSave = new SaveFileDialog();
+        SaveFileDialog saveDialog = new SaveFileDialog();
 
         Form current_form; 
 
@@ -455,5 +456,74 @@ namespace ProteoformSuite
             quantification.WindowState = FormWindowState.Maximized;
             quantification.Show();
         }
+
+        private void exportTablesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            export_table();
+        }
+
+        private void export_table()
+        {
+            List<DataGridView> dgvs = new List<DataGridView>();
+            if (current_form == rawExperimentalComponents)
+            {
+                dgvs.Add(rawExperimentalComponents.GetDGV());
+                SaveExcelFile(dgvs, "raw_experimental_components_table.xlsx");
+            }
+            if (current_form == neuCodePairs)
+            {
+                dgvs.Add(neuCodePairs.GetDGV());
+                SaveExcelFile(dgvs, "neucode_pairs_table.xlsx");
+            }
+            if (current_form == aggregatedProteoforms)
+            {
+                dgvs.Add(aggregatedProteoforms.GetDGV());
+                SaveExcelFile(dgvs, "aggregated_proteoforms_table.xlsx");
+           }
+            if (current_form == theoreticalDatabase)
+            {
+                dgvs.Add(theoreticalDatabase.GetDGV());
+                SaveExcelFile(dgvs, "theoretical_database_table.xlsx");
+            }
+            if ( current_form == experimentalTheoreticalComparison)
+            {
+                dgvs.Add(experimentalTheoreticalComparison.GetETPeaksDGV());
+                dgvs.Add(experimentalTheoreticalComparison.GetETRelationsDGV());
+                SaveExcelFile(dgvs,  "experimental_theoretical_comparison_table.xlsx");
+            }
+            if ( current_form == experimentExperimentComparison)
+            {
+                dgvs.Add(experimentExperimentComparison.GetEEPeaksDGV());
+                dgvs.Add(experimentExperimentComparison.GetEERelationDGV());
+                SaveExcelFile(dgvs,  "experiment_experiment_comparison_table.xlsx");
+            }
+            if (current_form == proteoformFamilies)
+            {
+                dgvs.Add(proteoformFamilies.GetDGV());
+                SaveExcelFile(dgvs, "proteoform_families_table.xlsx");
+            }
+            if (current_form == quantification)
+            {
+                dgvs.Add(quantification.Get_GoTerms_DGV());
+                dgvs.Add(quantification.Get_quant_results_DGV());
+                SaveExcelFile(dgvs, "quantification_table.xlsx");
+            }
+            
+        }
+
+        public void SaveExcelFile(List<DataGridView> dgvs, string filename)
+        {
+            saveDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
+            saveDialog.FileName = filename;
+            DialogResult dr = this.saveDialog.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                DGVExcelWriter writer = new DGVExcelWriter();
+                writer.ExportToExcel(dgvs, saveDialog.FileName);
+                MessageBox.Show("Successfully exported table.");
+            }
+            else { return; }
+        }
+
     }
 }

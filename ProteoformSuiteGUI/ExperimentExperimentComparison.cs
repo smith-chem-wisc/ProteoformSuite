@@ -47,6 +47,16 @@ namespace ProteoformSuite
             else MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
+        public DataGridView GetEERelationDGV()
+        {
+            return dgv_EE_Relations;
+        }
+
+        public DataGridView GetEEPeaksDGV()
+        {
+            return dgv_EE_Peaks;
+        }
+
         private void ClearListsAndTables()
         {
             Lollipop.ee_relations.Clear();

@@ -154,7 +154,6 @@ namespace ProteoformSuite
             dgv.Columns["is_decoy"].Visible = false;
             dgv.Columns["modified_mass"].Visible = false;
             if (!Lollipop.neucode_labeled) { dgv.Columns["lysine_count"].Visible = false; }
-
             dgv.AllowUserToAddRows = false;
         }
 
