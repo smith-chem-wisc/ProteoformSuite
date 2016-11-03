@@ -51,6 +51,11 @@ namespace ProteoformSuite
             DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
+        public DataGridView GetDGV()
+        {
+            return dgv_Database;
+        }
+
         private void InitializeSettings()
         {
             if (Lollipop.neucode_labeled)

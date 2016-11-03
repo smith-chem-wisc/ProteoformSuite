@@ -62,6 +62,16 @@ namespace ProteoformSuite
             this.dgv_ET_Peak_List.CurrentCellDirtyStateChanged += this.ET_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event 
         }
 
+        public DataGridView GetETRelationsDGV()
+        {
+            return dgv_ET_Pairs;
+        }
+
+        public DataGridView GetETPeaksDGV()
+        {
+            return dgv_ET_Peak_List;
+        }
+
         private void ClearListsAndTables()
         {
             Lollipop.et_relations.Clear();
