@@ -38,6 +38,11 @@ namespace ProteoformSuite
             if (Lollipop.proteoform_community.families.Count <= 0 && Lollipop.proteoform_community.has_e_proteoforms) run_the_gamut();
         }
 
+        public DataGridView GetDGV()
+        {
+            return dgv_proteoform_families;
+        }
+
         private void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;

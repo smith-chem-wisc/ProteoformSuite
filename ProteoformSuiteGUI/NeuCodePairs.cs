@@ -44,6 +44,11 @@ namespace ProteoformSuite
             FormatNeuCodePairsDGV();
         }
 
+        public DataGridView GetDGV()
+        {
+            return dgv_RawExpNeuCodePairs;
+        }
+
         public void GraphNeuCodePairs()
         {
             GraphLysineCount();

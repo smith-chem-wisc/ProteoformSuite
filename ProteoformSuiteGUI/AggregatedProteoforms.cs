@@ -42,6 +42,11 @@ namespace ProteoformSuite
             else { MessageBox.Show("Go back and load in deconvolution results."); }
         }
 
+        public DataGridView GetDGV()
+        {
+            return dgv_AggregatedProteoforms;
+        }
+
         private void InitializeSettings()
         {
             nUP_mass_tolerance.Minimum = 0;
