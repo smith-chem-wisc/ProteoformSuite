@@ -76,6 +76,7 @@
     <Compile Include="Psm.cs" />
     <Compile Include="RandomExtensions.cs" />
     <Compile Include="Results.cs" />
+    <Compile Include="SaveState.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
