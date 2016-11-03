@@ -190,7 +190,7 @@ namespace ProteoformSuite
                 MessageBox.Show("Please choose a folder in which the families will be built, so you can load them into Cytoscape.");
                 return false;
             }
-            string time_stamp = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString();
+            string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
             CytoscapeScript c = new CytoscapeScript(families, time_stamp);
             File.WriteAllText(c.edges_path, c.edge_table);

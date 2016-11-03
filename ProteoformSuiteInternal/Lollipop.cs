@@ -25,12 +25,6 @@ namespace ProteoformSuiteInternal
 
         //RAW EXPERIMENTAL COMPONENTS
         public static List<InputFile> input_files = new List<InputFile>();
-        public static IEnumerable<InputFile> identification_files() { return input_files.Where(f => f.purpose == Purpose.Identification); }
-        public static IEnumerable<InputFile> quantification_files() { return input_files.Where(f => f.purpose == Purpose.Quantification); }
-        public static IEnumerable<InputFile> calibration_files() { return input_files.Where(f => f.purpose == Purpose.Calibration); }
-        public static IEnumerable<InputFile> bottomup_files() { return input_files.Where(f => f.purpose == Purpose.BottomUp); }
-        public static IEnumerable<InputFile> topdown_files() { return input_files.Where(f => f.purpose == Purpose.TopDown); }
-        public static IEnumerable<InputFile> topdownID_files() { return input_files.Where(f => f.purpose == Purpose.TopDownIDResults); }
         public static List<Correction> correctionFactors = null;
         public static List<int> MS1_scans = new List<int>();
         public static List<Component> raw_experimental_components = new List<Component>();
@@ -39,6 +33,14 @@ namespace ProteoformSuiteInternal
         public static bool neucode_labeled = true;
         public static bool td_results = false;
 
+        //input file auxillary methods
+        public static IEnumerable<InputFile> identification_files() { return input_files.Where(f => f.purpose == Purpose.Identification); }
+        public static IEnumerable<InputFile> quantification_files() { return input_files.Where(f => f.purpose == Purpose.Quantification); }
+        public static IEnumerable<InputFile> calibration_files() { return input_files.Where(f => f.purpose == Purpose.Calibration); }
+        public static IEnumerable<InputFile> bottomup_files() { return input_files.Where(f => f.purpose == Purpose.BottomUp); }
+        public static IEnumerable<InputFile> topdown_files() { return input_files.Where(f => f.purpose == Purpose.TopDown); }
+        public static IEnumerable<InputFile> topdownID_files() { return input_files.Where(f => f.purpose == Purpose.TopDownIDResults); }
+       
         public static void process_raw_components()
         {
             if (input_files.Any(f => f.purpose == Purpose.Calibration))
@@ -540,93 +542,5 @@ namespace ProteoformSuiteInternal
         //PROTEOFORM FAMILIES -- see ProteoformCommunity
         public static string family_build_folder_path = "";
         public static int deltaM_edge_display_rounding = 2;
-
-        //METHOD FILE
-        public static string method_toString()
-        {
-            string method = String.Join(System.Environment.NewLine, new string[] {            
-                "NeuCodePairs|max_intensity_ratio\t" + max_intensity_ratio.ToString(),
-                "NeuCodePairs|min_intensity_ratio\t" + min_intensity_ratio.ToString(),
-                "NeuCodePairs|max_lysine_ct\t" + max_lysine_ct.ToString(),
-                "NeuCodePairs|min_lysine_ct\t" + min_lysine_ct.ToString(),
-                "AggregatedProteoforms|mass_tolerance\t" + mass_tolerance.ToString(),
-                "AggregatedProteoforms|retention_time_tolerance\t" + retention_time_tolerance.ToString(),
-                "AggregatedProteoforms|missed_monos\t" + missed_monos.ToString(),
-                "AggregatedProteoforms|missed_lysines\t" + missed_lysines.ToString(),
-                "AggregatedProteoforms|min_rel_abundance\t" + min_rel_abundance.ToString(),
-                "AggregatedProteoforms|min_num_CS\t" + min_num_CS.ToString(),
-                "AggregatedProteoforms|min_agg_count\t" + min_agg_count.ToString(),
-                "TheoreticalDatabase|uniprot_xml_filepath\t" + uniprot_xml_filepath,
-                "TheoreticalDatabase|ptmlist_filepath\t" + ptmlist_filepath,
-                "TheoreticalDatabase|methionine_oxidation\t" + methionine_oxidation.ToString(),
-                "TheoreticalDatabase|carbamidomethylation\t" + carbamidomethylation.ToString(),
-                "TheoreticalDatabase|methionine_cleavage\t" + methionine_cleavage.ToString(),
-                "TheoreticalDatabase|neucode_light_lysine\t" + neucode_light_lysine.ToString(),
-                "TheoreticalDatabase|neucode_heavy_lysine\t" + neucode_heavy_lysine.ToString(),
-                "TheoreticalDatabase|natural_lysine_isotope_abundance\t" + natural_lysine_isotope_abundance.ToString(),
-                "TheoreticalDatabase|max_ptms\t" + max_ptms.ToString(),
-                "TheoreticalDatabase|decoy_databases\t" + decoy_databases.ToString(),
-                "TheoreticalDatabase|min_peptide_length\t" + min_peptide_length.ToString(),
-                "TheoreticalDatabase|combine_identical_sequences\t" + combine_identical_sequences.ToString(),
-                "Comparisons|no_mans_land_lowerBound\t" + no_mans_land_lowerBound.ToString(),
-                "Comparisons|no_mans_land_upperBound\t" + no_mans_land_upperBound.ToString(),
-                "Comparisons|ee_max_mass_difference\t" + ee_max_mass_difference.ToString(),
-                "Comparisons|et_low_mass_difference\t" + et_low_mass_difference.ToString(),
-                "Comparisons|et_high_mass_difference\t" + et_high_mass_difference.ToString(),
-                "Comparisons|relation_group_centering_iterations\t" + relation_group_centering_iterations.ToString(),
-                "Comparisons|peak_width_base_ee\t" + peak_width_base_ee.ToString(),
-                "Comparisons|peak_width_base_et\t" + peak_width_base_et.ToString(),
-                "Comparisons|min_peak_count_ee\t" + min_peak_count_ee.ToString(),
-                "Comparisons|min_peak_count_et\t" + min_peak_count_et.ToString(),
-                "Comparisons|ee_max_RetentionTime_difference\t" + ee_max_RetentionTime_difference.ToString(),
-                "Families|family_build_folder_path\t" + family_build_folder_path, 
-                "Families|deltaM_edge_display_rounding\t" + deltaM_edge_display_rounding.ToString()    
-            });
-            return method; 
-        }
-
-        public static bool use_method_files = true;
-        public static void load_setting(string setting_spec)
-        {
-            string[] fields = setting_spec.Split('\t');
-            switch (fields[0])
-            {
-                case "NeuCodePairs|max_intensity_ratio": max_intensity_ratio = Convert.ToDecimal(fields[1]); break;
-                case "NeuCodePairs|min_intensity_ratio": min_intensity_ratio = Convert.ToDecimal(fields[1]); break;
-                case "NeuCodePairs|max_lysine_ct": max_lysine_ct = Convert.ToDecimal(fields[1]); break;
-                case "NeuCodePairs|min_lysine_ct": min_lysine_ct = Convert.ToDecimal(fields[1]); break;
-                case "AggregatedProteoforms|mass_tolerance": mass_tolerance = Convert.ToDecimal(fields[1]); break;
-                case "AggregatedProteoforms|retention_time_tolerance": retention_time_tolerance = Convert.ToDecimal(fields[1]); break;
-                case "AggregatedProteoforms|missed_monos": missed_monos = Convert.ToDecimal(fields[1]); break;
-                case "AggregatedProteoforms|missed_lysines": missed_lysines = Convert.ToDecimal(fields[1]); break;
-                case "AggregatedProteoforms|min_rel_abundance": min_rel_abundance = Convert.ToDouble(fields[1]); break;
-                case "AggregatedProteoforms|min_num_CS": min_num_CS = Convert.ToInt16(fields[1]); break;
-                case "AggregatedProteoforms|min_agg_count": min_agg_count = Convert.ToInt16(fields[1]); break;
-                case "TheoreticalDatabase|uniprot_xml_filepath": if (fields.Length > 1) uniprot_xml_filepath = fields[1]; break; //make sure path listed
-                case "TheoreticalDatabase|ptmlist_filepath": if (fields.Length > 1) ptmlist_filepath = fields[1]; break;
-                case "TheoreticalDatabase|methionine_oxidation": methionine_oxidation = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|carbamidomethylation": carbamidomethylation = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|methionine_cleavage": methionine_cleavage = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|neucode_light_lysine": neucode_light_lysine = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|neucode_heavy_lysine": neucode_heavy_lysine = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|natural_lysine_isotope_abundance": natural_lysine_isotope_abundance = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|combine_identical_sequences": combine_identical_sequences = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|max_ptms": max_ptms = Convert.ToInt32(fields[1]); break;
-                case "TheoreticalDatabase|decoy_databases": decoy_databases = Convert.ToInt32(fields[1]); break;
-                case "TheoreticalDatabase|min_peptide_length": min_peptide_length = Convert.ToInt32(fields[1]); break;
-                case "Comparisons|no_mans_land_lowerBound": no_mans_land_lowerBound = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|no_mans_land_upperBound": no_mans_land_upperBound = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|peak_width_base_ee": peak_width_base_ee = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|peak_width_base_et": peak_width_base_et = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|min_peak_count_ee": min_peak_count_ee = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|min_peak_count_et": min_peak_count_et = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|ee_max_RetentionTime_difference": ee_max_RetentionTime_difference = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|ee_max_mass_difference": ee_max_mass_difference = Convert.ToDouble(fields[1]); break;
-                case "Comprisons|et_high_mass_diffrence": et_high_mass_difference = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|et_low_mass_difference": et_low_mass_difference = Convert.ToDouble(fields[1]); break;
-                case "Families|family_build_folder_path": if (fields.Length > 1) family_build_folder_path = fields[1]; break; //still works if no path
-                case "Families|deltaM_edge_display_rounding": deltaM_edge_display_rounding = Convert.ToInt32(fields[1]); break;
-            }
-        }
     }
 }

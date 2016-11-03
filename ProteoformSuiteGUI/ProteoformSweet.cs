@@ -114,7 +114,7 @@ namespace ProteoformSuite
             else if (results_folder == DialogResult.Cancel) return;
             else return;
 
-            foreach (string setting_spec in File.ReadAllLines(working_directory + "\\_method.txt")) Lollipop.load_setting(setting_spec.Trim());
+            SaveState.open_method(File.ReadAllLines(working_directory + "\\_method.xml"));
             
             Lollipop.opening_results = true;
             Lollipop.opened_results_originally = true;
@@ -258,23 +258,6 @@ namespace ProteoformSuite
             }
         }
 
-
-        private bool openMethod()
-        {
-            DialogResult dr = this.methodFileOpen.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                string method_filename = methodFileOpen.FileName;
-                ResultsSummary.loadDescription = method_filename;
-                foreach (string setting_spec in File.ReadAllLines(method_filename))
-                {
-                    Lollipop.load_setting(setting_spec.Trim());
-                }
-                return true;
-            }
-            return false;
-        }
-
         private void saveCurrentPageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string working_directory;
@@ -294,9 +277,9 @@ namespace ProteoformSuite
             DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
             if (results_folder == DialogResult.OK) working_directory = this.resultsFolderOpen.SelectedPath;
             else return;
-            saveMethod(working_directory + "\\_method.txt");
+            saveMethod(working_directory + "\\_method.xml");
             save_tsv(working_directory, true);
-            File.Copy(ProteomeDatabaseReader.oldPtmlistFilePath, working_directory + "\\ptmlist.txt");
+            File.Copy(ProteomeDatabaseReader.oldPtmlistFilePath, working_directory + "\\ptmlist.txt", true);
             MessageBox.Show("Successfully saved all pages.");
         }
 
@@ -363,7 +346,25 @@ namespace ProteoformSuite
         private void saveMethod(string method_filename)
         {
             using (StreamWriter file = new StreamWriter(method_filename))
-                file.WriteLine(Lollipop.method_toString());
+                file.WriteLine(SaveState.save_method());
+        }
+
+        private void loadSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            load_method();
+        }
+
+        private bool load_method()
+        {
+            DialogResult dr = this.methodFileOpen.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                string method_filename = methodFileOpen.FileName;
+                ResultsSummary.loadDescription = method_filename;
+                SaveState.open_method(File.ReadAllLines(method_filename));
+                return true;
+            }
+            return false;
         }
 
         private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
@@ -376,12 +377,17 @@ namespace ProteoformSuite
             var result = MessageBox.Show("Choose a method file.", "Method Load and Run", MessageBoxButtons.OKCancel);
             if (result == DialogResult.Cancel) return;
 
-            bool successful_opening = openMethod();
-            if (!successful_opening) return;
+            if (!load_method()) return;
             MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
-            bool successful_run = full_run();
-            if (successful_run) { MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu."); }
-            else { MessageBox.Show("Method did not successfully run."); }
+
+            if (full_run())
+            {
+                MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
+            }
+            else
+            {
+                MessageBox.Show("Method did not successfully run.");
+            }
         }
 
         public bool full_run()
