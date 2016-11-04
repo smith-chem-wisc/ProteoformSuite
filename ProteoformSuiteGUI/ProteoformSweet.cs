@@ -423,7 +423,7 @@ namespace ProteoformSuite
     
 
         // MISCELLANEOUS
-        private void clear_lists()
+        public void clear_lists()
         {
             Lollipop.raw_experimental_components.Clear();
             Lollipop.raw_neucode_pairs.Clear();
