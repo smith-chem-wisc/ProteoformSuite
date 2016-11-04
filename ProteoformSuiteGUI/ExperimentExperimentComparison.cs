@@ -98,7 +98,7 @@ namespace ProteoformSuite
         }
         private void FillEEPeakListTable()
         {
-            DisplayUtility.FillDataGridView(dgv_EE_Peaks, Lollipop.ee_peaks);
+            DisplayUtility.FillDataGridView(dgv_EE_Peaks, Lollipop.ee_peaks.OrderByDescending(p => p.peak_relation_group_count).ToList());
         }
         private void GraphEERelations()
         {
