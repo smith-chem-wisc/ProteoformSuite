@@ -27,7 +27,7 @@ namespace ProteoformSuite
         private void ProteoformFamilies_Load(object sender, EventArgs e)
         { }
 
-        public void initialize_settings()
+        private void initialize_settings()
         {
             this.tb_familyBuildFolder.Text = Lollipop.family_build_folder_path;
             this.nud_decimalRoundingLabels.Value = Convert.ToDecimal(Lollipop.deltaM_edge_display_rounding);
@@ -35,6 +35,7 @@ namespace ProteoformSuite
 
         public void construct_families()
         {
+            initialize_settings();
             if (Lollipop.proteoform_community.families.Count <= 0 && Lollipop.proteoform_community.has_e_proteoforms) run_the_gamut();
         }
 
