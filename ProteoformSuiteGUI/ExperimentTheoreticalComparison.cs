@@ -33,7 +33,7 @@ namespace ProteoformSuite
         public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
         { }
 
-        private void compare_et()
+        public void compare_et()
         {
             if (Lollipop.proteoform_community.has_e_and_t_proteoforms)
             {
@@ -44,9 +44,8 @@ namespace ProteoformSuite
                 this.Cursor = Cursors.Default;
                 compared_et = true;
             }
-            else if (Lollipop.proteoform_community.has_e_proteoforms)
-            { MessageBox.Show("Go back and create a theoretical database."); }
-            else { MessageBox.Show("Go back and aggregate experimental proteoforms."); }
+            else if (Lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
+            else MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         public void FillTablesAndCharts()
@@ -102,7 +101,7 @@ namespace ProteoformSuite
         }
         private void FillETPeakListTable()
         {
-            DisplayUtility.FillDataGridView(dgv_ET_Peak_List, Lollipop.et_peaks);
+            DisplayUtility.FillDataGridView(dgv_ET_Peak_List, Lollipop.et_peaks.OrderByDescending(p => p.peak_relation_group_count).ToList());
         }
         private void GraphETRelations()
         {
