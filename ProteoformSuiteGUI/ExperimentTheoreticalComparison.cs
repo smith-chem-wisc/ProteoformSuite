@@ -31,7 +31,9 @@ namespace ProteoformSuite
         }
 
         public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
-        { }
+        {
+   
+        }
 
         private void compare_et()
         {
@@ -433,9 +435,14 @@ namespace ProteoformSuite
             xMaxET.Value = (decimal)Lollipop.et_high_mass_difference;
             xMinET.Value = (decimal)Lollipop.et_low_mass_difference;
         }
+
+        private void cb_TDBUpsm_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.limit_TD_BU_theoreticals = cb_TDBUpsm.Checked;
+        }
     }
 
-        public class ETPeakAcceptabilityChangedEventArgs : EventArgs
+    public class ETPeakAcceptabilityChangedEventArgs : EventArgs
         {
             private bool _isPeakAcceptable;
             private DeltaMassPeak _ETPeak;
