@@ -383,6 +383,15 @@ namespace ProteoformSuiteInternal
                 string[] accession_to_search = tp.accession.Split('_');
                 tp.psm_list = Lollipop.psm_list.Where(p => p.protein_description.Contains(accession_to_search[0])).ToList();
             });
+            for (int i = 0; i < decoy_databases; i++)
+            {
+                Parallel.ForEach<TheoreticalProteoform>(Lollipop.proteoform_community.decoy_proteoforms["DecoyDatabase_" + i], dp =>
+                 {
+                     string[] accession_to_search = dp.accession.Split('_');
+                     dp.psm_list = Lollipop.psm_list.Where(p => p.protein_description.Contains(accession_to_search[0])).ToList();
+ 
+                 });
+            }
         }
 
         private static void mark_accessions_of_interest()
@@ -515,6 +524,7 @@ namespace ProteoformSuiteInternal
         public static double min_peak_count_ee = 10;
         public static double min_peak_count_et = 10;
         public static int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
+        public static bool limit_TD_BU_theoreticals = false;
         public static List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
         public static List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
         public static Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
@@ -524,7 +534,8 @@ namespace ProteoformSuiteInternal
 
         public static void make_et_relationships()
         {
-            Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
+            if (!limit_TD_BU_theoreticals) Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
+            else Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.Where(t => t.psm_count_BU > 0 || t.psm_count_TD > 0 ).ToArray(), ProteoformComparison.et);
             Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
             Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
