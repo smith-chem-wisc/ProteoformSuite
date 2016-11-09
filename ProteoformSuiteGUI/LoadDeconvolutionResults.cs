@@ -32,6 +32,16 @@ namespace ProteoformSuite
         
         private void btn_neucode_CheckedChanged(object sender, EventArgs e)
         {
+            if (btn_unlabeled.Checked)
+            {
+                ProteoformSweet.run_when_form_loads = false; //if unlabeled, don't run automatically. 
+                cb_run_when_load.Checked = false;
+            }
+            else
+            {
+                ProteoformSweet.run_when_form_loads = true; //if unlabeled, don't run automatically. 
+                cb_run_when_load.Checked = true;
+            }
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(btn_neucode.Checked);
             Lollipop.neucode_labeled = btn_neucode.Checked;
             Lollipop.neucode_light_lysine = btn_neucode.Checked;
@@ -392,6 +402,11 @@ namespace ProteoformSuite
         private void bt_clearResults_Click(object sender, EventArgs e)
         {
             ((ProteoformSweet)MdiParent).clear_lists();
+        }
+
+        private void cb_run_when_load_CheckedChanged(object sender, EventArgs e)
+        {
+            ProteoformSweet.run_when_form_loads = cb_run_when_load.Checked;
         }
     }
 }
