@@ -33,6 +33,16 @@ namespace ProteoformSuite
             runTheGamut();
         }
 
+        public DataGridView Get_quant_results_DGV()
+        {
+            return dgv_quantification_results;
+        }
+
+        public DataGridView Get_GoTerms_DGV()
+        {
+            return dgv_goAnalysis;
+        }
+
         private void initializeForm()
         {
             rbtn_neucodeRatio.CheckedChanged += new EventHandler(datatableSelection_CheckedChange);

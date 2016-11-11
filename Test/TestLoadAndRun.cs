@@ -13,7 +13,6 @@ namespace Test
     class TestLoadAndRun
     {
         [Test]
-
         public void test_load_and_run()
         {
             //set parameters -- change some parameters to other than the current defaults... 
@@ -35,7 +34,7 @@ namespace Test
             Lollipop.ee_max_RetentionTime_difference = 10;
 
             //save method
-            string saved_method = Lollipop.method_toString();
+            string saved_method = SaveState.save_method().ToString();
 
             //change parameters back to defaults
             Lollipop.min_intensity_ratio = 1.4m;
@@ -51,10 +50,7 @@ namespace Test
             Lollipop.ee_max_RetentionTime_difference = 2.5;
             Lollipop.peak_width_base_ee = 0.015;
             //load method --> should switch parametetrs to saved 
-            foreach (string setting_spec in saved_method.Split('\n'))
-            {
-                Lollipop.load_setting(setting_spec.Trim());
-            }
+            SaveState.open_method(saved_method);
 
             //tests that the method settings properly a) saved b)loaded up above
             Assert.AreEqual(3, Lollipop.min_lysine_ct);
@@ -74,7 +70,6 @@ namespace Test
             Assert.AreEqual(0.001, Lollipop.peak_width_base_ee);
             Assert.AreEqual(10, Lollipop.ee_max_RetentionTime_difference);
         }
-
     }
 }
 

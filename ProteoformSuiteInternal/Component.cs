@@ -22,11 +22,13 @@ namespace ProteoformSuiteInternal
         public string rt_range { get; set; }
         public double rt_apex { get; set; }
         public double weighted_monoisotopic_mass { get; set; }
-        public double _manual_mass_shift { get; set; } = 0;
+        private double _manual_mass_shift { get; set; } = 0;
         public double manual_mass_shift
         {
             get { return _manual_mass_shift; }
-            set { _manual_mass_shift = value;
+            set
+            {
+                _manual_mass_shift = value;
                 this.calculate_weighted_monoisotopic_mass();
             }
         }
@@ -77,7 +79,7 @@ namespace ProteoformSuiteInternal
             this.monoisotopic_mass = c.monoisotopic_mass;
             this.weighted_monoisotopic_mass = c.weighted_monoisotopic_mass;
             this.corrected_mass = c.corrected_mass;
-            //this.manual_mass_shift = c.manual_mass_shift;
+            //this.manual_mass_shift = c.manual_mass_shift; //This messes up the corrected mass. Because we're not loading in charge states, the weighted monoisotopic mass is 0. This recalculates the corrected mass to 0.
             this.intensity_reported = c.intensity_reported;
             this.intensity_sum = c.intensity_sum;
             this.delta_mass = c.delta_mass;
@@ -118,23 +120,64 @@ namespace ProteoformSuiteInternal
 
         public Component mergeTheseComponents(Component cpToMerge) //this method is used just after initial read of components to get rid of missed monoisotopics in the same scan.
         {
-            foreach (ChargeState cs in this.charge_states) // here we check if the component to merge has matching charge states. If so, we merge those charge states
-            {
-                if (cpToMerge.charge_states.Where(cpCS => cpCS.charge_count == cs.charge_count).ToList().Count() > 0)
-                {
-                    cs.mergeTheseChargeStates(cpToMerge.charge_states.Where(cpCS => cpCS.charge_count == cs.charge_count).ToList().First());
-                }
-            }
+            if (Math.Abs((this.weighted_monoisotopic_mass - cpToMerge.weighted_monoisotopic_mass)) < 2d)
+            {// we're merging missed monoisotopics
 
-            foreach (ChargeState cs in cpToMerge.charge_states) // here we're looking for charge states in the component to merge that are not in the original. these we just add but we have to change their mass
-            {
-                if (this.charge_states.Where(thisCS => thisCS.charge_count == cs.charge_count).ToList().Count() == 0)
+                foreach (ChargeState cpCS in cpToMerge.charge_states)
                 {
-                    cs.reported_mass = cs.reported_mass - Lollipop.MONOISOTOPIC_UNIT_MASS; //downshift the mass by one.
-                    cs.mz_centroid = (cs.mz_centroid * cs.charge_count - cs.charge_count * 1.00727645D - Lollipop.MONOISOTOPIC_UNIT_MASS) / cs.charge_count; //downshift the mz by one mass divided by charge state.
-                    this.charge_states.Add(cs);
+                    if (cpCS.calculated_mass > this.weighted_monoisotopic_mass)
+                    {
+                        double monoIsoTopicDifference = Math.Round(cpCS.calculated_mass - this.weighted_monoisotopic_mass) * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                        cpCS.calculated_mass = cpCS.calculated_mass - monoIsoTopicDifference;
+                        cpCS.mz_centroid = (cpCS.calculated_mass + Lollipop.PROTON_MASS * cpCS.charge_count) / cpCS.charge_count;
+                        cpCS.mz_correction = 0;
+                        cpCS.reported_mass = cpCS.calculated_mass;
+                    }
+                    else
+                    {
+                        double monoIsoTopicDifference = Math.Round(this.weighted_monoisotopic_mass - cpCS.calculated_mass) * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                        cpCS.calculated_mass = cpCS.calculated_mass + monoIsoTopicDifference;
+                        cpCS.mz_centroid = (cpCS.calculated_mass + Lollipop.PROTON_MASS * cpCS.charge_count) / cpCS.charge_count;
+                        cpCS.mz_correction = 0;
+                        cpCS.reported_mass = cpCS.calculated_mass;
+                    }
+                    if (this.charge_states.Exists(thisCS => thisCS.charge_count == cpCS.charge_count))
+                        this.charge_states.Where(thisCS => thisCS.charge_count == cpCS.charge_count).First().mergeTheseChargeStates(cpCS);
+                    else
+                        this.charge_states.Add(cpCS);
                 }
             }
+            else // we're merging harmonics
+            {
+                foreach (ChargeState cpCS in cpToMerge.charge_states)
+                {
+                    if(cpCS.calculated_mass > this.weighted_monoisotopic_mass)
+                    {
+                        double harmonicRatio = Math.Round(cpCS.calculated_mass / this.weighted_monoisotopic_mass);// this should be 2 or 3
+                        cpCS.charge_count = (int)(cpCS.charge_count / harmonicRatio);//charge counts of harmonics are doubled or tripled and need to be lowered
+                        cpCS.calculated_mass = cpCS.calculated_mass / harmonicRatio;
+                        cpCS.calculated_mass = cpCS.calculated_mass - (Math.Round(cpCS.calculated_mass - this.weighted_monoisotopic_mass)) * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                        cpCS.mz_centroid = (cpCS.calculated_mass + Lollipop.PROTON_MASS * cpCS.charge_count) / cpCS.charge_count;
+                        cpCS.mz_correction = 0;
+                        cpCS.reported_mass = cpCS.calculated_mass;
+                    }
+                    else
+                    {
+                        double harmonicRatio = Math.Round(this.weighted_monoisotopic_mass/cpCS.calculated_mass);// this should be 2 or 3
+                        cpCS.charge_count = (int)(cpCS.charge_count * harmonicRatio);//charge counts of harmonics are halved or thirded and need to be raised
+                        cpCS.calculated_mass = cpCS.calculated_mass * harmonicRatio;
+                        cpCS.calculated_mass = cpCS.calculated_mass - (Math.Round(cpCS.calculated_mass - this.weighted_monoisotopic_mass)) * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                        cpCS.mz_centroid = (cpCS.calculated_mass + Lollipop.PROTON_MASS * cpCS.charge_count) / cpCS.charge_count;
+                        cpCS.mz_correction = 0;
+                        cpCS.reported_mass = cpCS.calculated_mass;
+                    }
+                    if (this.charge_states.Exists(thisCS => thisCS.charge_count == cpCS.charge_count))
+                        this.charge_states.Where(thisCS => thisCS.charge_count == cpCS.charge_count).First().mergeTheseChargeStates(cpCS);
+                    else
+                        this.charge_states.Add(cpCS);
+                }
+            }
+            
             this.calculate_sum_intensity();
             this.calculate_weighted_monoisotopic_mass();
             return this;
@@ -156,10 +199,19 @@ namespace ProteoformSuiteInternal
             this.intensity = Convert.ToDouble(charge_row[1]);
             this.mz_centroid = Convert.ToDouble(charge_row[2]);
             this.reported_mass = Convert.ToDouble(charge_row[3]);
-            this.calculated_mass = CorrectCalculatedMass(correction);
+            this.calculated_mass = correct_calculated_mass(correction);
         }
 
-        public double CorrectCalculatedMass(double mz_correction)
+        //For testing
+        public ChargeState(int charge_count, double intensity, double mz_centroid, double mz_correction)
+        {
+            this.charge_count = charge_count;
+            this.intensity = intensity;
+            this.mz_centroid = mz_centroid;
+            this.calculated_mass = correct_calculated_mass(mz_correction);
+        }
+
+        public double correct_calculated_mass(double mz_correction)
         {
             this.mz_correction = mz_correction;
             return (this.charge_count * (this.mz_centroid + mz_correction - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
@@ -170,8 +222,8 @@ namespace ProteoformSuiteInternal
             if(csToMerge != null)
             {
                 double totalIntensity = this.intensity + csToMerge.intensity;
-                this.reported_mass = (this.intensity * this.reported_mass + csToMerge.intensity * csToMerge.reported_mass)/totalIntensity;
-                csToMerge.mz_centroid = (csToMerge.mz_centroid * csToMerge.charge_count - charge_count * 1.00727645D - Lollipop.MONOISOTOPIC_UNIT_MASS) / csToMerge.charge_count;
+                this.reported_mass = (this.intensity * this.calculated_mass + csToMerge.intensity * csToMerge.calculated_mass) /totalIntensity;
+                //csToMerge.mz_centroid = (csToMerge.mz_centroid * csToMerge.charge_count - charge_count * 1.00727645D - Lollipop.MONOISOTOPIC_UNIT_MASS) / csToMerge.charge_count;
                 this.mz_centroid = (this.intensity * this.mz_centroid + csToMerge.intensity * csToMerge.mz_centroid) / totalIntensity;
                 this.intensity = totalIntensity;
             }

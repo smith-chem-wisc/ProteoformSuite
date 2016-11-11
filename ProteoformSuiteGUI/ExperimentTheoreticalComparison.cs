@@ -1,7 +1,6 @@
 ﻿using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -17,6 +16,7 @@ namespace ProteoformSuite
     {
         public event ETPeakAcceptabilityChangedEventHandler ETPeakAcceptabilityChanged;
         private bool compared_et;
+
         public ExperimentTheoreticalComparison()
         {
             InitializeComponent();
@@ -35,7 +35,7 @@ namespace ProteoformSuite
    
         }
 
-        private void compare_et()
+        public void compare_et()
         {
             if (Lollipop.proteoform_community.has_e_and_t_proteoforms)
             {
@@ -46,9 +46,8 @@ namespace ProteoformSuite
                 this.Cursor = Cursors.Default;
                 compared_et = true;
             }
-            else if (Lollipop.proteoform_community.has_e_proteoforms)
-            { MessageBox.Show("Go back and create a theoretical database."); }
-            else { MessageBox.Show("Go back and aggregate experimental proteoforms."); }
+            else if (Lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
+            else MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         public void FillTablesAndCharts()
@@ -62,6 +61,16 @@ namespace ProteoformSuite
             GraphETPeaks();
             updateFiguresOfMerit();
             this.dgv_ET_Peak_List.CurrentCellDirtyStateChanged += this.ET_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event 
+        }
+
+        public DataGridView GetETRelationsDGV()
+        {
+            return dgv_ET_Pairs;
+        }
+
+        public DataGridView GetETPeaksDGV()
+        {
+            return dgv_ET_Peak_List;
         }
 
         private void ClearListsAndTables()
@@ -94,7 +103,7 @@ namespace ProteoformSuite
         }
         private void FillETPeakListTable()
         {
-            DisplayUtility.FillDataGridView(dgv_ET_Peak_List, Lollipop.et_peaks);
+            DisplayUtility.FillDataGridView(dgv_ET_Peak_List, Lollipop.et_peaks.OrderByDescending(p => p.peak_relation_group_count).ToList());
         }
         private void GraphETRelations()
         {
@@ -136,33 +145,41 @@ namespace ProteoformSuite
             int clickedCol = dgv_ET_Peak_List.HitTest(e.X, e.Y).ColumnIndex;
             if (clickedRow < Lollipop.et_relations.Count && clickedRow >= 0 && clickedCol >=0 && clickedCol < dgv_ET_Peak_List.ColumnCount)
             { 
-            if (e.Button == MouseButtons.Left)
-            {
-                ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
-                DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
-                DisplayUtility.GraphSelectedDeltaMassPeak(ct_ET_peakList, selected_peak, Lollipop.et_relations);
-            }
-            else
-            {
-                if (e.Button == MouseButtons.Right && clickedRow >= 0 && clickedRow < Lollipop.et_relations.Count)
+                if (e.Button == MouseButtons.Left)
                 {
-                    ContextMenuStrip ET_peak_List_Menu = new ContextMenuStrip();
-                    int position_xy_mouse_row = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
-
+                    ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
                     DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
-
-                    if (position_xy_mouse_row > 0)
-                    {
-                        ET_peak_List_Menu.Items.Add("Increase Experimenal Mass " + Lollipop.MONOISOTOPIC_UNIT_MASS + " Da").Name = "IncreaseMass";
-                        ET_peak_List_Menu.Items.Add("Decrease Experimenal Mass " + Lollipop.MONOISOTOPIC_UNIT_MASS + " Da").Name = "DecreaseMass";
-                    }
-                    ET_peak_List_Menu.Show(dgv_ET_Peak_List, new Point(e.X, e.Y));
-
-                    //event menu click
-                    ET_peak_List_Menu.ItemClicked += new ToolStripItemClickedEventHandler((s, ev) => ET_peak_List_Menu_ItemClicked(s, ev, selected_peak));
+                    DisplayUtility.GraphSelectedDeltaMassPeak(ct_ET_peakList, selected_peak, Lollipop.et_relations);
                 }
+                else
+                {
+                    if (e.Button == MouseButtons.Right && clickedRow >= 0 && clickedRow < Lollipop.et_relations.Count)
+                    {
+                        ContextMenuStrip ET_peak_List_Menu = new ContextMenuStrip();
+                        int position_xy_mouse_row = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
+
+                        DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
+
+                        if (position_xy_mouse_row > 0)
+                        {
+                            ET_peak_List_Menu.Items.Add("Increase Experimental Mass " + Lollipop.MONOISOTOPIC_UNIT_MASS + " Da").Name = "IncreaseMass";
+                            ET_peak_List_Menu.Items.Add("Decrease Experimental Mass " + Lollipop.MONOISOTOPIC_UNIT_MASS + " Da").Name = "DecreaseMass";
+                        }
+                        ET_peak_List_Menu.Show(dgv_ET_Peak_List, new Point(e.X, e.Y));
+
+                        //event menu click
+                        ET_peak_List_Menu.ItemClicked += new ToolStripItemClickedEventHandler((s, ev) => ET_peak_List_Menu_ItemClicked(s, ev, selected_peak));
+                    }
                 } 
             }
+        }
+
+        private void bt_compare_et_Click(object sender, EventArgs e)
+        {
+            shift_masses();
+            compare_et();
+            xMaxET.Value = (decimal)Lollipop.et_high_mass_difference;
+            xMinET.Value = (decimal)Lollipop.et_low_mass_difference;
         }
 
         //shifts any mass shifts that have been changed from 0 in dgv
@@ -183,138 +200,41 @@ namespace ProteoformSuite
                         MessageBox.Show("Could not convert mass shift for peak at delta mass " + peak.delta_mass + ". Please enter an integer.");
                         return;
                     }
-                    massShifter(peak, int_mass_shifter, false);
+                    peak.shift_experimental_masses(int_mass_shifter);
                 }
-                if (Lollipop.neucode_labeled)
-                {
-                    Lollipop.raw_neucode_pairs.Clear();
-                    HashSet<string> scan_ranges = new HashSet<string>(Lollipop.raw_experimental_components.Select(c => c.scan_range));
-                    foreach (string scan_range in scan_ranges)
-                        Lollipop.find_neucode_pairs(Lollipop.raw_experimental_components.Where(c => c.scan_range == scan_range));
-                }
-                Lollipop.aggregate_proteoforms();
+                Lollipop.regroup_components();
             }
         }
-        
+
         //will leave option to change one at a time by right clicking
         void ET_peak_List_Menu_ItemClicked(object sender, ToolStripItemClickedEventArgs e, DeltaMassPeak peak)
         {
+            int int_mass_shifter = 0;
+            try
+            {
+                int_mass_shifter = Convert.ToInt32(peak.mass_shifter);
+            }
+            catch
+            {
+                MessageBox.Show("Oops, this mass shifter " + peak.mass_shifter + " is not an integer.");
+                return;
+            }
+
             switch (e.ClickedItem.Name.ToString())
             {
                 case "IncreaseMass":
-                    massShifter(peak, 1, true);
+                    peak.mass_shifter = (int_mass_shifter + 1).ToString();
                     break;
                 case "DecreaseMass":
-                    massShifter(peak, -1, true);
+                    peak.mass_shifter = (int_mass_shifter - 1).ToString();
                     break;
             }
-        }
-
-        private void massShifter(DeltaMassPeak peak, int shift, bool run_the_gamut)
-        {
-            List<ExperimentalProteoform> expProtList = new List<ExperimentalProteoform>();
-            foreach (ProteoformRelation relation in Lollipop.et_relations.Where(p => p.peak == peak).ToList())
-            {
-                if (relation.connected_proteoforms[0] is ExperimentalProteoform 
-                    && ((ExperimentalProteoform)relation.connected_proteoforms[0]).mass_shifted == false)
-                {
-                    ((ExperimentalProteoform)relation.connected_proteoforms[0]).mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
-                    expProtList.Add(relation.connected_proteoforms[0] as ExperimentalProteoform);
-                }
-            }
-
-            foreach (ExperimentalProteoform ep in Lollipop.proteoform_community.experimental_proteoforms.Where(ex => expProtList.Contains(ex)))
-            {
-                List<ProteoformSuiteInternal.Component> epComponents = new List<ProteoformSuiteInternal.Component>();
-
-                foreach (ProteoformSuiteInternal.Component comp in ep.aggregated_components)
-                {
-                    epComponents.Add(comp);
-                }
-
-                if (Lollipop.neucode_labeled)
-                {
-                    List<ProteoformSuiteInternal.Component> neuCodeComponents = new List<ProteoformSuiteInternal.Component>();
-
-                    foreach (ProteoformSuiteInternal.Component rawComponent in Lollipop.raw_neucode_pairs.Where(p => epComponents.Contains(p)).Select(p => p.neuCodeLight))
-                    {
-                        neuCodeComponents.Add(rawComponent);
-                    }
-
-                    foreach (ProteoformSuiteInternal.Component rawComponent in Lollipop.raw_neucode_pairs.Where(p => epComponents.Contains(p)).Select(p => p.neuCodeHeavy))
-                    {
-                        neuCodeComponents.Add(rawComponent);
-                    }
-
-                    foreach (ProteoformSuiteInternal.Component rawComponent in Lollipop.raw_experimental_components.Where(cp => neuCodeComponents.Contains(cp)).ToList())
-                    {
-                        rawComponent.manual_mass_shift = rawComponent.manual_mass_shift + (shift * Lollipop.MONOISOTOPIC_UNIT_MASS);
-                    }
-                }
-                else //unlabeled
-                {
-                    foreach (ProteoformSuiteInternal.Component rawComponent in Lollipop.raw_experimental_components.Where(p => epComponents.Contains(p)).ToList())
-                    {
-                        rawComponent.manual_mass_shift = rawComponent.manual_mass_shift + (shift * Lollipop.MONOISOTOPIC_UNIT_MASS);
-                    }
-                }
-            }
-            if (run_the_gamut)
-            {
-                if (Lollipop.neucode_labeled)
-                {
-                    Lollipop.raw_neucode_pairs.Clear();
-                    HashSet<string> scan_ranges = new HashSet<string>(Lollipop.raw_experimental_components.Select(c => c.scan_range));
-                    foreach (string scan_range in scan_ranges)
-                        Lollipop.find_neucode_pairs(Lollipop.raw_experimental_components.Where(c => c.scan_range == scan_range));
-                }
-                Lollipop.aggregate_proteoforms();
-                compare_et();
-            }
-        }
-
-        Point? ct_ET_Histogram_prevPosition = null;
-        Point? ct_ET_peakList_prevPosition = null;
-        ToolTip ct_ET_Histogram_tt = new ToolTip();
-        ToolTip ct_ET_peakList_tt = new ToolTip();
-        private void ct_ET_Histogram_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            DisplayUtility.tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_Histogram, ct_ET_Histogram_prevPosition);
-        }
-        private void ct_ET_peakList_MouseClick(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            DisplayUtility.tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_peakList, ct_ET_peakList_prevPosition);
-        }
-
-        private void ET_Peak_List_DirtyStateChanged(object sender, EventArgs e)
-        {
-            if (dgv_ET_Peak_List.IsCurrentCellDirty)
-            {
-                dgv_ET_Peak_List.CommitEdit(DataGridViewDataErrorContexts.Commit);
-
-                int columnIndex = dgv_ET_Peak_List.CurrentCell.ColumnIndex;
-                int rowIndex = dgv_ET_Peak_List.CurrentCell.RowIndex;
-
-                string columnName = dgv_ET_Peak_List.Columns[columnIndex].Name;
-
-                if (columnName == "peak_accepted")
-                {
-                    bool acceptibilityStatus = Convert.ToBoolean(dgv_ET_Peak_List.Rows[rowIndex].Cells[columnIndex].Value);
-                    DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[rowIndex].DataBoundItem;
-                    ETPeakAcceptabilityChangedEventArgs ETAcceptabilityChangedEventData = new ETPeakAcceptabilityChangedEventArgs(acceptibilityStatus, selected_peak);
-                    ONETAcceptibilityChanged(ETAcceptabilityChangedEventData);
-                }
-            }
+            dgv_ET_Peak_List.Refresh();
         }
 
         protected virtual void ONETAcceptibilityChanged(ETPeakAcceptabilityChangedEventArgs e)
         {
-            if (ETPeakAcceptabilityChanged != null)
-            {
-                ETPeakAcceptabilityChanged(this, e);
-            }
+            if (ETPeakAcceptabilityChanged != null) ETPeakAcceptabilityChanged(this, e);
         }
 
         private void InitializeMassWindow()
@@ -331,7 +251,6 @@ namespace ProteoformSuite
             if (Lollipop.neucode_labeled) Lollipop.et_high_mass_difference = 250;
             else Lollipop.et_high_mass_difference = 150;
             nUD_ET_Upper_Bound.Value = Convert.ToDecimal(Lollipop.et_high_mass_difference); // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
-
         }
 
         private void InitializeParameterSet()
@@ -427,50 +346,77 @@ namespace ProteoformSuite
                 ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
         }
 
-        private void bt_compare_et_Click(object sender, EventArgs e)
+        Point? ct_ET_Histogram_prevPosition = null;
+        Point? ct_ET_peakList_prevPosition = null;
+        ToolTip ct_ET_Histogram_tt = new ToolTip();
+        ToolTip ct_ET_peakList_tt = new ToolTip();
+        private void ct_ET_Histogram_MouseClick(object sender, MouseEventArgs e)
         {
-
-            shift_masses();
-            compare_et();
-            xMaxET.Value = (decimal)Lollipop.et_high_mass_difference;
-            xMinET.Value = (decimal)Lollipop.et_low_mass_difference;
+            if (e.Button == MouseButtons.Left)
+                DisplayUtility.tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_Histogram, ct_ET_Histogram_prevPosition);
         }
 
         private void cb_TDBUpsm_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.limit_TD_BU_theoreticals = cb_TDBUpsm.Checked;
         }
+
+        private void ct_ET_peakList_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+                DisplayUtility.tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_peakList, ct_ET_peakList_prevPosition);
+        }
+
+        private void ET_Peak_List_DirtyStateChanged(object sender, EventArgs e)
+        {
+            if (dgv_ET_Peak_List.IsCurrentCellDirty)
+            {
+                dgv_ET_Peak_List.CommitEdit(DataGridViewDataErrorContexts.Commit);
+
+                int columnIndex = dgv_ET_Peak_List.CurrentCell.ColumnIndex;
+                int rowIndex = dgv_ET_Peak_List.CurrentCell.RowIndex;
+
+                string columnName = dgv_ET_Peak_List.Columns[columnIndex].Name;
+
+                if (columnName == "peak_accepted")
+                {
+                    bool acceptibilityStatus = Convert.ToBoolean(dgv_ET_Peak_List.Rows[rowIndex].Cells[columnIndex].Value);
+                    DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[rowIndex].DataBoundItem;
+                    ETPeakAcceptabilityChangedEventArgs ETAcceptabilityChangedEventData = new ETPeakAcceptabilityChangedEventArgs(acceptibilityStatus, selected_peak);
+                    ONETAcceptibilityChanged(ETAcceptabilityChangedEventData);
+                }
+            }
+        }
     }
 
     public class ETPeakAcceptabilityChangedEventArgs : EventArgs
+    {
+        private bool _isPeakAcceptable;
+        public bool IsPeakAcceptable
         {
-            private bool _isPeakAcceptable;
-            private DeltaMassPeak _ETPeak;
-
-            public bool IsPeakAcceptable
+            get
             {
-                get
-                {
-                    return this._isPeakAcceptable;
-                }
-            }
-
-            public DeltaMassPeak ETPeak
-            {
-                get
-                {
-                    return this._ETPeak;
-                }
-            }
-
-            public ETPeakAcceptabilityChangedEventArgs(bool IsPeakAcceptable, DeltaMassPeak ETPeak)
-            {
-                this._isPeakAcceptable = IsPeakAcceptable; //True if peak is acceptable
-                this._ETPeak = ETPeak;
+                return this._isPeakAcceptable;
             }
         }
 
-        public delegate void ETPeakAcceptabilityChangedEventHandler(object sender, ETPeakAcceptabilityChangedEventArgs e);
+        private DeltaMassPeak _ETPeak;
+        public DeltaMassPeak ETPeak
+        {
+            get
+            {
+                return this._ETPeak;
+            }
+        }
 
+        public ETPeakAcceptabilityChangedEventArgs(bool IsPeakAcceptable, DeltaMassPeak ETPeak)
+        {
+            this._isPeakAcceptable = IsPeakAcceptable; //True if peak is acceptable
+            this._ETPeak = ETPeak;
+        }
     }
+
+    public delegate void ETPeakAcceptabilityChangedEventHandler(object sender, ETPeakAcceptabilityChangedEventArgs e);
+
+}
 

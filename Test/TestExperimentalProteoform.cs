@@ -11,14 +11,14 @@ namespace Test
     [TestFixture]
     class TestExperimentalProteoform
     {
-        double starter_mass = 1000.0;
-        double starter_neucode_intensity = 100.0;
-        double starter_rt = 50.0;
-        int starter_lysine_count = 3;
+        public static double starter_mass = 1000.0;
+        public static double starter_intensity = 100.0;
+        public static double starter_rt = 50.0;
+        public static int starter_lysine_count = 3;
         List<Component> empty_quant_components_list = new List<Component>();
 
         // The calculations for unlabeled and neucode components are the same, currently
-        public List<Component> generate_neucode_components()
+        public static List<Component> generate_neucode_components(double starter_mass)
         {
             List<Component> components = new List<Component>();
             InputFile inFile = new ProteoformSuiteInternal.InputFile("somepath", Labeling.NeuCode, Purpose.Identification);
@@ -33,19 +33,27 @@ namespace Test
                 heavy.id = 2.ToString();
                 light.corrected_mass = starter_mass;
                 heavy.corrected_mass = starter_mass + starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
-                light.intensity_sum_olcs = starter_neucode_intensity; //using the special intensity sum for overlapping charge states in a neucode pair
+                light.intensity_sum_olcs = starter_intensity; //using the special intensity sum for overlapping charge states in a neucode pair
+                heavy.intensity_sum_olcs = starter_intensity / 2; //using the special intensity sum for overlapping charge states in a neucode pair
                 light.rt_apex = starter_rt;
                 heavy.rt_apex = starter_rt;
                 light.accepted = true;
                 heavy.accepted = true;
+                ChargeState light_charge_state = new ChargeState(1, light.intensity_sum_olcs, light.corrected_mass, 1.00727645D);
+                ChargeState heavy_charge_state = new ChargeState(1, heavy.intensity_sum_olcs, heavy.corrected_mass, 1.00727645D);
+                light.charge_states = new List<ChargeState> { light_charge_state };
+                heavy.charge_states = new List<ChargeState> { heavy_charge_state };
+                light.calculate_sum_intensity();
+                heavy.calculate_sum_intensity();
                 NeuCodePair n = new NeuCodePair(light, heavy);
                 n.lysine_count = starter_lysine_count;
+                n.calculate_sum_intensity();
                 components.Add(n);
             }
             return components;
         }
 
-        public List<Component> generate_neucode_quantitative_components()
+        public static List<Component> generate_neucode_quantitative_components()
         {
             List<Component> components = new List<Component>();
             InputFile inFile = new ProteoformSuiteInternal.InputFile("somepath", Labeling.NeuCode, Purpose.Quantification);
@@ -58,8 +66,8 @@ namespace Test
             heavy.id = 2.ToString();
             light.corrected_mass = starter_mass;
             heavy.corrected_mass = starter_mass + starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
-            light.intensity_sum = starter_neucode_intensity; //using the special intensity sum for overlapping charge states in a neucode pair
-            heavy.intensity_sum = starter_neucode_intensity / 2;
+            light.intensity_sum = starter_intensity; //using the special intensity sum for overlapping charge states in a neucode pair
+            heavy.intensity_sum = starter_intensity / 2;
             light.rt_apex = starter_rt;
             heavy.rt_apex = starter_rt;
             light.accepted = true;
@@ -71,7 +79,7 @@ namespace Test
             return components;
         }
 
-        public List<Component> generate_unlabeled_components()
+        public static List<Component> generate_unlabeled_components(double starter_mass)
         {
             List<Component> components = new List<Component>();
             for (int i = 0; i < 2; i++)
@@ -79,9 +87,11 @@ namespace Test
                 Component c = new Component();
                 c.id = i.ToString();
                 c.corrected_mass = starter_mass;
-                c.intensity_sum = starter_neucode_intensity;
+                c.intensity_sum = starter_intensity;
                 c.rt_apex = starter_rt;
                 c.accepted = true;
+                ChargeState a = new ChargeState(1, c.intensity_sum, starter_mass, 0);
+                c.charge_states = new List<ChargeState> { a };
                 components.Add(c);
             }
             return components;
@@ -92,7 +102,7 @@ namespace Test
         {
             Lollipop.neucode_labeled = true;
             List<Component> quant_components_list = generate_neucode_quantitative_components();
-            List<Component> components = generate_neucode_components();
+            List<Component> components = generate_neucode_components(starter_mass);
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, quant_components_list, true);
             List<InputFile> inFileList = new List<InputFile>();
             quant_components_list.ForEach(q => {
@@ -109,13 +119,13 @@ namespace Test
         public void neucode_proteoform_calculate_properties()
         {
             Lollipop.neucode_labeled = true;
-            List<Component> components = generate_neucode_components();        
+            List<Component> components = generate_neucode_components(starter_mass);        
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
             Assert.AreEqual(3, e.lysine_count);
-            double expected_agg_intensity = components.Count * starter_neucode_intensity;
+            double expected_agg_intensity = components.Count * starter_intensity;
             Assert.AreEqual(expected_agg_intensity, e.agg_intensity);
-            double intensity_normalization_factor = components.Count * starter_neucode_intensity / expected_agg_intensity;
+            double intensity_normalization_factor = components.Count * starter_intensity / expected_agg_intensity;
             double expected_agg_mass = starter_mass * intensity_normalization_factor;
             Assert.AreEqual(starter_mass * intensity_normalization_factor, e.agg_mass);
             Assert.AreEqual(starter_rt * intensity_normalization_factor, e.agg_rt);
@@ -125,12 +135,12 @@ namespace Test
         public void unlabeled_proteoform_calculate_properties()
         {
             Lollipop.neucode_labeled = false;
-            List<Component> components = generate_unlabeled_components();
+            List<Component> components = generate_unlabeled_components(starter_mass);
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
-            double expected_agg_intensity = components.Count * starter_neucode_intensity;
+            double expected_agg_intensity = components.Count * starter_intensity;
             Assert.AreEqual(expected_agg_intensity, e.agg_intensity);
-            double intensity_normalization_factor = components.Count * starter_neucode_intensity / expected_agg_intensity;
+            double intensity_normalization_factor = components.Count * starter_intensity / expected_agg_intensity;
             double expected_agg_mass = starter_mass * intensity_normalization_factor;
             Assert.AreEqual(starter_mass * intensity_normalization_factor, e.agg_mass);
             Assert.AreEqual(starter_rt * intensity_normalization_factor, e.agg_rt);
@@ -139,11 +149,11 @@ namespace Test
         public void aggregate_mass_corrects_for_monoisotopic_errors()
         {
             //Make a monoisotopic error, and test that it removes it before aggregation
-            List<Component> components = generate_neucode_components();
+            List<Component> components = generate_neucode_components(starter_mass);
             components[4].corrected_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
-            double expected_agg_intensity = components.Count * starter_neucode_intensity;
-            double intensity_normalization_factor = components.Count * starter_neucode_intensity / expected_agg_intensity;
+            double expected_agg_intensity = components.Count * starter_intensity;
+            double intensity_normalization_factor = components.Count * starter_intensity / expected_agg_intensity;
             double expected_agg_mass = starter_mass * intensity_normalization_factor;
             Assert.AreEqual(expected_agg_mass, e.agg_mass);
         }
@@ -152,7 +162,7 @@ namespace Test
         public void aggregate_outside_rt_tolerance()
         {
             Lollipop.neucode_labeled = true;
-            List<Component> components = generate_neucode_components();
+            List<Component> components = generate_neucode_components(starter_mass);
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             components[1].rt_apex = starter_rt - Convert.ToDouble(Lollipop.retention_time_tolerance) - 1;
             e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
@@ -166,7 +176,7 @@ namespace Test
         public void aggregate_outside_lysine_count_tolerance()
         {
             Lollipop.neucode_labeled = true;
-            List<Component> components = generate_neucode_components();
+            List<Component> components = generate_neucode_components(starter_mass);
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             ((NeuCodePair)components[1]).lysine_count = starter_lysine_count + Convert.ToInt32(Lollipop.missed_lysines) + 1;
             e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
@@ -191,7 +201,7 @@ namespace Test
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Lollipop.neucode_labeled = true;
-            List<Component> components = generate_neucode_components();
+            List<Component> components = generate_neucode_components(starter_mass);
 
             // in bounds lowest monoisotopic error
             components[1].corrected_mass = min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance);
@@ -209,7 +219,7 @@ namespace Test
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Lollipop.neucode_labeled = true;
-            List<Component> components = generate_neucode_components();
+            List<Component> components = generate_neucode_components(starter_mass);
 
             // below lowest monoisotopic tolerance
             components[1].corrected_mass = min_monoisotopic_mass - 100;
@@ -221,13 +231,14 @@ namespace Test
             Assert.AreEqual(1, e.aggregated_components.Count);
         }
 
+        [Test]
         public void aggregate_in_bounds_middle_monoisotopic_tolerance()
         {
             missed_monoisotopics -= 1;
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Lollipop.neucode_labeled = true;
-            List<Component> components = generate_neucode_components();
+            List<Component> components = generate_neucode_components(starter_mass);
 
             // in bounds lowest monoisotopic error
             components[1].corrected_mass = min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance);
@@ -239,13 +250,14 @@ namespace Test
             Assert.AreEqual(2, e.aggregated_components.Count);
         }
 
+        [Test]
         public void aggregate_out_of_middle_monoisotopic_tolerance()
         {
             missed_monoisotopics -= 1;
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Lollipop.neucode_labeled = true;
-            List<Component> components = generate_neucode_components();
+            List<Component> components = generate_neucode_components(starter_mass);
 
             // below lowest monoisotopic tolerance
             components[1].corrected_mass = min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance) - Double.MinValue;
@@ -257,15 +269,14 @@ namespace Test
             Assert.AreEqual(1, e.aggregated_components.Count);
         }
 
+        [Test]
         public void aggregate_just_the_root()
         {
-            List<Component> components = generate_neucode_components();
+            List<Component> components = generate_neucode_components(starter_mass);
             components.Remove(components[1]);
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
             Assert.AreEqual(components[0], e.aggregated_components.First());
         }
-
-        
     }
 }

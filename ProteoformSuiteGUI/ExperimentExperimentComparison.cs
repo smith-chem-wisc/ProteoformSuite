@@ -47,6 +47,16 @@ namespace ProteoformSuite
             else MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
+        public DataGridView GetEERelationDGV()
+        {
+            return dgv_EE_Relations;
+        }
+
+        public DataGridView GetEEPeaksDGV()
+        {
+            return dgv_EE_Peaks;
+        }
+
         private void ClearListsAndTables()
         {
             Lollipop.ee_relations.Clear();
@@ -88,7 +98,7 @@ namespace ProteoformSuite
         }
         private void FillEEPeakListTable()
         {
-            DisplayUtility.FillDataGridView(dgv_EE_Peaks, Lollipop.ee_peaks);
+            DisplayUtility.FillDataGridView(dgv_EE_Peaks, Lollipop.ee_peaks.OrderByDescending(p => p.peak_relation_group_count).ToList());
         }
         private void GraphEERelations()
         {

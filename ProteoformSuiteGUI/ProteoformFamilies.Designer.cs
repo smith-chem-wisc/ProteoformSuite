@@ -34,6 +34,10 @@
             this.pictureBox_familyDisplay = new System.Windows.Forms.PictureBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
+            this.tb_singleton_count = new System.Windows.Forms.TextBox();
+            this.lb_singletons = new System.Windows.Forms.Label();
+            this.nud_decimalRoundingLabels = new System.Windows.Forms.NumericUpDown();
+            this.label1 = new System.Windows.Forms.Label();
             this.lb_timeStamp = new System.Windows.Forms.Label();
             this.tb_recentTimeStamp = new System.Windows.Forms.TextBox();
             this.btn_buildSelectedFamilies = new System.Windows.Forms.Button();
@@ -46,8 +50,6 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.Families_update = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.nud_decimalRoundingLabels = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -139,6 +141,8 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.Controls.Add(this.tb_singleton_count);
+            this.splitContainer3.Panel2.Controls.Add(this.lb_singletons);
             this.splitContainer3.Panel2.Controls.Add(this.nud_decimalRoundingLabels);
             this.splitContainer3.Panel2.Controls.Add(this.label1);
             this.splitContainer3.Panel2.Controls.Add(this.lb_timeStamp);
@@ -168,6 +172,44 @@
             this.dgv_proteoform_family_members.Name = "dgv_proteoform_family_members";
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(543, 334);
             this.dgv_proteoform_family_members.TabIndex = 3;
+            // 
+            // tb_singleton_count
+            // 
+            this.tb_singleton_count.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.tb_singleton_count.Location = new System.Drawing.Point(231, 276);
+            this.tb_singleton_count.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_singleton_count.Name = "tb_singleton_count";
+            this.tb_singleton_count.ReadOnly = true;
+            this.tb_singleton_count.Size = new System.Drawing.Size(86, 20);
+            this.tb_singleton_count.TabIndex = 44;
+            // 
+            // lb_singletons
+            // 
+            this.lb_singletons.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.lb_singletons.AutoSize = true;
+            this.lb_singletons.Location = new System.Drawing.Point(47, 279);
+            this.lb_singletons.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lb_singletons.Name = "lb_singletons";
+            this.lb_singletons.Size = new System.Drawing.Size(144, 13);
+            this.lb_singletons.TabIndex = 43;
+            this.lb_singletons.Text = "Total Orphans (No Relations)";
+            // 
+            // nud_decimalRoundingLabels
+            // 
+            this.nud_decimalRoundingLabels.Location = new System.Drawing.Point(170, 79);
+            this.nud_decimalRoundingLabels.Name = "nud_decimalRoundingLabels";
+            this.nud_decimalRoundingLabels.Size = new System.Drawing.Size(49, 20);
+            this.nud_decimalRoundingLabels.TabIndex = 42;
+            this.nud_decimalRoundingLabels.ValueChanged += new System.EventHandler(this.nud_decimalRoundingLabels_ValueChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(13, 81);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(143, 13);
+            this.label1.TabIndex = 41;
+            this.label1.Text = "Decimal Rounding for Labels";
             // 
             // lb_timeStamp
             // 
@@ -236,7 +278,7 @@
             // tb_IdentifiedFamilies
             // 
             this.tb_IdentifiedFamilies.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.tb_IdentifiedFamilies.Location = new System.Drawing.Point(157, 260);
+            this.tb_IdentifiedFamilies.Location = new System.Drawing.Point(231, 253);
             this.tb_IdentifiedFamilies.Margin = new System.Windows.Forms.Padding(2);
             this.tb_IdentifiedFamilies.Name = "tb_IdentifiedFamilies";
             this.tb_IdentifiedFamilies.ReadOnly = true;
@@ -246,7 +288,7 @@
             // tb_TotalFamilies
             // 
             this.tb_TotalFamilies.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.tb_TotalFamilies.Location = new System.Drawing.Point(157, 228);
+            this.tb_TotalFamilies.Location = new System.Drawing.Point(231, 229);
             this.tb_TotalFamilies.Margin = new System.Windows.Forms.Padding(2);
             this.tb_TotalFamilies.Name = "tb_TotalFamilies";
             this.tb_TotalFamilies.ReadOnly = true;
@@ -257,7 +299,7 @@
             // 
             this.label8.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(47, 267);
+            this.label8.Location = new System.Drawing.Point(47, 256);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(90, 13);
@@ -268,7 +310,7 @@
             // 
             this.label7.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(47, 235);
+            this.label7.Location = new System.Drawing.Point(47, 232);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(71, 13);
@@ -287,23 +329,6 @@
             this.Families_update.UseMnemonic = false;
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 81);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(143, 13);
-            this.label1.TabIndex = 41;
-            this.label1.Text = "Decimal Rounding for Labels";
-            // 
-            // nud_decimalRoundingLabels
-            // 
-            this.nud_decimalRoundingLabels.Location = new System.Drawing.Point(170, 79);
-            this.nud_decimalRoundingLabels.Name = "nud_decimalRoundingLabels";
-            this.nud_decimalRoundingLabels.Size = new System.Drawing.Size(49, 20);
-            this.nud_decimalRoundingLabels.TabIndex = 42;
-            this.nud_decimalRoundingLabels.ValueChanged += new System.EventHandler(this.nud_decimalRoundingLabels_ValueChanged);
             // 
             // ProteoformFamilies
             // 
@@ -357,5 +382,7 @@
         private System.Windows.Forms.TextBox tb_recentTimeStamp;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown nud_decimalRoundingLabels;
+        private System.Windows.Forms.TextBox tb_singleton_count;
+        private System.Windows.Forms.Label lb_singletons;
     }
 }

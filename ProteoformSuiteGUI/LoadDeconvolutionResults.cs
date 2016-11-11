@@ -388,5 +388,10 @@ namespace ProteoformSuite
                 }
             }
         }
+
+        private void bt_clearResults_Click(object sender, EventArgs e)
+        {
+            ((ProteoformSweet)MdiParent).clear_lists();
+        }
     }
 }

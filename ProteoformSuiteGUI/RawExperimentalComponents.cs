@@ -40,6 +40,11 @@ namespace ProteoformSuite
             }
         }
 
+        public DataGridView GetDGV()
+        {
+            return dgv_RawExpComp_MI_masses;
+        }
+
         public void FillRawExpComponentsTable()
         {
             DisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, Lollipop.raw_experimental_components);
@@ -90,7 +95,7 @@ namespace ProteoformSuite
             {
                 dgv_RawExpComp_MI_masses.Columns["intensity_sum_olcs"].Visible = false;
             }
-            dgv_RawExpComp_MI_masses.Columns["_manual_mass_shift"].Visible = false;
+            dgv_RawExpComp_MI_masses.Columns["manual_mass_shift"].Visible = false;
         }
 
         private void FormatRawQuantificationComponentsTable()
@@ -126,7 +131,7 @@ namespace ProteoformSuite
             dgv_RawQuantComp_MI_masses.AllowUserToAddRows = false;
             dgv_RawQuantComp_MI_masses.Columns["corrected_mass"].Visible = false;
             dgv_RawQuantComp_MI_masses.Columns["intensity_sum_olcs"].Visible = false;
-            dgv_RawQuantComp_MI_masses.Columns["_manual_mass_shift"].Visible = false;
+            //dgv_RawQuantComp_MI_masses.Columns["_manual_mass_shift"].Visible = false;
         }
 
         private void dgv_RawExpComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
