@@ -100,14 +100,10 @@ namespace ProteoformSuiteInternal
             for (int i = 1; i < correction_lines.Length; i++)
             {
                 string[] parts = correction_lines[i].Split('\t');
-                if (parts.Length < 3) continue;
+                if (parts.Length < 2) continue;
                 int scan_number = Convert.ToInt32(parts[0]);
                 double correction = Double.NaN;
-                //two corrections can be available for each scan. The correction in column 3 is preferred
-                //if column three is NaN, then column 2 is selected.
-                //if column 2 is also NaN, then the correction for the scan will be interpolated from adjacent scans
-                correction = Convert.ToDouble(parts[2]);
-                if (Double.IsNaN(correction)) correction = Convert.ToDouble(parts[1]);
+                correction = Convert.ToDouble(parts[1]);
                 yield return new Correction(filename, scan_number, correction);
             }
         }

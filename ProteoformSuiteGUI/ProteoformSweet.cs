@@ -34,7 +34,9 @@ namespace ProteoformSuite
         SaveFileDialog methodFileSave = new SaveFileDialog();
         SaveFileDialog saveDialog = new SaveFileDialog();
 
-        Form current_form; 
+        Form current_form;
+
+        public static bool run_when_form_loads = true;
 
         public ProteoformSweet()
         {
@@ -79,18 +81,18 @@ namespace ProteoformSuite
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(aggregatedProteoforms);
-            aggregatedProteoforms.aggregate_proteoforms();
+            if (run_when_form_loads) aggregatedProteoforms.aggregate_proteoforms();
         }
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e) { showForm(theoreticalDatabase); }
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentalTheoreticalComparison);
-            experimentalTheoreticalComparison.compare_et();
+            if (run_when_form_loads) experimentalTheoreticalComparison.compare_et();
         }
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentExperimentComparison);
-            experimentExperimentComparison.compare_ee();
+            if (run_when_form_loads) experimentExperimentComparison.compare_ee();
         }
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
