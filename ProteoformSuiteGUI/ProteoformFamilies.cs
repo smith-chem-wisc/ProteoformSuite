@@ -27,7 +27,7 @@ namespace ProteoformSuite
         private void ProteoformFamilies_Load(object sender, EventArgs e)
         { }
 
-        public void initialize_settings()
+        private void initialize_settings()
         {
             this.tb_familyBuildFolder.Text = Lollipop.family_build_folder_path;
             this.nud_decimalRoundingLabels.Value = Convert.ToDecimal(Lollipop.deltaM_edge_display_rounding);
@@ -35,7 +35,13 @@ namespace ProteoformSuite
 
         public void construct_families()
         {
+            initialize_settings();
             if (Lollipop.proteoform_community.families.Count <= 0 && Lollipop.proteoform_community.has_e_proteoforms) run_the_gamut();
+        }
+
+        public DataGridView GetDGV()
+        {
+            return dgv_proteoform_families;
         }
 
         private void run_the_gamut()
@@ -49,14 +55,15 @@ namespace ProteoformSuite
 
         private void fill_proteoform_families()
         {
-            DisplayUtility.FillDataGridView(dgv_proteoform_families, Lollipop.proteoform_community.families);
+            DisplayUtility.FillDataGridView(dgv_proteoform_families, Lollipop.proteoform_community.families.OrderByDescending(f => f.relation_count).ToList());
             format_families_dgv();
         }
 
         private void update_figures_of_merit()
         {
-            this.tb_TotalFamilies.Text = Lollipop.proteoform_community.families.Count().ToString();
+            this.tb_TotalFamilies.Text = Lollipop.proteoform_community.families.Count(f => f.proteoforms.Count > 1).ToString();
             this.tb_IdentifiedFamilies.Text = Lollipop.proteoform_community.families.Count(f => f.theoretical_count > 0).ToString();
+            this.tb_singleton_count.Text = Lollipop.proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString();
         }
 
         private void format_families_dgv()
@@ -184,7 +191,7 @@ namespace ProteoformSuite
                 MessageBox.Show("Please choose a folder in which the families will be built, so you can load them into Cytoscape.");
                 return false;
             }
-            string time_stamp = DateTime.Now.Year.ToString() + DateTime.Now.Month.ToString() + DateTime.Now.Day.ToString() + DateTime.Now.Hour.ToString() + DateTime.Now.Minute.ToString() + DateTime.Now.Second.ToString();
+            string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
             CytoscapeScript c = new CytoscapeScript(families, time_stamp);
             File.WriteAllText(c.edges_path, c.edge_table);

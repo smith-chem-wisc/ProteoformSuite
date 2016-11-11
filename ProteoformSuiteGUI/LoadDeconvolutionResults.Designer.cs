@@ -56,6 +56,7 @@
             this.bt_morpheusBUResultsClear = new System.Windows.Forms.Button();
             this.bt_tdResultsAdd = new System.Windows.Forms.Button();
             this.bt_tdResultsClear = new System.Windows.Forms.Button();
+            this.bt_clearResults = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_identificationFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantitationFiles)).BeginInit();
@@ -362,9 +363,20 @@
             this.bt_tdResultsClear.UseVisualStyleBackColor = true;
             this.bt_tdResultsClear.Click += new System.EventHandler(this.bt_tdResultsClear_Click);
             // 
+            // bt_clearResults
+            // 
+            this.bt_clearResults.Location = new System.Drawing.Point(751, 619);
+            this.bt_clearResults.Name = "bt_clearResults";
+            this.bt_clearResults.Size = new System.Drawing.Size(156, 92);
+            this.bt_clearResults.TabIndex = 26;
+            this.bt_clearResults.Text = "Clear Results";
+            this.bt_clearResults.UseVisualStyleBackColor = true;
+            this.bt_clearResults.Click += new System.EventHandler(this.bt_clearResults_Click);
+            // 
             // LoadDeconvolutionResults
             // 
             this.ClientSize = new System.Drawing.Size(1471, 736);
+            this.Controls.Add(this.bt_clearResults);
             this.Controls.Add(this.bt_tdResultsAdd);
             this.Controls.Add(this.bt_tdResultsClear);
             this.Controls.Add(this.bt_morpheusBUResultsAdd);
@@ -432,5 +444,6 @@
         private System.Windows.Forms.DataGridView dgv_tdFiles;
         private System.Windows.Forms.DataGridView dgv_buFiles;
         private System.Windows.Forms.CheckBox cb_td_file;
+        private System.Windows.Forms.Button bt_clearResults;
     }
 }

@@ -32,6 +32,7 @@ namespace ProteoformSuite
         FolderBrowserDialog resultsFolderOpen = new FolderBrowserDialog();
         OpenFileDialog methodFileOpen = new OpenFileDialog();
         SaveFileDialog methodFileSave = new SaveFileDialog();
+        SaveFileDialog saveDialog = new SaveFileDialog();
 
         Form current_form; 
 
@@ -78,20 +79,22 @@ namespace ProteoformSuite
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(aggregatedProteoforms);
+            aggregatedProteoforms.aggregate_proteoforms();
         }
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e) { showForm(theoreticalDatabase); }
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentalTheoreticalComparison);
+            experimentalTheoreticalComparison.compare_et();
         }
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentExperimentComparison);
+            experimentExperimentComparison.compare_ee();
         }
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(proteoformFamilies);
-            proteoformFamilies.initialize_settings();
             proteoformFamilies.construct_families();
         }
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e) { showForm(quantification); }
@@ -113,7 +116,7 @@ namespace ProteoformSuite
             else if (results_folder == DialogResult.Cancel) return;
             else return;
 
-            foreach (string setting_spec in File.ReadAllLines(working_directory + "\\_method.txt")) Lollipop.load_setting(setting_spec.Trim());
+            SaveState.open_method(File.ReadAllLines(working_directory + "\\_method.xml"));
             
             Lollipop.opening_results = true;
             Lollipop.opened_results_originally = true;
@@ -216,7 +219,7 @@ namespace ProteoformSuite
                         {
                             HashSet<string> scan_ranges = new HashSet<string>(Lollipop.raw_experimental_components.Select(c => c.scan_range));
                             foreach (string scan_range in scan_ranges)
-                                Lollipop.find_neucode_pairs(Lollipop. raw_experimental_components.Where(c => c.scan_range == scan_range));
+                                Lollipop.find_neucode_pairs(Lollipop.raw_experimental_components.Where(c => c.scan_range == scan_range));
                         }
                     }
                     catch
@@ -257,23 +260,6 @@ namespace ProteoformSuite
             }
         }
 
-
-        private bool openMethod()
-        {
-            DialogResult dr = this.methodFileOpen.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                string method_filename = methodFileOpen.FileName;
-                ResultsSummary.loadDescription = method_filename;
-                foreach (string setting_spec in File.ReadAllLines(method_filename))
-                {
-                    Lollipop.load_setting(setting_spec.Trim());
-                }
-                return true;
-            }
-            return false;
-        }
-
         private void saveCurrentPageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string working_directory;
@@ -293,9 +279,9 @@ namespace ProteoformSuite
             DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
             if (results_folder == DialogResult.OK) working_directory = this.resultsFolderOpen.SelectedPath;
             else return;
-            saveMethod(working_directory + "\\_method.txt");
+            saveMethod(working_directory + "\\_method.xml");
             save_tsv(working_directory, true);
-            File.Copy(ProteomeDatabaseReader.oldPtmlistFilePath, working_directory + "\\ptmlist.txt");
+            File.Copy(ProteomeDatabaseReader.oldPtmlistFilePath, working_directory + "\\ptmlist.txt", true);
             MessageBox.Show("Successfully saved all pages.");
         }
 
@@ -362,7 +348,25 @@ namespace ProteoformSuite
         private void saveMethod(string method_filename)
         {
             using (StreamWriter file = new StreamWriter(method_filename))
-                file.WriteLine(Lollipop.method_toString());
+                file.WriteLine(SaveState.save_method());
+        }
+
+        private void loadSettingsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            load_method();
+        }
+
+        private bool load_method()
+        {
+            DialogResult dr = this.methodFileOpen.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                string method_filename = methodFileOpen.FileName;
+                ResultsSummary.loadDescription = method_filename;
+                SaveState.open_method(File.ReadAllLines(method_filename));
+                return true;
+            }
+            return false;
         }
 
         private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
@@ -375,12 +379,17 @@ namespace ProteoformSuite
             var result = MessageBox.Show("Choose a method file.", "Method Load and Run", MessageBoxButtons.OKCancel);
             if (result == DialogResult.Cancel) return;
 
-            bool successful_opening = openMethod();
-            if (!successful_opening) return;
+            if (!load_method()) return;
             MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
-            bool successful_run = full_run();
-            if (successful_run) { MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu."); }
-            else { MessageBox.Show("Method did not successfully run."); }
+
+            if (full_run())
+            {
+                MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
+            }
+            else
+            {
+                MessageBox.Show("Method did not successfully run.");
+            }
         }
 
         public bool full_run()
@@ -416,7 +425,7 @@ namespace ProteoformSuite
     
 
         // MISCELLANEOUS
-        private void clear_lists()
+        public void clear_lists()
         {
             Lollipop.raw_experimental_components.Clear();
             Lollipop.raw_neucode_pairs.Clear();
@@ -455,5 +464,74 @@ namespace ProteoformSuite
             quantification.WindowState = FormWindowState.Maximized;
             quantification.Show();
         }
+
+        private void exportTablesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            export_table();
+        }
+
+        private void export_table()
+        {
+            List<DataGridView> dgvs = new List<DataGridView>();
+            if (current_form == rawExperimentalComponents)
+            {
+                dgvs.Add(rawExperimentalComponents.GetDGV());
+                SaveExcelFile(dgvs, "raw_experimental_components_table.xlsx");
+            }
+            if (current_form == neuCodePairs)
+            {
+                dgvs.Add(neuCodePairs.GetDGV());
+                SaveExcelFile(dgvs, "neucode_pairs_table.xlsx");
+            }
+            if (current_form == aggregatedProteoforms)
+            {
+                dgvs.Add(aggregatedProteoforms.GetDGV());
+                SaveExcelFile(dgvs, "aggregated_proteoforms_table.xlsx");
+           }
+            if (current_form == theoreticalDatabase)
+            {
+                dgvs.Add(theoreticalDatabase.GetDGV());
+                SaveExcelFile(dgvs, "theoretical_database_table.xlsx");
+            }
+            if ( current_form == experimentalTheoreticalComparison)
+            {
+                dgvs.Add(experimentalTheoreticalComparison.GetETPeaksDGV());
+                dgvs.Add(experimentalTheoreticalComparison.GetETRelationsDGV());
+                SaveExcelFile(dgvs,  "experimental_theoretical_comparison_table.xlsx");
+            }
+            if ( current_form == experimentExperimentComparison)
+            {
+                dgvs.Add(experimentExperimentComparison.GetEEPeaksDGV());
+                dgvs.Add(experimentExperimentComparison.GetEERelationDGV());
+                SaveExcelFile(dgvs,  "experiment_experiment_comparison_table.xlsx");
+            }
+            if (current_form == proteoformFamilies)
+            {
+                dgvs.Add(proteoformFamilies.GetDGV());
+                SaveExcelFile(dgvs, "proteoform_families_table.xlsx");
+            }
+            if (current_form == quantification)
+            {
+                dgvs.Add(quantification.Get_GoTerms_DGV());
+                dgvs.Add(quantification.Get_quant_results_DGV());
+                SaveExcelFile(dgvs, "quantification_table.xlsx");
+            }
+            
+        }
+
+        public void SaveExcelFile(List<DataGridView> dgvs, string filename)
+        {
+            saveDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
+            saveDialog.FileName = filename;
+            DialogResult dr = this.saveDialog.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                DGVExcelWriter writer = new DGVExcelWriter();
+                writer.ExportToExcel(dgvs, saveDialog.FileName);
+                MessageBox.Show("Successfully exported table.");
+            }
+            else { return; }
+        }
+
     }
 }

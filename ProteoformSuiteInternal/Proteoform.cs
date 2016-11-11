@@ -29,8 +29,7 @@ namespace ProteoformSuiteInternal
                 this.is_target = false;
                 this.is_decoy = true;
             }
-        }
-        public Proteoform(string accession)
+        }       public Proteoform(string accession)
         {
             this.accession = accession;
         }
@@ -59,7 +58,8 @@ namespace ProteoformSuiteInternal
         {
             get { return aggregated_components.Count; }
         }
-        public bool mass_shifted { get; set; } //make sure in ET if shifting multiple peaks, not shifting same E > once. 
+        public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once. 
+
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession)
         {
             this.root = root;
@@ -164,6 +164,27 @@ namespace ProteoformSuiteInternal
                 if (tolerable_mass) return true; //Return a true result immediately; acts as an OR between these conditions
             }
             return false;
+        }
+
+        public void shift_masses(int shift)
+        {
+            if (Lollipop.neucode_labeled)
+            {
+                foreach (Component c in this.aggregated_components)
+                {
+                    ((NeuCodePair)c).manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    ((NeuCodePair)c).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    ((NeuCodePair)c).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                }
+            }
+            else //unlabeled
+            {
+                foreach (Component c in this.aggregated_components)
+                {
+                    c.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                }
+            }
+            this.mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
         }
 
         //Quantitative Class and Methods

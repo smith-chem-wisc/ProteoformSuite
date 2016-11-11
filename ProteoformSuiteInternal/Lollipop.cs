@@ -17,6 +17,8 @@ namespace ProteoformSuiteInternal
     {
         public const double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
         public const double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
+        public const double PROTON_MASS = 1.007276474;
+
 
         //needed for functioning open results - user can update/rerun modules and program doesn't crash.
         public static bool opening_results = false; //set to true if previously saved tsv's are read into program
@@ -27,17 +29,20 @@ namespace ProteoformSuiteInternal
 
         //RAW EXPERIMENTAL COMPONENTS
         public static List<InputFile> input_files = new List<InputFile>();
+        public static List<Correction> correctionFactors = null;
+        public static List<Component> raw_experimental_components = new List<Component>();
+        public static List<Component> raw_quantification_components = new List<Component>();
+        public static bool neucode_labeled = true;
+        public static bool td_results = false;
+
+        //input file auxillary methods
         public static IEnumerable<InputFile> identification_files() { return input_files.Where(f => f.purpose == Purpose.Identification); }
         public static IEnumerable<InputFile> quantification_files() { return input_files.Where(f => f.purpose == Purpose.Quantification); }
         public static IEnumerable<InputFile> calibration_files() { return input_files.Where(f => f.purpose == Purpose.Calibration); }
         public static IEnumerable<InputFile> bottomup_files() { return input_files.Where(f => f.purpose == Purpose.BottomUp); }
         public static IEnumerable<InputFile> topdown_files() { return input_files.Where(f => f.purpose == Purpose.TopDown); }
         public static IEnumerable<InputFile> topdownID_files() { return input_files.Where(f => f.purpose == Purpose.TopDownIDResults); }
-        public static List<Correction> correctionFactors = null;
-        public static List<Component> raw_experimental_components = new List<Component>();
-        public static List<Component> raw_quantification_components = new List<Component>();
-        public static bool neucode_labeled = true;
-        public static bool td_results = false;
+       
         public static void process_raw_components()
         {
             if (input_files.Any(f => f.purpose == Purpose.Calibration))
@@ -45,8 +50,9 @@ namespace ProteoformSuiteInternal
             object sync = new object();
             Parallel.ForEach(input_files.Where(f=>f.purpose==Purpose.Identification), file =>
             {
-                ExcelReader componentReader = new ExcelReader();
-                List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors, MS1_scans(file.filename)));
+                ComponentReader componentReader = new ComponentReader();
+                //List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors));
+                List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors, MS1_scans(file.filename));
                 lock (sync)
                 {                   
                    raw_experimental_components.AddRange(someComponents);
@@ -73,34 +79,16 @@ namespace ProteoformSuiteInternal
             if (input_files.Any(f => f.purpose == Purpose.Quantification))
                 correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
             object sync = new object();
-            Parallel.ForEach(quantification_files(), file => 
+            Parallel.ForEach(quantification_files(), file =>
             {
-                ExcelReader componentReader = new ExcelReader();
-                List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors, new List<string>()));
+                ComponentReader componentReader = new ComponentReader();
+                //List<Component> someComponents = remove_monoisotopic_duplicates_from_same_scan(componentReader.read_components_from_xlsx(file, correctionFactors));
+                List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors, new List<string>());
                 lock (sync)
                 {
                     raw_quantification_components.AddRange(someComponents);
                 }
             });
-        }
-
-        private static List<Component> remove_monoisotopic_duplicates_from_same_scan(List<Component> raw_components)
-        {
-            IEnumerable<string> scans = raw_components.Select(c => c.scan_range).Distinct();
-            List<Component> removeThese = new List<Component>();
-
-            foreach (string scan in scans)
-            {
-                IEnumerable<Component> scanComps = raw_components.Where(c => c.scan_range == scan).OrderBy(w => w.weighted_monoisotopic_mass);
-                foreach (Component sc in scanComps)
-                {
-                    IEnumerable<Component> mmc = scanComps.Where(cp => cp.weighted_monoisotopic_mass >= sc.weighted_monoisotopic_mass + (Lollipop.MONOISOTOPIC_UNIT_MASS - 0.0003) && cp.weighted_monoisotopic_mass <= sc.weighted_monoisotopic_mass + (Lollipop.MONOISOTOPIC_UNIT_MASS + 0.0003)); //missed monoisotopic that is one dalton larger
-                    removeThese.AddRange(mmc);
-                    foreach (Component c in mmc) sc.mergeTheseComponents(c);
-                 }
-            }
-
-            return raw_components.Except(removeThese).ToList();
         }
 
         public static IEnumerable<Correction> read_corrections(InputFile file)
@@ -146,13 +134,13 @@ namespace ProteoformSuiteInternal
         {
             object sync = new object();
             //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
-            List<Component> components = components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
+            List<Component> components = components_in_file_scanrange.OrderBy(c => c.corrected_mass).ToList();
             foreach (Component lower_component in components)
             {
-                IEnumerable<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.weighted_monoisotopic_mass > lower_component.weighted_monoisotopic_mass);
+                IEnumerable<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.corrected_mass > lower_component.corrected_mass);
                 foreach (Component higher_component in higher_mass_components)
                 {
-                    double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
+                    double mass_difference = higher_component.corrected_mass - lower_component.corrected_mass;
                     if (mass_difference < 6)
                     {
                         List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
@@ -167,8 +155,8 @@ namespace ProteoformSuiteInternal
                         }
                         else
                         {
-                             lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                             higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                            lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                            higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
                         }
                         bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
                         if (lower_intensity > 0 && higher_intensity > 0)
@@ -180,10 +168,11 @@ namespace ProteoformSuiteInternal
                                 pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
                             if ((pair.corrected_mass <= (pair.neuCodeHeavy.corrected_mass + Lollipop.MONOISOTOPIC_UNIT_MASS)) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
                                 && !Lollipop.raw_neucode_pairs.Any(p => p.id_heavy == pair.id_light && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity is probably correct and that that component should not get reuused as a light.
-                                lock (sync)
-                                {
-                                    Lollipop.raw_neucode_pairs.Add(pair);
-                                }                                
+
+                            {
+                                lock (sync) Lollipop.raw_neucode_pairs.Add(pair);
+                            }
+
                         }
                     }
                 }
@@ -220,7 +209,7 @@ namespace ProteoformSuiteInternal
             else
             {
                 remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.relative_abundance >= Lollipop.min_rel_abundance && p.num_charge_states >= Lollipop.min_num_CS).ToArray();
-                remaining_quant_components = Lollipop.raw_experimental_components; // there are no extra quantitative files for unlablel
+                remaining_quant_components = Lollipop.raw_experimental_components; // there are no extra quantitative files for unlableled
             }
 
             int count = 1;
@@ -238,6 +227,22 @@ namespace ProteoformSuiteInternal
             }
             Lollipop.proteoform_community.experimental_proteoforms = experimental_proteoforms.ToArray();
         } 
+
+        //Could be improved. Used for manual mass shifting.
+        //Idea 1: Start with Components -- have them find the most intense nearby component. Then, go through and correct edge cases that aren't correct.
+        //Idea 2: Use the assumption that proteoforms distant to the manual shift will not regroup.
+        //Idea 2.1: Put the shifted proteoforms, plus some range from the min and max masses in there, and reaggregate the components with the aggregate_proteoforms algorithm.
+        public static void regroup_components()
+        {
+            if (Lollipop.neucode_labeled)
+            {
+                Lollipop.raw_neucode_pairs.Clear();
+                HashSet<string> scan_ranges = new HashSet<string>(Lollipop.raw_experimental_components.Select(c => c.scan_range));
+                foreach (string scan_range in scan_ranges)
+                    Lollipop.find_neucode_pairs(Lollipop.raw_experimental_components.Where(c => c.scan_range == scan_range));
+            }
+            Lollipop.aggregate_proteoforms();
+        }
 
 
         //THEORETICAL DATABASE
@@ -355,7 +360,7 @@ namespace ProteoformSuiteInternal
                     List<string> cellStrings = new List<string>();
                     for (int k = 0; k < rowcollection[i].Descendants<Cell>().Count(); k++)
                     {
-                        cellStrings.Add(ExcelReader.GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
+                        cellStrings.Add(ComponentReader.GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
                     }
 
                     if (td_program == TDProgram.NRTDP)
@@ -514,13 +519,13 @@ namespace ProteoformSuiteInternal
 
         //ET,ED,EE,EF COMPARISONS
         public static double ee_max_mass_difference = 250; //TODO: implement this in ProteoformFamilies and elsewhere
+        public static double ee_max_RetentionTime_difference = 2.5;
         public static double et_low_mass_difference = -250;
-        public static double ee_max_RetentionTime_difference = 2.5D;
-        public static double et_high_mass_difference=250;
+        public static double et_high_mass_difference = 250;
         public static double no_mans_land_lowerBound = 0.22;
         public static double no_mans_land_upperBound = 0.88;
-        public static double peak_width_base_ee = 0.0150;
-        public static double peak_width_base_et = 0.0150; //need to be separate so you can change one and not other. 
+        public static double peak_width_base_ee = 0.015;
+        public static double peak_width_base_et = 0.015; //need to be separate so you can change one and not other. 
         public static double min_peak_count_ee = 10;
         public static double min_peak_count_et = 10;
         public static int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
@@ -550,93 +555,5 @@ namespace ProteoformSuiteInternal
         //PROTEOFORM FAMILIES -- see ProteoformCommunity
         public static string family_build_folder_path = "";
         public static int deltaM_edge_display_rounding = 2;
-
-        //METHOD FILE
-        public static string method_toString()
-        {
-            string method = String.Join(System.Environment.NewLine, new string[] {            
-                "NeuCodePairs|max_intensity_ratio\t" + max_intensity_ratio.ToString(),
-                "NeuCodePairs|min_intensity_ratio\t" + min_intensity_ratio.ToString(),
-                "NeuCodePairs|max_lysine_ct\t" + max_lysine_ct.ToString(),
-                "NeuCodePairs|min_lysine_ct\t" + min_lysine_ct.ToString(),
-                "AggregatedProteoforms|mass_tolerance\t" + mass_tolerance.ToString(),
-                "AggregatedProteoforms|retention_time_tolerance\t" + retention_time_tolerance.ToString(),
-                "AggregatedProteoforms|missed_monos\t" + missed_monos.ToString(),
-                "AggregatedProteoforms|missed_lysines\t" + missed_lysines.ToString(),
-                "AggregatedProteoforms|min_rel_abundance\t" + min_rel_abundance.ToString(),
-                "AggregatedProteoforms|min_num_CS\t" + min_num_CS.ToString(),
-                "AggregatedProteoforms|min_agg_count\t" + min_agg_count.ToString(),
-                "TheoreticalDatabase|uniprot_xml_filepath\t" + uniprot_xml_filepath,
-                "TheoreticalDatabase|ptmlist_filepath\t" + ptmlist_filepath,
-                "TheoreticalDatabase|methionine_oxidation\t" + methionine_oxidation.ToString(),
-                "TheoreticalDatabase|carbamidomethylation\t" + carbamidomethylation.ToString(),
-                "TheoreticalDatabase|methionine_cleavage\t" + methionine_cleavage.ToString(),
-                "TheoreticalDatabase|neucode_light_lysine\t" + neucode_light_lysine.ToString(),
-                "TheoreticalDatabase|neucode_heavy_lysine\t" + neucode_heavy_lysine.ToString(),
-                "TheoreticalDatabase|natural_lysine_isotope_abundance\t" + natural_lysine_isotope_abundance.ToString(),
-                "TheoreticalDatabase|max_ptms\t" + max_ptms.ToString(),
-                "TheoreticalDatabase|decoy_databases\t" + decoy_databases.ToString(),
-                "TheoreticalDatabase|min_peptide_length\t" + min_peptide_length.ToString(),
-                "TheoreticalDatabase|combine_identical_sequences\t" + combine_identical_sequences.ToString(),
-                "Comparisons|no_mans_land_lowerBound\t" + no_mans_land_lowerBound.ToString(),
-                "Comparisons|no_mans_land_upperBound\t" + no_mans_land_upperBound.ToString(),
-                "Comparisons|ee_max_mass_difference\t" + ee_max_mass_difference.ToString(),
-                "Comparisons|et_low_mass_difference\t" + et_low_mass_difference.ToString(),
-                "Comparisons|et_high_mass_difference\t" + et_high_mass_difference.ToString(),
-                "Comparisons|relation_group_centering_iterations\t" + relation_group_centering_iterations.ToString(),
-                "Comparisons|peak_width_base_ee\t" + peak_width_base_ee.ToString(),
-                "Comparisons|peak_width_base_et\t" + peak_width_base_et.ToString(),
-                "Comparisons|min_peak_count_ee\t" + min_peak_count_ee.ToString(),
-                "Comparisons|min_peak_count_et\t" + min_peak_count_et.ToString(),
-                "Comparisons|ee_max_RetentionTime_difference\t" + ee_max_RetentionTime_difference.ToString(),
-                "Families|family_build_folder_path\t" + family_build_folder_path, 
-                "Families|deltaM_edge_display_rounding\t" + deltaM_edge_display_rounding.ToString()    
-            });
-            return method; 
-        }
-
-        public static bool use_method_files = true;
-        public static void load_setting(string setting_spec)
-        {
-            string[] fields = setting_spec.Split('\t');
-            switch (fields[0])
-            {
-                case "NeuCodePairs|max_intensity_ratio": max_intensity_ratio = Convert.ToDecimal(fields[1]); break;
-                case "NeuCodePairs|min_intensity_ratio": min_intensity_ratio = Convert.ToDecimal(fields[1]); break;
-                case "NeuCodePairs|max_lysine_ct": max_lysine_ct = Convert.ToDecimal(fields[1]); break;
-                case "NeuCodePairs|min_lysine_ct": min_lysine_ct = Convert.ToDecimal(fields[1]); break;
-                case "AggregatedProteoforms|mass_tolerance": mass_tolerance = Convert.ToDecimal(fields[1]); break;
-                case "AggregatedProteoforms|retention_time_tolerance": retention_time_tolerance = Convert.ToDecimal(fields[1]); break;
-                case "AggregatedProteoforms|missed_monos": missed_monos = Convert.ToDecimal(fields[1]); break;
-                case "AggregatedProteoforms|missed_lysines": missed_lysines = Convert.ToDecimal(fields[1]); break;
-                case "AggregatedProteoforms|min_rel_abundance": min_rel_abundance = Convert.ToDouble(fields[1]); break;
-                case "AggregatedProteoforms|min_num_CS": min_num_CS = Convert.ToInt16(fields[1]); break;
-                case "AggregatedProteoforms|min_agg_count": min_agg_count = Convert.ToInt16(fields[1]); break;
-                case "TheoreticalDatabase|uniprot_xml_filepath": if (fields.Length > 1) uniprot_xml_filepath = fields[1]; break; //make sure path listed
-                case "TheoreticalDatabase|ptmlist_filepath": if (fields.Length > 1) ptmlist_filepath = fields[1]; break;
-                case "TheoreticalDatabase|methionine_oxidation": methionine_oxidation = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|carbamidomethylation": carbamidomethylation = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|methionine_cleavage": methionine_cleavage = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|neucode_light_lysine": neucode_light_lysine = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|neucode_heavy_lysine": neucode_heavy_lysine = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|natural_lysine_isotope_abundance": natural_lysine_isotope_abundance = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|combine_identical_sequences": combine_identical_sequences = Convert.ToBoolean(fields[1]); break;
-                case "TheoreticalDatabase|max_ptms": max_ptms = Convert.ToInt32(fields[1]); break;
-                case "TheoreticalDatabase|decoy_databases": decoy_databases = Convert.ToInt32(fields[1]); break;
-                case "TheoreticalDatabase|min_peptide_length": min_peptide_length = Convert.ToInt32(fields[1]); break;
-                case "Comparisons|no_mans_land_lowerBound": no_mans_land_lowerBound = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|no_mans_land_upperBound": no_mans_land_upperBound = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|peak_width_base_ee": peak_width_base_ee = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|peak_width_base_et": peak_width_base_et = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|min_peak_count_ee": min_peak_count_ee = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|min_peak_count_et": min_peak_count_et = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|ee_max_RetentionTime_difference": ee_max_RetentionTime_difference = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|ee_max_mass_difference": ee_max_mass_difference = Convert.ToDouble(fields[1]); break;
-                case "Comprisons|et_high_mass_diffrence": et_high_mass_difference = Convert.ToDouble(fields[1]); break;
-                case "Comparisons|et_low_mass_difference": et_low_mass_difference = Convert.ToDouble(fields[1]); break;
-                case "Families|family_build_folder_path": if (fields.Length > 1) family_build_folder_path = fields[1]; break; //still works if no path
-                case "Families|deltaM_edge_display_rounding": deltaM_edge_display_rounding = Convert.ToInt32(fields[1]); break;
-            }
-        }
     }
 }
