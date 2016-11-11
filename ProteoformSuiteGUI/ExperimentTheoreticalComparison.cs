@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-
+using System.IO;
 
 namespace ProteoformSuite
 {
@@ -123,6 +123,51 @@ namespace ProteoformSuite
                 pRelation.accepted = e.IsPeakAcceptable;
             }
             FillTablesAndCharts();
+            write_files();
+        }
+
+        private void write_files()
+        {
+            List<ProteoformRelation> in_peaks = Lollipop.et_relations.Where(p => p.accepted).ToList();
+            List<ProteoformRelation> out_peaks = Lollipop.et_relations.Except(in_peaks).ToList();
+            List<ProteoformRelation> in_peaks_PSM = in_peaks.Where(p => p.psm_count_TD > 0).ToList();
+
+            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\in_peaks.tsv"))
+            {
+                writer.WriteLine("in_peak_cs" + "\t" + "in_peak_ac" + "\t" + "in_peak_ra");
+                foreach (ProteoformRelation pr in in_peaks)
+                {
+                    int cs = ((ExperimentalProteoform)pr.connected_proteoforms[0]).aggregated_components.Max(a => a.num_charge_states);
+                    int ac = ((ExperimentalProteoform)pr.connected_proteoforms[0]).observation_count;
+                    double ra = ((ExperimentalProteoform)pr.connected_proteoforms[0]).aggregated_components.Max(a => a.relative_abundance);
+                    writer.WriteLine(cs + "\t" + ac + "\t" + ra);
+                }
+            }
+
+            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\out_peaks.tsv"))
+            {
+                writer.WriteLine("out_peak_cs" + "\t" + "out_peak_ac" + "\t" + "out_peak_ra");
+                foreach (ProteoformRelation pr in out_peaks)
+                {
+                    int cs = ((ExperimentalProteoform)pr.connected_proteoforms[0]).aggregated_components.Max(a => a.num_charge_states);
+                    int ac = ((ExperimentalProteoform)pr.connected_proteoforms[0]).observation_count;
+                    double ra = ((ExperimentalProteoform)pr.connected_proteoforms[0]).aggregated_components.Max(a => a.relative_abundance);
+                    writer.WriteLine(cs + "\t" + ac + "\t" + ra);
+                }
+            }
+
+            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\in_peaks_PSM.tsv"))
+            {
+                writer.WriteLine("in_peak_PSM_cs" + "\t" + "in_peak_PSM_ac" + "\t" + "in_peak_PSM_ra");
+                foreach (ProteoformRelation pr in in_peaks_PSM)
+                {
+                    int cs = ((ExperimentalProteoform)pr.connected_proteoforms[0]).aggregated_components.Max(a => a.num_charge_states);
+                    int ac = ((ExperimentalProteoform)pr.connected_proteoforms[0]).observation_count;
+                    double ra = ((ExperimentalProteoform)pr.connected_proteoforms[0]).aggregated_components.Max(a => a.relative_abundance);
+                    writer.WriteLine(cs + "\t" + ac + "\t" + ra);
+                }
+            }
+
         }
 
         private void dgv_ET_Pairs_CellClick(object sender, DataGridViewCellMouseEventArgs e)
