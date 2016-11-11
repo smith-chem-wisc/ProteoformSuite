@@ -72,7 +72,7 @@ namespace ProteoformSuiteInternal
 
         private List<Component> remove_monoisotopic_duplicates_harmonics_from_same_scan(List<Component> raw_components)
         {
-            IEnumerable<string> scans = raw_components.Select(c => c.scan_range).Distinct().Where(s => acceptable_scan_range(s)).ToList();
+            IEnumerable<string> scans = raw_components.Select(c => c.scan_range).Distinct();
             List<Component> removeThese = new List<Component>();
             List<NeuCodePair> ncPairsInScan = new List<NeuCodePair>();
 
@@ -83,9 +83,7 @@ namespace ProteoformSuiteInternal
                 {
                     IEnumerable<Component> mmc = scanComps.Where(cp => cp.weighted_monoisotopic_mass >= sc.weighted_monoisotopic_mass + (Lollipop.MONOISOTOPIC_UNIT_MASS - 0.0003) && cp.weighted_monoisotopic_mass <= sc.weighted_monoisotopic_mass + (Lollipop.MONOISOTOPIC_UNIT_MASS + 0.0003)); //missed monoisotopic that is one dalton larger
                     removeThese.AddRange(mmc);
-                    IEnumerable<Component> repeat = scanComps.Where(cp => cp.intensity_sum == sc.intensity_sum && cp.monoisotopic_mass == sc.monoisotopic_mass).ToList();
-                    removeThese.AddRange(repeat);
-                    foreach (Component c in mmc) sc.mergeTheseComponents(c);                   
+                    IEnumerable<Component> repeat = scanComps.Where(cp => cp.intensity_sum == sc.intensity_sum && cp.monoisotopic_mass == sc.monoisotopic_mass).ToList();                
                 }
                 if(Lollipop.neucode_labeled) //before we compress harmonics, we have to determine if they are neucode labeled and lysine count 14. these have special considerations
                     ncPairsInScan = find_neucode_pairs(scanComps.Except(removeThese)); // these are not the final neucode pairs, just a temp list
@@ -294,12 +292,13 @@ namespace ProteoformSuiteInternal
             return psm_list;
         }
 
-        private bool acceptable_scan_range(string scan_range)
+        private bool acceptable_td_component(Component c)
         {
-            string[] scans = scan_range.Split('-');
+            string[] scans = c.scan_range.Split('-');
             bool same_scan = scans[0] == scans[1];
             bool MS1_scan = MS1_scans.Contains(scans[0]);
-            if (same_scan && MS1_scan) return true;
+            bool not_repeat = raw_components_in_file.Where(r => r.scan_range == c.scan_range && r.monoisotopic_mass == c.monoisotopic_mass).ToList().Count == 0;
+            if (same_scan && MS1_scan && not_repeat) return true;
             else return false;
         }
 
@@ -307,7 +306,7 @@ namespace ProteoformSuiteInternal
         {
             c.calculate_sum_intensity();
             c.calculate_weighted_monoisotopic_mass();
-            raw_components_in_file.Add(c);
+            if (!Lollipop.td_results || acceptable_td_component(c)) raw_components_in_file.Add(c);
         }
     }
 }
