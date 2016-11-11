@@ -57,6 +57,7 @@
             this.bt_tdResultsAdd = new System.Windows.Forms.Button();
             this.bt_tdResultsClear = new System.Windows.Forms.Button();
             this.bt_clearResults = new System.Windows.Forms.Button();
+            this.cb_run_when_load = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_identificationFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantitationFiles)).BeginInit();
@@ -373,9 +374,23 @@
             this.bt_clearResults.UseVisualStyleBackColor = true;
             this.bt_clearResults.Click += new System.EventHandler(this.bt_clearResults_Click);
             // 
+            // cb_run_when_load
+            // 
+            this.cb_run_when_load.AutoSize = true;
+            this.cb_run_when_load.Checked = true;
+            this.cb_run_when_load.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_run_when_load.Location = new System.Drawing.Point(16, 587);
+            this.cb_run_when_load.Name = "cb_run_when_load";
+            this.cb_run_when_load.Size = new System.Drawing.Size(157, 17);
+            this.cb_run_when_load.TabIndex = 27;
+            this.cb_run_when_load.Text = "Process when loading page";
+            this.cb_run_when_load.UseVisualStyleBackColor = true;
+            this.cb_run_when_load.CheckedChanged += new System.EventHandler(this.cb_run_when_load_CheckedChanged);
+            // 
             // LoadDeconvolutionResults
             // 
-            this.ClientSize = new System.Drawing.Size(1471, 736);
+            this.ClientSize = new System.Drawing.Size(1362, 736);
+            this.Controls.Add(this.cb_run_when_load);
             this.Controls.Add(this.bt_clearResults);
             this.Controls.Add(this.bt_tdResultsAdd);
             this.Controls.Add(this.bt_tdResultsClear);
@@ -445,5 +460,6 @@
         private System.Windows.Forms.DataGridView dgv_buFiles;
         private System.Windows.Forms.CheckBox cb_td_file;
         private System.Windows.Forms.Button bt_clearResults;
+        private System.Windows.Forms.CheckBox cb_run_when_load;
     }
 }
