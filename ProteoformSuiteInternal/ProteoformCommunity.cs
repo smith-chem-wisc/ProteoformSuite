@@ -91,7 +91,7 @@ namespace ProteoformSuiteInternal
             Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
             Parallel.ForEach(decoy_proteoforms, decoys =>
             {
-                ed_relations[decoys.Key] = relate_et(experimental_proteoforms, decoys.Value, ProteoformComparison.ed);
+                ed_relations[decoys.Key] = relate_et(experimental_proteoforms.Where(p => p.accepted).ToArray(), decoys.Value, ProteoformComparison.ed);
             });
             return ed_relations;
         }
