@@ -46,7 +46,11 @@ namespace ProteoformSuiteInternal
                         List<Proteoform> candidate_pfs2_with_accession = candidate_pfs2.Where(x => x.accession == accession).ToList();
                         candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
                         Proteoform best_pf2 = candidate_pfs2_with_accession.First();
-                        relations.Add(new ProteoformRelation(pf1, best_pf2, relation_type, pf1.modified_mass - best_pf2.modified_mass));
+                        ProteoformRelation pr = new ProteoformRelation(pf1, best_pf2, relation_type, pf1.modified_mass - best_pf2.modified_mass);
+                         List<ProteoformRelation> neucode_detected = Lollipop.neucode_et_pairs.Where(r => ((TheoreticalProteoform)r.connected_proteoforms[1]).accession_reduced == ((TheoreticalProteoform)best_pf2).accession_reduced
+                          && ((TheoreticalProteoform)r.connected_proteoforms[1]).ptm_descriptions_readin == ((TheoreticalProteoform)best_pf2).ptm_descriptions
+                          && Math.Abs(pr.delta_mass - r.delta_mass) <= 0.03).ToList();
+                         if (Lollipop.neucode_et_pairs.Count == 0 || neucode_detected.Count > 0) relations.Add(pr);
                     }
                 }
             });
@@ -58,14 +62,30 @@ namespace ProteoformSuiteInternal
         
         public List<ProteoformRelation> relate_ee(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2, ProteoformComparison relation_type)
         {
+            List<ProteoformRelation> relations_in_NC = new List<ProteoformRelation>();
             List<ProteoformRelation> relations = new List<ProteoformRelation>(
                 from pf1 in pfs1
                 from pf2 in pfs2
                 where allowed_ee_relation(pf1, pf2)
                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
             );
-            count_nearby_relations(relations);  //putative counts include no-mans land
-            return relations;
+            if (Lollipop.neucode_ee_pairs.Count == 0) { count_nearby_relations(relations); return relations; }
+            
+            //for label-free, if read-in neucode results
+            else
+            {
+                foreach (ProteoformRelation pf in relations)
+                {
+                    double heavy_mass = ((ExperimentalProteoform)pf.connected_proteoforms[0]).agg_mass;
+                    double light_mass = ((ExperimentalProteoform)pf.connected_proteoforms[1]).agg_mass;
+                    List<ProteoformRelation> in_neucode = Lollipop.neucode_ee_pairs.Where(r =>
+                   Math.Abs(((ExperimentalProteoform)r.connected_proteoforms[0]).agg_mass - heavy_mass) <= 0.03
+                   && Math.Abs(((ExperimentalProteoform)r.connected_proteoforms[1]).agg_mass - light_mass) <= 0.03).ToList();
+                    if (in_neucode.Count > 0) relations_in_NC.Add(pf);
+                }
+                count_nearby_relations(relations_in_NC); 
+                return relations_in_NC;
+            }
         }
 
         public bool allowed_ee_relation(ExperimentalProteoform pf1, ExperimentalProteoform pf2)
