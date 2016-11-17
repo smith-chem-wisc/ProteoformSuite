@@ -28,13 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.dgv_EE_Peaks = new System.Windows.Forms.DataGridView();
@@ -65,6 +65,7 @@
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.bt_neucode_EE_pairs = new System.Windows.Forms.Button();
             this.bt_compare_EE = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -351,17 +352,17 @@
             // 
             // ct_EE_Histogram
             // 
-            chartArea1.Name = "ChartArea1";
-            this.ct_EE_Histogram.ChartAreas.Add(chartArea1);
+            chartArea3.Name = "ChartArea1";
+            this.ct_EE_Histogram.ChartAreas.Add(chartArea3);
             this.ct_EE_Histogram.Cursor = System.Windows.Forms.Cursors.Default;
             this.ct_EE_Histogram.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_EE_Histogram.Location = new System.Drawing.Point(0, 0);
             this.ct_EE_Histogram.Name = "ct_EE_Histogram";
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series1.Legend = "Legend1";
-            series1.Name = "relations";
-            this.ct_EE_Histogram.Series.Add(series1);
+            series5.ChartArea = "ChartArea1";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series5.Legend = "Legend1";
+            series5.Name = "relations";
+            this.ct_EE_Histogram.Series.Add(series5);
             this.ct_EE_Histogram.Size = new System.Drawing.Size(466, 243);
             this.ct_EE_Histogram.TabIndex = 16;
             this.ct_EE_Histogram.TabStop = false;
@@ -379,32 +380,32 @@
             // 
             // ct_EE_peakList
             // 
-            chartArea2.Name = "ChartArea1";
-            this.ct_EE_peakList.ChartAreas.Add(chartArea2);
+            chartArea4.Name = "ChartArea1";
+            this.ct_EE_peakList.ChartAreas.Add(chartArea4);
             this.ct_EE_peakList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_EE_peakList.Enabled = false;
-            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
-            legend1.Name = "Legend1";
-            this.ct_EE_peakList.Legends.Add(legend1);
+            legend2.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
+            legend2.Name = "Legend1";
+            this.ct_EE_peakList.Legends.Add(legend2);
             this.ct_EE_peakList.Location = new System.Drawing.Point(0, 0);
             this.ct_EE_peakList.Name = "ct_EE_peakList";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series2.Legend = "Legend1";
-            series2.MarkerSize = 10;
-            series2.Name = "Peak Count";
-            series3.ChartArea = "ChartArea1";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series3.Legend = "Legend1";
-            series3.Name = "Nearby Relations";
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series4.Legend = "Legend1";
-            series4.MarkerSize = 10;
-            series4.Name = "Decoy Count";
-            this.ct_EE_peakList.Series.Add(series2);
-            this.ct_EE_peakList.Series.Add(series3);
-            this.ct_EE_peakList.Series.Add(series4);
+            series6.ChartArea = "ChartArea1";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series6.Legend = "Legend1";
+            series6.MarkerSize = 10;
+            series6.Name = "Peak Count";
+            series7.ChartArea = "ChartArea1";
+            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series7.Legend = "Legend1";
+            series7.Name = "Nearby Relations";
+            series8.ChartArea = "ChartArea1";
+            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series8.Legend = "Legend1";
+            series8.MarkerSize = 10;
+            series8.Name = "Decoy Count";
+            this.ct_EE_peakList.Series.Add(series6);
+            this.ct_EE_peakList.Series.Add(series7);
+            this.ct_EE_peakList.Series.Add(series8);
             this.ct_EE_peakList.Size = new System.Drawing.Size(235, 281);
             this.ct_EE_peakList.TabIndex = 2;
             this.ct_EE_peakList.TabStop = false;
@@ -463,6 +464,7 @@
             // 
             // splitContainer5.Panel2
             // 
+            this.splitContainer5.Panel2.Controls.Add(this.bt_neucode_EE_pairs);
             this.splitContainer5.Panel2.Controls.Add(this.bt_compare_EE);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox4);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox3);
@@ -491,6 +493,17 @@
             this.splitContainer4.Size = new System.Drawing.Size(455, 285);
             this.splitContainer4.SplitterDistance = 212;
             this.splitContainer4.TabIndex = 18;
+            // 
+            // bt_neucode_EE_pairs
+            // 
+            this.bt_neucode_EE_pairs.Dock = System.Windows.Forms.DockStyle.Top;
+            this.bt_neucode_EE_pairs.Location = new System.Drawing.Point(0, 0);
+            this.bt_neucode_EE_pairs.Name = "bt_neucode_EE_pairs";
+            this.bt_neucode_EE_pairs.Size = new System.Drawing.Size(451, 23);
+            this.bt_neucode_EE_pairs.TabIndex = 33;
+            this.bt_neucode_EE_pairs.Text = "Import EE Relations";
+            this.bt_neucode_EE_pairs.UseVisualStyleBackColor = true;
+            this.bt_neucode_EE_pairs.Click += new System.EventHandler(this.bt_neucode_EE_pairs_Click);
             // 
             // bt_compare_EE
             // 
@@ -710,6 +723,7 @@
         private System.Windows.Forms.Button bt_compare_EE;
         private System.Windows.Forms.NumericUpDown nUD_MaxRetTimeDifference;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button bt_neucode_EE_pairs;
     }
 }
 

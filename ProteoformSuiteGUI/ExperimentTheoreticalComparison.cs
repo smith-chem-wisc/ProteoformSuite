@@ -32,7 +32,8 @@ namespace ProteoformSuite
 
         public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
         {
-   
+            if (Lollipop.neucode_labeled) bt_neucode_ET_pairs.Text = "Export Neucode ET Relations";
+            else bt_neucode_ET_pairs.Text = "Import Neucode ET Relations";
         }
 
         public void compare_et()
@@ -429,6 +430,46 @@ namespace ProteoformSuite
                     DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[rowIndex].DataBoundItem;
                     ETPeakAcceptabilityChangedEventArgs ETAcceptabilityChangedEventData = new ETPeakAcceptabilityChangedEventArgs(acceptibilityStatus, selected_peak);
                     ONETAcceptibilityChanged(ETAcceptabilityChangedEventData);
+                }
+            }
+        }
+
+        private static string ET_relations_list()
+        {
+            string tsv_header = "experimental_mass\texperimental_RT\ttheoretical_mass\ttheoretical_accession\tmodification\t\tlysinecount\tdelta_mass";
+            List<string> rows = new List<string>();
+                foreach (ProteoformRelation relation in Lollipop.et_relations)
+                {
+                    ExperimentalProteoform e = (ExperimentalProteoform)relation.connected_proteoforms[0];
+                    TheoreticalProteoform t = (TheoreticalProteoform)relation.connected_proteoforms[1];
+                    rows.Add(String.Join("\t", e.agg_mass, e.agg_rt,t.modified_mass, t.accession, t.ptm_descriptions, t.lysine_count, relation.delta_mass));
+                 }
+            string results_rows = String.Join(Environment.NewLine, rows.Select(r => r.ToString()));
+            return tsv_header + "\n" + results_rows;
+        }
+
+        private void bt_neucode_ET_pairs_Click(object sender, EventArgs e)
+        {
+            if (Lollipop.neucode_labeled)
+            {
+                SaveFileDialog saveDialog = new SaveFileDialog();
+                saveDialog.Filter = "Proteoforms Families (.tsv) | *.tsv";
+                DialogResult dr = saveDialog.ShowDialog();
+                if (dr == System.Windows.Forms.DialogResult.OK)
+                {
+                    File.WriteAllText(saveDialog.FileName, ET_relations_list());
+                }
+            }
+
+            else
+            {
+                OpenFileDialog openDialog = new OpenFileDialog();
+                openDialog.Filter = "ET Relations (.tsv) | *.tsv";
+                DialogResult dr = openDialog.ShowDialog();
+                if (dr == System.Windows.Forms.DialogResult.OK)
+                {
+                    string[] et_relations = File.ReadAllLines(openDialog.FileName);
+                    Lollipop.read_neucode_et_relationships(et_relations);
                 }
             }
         }

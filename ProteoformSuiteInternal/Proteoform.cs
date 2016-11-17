@@ -86,6 +86,16 @@ namespace ProteoformSuiteInternal
             }
         }
 
+        //for reading in neucode EE pairs
+        public ExperimentalProteoform(string accession, double agg_mass, int lysine_count, double agg_rt) : base(accession)
+        {
+            this.accession = accession;
+            this.agg_mass = agg_mass;
+            this.lysine_count = lysine_count;
+            this.agg_rt = agg_rt;
+        }
+
+
         //for Tests
         public ExperimentalProteoform(string accession) : base(accession)
         {
@@ -287,9 +297,17 @@ namespace ProteoformSuiteInternal
         public PtmSet ptm_set { get; set; } = new PtmSet(new List<Ptm>());
         public List<Ptm> ptm_list { get { return ptm_set.ptm_combination.ToList(); } }
         public double ptm_mass { get { return ptm_set.mass; } }
+        public string ptm_descriptions_readin { get; set; }
         public string ptm_descriptions
         {
             get { return ptm_list_string(); }
+        }
+        public string accession_reduced
+        {
+            get {
+                string[] merf = this.accession.Split('_');
+                return merf[0];
+            }
         }
         public List<Psm> psm_list { get; set; } = new List<Psm>();
         private int _psm_count_BU;
@@ -310,6 +328,16 @@ namespace ProteoformSuiteInternal
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
         }
+
+        //for reading in neucode pairs
+        public TheoreticalProteoform(string accession, double modified_mass, int lysine_count, string ptm_descriptions):base (accession)
+        {
+            this.accession = accession;
+            this.modified_mass = modified_mass;
+            this.lysine_count = lysine_count;
+            this.ptm_descriptions_readin = ptm_descriptions;
+        }
+
 
         //for Tests
         public TheoreticalProteoform(string accession): base(accession)

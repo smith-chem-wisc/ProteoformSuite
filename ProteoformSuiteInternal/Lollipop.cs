@@ -185,6 +185,8 @@ namespace ProteoformSuiteInternal
         public static double min_rel_abundance = 0;
         public static int min_agg_count = 1;
         public static int min_num_CS = 1;
+        public static double RT_tol_NC = 10;
+        public static double mass_tol_NC = 0.02;
 
         public static void aggregate_proteoforms()
         {
@@ -200,15 +202,16 @@ namespace ProteoformSuiteInternal
             if (Lollipop.neucode_labeled)
             {
                 remaining_proteoforms = Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true && p.relative_abundance >= Lollipop.min_rel_abundance && p.num_charge_states >= Lollipop.min_num_CS).ToArray();
-                remaining_quant_components = Lollipop.raw_quantification_components; 
+                remaining_quant_components = Lollipop.raw_quantification_components;
             }
             else
             {
                 remaining_proteoforms = Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.relative_abundance >= Lollipop.min_rel_abundance && p.num_charge_states >= Lollipop.min_num_CS).ToArray();
                 remaining_quant_components = Lollipop.raw_experimental_components; // there are no extra quantitative files for unlableled
             }
+        
 
-            int count = 1;
+        int count = 1;
             List<ExperimentalProteoform> experimental_proteoforms = new List<ExperimentalProteoform>();
             while (remaining_proteoforms.Length > 0)
             {
@@ -221,7 +224,7 @@ namespace ProteoformSuiteInternal
                 remaining_quant_components = tmp_remaining_quant_proteoforms.Except(new_pf.lt_quant_components).Except(new_pf.hv_quant_components).ToList();
                 count += 1;
             }
-            Lollipop.proteoform_community.experimental_proteoforms = experimental_proteoforms.ToArray();
+                Lollipop.proteoform_community.experimental_proteoforms = experimental_proteoforms.ToArray();
         } 
 
         //Could be improved. Used for manual mass shifting.
@@ -239,7 +242,6 @@ namespace ProteoformSuiteInternal
             }
             Lollipop.aggregate_proteoforms();
         }
-
 
         //THEORETICAL DATABASE
         public static bool methionine_oxidation = false;
@@ -533,12 +535,60 @@ namespace ProteoformSuiteInternal
         public static List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
         public static List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
 
+        public static List<ProteoformRelation> neucode_et_pairs = new List<ProteoformRelation>();
+        public static List<ProteoformRelation> neucode_ee_pairs = new List<ProteoformRelation>();
+
         public static void make_et_relationships()
         {
             if (!limit_TD_BU_theoreticals) Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
             else Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.Where(t => t.psm_count_BU > 0 || t.psm_count_TD > 0 ).ToArray(), ProteoformComparison.et);
             Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
             Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
+        }
+
+        public static void read_neucode_et_relationships(string [] relationships)
+        {
+            neucode_et_pairs.Clear();
+            for (int i = 1; i < relationships.Length; i++)
+            {
+                string[] e = relationships[i].Split('\t');
+                double labeled_e_mass = Convert.ToDouble(e[0]);
+                double rt = Convert.ToDouble(e[1]);
+                double labeled_t_mass = Convert.ToDouble(e[2]);
+                string accession = e[3];
+                string mods = e[4];
+                int lysine_count = Convert.ToInt16(e[5]);
+                double delta_mass = Convert.ToDouble(e[6]);
+                double e_mass = labeled_e_mass - (lysine_count * 136.109162) + (lysine_count * 128.094963);
+                double t_mass = labeled_t_mass - (lysine_count * 136.109162) + (lysine_count * 128.094963);
+
+                TheoreticalProteoform theo = new TheoreticalProteoform(accession, t_mass, lysine_count, mods);
+                ExperimentalProteoform exp = new ExperimentalProteoform("E_" + i, e_mass, lysine_count, rt);
+                ProteoformRelation pr = new ProteoformRelation(exp, theo, ProteoformComparison.et, delta_mass);
+                neucode_et_pairs.Add(pr);
+            }
+        }
+
+        public static void read_neucode_ee_relationships(string[] relationships)
+        {
+            neucode_ee_pairs.Clear();
+            for (int i = 1; i < relationships.Length; i++)
+            {
+                string[] e = relationships[i].Split('\t');
+                double labeled_e1_mass = Convert.ToDouble(e[0]);
+                double e1_rt = Convert.ToDouble(e[1]);
+                double labeled_e2_mass = Convert.ToDouble(e[2]);
+                double e2_rt = Convert.ToDouble(e[3]);
+                int lysine_count = Convert.ToInt16(e[4]);
+                double delta_mass = Convert.ToDouble(e[5]);
+                double e1_mass = labeled_e1_mass - (lysine_count * 136.109162) + (lysine_count * 128.094963);
+                double e2_mass = labeled_e2_mass - (lysine_count * 136.109162) + (lysine_count * 128.094963);
+
+                ExperimentalProteoform e1 = new ExperimentalProteoform("E_" + i, e1_mass, lysine_count, e1_rt);
+                ExperimentalProteoform e2 = new ExperimentalProteoform("E_" + i, e2_mass, lysine_count, e2_rt);
+                ProteoformRelation pr = new ProteoformRelation(e1, e2, ProteoformComparison.ee, delta_mass);
+                neucode_ee_pairs.Add(pr);
+            }
         }
 
         public static void make_ee_relationships()
