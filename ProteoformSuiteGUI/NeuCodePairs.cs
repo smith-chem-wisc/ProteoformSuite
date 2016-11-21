@@ -67,10 +67,10 @@ namespace ProteoformSuite
         private void FormatNeuCodePairsDGV()
         {
             //round table values
-            dgv_RawExpNeuCodePairs.Columns["monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
+            dgv_RawExpNeuCodePairs.Columns["reported_monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
             dgv_RawExpNeuCodePairs.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
             dgv_RawExpNeuCodePairs.Columns["weighted_monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpNeuCodePairs.Columns["corrected_mass"].DefaultCellStyle.Format = "0.####";
+            //dgv_RawExpNeuCodePairs.Columns["corrected_mass"].DefaultCellStyle.Format = "0.####";
             dgv_RawExpNeuCodePairs.Columns["rt_apex"].DefaultCellStyle.Format = "0.##";
             dgv_RawExpNeuCodePairs.Columns["relative_abundance"].DefaultCellStyle.Format = "0.####";
             dgv_RawExpNeuCodePairs.Columns["fract_abundance"].DefaultCellStyle.Format = "0.####";
@@ -78,12 +78,12 @@ namespace ProteoformSuite
             dgv_RawExpNeuCodePairs.Columns["intensity_ratio"].DefaultCellStyle.Format = "0.####";
 
             //set column header
-            dgv_RawExpNeuCodePairs.Columns["monoisotopic_mass"].HeaderText = "Light Monoisotopic Mass";
+            dgv_RawExpNeuCodePairs.Columns["reported_monoisotopic_mass"].HeaderText = "Light Monoisotopic Mass";
             dgv_RawExpNeuCodePairs.Columns["id_light"].HeaderText = "Neucode Light ID";
             dgv_RawExpNeuCodePairs.Columns["id_heavy"].HeaderText = "Neucode Heavy ID";
             dgv_RawExpNeuCodePairs.Columns["delta_mass"].HeaderText = "Light Delta Mass";
             dgv_RawExpNeuCodePairs.Columns["weighted_monoisotopic_mass"].HeaderText = "Light Weighted Monoisotopic Mass";
-            dgv_RawExpNeuCodePairs.Columns["corrected_mass"].HeaderText = "Light Corrected Mass";
+            //dgv_RawExpNeuCodePairs.Columns["corrected_mass"].HeaderText = "Light Corrected Mass";
             dgv_RawExpNeuCodePairs.Columns["rt_apex"].HeaderText = "Light Apex RT";
             dgv_RawExpNeuCodePairs.Columns["relative_abundance"].HeaderText = "Light Relative Abundance";
             dgv_RawExpNeuCodePairs.Columns["fract_abundance"].HeaderText = "Light Fractional Abundance";

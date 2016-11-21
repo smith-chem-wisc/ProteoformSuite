@@ -302,7 +302,7 @@ namespace ProteoformSuite
                 }
             }
 
-            foreach (ExperimentalProteoform eP in Lollipop.proteoform_community.experimental_proteoforms) // we may want to limit this to select proteoforms
+            foreach (ExperimentalProteoform eP in Lollipop.proteoform_community.experimental_proteoforms.Where(eP=>eP.accepted == true).ToList()) // we may want to limit this to select proteoforms
             {
                 object[] ratio = new object[columnNames.Count()];
                 object[] intensity = new object[columnNames.Count()];

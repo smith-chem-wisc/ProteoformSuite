@@ -24,12 +24,12 @@ namespace ProteoformSuiteInternal
                 Component component = new Component();
                 component.id = (line[0]).ToString();
                 component.id = line[0].ToString();
-                component.monoisotopic_mass = Convert.ToDouble(line[1]);
-                component.weighted_monoisotopic_mass = Convert.ToDouble(line[2]);
-                component.corrected_mass = Convert.ToDouble(line[3]);
-                component.intensity_sum = Convert.ToDouble(line[4]);
+                component.reported_monoisotopic_mass = Convert.ToDouble(line[1]);
+                component.attemptToSetWeightedMonoisotopic_mass(Convert.ToDouble(line[2]));
+                //component.corrected_mass = Convert.ToDouble(line[3]);
+                component.attemptToSetIntensity(Convert.ToDouble(line[4])); // there is no charge state data. we read in the intensity and store it using a method inside the component class
                 component.intensity_reported = Convert.ToDouble(line[4]);
-                component.num_charge_states_fromFile = Convert.ToInt16(line[5]);
+                component.attemptToSetNumChargeStates(Convert.ToInt16(line[5])); // there is no charge state data. we read in the intensity and store it using a method inside the component class
                 component.delta_mass = Convert.ToDouble(line[6]);
                 component.relative_abundance = Convert.ToDouble(line[7]);
                 component.fract_abundance = Convert.ToDouble(line[8]);
@@ -70,12 +70,12 @@ namespace ProteoformSuiteInternal
         private static string component_as_tsv_row(Component c)
         {
             if (Lollipop.neucode_labeled)
-                return String.Join("\t", new List<string> { c.id.ToString(), c.monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(), c. corrected_mass.ToString(),
+                return String.Join("\t", new List<string> { c.id.ToString(), c.reported_monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(), c. weighted_monoisotopic_mass.ToString(),
                     c.intensity_sum.ToString(), c.num_charge_states.ToString(),
                     c.delta_mass.ToString(), c.relative_abundance.ToString(), c.fract_abundance.ToString(), c.scan_range.ToString(), c.rt_range.ToString(),
                     c.rt_apex.ToString(), c.intensity_sum_olcs.ToString(), c.input_file.UniqueId.ToString(), c.accepted.ToString() });
             else
-                return String.Join("\t", new List<string> { c.id.ToString(), c.monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(), c.corrected_mass.ToString(),
+                return String.Join("\t", new List<string> { c.id.ToString(), c.reported_monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(), c.weighted_monoisotopic_mass.ToString(),
                     c.intensity_sum.ToString(), c.num_charge_states.ToString(),
                     c.delta_mass.ToString(), c.relative_abundance.ToString(), c.fract_abundance.ToString(), c.scan_range.ToString(), c.rt_range.ToString(),
                     c.rt_apex.ToString(), c.input_file.UniqueId.ToString(), c.accepted.ToString() });
@@ -138,7 +138,7 @@ namespace ProteoformSuiteInternal
                 { neucode_pair.accepted = true; }
                 else { neucode_pair.accepted = false; }
 
-                neucode_pair.corrected_mass = neucode_pair.corrected_mass + Math.Round((neucode_pair.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * 1.0015;
+                neucode_pair.neuCodeCorrection = Math.Round((neucode_pair.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * 1.0015;
 
                 lock (lockThread) { Lollipop.raw_neucode_pairs.Add(neucode_pair); }
             });
@@ -154,7 +154,7 @@ namespace ProteoformSuiteInternal
 
         private static string neucode_pair_as_tsv_row(NeuCodePair n)
         {
-            return String.Join("\t", new List<string> { n.id.ToString(), n.intensity_sum_olcs.ToString(), n.weighted_monoisotopic_mass.ToString(), n.corrected_mass.ToString(), n.rt_apex.ToString(),
+            return String.Join("\t", new List<string> { n.id.ToString(), n.intensity_sum_olcs.ToString(), n.weighted_monoisotopic_mass.ToString(), n.weighted_monoisotopic_mass.ToString(), n.rt_apex.ToString(),
                     n.neuCodeHeavy.id.ToString(), n.neuCodeHeavy.intensity_sum_olcs.ToString(), n.neuCodeHeavy.weighted_monoisotopic_mass.ToString(), n.intensity_ratio.ToString(), n.lysine_count.ToString(),
                     n.input_file.UniqueId.ToString() });
         }

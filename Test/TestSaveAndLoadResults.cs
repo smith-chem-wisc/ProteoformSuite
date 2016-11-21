@@ -26,16 +26,14 @@ namespace Test
             Component c2 = new Component();
             c1.id = 1.ToString();
             c2.id = 2.ToString();
-            c1.monoisotopic_mass = 1.0;
-            c2.monoisotopic_mass = 2.0;
-            c1.weighted_monoisotopic_mass = 1.1;
-            c2.weighted_monoisotopic_mass = 2.1;
-            c1.corrected_mass = 1.2;
-            c2.corrected_mass = 2.2;
-            c1.intensity_sum = 100.0;
-            c2.intensity_sum = 200.0;
-            c1.num_charge_states_fromFile = 5;
-            c2.num_charge_states_fromFile = 6;
+            c1.reported_monoisotopic_mass = 1.0;
+            c2.reported_monoisotopic_mass = 2.0;
+            c1.attemptToSetWeightedMonoisotopic_mass(1.1);
+            c2.attemptToSetWeightedMonoisotopic_mass(2.1);
+            c1.attemptToSetIntensity(100.0);
+            c2.attemptToSetIntensity(200.0);
+            c1.attemptToSetNumChargeStates(5);
+            c2.attemptToSetNumChargeStates(6);
             c1.delta_mass = 10.0;
             c2.delta_mass = 20.0;
             c1.relative_abundance = 0.5;
@@ -113,11 +111,9 @@ namespace Test
         public void compare_components(Component c, Component d)
         {
             Assert.AreEqual(c.id, d.id);
-            Assert.AreEqual(c.monoisotopic_mass, d.monoisotopic_mass);
+            Assert.AreEqual(c.reported_monoisotopic_mass, d.reported_monoisotopic_mass);
             Assert.AreEqual(c.weighted_monoisotopic_mass, d.weighted_monoisotopic_mass);
-            Assert.AreEqual(c.corrected_mass, d.corrected_mass);
             Assert.AreEqual(c.intensity_sum, d.intensity_sum);
-            //Assert.AreEqual(c.num_charge_states_fromFile, d.num_charge_states_fromFile);
             Assert.AreEqual(c.delta_mass, d.delta_mass);
             Assert.AreEqual(c.relative_abundance, d.relative_abundance);
             Assert.AreEqual(c.fract_abundance, d.fract_abundance);
@@ -125,7 +121,6 @@ namespace Test
             Assert.AreEqual(c.rt_range, d.rt_range);
             Assert.AreEqual(c.rt_apex, d.rt_apex);
             Assert.AreEqual(c.intensity_sum_olcs, d.intensity_sum_olcs);
-            //Assert.AreEqual(c.input_file, d.input_file);
             Assert.AreEqual(c.accepted, d.accepted);
         }
 
