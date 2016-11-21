@@ -2,46 +2,93 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
     public class Component
     {
-        //public string file_origin { get; set; }
         public InputFile input_file { get; set; }
         public string id { get; set; } // deconvolution 4.0 assigns a component id. This is made unique by appending the inputFile id.
-        public double monoisotopic_mass { get; set; }
-        public double intensity_reported { get; set; } //from deconvolution 4.0
-        public double intensity_sum { get; set; } //intensity sum for all charge states. Different value that what is reported by deconv 4.0 for some reason
-        public double intensity_sum_olcs { get; set; } //intensity sum for overlapping charge states -> determined when grouped into neucode pairs.
+        public double reported_monoisotopic_mass { get; set; }  //from deconvolution 4.0
+        public double intensity_reported { get; set; } //from deconvolution 4.0         
+        public double intensity_sum_olcs { get; set; } = 0; //intensity sum for overlapping charge states -> determined when grouped into neucode pairs.
         public double delta_mass { get; set; }
         public double relative_abundance { get; set; }
         public double fract_abundance { get; set; }
         public string scan_range { get; set; }
         public string rt_range { get; set; }
         public double rt_apex { get; set; }
-        public double weighted_monoisotopic_mass { get; set; }
-        private double _manual_mass_shift { get; set; } = 0;
+        public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
+        public void add_charge_state(List<string> charge_row, double correction)
+        {
+            this.charge_states.Add(new ChargeState(charge_row, correction));
+        }
+        private int Num_charge_states { get; set; } = 0;
+        public int num_charge_states
+        {
+            get
+            {
+                if (charge_states.Select(cs => cs.charge_count).ToList().Count() > 0) { return charge_states.Count(); }
+                else { return Num_charge_states; }
+            }
+        }
+        public void attemptToSetNumChargeStates(int fromFileNumChargeStates)
+        {
+            if (charge_states.Select(cs => cs.charge_count).ToList().Count() > 0)
+                throw new ArgumentException("Charge state data exists that can't be overwritten with input");
+            else
+                Num_charge_states = fromFileNumChargeStates;
+        }
+
+        private double _manual_mass_shift { get; set; } = 0; // added or substracted from weighted monoisotopic mass. This value is adjusted manually after observing ET histograms. Eventually also after see EE histograms. 
         public double manual_mass_shift
         {
             get { return _manual_mass_shift; }
             set
             {
                 _manual_mass_shift = value;
-                this.calculate_weighted_monoisotopic_mass();
             }
         }
-        public double corrected_mass { get; set; }
-        public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
-        public int num_charge_states
-        {
-            get { return this.charge_states.Count; }
-        }
-        private int num_detected_intervals { get; set; }
-        public int num_charge_states_fromFile { get; set; }
-        public bool accepted { get; set; }
+        public double neuCodeCorrection { get; set; } = 0;
 
+        private double Intensity_sum { get; set; } = 0;
+        public double intensity_sum //intensity sum for all charge states. Different value that what is reported by deconv 4.0 for some reason
+        {
+            get
+            { 
+                if (charge_states.Select(cs => cs.charge_count).ToList().Count() > 0) { return charge_states.Select(cs => cs.intensity).ToList().Sum(); }
+                else { return Intensity_sum; }
+            }
+        }
+        public void attemptToSetIntensity(double fromFileIntensity)
+        {
+            if (charge_states.Select(cs => cs.charge_count).ToList().Count() > 0)
+                throw new ArgumentException("Charge state data exists that can't be overwritten with input");
+            else
+                Intensity_sum = fromFileIntensity;
+        }
+
+        private double Weighted_monoisotopic_mass { get; set; } = 0;
+        public double weighted_monoisotopic_mass
+        {
+            get 
+            {
+                if (charge_states.Select(cs=>cs.charge_count).ToList().Count() > 0) { return this.charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum() + manual_mass_shift + neuCodeCorrection; }
+                else { return Weighted_monoisotopic_mass; }
+            }
+        } //this is computed as the weighted sum of charge state masses.
+        public void attemptToSetWeightedMonoisotopic_mass(double fromFileMass)
+        {
+            if (charge_states.Select(cs => cs.charge_count).ToList().Count() > 0)
+                throw new ArgumentException("Charge state data exists that can't be overwritten with input");
+            else
+                Weighted_monoisotopic_mass = fromFileMass;
+        }
+
+        public int num_detected_intervals { get; set; }
+        public bool accepted { get; set; }
 
         public Component()
         { }
@@ -51,10 +98,10 @@ namespace ProteoformSuiteInternal
             this.id = Convert.ToInt32(cellStrings[0]).ToString();
             this.input_file = input_file;
             this.id = input_file.UniqueId.ToString() + "_" + Convert.ToInt32(cellStrings[0]);
-
-            this.monoisotopic_mass = Convert.ToDouble(cellStrings[1]);
+            this.reported_monoisotopic_mass = Convert.ToDouble(cellStrings[1]);
+            this.attemptToSetWeightedMonoisotopic_mass(Convert.ToDouble(cellStrings[1])); // this will get immediately replaced and updated as charge states are added.
             this.intensity_reported = Convert.ToDouble(cellStrings[2]);
-            this.num_charge_states_fromFile = Convert.ToInt32(cellStrings[3]);
+            this.attemptToSetNumChargeStates(Convert.ToInt32(cellStrings[3]));
             this.num_detected_intervals = Convert.ToInt32(cellStrings[4]);
             this.delta_mass = Convert.ToDouble(cellStrings[5]);
             this.relative_abundance = Convert.ToDouble(cellStrings[6]);
@@ -62,26 +109,20 @@ namespace ProteoformSuiteInternal
             this.scan_range = cellStrings[8];
             this.rt_range = cellStrings[9];
             this.rt_apex = Convert.ToDouble(cellStrings[10]);
-            this.monoisotopic_mass = Convert.ToDouble(cellStrings[1]);
-            this.intensity_sum = Convert.ToDouble(cellStrings[2]); // this needs to be fixed.
-            this.num_charge_states_fromFile = Convert.ToInt32(cellStrings[3]);
-            this.num_detected_intervals = Convert.ToInt32(cellStrings[4]);
-            this.delta_mass = Convert.ToDouble(cellStrings[5]);
-            this.relative_abundance = Convert.ToDouble(cellStrings[6]);
-            this.fract_abundance = Convert.ToDouble(cellStrings[7]);           
+            this.attemptToSetIntensity(Convert.ToDouble(cellStrings[2])); // this needs to be fixed.       
             this.accepted = true;
+            this.charge_states = new List<ChargeState>();
         }
-        public Component(Component c) // I don't know why we need this. // To open TSV files with saved Component data.
+        public Component(Component c) // To open TSV files with saved Component data and duplicate components
         {
-            //this.file_origin = c.file_origin;
             this.input_file = c.input_file;
             this.id = c.id;
-            this.monoisotopic_mass = c.monoisotopic_mass;
-            this.weighted_monoisotopic_mass = c.weighted_monoisotopic_mass;
-            this.corrected_mass = c.corrected_mass;
+            this.reported_monoisotopic_mass = c.reported_monoisotopic_mass;
+            this.attemptToSetWeightedMonoisotopic_mass(c.weighted_monoisotopic_mass);
+            //this.corrected_mass = c.corrected_mass;
             //this.manual_mass_shift = c.manual_mass_shift; //This messes up the corrected mass. Because we're not loading in charge states, the weighted monoisotopic mass is 0. This recalculates the corrected mass to 0.
             this.intensity_reported = c.intensity_reported;
-            this.intensity_sum = c.intensity_sum;
+            this.attemptToSetIntensity(c.intensity_sum);
             this.delta_mass = c.delta_mass;
             this.relative_abundance = c.relative_abundance;
             this.fract_abundance = c.fract_abundance;
@@ -90,15 +131,12 @@ namespace ProteoformSuiteInternal
             this.rt_range = c.rt_range;
             this.charge_states = c.charge_states;
             this.num_detected_intervals = c.num_detected_intervals;
-            this.num_charge_states_fromFile = c.num_charge_states_fromFile;
+            if (c.charge_states.Count() > 0)            
+                this.charge_states = c.charge_states;
+            else
+                this.attemptToSetNumChargeStates(c.num_charge_states);
             this.intensity_sum_olcs = c.intensity_sum_olcs;
             this.accepted = c.accepted;
-        }
-
-        public double calculate_sum_intensity()
-        {
-            this.intensity_sum = this.charge_states.Select(charge_state => charge_state.intensity).Sum();
-            return this.intensity_sum;
         }
 
         public double calculate_sum_intensity_olcs(List<int> charges_to_sum)
@@ -107,21 +145,13 @@ namespace ProteoformSuiteInternal
             return this.intensity_sum_olcs;
         }
 
-        public void calculate_weighted_monoisotopic_mass()
-        {
-            this.weighted_monoisotopic_mass = this.charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum();
-            this.corrected_mass = this.weighted_monoisotopic_mass + this.manual_mass_shift;
-        }
-
-        public void add_charge_state(List<string> charge_row, double correction)
-        {
-            this.charge_states.Add(new ChargeState(charge_row, correction));
-        }
-
         public Component mergeTheseComponents(Component cpToMerge) //this method is used just after initial read of components to get rid of missed monoisotopics in the same scan.
         {
-            if (Math.Abs((this.weighted_monoisotopic_mass - cpToMerge.weighted_monoisotopic_mass)) < 2d)
+            if (Math.Abs((this.weighted_monoisotopic_mass - cpToMerge.weighted_monoisotopic_mass)) <= (3*Lollipop.MONOISOTOPIC_UNIT_MASS + Math.Max(this.weighted_monoisotopic_mass, cpToMerge.weighted_monoisotopic_mass)/1000000d*(double)Lollipop.mass_tolerance))
             {// we're merging missed monoisotopics
+
+                //string line = "MM_BEFORE: \t" + this.scan_range + "\t" + this.id + "\t" + cpToMerge.id + "\t" + this.weighted_monoisotopic_mass + "\t" + cpToMerge.weighted_monoisotopic_mass + "\t" + this.num_charge_states + "\t" + cpToMerge.num_charge_states + "\t" + this.intensity_sum + "\t" + cpToMerge.intensity_sum + "\t" + this.input_file.filename;
+                //File.AppendAllText(@"C:\Users\Michael\Downloads\new_h_m.txt", line + Environment.NewLine);
 
                 foreach (ChargeState cpCS in cpToMerge.charge_states)
                 {
@@ -130,22 +160,22 @@ namespace ProteoformSuiteInternal
                         double monoIsoTopicDifference = Math.Round(cpCS.calculated_mass - this.weighted_monoisotopic_mass) * Lollipop.MONOISOTOPIC_UNIT_MASS;
                         cpCS.calculated_mass = cpCS.calculated_mass - monoIsoTopicDifference;
                         cpCS.mz_centroid = (cpCS.calculated_mass + Lollipop.PROTON_MASS * cpCS.charge_count) / cpCS.charge_count;
-                        cpCS.mz_correction = 0;
-                        cpCS.reported_mass = cpCS.calculated_mass;
                     }
                     else
                     {
                         double monoIsoTopicDifference = Math.Round(this.weighted_monoisotopic_mass - cpCS.calculated_mass) * Lollipop.MONOISOTOPIC_UNIT_MASS;
                         cpCS.calculated_mass = cpCS.calculated_mass + monoIsoTopicDifference;
                         cpCS.mz_centroid = (cpCS.calculated_mass + Lollipop.PROTON_MASS * cpCS.charge_count) / cpCS.charge_count;
-                        cpCS.mz_correction = 0;
-                        cpCS.reported_mass = cpCS.calculated_mass;
                     }
                     if (this.charge_states.Exists(thisCS => thisCS.charge_count == cpCS.charge_count))
                         this.charge_states.Where(thisCS => thisCS.charge_count == cpCS.charge_count).First().mergeTheseChargeStates(cpCS);
                     else
                         this.charge_states.Add(cpCS);
                 }
+
+                //line = "MM_AFTER: \t" + this.scan_range + "\t" + this.id + "\t" + this.weighted_monoisotopic_mass + "\t" + this.num_charge_states + "\t" + this.intensity_sum + "\t" + this.input_file.filename;
+                //File.AppendAllText(@"C:\Users\Michael\Downloads\new_h_m.txt", line + Environment.NewLine);
+
             }
             else // we're merging harmonics
             {
@@ -158,8 +188,6 @@ namespace ProteoformSuiteInternal
                         cpCS.calculated_mass = cpCS.calculated_mass / harmonicRatio;
                         cpCS.calculated_mass = cpCS.calculated_mass - (Math.Round(cpCS.calculated_mass - this.weighted_monoisotopic_mass)) * Lollipop.MONOISOTOPIC_UNIT_MASS;
                         cpCS.mz_centroid = (cpCS.calculated_mass + Lollipop.PROTON_MASS * cpCS.charge_count) / cpCS.charge_count;
-                        cpCS.mz_correction = 0;
-                        cpCS.reported_mass = cpCS.calculated_mass;
                     }
                     else
                     {
@@ -168,8 +196,6 @@ namespace ProteoformSuiteInternal
                         cpCS.calculated_mass = cpCS.calculated_mass * harmonicRatio;
                         cpCS.calculated_mass = cpCS.calculated_mass - (Math.Round(cpCS.calculated_mass - this.weighted_monoisotopic_mass)) * Lollipop.MONOISOTOPIC_UNIT_MASS;
                         cpCS.mz_centroid = (cpCS.calculated_mass + Lollipop.PROTON_MASS * cpCS.charge_count) / cpCS.charge_count;
-                        cpCS.mz_correction = 0;
-                        cpCS.reported_mass = cpCS.calculated_mass;
                     }
                     if (this.charge_states.Exists(thisCS => thisCS.charge_count == cpCS.charge_count))
                         this.charge_states.Where(thisCS => thisCS.charge_count == cpCS.charge_count).First().mergeTheseChargeStates(cpCS);
@@ -178,28 +204,26 @@ namespace ProteoformSuiteInternal
                 }
             }
             
-            this.calculate_sum_intensity();
-            this.calculate_weighted_monoisotopic_mass();
+            //this.calculate_sum_intensity();
+            //this.calculate_weighted_monoisotopic_mass();
             return this;
         }     
     }
 
     public class ChargeState
     {
-        public int charge_count { get; set; }
-        public double intensity { get; set; }
-        public double mz_centroid { get; set; }
-        public double mz_correction { get; set; }
-        public double reported_mass { get; set; }
-        public double calculated_mass { get; set; }
+        public int charge_count { get; set; } //value from deconv 4.0
+        public double intensity { get; set; } //value from deconv 4.0
+        public double mz_centroid { get; set; } //value from deconv 4.0
+        public double calculated_mass { get; set; }  // the value reported by decon 4.0 is incorrect, so we calculate it from m/z and charge (including correction when necessary)
 
-        public ChargeState(List<string> charge_row, double correction)
+        public ChargeState(List<string> charge_row, double mz_correction) //the correction used is determined from measurement of lock-mass compound. It is read in at the same time the data is read in. We do not keep track of the correction because it adds confusion when charge states are combined.
         {
             this.charge_count = Convert.ToInt32(charge_row[0]);
             this.intensity = Convert.ToDouble(charge_row[1]);
             this.mz_centroid = Convert.ToDouble(charge_row[2]);
-            this.reported_mass = Convert.ToDouble(charge_row[3]);
-            this.calculated_mass = correct_calculated_mass(correction);
+            //this.reported_mass = Convert.ToDouble(charge_row[3]); // this value is junk so we don't even read/store it. If we redo data input and use another source, we could bring it back.
+            this.calculated_mass = correct_calculated_mass(mz_correction);
         }
 
         //For testing
@@ -211,9 +235,8 @@ namespace ProteoformSuiteInternal
             this.calculated_mass = correct_calculated_mass(mz_correction);
         }
 
-        public double correct_calculated_mass(double mz_correction)
+        public double correct_calculated_mass(double mz_correction) // the correction is a linear shift to m/z
         {
-            this.mz_correction = mz_correction;
             return (this.charge_count * (this.mz_centroid + mz_correction - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
         }
 
@@ -222,8 +245,7 @@ namespace ProteoformSuiteInternal
             if(csToMerge != null)
             {
                 double totalIntensity = this.intensity + csToMerge.intensity;
-                this.reported_mass = (this.intensity * this.calculated_mass + csToMerge.intensity * csToMerge.calculated_mass) /totalIntensity;
-                //csToMerge.mz_centroid = (csToMerge.mz_centroid * csToMerge.charge_count - charge_count * 1.00727645D - Lollipop.MONOISOTOPIC_UNIT_MASS) / csToMerge.charge_count;
+                this.calculated_mass = (this.intensity * this.calculated_mass + csToMerge.intensity * csToMerge.calculated_mass) /totalIntensity; //this is a weighted calculation of m/z based on the intenity of each ChargeState object
                 this.mz_centroid = (this.intensity * this.mz_centroid + csToMerge.intensity * csToMerge.mz_centroid) / totalIntensity;
                 this.intensity = totalIntensity;
             }
