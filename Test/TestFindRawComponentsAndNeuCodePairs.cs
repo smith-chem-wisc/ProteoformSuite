@@ -28,7 +28,7 @@ namespace Test
 
             Lollipop.neucode_labeled = true;
             Lollipop.process_raw_components();
-            Assert.AreEqual(224, Lollipop.raw_experimental_components.Count);
+            Assert.AreEqual(223, Lollipop.raw_experimental_components.Count);
 
             //Check the validity of one component read from the Excel file
             Component c1 = Lollipop.raw_experimental_components[0];
@@ -39,10 +39,10 @@ namespace Test
             Assert.AreEqual(9, c1.charge_states.Count);
             Assert.AreEqual(8, overlapping_charge_states.Count);
             Assert.AreEqual(Lollipop.input_files.Where(f => f.filename == "noisy").FirstOrDefault().UniqueId + "_1", c1.id); //this line behaving strangely.
-            Assert.AreEqual(Math.Round(8982.7258, 4), Math.Round(c1.monoisotopic_mass, 4));
+            Assert.AreEqual(Math.Round(8982.7258, 4), Math.Round(c1.reported_monoisotopic_mass, 4));
             Assert.AreEqual(Math.Round(32361626.3, 1), Math.Round(c1.intensity_sum, 1));
             Assert.AreEqual(Math.Round(32135853.39, 2), Math.Round(c1.calculate_sum_intensity_olcs(overlapping_charge_states), 2));
-            Assert.AreEqual(9, c1.num_charge_states_fromFile);
+            Assert.AreEqual(9, c1.num_charge_states);
             Assert.AreEqual(Math.Round(2127.5113, 4), Math.Round(c1.delta_mass, 4));
             Assert.AreEqual(Math.Round(54.97795307, 8), Math.Round(c1.relative_abundance, 8));
             Assert.AreEqual(Math.Round(1.141297566, 8), Math.Round(c1.fract_abundance, 8));
@@ -60,18 +60,6 @@ namespace Test
             //testing that only overlapping charge states go into intensity ratio
             neucode_pair = Lollipop.raw_neucode_pairs.Where(i => i.id_heavy == inFileId + "_122" && i.id_light == inFileId + "_57").ToList();
             Assert.AreEqual(1.7231604062234347, neucode_pair[0].intensity_ratio);
-
-            //testing that if Neucode-light is "heavier", K value still correctly calculated  //Not really allowed anymore
-            //neucode_pair = Lollipop.raw_neucode_pairs.Where(i => i.id_heavy == inFileId + "_217" && i.id_light == inFileId + "_218").ToList();
-            //Assert.AreEqual(15, neucode_pair[0].lysine_count);
-
-            //test that pair w/ out of bounds I-ratio is marked unaccepted //Not really allowed anymore
-            //neucode_pair = Lollipop.raw_neucode_pairs.Where(i => i.id_heavy == inFileId + "_222" && i.id_light == inFileId + "_221").ToList();
-            //Assert.AreEqual(false, neucode_pair[0].accepted);
-
-            ////test that pair w/ out of bounds K-count is marked unaccepted
-            //neucode_pair = Lollipop.raw_neucode_pairs.Where(i => i.id_heavy == inFileId + "_224" && i.id_light == inFileId + "_223").ToList();
-            //Assert.AreEqual(false, neucode_pair[0].accepted);
         }
 
     }
