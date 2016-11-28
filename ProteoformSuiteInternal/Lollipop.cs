@@ -208,6 +208,7 @@ namespace ProteoformSuiteInternal
                 Lollipop.proteoform_community.experimental_proteoforms = assignQuantificationComponents(vettedExperimentalProteoforms).ToArray();
             else
                 Lollipop.proteoform_community.experimental_proteoforms = vettedExperimentalProteoforms.ToArray();
+            if (Lollipop.proteoform_community.topdown_proteoforms.Count > 0) match_topdown_proteoforms();
         }
 
         public static List<ExperimentalProteoform> createProteoforms()
@@ -237,8 +238,6 @@ namespace ProteoformSuiteInternal
                 remaining_proteoforms = tmp_remaining_proteoforms.Except(new_pf.aggregated_components).ToArray();
                 count += 1;
             }
-
-            if (Lollipop.proteoform_community.topdown_proteoforms.Count > 0) match_topdown_proteoforms();
             return candidateExperimentalProteoforms;
         }
 
