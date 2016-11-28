@@ -35,7 +35,7 @@ namespace ProteoformSuiteInternal
         public string extension { get; set; }
         public Purpose purpose { get; set; } //ID, Quant, Calib, Bottom-Up or Top-Down
         public Labeling label { get; set; }
-        public TDProgram td_program { get; set; } = TDProgram.NRTDP;
+        public TDSoftware td_software { get; set; } = TDSoftware.NRTDP;
 
         public InputFile(string path, string filename, string extension, Labeling label, Purpose purpose)
         {
@@ -88,7 +88,7 @@ namespace ProteoformSuiteInternal
     }
 
     //for TD 
-    public enum TDProgram
+    public enum TDSoftware
     {
         ProSight,
         NRTDP //NU software
@@ -101,7 +101,7 @@ namespace ProteoformSuiteInternal
         Calibration,
         BottomUp,
         TopDown,
-        TopDownIDResults
+        TopDownMS1List
     }
 
     public enum Labeling

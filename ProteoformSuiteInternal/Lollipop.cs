@@ -41,7 +41,7 @@ namespace ProteoformSuiteInternal
         public static IEnumerable<InputFile> calibration_files() { return input_files.Where(f => f.purpose == Purpose.Calibration); }
         public static IEnumerable<InputFile> bottomup_files() { return input_files.Where(f => f.purpose == Purpose.BottomUp); }
         public static IEnumerable<InputFile> topdown_files() { return input_files.Where(f => f.purpose == Purpose.TopDown); }
-        public static IEnumerable<InputFile> topdownID_files() { return input_files.Where(f => f.purpose == Purpose.TopDownIDResults); }
+        public static IEnumerable<InputFile> topdownMS1list_files() { return input_files.Where(f => f.purpose == Purpose.TopDownMS1List); }
        
         public static void process_raw_components()
         {
@@ -71,6 +71,13 @@ namespace ProteoformSuiteInternal
                             find_neucode_pairs(raw_experimental_components.Where(c => c.input_file.UniqueId.ToString() == inputFile && c.scan_range == scan_range));
                     }                                  
                 });
+            }
+
+
+            foreach (InputFile file in Lollipop.topdown_files())
+            {
+                List<TopDownProteoform> td_file_proteoforms = Lollipop.ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_software);
+                Lollipop.proteoform_community.topdown_proteoforms.AddRange(td_file_proteoforms);
             }
         }
 
@@ -110,9 +117,9 @@ namespace ProteoformSuiteInternal
 
         private static List<string> MS1_scans(string filename)
         {
-            if (td_results)
+            if (td_results) 
             { //find MS1 list corresponding to identification file (will only read in components in MS1 scans)
-                List<InputFile> td_files = topdownID_files().Where(t => t.filename == filename).ToList(); //checked in GUI for 1 matching file
+                List<InputFile> td_files = topdownMS1list_files().Where(t => t.filename == filename).ToList(); //checked in GUI for 1 matching file
                 string[] td_file = File.ReadAllLines(td_files[0].path + "\\" + td_files[0].filename + td_files[0].extension);
                 return new List<string>(td_file);
             }
@@ -225,6 +232,8 @@ namespace ProteoformSuiteInternal
                 count += 1;
             }
                 Lollipop.proteoform_community.experimental_proteoforms = experimental_proteoforms.ToArray();
+
+            if (Lollipop.proteoform_community.topdown_proteoforms.Count > 0) match_topdown_proteoforms();
         } 
 
         //Could be improved. Used for manual mass shifting.
@@ -290,13 +299,6 @@ namespace ProteoformSuiteInternal
                 psm_list.AddRange(psm_from_file);
             }
 
-            //Read TD data into PSM list
-            foreach (InputFile file in Lollipop.topdown_files())
-            {
-                List<Psm> psm_from_file = ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_program);
-                psm_list.AddRange(psm_from_file);
-            }
-
             //PARALLEL PROBLEM
             process_entries();
             process_decoys();
@@ -332,7 +334,7 @@ namespace ProteoformSuiteInternal
                     {
                         Psm new_psm = new Psm(parts[11].ToString(), parts[0].ToString(), Convert.ToInt32(parts[14]), Convert.ToInt32(parts[15]),
                             Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]), Convert.ToInt32(parts[1]),
-                            parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]), PsmType.BottomUp);
+                            parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]));
                         psm_list.Add(new_psm);
                     }
                     i++;
@@ -343,9 +345,9 @@ namespace ProteoformSuiteInternal
         }
 
         //Reading in Top-down excel
-        public static List<Psm> ReadTDFile(string filename, TDProgram td_program)
+        public static List<TopDownProteoform> ReadTDFile(string filename, TDSoftware td_software)
         {
-            List<Psm> psm_list = new List<Psm>();
+            List<TopDownProteoform> td_proteoforms = new List<TopDownProteoform>();
             using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(filename, false))
             {
                 // Get Data in Sheet1 of Excel file
@@ -353,6 +355,7 @@ namespace ProteoformSuiteInternal
                 WorksheetPart worksheet_1 = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
                 SheetData sheet_1 = worksheet_1.Worksheet.Elements<SheetData>().First();
                 List<Row> rowcollection = worksheet_1.Worksheet.Descendants<Row>().ToList();
+
                 for (int i = 1; i < rowcollection.Count; i++)   //skip first row (headers)
                 {
                     List<string> cellStrings = new List<string>();
@@ -361,21 +364,88 @@ namespace ProteoformSuiteInternal
                         cellStrings.Add(ComponentReader.GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
                     }
 
-                    if (td_program == TDProgram.NRTDP)
+                    if (td_software == TDSoftware.NRTDP)
                     {
-                        Psm new_psm = new Psm(cellStrings[8] + cellStrings[4], filename, Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]),
-                            0, 0, Convert.ToDouble(cellStrings[14]), 0, cellStrings[2], Convert.ToDouble(cellStrings[12]), 0, 0, PsmType.TopDown);
-                        psm_list.Add(new_psm);
+                        //get ptms on proteoform
+                        List<Ptm> ptm_list = new List<Ptm>();
+                        string modification_description = cellStrings[8];
+                        modification_description = modification_description.Replace(", ", ";");
+                        string[] modifications = modification_description.Split(';');
+                        for (int j = 0; j < modifications.Length; j++)
+                        {
+                            string[] new_modification = modifications[j].Split('@');
+                            if (new_modification.Length > 1)
+                            {
+                                int position = 0;
+                                if (new_modification[1] == "N") position = 1;
+                                else if (new_modification[1] == "C") position = cellStrings[3].Length;
+                                else position = Convert.ToInt16(new_modification[1]);
+                                Ptm ptm = new Ptm(position, new Modification(new_modification[0]));
+                                ptm_list.Add(ptm);
+                            }
+                        }
+                        //convert into new td proteoform
+                        TopDownProteoform td_proteoform = new TopDownProteoform(cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
+                            Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]), ptm_list, Convert.ToDouble(cellStrings[12]), Convert.ToDouble(cellStrings[12]));
+                        td_proteoforms.Add(td_proteoform);
                     }
 
-                    else if (td_program == TDProgram.ProSight)
+                    else if (td_software == TDSoftware.ProSight)
                     {
-                        Psm new_psm = new Psm(cellStrings[6] + cellStrings[8], cellStrings[14], 0, 0, 0, 0, Convert.ToDouble(cellStrings[20]), 0, cellStrings[4], Convert.ToDouble(cellStrings[9]), 0, Convert.ToDouble(cellStrings[11]), PsmType.TopDown);
-                        psm_list.Add(new_psm);
+                        string[] description = cellStrings[13].Split(';');
+                        string[] accession = description[0].Split(',');
+
+                        string file_sequence = cellStrings[6];
+                        file_sequence = file_sequence.Replace(")", "(");
+                        string[] split_sequence = file_sequence.Split('(');
+                        List<int> positions = new List<int>();
+                        string sequence = "";
+                        for (int j = 0; j < split_sequence.Length; j++)
+                        {
+                            try
+                            {
+                                //if number, add position of PTM to list
+                                int mod_id = Convert.ToInt16(split_sequence[j]);
+                                positions.Add(sequence.Length);
+                            }
+                            catch { sequence += split_sequence[j]; } 
+                        }
+
+                        List<Ptm> ptm_list = new List<Ptm>();
+                        string modification_description = cellStrings[8];
+                        modification_description = modification_description.Replace(", ", "; ");
+                        string[] modifications = modification_description.Split(';');
+                        if (modifications.Length > 1)
+                        {
+                            for (int j = 0; j < modifications.Length; j++)
+                            {
+                                string[] new_modification = modifications[j].Split('(');
+                                int position = positions[j];
+                                Ptm ptm = new Ptm(position, new Modification(new_modification[0]));
+                                ptm_list.Add(ptm);
+                            }
+                        }
+                        TopDownProteoform td_proteoform = new TopDownProteoform(cellStrings[4], accession[0], description[1], sequence,
+                           0, 0, ptm_list, Convert.ToDouble(cellStrings[10]), Convert.ToDouble(cellStrings[9]));
+                        td_proteoforms.Add(td_proteoform); 
                     }
                 }
             }
-            return psm_list;
+            return td_proteoforms;
+        }
+
+        private static void match_topdown_proteoforms()
+        {
+            //for now - assume E with closest mass = the TD's corresponding experimental
+            foreach (TopDownProteoform td_proteoform in Lollipop.proteoform_community.topdown_proteoforms)
+            {
+                ExperimentalProteoform e = proteoform_community.experimental_proteoforms.OrderBy(p => Math.Abs(p.agg_mass - td_proteoform.monoisotopic_mass)).ToList().First();
+                ProteoformRelation td_relation = new ProteoformRelation(e, td_proteoform, ProteoformComparison.etd, (e.agg_mass - td_proteoform.monoisotopic_mass));
+                td_relation.accepted = true;
+                e.relationships.Add(td_relation);
+                td_proteoform.relationships.Add(td_relation);
+                td_relations.Add(td_relation);
+            }
         }
 
         private static void match_psms_and_theoreticals()
@@ -534,14 +604,20 @@ namespace ProteoformSuiteInternal
         public static List<ProteoformRelation> ef_relations = new List<ProteoformRelation>();
         public static List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
         public static List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
+        public static List<ProteoformRelation> td_relations = new List<ProteoformRelation>(); //td data
 
+        //for reading in neucode data for labelfree analysis
         public static List<ProteoformRelation> neucode_et_pairs = new List<ProteoformRelation>();
         public static List<ProteoformRelation> neucode_ee_pairs = new List<ProteoformRelation>();
+        public static bool limit_NC_ee_pairs = false;
+        public static bool limit_NC_et_pairs = false;
+        public static double NC_et_mass_tol = 0.03;
+        public static double NC_ee_mass_tol = 0.03;
 
         public static void make_et_relationships()
         {
             if (!limit_TD_BU_theoreticals) Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
-            else Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.Where(t => t.psm_count_BU > 0 || t.psm_count_TD > 0 ).ToArray(), ProteoformComparison.et);
+            else Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.Where(t => t.psm_count_BU > 0 || t.TD_proteofomrs.Count > 0 ).ToArray(), ProteoformComparison.et);
             Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
             Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }

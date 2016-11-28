@@ -141,11 +141,11 @@
     <Compile Include="ProteoformSweet.Designer.cs">
       <DependentUpon>ProteoformSweet.cs</DependentUpon>
     </Compile>
-    <Compile Include="LoadDeconvolutionResults.cs">
+    <Compile Include="LoadResults.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LoadDeconvolutionResults.Designer.cs">
-      <DependentUpon>LoadDeconvolutionResults.cs</DependentUpon>
+    <Compile Include="LoadResults.Designer.cs">
+      <DependentUpon>LoadResults.cs</DependentUpon>
     </Compile>
     <Compile Include="NeuCodePairs.cs">
       <SubType>Form</SubType>
@@ -180,6 +180,12 @@
     <Compile Include="TheoreticalDatabase.Designer.cs">
       <DependentUpon>TheoreticalDatabase.cs</DependentUpon>
     </Compile>
+    <Compile Include="TopDown.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TopDown.Designer.cs">
+      <DependentUpon>TopDown.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AggregatedProteoforms.resx">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </EmbeddedResource>
@@ -195,8 +201,8 @@
     <EmbeddedResource Include="ProteoformSweet.resx">
       <DependentUpon>ProteoformSweet.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LoadDeconvolutionResults.resx">
-      <DependentUpon>LoadDeconvolutionResults.cs</DependentUpon>
+    <EmbeddedResource Include="LoadResults.resx">
+      <DependentUpon>LoadResults.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NeuCodePairs.resx">
       <DependentUpon>NeuCodePairs.cs</DependentUpon>
@@ -222,6 +228,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TheoreticalDatabase.resx">
       <DependentUpon>TheoreticalDatabase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TopDown.resx">
+      <DependentUpon>TopDown.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config">
       <SubType>Designer</SubType>
