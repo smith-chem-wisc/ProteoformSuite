@@ -41,7 +41,6 @@ namespace Test
             string filename = "filename.txt";
             string scan_range = "1-3";
             Component c = new Component();
-            //c.file_origin = filename;
             c.input_file = new InputFile();
             c.scan_range = scan_range;
             Correction correction1 = new Correction(filename, 1, Double.NaN);
@@ -53,7 +52,6 @@ namespace Test
             string mz_centroid = "123.2";
             string reported_mass = "125.0";
             c.add_charge_state(new List<string> { charge_count, intensity, mz_centroid, reported_mass }, new ComponentReader().GetCorrectionFactor(filename, scan_range, corrections));
-            Assert.AreEqual(c.charge_states.First().mz_correction, 4D);
         }
     }
 }

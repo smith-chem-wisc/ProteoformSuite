@@ -178,8 +178,8 @@ namespace ProteoformSuiteInternal
                             new Tuple<string, string>(red_hexadecimal, unmodified_theoretical_label),
                             new Tuple<string, string>(green_hexadecimal, modified_theoretical_label),
                             new Tuple<string, string>(blue_hexadecimal, experimental_label),
-                            //new Tuple <string, string> (orange_hexadecimal, unmodified_td_label),
-                            //new Tuple<string, string> (purple_hexadecimal, modified_td_label)
+                            new Tuple <string, string> (orange_hexadecimal, unmodified_td_label),
+                            new Tuple<string, string> (purple_hexadecimal, modified_td_label)
                         });
                     if (style.Key == "NODE_LABEL_COLOR") write_passthrough(writer, "string", "shared name");
                     if (style.Key == "NODE_LABEL") write_passthrough(writer, "string", "name");

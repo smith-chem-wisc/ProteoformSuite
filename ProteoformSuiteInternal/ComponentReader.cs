@@ -48,8 +48,8 @@ namespace ProteoformSuiteInternal
                         
                         if (cellStrings.Count > 4) //component row
                         {
-                            if (i > 1) add_component(new_component);
-                            new_component = new Component(cellStrings, file);
+                            if (i > 1) add_component(new_component); // here we're adding the previously read component
+                            new_component = new Component(cellStrings, file); // starting fresh here with a newly created componet.
                             charge_row_index = 0;
                             scan_range = cellStrings[8];
                         }
@@ -78,14 +78,42 @@ namespace ProteoformSuiteInternal
 
             foreach (string scan in scans)
             {
-                IEnumerable<Component> scanComps = raw_components.Where(c => c.scan_range == scan).OrderBy(w => w.weighted_monoisotopic_mass);
-                foreach (Component sc in scanComps) // this loop compresses missed monoisotopics into a single component
+                IEnumerable<Component> scanComps = raw_components.Where(c => c.scan_range == scan).OrderByDescending(i => i.intensity_sum);
+                foreach (Component sc in scanComps) // this loop compresses missed monoisotopics into a single component. components are sorted by mass. in one scan, there should only be one missed mono per 
                 {
-                    IEnumerable<Component> mmc = scanComps.Where(cp => cp.weighted_monoisotopic_mass >= sc.weighted_monoisotopic_mass + (Lollipop.MONOISOTOPIC_UNIT_MASS - 0.0003) && cp.weighted_monoisotopic_mass <= sc.weighted_monoisotopic_mass + (Lollipop.MONOISOTOPIC_UNIT_MASS + 0.0003)); //missed monoisotopic that is one dalton larger
-                    removeThese.AddRange(mmc);
-                    IEnumerable<Component> repeat = scanComps.Where(cp => cp.intensity_sum == sc.intensity_sum && cp.monoisotopic_mass == sc.monoisotopic_mass).ToList();                
+                    if (removeThese.Contains(sc))
+                        continue;
+                    else
+                    {
+                        List<double> possibleMissedMonoisotopicsList = new List<double>
+                    {
+                        (sc.weighted_monoisotopic_mass - (3d * Lollipop.MONOISOTOPIC_UNIT_MASS)),
+                        (sc.weighted_monoisotopic_mass - (2d * Lollipop.MONOISOTOPIC_UNIT_MASS)),
+                        (sc.weighted_monoisotopic_mass - (1d * Lollipop.MONOISOTOPIC_UNIT_MASS)),
+                        (sc.weighted_monoisotopic_mass + (0d * Lollipop.MONOISOTOPIC_UNIT_MASS)),
+                        (sc.weighted_monoisotopic_mass + (1d * Lollipop.MONOISOTOPIC_UNIT_MASS)),
+                        (sc.weighted_monoisotopic_mass + (2d * Lollipop.MONOISOTOPIC_UNIT_MASS)),
+                        (sc.weighted_monoisotopic_mass + (3d * Lollipop.MONOISOTOPIC_UNIT_MASS)),
+                    };
+
+                        foreach (double missedMonoMass in possibleMissedMonoisotopicsList)
+                        {
+                            double massTolerance = missedMonoMass / 1000000d * (double)Lollipop.mass_tolerance;
+                            IEnumerable<Component> missedMonoisotopics = scanComps.Except(removeThese).Where(
+                                cp => cp.weighted_monoisotopic_mass >= (missedMonoMass - massTolerance)
+                                && cp.weighted_monoisotopic_mass <= (missedMonoMass + massTolerance)
+                                ); // this is a list of harmonics to hc
+
+                            foreach (Component c in missedMonoisotopics.Where(m=>m.id != sc.id))
+                            {
+                                sc.mergeTheseComponents(c);
+                                removeThese.Add(c);
+                            }
+                        }
+                    }                                    
                 }
-                if(Lollipop.neucode_labeled) //before we compress harmonics, we have to determine if they are neucode labeled and lysine count 14. these have special considerations
+                
+                if (Lollipop.neucode_labeled && raw_components.FirstOrDefault().input_file.purpose == Purpose.Identification) //before we compress harmonics, we have to determine if they are neucode labeled and lysine count 14. these have special considerations
                     ncPairsInScan = find_neucode_pairs(scanComps.Except(removeThese)); // these are not the final neucode pairs, just a temp list
                 List<string> lysFourteenComponents = new List<string>();
                 foreach (NeuCodePair ncp in ncPairsInScan)
@@ -97,30 +125,48 @@ namespace ProteoformSuiteInternal
                     }
                 }
 
-                foreach (Component hc in scanComps.Except(removeThese))
+                foreach (Component hc in scanComps.OrderByDescending(w=>w.weighted_monoisotopic_mass))
                 {
-                    List<double> possibleHarmonicList = new List<double>
-                    { 
-                        (hc.weighted_monoisotopic_mass - 2 * Lollipop.MONOISOTOPIC_UNIT_MASS)/2d,
-                        (hc.weighted_monoisotopic_mass - 1 * Lollipop.MONOISOTOPIC_UNIT_MASS)/2d,
-                        (hc.weighted_monoisotopic_mass - 0 * Lollipop.MONOISOTOPIC_UNIT_MASS)/2d,
-                        (hc.weighted_monoisotopic_mass + 1 * Lollipop.MONOISOTOPIC_UNIT_MASS)/2d,
-                        (hc.weighted_monoisotopic_mass + 2 * Lollipop.MONOISOTOPIC_UNIT_MASS)/2d,
-                        (hc.weighted_monoisotopic_mass - 2 * Lollipop.MONOISOTOPIC_UNIT_MASS)/3d,
-                        (hc.weighted_monoisotopic_mass - 1 * Lollipop.MONOISOTOPIC_UNIT_MASS)/3d,
-                        (hc.weighted_monoisotopic_mass - 0 * Lollipop.MONOISOTOPIC_UNIT_MASS)/3d,
-                        (hc.weighted_monoisotopic_mass + 1 * Lollipop.MONOISOTOPIC_UNIT_MASS)/3d,
-                        (hc.weighted_monoisotopic_mass + 2 * Lollipop.MONOISOTOPIC_UNIT_MASS)/3d,
+                    if (removeThese.Contains(hc))
+                        continue;
+
+                    List<double> possibleHarmonicList = new List<double> // 2 missed on the top means up to 4 missed monos on the 2nd harmonic and 6 missed monos on the 3rd harmonic
+                    {
+                        (hc.weighted_monoisotopic_mass - (4d * Lollipop.MONOISOTOPIC_UNIT_MASS))/2d,
+                        (hc.weighted_monoisotopic_mass - (3d * Lollipop.MONOISOTOPIC_UNIT_MASS))/2d,
+                        (hc.weighted_monoisotopic_mass - (2d * Lollipop.MONOISOTOPIC_UNIT_MASS))/2d,
+                        (hc.weighted_monoisotopic_mass - (1d * Lollipop.MONOISOTOPIC_UNIT_MASS))/2d,
+                        (hc.weighted_monoisotopic_mass - (0d * Lollipop.MONOISOTOPIC_UNIT_MASS))/2d,
+                        (hc.weighted_monoisotopic_mass + (1d * Lollipop.MONOISOTOPIC_UNIT_MASS))/2d,
+                        (hc.weighted_monoisotopic_mass + (2d * Lollipop.MONOISOTOPIC_UNIT_MASS))/2d,
+                        (hc.weighted_monoisotopic_mass + (3d * Lollipop.MONOISOTOPIC_UNIT_MASS))/2d,
+                        (hc.weighted_monoisotopic_mass + (4d * Lollipop.MONOISOTOPIC_UNIT_MASS))/2d,
+                        (hc.weighted_monoisotopic_mass - (6d * Lollipop.MONOISOTOPIC_UNIT_MASS))/3d,
+                        (hc.weighted_monoisotopic_mass - (5d * Lollipop.MONOISOTOPIC_UNIT_MASS))/3d,
+                        (hc.weighted_monoisotopic_mass - (4d * Lollipop.MONOISOTOPIC_UNIT_MASS))/3d,
+                        (hc.weighted_monoisotopic_mass - (3d * Lollipop.MONOISOTOPIC_UNIT_MASS))/3d,
+                        (hc.weighted_monoisotopic_mass - (2d * Lollipop.MONOISOTOPIC_UNIT_MASS))/3d,
+                        (hc.weighted_monoisotopic_mass - (1d * Lollipop.MONOISOTOPIC_UNIT_MASS))/3d,
+                        (hc.weighted_monoisotopic_mass - (0d * Lollipop.MONOISOTOPIC_UNIT_MASS))/3d,
+                        (hc.weighted_monoisotopic_mass + (1d * Lollipop.MONOISOTOPIC_UNIT_MASS))/3d,
+                        (hc.weighted_monoisotopic_mass + (2d * Lollipop.MONOISOTOPIC_UNIT_MASS))/3d,
+                        (hc.weighted_monoisotopic_mass + (3d * Lollipop.MONOISOTOPIC_UNIT_MASS))/3d,
+                        (hc.weighted_monoisotopic_mass + (4d * Lollipop.MONOISOTOPIC_UNIT_MASS))/3d,
+                        (hc.weighted_monoisotopic_mass + (5d * Lollipop.MONOISOTOPIC_UNIT_MASS))/3d,
+                        (hc.weighted_monoisotopic_mass + (6d * Lollipop.MONOISOTOPIC_UNIT_MASS))/3d,
                     };
 
                     foreach (double harmonicMass in possibleHarmonicList)
                     {
-                        IEnumerable<Component> harmonics = scanComps.Where(
-                            cp => cp.weighted_monoisotopic_mass >= (harmonicMass - harmonicMass / 1000000d * 5d)
-                            && cp.weighted_monoisotopic_mass <= (harmonicMass + harmonicMass / 1000000d * 5d)
+                        double massTolerance = harmonicMass / 1000000d * (double)Lollipop.mass_tolerance;
+                        IEnumerable<Component> harmonics = scanComps.Except(removeThese).Where(
+                            cp => cp.weighted_monoisotopic_mass >= (harmonicMass - massTolerance)
+                            && cp.weighted_monoisotopic_mass <= (harmonicMass + massTolerance)
                             ); // this is a list of harmonics to hc
-                        foreach (Component h in harmonics) // now that we have a list of harmonics to hc, we have to figure out what to do with them
+                        foreach (Component h in harmonics.Where(harmonicComponent=> harmonicComponent.id !=hc.id)) // now that we have a list of harmonics to hc, we have to figure out what to do with them
                         {
+                            if (removeThese.Contains(h) || removeThese.Contains(hc))
+                                continue;
                             int parCsCount = hc.charge_states.Count();
                             int cldCsCount = h.charge_states.Count();
                             double parMass = hc.weighted_monoisotopic_mass;
@@ -129,10 +175,14 @@ namespace ProteoformSuiteInternal
 
                             if (lysFourteenComponents.Contains(h.id))
                             {
+                                //string line = "BEFORE: \t" + hc.scan_range + "\t" + hc.id + "\t" + h.id + "\t" + hc.weighted_monoisotopic_mass + "\t" + h.weighted_monoisotopic_mass + "\t" + hc.num_charge_states + "\t" + h.num_charge_states + "\t" + hc.intensity_sum + "\t" + h.intensity_sum + "\t" + "lysine count 14" + "\t" + hc.input_file.filename;
+                                //File.AppendAllText(@"C:\Users\Michael\Downloads\new_h_m.txt", line + Environment.NewLine);
+
                                 h.mergeTheseComponents(hc);
                                 removeThese.Add(hc);
-                                //string line = hc.id + "\t" + h.id + "\t" + hc.weighted_monoisotopic_mass + "\t" + h.weighted_monoisotopic_mass + hc.num_charge_states + "\t" + h.num_charge_states + "\t" + "lysine count 14" + hc.input_file.filename;
-                                //File.AppendAllText(@"C:\Users\Michael\Downloads\h_m.txt", line + Environment.NewLine);
+
+                                //line = "***AFTER: \t" + h.scan_range + "\t" + h.id + "\t" + h.weighted_monoisotopic_mass + "\t" + h.num_charge_states + "\t" + h.intensity_sum + "\t" + "lysine count 14" + "\t" + h.input_file.filename;
+                                //File.AppendAllText(@"C:\Users\Michael\Downloads\new_h_m.txt", line + Environment.NewLine);
                             }
                             else
                             {
@@ -140,38 +190,57 @@ namespace ProteoformSuiteInternal
                                     continue;
                                 if (hc.charge_states.Count() == h.charge_states.Count())
                                 {
+                                    //string line = "BEFORE: \t" + h.scan_range + "\t" + h.id + "\t" + hc.id + "\t" + h.weighted_monoisotopic_mass + "\t" + hc.weighted_monoisotopic_mass + "\t" + h.num_charge_states + "\t" + hc.num_charge_states + "\t" + h.intensity_sum + "\t" + hc.intensity_sum + "\t" + hc.input_file.filename;
+
                                     //throw out the lower mass component
                                     if (hc.weighted_monoisotopic_mass > h.weighted_monoisotopic_mass)
                                     {
+                                        //line = line + "\t" + "equal # CS throw out lower mass";
+                                        //File.AppendAllText(@"C:\Users\Michael\Downloads\new_h_m.txt", line + Environment.NewLine);
+
                                         hc.mergeTheseComponents(h);
                                         removeThese.Add(h);
-                                        //string line = hc.id + "\t" + h.id + "\t" + hc.weighted_monoisotopic_mass + "\t" + hc.num_charge_states + "\t" + h.num_charge_states + "\t" + h.weighted_monoisotopic_mass + "equal # CS throw out lower mass" + hc.input_file.filename;
-                                        //File.AppendAllText(@"C:\Users\Michael\Downloads\h_m.txt", line + Environment.NewLine);
+
+                                        //line = "***AFTER: \t" + hc.scan_range + "\t" + hc.id + "\t" + hc.weighted_monoisotopic_mass + "\t" + hc.num_charge_states + "\t" + hc.intensity_sum + "\t" + hc.input_file.filename;
+                                        //File.AppendAllText(@"C:\Users\Michael\Downloads\new_h_m.txt", line + Environment.NewLine);
                                     }
                                     else
                                     {
+                                        //line = line + "\t" + "equal # CS throw out lower mass";
+                                        //File.AppendAllText(@"C:\Users\Michael\Downloads\new_h_m.txt", line + Environment.NewLine);
+
                                         h.mergeTheseComponents(hc);
                                         removeThese.Add(hc);
-                                        //string line = hc.id + "\t" + h.id + "\t" + hc.weighted_monoisotopic_mass + "\t" + hc.num_charge_states + "\t" + h.num_charge_states + "\t" + h.weighted_monoisotopic_mass + "equal # CS throw out lower mass" + hc.input_file.filename;
-                                        //File.AppendAllText(@"C:\Users\Michael\Downloads\h_m.txt", line + Environment.NewLine);
+
+                                        //line = "***AFTER: \t" + h.scan_range + "\t" + h.id + "\t" + h.weighted_monoisotopic_mass + "\t" + h.num_charge_states + "\t" + h.intensity_sum + "\t" + h.input_file.filename;
+                                        //File.AppendAllText(@"C:\Users\Michael\Downloads\new_h_m.txt", line + Environment.NewLine);
                                     }
                                 }
                                 else
                                 {
+                                    //string line = "BEFORE: \t" + h.scan_range + "\t" + h.id + "\t" + hc.id + "\t" + h.weighted_monoisotopic_mass + "\t" + hc.weighted_monoisotopic_mass + "\t" + h.num_charge_states + "\t" + hc.num_charge_states + "\t" + h.intensity_sum + "\t" + hc.intensity_sum + "\t" + hc.input_file.filename;
                                     //throw out the component with fewer charge states
                                     if (hc.charge_states.Count() > h.charge_states.Count())
                                     {
+                                        //line = line + "\t" + "unequal # CS throw out fewer CS";
+                                        //File.AppendAllText(@"C:\Users\Michael\Downloads\new_h_m.txt", line + Environment.NewLine);
+
                                         hc.mergeTheseComponents(h);
                                         removeThese.Add(h);
-                                        //string line = hc.id + "\t" + h.id + "\t" + hc.weighted_monoisotopic_mass + "\t" + hc.num_charge_states + "\t" + h.num_charge_states + "\t" + h.weighted_monoisotopic_mass + "unequal # CS throw out fewer CS" + hc.input_file.filename;
-                                        //File.AppendAllText(@"C:\Users\Michael\Downloads\h_m.txt", line + Environment.NewLine);
+
+                                        //line = "***AFTER: \t" + hc.scan_range + "\t" + hc.id + "\t" + hc.weighted_monoisotopic_mass + "\t" + hc.num_charge_states + "\t" + hc.intensity_sum + "\t" + hc.input_file.filename;
+                                        //File.AppendAllText(@"C:\Users\Michael\Downloads\new_h_m.txt", line + Environment.NewLine);
                                     }
                                     else
                                     {
+                                        //line = line + "\t" + "unequal # CS throw out fewer CS";
+                                        //File.AppendAllText(@"C:\Users\Michael\Downloads\new_h_m.txt", line + Environment.NewLine);
+
                                         h.mergeTheseComponents(hc);
                                         removeThese.Add(hc);
-                                        //string line = hc.id + "\t" + h.id + "\t" + hc.weighted_monoisotopic_mass + "\t" + hc.num_charge_states + "\t" + h.num_charge_states + "\t" + h.weighted_monoisotopic_mass + "unequal # CS throw out fewer CS" + hc.input_file.filename;
-                                        //File.AppendAllText(@"C:\Users\Michael\Downloads\h_m.txt", line + Environment.NewLine);
+
+                                        //line = "***AFTER: \t" + h.scan_range + "\t" + h.id + "\t" + h.weighted_monoisotopic_mass + "\t" + h.num_charge_states + "\t" + h.intensity_sum + "\t" + h.input_file.filename;
+                                        //File.AppendAllText(@"C:\Users\Michael\Downloads\new_h_m.txt", line + Environment.NewLine);
                                     }
                                 }
                             }                   
@@ -179,7 +248,6 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-            //neucodePairs_in_file.Add(find_neucode_pairs(raw_components.Except(removeThese)));
             return raw_components.Except(removeThese).ToList();
         }
 
@@ -209,7 +277,7 @@ namespace ProteoformSuiteInternal
                                 pair = new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower); //lower mass is neucode light
                             else
                                 pair = new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
-                            if ((pair.corrected_mass <= (pair.neuCodeHeavy.corrected_mass + Lollipop.MONOISOTOPIC_UNIT_MASS)) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
+                            if ((pair.weighted_monoisotopic_mass <= (pair.neuCodeHeavy.weighted_monoisotopic_mass + Lollipop.MONOISOTOPIC_UNIT_MASS)) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
                                 && !neucodePairs_in_file.Any(p => p.id_heavy == pair.id_light && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity is probably correct and that that component should not get reuused as a light.
                                 pairsInScanRange.Add(pair);
                         }
@@ -261,16 +329,16 @@ namespace ProteoformSuiteInternal
             string[] scans = c.scan_range.Split('-');
             bool same_scan = scans[0] == scans[1];
             bool MS1_scan = MS1_scans.Contains(scans[0]);
-            bool not_repeat = raw_components_in_file.Where(r => r.scan_range == c.scan_range && r.monoisotopic_mass == c.monoisotopic_mass).ToList().Count == 0;
+            bool not_repeat = raw_components_in_file.Where(r => r.scan_range == c.scan_range && r.reported_monoisotopic_mass == c.reported_monoisotopic_mass).ToList().Count == 0;
             if (same_scan && MS1_scan && not_repeat) return true;
             else return false;
         }
 
         private void add_component(Component c)
         {
-            c.calculate_sum_intensity();
-            c.calculate_weighted_monoisotopic_mass();
-            if (!Lollipop.td_results || acceptable_td_component(c)) raw_components_in_file.Add(c);
+            //c.calculate_sum_intensity();
+            //c.calculate_weighted_monoisotopic_mass();
+             if (!Lollipop.td_results || acceptable_td_component(c)) this.raw_components_in_file.Add(c);
         }
     }
 }
