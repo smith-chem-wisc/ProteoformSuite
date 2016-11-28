@@ -65,6 +65,8 @@ namespace ProteoformSuiteInternal
         public static string observation_count_header = "observations";
         public static string experimental_label = "exp";
         public static string unmodified_theoretical_label = "theo";
+        public static string unmodified_td_label = "td";
+        public static string modified_td_label = "td_ptm";
         public static string modified_theoretical_label = "ptm";
         public string get_cytoscape_edges_tsv(List<ProteoformFamily> families)
         {
@@ -72,9 +74,11 @@ namespace ProteoformSuiteInternal
             string edge_rows = "";
             foreach (ProteoformRelation r in families.SelectMany(f => f.relations))
             {
+                double mass_label = r.peak_center_deltaM;
+                if (r.relation_type == ProteoformComparison.etd) mass_label = r.delta_mass;
                 edge_rows += String.Join("\t", new List<string>
                 {
-                    get_proteoform_shared_name(r.connected_proteoforms[0]), r.lysine_count.ToString(), get_proteoform_shared_name(r.connected_proteoforms[1]), Math.Round(r.peak_center_deltaM, 2).ToString()
+                    get_proteoform_shared_name(r.connected_proteoforms[0]), r.lysine_count.ToString(), get_proteoform_shared_name(r.connected_proteoforms[1]), Math.Round(mass_label, 2).ToString()
                 });
                 edge_rows += Environment.NewLine;
             }
@@ -84,8 +88,8 @@ namespace ProteoformSuiteInternal
         private string get_proteoform_shared_name(Proteoform p)
         {
             string result;
-            if (p.GetType() == typeof(ExperimentalProteoform)) result = p.accession + "_" + Math.Round(((ExperimentalProteoform)p).agg_mass, Lollipop.deltaM_edge_display_rounding);
-            else if (p.GetType() == typeof(TheoreticalProteoform)) result = ((TheoreticalProteoform)p).accession + "_" + ((TheoreticalProteoform)p).ptm_list_string();
+            if (p is ExperimentalProteoform) result = p.accession + "_" + Math.Round(((ExperimentalProteoform)p).agg_mass, Lollipop.deltaM_edge_display_rounding);
+            else if (p is TheoreticalProteoform) result = ((TheoreticalProteoform)p).accession + "_" + ((TheoreticalProteoform)p).ptm_list_string();
             else result = p.accession;
             return result;
         }
@@ -107,7 +111,13 @@ namespace ProteoformSuiteInternal
                 string observations = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p), node_type, observations }) + Environment.NewLine;
             }
-
+            foreach (TopDownProteoform p in families.SelectMany(f => f.topdown_proteoforms))
+            {
+                string node_type = unmodified_td_label;
+                if (p.ptm_list.Count > 0) node_type = modified_td_label;
+                string observations = "20";
+                node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p), node_type, observations }) + Environment.NewLine;
+            }
             return tsv_header + Environment.NewLine + node_rows;
         }
 
@@ -115,6 +125,8 @@ namespace ProteoformSuiteInternal
         public string blue_hexadecimal = "#3333FF";
         public string green_hexadecimal = "#00CC00";
         public string red_hexadecimal = "#FF0000";
+        public string orange_hexadecimal = "#FF6600";
+        public string purple_hexadecimal = "#6B238E";
         public void write_styles()
         {
             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
@@ -165,7 +177,9 @@ namespace ProteoformSuiteInternal
                         {
                             new Tuple<string, string>(red_hexadecimal, unmodified_theoretical_label),
                             new Tuple<string, string>(green_hexadecimal, modified_theoretical_label),
-                            new Tuple<string, string>(blue_hexadecimal, experimental_label)
+                            new Tuple<string, string>(blue_hexadecimal, experimental_label),
+                            //new Tuple <string, string> (orange_hexadecimal, unmodified_td_label),
+                            //new Tuple<string, string> (purple_hexadecimal, modified_td_label)
                         });
                     if (style.Key == "NODE_LABEL_COLOR") write_passthrough(writer, "string", "shared name");
                     if (style.Key == "NODE_LABEL") write_passthrough(writer, "string", "name");

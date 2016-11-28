@@ -35,6 +35,11 @@ namespace ProteoformSuiteInternal
         {
             get { return this.theoretical_proteoforms.Count; }
         }
+        public List<TopDownProteoform> topdown_proteoforms { get; set; }
+        public int topdown_count
+        {
+            get { return this.topdown_proteoforms.Count; }
+        }
         public int relation_count
         {
             get { return this.relations.Count; }
@@ -53,8 +58,9 @@ namespace ProteoformSuiteInternal
                 else this.lysine_count = -1;
 
                 this.experimental_proteoforms = value.Where(p => p is ExperimentalProteoform).Select(p => (ExperimentalProteoform)p).ToList();
-                this.theoretical_proteoforms = value.Where(p => p is TheoreticalProteoform).Select(p => (TheoreticalProteoform)p).ToList();
-                this.relations = new HashSet<ProteoformRelation>(value.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted)), new RelationComparer());
+                this.theoretical_proteoforms = value.Where(p => p is TheoreticalProteoform && !(p is TopDownProteoform)).Select(p => (TheoreticalProteoform)p).ToList();
+                this.topdown_proteoforms = value.Where(p => p is TopDownProteoform).Select(p => (TopDownProteoform)p).ToList();
+                this.relations = new HashSet<ProteoformRelation>(value.SelectMany(p => p.relationships.Where(r => r.accepted)), new RelationComparer());
             }
         }
 

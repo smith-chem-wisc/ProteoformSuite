@@ -29,14 +29,15 @@ namespace ProteoformSuiteInternal
                 this.is_target = false;
                 this.is_decoy = true;
             }
-        }       public Proteoform(string accession)
+        }
+        public Proteoform(string accession)
         {
             this.accession = accession;
         }
 
         public List<Proteoform> get_connected_proteoforms()
         {
-            return relationships.Where(r => r.peak.peak_accepted).SelectMany(r => r.connected_proteoforms).ToList();
+            return relationships.Where(r => r.accepted).SelectMany(r => r.connected_proteoforms).ToList();
         }
     }
 
@@ -65,7 +66,7 @@ namespace ProteoformSuiteInternal
             this.root = root;
             this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
             this.calculate_properties();
-            if(quantitative_observations.Count > 0)
+            if (quantitative_observations.Count > 0)
             {
                 this.lt_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, true)));
                 if (Lollipop.neucode_labeled)
@@ -138,9 +139,9 @@ namespace ProteoformSuiteInternal
         public bool includes(Component candidate, ExperimentalProteoform root, bool light)
         {
             double corrected_mass = root.agg_mass;
-            if (!light)       
+            if (!light)
                 corrected_mass = corrected_mass + root.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
-            
+
             bool does_include = tolerable_rt(candidate, root.agg_rt) && tolerable_mass(candidate, corrected_mass);
             if (candidate is NeuCodePair) does_include = does_include && tolerable_lysCt((NeuCodePair)candidate, root.lysine_count);
             return does_include;
@@ -236,11 +237,13 @@ namespace ProteoformSuiteInternal
 
             if (wRIV.intensity > 0)
             {
-                quantitativeValues.ForEach(q => {
+                quantitativeValues.ForEach(q =>
+                {
                     wRIV.ratio = wRIV.ratio + q.ratio * q.intensity / wRIV.intensity;
                     q.fraction = (double)q.intensity / wRIV.intensity;
                 });
-                quantitativeValues.ForEach(q => {
+                quantitativeValues.ForEach(q =>
+                {
                     squaredVariance = squaredVariance + q.fraction * Math.Pow((q.ratio - wRIV.ratio), 2);
                 });
                 wRIV.pValue = pValueFromPermutation(quantitativeValues, wRIV.intensity, wRIV.ratio);
@@ -297,26 +300,26 @@ namespace ProteoformSuiteInternal
         public PtmSet ptm_set { get; set; } = new PtmSet(new List<Ptm>());
         public List<Ptm> ptm_list { get { return ptm_set.ptm_combination.ToList(); } }
         public double ptm_mass { get { return ptm_set.mass; } }
-        public string ptm_descriptions_readin { get; set; }
+        public string ptm_descriptions_readin { get; set; } //for reading in neucode data for labelfree 
         public string ptm_descriptions
         {
             get { return ptm_list_string(); }
         }
         public string accession_reduced
         {
-            get {
-                string[] merf = this.accession.Split('_');
-                return merf[0];
+            get
+            {
+                string[] accession_string = this.accession.Split('_');
+                return accession_string[0];
             }
         }
         public List<Psm> psm_list { get; set; } = new List<Psm>();
         private int _psm_count_BU;
-        private int _psm_count_TD;
-        public int psm_count_BU { set { _psm_count_BU = value; } get { if (!Lollipop.opened_results_originally) return psm_list.Where(p => p.psm_type == PsmType.BottomUp).ToList().Count; else return _psm_count_BU; } } 
-        public int psm_count_TD { set { _psm_count_TD = value; } get { if (!Lollipop.opened_results_originally) return psm_list.Where(p => p.psm_type == PsmType.TopDown).ToList().Count; else return _psm_count_TD; } } 
+        public int psm_count_BU { set { _psm_count_BU = value; } get { if (!Lollipop.opened_results_originally) return psm_list.Count;  else return _psm_count_BU; } }
         public string of_interest { get; set; } = "";
+        public List<TopDownProteoform> TD_proteofomrs { get; set; } = new List<TopDownProteoform>();
 
-        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target) : 
+        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target) :
             base(accession, modified_mass, lysine_count, is_target)
         {
             this.accession = accession;
@@ -330,7 +333,7 @@ namespace ProteoformSuiteInternal
         }
 
         //for reading in neucode pairs
-        public TheoreticalProteoform(string accession, double modified_mass, int lysine_count, string ptm_descriptions):base (accession)
+        public TheoreticalProteoform(string accession, double modified_mass, int lysine_count, string ptm_descriptions) : base(accession)
         {
             this.accession = accession;
             this.modified_mass = modified_mass;
@@ -340,12 +343,13 @@ namespace ProteoformSuiteInternal
 
 
         //for Tests
-        public TheoreticalProteoform(string accession): base(accession)
+        public TheoreticalProteoform(string accession) : base(accession)
         {
             this.accession = accession;
         }
+
         //for Tests
-        public TheoreticalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base (accession,  modified_mass,  lysine_count,  is_target)
+        public TheoreticalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession, modified_mass, lysine_count, is_target)
         {
             this.accession = accession;
             this.modified_mass = modified_mass;
@@ -371,7 +375,13 @@ namespace ProteoformSuiteInternal
 
         public string ptm_list_string()
         {
-            if (ptm_list.Count == 0)
+            if (this is TopDownProteoform) //know position of ptm, should include this info
+            {
+                string _modifications_string = "";
+                foreach (Ptm ptm in ((TopDownProteoform)this).ptm_list) _modifications_string += (ptm.modification.description + "@" + ptm.position + "; ");
+                return _modifications_string;
+            }
+            else if (ptm_list.Count == 0)
                 return "unmodified";
             else
                 return string.Join("; ", ptm_list.Select(ptm => ptm.modification.description));
@@ -401,4 +411,38 @@ namespace ProteoformSuiteInternal
         public double pValue { get; set; } = 0;
     }
 
+    public class TopDownProteoform : TheoreticalProteoform
+    {
+        public string uniprot_id { get; set; }
+        public string sequence { get; set; }
+        public int start_index { get; set; }
+        public int stop_index { get; set; }
+        public new List<Ptm> ptm_list { get; set; } = new List<Ptm>();
+        public double monoisotopic_mass { get; set; }
+        public double theoretical_mass { get; set; }
+        public List<TheoreticalProteoform> topdown_theoreticals = new List<TheoreticalProteoform>();
+
+        public TopDownProteoform(string accession, string uniprot_id, string description, string sequence, int start_index, int stop_index, List<Ptm> modifications, double monoisotopic_mass, double theoretical_mass) : base(accession, monoisotopic_mass, -1, true)
+        {
+            this.accession = accession;
+            this.uniprot_id = uniprot_id;
+            this.name = accession;
+            this.description = description;
+            this.sequence = sequence;
+            this.start_index = start_index;
+            this.stop_index = stop_index;
+            this.ptm_list = modifications;
+            this.monoisotopic_mass = monoisotopic_mass;
+            this.modified_mass = monoisotopic_mass;
+            this.theoretical_mass = theoretical_mass;
+            this.topdown_theoreticals = match_theoreticals(accession);
+        }
+
+        private List<TheoreticalProteoform> match_theoreticals(string accession)
+        {
+            List<TheoreticalProteoform> theoreticals = Lollipop.proteoform_community.theoretical_proteoforms.Where(t => t.accession_reduced == accession).ToList();
+            Parallel.ForEach<TheoreticalProteoform>(theoreticals, t => t.TD_proteofomrs.Add(this));
+            return theoreticals;
+        }
+    }
 }

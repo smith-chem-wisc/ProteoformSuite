@@ -1,6 +1,6 @@
 ﻿namespace ProteoformSuite
 {
-    partial class LoadDeconvolutionResults
+    partial class LoadResults
     {
         /// <summary>
         /// Required designer variable.
@@ -137,11 +137,11 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(610, 13);
+            this.label3.Location = new System.Drawing.Point(654, 13);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(293, 20);
+            this.label3.Size = new System.Drawing.Size(159, 20);
             this.label3.TabIndex = 6;
-            this.label3.Text = "Deconvolution Calibration Files (.txt, .tsv)";
+            this.label3.Text = "Calibration Files (.tsv)";
             // 
             // btn_protIdResultsClear
             // 
@@ -289,7 +289,7 @@
             this.dgv_buFiles.AllowDrop = true;
             this.dgv_buFiles.AllowUserToOrderColumns = true;
             this.dgv_buFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_buFiles.Location = new System.Drawing.Point(903, 49);
+            this.dgv_buFiles.Location = new System.Drawing.Point(1183, 49);
             this.dgv_buFiles.Name = "dgv_buFiles";
             this.dgv_buFiles.Size = new System.Drawing.Size(287, 463);
             this.dgv_buFiles.TabIndex = 18;
@@ -299,7 +299,7 @@
             this.dgv_tdFiles.AllowDrop = true;
             this.dgv_tdFiles.AllowUserToOrderColumns = true;
             this.dgv_tdFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_tdFiles.Location = new System.Drawing.Point(1196, 49);
+            this.dgv_tdFiles.Location = new System.Drawing.Point(903, 49);
             this.dgv_tdFiles.Name = "dgv_tdFiles";
             this.dgv_tdFiles.Size = new System.Drawing.Size(275, 463);
             this.dgv_tdFiles.TabIndex = 19;
@@ -308,7 +308,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(1246, 13);
+            this.label4.Location = new System.Drawing.Point(949, 13);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(183, 20);
             this.label4.TabIndex = 20;
@@ -318,15 +318,15 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(923, 13);
+            this.label5.Location = new System.Drawing.Point(1216, 13);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(258, 20);
+            this.label5.Size = new System.Drawing.Size(183, 20);
             this.label5.TabIndex = 21;
-            this.label5.Text = "Morpheus Bottom-Up Results (.tsv)";
+            this.label5.Text = "Bottom-Up Results (.tsv)";
             // 
             // bt_morpheusBUResultsAdd
             // 
-            this.bt_morpheusBUResultsAdd.Location = new System.Drawing.Point(913, 518);
+            this.bt_morpheusBUResultsAdd.Location = new System.Drawing.Point(1216, 518);
             this.bt_morpheusBUResultsAdd.Name = "bt_morpheusBUResultsAdd";
             this.bt_morpheusBUResultsAdd.Size = new System.Drawing.Size(122, 36);
             this.bt_morpheusBUResultsAdd.TabIndex = 23;
@@ -336,7 +336,7 @@
             // 
             // bt_morpheusBUResultsClear
             // 
-            this.bt_morpheusBUResultsClear.Location = new System.Drawing.Point(1041, 518);
+            this.bt_morpheusBUResultsClear.Location = new System.Drawing.Point(1343, 518);
             this.bt_morpheusBUResultsClear.Name = "bt_morpheusBUResultsClear";
             this.bt_morpheusBUResultsClear.Size = new System.Drawing.Size(122, 36);
             this.bt_morpheusBUResultsClear.TabIndex = 22;
@@ -346,7 +346,7 @@
             // 
             // bt_tdResultsAdd
             // 
-            this.bt_tdResultsAdd.Location = new System.Drawing.Point(1209, 518);
+            this.bt_tdResultsAdd.Location = new System.Drawing.Point(919, 518);
             this.bt_tdResultsAdd.Name = "bt_tdResultsAdd";
             this.bt_tdResultsAdd.Size = new System.Drawing.Size(122, 36);
             this.bt_tdResultsAdd.TabIndex = 25;
@@ -356,7 +356,7 @@
             // 
             // bt_tdResultsClear
             // 
-            this.bt_tdResultsClear.Location = new System.Drawing.Point(1337, 518);
+            this.bt_tdResultsClear.Location = new System.Drawing.Point(1047, 518);
             this.bt_tdResultsClear.Name = "bt_tdResultsClear";
             this.bt_tdResultsClear.Size = new System.Drawing.Size(122, 36);
             this.bt_tdResultsClear.TabIndex = 24;
@@ -387,7 +387,7 @@
             this.cb_run_when_load.UseVisualStyleBackColor = true;
             this.cb_run_when_load.CheckedChanged += new System.EventHandler(this.cb_run_when_load_CheckedChanged);
             // 
-            // LoadDeconvolutionResults
+            // LoadResults
             // 
             this.ClientSize = new System.Drawing.Size(1362, 736);
             this.Controls.Add(this.cb_run_when_load);
@@ -415,7 +415,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
-            this.Name = "LoadDeconvolutionResults";
+            this.Name = "LoadResults";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_identificationFiles)).EndInit();

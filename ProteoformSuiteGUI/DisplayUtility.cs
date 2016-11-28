@@ -63,8 +63,8 @@ namespace ProteoformSuite
             {
                 DataGridViewComboBoxColumn cmCol = new DataGridViewComboBoxColumn();
                 cmCol.HeaderText = "TD Program";
-                cmCol.DataSource = Enum.GetValues(typeof(TDProgram));
-                cmCol.ValueType = typeof(TDProgram);
+                cmCol.DataSource = Enum.GetValues(typeof(TDSoftware));
+                cmCol.ValueType = typeof(TDSoftware);
                 dgv.Columns.Add(cmCol);
             }
         }

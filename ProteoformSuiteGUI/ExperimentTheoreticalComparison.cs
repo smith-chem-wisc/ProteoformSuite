@@ -124,52 +124,7 @@ namespace ProteoformSuite
                 pRelation.accepted = e.IsPeakAcceptable;
             }
             FillTablesAndCharts();
-            write_files();
-        }
-
-        private void write_files()
-        {
-            List<ProteoformRelation> in_peaks = Lollipop.et_relations.Where(p => p.accepted).ToList();
-            List<ProteoformRelation> out_peaks = Lollipop.et_relations.Except(in_peaks).ToList();
-            List<ProteoformRelation> in_peaks_PSM = in_peaks.Where(p => p.psm_count_TD > 0).ToList();
-
-            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\in_peaks.tsv"))
-            {
-                writer.WriteLine("in_peak_cs" + "\t" + "in_peak_ac" + "\t" + "in_peak_ra");
-                foreach (ProteoformRelation pr in in_peaks)
-                {
-                    int cs = ((ExperimentalProteoform)pr.connected_proteoforms[0]).aggregated_components.Max(a => a.num_charge_states);
-                    int ac = ((ExperimentalProteoform)pr.connected_proteoforms[0]).observation_count;
-                    double ra = ((ExperimentalProteoform)pr.connected_proteoforms[0]).aggregated_components.Max(a => a.relative_abundance);
-                    writer.WriteLine(cs + "\t" + ac + "\t" + ra);
-                }
-            }
-
-            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\out_peaks.tsv"))
-            {
-                writer.WriteLine("out_peak_cs" + "\t" + "out_peak_ac" + "\t" + "out_peak_ra");
-                foreach (ProteoformRelation pr in out_peaks)
-                {
-                    int cs = ((ExperimentalProteoform)pr.connected_proteoforms[0]).aggregated_components.Max(a => a.num_charge_states);
-                    int ac = ((ExperimentalProteoform)pr.connected_proteoforms[0]).observation_count;
-                    double ra = ((ExperimentalProteoform)pr.connected_proteoforms[0]).aggregated_components.Max(a => a.relative_abundance);
-                    writer.WriteLine(cs + "\t" + ac + "\t" + ra);
-                }
-            }
-
-            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\in_peaks_PSM.tsv"))
-            {
-                writer.WriteLine("in_peak_PSM_cs" + "\t" + "in_peak_PSM_ac" + "\t" + "in_peak_PSM_ra");
-                foreach (ProteoformRelation pr in in_peaks_PSM)
-                {
-                    int cs = ((ExperimentalProteoform)pr.connected_proteoforms[0]).aggregated_components.Max(a => a.num_charge_states);
-                    int ac = ((ExperimentalProteoform)pr.connected_proteoforms[0]).observation_count;
-                    double ra = ((ExperimentalProteoform)pr.connected_proteoforms[0]).aggregated_components.Max(a => a.relative_abundance);
-                    writer.WriteLine(cs + "\t" + ac + "\t" + ra);
-                }
-            }
-
-        }
+        }       
 
         private void dgv_ET_Pairs_CellClick(object sender, DataGridViewCellMouseEventArgs e)
         {
@@ -333,6 +288,10 @@ namespace ProteoformSuite
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
             nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(Lollipop.min_peak_count_et); // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
+
+            nud_NC_ET_masstol.Minimum = 0;
+            nud_NC_ET_masstol.Maximum = 5;
+            nud_NC_ET_masstol.Value = Convert.ToDecimal(Lollipop.NC_et_mass_tol);
         }
 
         private void nUD_ET_Lower_Bound_ValueChanged(object sender, EventArgs e) // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
@@ -458,7 +417,9 @@ namespace ProteoformSuite
                 if (dr == System.Windows.Forms.DialogResult.OK)
                 {
                     File.WriteAllText(saveDialog.FileName, ET_relations_list());
+                    MessageBox.Show("Successfully exported neucode experiment-theoretical pairs.");
                 }
+                else { return; }
             }
 
             else
@@ -470,8 +431,25 @@ namespace ProteoformSuite
                 {
                     string[] et_relations = File.ReadAllLines(openDialog.FileName);
                     Lollipop.read_neucode_et_relationships(et_relations);
+                    cb_limit_NC_ET_pairs.Visible = true;
+                    cb_limit_NC_ET_pairs.Checked = true;
+                    label9.Visible = true;
+                    nud_NC_ET_masstol.Visible = true;
+                    Lollipop.limit_NC_et_pairs = true;
+                    MessageBox.Show("Successfully imported neucode experiment-theoretical pairs.");
                 }
+                else { return; }
             }
+        }
+
+        private void cb_limit_NC_ET_pairs_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.limit_NC_et_pairs = cb_limit_NC_ET_pairs.Checked;
+        }
+
+        private void nud_NC_ET_masstol_ValueChanged(object sender, EventArgs e)
+        {
+            Lollipop.NC_et_mass_tol = Convert.ToDouble(nud_NC_ET_masstol.Value);
         }
     }
 

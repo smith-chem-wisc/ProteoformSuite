@@ -161,8 +161,6 @@ namespace Test
             pf2.is_decoy = false;
             pf1.psm_count_BU = 0;
             pf2.psm_count_BU = 0;
-            pf1.psm_count_TD = 0;
-            pf2.psm_count_TD = 0;
             Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[] { pf1, pf2 };
             string[] theoretical_proteoform_results = Results.theoretical_proteoforms_results(true).Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.AreEqual(3, theoretical_proteoform_results.Length);

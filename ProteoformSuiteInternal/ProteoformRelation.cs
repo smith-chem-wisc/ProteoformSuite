@@ -11,7 +11,8 @@ namespace ProteoformSuiteInternal
         et, //Experiment-Theoretical comparisons
         ed, //Experiment-Decoy comparisons
         ee, //Experiment-Experiment comparisons
-        ef  //Experiment-Experiment comparisons using unequal lysine counts
+        ef,  //Experiment-Experiment comparisons using unequal lysine counts
+        etd //Experiment-TopDown comparison (from TD data)
     }
 
     //I have not used MassDifference objects in the logic, since it is better to cast the comparisons immediately as
@@ -104,8 +105,8 @@ namespace ProteoformSuiteInternal
                 else if (this.relation_type == ProteoformComparison.ee) return "Experimental-Experimental";
                 else if (this.relation_type == ProteoformComparison.ed) return "Experimental-Decoy";
                 else if (this.relation_type == ProteoformComparison.ef) return "Experimental-Unequal Lysine Count";
+                else if (this.relation_type == ProteoformComparison.etd) return "Experimental-TopDown";
                 else return "";
-
             }
         }
 
@@ -134,8 +135,11 @@ namespace ProteoformSuiteInternal
             {
                 if (connected_proteoforms[1] is ExperimentalProteoform)
                     return ((ExperimentalProteoform)connected_proteoforms[1]).agg_mass;
-                else
+                else if (connected_proteoforms[1] is TheoreticalProteoform)
                     return ((TheoreticalProteoform)connected_proteoforms[1]).modified_mass;
+                else if (connected_proteoforms[1] is TopDownProteoform)
+                    return ((TopDownProteoform)connected_proteoforms[1]).theoretical_mass;
+                else return 0;
             }
         }
 
@@ -177,7 +181,7 @@ namespace ProteoformSuiteInternal
         }
         public int psm_count_TD
         {
-            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).psm_count_TD; } catch { return 0; } }
+            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).TD_proteofomrs.Count; } catch { return 0; } }
         }
         public string of_interest
         {

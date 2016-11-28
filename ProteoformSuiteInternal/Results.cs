@@ -209,7 +209,6 @@ namespace ProteoformSuiteInternal
                     else ptm_set = new PtmSet(unmodified);
                     TheoreticalProteoform theoretical_proteoform = new TheoreticalProteoform(line[0], line[5], line[6], line[7], Convert.ToInt32(line[8]), Convert.ToInt32(line[9]), Convert.ToDouble(line[10]), Convert.ToInt32(line[2]), goTerms, ptm_set, Convert.ToDouble(line[1]), Convert.ToBoolean(line[3]));
                     theoretical_proteoform.psm_count_BU = Convert.ToInt32(line[14]);
-                    theoretical_proteoform.psm_count_TD = Convert.ToInt32(line[15]);
                     string database = line[13];
                     if (database == "Target") lock (lockThread)
                         theoretical_proteoforms.Add(theoretical_proteoform);
@@ -245,7 +244,7 @@ namespace ProteoformSuiteInternal
         private static string theoretical_proteoform_as_tsv_row(TheoreticalProteoform t, string database)
         {
             return String.Join("\t", new List<string> { t.accession.ToString(), t.modified_mass.ToString(), t.lysine_count.ToString(), t.is_target.ToString(), t.is_decoy.ToString(),
-                t.description.ToString(), t.name.ToString(), t.fragment.ToString(), t.begin.ToString(), t.end.ToString(), t.unmodified_mass.ToString(), t.ptm_descriptions.ToString(), t.ptm_mass.ToString(), database, t.psm_count_BU.ToString(), t.psm_count_TD.ToString() });
+                t.description.ToString(), t.name.ToString(), t.fragment.ToString(), t.begin.ToString(), t.end.ToString(), t.unmodified_mass.ToString(), t.ptm_descriptions.ToString(), t.ptm_mass.ToString(), database, t.psm_count_BU.ToString(), t.TD_proteofomrs.Count.ToString() });
         }
 
         // PROTEOFORM RELATION I/O

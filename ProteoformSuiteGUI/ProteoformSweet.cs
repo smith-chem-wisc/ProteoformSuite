@@ -16,7 +16,7 @@ namespace ProteoformSuite
     public partial class ProteoformSweet : Form
     {
         //  Initialize Forms START
-        LoadDeconvolutionResults loadDeconvolutionResults = new LoadDeconvolutionResults();
+        LoadResults loadResults = new LoadResults();
         RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
         NeuCodePairs neuCodePairs = new NeuCodePairs();
         AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms();
@@ -24,6 +24,7 @@ namespace ProteoformSuite
         ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
         ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
         ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
+        TopDown topDown = new TopDown();
         Quantification quantification = new Quantification();
         ResultsSummary resultsSummary = new ResultsSummary();
         List<Form> forms;
@@ -44,14 +45,14 @@ namespace ProteoformSuite
             InitializeForms();
             this.WindowState = FormWindowState.Maximized;
             this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
-            showForm(loadDeconvolutionResults);
+            showForm(loadResults);
             methodFileOpen.Filter = "Method TXT File (*.txt)| *.txt";
         }
 
         public void InitializeForms()
         {
             forms = new List<Form>(new Form[] {
-                loadDeconvolutionResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
+                loadResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
                 theoreticalDatabase, experimentalTheoreticalComparison, experimentExperimentComparison,
                 proteoformFamilies, quantification
             });
@@ -67,7 +68,7 @@ namespace ProteoformSuite
         
 
         // RESULTS TOOL STRIP
-        public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(loadDeconvolutionResults); }
+        public void loadResultsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(loadResults); }
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(rawExperimentalComponents);
@@ -98,6 +99,11 @@ namespace ProteoformSuite
         {
             showForm(proteoformFamilies);
             proteoformFamilies.construct_families();
+        }
+        private void topdownResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(topDown);
+            topDown.load_dgv();
         }
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e) { showForm(quantification); }
         private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -199,7 +205,7 @@ namespace ProteoformSuite
 
         private void openCurrentPageToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (current_form == loadDeconvolutionResults)
+            if (current_form == loadResults)
             {
                 MessageBox.Show("Please select a raw experimental components file to open.");
                 OpenFileDialog openFileDialog1 = new OpenFileDialog();
@@ -265,7 +271,7 @@ namespace ProteoformSuite
         private void saveCurrentPageToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string working_directory;
-            if (current_form == loadDeconvolutionResults) { return; }
+            if (current_form == loadResults) { return; }
             MessageBox.Show("Choose a results folder.");
             DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
             if (results_folder == DialogResult.OK) working_directory = this.resultsFolderOpen.SelectedPath;
@@ -289,7 +295,7 @@ namespace ProteoformSuite
 
         private void save_tsv(string working_directory, bool save_all)
         {
-            if (current_form == loadDeconvolutionResults || save_all)
+            if (current_form == loadResults || save_all)
             {
                 File.WriteAllText(working_directory + "\\input_files.tsv", Results.input_file_results());
             }
