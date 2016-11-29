@@ -28,9 +28,7 @@ namespace ProteoformSuiteInternal
         //RAW EXPERIMENTAL COMPONENTS
         public static List<InputFile> input_files = new List<InputFile>();
         public static List<Correction> correctionFactors = null;
-        public static List<int> MS1_scans = new List<int>();
         public static List<Component> raw_experimental_components = new List<Component>();
-        public static List<Component> reduced_raw_exp_components = new List<Component>(); //for td data
         public static List<Component> raw_quantification_components = new List<Component>();
         public static bool neucode_labeled = true;
         public static bool td_results = false;
@@ -41,7 +39,7 @@ namespace ProteoformSuiteInternal
         public static IEnumerable<InputFile> calibration_files() { return input_files.Where(f => f.purpose == Purpose.Calibration); }
         public static IEnumerable<InputFile> bottomup_files() { return input_files.Where(f => f.purpose == Purpose.BottomUp); }
         public static IEnumerable<InputFile> topdown_files() { return input_files.Where(f => f.purpose == Purpose.TopDown); }
-        public static IEnumerable<InputFile> topdownID_files() { return input_files.Where(f => f.purpose == Purpose.TopDownIDResults); }
+        public static IEnumerable<InputFile> topdownMS1list_files() { return input_files.Where(f => f.purpose == Purpose.TopDownMS1List); }
        
         public static void process_raw_components()
         {
@@ -52,7 +50,7 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(input_files.Where(f => f.purpose == Purpose.Identification), file =>
             {
                 ComponentReader componentReader = new ComponentReader();
-                List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors);
+                List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors, MS1_scans(file.filename));
                 lock (sync)
                 {
                     raw_experimental_components.AddRange(someComponents);
@@ -63,13 +61,6 @@ namespace ProteoformSuiteInternal
             {
                 process_neucode_components();
             }
-
-            //if (td_results)
-            //{
-            //    raw_experimental_components.Clear();
-            //    raw_experimental_components = reduced_raw_exp_components;
-            //}
-
         }
 
         private static void process_neucode_components()
@@ -88,28 +79,6 @@ namespace ProteoformSuiteInternal
             });
         }
 
-        private static void delete_MS2_and_repeats(string filename)
-        {
-            int i = 1;
-            List<Component> reduced_raw_exp_comps = new List<Component>();
-            foreach (Component comp in raw_experimental_components.Where(f => (f.input_file.path + "\\" + f.input_file.filename + f.input_file.extension) == filename).ToList())
-            {
-                string[] scans = comp.scan_range.Split('-');
-                if (scans[0].Equals(scans[1]) && MS1_scans.Contains(Convert.ToInt32(scans[0])))  //make sure same scan # in range (one scan) and that it's MS1 scan
-                    {
-                        //if it has the same monoisotopic mass and intensity sum as something else, it's probably a repeat - don't add. 
-                        if (reduced_raw_exp_comps.Where(r => r.reported_monoisotopic_mass == comp.reported_monoisotopic_mass && r.intensity_sum == comp.intensity_sum).ToList().Count == 0)
-                        {
-                            comp.id = i.ToString();  //new id
-                            reduced_raw_exp_comps.Add(comp);
-                            i++;
-                        }   
-                    }
-           }
-            Lollipop.reduced_raw_exp_components.AddRange(reduced_raw_exp_comps);
-        }
-
-
         public static void process_raw_quantification_components()
         {
             if (input_files.Any(f => f.purpose == Purpose.Quantification))
@@ -118,7 +87,7 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(quantification_files(), file => 
             {
                 ComponentReader componentReader = new ComponentReader();
-                List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors);
+                List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors, new List<string>());
                 lock (sync)
                 {
                     raw_quantification_components.AddRange(someComponents);
@@ -144,6 +113,16 @@ namespace ProteoformSuiteInternal
             }
         }
 
+        private static List<string> MS1_scans(string filename)
+        {
+            if (td_results)
+            {
+                List<InputFile> td_files = topdownMS1list_files().Where(t => t.filename == filename).ToList();
+                string[] td_file = File.ReadAllLines(td_files[0].path + "\\" + td_files[0].filename + td_files[0].extension);
+                return new List<string>(td_file);
+            }
+            else return new List<string>();
+        }
 
         //NEUCODE PAIRS
         public static List<NeuCodePair> raw_neucode_pairs = new List<NeuCodePair>();

@@ -133,9 +133,9 @@ namespace ProteoformSuite
             // Look for results files with the same filename as a calibration file, and show that they're matched
             foreach (InputFile file in Lollipop.calibration_files())
             {
-                if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.TopDownIDResults).Select(f => f.filename).Contains(file.filename))
+                if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.TopDownMS1List).Select(f => f.filename).Contains(file.filename))
                 {
-                    IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.TopDownIDResults && f.filename == file.filename);
+                    IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.TopDownMS1List && f.filename == file.filename);
                     InputFile matching_file = matching_files.First();
                     if (matching_files.Count() != 1) MessageBox.Show("Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + ".");
                     file.matchingCalibrationFile = true;
@@ -374,23 +374,23 @@ namespace ProteoformSuite
                 openFileDialog1.Multiselect = true; //TODO: ADD THERMO RAW FILE READER OPTION TO FIND MS-1 SCAN #'S IN SUITE?
                 DialogResult dr = openFileDialog1.ShowDialog();
                 if (dr == DialogResult.OK)
-                    enter_input_files(openFileDialog1.FileNames, new List<string> { ".txt" }, Purpose.TopDownIDResults);
+                    enter_input_files(openFileDialog1.FileNames, new List<string> { ".txt" }, Purpose.TopDownMS1List);
                 else { cb_td_file.Checked = false; Lollipop.td_results = false; return; }
                 //Make sure those files matched. 
-                foreach (InputFile file in Lollipop.topdownID_files())
+                foreach (InputFile file in Lollipop.topdownMS1list_files())
                 {
                     int matching_files = Lollipop.identification_files().Where(f => f.filename == file.filename).ToList().Count;
                     if (matching_files > 1)
                     {
                         MessageBox.Show("There is more than one results file named " + file.filename + ". Please try again and choose one file per one identification result file.");
-                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.TopDownIDResults); //start over....
+                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.TopDownMS1List); //start over....
                         cb_td_file.Checked = false; Lollipop.td_results = false;
                         return;
                     }
                     else if (matching_files < 1)
                     {
                         MessageBox.Show("There is no matching deconvolution result for the file " + file.filename + ". Please try again and select a file with the same name as the identification result file.");
-                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.TopDownIDResults); //start over....
+                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.TopDownMS1List); //start over....
                         cb_td_file.Checked = false; Lollipop.td_results = false;
                         return;
                     }

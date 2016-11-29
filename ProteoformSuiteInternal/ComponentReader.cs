@@ -12,10 +12,12 @@ namespace ProteoformSuiteInternal
     {
         private List<Component> raw_components_in_file = new List<Component>();
         private static List<NeuCodePair> neucodePairs_in_file = new List<NeuCodePair>();
+        private List<string> MS1_scans = new List<string>();
 
-        public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction>correctionFactors)
+        public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction>correctionFactors, List<string> MS1_scans)
         {
-
+            this.MS1_scans.Clear();
+            this.MS1_scans = MS1_scans;
             this.raw_components_in_file.Clear();
             string absolute_path = file.path + "\\" + file.filename + file.extension;
             try
@@ -358,11 +360,21 @@ namespace ProteoformSuiteInternal
             return psm_list;
         }
 
+        private bool acceptable_td_component(Component c)
+        {
+            string[] scans = c.scan_range.Split('-');
+            bool same_scan = scans[0] == scans[1];
+            bool MS1_scan = MS1_scans.Contains(scans[0]);
+            bool not_repeat = raw_components_in_file.Where(r => r.scan_range == c.scan_range && r.reported_monoisotopic_mass == c.reported_monoisotopic_mass).ToList().Count == 0;
+            if (same_scan && MS1_scan && not_repeat) return true;
+            else return false;
+        }
+
         private void add_component(Component c)
         {
             //c.calculate_sum_intensity();
             //c.calculate_weighted_monoisotopic_mass();
-            this.raw_components_in_file.Add(c);
+            if (!Lollipop.td_results || acceptable_td_component(c)) this.raw_components_in_file.Add(c);
         }
     }
 }
