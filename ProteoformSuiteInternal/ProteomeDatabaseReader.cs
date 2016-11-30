@@ -159,6 +159,7 @@ namespace ProteoformSuiteInternal
                     IEnumerable<XElement> features = from node in entry.Elements() where node.Name.LocalName == "feature" select node;
                     IEnumerable<XElement> dbReferences = from node in entry.Elements() where node.Name.LocalName == "dbReference" select node;
                     List<GoTerm> goTerms = new List<GoTerm>();
+                    List<int> gene_id = new List<int>();
                     XElement sequence_elem = GetChild(entry, "sequence");
                     string sequence = sequence_elem.Value.Replace("\r", null).Replace("\n", null);
                     string fragment = GetAttribute(sequence_elem, "fragment");
@@ -215,6 +216,10 @@ namespace ProteoformSuiteInternal
                                 }
                             }                            
                         }
+                        else if (dbReference_type == "GeneID")
+                        {
+                            gene_id.Add(Convert.ToInt32(GetAttribute(dbReference, "id")));
+                        }
                     }
 
                     //Process the modified residues
@@ -241,7 +246,7 @@ namespace ProteoformSuiteInternal
                     }
 
                     //Add the full length protein, and then add the fragments with segments of the above modification dictionary
-                    bag_protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, goTerms, positionsAndPtms));
+                    bag_protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, goTerms, positionsAndPtms, gene_id));
                     //MessageBox.Show("added " + new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms).ToString());
 
                     //PARALLEL PROBLEM
@@ -265,7 +270,7 @@ namespace ProteoformSuiteInternal
                                     string subsequence = sequence.Substring(feature_begin, feature_end - feature_begin + 1);
                                     if (!justMetCleavage && subsequence.Length != sequence.Length && subsequence.Length >= minPeptideLength)
                                         bag_protein_list.Add(new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence, goTerms,
-                                            SegmentPtms(positionsAndPtms, feature_begin, feature_end)));
+                                            SegmentPtms(positionsAndPtms, feature_begin, feature_end), gene_id));
                                 }
                                 break;
                             case "splice variant":

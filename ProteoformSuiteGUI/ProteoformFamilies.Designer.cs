@@ -50,6 +50,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.Families_update = new System.Windows.Forms.Button();
+            this.bt_export_families = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -141,6 +142,7 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.Controls.Add(this.bt_export_families);
             this.splitContainer3.Panel2.Controls.Add(this.tb_singleton_count);
             this.splitContainer3.Panel2.Controls.Add(this.lb_singletons);
             this.splitContainer3.Panel2.Controls.Add(this.nud_decimalRoundingLabels);
@@ -330,6 +332,16 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
+            // bt_export_families
+            // 
+            this.bt_export_families.Location = new System.Drawing.Point(97, 168);
+            this.bt_export_families.Name = "bt_export_families";
+            this.bt_export_families.Size = new System.Drawing.Size(195, 23);
+            this.bt_export_families.TabIndex = 45;
+            this.bt_export_families.Text = "Export Identified Families List";
+            this.bt_export_families.UseVisualStyleBackColor = true;
+            this.bt_export_families.Click += new System.EventHandler(this.bt_export_families_Click);
+            // 
             // ProteoformFamilies
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -384,5 +396,6 @@
         private System.Windows.Forms.NumericUpDown nud_decimalRoundingLabels;
         private System.Windows.Forms.TextBox tb_singleton_count;
         private System.Windows.Forms.Label lb_singletons;
+        private System.Windows.Forms.Button bt_export_families;
     }
 }
