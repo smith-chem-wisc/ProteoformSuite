@@ -297,5 +297,10 @@ namespace ProteoformSuite
             if (!initial_load)
                 Lollipop.interest_type = tb_interest_label.Text;
         }
+
+        private void cb_useGeneID_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.use_gene_ID = cb_useGeneID.Checked;
+        }
     }
 }

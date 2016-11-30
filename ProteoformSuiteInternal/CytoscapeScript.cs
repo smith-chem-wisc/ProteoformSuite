@@ -89,7 +89,17 @@ namespace ProteoformSuiteInternal
         {
             string result;
             if (p is ExperimentalProteoform) result = p.accession + "_" + Math.Round(((ExperimentalProteoform)p).agg_mass, Lollipop.deltaM_edge_display_rounding);
-            else if (p is TheoreticalProteoform) result = ((TheoreticalProteoform)p).accession + "_" + ((TheoreticalProteoform)p).ptm_list_string();
+            else if (p is TheoreticalProteoform)
+            {
+                if (!Lollipop.use_gene_ID || p is TopDownProteoform)
+                {
+                    result = ((TheoreticalProteoform)p).accession + "_" + ((TheoreticalProteoform)p).ptm_list_string();
+                }
+                else
+                {
+                    result = ((TheoreticalProteoform)p).gene_id_string + "_" + ((TheoreticalProteoform)p).ptm_list_string();
+                }
+            }
             else result = p.accession;
             return result;
         }
@@ -104,18 +114,19 @@ namespace ProteoformSuiteInternal
                 string observations = ((ExperimentalProteoform)p).aggregated_components.Count.ToString();
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p), node_type, observations }) + Environment.NewLine;
             }
+            int average_node_size = Convert.ToInt16(families.Average(f => f.experimental_proteoforms.Average(e => e.observation_count)));
             foreach (TheoreticalProteoform p in families.SelectMany(f => f.theoretical_proteoforms))
             {
                 string node_type = unmodified_theoretical_label;
                 if (p.ptm_list.Count > 0) node_type = modified_theoretical_label;
-                string observations = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
+                string observations = "" + average_node_size; //set all theoretical proteoforms with observations=20 for node sizing purposes
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p), node_type, observations }) + Environment.NewLine;
             }
             foreach (TopDownProteoform p in families.SelectMany(f => f.topdown_proteoforms))
             {
                 string node_type = unmodified_td_label;
                 if (p.ptm_list.Count > 0) node_type = modified_td_label;
-                string observations = "20";
+                string observations = "" + average_node_size;
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p), node_type, observations }) + Environment.NewLine;
             }
             return tsv_header + Environment.NewLine + node_rows;

@@ -181,11 +181,15 @@ namespace ProteoformSuiteInternal
         }
         public int psm_count_TD
         {
-            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).TD_proteofomrs.Count; } catch { return 0; } }
+            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).TD_proteoforms.Count; } catch { return 0; } }
         }
         public string of_interest
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).of_interest; } catch { return null; } }
+        }
+        public string gene_id
+        {
+            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).gene_id_string; } catch { return null; } }
         }
     }
 }

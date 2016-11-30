@@ -211,5 +211,30 @@ namespace ProteoformSuite
         {
             Lollipop.deltaM_edge_display_rounding = Convert.ToInt32(this.nud_decimalRoundingLabels.Value);
         }
+
+        private void bt_export_families_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = this.folderBrowser.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                string folder_path = folderBrowser.SelectedPath;
+                using (var writer = new StreamWriter(folder_path + "\\identified_proteoform_families.tsv"))
+                {
+                    int fam_id = 1;
+                    writer.WriteLine("family_id\trelation_type\tdelta_mass\tp1_mass\tp2_mass\tp1_id\tp2_id");
+                    foreach (ProteoformFamily family in Lollipop.proteoform_community.families.Where(f => f.theoretical_count > 0))
+                    {
+                        foreach (ProteoformRelation relation in family.relations)
+                        {
+                            string id = relation.connected_proteoforms[1].accession;
+                            if (relation.relation_type == ProteoformComparison.et && Lollipop.use_gene_ID) id = ((TheoreticalProteoform)relation.connected_proteoforms[1]).gene_id_string;
+                            writer.WriteLine(String.Join("\t", fam_id, relation.relation_type, relation.delta_mass,
+                                relation.connected_proteoforms[0].modified_mass, relation.connected_proteoforms[1].modified_mass, relation.connected_proteoforms[0].accession, id));
+                        }
+                        fam_id++;
+                    }
+                }
+            }
+        }
     }
 }

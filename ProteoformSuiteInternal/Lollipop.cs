@@ -34,6 +34,7 @@ namespace ProteoformSuiteInternal
         public static List<Component> raw_quantification_components = new List<Component>();
         public static bool neucode_labeled = true;
         public static bool td_results = false;
+        public static bool td_famlies = false;
 
         //input file auxillary methods
         public static IEnumerable<InputFile> identification_files() { return input_files.Where(f => f.purpose == Purpose.Identification); }
@@ -208,7 +209,7 @@ namespace ProteoformSuiteInternal
                 Lollipop.proteoform_community.experimental_proteoforms = assignQuantificationComponents(vettedExperimentalProteoforms).ToArray();
             else
                 Lollipop.proteoform_community.experimental_proteoforms = vettedExperimentalProteoforms.ToArray();
-            if (Lollipop.proteoform_community.topdown_proteoforms.Count > 0) match_topdown_proteoforms();
+            if (Lollipop.proteoform_community.topdown_proteoforms.Count > 0 && Lollipop.td_famlies) match_topdown_proteoforms();
         }
 
         public static List<ExperimentalProteoform> createProteoforms()
@@ -327,7 +328,7 @@ namespace ProteoformSuiteInternal
         public static string interest_type = "Of interest"; //label for proteins of interest. can be changed 
         public static Protein[] proteins;
         public static List<Psm> psm_list = new List<Psm>();
-
+        public static bool use_gene_ID = false;
         public static ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
         public static Dictionary<string, Modification> uniprotModificationTable;
         static Dictionary<char, double> aaIsotopeMassList;
@@ -606,10 +607,10 @@ namespace ProteoformSuiteInternal
 
                 if (decoy_number < 0 )
                     theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
-                        unmodified_mass, lysine_count, prot.goTerms, ptm_set, proteoform_mass, true));
+                        unmodified_mass, lysine_count, prot.goTerms, ptm_set, proteoform_mass, prot.gene_id, true));
                 else
                     theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
-                        unmodified_mass, lysine_count, prot.goTerms , ptm_set, proteoform_mass, false));
+                        unmodified_mass, lysine_count, prot.goTerms , ptm_set, proteoform_mass, prot.gene_id, false));
                 listMemberNumber++;
             } 
         }
@@ -672,7 +673,7 @@ namespace ProteoformSuiteInternal
         public static void make_et_relationships()
         {
             if (!limit_TD_BU_theoreticals) Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.ToArray(), ProteoformComparison.et);
-            else Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.Where(t => t.psm_count_BU > 0 || t.TD_proteofomrs.Count > 0 ).ToArray(), ProteoformComparison.et);
+            else Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.Where(t => t.psm_count_BU > 0 || t.TD_proteoforms.Count > 0 ).ToArray(), ProteoformComparison.et);
             Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
             Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }

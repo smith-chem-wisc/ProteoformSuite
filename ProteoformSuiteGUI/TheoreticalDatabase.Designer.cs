@@ -56,6 +56,7 @@
             this.tb_UniProtXML_Path = new System.Windows.Forms.TextBox();
             this.btn_GetUniProtXML = new System.Windows.Forms.Button();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
+            this.cb_useGeneID = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -77,6 +78,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.cb_useGeneID);
             this.splitContainer1.Panel1.Controls.Add(this.ckbx_combineTheoreticalsByMass);
             this.splitContainer1.Panel1.Controls.Add(this.tb_interest_label);
             this.splitContainer1.Panel1.Controls.Add(this.label5);
@@ -193,7 +195,7 @@
             // 
             // btn_Make_Databases
             // 
-            this.btn_Make_Databases.Location = new System.Drawing.Point(7, 517);
+            this.btn_Make_Databases.Location = new System.Drawing.Point(7, 542);
             this.btn_Make_Databases.Margin = new System.Windows.Forms.Padding(2);
             this.btn_Make_Databases.Name = "btn_Make_Databases";
             this.btn_Make_Databases.Size = new System.Drawing.Size(207, 22);
@@ -402,6 +404,18 @@
             this.dgv_Database.Size = new System.Drawing.Size(903, 737);
             this.dgv_Database.TabIndex = 0;
             // 
+            // cb_useGeneID
+            // 
+            this.cb_useGeneID.AutoSize = true;
+            this.cb_useGeneID.Location = new System.Drawing.Point(7, 512);
+            this.cb_useGeneID.Margin = new System.Windows.Forms.Padding(2);
+            this.cb_useGeneID.Name = "cb_useGeneID";
+            this.cb_useGeneID.Size = new System.Drawing.Size(182, 17);
+            this.cb_useGeneID.TabIndex = 23;
+            this.cb_useGeneID.Text = "Use Gene ID to label theoreticals";
+            this.cb_useGeneID.UseVisualStyleBackColor = true;
+            this.cb_useGeneID.CheckedChanged += new System.EventHandler(this.cb_useGeneID_CheckedChanged);
+            // 
             // TheoreticalDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -458,5 +472,6 @@
         private System.Windows.Forms.Button bt_proteins_of_interest;
         private System.Windows.Forms.TextBox tb_interest_label;
         private System.Windows.Forms.CheckBox ckbx_combineTheoreticalsByMass;
+        private System.Windows.Forms.CheckBox cb_useGeneID;
     }
 }
