@@ -97,7 +97,7 @@ namespace ProteoformSuiteInternal
                 }
                 else
                 {
-                    result = ((TheoreticalProteoform)p).gene_id_string + "_" + ((TheoreticalProteoform)p).ptm_list_string();
+                    result = ((TheoreticalProteoform)p).gene_id + "_" + ((TheoreticalProteoform)p).ptm_list_string();
                 }
             }
             else result = p.accession;

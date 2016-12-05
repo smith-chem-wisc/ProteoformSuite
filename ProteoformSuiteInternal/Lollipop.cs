@@ -8,8 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace ProteoformSuiteInternal
 {
@@ -32,6 +30,7 @@ namespace ProteoformSuiteInternal
         public static List<Correction> correctionFactors = null;
         public static List<Component> raw_experimental_components = new List<Component>();
         public static List<Component> raw_quantification_components = new List<Component>();
+        public static List<TopDownHit> top_down_hits = new List<TopDownHit>();
         public static bool neucode_labeled = true;
         public static bool td_results = false;
         public static bool td_famlies = false;
@@ -53,7 +52,7 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(input_files.Where(f => f.purpose == Purpose.Identification), file =>
             {
                 ComponentReader componentReader = new ComponentReader();
-                List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors, MS1_scans(file.filename));
+                List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors, TdBuReader.MS1_scans(file.filename));
                 lock (sync)
                 {
                     raw_experimental_components.AddRange(someComponents);
@@ -67,8 +66,8 @@ namespace ProteoformSuiteInternal
 
             foreach (InputFile file in Lollipop.topdown_files())
             {
-                List<TopDownProteoform> td_file_proteoforms = Lollipop.ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_software);
-                Lollipop.proteoform_community.topdown_proteoforms.AddRange(td_file_proteoforms);
+                List<TopDownHit> td_file_proteoforms =  TdBuReader.ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_software);
+                top_down_hits.AddRange(td_file_proteoforms);
             }
         }
 
@@ -121,16 +120,6 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        private static List<string> MS1_scans(string filename)
-        {
-            if (td_results) 
-            { //find MS1 list corresponding to identification file (will only read in components in MS1 scans)
-                List<InputFile> td_files = topdownMS1list_files().Where(t => t.filename == filename).ToList(); //checked in GUI for 1 matching file
-                string[] td_file = File.ReadAllLines(td_files[0].path + "\\" + td_files[0].filename + td_files[0].extension);
-                return new List<string>(td_file);
-            }
-            else return new List<string>();
-        }
 
         //NEUCODE PAIRS
         public static List<NeuCodePair> raw_neucode_pairs = new List<NeuCodePair>();
@@ -209,7 +198,11 @@ namespace ProteoformSuiteInternal
                 Lollipop.proteoform_community.experimental_proteoforms = assignQuantificationComponents(vettedExperimentalProteoforms).ToArray();
             else
                 Lollipop.proteoform_community.experimental_proteoforms = vettedExperimentalProteoforms.ToArray();
-            if (Lollipop.proteoform_community.topdown_proteoforms.Count > 0 && Lollipop.td_famlies) match_topdown_proteoforms();
+            if (Lollipop.top_down_hits.Count > 0)
+            {
+                aggregate_td_hits();
+                if (Lollipop.td_famlies) make_etd_relationships();
+            }
         }
 
         public static List<ExperimentalProteoform> createProteoforms()
@@ -294,11 +287,29 @@ namespace ProteoformSuiteInternal
             return vettedExperimentalProteoforms;
         }
 
-        //Could be improved. Used for manual mass shifting.
-        //Idea 1: Start with Components -- have them find the most intense nearby component. Then, go through and correct edge cases that aren't correct.
-        //Idea 2: Use the assumption that proteoforms distant to the manual shift will not regroup.
-        //Idea 2.1: Put the shifted proteoforms, plus some range from the min and max masses in there, and reaggregate the components with the aggregate_proteoforms algorithm.
-        public static void regroup_components()
+        private static void aggregate_td_hits()
+        {
+            TopDownHit[] remaining_td_hits = new TopDownHit[0];
+            //aggregate to td hit w/ highest C score
+            remaining_td_hits = Lollipop.top_down_hits.OrderByDescending(t => t.score).ToArray();
+
+            while (remaining_td_hits.Length > 0)
+            {
+                TopDownHit root = remaining_td_hits[0];
+                List<TopDownHit> tmp_remaining_td_hits = remaining_td_hits.ToList();
+                //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within mass tolerance used for agg
+                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, tmp_remaining_td_hits.Where(h=> h.accession == root.accession && h.theoretical_mass == root.theoretical_mass).ToList());
+                Lollipop.proteoform_community.topdown_proteoforms.Add(new_pf);
+                remaining_td_hits = tmp_remaining_td_hits.Except(new_pf.topdown_hits).ToArray();
+            }
+            Lollipop.proteoform_community.topdown_proteoforms = Lollipop.proteoform_community.topdown_proteoforms.Where(p => p != null).ToList();
+        }
+
+    //Could be improved. Used for manual mass shifting.
+    //Idea 1: Start with Components -- have them find the most intense nearby component. Then, go through and correct edge cases that aren't correct.
+    //Idea 2: Use the assumption that proteoforms distant to the manual shift will not regroup.
+    //Idea 2.1: Put the shifted proteoforms, plus some range from the min and max masses in there, and reaggregate the components with the aggregate_proteoforms algorithm.
+    public static void regroup_components()
         {
             if (Lollipop.neucode_labeled)
             {
@@ -351,7 +362,7 @@ namespace ProteoformSuiteInternal
             //Read the Morpheus BU data into PSM list
             foreach (InputFile file in Lollipop.bottomup_files())
             {
-                List<Psm> psm_from_file = Lollipop.ReadBUFile(file.path + "\\" + file.filename + file.extension);
+                List<Psm> psm_from_file = TdBuReader.ReadBUFile(file.path + "\\" + file.filename + file.extension);
                 psm_list.AddRange(psm_from_file);
             }
 
@@ -369,139 +380,6 @@ namespace ProteoformSuiteInternal
                 match_psms_and_theoreticals();   //if BU data loaded in, match PSMs to theoretical accessions
             if (Lollipop.accessions_of_interest_list_filepath.Length > 0)
                 mark_accessions_of_interest();
-        }
-
-        //READING IN BOTTOM-UP MORPHEUS FILE
-        public static List<Psm> ReadBUFile(string filename)
-        {
-            List<Psm> psm_list = new List<Psm>();
-            string[] lines = File.ReadAllLines(filename);
-
-            int i = 1;
-            bool qLessThan1 = true;
-            //only add PSMs with q less than 1. this assumes the tsv is in increasing order of q-value! 
-            while (qLessThan1)
-            {
-                string[] parts = lines[i].Split('\t');
-                //only read in with Q-value < 1%
-                if (Convert.ToDouble(parts[30]) < 1)
-                {
-                    if (Convert.ToBoolean(parts[26]))
-                    {
-                        Psm new_psm = new Psm(parts[11].ToString(), parts[0].ToString(), Convert.ToInt32(parts[14]), Convert.ToInt32(parts[15]),
-                            Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]), Convert.ToInt32(parts[1]),
-                            parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]));
-                        psm_list.Add(new_psm);
-                    }
-                    i++;
-                }
-                else { qLessThan1 = false; }
-            }
-            return psm_list;
-        }
-
-        //Reading in Top-down excel
-        public static List<TopDownProteoform> ReadTDFile(string filename, TDSoftware td_software)
-        {
-            List<TopDownProteoform> td_proteoforms = new List<TopDownProteoform>();
-            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(filename, false))
-            {
-                // Get Data in Sheet1 of Excel file
-                IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
-                WorksheetPart worksheet_1 = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
-                SheetData sheet_1 = worksheet_1.Worksheet.Elements<SheetData>().First();
-                List<Row> rowcollection = worksheet_1.Worksheet.Descendants<Row>().ToList();
-
-                for (int i = 1; i < rowcollection.Count; i++)   //skip first row (headers)
-                {
-                    List<string> cellStrings = new List<string>();
-                    for (int k = 0; k < rowcollection[i].Descendants<Cell>().Count(); k++)
-                    {
-                        cellStrings.Add(ComponentReader.GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
-                    }
-
-                    if (td_software == TDSoftware.NRTDP)
-                    {
-                        //get ptms on proteoform
-                        List<Ptm> ptm_list = new List<Ptm>();
-                        string modification_description = cellStrings[8];
-                        modification_description = modification_description.Replace(", ", ";");
-                        string[] modifications = modification_description.Split(';');
-                        for (int j = 0; j < modifications.Length; j++)
-                        {
-                            string[] new_modification = modifications[j].Split('@');
-                            if (new_modification.Length > 1)
-                            {
-                                int position = 0;
-                                if (new_modification[1] == "N") position = 1;
-                                else if (new_modification[1] == "C") position = cellStrings[3].Length;
-                                else position = Convert.ToInt16(new_modification[1]);
-                                Ptm ptm = new Ptm(position, new Modification(new_modification[0]));
-                                ptm_list.Add(ptm);
-                            }
-                        }
-                        //convert into new td proteoform
-                        TopDownProteoform td_proteoform = new TopDownProteoform(cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
-                            Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]), ptm_list, Convert.ToDouble(cellStrings[12]), Convert.ToDouble(cellStrings[12]));
-                        td_proteoforms.Add(td_proteoform);
-                    }
-
-                    else if (td_software == TDSoftware.ProSight)
-                    {
-                        string[] description = cellStrings[13].Split(';');
-                        string[] accession = description[0].Split(',');
-
-                        string file_sequence = cellStrings[6];
-                        file_sequence = file_sequence.Replace(")", "(");
-                        string[] split_sequence = file_sequence.Split('(');
-                        List<int> positions = new List<int>();
-                        string sequence = "";
-                        for (int j = 0; j < split_sequence.Length; j++)
-                        {
-                            try
-                            {
-                                //if number, add position of PTM to list
-                                int mod_id = Convert.ToInt16(split_sequence[j]);
-                                positions.Add(sequence.Length);
-                            }
-                            catch { sequence += split_sequence[j]; } 
-                        }
-
-                        List<Ptm> ptm_list = new List<Ptm>();
-                        string modification_description = cellStrings[8];
-                        modification_description = modification_description.Replace(", ", "; ");
-                        string[] modifications = modification_description.Split(';');
-                        if (modifications.Length > 1)
-                        {
-                            for (int j = 0; j < modifications.Length; j++)
-                            {
-                                string[] new_modification = modifications[j].Split('(');
-                                int position = positions[j];
-                                Ptm ptm = new Ptm(position, new Modification(new_modification[0]));
-                                ptm_list.Add(ptm);
-                            }
-                        }
-                        TopDownProteoform td_proteoform = new TopDownProteoform(cellStrings[4], accession[0], description[1], sequence,
-                           0, 0, ptm_list, Convert.ToDouble(cellStrings[10]), Convert.ToDouble(cellStrings[9]));
-                        td_proteoforms.Add(td_proteoform); 
-                    }
-                }
-            }
-            return td_proteoforms;
-        }
-
-        private static void match_topdown_proteoforms()
-        {
-            //for now - assume E with closest mass = the TD's corresponding experimental
-            foreach (TopDownProteoform td_proteoform in Lollipop.proteoform_community.topdown_proteoforms)
-            {
-                ExperimentalProteoform e = proteoform_community.experimental_proteoforms.OrderBy(p => Math.Abs(p.agg_mass - td_proteoform.monoisotopic_mass)).ToList().First();
-                ProteoformRelation td_relation = new ProteoformRelation(e, td_proteoform, ProteoformComparison.etd, (e.agg_mass - td_proteoform.monoisotopic_mass));
-                td_relation.accepted = true;
-                e.relationships.Add(td_relation);
-                td_proteoform.relationships.Add(td_relation);
-                td_relations.Add(td_relation);
-            }
         }
 
         private static void match_psms_and_theoreticals()
@@ -701,6 +579,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
+
         public static void read_neucode_ee_relationships(string[] relationships)
         {
             neucode_ee_pairs.Clear();
@@ -730,6 +609,26 @@ namespace ProteoformSuiteInternal
             Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
+        public static void make_etd_relationships()
+        {
+            foreach (TopDownProteoform td_proteoform in Lollipop.proteoform_community.topdown_proteoforms)
+            {
+                double mass_tolerance_td = (td_proteoform.monoisotopic_mass / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance));
+                try
+                {
+                    //try removing mass and rt tol and doing with all files
+                    //make sure matching up correctly w/ E's..... 
+                    ExperimentalProteoform e = Lollipop.proteoform_community.experimental_proteoforms.Where(ep => Math.Abs(ep.modified_mass - td_proteoform.modified_mass) < Convert.ToDouble(mass_tolerance_td*2)
+                  && Math.Abs(ep.agg_rt - td_proteoform.agg_rt) < Convert.ToDouble(Lollipop.retention_time_tolerance*2)).ToList().OrderBy(exp => Math.Abs(exp.modified_mass - td_proteoform.modified_mass)).First();
+                    ProteoformRelation td_relation = new ProteoformRelation(e, td_proteoform, ProteoformComparison.etd, (e.modified_mass - td_proteoform.theoretical_mass));
+                    td_relation.accepted = true;
+                    e.relationships.Add(td_relation);
+                    td_proteoform.relationships.Add(td_relation);
+                    td_relations.Add(td_relation);
+                }
+                catch { }
+            }
+        }
         //PROTEOFORM FAMILIES -- see ProteoformCommunity
         public static string family_build_folder_path = "";
         public static int deltaM_edge_display_rounding = 2;

@@ -159,7 +159,7 @@ namespace ProteoformSuiteInternal
                     IEnumerable<XElement> features = from node in entry.Elements() where node.Name.LocalName == "feature" select node;
                     IEnumerable<XElement> dbReferences = from node in entry.Elements() where node.Name.LocalName == "dbReference" select node;
                     List<GoTerm> goTerms = new List<GoTerm>();
-                    List<int> gene_id = new List<int>();
+                    int gene_id = 0;
                     XElement sequence_elem = GetChild(entry, "sequence");
                     string sequence = sequence_elem.Value.Replace("\r", null).Replace("\n", null);
                     string fragment = GetAttribute(sequence_elem, "fragment");
@@ -218,7 +218,7 @@ namespace ProteoformSuiteInternal
                         }
                         else if (dbReference_type == "GeneID")
                         {
-                            gene_id.Add(Convert.ToInt32(GetAttribute(dbReference, "id")));
+                            gene_id = Convert.ToInt32(GetAttribute(dbReference, "id"));
                         }
                     }
 

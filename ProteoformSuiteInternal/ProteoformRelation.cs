@@ -189,7 +189,7 @@ namespace ProteoformSuiteInternal
         }
         public string gene_id
         {
-            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).gene_id_string; } catch { return null; } }
+            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).gene_id.ToString(); } catch { return null; } }
         }
     }
 }

@@ -77,6 +77,8 @@
     <Compile Include="RandomExtensions.cs" />
     <Compile Include="Results.cs" />
     <Compile Include="SaveState.cs" />
+    <Compile Include="TdBuReader.cs" />
+    <Compile Include="TopDownHit.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

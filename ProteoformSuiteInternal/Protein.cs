@@ -14,9 +14,9 @@ namespace ProteoformSuiteInternal
         public string sequence { get; set; }
         public List<GoTerm> goTerms { get; set; }
         public Dictionary<int, List<Modification>> ptms_by_position { get; set; }
-        public List<int> gene_id { get; set; }
+        public int gene_id { get; set; }
 
-        public Protein(string accession, string name, string fragment, int begin, int end, string sequence, List<GoTerm> goTerms, Dictionary<int, List<Modification>> positionsAndPtms,  List<int> gene_id)
+        public Protein(string accession, string name, string fragment, int begin, int end, string sequence, List<GoTerm> goTerms, Dictionary<int, List<Modification>> positionsAndPtms,  int gene_id)
         {
             this.accession = accession;          
             this.name = name;
@@ -40,7 +40,7 @@ namespace ProteoformSuiteInternal
     {
         public List<string> accessionList { get; set; } // this is the list of accession numbers for all proteins that share the same sequence. the list gets alphabetical order
 
-        public ProteinSequenceGroup(string accession, string name, string fragment, int begin, int end, string sequence, List<GoTerm> goTerms, Dictionary<int, List<Modification>> positionsAndPtms, List<int> gene_id)
+        public ProteinSequenceGroup(string accession, string name, string fragment, int begin, int end, string sequence, List<GoTerm> goTerms, Dictionary<int, List<Modification>> positionsAndPtms, int gene_id)
             : base(accession, name, fragment, begin, end, sequence, goTerms, positionsAndPtms, gene_id)
         { }
         public ProteinSequenceGroup(List<Protein> proteins)
