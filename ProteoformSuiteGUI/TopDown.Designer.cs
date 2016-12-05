@@ -57,6 +57,7 @@
             this.dgv_TD_proteoforms.Name = "dgv_TD_proteoforms";
             this.dgv_TD_proteoforms.Size = new System.Drawing.Size(323, 338);
             this.dgv_TD_proteoforms.TabIndex = 0;
+            this.dgv_TD_proteoforms.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_TD_proteoforms_CellContentClick);
             // 
             // splitContainer1
             // 
@@ -98,6 +99,7 @@
             this.rtb_sequence.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rtb_sequence.Location = new System.Drawing.Point(0, 0);
             this.rtb_sequence.Name = "rtb_sequence";
+            this.rtb_sequence.ReadOnly = true;
             this.rtb_sequence.Size = new System.Drawing.Size(346, 114);
             this.rtb_sequence.TabIndex = 1;
             this.rtb_sequence.Text = "";

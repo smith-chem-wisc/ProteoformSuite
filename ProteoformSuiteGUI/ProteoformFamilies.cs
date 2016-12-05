@@ -227,7 +227,7 @@ namespace ProteoformSuite
                         foreach (ProteoformRelation relation in family.relations)
                         {
                             string id = relation.connected_proteoforms[1].accession;
-                            if (relation.relation_type == ProteoformComparison.et && Lollipop.use_gene_ID) id = ((TheoreticalProteoform)relation.connected_proteoforms[1]).gene_id_string;
+                            if (relation.relation_type == ProteoformComparison.et && Lollipop.use_gene_ID) id = ((TheoreticalProteoform)relation.connected_proteoforms[1]).gene_id.ToString();
                             writer.WriteLine(String.Join("\t", fam_id, relation.relation_type, relation.delta_mass,
                                 relation.connected_proteoforms[0].modified_mass, relation.connected_proteoforms[1].modified_mass, relation.connected_proteoforms[0].accession, id));
                         }

@@ -21,6 +21,7 @@ namespace ProteoformSuiteInternal
         public string rt_range { get; set; }
         public double rt_apex { get; set; }
         public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
+
         public void add_charge_state(List<string> charge_row, double correction)
         {
             this.charge_states.Add(new ChargeState(charge_row, correction));

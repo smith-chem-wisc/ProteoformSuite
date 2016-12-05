@@ -207,7 +207,7 @@ namespace ProteoformSuiteInternal
                     List<Ptm> unmodified = new List<Ptm>();
                     if (line[11] != "unmodified") { ptm_set = new PtmSet(new List<Ptm>(from ptm_description in line[11].Split(';') select new Ptm(-1, Lollipop.uniprotModificationTable[ptm_description.Trim().TrimEnd(';')]))); }
                     else ptm_set = new PtmSet(unmodified);
-                    TheoreticalProteoform theoretical_proteoform = new TheoreticalProteoform(line[0], line[5], line[6], line[7], Convert.ToInt32(line[8]), Convert.ToInt32(line[9]), Convert.ToDouble(line[10]), Convert.ToInt32(line[2]), goTerms, ptm_set, Convert.ToDouble(line[1]), new List<int>(), Convert.ToBoolean(line[3]));
+                    TheoreticalProteoform theoretical_proteoform = new TheoreticalProteoform(line[0], line[5], line[6], line[7], Convert.ToInt32(line[8]), Convert.ToInt32(line[9]), Convert.ToDouble(line[10]), Convert.ToInt32(line[2]), goTerms, ptm_set, Convert.ToDouble(line[1]), 0, Convert.ToBoolean(line[3]));
                     theoretical_proteoform.psm_count_BU = Convert.ToInt32(line[14]);
                     string database = line[13];
                     if (database == "Target") lock (lockThread)
