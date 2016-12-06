@@ -593,7 +593,7 @@ namespace ProteoformSuiteInternal
         private void calculate_properties()
         {
             this.agg_rt = topdown_hits.Select(h => h.retention_time).Average(); //need to use average (no intensity info)
-            this.monoisotopic_mass = topdown_hits.Select(h => h.monoisotopic_mass).Average();
+            this.monoisotopic_mass = topdown_hits.Select(h => (h.monoisotopic_mass - Math.Round(h.monoisotopic_mass - root.monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.monoisotopic_mass;
         }
 

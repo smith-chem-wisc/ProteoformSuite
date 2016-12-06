@@ -35,7 +35,6 @@ namespace ProteoformSuite
             {
                 TopDownProteoform p = (TopDownProteoform)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem;
                 if (p.family != null) DisplayUtility.FillDataGridView(dgv_TD_family, p.family.relations);
-
                 get_proteoform_sequence(p);
             }
         }

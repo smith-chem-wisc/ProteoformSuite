@@ -611,22 +611,27 @@ namespace ProteoformSuiteInternal
 
         public static void make_etd_relationships()
         {
+            int max_missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
+            List<int> missed_monoisotopics = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).
             foreach (TopDownProteoform td_proteoform in Lollipop.proteoform_community.topdown_proteoforms)
             {
-                double mass_tolerance_td = (td_proteoform.monoisotopic_mass / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance));
-                try
+                foreach (int m in missed_monoisotopics)
                 {
-                    //try removing mass and rt tol and doing with all files
-                    //make sure matching up correctly w/ E's..... 
-                    ExperimentalProteoform e = Lollipop.proteoform_community.experimental_proteoforms.Where(ep => Math.Abs(ep.modified_mass - td_proteoform.modified_mass) < Convert.ToDouble(mass_tolerance_td*2)
-                  && Math.Abs(ep.agg_rt - td_proteoform.agg_rt) < Convert.ToDouble(Lollipop.retention_time_tolerance*2)).ToList().OrderBy(exp => Math.Abs(exp.modified_mass - td_proteoform.modified_mass)).First();
-                    ProteoformRelation td_relation = new ProteoformRelation(e, td_proteoform, ProteoformComparison.etd, (e.modified_mass - td_proteoform.theoretical_mass));
-                    td_relation.accepted = true;
-                    e.relationships.Add(td_relation);
-                    td_proteoform.relationships.Add(td_relation);
-                    td_relations.Add(td_relation);
+                    double shift = m * 1.0015;
+                    double mass_tolerance = (td_proteoform.monoisotopic_mass + shift) / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance);
+                    double low = td_proteoform.monoisotopic_mass + shift - mass_tolerance;
+                    double high = td_proteoform.monoisotopic_mass + shift + mass_tolerance;
+                    List<ExperimentalProteoform> matching_e = Lollipop.proteoform_community.experimental_proteoforms.Where(ep => ep.modified_mass >= low && ep.modified_mass <= high
+                    && Math.Abs(ep.agg_rt - td_proteoform.agg_rt) < Convert.ToDouble(Lollipop.retention_time_tolerance)).ToList();
+                    foreach (ExperimentalProteoform e in matching_e)
+                    {
+                        ProteoformRelation td_relation = new ProteoformRelation(e, td_proteoform, ProteoformComparison.etd, (e.modified_mass - td_proteoform.modified_mass));
+                        td_relation.accepted = true;
+                        e.relationships.Add(td_relation);
+                        td_proteoform.relationships.Add(td_relation);
+                        td_relations.Add(td_relation);
+                    }
                 }
-                catch { }
             }
         }
         //PROTEOFORM FAMILIES -- see ProteoformCommunity
