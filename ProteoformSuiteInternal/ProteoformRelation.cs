@@ -138,7 +138,7 @@ namespace ProteoformSuiteInternal
                 else if (connected_proteoforms[1] is TheoreticalProteoform)
                     return ((TheoreticalProteoform)connected_proteoforms[1]).modified_mass;
                 else if (connected_proteoforms[1] is TopDownProteoform)
-                    return ((TopDownProteoform)connected_proteoforms[1]).theoretical_mass;
+                    return ((TopDownProteoform)connected_proteoforms[1]).modified_mass;
                 else return 0;
             }
         }
@@ -149,7 +149,12 @@ namespace ProteoformSuiteInternal
         }
         public double agg_RT_2
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt; } catch { return 0; } }
+            get {
+                if (connected_proteoforms[1] is ExperimentalProteoform)
+                    return ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt;
+                else if (connected_proteoforms[1] is TopDownProteoform)
+                    return ((TopDownProteoform)connected_proteoforms[1]).agg_rt;
+                else { return 0; } }
         }
         public int num_observations_2
         {
