@@ -200,6 +200,8 @@ namespace ProteoformSuiteInternal
                 Lollipop.proteoform_community.experimental_proteoforms = vettedExperimentalProteoforms.ToArray();
             if (Lollipop.top_down_hits.Count > 0)
             {
+                Lollipop.proteoform_community.topdown_proteoforms.Clear();
+                Lollipop.td_relations.Clear();
                 aggregate_td_hits();
                 if (Lollipop.td_famlies) make_etd_relationships();
             }
@@ -612,15 +614,15 @@ namespace ProteoformSuiteInternal
         public static void make_etd_relationships()
         {
             int max_missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
-            List<int> missed_monoisotopics = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).
+            List<int> missed_monoisotopics_range = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
             foreach (TopDownProteoform td_proteoform in Lollipop.proteoform_community.topdown_proteoforms)
             {
-                foreach (int m in missed_monoisotopics)
+                foreach (int m in missed_monoisotopics_range)
                 {
-                    double shift = m * 1.0015;
-                    double mass_tolerance = (td_proteoform.monoisotopic_mass + shift) / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance);
-                    double low = td_proteoform.monoisotopic_mass + shift - mass_tolerance;
-                    double high = td_proteoform.monoisotopic_mass + shift + mass_tolerance;
+                    double shift = m * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    double mass_tol = (td_proteoform.modified_mass + shift) / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance);
+                    double low = td_proteoform.modified_mass + shift - mass_tol;
+                    double high = td_proteoform.modified_mass + shift + mass_tol;
                     List<ExperimentalProteoform> matching_e = Lollipop.proteoform_community.experimental_proteoforms.Where(ep => ep.modified_mass >= low && ep.modified_mass <= high
                     && Math.Abs(ep.agg_rt - td_proteoform.agg_rt) < Convert.ToDouble(Lollipop.retention_time_tolerance)).ToList();
                     foreach (ExperimentalProteoform e in matching_e)
@@ -634,6 +636,7 @@ namespace ProteoformSuiteInternal
                 }
             }
         }
+
         //PROTEOFORM FAMILIES -- see ProteoformCommunity
         public static string family_build_folder_path = "";
         public static int deltaM_edge_display_rounding = 2;

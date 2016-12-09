@@ -27,12 +27,14 @@ namespace ProteoformSuite
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.topdown_proteoforms);
             load_colors();
             load_ptm_colors();
+            tb_tdProteoforms.Text = Lollipop.proteoform_community.topdown_proteoforms.Count.ToString();
         }
 
         private void dgv_TD_proteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
             {
+                dgv_TD_family.DataSource = null;
                 TopDownProteoform p = (TopDownProteoform)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem;
                 if (p.family != null) DisplayUtility.FillDataGridView(dgv_TD_family, p.family.relations);
                 get_proteoform_sequence(p);
@@ -41,7 +43,7 @@ namespace ProteoformSuite
 
         private void get_proteoform_sequence(TopDownProteoform p)
         {
-            rtb_sequence.Text = p.sequence + "\n" ;
+            rtb_sequence.Text = p.sequence + "\n";
             rtb_sequence.SelectionStart = 0;
             rtb_sequence.SelectionLength = p.sequence.Length;
             rtb_sequence.SelectionColor = Color.Black;
@@ -53,18 +55,26 @@ namespace ProteoformSuite
             {
                 int i;
                 try { i = mods.IndexOf(ptm.modification.description); }
-                catch { i = 0;  } //just make color blue if > 20 unique PTMs
+                catch { i = 0; } //just make color blue if > 20 unique PTMs
                 Color color = colors[i];
 
                 rtb_sequence.SelectionStart = ptm.position - 1;
                 rtb_sequence.SelectionLength = 1;
                 rtb_sequence.SelectionColor = color;
+            }
 
-                rtb_sequence.AppendText("\n" + ptm.modification.description);
+            foreach (string description in p.ptm_list.Select(ptm => ptm.modification.description).Distinct())
+            {
+                int i;
+                try { i = mods.IndexOf(description); }
+                catch { i = 0; }
+                Color color = colors[i];
+
+                rtb_sequence.AppendText("\n" + description);
                 rtb_sequence.SelectionStart = length;
-                rtb_sequence.SelectionLength = ptm.modification.description.Length + 1;
-                rtb_sequence.SelectionColor = color;
-                length += ptm.modification.description.Length + 1;
+                rtb_sequence.SelectionLength = description.Length + 1;
+                rtb_sequence.SelectionColor = colors[i];
+                length += description.Length + 1;
             }
 
         }

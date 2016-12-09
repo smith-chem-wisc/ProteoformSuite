@@ -595,6 +595,8 @@ namespace ProteoformSuiteInternal
             this.agg_rt = topdown_hits.Select(h => h.retention_time).Average(); //need to use average (no intensity info)
             this.monoisotopic_mass = topdown_hits.Select(h => (h.monoisotopic_mass - Math.Round(h.monoisotopic_mass - root.monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.monoisotopic_mass;
+            int count = Lollipop.proteoform_community.topdown_proteoforms.Where(p => p.uniprot_id == this.uniprot_id).ToList().Count + 1;
+            this.accession = accession + "_" + count + "_" + Math.Round(this.modified_mass, 2);
         }
 
         public bool includes(TopDownHit candidate)
@@ -616,7 +618,7 @@ namespace ProteoformSuiteInternal
             List<int> missed_monoisotopics = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
             foreach (int m in missed_monoisotopics)
             {
-                double shift = m * 1.0015;
+                double shift = m * Lollipop.MONOISOTOPIC_UNIT_MASS;
                 double mass_tolerance = (this.root.monoisotopic_mass + shift) / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance);
                 double low = this.root.monoisotopic_mass + shift - mass_tolerance;
                 double high = this.root.monoisotopic_mass + shift + mass_tolerance;

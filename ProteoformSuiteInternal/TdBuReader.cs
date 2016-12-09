@@ -58,7 +58,8 @@ namespace ProteoformSuiteInternal
                     List<string> cellStrings = new List<string>();
                     for (int k = 0; k < rowcollection[i].Descendants<Cell>().Count(); k++)
                     {
-                        cellStrings.Add(ComponentReader.GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
+                        if (ComponentReader.GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)) != null)
+                             cellStrings.Add(ComponentReader.GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
                     }
 
                     if (td_software == TDSoftware.NRTDP)
