@@ -34,6 +34,7 @@
             this.pictureBox_familyDisplay = new System.Windows.Forms.PictureBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
+            this.bt_export_families = new System.Windows.Forms.Button();
             this.tb_singleton_count = new System.Windows.Forms.TextBox();
             this.lb_singletons = new System.Windows.Forms.Label();
             this.nud_decimalRoundingLabels = new System.Windows.Forms.NumericUpDown();
@@ -50,7 +51,6 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.Families_update = new System.Windows.Forms.Button();
-            this.bt_export_families = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -174,6 +174,16 @@
             this.dgv_proteoform_family_members.Name = "dgv_proteoform_family_members";
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(543, 334);
             this.dgv_proteoform_family_members.TabIndex = 3;
+            // 
+            // bt_export_families
+            // 
+            this.bt_export_families.Location = new System.Drawing.Point(74, 168);
+            this.bt_export_families.Name = "bt_export_families";
+            this.bt_export_families.Size = new System.Drawing.Size(243, 23);
+            this.bt_export_families.TabIndex = 45;
+            this.bt_export_families.Text = "Export Identified Family Proteoforms List";
+            this.bt_export_families.UseVisualStyleBackColor = true;
+            this.bt_export_families.Click += new System.EventHandler(this.bt_export_families_Click);
             // 
             // tb_singleton_count
             // 
@@ -331,16 +341,6 @@
             this.Families_update.UseMnemonic = false;
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
-            // 
-            // bt_export_families
-            // 
-            this.bt_export_families.Location = new System.Drawing.Point(97, 168);
-            this.bt_export_families.Name = "bt_export_families";
-            this.bt_export_families.Size = new System.Drawing.Size(195, 23);
-            this.bt_export_families.TabIndex = 45;
-            this.bt_export_families.Text = "Export Identified Families List";
-            this.bt_export_families.UseVisualStyleBackColor = true;
-            this.bt_export_families.Click += new System.EventHandler(this.bt_export_families_Click);
             // 
             // ProteoformFamilies
             // 

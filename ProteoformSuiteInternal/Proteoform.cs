@@ -543,7 +543,7 @@ namespace ProteoformSuiteInternal
             : base(accession, description, name, fragment, begin, end, unmodified_mass, lysine_count, goTerms, ptm_set, modified_mass, gene_id, is_target)
         { }
         public TheoreticalProteoformGroup(List<TheoreticalProteoform> theoreticals)
-            : base(theoreticals[0].accession + "_T" + theoreticals.Count(), String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.fragment)), theoreticals[0].begin, theoreticals[0].end, theoreticals[0].unmodified_mass, theoreticals[0].lysine_count, theoreticals[0].goTerms, theoreticals[0].ptm_set, theoreticals[0].modified_mass, theoreticals[0].gene_id, theoreticals[0].is_target)
+            : base(theoreticals[0].accession + "_T" + theoreticals.Count(), String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.name)), String.Join(";", theoreticals.Select(t => t.fragment)), theoreticals[0].begin, theoreticals[0].end, theoreticals[0].unmodified_mass, theoreticals[0].lysine_count, theoreticals[0].goTerms, theoreticals[0].ptm_set, theoreticals[0].modified_mass, theoreticals[0].gene_id, theoreticals[0].is_target)
         {
             this.accessionList = theoreticals.Select(p => p.accession).ToList();
         }
@@ -560,6 +560,7 @@ namespace ProteoformSuiteInternal
     public class TopDownProteoform : Proteoform
     {
         public string uniprot_id { get; set; }
+        public string name { get; set; }
         public string sequence { get; set; }
         public int start_index { get; set; }
         public int stop_index { get; set; }
@@ -578,6 +579,7 @@ namespace ProteoformSuiteInternal
         public TopDownProteoform(string accession, TopDownHit root, List<TopDownHit> candidate_hits) : base(accession)
         {
             this.root = root;
+            this.name = root.name;
             this.ptm_list = root.ptm_list;
             this.uniprot_id = root.uniprot_id;
             this.sequence = root.sequence;
