@@ -20,13 +20,13 @@ namespace ProteoformSuiteInternal
         public double monoisotopic_mass { get; set; }
         public double theoretical_mass { get; set; }
         public string accession { get; set; }
-        public string description { get; set; }
+        public string name { get; set; }
 
-        public TopDownHit(string accession, string uniprot_id, string description, string sequence, int start_index, int stop_index, List<Ptm> modifications, double monoisotopic_mass, double theoretical_mass, int scan, double retention_time, string filename, double score)
+        public TopDownHit(string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double monoisotopic_mass, double theoretical_mass, int scan, double retention_time, string filename, double score)
         {
             this.accession = accession;
             this.uniprot_id = uniprot_id;
-            this.description = description;
+            this.name = name;
             this.sequence = sequence;
             this.start_index = start_index;
             this.stop_index = stop_index;

@@ -42,18 +42,18 @@ namespace ProteoformSuiteInternal
 
                 //Load Tables
                 "network import file file=\"" + this.edges_path + "\" firstRowAsColumnNames=true delimiters=\"\\t\" indexColumnSourceInteraction=\"1\" indexColumnTargetInteraction=\"3\" startLoadRow=\"0\" dataTypeList=\"s,s,s,s\"",
-                "command sleep duration=" + (0.8 + Math.Round((1.0 * sleep_factor), 2)).ToString(),
+                "command sleep duration=" + (1.0 + Math.Round((1.0 * sleep_factor), 2)).ToString(),
                 "table import file file =\"" + this.nodes_path + "\" startLoadRow=\"0\" keyColumnIndex=\"1\" DataTypeTargetForNetworkCollection=\"Node Table Columns\" dataTypeList=\"s,s,i\"",
-                "command sleep duration=" + (0.2 + Math.Round((0.2 * sleep_factor), 2)).ToString(),
+                "command sleep duration=" + (1.0 + Math.Round((0.2 * sleep_factor), 2)).ToString(),
 
 
                 //Load Settings
                 "vizmap load file file=\"" + this.styles_path + "\"",
                 "command sleep duration=0.5",
                 "vizmap apply styles=\"" + this.style_name + "\"",
-                "command sleep duration=" + (0.8 + Math.Round((1.0 * sleep_factor), 2)).ToString(),
+                "command sleep duration=" + (1.0 + Math.Round((1.0 * sleep_factor), 2)).ToString(),
                 "layout degree-circle",
-                "command sleep duration=" + (0.5 + Math.Round((0.5 * sleep_factor), 2)).ToString(),
+                "command sleep duration=" + (1.0 + Math.Round((0.5 * sleep_factor), 2)).ToString(),
                 "view fit content"
             });
         }
@@ -91,7 +91,7 @@ namespace ProteoformSuiteInternal
             if (p is ExperimentalProteoform) result = p.accession + "_" + Math.Round(((ExperimentalProteoform)p).agg_mass, Lollipop.deltaM_edge_display_rounding);
             else if (p is TheoreticalProteoform)
             {
-                if (!Lollipop.use_gene_ID || p is TopDownProteoform)
+                if (!Lollipop.use_gene_ID)
                 {
                     result = ((TheoreticalProteoform)p).accession + "_" + ((TheoreticalProteoform)p).ptm_list_string();
                 }
@@ -99,6 +99,10 @@ namespace ProteoformSuiteInternal
                 {
                     result = ((TheoreticalProteoform)p).gene_id + "_" + ((TheoreticalProteoform)p).ptm_list_string();
                 }
+            }
+            else if ( p is TopDownProteoform)
+            {
+                result = ((TopDownProteoform)p).accession + "_" + ((TopDownProteoform)p).ptm_list_string();
             }
             else result = p.accession;
             return result;
@@ -114,7 +118,7 @@ namespace ProteoformSuiteInternal
                 string observations = ((ExperimentalProteoform)p).aggregated_components.Count.ToString();
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p), node_type, observations }) + Environment.NewLine;
             }
-            int average_node_size = Convert.ToInt16(families.Average(f => f.experimental_proteoforms.Average(e => e.observation_count)));
+            int average_node_size  = Convert.ToInt16(families.Average(f => f.experimental_proteoforms.Average(e => e.observation_count))); 
             foreach (TheoreticalProteoform p in families.SelectMany(f => f.theoretical_proteoforms))
             {
                 string node_type = unmodified_theoretical_label;

@@ -36,7 +36,7 @@ namespace ProteoformSuite
         public void construct_families()
         {
             initialize_settings();
-            if (Lollipop.proteoform_community.families.Count <= 0 && Lollipop.proteoform_community.has_e_proteoforms) run_the_gamut();
+            if (Lollipop.proteoform_community.families.Count <= 0 && (Lollipop.proteoform_community.has_e_proteoforms || Lollipop.proteoform_community.topdown_proteoforms.Count > 0)) run_the_gamut();
         }
 
         public DataGridView GetDGV()
@@ -218,22 +218,30 @@ namespace ProteoformSuite
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
                 string folder_path = folderBrowser.SelectedPath;
-                using (var writer = new StreamWriter(folder_path + "\\identified_proteoform_families.tsv"))
+                using (var writer = new StreamWriter(folder_path + "\\identified_proteoforms.tsv"))
                 {
                     int fam_id = 1;
-                    writer.WriteLine("family_id\trelation_type\tdelta_mass\tp1_mass\tp2_mass\tp1_id\tp2_id");
-                    foreach (ProteoformFamily family in Lollipop.proteoform_community.families.Where(f => f.theoretical_count > 0))
+                    writer.WriteLine("family_id\tproteoform_type\tp_id\tptm\tmass\tname");
+                    foreach (ProteoformFamily family in Lollipop.proteoform_community.families.Where(f => f.theoretical_count > 0 || f.topdown_count > 0))
                     {
-                        foreach (ProteoformRelation relation in family.relations)
+                        foreach (TheoreticalProteoform t in family.theoretical_proteoforms)
                         {
-                            string id = relation.connected_proteoforms[1].accession;
-                            if (relation.relation_type == ProteoformComparison.et && Lollipop.use_gene_ID) id = ((TheoreticalProteoform)relation.connected_proteoforms[1]).gene_id.ToString();
-                            writer.WriteLine(String.Join("\t", fam_id, relation.relation_type, relation.delta_mass,
-                                relation.connected_proteoforms[0].modified_mass, relation.connected_proteoforms[1].modified_mass, relation.connected_proteoforms[0].accession, id));
+                            string id = t.accession;
+                            if (Lollipop.use_gene_ID) id = t.gene_id.ToString();
+                            writer.WriteLine(String.Join("\t", fam_id, "Theoretical", id, t.ptm_descriptions, t.modified_mass, t.name));
+                        }
+                        foreach (ExperimentalProteoform exp in family.experimental_proteoforms)
+                        {
+                            writer.WriteLine(String.Join("\t", fam_id, "Experimental", exp.accession, "" , exp.modified_mass, ""));
+                        }
+                        foreach (TopDownProteoform td in family.topdown_proteoforms)
+                        {
+                            writer.WriteLine(String.Join("\t", fam_id, "Top-down", td.accession, td.ptm_descriptions, td.modified_mass, td.name));
                         }
                         fam_id++;
                     }
                 }
+                MessageBox.Show("Successfully exported list of proteoforms in identified families.");
             }
         }
     }
