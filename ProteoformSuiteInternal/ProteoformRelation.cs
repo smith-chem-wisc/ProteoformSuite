@@ -107,6 +107,7 @@ namespace ProteoformSuiteInternal
                 else if (this.relation_type == ProteoformComparison.ed) return "Experimental-Decoy";
                 else if (this.relation_type == ProteoformComparison.ef) return "Experimental-Unequal Lysine Count";
                 else if (this.relation_type == ProteoformComparison.etd) return "Experimental-TopDown";
+                else if (this.relation_type == ProteoformComparison.ttd) return "Theoretical-TopDown";
                 else return "";
             }
         }
@@ -118,7 +119,14 @@ namespace ProteoformSuiteInternal
         }
         public double agg_RT_1
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_rt; } catch { return Double.NaN; } }
+            get
+            {
+                if (connected_proteoforms[0] is ExperimentalProteoform)
+                    return ((ExperimentalProteoform)connected_proteoforms[0]).agg_rt;
+                else if (connected_proteoforms[0] is TopDownProteoform)
+                    return ((TopDownProteoform)connected_proteoforms[0]).agg_rt;
+                else { return 0; }
+            }
         }
         public int num_observations_1
         {
@@ -126,22 +134,22 @@ namespace ProteoformSuiteInternal
         }
         public double proteoform_mass_1
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_mass; } catch { return Double.NaN; } }
+            get { try { return (connected_proteoforms[0]).modified_mass; } catch { return 0; } }
+
+        }
+        public string name_1
+        {
+            get { try { return ((TopDownProteoform)connected_proteoforms[0]).name; } catch { return null; } }
+        }
+        public string ptm_list_1
+        {
+            get { try { return ((TopDownProteoform)connected_proteoforms[0]).ptm_descriptions; } catch { return null; } }
         }
 
         // For DataGridView display of proteform2
         public double proteoform_mass_2
         {
-            get
-            {
-                if (connected_proteoforms[1] is ExperimentalProteoform)
-                    return ((ExperimentalProteoform)connected_proteoforms[1]).agg_mass;
-                else if (connected_proteoforms[1] is TheoreticalProteoform)
-                    return ((TheoreticalProteoform)connected_proteoforms[1]).modified_mass;
-                else if (connected_proteoforms[1] is TopDownProteoform)
-                    return ((TopDownProteoform)connected_proteoforms[1]).modified_mass;
-                else return 0;
-            }
+            get { try { return (connected_proteoforms[1]).modified_mass; } catch { return 0; } }
         }
 
         public double agg_intensity_2
@@ -150,12 +158,8 @@ namespace ProteoformSuiteInternal
         }
         public double agg_RT_2
         {
-            get {
-                if (connected_proteoforms[1] is ExperimentalProteoform)
-                    return ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt;
-                else if (connected_proteoforms[1] is TopDownProteoform)
-                    return ((TopDownProteoform)connected_proteoforms[1]).agg_rt;
-                else { return 0; } }
+            get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt; } catch { return Double.NaN; } }
+
         }
         public int num_observations_2
         {
@@ -167,9 +171,9 @@ namespace ProteoformSuiteInternal
         }
         public string accession_1
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).accession; } catch { return null; } }
+            get { try { return (connected_proteoforms[0]).accession; } catch { return null; } }
         }
-        public string name
+        public string name_2
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).name; } catch { return null; } }
         }
@@ -177,7 +181,7 @@ namespace ProteoformSuiteInternal
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).fragment; } catch { return null; } }
         }
-        public string ptm_list
+        public string ptm_list_2
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).ptm_descriptions; } catch { return null; } }
         }

@@ -103,7 +103,7 @@ namespace ProteoformSuite
         private void topdownResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(topDown);
-            topDown.load_dgv();
+            topDown.load_topdown();
         }
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e) { showForm(quantification); }
         private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)

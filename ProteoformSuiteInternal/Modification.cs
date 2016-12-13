@@ -15,6 +15,8 @@ namespace ProteoformSuiteInternal
         public char[] target_aas { get; set; } = new char[0]; //TG
         public double monoisotopic_mass_shift { get; set; } = 0; //MM
         public double average_mass_shift { get; set; } = 0; //MA
+        public int resid { get; set; } = 0;
+        public int psi_mod { get; set; } = 0;
         public Modification() // constructs an "un-Modification"
         { }
         public Modification(string description, string accession, string featureType,

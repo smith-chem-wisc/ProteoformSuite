@@ -17,12 +17,15 @@ namespace ProteoformSuiteInternal
         public int start_index { get; set; }
         public int stop_index { get; set; }
         public List<Ptm> ptm_list { get; set; } = new List<Ptm>();
-        public double monoisotopic_mass { get; set; }
         public double theoretical_mass { get; set; }
         public string accession { get; set; }
         public string name { get; set; }
+        public Result_Set result_set { get; set; }
 
-        public TopDownHit(string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double monoisotopic_mass, double theoretical_mass, int scan, double retention_time, string filename, double score)
+        public double reported_mass { get; set; } //reported in TD results file
+        public double corrected_mass { get; set; } //calibrated mass
+
+        public TopDownHit(string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double score, Result_Set result_set)
         {
             this.accession = accession;
             this.uniprot_id = uniprot_id;
@@ -31,12 +34,22 @@ namespace ProteoformSuiteInternal
             this.start_index = start_index;
             this.stop_index = stop_index;
             this.ptm_list = modifications;
-            this.monoisotopic_mass = monoisotopic_mass;
+            this.reported_mass = reported_mass;
+            this.corrected_mass = corrected_mass; 
             this.theoretical_mass = theoretical_mass;
             this.scan = scan;
             this.retention_time = retention_time;
             this.filename = filename;
             this.score = score;
+            this.result_set = result_set;
         }
     }
+
+    public enum Result_Set
+    {
+       tight_absolute_mass, 
+       find_unexpected_mods,
+       biomarker
+    }
+
 }

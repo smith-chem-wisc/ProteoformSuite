@@ -157,35 +157,51 @@ namespace ProteoformSuiteInternal
                     && Math.Abs(ep.agg_rt - td_proteoform.agg_rt) < Convert.ToDouble(Lollipop.retention_time_tolerance)).ToList();
                     foreach (ExperimentalProteoform e in matching_e)
                     {
-                        ProteoformRelation td_relation = new ProteoformRelation(e, td_proteoform, ProteoformComparison.etd, (e.modified_mass - td_proteoform.modified_mass));
+                        ProteoformRelation td_relation = new ProteoformRelation( td_proteoform, e, ProteoformComparison.etd, (e.modified_mass - td_proteoform.modified_mass));
                         etd_full_relations.Add(td_relation);
                     }
                 }
 
-                //match each td proteoform to the closest theoretical w/ same accession. 
+                //match each td proteoform to the closest theoretical w/ same accession and number of modifications. (if no match always make relationship with unmodified)
                 if (theoreticals.Count > 0)
                 {
+                    TheoreticalProteoform theo = null;
                     try
                     {
-                        TheoreticalProteoform theo = theoreticals.Where(t => t.accession_reduced == td_proteoform.accession.Split('_')[0]).OrderBy(t => Math.Abs(t.modified_mass - td_proteoform.theoretical_mass)).First();
-                        ProteoformRelation t_td_relation = new ProteoformRelation(theo, td_proteoform, ProteoformComparison.ttd, (td_proteoform.theoretical_mass - theo.modified_mass));
-                        t_td_relation.accepted = true;
-                        t_td_relation.connected_proteoforms[0].relationships.Add(t_td_relation);
-                        t_td_relation.connected_proteoforms[1].relationships.Add(t_td_relation);
-                        td_relations.Add(t_td_relation);
-                    }
-                    catch { }
-                }
+                        theo = theoreticals.Where(t => t.accession_reduced == td_proteoform.accession.Split('_')[0] && t.ptm_list.Count 
+                            == td_proteoform.ptm_list.Count).OrderBy(t => Math.Abs(t.modified_mass - td_proteoform.theoretical_mass)).First();
 
+                    }
+                    catch {
+
+                        if (td_proteoform.ptm_list.Count == 0) continue; //if can't find match to unmodified topdown, nothing to do
+                        //if modified topdown, compare with unmodified theoretical
+                        else
+                        {
+                            try
+                            {
+                                theo = theoreticals.Where(t => t.accession_reduced == td_proteoform.accession.Split('_')[0] && t.ptm_list.Count == 0).OrderBy(
+                          t => Math.Abs(t.modified_mass - td_proteoform.theoretical_mass)).First();
+                            }
+                            catch { continue; }
+                        }
+                    }
+
+                    ProteoformRelation t_td_relation = new ProteoformRelation(td_proteoform, theo, ProteoformComparison.ttd, (td_proteoform.theoretical_mass - theo.modified_mass));
+                    t_td_relation.accepted = true;
+                    t_td_relation.connected_proteoforms[0].relationships.Add(t_td_relation);
+                    t_td_relation.connected_proteoforms[1].relationships.Add(t_td_relation);
+                    td_relations.Add(t_td_relation);
+                }
             }
 
             //map each experimental to only one td proteoform of the same accession #
-            foreach (ExperimentalProteoform e in etd_full_relations.Select(r => r.connected_proteoforms[0]).Distinct())
+            foreach (ExperimentalProteoform e in etd_full_relations.Select(r => r.connected_proteoforms[1]).Distinct())
             {
-                List<ProteoformRelation> relations = etd_full_relations.Where(r => r.connected_proteoforms[0] == e).ToList();
-                foreach (string accession in new HashSet<string>(relations.Select(r => r.connected_proteoforms[1].accession.Split('_')[0])).Distinct())
+                List<ProteoformRelation> relations = etd_full_relations.Where(r => r.connected_proteoforms[1] == e).ToList();
+                foreach (string accession in new HashSet<string>(relations.Select(r => r.connected_proteoforms[0].accession.Split('_')[0])).Distinct())
                 {
-                    List<ProteoformRelation> relations_with_accession = relations.Where(x => x.connected_proteoforms[1].accession.Split('_')[0] == accession).ToList();
+                    List<ProteoformRelation> relations_with_accession = relations.Where(x => x.connected_proteoforms[0].accession.Split('_')[0] == accession).ToList();
                     ProteoformRelation best = relations_with_accession.OrderBy(x => Math.Abs(x.delta_mass)).First();
                     best.accepted = true;
                     best.connected_proteoforms[0].relationships.Add(best);
@@ -238,7 +254,6 @@ namespace ProteoformSuiteInternal
         //CONSTRUCTING FAMILIES
         public void construct_families()
         {
-            if (Lollipop.td_famlies && topdown_proteoforms.Count > 0) Lollipop.make_td_relationships();
             List<Proteoform> inducted = new List<Proteoform>();
             List<Proteoform> remaining = new List<Proteoform>(this.experimental_proteoforms);
             remaining.AddRange(this.topdown_proteoforms);

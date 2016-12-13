@@ -410,9 +410,5 @@ namespace ProteoformSuite
             ProteoformSweet.run_when_form_loads = cb_run_when_load.Checked;
         }
 
-        private void cb_makeFamiliesTD_CheckedChanged(object sender, EventArgs e)
-        {
-            Lollipop.td_famlies = cb_makeFamiliesTD.Checked;
-        }
     }
 }

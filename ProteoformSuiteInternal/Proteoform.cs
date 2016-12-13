@@ -436,7 +436,7 @@ namespace ProteoformSuiteInternal
         public string fragment { get; set; }
         public int begin { get; set; }
         public int end { get; set; }
-        public int gene_id { get; set; }
+        public string gene_id { get; set; }
         public double unmodified_mass { get; set; }
         private string sequence { get; set; }
         public List<GoTerm> goTerms { get; set; } = null;
@@ -462,7 +462,7 @@ namespace ProteoformSuiteInternal
         public string of_interest { get; set; } = "";
         public List<TopDownProteoform> TD_proteoforms { get; set; } = new List<TopDownProteoform>();
 
-        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, int gene_id, bool is_target) :
+        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, string gene_id, bool is_target) :
             base(accession, modified_mass, lysine_count, is_target)
         {
             this.accession = accession;
@@ -539,7 +539,7 @@ namespace ProteoformSuiteInternal
 
         public List<string> accessionList { get; set; } // this is the list of accession numbers for all proteoforms that share the same modified mass. the list gets alphabetical order
 
-        public TheoreticalProteoformGroup(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, int gene_id, bool is_target)
+        public TheoreticalProteoformGroup(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, string gene_id, bool is_target)
             : base(accession, description, name, fragment, begin, end, unmodified_mass, lysine_count, goTerms, ptm_set, modified_mass, gene_id, is_target)
         { }
         public TheoreticalProteoformGroup(List<TheoreticalProteoform> theoreticals)
@@ -595,7 +595,7 @@ namespace ProteoformSuiteInternal
         private void calculate_properties()
         {
             this.agg_rt = topdown_hits.Select(h => h.retention_time).Average(); //need to use average (no intensity info)
-            this.monoisotopic_mass = topdown_hits.Select(h => (h.monoisotopic_mass - Math.Round(h.monoisotopic_mass - root.monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
+            this.monoisotopic_mass = topdown_hits.Select(h => (h.corrected_mass - Math.Round(h.corrected_mass - root.corrected_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.monoisotopic_mass;
             int count = Lollipop.proteoform_community.topdown_proteoforms.Where(p => p.uniprot_id == this.uniprot_id).ToList().Count + 1;
             this.accession = accession + "_" + count + "_" + Math.Round(this.modified_mass, 2);
@@ -621,10 +621,10 @@ namespace ProteoformSuiteInternal
             foreach (int m in missed_monoisotopics)
             {
                 double shift = m * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                double mass_tolerance = (this.root.monoisotopic_mass + shift) / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance);
-                double low = this.root.monoisotopic_mass + shift - mass_tolerance;
-                double high = this.root.monoisotopic_mass + shift + mass_tolerance;
-                bool tolerable_mass = candidate.monoisotopic_mass >= low && candidate.monoisotopic_mass <= high;
+                double mass_tolerance = (this.root.corrected_mass + shift) / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance);
+                double low = this.root.corrected_mass + shift - mass_tolerance;
+                double high = this.root.corrected_mass + shift + mass_tolerance;
+                bool tolerable_mass = candidate.corrected_mass >= low && candidate.corrected_mass <= high;
                 if (tolerable_mass) return true;
             }
             return false;

@@ -83,10 +83,16 @@ namespace ProteoformSuiteInternal
                             }
                         }
                         string[] full_filename = cellStrings[14].Split('.');
-                        //convert into new td proteoform
-                        TopDownHit td_proteoform = new TopDownHit(cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
+
+                        Result_Set result_set = new Result_Set();
+                        if (cellStrings[15] == "Tight Absolute Mass") result_set = Result_Set.tight_absolute_mass;
+                        else if (cellStrings[15] == "Find Unexpected Modifications") result_set = Result_Set.find_unexpected_mods;
+                        else if (cellStrings[15] == "BioMarker") result_set = Result_Set.biomarker;
+
+                            //convert into new td hit
+                            TopDownHit td_proteoform = new TopDownHit(cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
                             Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]), ptm_list, Convert.ToDouble(cellStrings[16]), Convert.ToDouble(cellStrings[12]),
-                            Convert.ToInt16(cellStrings[17]), Convert.ToDouble(cellStrings[18]), full_filename[0], Convert.ToDouble(cellStrings[23]));
+                            Convert.ToInt16(cellStrings[17]), Convert.ToDouble(cellStrings[18]), full_filename[0], Convert.ToDouble(cellStrings[23]), result_set);
                         td_proteoforms.Add(td_proteoform);
                     }
 
@@ -126,8 +132,13 @@ namespace ProteoformSuiteInternal
                             }
                         }
                         string[] full_filename = cellStrings[14].Split('.');
+
+                        Result_Set result_set = new Result_Set();
+                        if (cellStrings[3] == "absolute_mass") result_set = Result_Set.tight_absolute_mass;
+                        else if (cellStrings[3] == "biomarker") result_set = Result_Set.biomarker;
+
                         TopDownHit td_proteoform = new TopDownHit(cellStrings[4], accession[0], description[1], sequence,
-                           0, 0, ptm_list, Convert.ToDouble(cellStrings[10]), Convert.ToDouble(cellStrings[9]), 0, 0, full_filename[0], Convert.ToDouble(cellStrings[20]));
+                           0, 0, ptm_list, Convert.ToDouble(cellStrings[10]), Convert.ToDouble(cellStrings[9]), 0, 0, full_filename[0], Convert.ToDouble(cellStrings[20]), result_set);
                         td_proteoforms.Add(td_proteoform);
                     }
                 }
