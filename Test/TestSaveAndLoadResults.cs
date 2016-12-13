@@ -142,7 +142,7 @@ namespace Test
             pf2.end = 99;
             pf1.unmodified_mass = 1001.0;
             pf2.unmodified_mass = 999.0;
-            pf1.ptm_set = new PtmSet(new List<Ptm> { new Ptm(1, new Modification("test", "test", "test", "1", new char[] { 'X' }, 2.345, 2.344)) });
+            pf1.ptm_set = new PtmSet(new List<Ptm> { new Ptm(1, new Modification("test", "test", "test", "1", new char[] { 'X' }, 2.345, 2.344))});
             pf2.ptm_set = new PtmSet( new List<Ptm> { new Ptm() });
             Assert.AreEqual(2.345, pf1.ptm_set.mass);
             Assert.AreEqual(0, pf2.ptm_set.mass);

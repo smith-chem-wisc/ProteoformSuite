@@ -38,11 +38,6 @@ namespace ProteoformSuite
                 if (Lollipop.raw_quantification_components.Count > 0)
                     this.FillRawQuantificationComponentsTable();
             }
-
-            if (Lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
-            {
-                if (Lollipop.top_down_hits.Count == 0) Lollipop.process_td_results();
-            }
         }
 
         public DataGridView GetDGV()

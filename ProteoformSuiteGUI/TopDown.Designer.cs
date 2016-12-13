@@ -29,23 +29,27 @@
         private void InitializeComponent()
         {
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.dgv_TD_family = new System.Windows.Forms.DataGridView();
-            this.rtb_sequence = new System.Windows.Forms.RichTextBox();
             this.dgv_TD_proteoforms = new System.Windows.Forms.DataGridView();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.rtb_sequence = new System.Windows.Forms.RichTextBox();
+            this.dgv_TD_family = new System.Windows.Forms.DataGridView();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.tb_tdProteoforms = new System.Windows.Forms.TextBox();
+            this.bt_td_relations = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.tb_tdProteoforms = new System.Windows.Forms.TextBox();
+            this.bt_load_td = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tb_td_relations = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_TD_proteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_TD_family)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_TD_proteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
@@ -65,9 +69,19 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(673, 353);
-            this.splitContainer1.SplitterDistance = 324;
+            this.splitContainer1.Size = new System.Drawing.Size(976, 545);
+            this.splitContainer1.SplitterDistance = 469;
             this.splitContainer1.TabIndex = 1;
+            // 
+            // dgv_TD_proteoforms
+            // 
+            this.dgv_TD_proteoforms.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_TD_proteoforms.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_TD_proteoforms.Location = new System.Drawing.Point(0, 0);
+            this.dgv_TD_proteoforms.Name = "dgv_TD_proteoforms";
+            this.dgv_TD_proteoforms.Size = new System.Drawing.Size(469, 545);
+            this.dgv_TD_proteoforms.TabIndex = 0;
+            this.dgv_TD_proteoforms.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_TD_proteoforms_CellContentClick);
             // 
             // splitContainer2
             // 
@@ -83,18 +97,9 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.dgv_TD_family);
-            this.splitContainer2.Size = new System.Drawing.Size(345, 353);
-            this.splitContainer2.SplitterDistance = 119;
+            this.splitContainer2.Size = new System.Drawing.Size(503, 545);
+            this.splitContainer2.SplitterDistance = 183;
             this.splitContainer2.TabIndex = 0;
-            // 
-            // dgv_TD_family
-            // 
-            this.dgv_TD_family.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_TD_family.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_TD_family.Location = new System.Drawing.Point(0, 0);
-            this.dgv_TD_family.Name = "dgv_TD_family";
-            this.dgv_TD_family.Size = new System.Drawing.Size(345, 230);
-            this.dgv_TD_family.TabIndex = 0;
             // 
             // rtb_sequence
             // 
@@ -102,19 +107,18 @@
             this.rtb_sequence.Location = new System.Drawing.Point(0, 0);
             this.rtb_sequence.Name = "rtb_sequence";
             this.rtb_sequence.ReadOnly = true;
-            this.rtb_sequence.Size = new System.Drawing.Size(345, 119);
+            this.rtb_sequence.Size = new System.Drawing.Size(503, 183);
             this.rtb_sequence.TabIndex = 1;
             this.rtb_sequence.Text = "";
             // 
-            // dgv_TD_proteoforms
+            // dgv_TD_family
             // 
-            this.dgv_TD_proteoforms.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_TD_proteoforms.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_TD_proteoforms.Location = new System.Drawing.Point(0, 0);
-            this.dgv_TD_proteoforms.Name = "dgv_TD_proteoforms";
-            this.dgv_TD_proteoforms.Size = new System.Drawing.Size(324, 353);
-            this.dgv_TD_proteoforms.TabIndex = 0;
-            this.dgv_TD_proteoforms.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_TD_proteoforms_CellContentClick);
+            this.dgv_TD_family.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_TD_family.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_TD_family.Location = new System.Drawing.Point(0, 0);
+            this.dgv_TD_family.Name = "dgv_TD_family";
+            this.dgv_TD_family.Size = new System.Drawing.Size(503, 358);
+            this.dgv_TD_family.TabIndex = 0;
             // 
             // splitContainer3
             // 
@@ -125,22 +129,29 @@
             // 
             // splitContainer3.Panel1
             // 
+            this.splitContainer3.Panel1.Controls.Add(this.label2);
+            this.splitContainer3.Panel1.Controls.Add(this.tb_td_relations);
+            this.splitContainer3.Panel1.Controls.Add(this.bt_load_td);
+            this.splitContainer3.Panel1.Controls.Add(this.bt_td_relations);
             this.splitContainer3.Panel1.Controls.Add(this.label1);
             this.splitContainer3.Panel1.Controls.Add(this.tb_tdProteoforms);
             // 
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.splitContainer1);
-            this.splitContainer3.Size = new System.Drawing.Size(673, 382);
-            this.splitContainer3.SplitterDistance = 25;
+            this.splitContainer3.Size = new System.Drawing.Size(976, 622);
+            this.splitContainer3.SplitterDistance = 73;
             this.splitContainer3.TabIndex = 2;
             // 
-            // tb_tdProteoforms
+            // bt_td_relations
             // 
-            this.tb_tdProteoforms.Location = new System.Drawing.Point(13, 3);
-            this.tb_tdProteoforms.Name = "tb_tdProteoforms";
-            this.tb_tdProteoforms.Size = new System.Drawing.Size(100, 20);
-            this.tb_tdProteoforms.TabIndex = 0;
+            this.bt_td_relations.Location = new System.Drawing.Point(483, 0);
+            this.bt_td_relations.Name = "bt_td_relations";
+            this.bt_td_relations.Size = new System.Drawing.Size(190, 23);
+            this.bt_td_relations.TabIndex = 2;
+            this.bt_td_relations.Text = "Make TopDown Comparisons";
+            this.bt_td_relations.UseVisualStyleBackColor = true;
+            this.bt_td_relations.Click += new System.EventHandler(this.bt_td_relations_Click);
             // 
             // label1
             // 
@@ -151,24 +162,58 @@
             this.label1.TabIndex = 1;
             this.label1.Text = "Topdown Proteoforms";
             // 
+            // tb_tdProteoforms
+            // 
+            this.tb_tdProteoforms.Location = new System.Drawing.Point(13, 3);
+            this.tb_tdProteoforms.Name = "tb_tdProteoforms";
+            this.tb_tdProteoforms.Size = new System.Drawing.Size(100, 20);
+            this.tb_tdProteoforms.TabIndex = 0;
+            // 
+            // bt_load_td
+            // 
+            this.bt_load_td.Location = new System.Drawing.Point(283, -1);
+            this.bt_load_td.Name = "bt_load_td";
+            this.bt_load_td.Size = new System.Drawing.Size(185, 23);
+            this.bt_load_td.TabIndex = 3;
+            this.bt_load_td.Text = "Aggregate TopDown Proteoforms";
+            this.bt_load_td.UseVisualStyleBackColor = true;
+            this.bt_load_td.Click += new System.EventHandler(this.bt_load_td_Click);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(118, 32);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(101, 13);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "TopDown Relations";
+            // 
+            // tb_td_relations
+            // 
+            this.tb_td_relations.Location = new System.Drawing.Point(12, 29);
+            this.tb_td_relations.Name = "tb_td_relations";
+            this.tb_td_relations.Size = new System.Drawing.Size(100, 20);
+            this.tb_td_relations.TabIndex = 4;
+            // 
             // TopDown
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(673, 382);
+            this.ClientSize = new System.Drawing.Size(976, 622);
             this.Controls.Add(this.splitContainer3);
             this.Name = "TopDown";
             this.Text = "TopDown";
+            this.Load += new System.EventHandler(this.TopDown_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_TD_proteoforms)).EndInit();
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_TD_family)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_TD_proteoforms)).EndInit();
             this.splitContainer3.Panel1.ResumeLayout(false);
             this.splitContainer3.Panel1.PerformLayout();
             this.splitContainer3.Panel2.ResumeLayout(false);
@@ -188,5 +233,9 @@
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tb_tdProteoforms;
+        private System.Windows.Forms.Button bt_td_relations;
+        private System.Windows.Forms.Button bt_load_td;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox tb_td_relations;
     }
 }

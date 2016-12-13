@@ -211,8 +211,8 @@ namespace ProteoformSuite
 
             //ET formatting
             dgv.Columns["fragment"].HeaderText = "Fragment";
-            dgv.Columns["ptm_list"].HeaderText = "PTM Description";
-            dgv.Columns["name"].HeaderText = "Name";
+            //dgv.Columns["ptm_list"].HeaderText = "PTM Description";
+            //dgv.Columns["name"].HeaderText = "Name";
             if (mask_experimental)
             {
                 dgv.Columns["num_observations_1"].HeaderText = "Number Experimental Observations";

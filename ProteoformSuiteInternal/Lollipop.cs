@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using MathNet.Numerics;
 
 namespace ProteoformSuiteInternal
 {
@@ -43,6 +44,8 @@ namespace ProteoformSuiteInternal
         public static IEnumerable<InputFile> topdown_files() { return input_files.Where(f => f.purpose == Purpose.TopDown); }
         public static IEnumerable<InputFile> topdownMS1list_files() { return input_files.Where(f => f.purpose == Purpose.TopDownMS1List); }
 
+        public static Dictionary<string, Func<double[], double>> td_corrections = new Dictionary<string, Func<double[], double>>();
+
         public static void process_raw_components()
         {
             if (input_files.Any(f => f.purpose == Purpose.Calibration))
@@ -55,6 +58,17 @@ namespace ProteoformSuiteInternal
                 List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors, TdBuReader.MS1_scans(file.filename));
                 lock (sync)
                 {
+                    if (top_down_hits.Count > 0)
+                    { 
+                    foreach(Component comp in someComponents)
+                    {
+                        foreach (ChargeState cs in comp.charge_states)
+                        {
+                            cs.calculated_mass = cs.calculated_mass +  td_corrections[comp.input_file.filename](new double[] { Convert.ToDouble(comp.scan_range.Split('-')[0]), comp.reported_monoisotopic_mass });
+                        }
+                    }
+                    }
+
                     raw_experimental_components.AddRange(someComponents);
                 }
             });
@@ -62,17 +76,6 @@ namespace ProteoformSuiteInternal
             if (neucode_labeled)
             {
                 process_neucode_components();
-            }
-
-
-        }
-
-        public static void process_td_results()
-        {
-            foreach (InputFile file in Lollipop.topdown_files())
-            {
-                List<TopDownHit> td_file_proteoforms = TdBuReader.ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_software);
-                top_down_hits.AddRange(td_file_proteoforms);
             }
         }
 
@@ -287,23 +290,6 @@ namespace ProteoformSuiteInternal
             return vettedExperimentalProteoforms;
         }
 
-        public static void aggregate_td_hits()
-        {
-            TopDownHit[] remaining_td_hits = new TopDownHit[0];
-            //aggregate to td hit w/ highest C score
-            remaining_td_hits = Lollipop.top_down_hits.OrderByDescending(t => t.score).ToArray();
-
-            while (remaining_td_hits.Length > 0)
-            {
-                TopDownHit root = remaining_td_hits[0];
-                List<TopDownHit> tmp_remaining_td_hits = remaining_td_hits.ToList();
-                //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within mass tolerance used for agg
-                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, tmp_remaining_td_hits.Where(h=> h.accession == root.accession && h.theoretical_mass == root.theoretical_mass).ToList());
-                Lollipop.proteoform_community.topdown_proteoforms.Add(new_pf);
-                remaining_td_hits = tmp_remaining_td_hits.Except(new_pf.topdown_hits).ToArray();
-            }
-            Lollipop.proteoform_community.topdown_proteoforms = Lollipop.proteoform_community.topdown_proteoforms.Where(p => p != null).ToList();
-        }
 
     //Could be improved. Used for manual mass shifting.
     //Idea 1: Start with Components -- have them find the most intense nearby component. Then, go through and correct edge cases that aren't correct.
@@ -607,6 +593,76 @@ namespace ProteoformSuiteInternal
             Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ee);
             Lollipop.ef_relations = Lollipop.proteoform_community.relate_unequal_ee_lysine_counts();
             Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
+        }
+
+        public static Dictionary<int, Modification> uniprotModificationTable_resid = new Dictionary<int, Modification>();
+        public static Dictionary<int, Modification> uniprotModificationTable_psi_mod = new Dictionary<int, Modification>();
+
+        //TOPDOWN DATA
+        public static void process_td_results()
+        {
+            foreach (InputFile file in Lollipop.topdown_files())
+            {
+                List<TopDownHit> td_file_hits = TdBuReader.ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_software);
+
+                top_down_hits.AddRange(td_file_hits);
+
+            }
+
+            //get corrections
+            List<string> filenames = top_down_hits.Select(h => h.filename).Distinct().ToList();
+            foreach (string filename in filenames)
+            {
+                Func<double[], double> f = get_td_corrections(top_down_hits.Where(h => h.filename == filename && h.result_set == Result_Set.tight_absolute_mass).ToList());
+                td_corrections.Add(filename, f);
+                foreach (TopDownHit td_hit in Lollipop.top_down_hits.Where(h => h.filename == filename).ToList())
+                {
+                    td_hit.corrected_mass = td_hit.reported_mass + f(new double[] { td_hit.scan, td_hit.reported_mass });
+                }
+            }
+        }
+
+        private static Func<double[], double>  get_td_corrections(List<TopDownHit> td_training_hits)
+        {
+            double[] mass_corrections = td_training_hits.Select(h => ( h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0)).ToArray();
+
+            double[][] x_vals = new double[td_training_hits.Count][];
+            int k = 0;
+            foreach(TopDownHit hit in td_training_hits)
+            {
+                double[] vals = new double[] { hit.scan, hit.reported_mass };
+                x_vals[k] = vals;
+                k++;
+            }
+
+            var ye = new Func<double[], double>[2 + 1];
+            ye[0] = a => 1;
+            for (int i = 0; i < 2; i++)
+            {
+                int j = i;
+                ye[j + 1] = a => a[j];
+            }
+
+            Func<double[], double> f = Fit.LinearMultiDimFunc(x_vals, mass_corrections, ye);
+            return f;
+        }
+
+        public static void aggregate_td_hits()
+        {
+            TopDownHit[] remaining_td_hits = new TopDownHit[0];
+            //aggregate to td hit w/ highest C score
+            remaining_td_hits = Lollipop.top_down_hits.OrderByDescending(t => t.score).ToArray();
+
+            while (remaining_td_hits.Length > 0)
+            {
+                TopDownHit root = remaining_td_hits[0];
+                List<TopDownHit> tmp_remaining_td_hits = remaining_td_hits.ToList();
+                //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within mass tolerance used for agg
+                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, tmp_remaining_td_hits.Where(h => h.accession == root.accession && h.theoretical_mass == root.theoretical_mass).ToList());
+                Lollipop.proteoform_community.topdown_proteoforms.Add(new_pf);
+                remaining_td_hits = tmp_remaining_td_hits.Except(new_pf.topdown_hits).ToArray();
+            }
+            Lollipop.proteoform_community.topdown_proteoforms = Lollipop.proteoform_community.topdown_proteoforms.Where(p => p != null).ToList();
         }
 
         public static void make_td_relationships()

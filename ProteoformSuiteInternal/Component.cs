@@ -80,6 +80,7 @@ namespace ProteoformSuiteInternal
                 else { return Weighted_monoisotopic_mass; }
             }
         } //this is computed as the weighted sum of charge state masses.
+
         public void attemptToSetWeightedMonoisotopic_mass(double fromFileMass)
         {
             if (charge_states.Select(cs => cs.charge_count).ToList().Count() > 0)

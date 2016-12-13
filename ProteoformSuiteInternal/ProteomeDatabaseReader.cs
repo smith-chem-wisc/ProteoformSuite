@@ -246,7 +246,7 @@ namespace ProteoformSuiteInternal
                     }
 
                     //Add the full length protein, and then add the fragments with segments of the above modification dictionary
-                    bag_protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, goTerms, positionsAndPtms, gene_id));
+                    bag_protein_list.Add(new Protein(accession, full_name, fragment, begin, end, sequence, goTerms, positionsAndPtms, gene_id.ToString()));
                     //MessageBox.Show("added " + new Protein(accession, name, fragment, begin, end, sequence, positionsAndPtms).ToString());
 
                     //PARALLEL PROBLEM
@@ -270,7 +270,7 @@ namespace ProteoformSuiteInternal
                                     string subsequence = sequence.Substring(feature_begin, feature_end - feature_begin + 1);
                                     if (!justMetCleavage && subsequence.Length != sequence.Length && subsequence.Length >= minPeptideLength)
                                         bag_protein_list.Add(new Protein(accession, full_name, feature_type, feature_begin, feature_end, subsequence, goTerms,
-                                            SegmentPtms(positionsAndPtms, feature_begin, feature_end), gene_id));
+                                            SegmentPtms(positionsAndPtms, feature_begin, feature_end), gene_id.ToString()));
                                 }
                                 break;
                             case "splice variant":

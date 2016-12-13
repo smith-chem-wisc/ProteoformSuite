@@ -27,7 +27,41 @@ namespace ProteoformSuite
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.topdown_proteoforms);
             load_colors();
             load_ptm_colors();
-            tb_tdProteoforms.Text = Lollipop.proteoform_community.topdown_proteoforms.Count.ToString();
+        }
+
+        public void load_topdown()
+        {
+          if (Lollipop.top_down_hits.Count == 0 && Lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
+            {
+                 Lollipop.process_td_results();
+            }
+        }
+
+        private void bt_load_td_Click(object sender, EventArgs e)
+        {
+            if (Lollipop.proteoform_community.topdown_proteoforms.Count == 0)
+            {
+                Lollipop.aggregate_td_hits();
+                tb_tdProteoforms.Text = Lollipop.proteoform_community.topdown_proteoforms.Count.ToString();
+            }
+            DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.top_down_hits);
+
+            //load_dgv();
+        }
+
+        private void bt_td_relations_Click(object sender, EventArgs e)
+        {
+            if (Lollipop.proteoform_community.experimental_proteoforms.Length > 0 && Lollipop.proteoform_community.topdown_proteoforms.Count > 0)
+            {
+                Lollipop.make_td_relationships();
+                tb_td_relations.Text = Lollipop.td_relations.Count.ToString();
+
+            }
+            else
+            {
+                if (Lollipop.proteoform_community.experimental_proteoforms.Length > 0) MessageBox.Show("Go back and load in topdown results.");
+                else if (Lollipop.proteoform_community.topdown_proteoforms.Count > 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
+            }
         }
 
         private void dgv_TD_proteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -36,7 +70,7 @@ namespace ProteoformSuite
             {
                 dgv_TD_family.DataSource = null;
                 TopDownProteoform p = (TopDownProteoform)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem;
-                if (p.family != null) DisplayUtility.FillDataGridView(dgv_TD_family, p.family.relations);
+                if (p.relationships != null) DisplayUtility.FillDataGridView(dgv_TD_family, p.relationships);  //show T-TD and E-TD relations
                 get_proteoform_sequence(p);
             }
         }
@@ -112,6 +146,11 @@ namespace ProteoformSuite
             }
             IEnumerable<string> unique_ptm = ptm.Select(p => p.modification.description).Distinct();
             mods = unique_ptm.ToList();
+        }
+
+        private void TopDown_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
