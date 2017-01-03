@@ -118,7 +118,7 @@ namespace ProteoformSuiteInternal
                 string observations = ((ExperimentalProteoform)p).aggregated_components.Count.ToString();
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p), node_type, observations }) + Environment.NewLine;
             }
-            int average_node_size  = Convert.ToInt16(families.Average(f => f.experimental_proteoforms.Average(e => e.observation_count))); 
+            int average_node_size  = Convert.ToInt16(families.Where(f => f.experimental_count > 0).Average(f => f.experimental_proteoforms.Average(e => e.observation_count))); 
             foreach (TheoreticalProteoform p in families.SelectMany(f => f.theoretical_proteoforms))
             {
                 string node_type = unmodified_theoretical_label;

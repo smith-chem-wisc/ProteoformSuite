@@ -35,7 +35,7 @@ namespace ProteoformSuiteInternal
             this.stop_index = stop_index;
             this.ptm_list = modifications;
             this.reported_mass = reported_mass;
-            this.corrected_mass = corrected_mass; 
+            this.corrected_mass = reported_mass; 
             this.theoretical_mass = theoretical_mass;
             this.scan = scan;
             this.retention_time = retention_time;

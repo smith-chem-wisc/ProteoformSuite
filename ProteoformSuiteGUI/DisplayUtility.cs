@@ -241,7 +241,7 @@ namespace ProteoformSuite
                 dgv.Columns["accession_2"].HeaderText = "Light Experimental Accession";
                 dgv.Columns["proteoform_mass_1"].HeaderText = "Heavy Experimental Aggregated Mass";
                 dgv.Columns["proteoform_mass_2"].HeaderText = "Light Experimental Aggregated Mass";
-                dgv.Columns["name"].Visible = false;
+               // dgv.Columns["name"].Visible = false;
                 dgv.Columns["fragment"].Visible = false;
             }
 

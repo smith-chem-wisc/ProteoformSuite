@@ -53,7 +53,7 @@ namespace ProteoformSuiteInternal
             }
         }
         public double neuCodeCorrection { get; set; } = 0;
-
+        public double topdown_correction { get; set; } = 0;
         private double Intensity_sum { get; set; } = 0;
         public double intensity_sum //intensity sum for all charge states. Different value that what is reported by deconv 4.0 for some reason
         {
@@ -76,10 +76,28 @@ namespace ProteoformSuiteInternal
         {
             get 
             {
-                if (charge_states.Select(cs=>cs.charge_count).ToList().Count() > 0) { return this.charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum() + manual_mass_shift + neuCodeCorrection; }
+                if (charge_states.Select(cs=>cs.charge_count).ToList().Count() > 0) { return this.charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum() + manual_mass_shift + neuCodeCorrection + topdown_correction; }
                 else { return Weighted_monoisotopic_mass; }
             }
         } //this is computed as the weighted sum of charge state masses.
+
+        //not calibrated with either lock mass or top down data... 
+        public double uncalibrated_monoisotopic_mass
+        {
+            get {
+                List<ChargeState> uncorrected_charge_states = new List<ChargeState>();
+                foreach (ChargeState cs in this.charge_states)
+                {
+                    List<string> cs_info = new List<string>();
+                    cs_info.Add(cs.charge_count.ToString());
+                    cs_info.Add(cs.intensity.ToString());
+                    cs_info.Add(cs.mz_centroid.ToString());
+                    uncorrected_charge_states.Add(new ChargeState(cs_info, 0));
+                }
+                return uncorrected_charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum();
+            }
+        }
+        
 
         public void attemptToSetWeightedMonoisotopic_mass(double fromFileMass)
         {

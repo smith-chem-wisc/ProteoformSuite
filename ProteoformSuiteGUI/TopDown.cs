@@ -39,23 +39,30 @@ namespace ProteoformSuite
 
         private void bt_load_td_Click(object sender, EventArgs e)
         {
-            if (Lollipop.proteoform_community.topdown_proteoforms.Count == 0)
-            {
-                Lollipop.aggregate_td_hits();
+            Lollipop.proteoform_community.topdown_proteoforms.Clear();
+            clear_lists();
+            Lollipop.aggregate_td_hits();
                 tb_tdProteoforms.Text = Lollipop.proteoform_community.topdown_proteoforms.Count.ToString();
-            }
-            DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.top_down_hits);
+            load_dgv();
+        }
 
-            //load_dgv();
+        private void clear_lists()
+        {
+            Lollipop.td_relations.Clear();
+            foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.etd);
+            foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ttd);
+            dgv_TD_proteoforms.DataSource = null;
+            dgv_TD_proteoforms.Rows.Clear();
         }
 
         private void bt_td_relations_Click(object sender, EventArgs e)
         {
             if (Lollipop.proteoform_community.experimental_proteoforms.Length > 0 && Lollipop.proteoform_community.topdown_proteoforms.Count > 0)
             {
+                clear_lists();
                 Lollipop.make_td_relationships();
                 tb_td_relations.Text = Lollipop.td_relations.Count.ToString();
-
+                load_dgv();
             }
             else
             {
@@ -70,7 +77,10 @@ namespace ProteoformSuite
             {
                 dgv_TD_family.DataSource = null;
                 TopDownProteoform p = (TopDownProteoform)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem;
-                if (p.relationships != null) DisplayUtility.FillDataGridView(dgv_TD_family, p.relationships);  //show T-TD and E-TD relations
+                if (p.relationships != null)
+                {
+                    DisplayUtility.FillDataGridView(dgv_TD_family, p.relationships);  //show T-TD and E-TD relationsj
+                }
                 get_proteoform_sequence(p);
             }
         }

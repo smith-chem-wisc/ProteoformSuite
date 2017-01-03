@@ -58,6 +58,7 @@
             this.bt_tdResultsClear = new System.Windows.Forms.Button();
             this.bt_clearResults = new System.Windows.Forms.Button();
             this.cb_run_when_load = new System.Windows.Forms.CheckBox();
+            this.cb_calibrate_td_results = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_identificationFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantitationFiles)).BeginInit();
@@ -69,6 +70,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cb_calibrate_td_results);
             this.groupBox1.Controls.Add(this.cb_td_file);
             this.groupBox1.Controls.Add(this.btn_unlabeled);
             this.groupBox1.Controls.Add(this.btn_neucode);
@@ -387,6 +389,17 @@
             this.cb_run_when_load.UseVisualStyleBackColor = true;
             this.cb_run_when_load.CheckedChanged += new System.EventHandler(this.cb_run_when_load_CheckedChanged);
             // 
+            // cb_calibrate_td_results
+            // 
+            this.cb_calibrate_td_results.AutoSize = true;
+            this.cb_calibrate_td_results.Location = new System.Drawing.Point(177, 91);
+            this.cb_calibrate_td_results.Name = "cb_calibrate_td_results";
+            this.cb_calibrate_td_results.Size = new System.Drawing.Size(178, 17);
+            this.cb_calibrate_td_results.TabIndex = 28;
+            this.cb_calibrate_td_results.Text = "Calibrate with Top-down Results";
+            this.cb_calibrate_td_results.UseVisualStyleBackColor = true;
+            this.cb_calibrate_td_results.CheckedChanged += new System.EventHandler(this.cb_calibrate_td_results_CheckedChanged);
+            // 
             // LoadResults
             // 
             this.ClientSize = new System.Drawing.Size(1362, 736);
@@ -461,5 +474,6 @@
         private System.Windows.Forms.CheckBox cb_td_file;
         private System.Windows.Forms.Button bt_clearResults;
         private System.Windows.Forms.CheckBox cb_run_when_load;
+        private System.Windows.Forms.CheckBox cb_calibrate_td_results;
     }
 }
