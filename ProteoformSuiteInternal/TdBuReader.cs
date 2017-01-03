@@ -151,6 +151,7 @@ namespace ProteoformSuiteInternal
         public static List<string> MS1_scans(string filename)
         {
             if (Lollipop.td_results)
+
             { //find MS1 list corresponding to identification file (will only read in components in MS1 scans)
                 List<InputFile> td_files = Lollipop.topdownMS1list_files().Where(t => t.filename == filename).ToList(); //checked in GUI for 1 matching file
                 string[] td_file = File.ReadAllLines(td_files[0].path + "\\" + td_files[0].filename + td_files[0].extension);

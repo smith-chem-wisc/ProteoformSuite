@@ -196,13 +196,13 @@ namespace ProteoformSuiteInternal
             }
 
             //map each experimental to only one td proteoform of the same accession #
-            foreach (ExperimentalProteoform e in etd_full_relations.Select(r => r.connected_proteoforms[1]).Distinct())
+            foreach (ExperimentalProteoform e in etd_full_relations.Where(r => r.relation_type == ProteoformComparison.etd).Select(r => r.connected_proteoforms[1]).Distinct())
             {
                 List<ProteoformRelation> relations = etd_full_relations.Where(r => r.connected_proteoforms[1] == e).ToList();
                 foreach (string accession in new HashSet<string>(relations.Select(r => r.connected_proteoforms[0].accession.Split('_')[0])).Distinct())
                 {
                     List<ProteoformRelation> relations_with_accession = relations.Where(x => x.connected_proteoforms[0].accession.Split('_')[0] == accession).ToList();
-                    ProteoformRelation best = relations_with_accession.OrderBy(x => Math.Abs(x.delta_mass)).First();
+                    ProteoformRelation best = relations_with_accession.OrderBy(x => Math.Abs(x.delta_mass - Math.Round(x.delta_mass, 0))).First();
                     best.accepted = true;
                     best.connected_proteoforms[0].relationships.Add(best);
                     best.connected_proteoforms[1].relationships.Add(best);
@@ -255,7 +255,7 @@ namespace ProteoformSuiteInternal
         public void construct_families()
         {
             List<Proteoform> inducted = new List<Proteoform>();
-            List<Proteoform> remaining = new List<Proteoform>(this.experimental_proteoforms);
+            List<Proteoform> remaining = new List<Proteoform>(this.experimental_proteoforms.Where(e => e.accepted).ToList());
             remaining.AddRange(this.topdown_proteoforms);
             int family_id = 1;
             while (remaining.Count > 0)

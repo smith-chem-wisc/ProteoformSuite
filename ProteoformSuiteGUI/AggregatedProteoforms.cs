@@ -27,11 +27,6 @@ namespace ProteoformSuite
         {
             return Lollipop.neucode_labeled && Lollipop.raw_neucode_pairs.Count > 0 || Lollipop.raw_experimental_components.Count > 0;
         }
-        
-        private bool ready_to_aggregate_td()
-        {
-            return Lollipop.top_down_hits.Count > 0;
-        }
 
         public void aggregate_proteoforms()
         {
@@ -44,13 +39,7 @@ namespace ProteoformSuite
                 updateFiguresOfMerit();
                 this.Cursor = Cursors.Default;
             }
-            if (ready_to_aggregate_td())
-            {
-                Lollipop.proteoform_community.topdown_proteoforms.Clear();
-                Lollipop.td_relations.Clear();
-                Lollipop.aggregate_td_hits();
-            }
-            if (!ready_to_aggregate() && !ready_to_aggregate_td()){ MessageBox.Show("Go back and load in deconvolution results."); }
+           else { MessageBox.Show("Go back and load in deconvolution results."); }
         }
 
         public DataGridView GetDGV()
@@ -87,6 +76,10 @@ namespace ProteoformSuite
             nUD_min_num_CS.Minimum = 0;
             nUD_min_num_CS.Maximum = 20;
             nUD_min_num_CS.Value = Lollipop.min_num_CS;
+
+            nUD_min_num_bioreps.Minimum = 1;
+            nUD_min_num_bioreps.Maximum = 20;
+            nUD_min_num_bioreps.Value = Lollipop.min_num_bioreps;
         }
 
         public void FillAggregatesTable()
@@ -206,6 +199,11 @@ namespace ProteoformSuite
         private void nUD_min_num_CS_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.min_num_CS = Convert.ToInt16(nUD_min_num_CS.Value);
+        }
+
+        private void nUD_min_num_bioreps_ValueChanged(object sender, EventArgs e)
+        {
+            Lollipop.min_num_bioreps = Convert.ToInt16(nUD_min_num_bioreps.Value);
         }
     }
 }

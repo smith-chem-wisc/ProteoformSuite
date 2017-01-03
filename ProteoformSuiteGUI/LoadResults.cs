@@ -378,9 +378,9 @@ namespace ProteoformSuite
                     enter_input_files(openFileDialog1.FileNames, new List<string> { ".txt" }, Purpose.TopDownMS1List);
                 else { cb_td_file.Checked = false; Lollipop.td_results = false; return; }
                 //Make sure those files matched. 
-                foreach (InputFile file in Lollipop.topdownMS1list_files())
+                foreach (InputFile file in Lollipop.identification_files())
                 {
-                    int matching_files = Lollipop.identification_files().Where(f => f.filename == file.filename).ToList().Count;
+                    int matching_files = Lollipop.topdownMS1list_files().Where(f => f.filename == file.filename).ToList().Count;
                     if (matching_files > 1)
                     {
                         MessageBox.Show("There is more than one results file named " + file.filename + ". Please try again and choose one file per one identification result file.");
@@ -410,5 +410,22 @@ namespace ProteoformSuite
             ProteoformSweet.run_when_form_loads = cb_run_when_load.Checked;
         }
 
+        private void cb_calibrate_td_results_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.calibrate_td_results = cb_calibrate_td_results.Checked;
+            if (Lollipop.calibrate_td_results)
+            {
+                if (!Lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
+                {
+                    MessageBox.Show("Load in top-down results to calibrate deconvolution results.");
+                    cb_calibrate_td_results.Checked = false;
+                    Lollipop.calibrate_td_results = false;
+                }
+                else if (Lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
+                {
+                    Lollipop.calibrate_td_results = cb_calibrate_td_results.Checked;
+                }
+            }
+        }
     }
 }

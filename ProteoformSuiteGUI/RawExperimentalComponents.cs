@@ -18,6 +18,11 @@ namespace ProteoformSuite
 
         public void load_raw_components()
         {
+            if (Lollipop.top_down_hits.Count == 0 && Lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
+            {
+                Lollipop.process_td_results();
+            }
+
             if (Lollipop.input_files.Any(f => f.purpose == Purpose.Identification))
             {
                 if (Lollipop.raw_experimental_components.Count == 0)
