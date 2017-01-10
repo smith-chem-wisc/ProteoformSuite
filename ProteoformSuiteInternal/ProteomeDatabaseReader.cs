@@ -8,6 +8,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
+using UsefulProteomicsDatabases;
 
 
 //Inspired by the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
@@ -60,10 +61,12 @@ namespace ProteoformSuiteInternal
                 string accession = "";
                 string featureType = "";
                 string position = "";
+                string ptm_category = "";
                 double monoisotopicMassShift = 0;
                 double averageMassShift = 0;
+                string resid = ""; 
                 char[] targetAAs = new char[2];
-
+                string chemical_formula_line = "";
                 //Read lines and enter ptm information into the dictionary
                 while (uniprot_mods.Peek() != -1)
                 {
@@ -79,7 +82,7 @@ namespace ProteoformSuiteInternal
                             case "FT":
                                 featureType = line.Substring(5); break;
                             case "PP":
-                                position = line.Substring(5); break;
+                                position = line.Substring(5).Trim('.'); break;
                             case "MM":
                                 monoisotopicMassShift = double.Parse(line.Substring(5)); break;
                             case "MA":
@@ -94,9 +97,18 @@ namespace ProteoformSuiteInternal
                                 }
                                 targetAAs = bases;
                                 break;
+                            case "KW":
+                                ptm_category = line.Substring(5).TrimEnd('.'); break;
+                            case "DR":                  
+                                string full_line = line.Substring(5);
+                                if (full_line.Contains("RESID")) resid = full_line.TrimEnd('.').Substring(full_line.IndexOf("AA"));
+                                break;
+                            case "CF":
+                                chemical_formula_line = line.Substring(5);
+                                break;
                             case "//":
                                 uniprotModifications.Add(
-                                    description, new Modification(description, accession, featureType, position, targetAAs, monoisotopicMassShift, averageMassShift));
+                                    description, new Modification(description, accession, featureType, position, targetAAs, monoisotopicMassShift, averageMassShift, ptm_category, resid, chemical_formula_line));
                                 count++;
                                 break;
                         }

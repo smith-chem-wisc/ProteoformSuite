@@ -12,9 +12,9 @@ namespace ProteoformSuiteInternal
     {
         private List<Component> raw_components_in_file = new List<Component>();
         private static List<NeuCodePair> neucodePairs_in_file = new List<NeuCodePair>();
-        private List<string> MS1_scans = new List<string>();
+        private List<int> MS1_scans = new List<int>();
 
-        public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction>correctionFactors, List<string> MS1_scans)
+        public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction>correctionFactors, List<int> MS1_scans)
         {
             this.MS1_scans.Clear();
             this.MS1_scans = MS1_scans;
@@ -328,7 +328,7 @@ namespace ProteoformSuiteInternal
         {
             string[] scans = c.scan_range.Split('-');
             bool same_scan = scans[0] == scans[1];
-            bool MS1_scan = MS1_scans.Contains(scans[0]);
+            bool MS1_scan = MS1_scans.Contains(Convert.ToInt16(scans[0]));
             bool not_repeat = raw_components_in_file.Where(r => r.scan_range == c.scan_range && r.reported_monoisotopic_mass == c.reported_monoisotopic_mass).ToList().Count == 0;
             if (same_scan && MS1_scan && not_repeat) return true;
             else return false;

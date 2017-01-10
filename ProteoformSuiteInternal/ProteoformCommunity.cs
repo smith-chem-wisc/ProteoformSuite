@@ -195,7 +195,7 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            //map each experimental to only one td proteoform of the same accession #
+            // map each experimental to only one td proteoform of the same accession #
             foreach (ExperimentalProteoform e in etd_full_relations.Where(r => r.relation_type == ProteoformComparison.etd).Select(r => r.connected_proteoforms[1]).Distinct())
             {
                 List<ProteoformRelation> relations = etd_full_relations.Where(r => r.connected_proteoforms[1] == e).ToList();
@@ -211,6 +211,7 @@ namespace ProteoformSuiteInternal
             }
 
             return td_relations;
+
         }
 
         //GROUP and ANALYZE RELATIONS

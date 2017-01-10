@@ -101,7 +101,7 @@ namespace ProteoformSuiteInternal
         Calibration,
         BottomUp,
         TopDown,
-        TopDownMS1List
+        RawFile
     }
 
     public enum Labeling
