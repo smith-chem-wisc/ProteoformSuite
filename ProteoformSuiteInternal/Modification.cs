@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -15,12 +16,13 @@ namespace ProteoformSuiteInternal
         public char[] target_aas { get; set; } = new char[0]; //TG
         public double monoisotopic_mass_shift { get; set; } = 0; //MM
         public double average_mass_shift { get; set; } = 0; //MA
-        public int resid { get; set; } = 0;
-        public int psi_mod { get; set; } = 0;
+        public string ptm_category { get; set; } = ""; //KW
+        public string resid { get; set; } = ""; //DR
+        public string chemical_formula_line { get; set; } = "";
         public Modification() // constructs an "un-Modification"
         { }
         public Modification(string description, string accession, string featureType,
-            string position, char[] targetAAs, double monoisotopicMassShift, double averageMassShift)
+            string position, char[] targetAAs, double monoisotopicMassShift, double averageMassShift, string ptm_category, string resid, string chemical_formula_line )
         {
             this.description = description;
             this.accession = accession;
@@ -29,6 +31,9 @@ namespace ProteoformSuiteInternal
             this.target_aas = targetAAs;
             this.monoisotopic_mass_shift = monoisotopicMassShift;
             this.average_mass_shift = averageMassShift;
+            this.ptm_category = ptm_category;
+            this.resid = resid;
+            this.chemical_formula_line = chemical_formula_line;
         }
 
         public Modification(string description)

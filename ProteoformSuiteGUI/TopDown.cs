@@ -102,7 +102,7 @@ namespace ProteoformSuite
                 catch { i = 0; } //just make color blue if > 20 unique PTMs
                 Color color = colors[i];
 
-                rtb_sequence.SelectionStart = ptm.position - 1;
+                rtb_sequence.SelectionStart = ptm.position;
                 rtb_sequence.SelectionLength = 1;
                 rtb_sequence.SelectionColor = color;
             }

@@ -133,9 +133,9 @@ namespace ProteoformSuite
             // Look for results files with the same filename as a calibration file, and show that they're matched
             foreach (InputFile file in Lollipop.calibration_files())
             {
-                if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.TopDownMS1List).Select(f => f.filename).Contains(file.filename))
+                if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.RawFile).Select(f => f.filename).Contains(file.filename))
                 {
-                    IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.TopDownMS1List && f.filename == file.filename);
+                    IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.RawFile && f.filename == file.filename);
                     InputFile matching_file = matching_files.First();
                     if (matching_files.Count() != 1) MessageBox.Show("Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + ".");
                     file.matchingCalibrationFile = true;
@@ -290,6 +290,10 @@ namespace ProteoformSuite
             if (i == 1) DisplayUtility.EditInputFileDGVs(dgv_tdFiles, Purpose.TopDown);  //adds drop-down column for dataresults first time td file added
             DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
             for (int j = 0; j < i; j++ ) {InputFile input = (InputFile)dgv_tdFiles.Rows[j].DataBoundItem; dgv_tdFiles.Rows[j].Cells[0].Value = input.td_software; } //display
+            if (Lollipop.ptmlist_filepath.Length == 0) get_ptm_list();
+            ProteomeDatabaseReader.oldPtmlistFilePath = Lollipop.ptmlist_filepath;
+            Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist(); //need for reading in TD hit PTMs
+
         }
 
         // CLEAR BUTTONS
@@ -368,30 +372,30 @@ namespace ProteoformSuite
             Lollipop.td_results = cb_td_file.Checked;
             if (Lollipop.td_results)
             {
-                MessageBox.Show("Please select the a list of scan #'s corresponding to MS1 scans.");
+                MessageBox.Show("Please select corresponding Thermo data files.");
                 OpenFileDialog openFileDialog1 = new OpenFileDialog();
-                openFileDialog1.Title = "MS1 Scans";
-                openFileDialog1.Filter = "MS1 Scans (.txt) | *.txt";
-                openFileDialog1.Multiselect = true; //TODO: ADD THERMO RAW FILE READER OPTION TO FIND MS-1 SCAN #'S IN SUITE?
+                openFileDialog1.Title = "Thermo Data Files";
+                openFileDialog1.Filter = "Thermo Data Files (.raw) | *.raw";
+                openFileDialog1.Multiselect = true;
                 DialogResult dr = openFileDialog1.ShowDialog();
                 if (dr == DialogResult.OK)
-                    enter_input_files(openFileDialog1.FileNames, new List<string> { ".txt" }, Purpose.TopDownMS1List);
+                    enter_input_files(openFileDialog1.FileNames, new List<string> { ".raw" }, Purpose.RawFile);
                 else { cb_td_file.Checked = false; Lollipop.td_results = false; return; }
                 //Make sure those files matched. 
                 foreach (InputFile file in Lollipop.identification_files())
                 {
-                    int matching_files = Lollipop.topdownMS1list_files().Where(f => f.filename == file.filename).ToList().Count;
+                    int matching_files = Lollipop.raw_files().Where(f => f.filename == file.filename).ToList().Count;
                     if (matching_files > 1)
                     {
-                        MessageBox.Show("There is more than one results file named " + file.filename + ". Please try again and choose one file per one identification result file.");
-                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.TopDownMS1List); //start over....
+                        MessageBox.Show("There is more than one results file named " + file.filename + ". Please try again and choose one data file per one identification result file.");
+                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.RawFile); //start over....
                         cb_td_file.Checked = false; Lollipop.td_results = false;
                         return;
                     }
                     else if (matching_files < 1)
                     {
-                        MessageBox.Show("There is no matching deconvolution result for the file " + file.filename + ". Please try again and select a file with the same name as the identification result file.");
-                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.TopDownMS1List); //start over....
+                        MessageBox.Show("There is no matching deconvolution result for the file " + file.filename + ". Please try again and select a data file with the same name as the identification result file.");
+                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.RawFile); //start over....
                         cb_td_file.Checked = false; Lollipop.td_results = false;
                         return;
                     }
@@ -426,6 +430,20 @@ namespace ProteoformSuite
                     Lollipop.calibrate_td_results = cb_calibrate_td_results.Checked;
                 }
             }
+        }
+
+        private void get_ptm_list()
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            MessageBox.Show("Please select a Uniprot ptm list.");
+            DialogResult dr = ofd.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                string ptm_list = ofd.FileName;
+                Lollipop.ptmlist_filepath = ptm_list;
+            }
+            else if (dr == DialogResult.Cancel) return;
+            else return;
         }
     }
 }

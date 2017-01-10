@@ -8,6 +8,7 @@ namespace ProteoformSuiteInternal
 {
     public class TopDownHit
     {
+        public MsScan ms_scan { get; set; }
         public int scan { get; set; }
         public double retention_time { get; set; }
         public string filename { get; set; }
@@ -25,6 +26,11 @@ namespace ProteoformSuiteInternal
         public double reported_mass { get; set; } //reported in TD results file
         public double corrected_mass { get; set; } //calibrated mass
 
+        public int charge { get; set; }
+        public double mass_error { get; set; }
+        public double mz { get; set; }
+        public double intensity { get; set; } //precursor ion intensity
+
         public TopDownHit(string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double score, Result_Set result_set)
         {
             this.accession = accession;
@@ -35,7 +41,7 @@ namespace ProteoformSuiteInternal
             this.stop_index = stop_index;
             this.ptm_list = modifications;
             this.reported_mass = reported_mass;
-            this.corrected_mass = reported_mass; 
+            this.corrected_mass = reported_mass;
             this.theoretical_mass = theoretical_mass;
             this.scan = scan;
             this.retention_time = retention_time;
@@ -43,13 +49,79 @@ namespace ProteoformSuiteInternal
             this.score = score;
             this.result_set = result_set;
         }
+
+        public TopDownHit(int scan, string filename)
+        {
+            this.scan = scan;
+            this.filename = filename;
+        }
+
+        public double get_mass_error(double theoretical, double observed)
+        {
+            return (observed - theoretical_mass) - Math.Round(observed - theoretical, 0);
+        }
     }
 
     public enum Result_Set
     {
-       tight_absolute_mass, 
-       find_unexpected_mods,
-       biomarker
+        tight_absolute_mass,
+        find_unexpected_mods,
+        biomarker
     }
+
+    //CALIBRATION
+    public class TrainingPoint 
+    {
+        public DataPoint dp;
+        public double l;
+
+        public TrainingPoint(DataPoint t, double label)
+        {
+            dp = t;
+            l = label;
+        }
+    }
+
+    public class DataPoint
+    {
+        public double mz;
+        public double rt;
+        public int msnOrder;
+        public double intensity;
+        public int SelectedIonGuessChargeStateGuess;
+        public double IsolationMZ;
+        public double TotalIonCurrent;
+        public double InjectionTime;
+        public double relativeMZ;
+        public string filename;
+
+        public DataPoint(double mz, double rt, int msnOrder, double intensity, double TotalIonCurrent, double InjectionTime, string filename, int SelectedIonGuessChargeStateGuess = 0, double IsolationMZ = 0, double relativeMZ = 0)
+        {
+            this.mz = mz;
+            this.rt = rt;
+            this.msnOrder = msnOrder;
+            this.intensity = 0;
+            this.SelectedIonGuessChargeStateGuess = SelectedIonGuessChargeStateGuess;
+            this.IsolationMZ = IsolationMZ;
+            this.TotalIonCurrent = 0;
+            this.InjectionTime = 0;
+            this.relativeMZ = relativeMZ;
+            this.filename = filename;
+        }
+    }
+
+        public class LabeledDataPoint
+    {
+        public double[] inputs;
+        public double output;
+
+        public LabeledDataPoint(double[] v1, double v2)
+        {
+            inputs = v1;
+            output = v2;
+        }
+    }
+
+
 
 }

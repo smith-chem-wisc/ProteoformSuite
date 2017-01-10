@@ -40,7 +40,7 @@ namespace ProteoformSuite
                 {
                     if (result.ChartElementType == ChartElementType.DataPoint)
                     {
-                        DataPoint prop = result.Object as DataPoint;
+                        System.Windows.Forms.DataVisualization.Charting.DataPoint prop = result.Object as System.Windows.Forms.DataVisualization.Charting.DataPoint;
                         if (prop != null)
                         {
                             double pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
