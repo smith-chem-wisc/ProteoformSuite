@@ -54,11 +54,12 @@ namespace ProteoformSuiteInternal
         public double neuCodeCorrection { get; set; } = 0;
 
         private double Intensity_sum { get; set; } = 0;
-        public double intensity_sum //intensity sum for all charge states. Different value that what is reported by deconv 4.0 for some reason
+        public double intensity_sum //intensity sum for all charge states. Different value than what is reported by deconv 4.0 for some reason
         {
             get
-            { 
-                if (charge_states.Select(cs => cs.charge_count).ToList().Count() > 0) { return charge_states.Select(cs => cs.intensity).ToList().Sum(); }
+            {
+                var csLIst = charge_states.Select(cs => cs.intensity).ToList();
+                if (csLIst.Count() > 0) { return csLIst.Sum(); }
                 else { return Intensity_sum; }
             }
         }
