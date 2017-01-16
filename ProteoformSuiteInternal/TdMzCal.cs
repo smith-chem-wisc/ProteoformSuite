@@ -19,10 +19,10 @@ namespace ProteoformSuiteInternal
     {
         //parameters
         public static double fineResolution = 0.1;
-        public static string[] filenames = new string[18];
-        public static int[] training_points = new int[18];
-        public static int[] hits_total = new int[18];
-        public static int[] hits_tight_mass = new int[18];
+        public static string[] filenames = new string[59];
+        public static int[] training_points = new int[59];
+        public static int[] hits_total = new int[59];
+        public static int[] hits_tight_mass = new int[59];
         public static int i = 0;
         //runner
         public static CalibrationFunction Run_TdMzCal(string filename, string raw_file_path, List<TopDownHit> identifications)
@@ -35,21 +35,20 @@ namespace ProteoformSuiteInternal
                 MsScan scan = new ProteoformSuiteInternal.MsScan(spectrum.MsnOrder, spectrum.OneBasedScanNumber, filename, spectrum.RetentionTime, spectrum.InjectionTime, spectrum.TotalIonCurrent);
                 Lollipop.Ms_scans.Add(scan);
             }
+                foreach (TopDownHit hit in identifications)
+                {
+                    hit.ms_scan = Lollipop.Ms_scans.Where(s => s.filename == hit.filename && s.scan_number == hit.scan).ToList().First();
+                    //add intensity and charge info for precursor
+                    double intensity;
+                    // myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessChargeStateGuess(out protein_charge); didn't work 
+                    myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessIntensity(out intensity);
+                    double mz;
+                    myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessMonoisotopicMZ(out mz);
+                    hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / mz, 0)); //m / (m/z)  round to get charge 
+                    hit.mz = hit.reported_mass.ToMassToChargeRatio(hit.charge);
+                    hit.intensity = intensity;
 
-            foreach (TopDownHit hit in identifications)
-            {
-                hit.ms_scan = Lollipop.Ms_scans.Where(s => s.filename == hit.filename && s.scan_number == hit.scan).ToList().First();
-                //add intensity and charge info for precursor
-                double intensity;
-                // myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessChargeStateGuess(out protein_charge); didn't work 
-                myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessIntensity(out intensity);
-                double mz;
-                myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessMonoisotopicMZ(out mz);
-                hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / mz, 0)); //m / (m/z)  round to get charge 
-                hit.mz = hit.reported_mass.ToMassToChargeRatio(hit.charge);
-                hit.intensity = intensity;
-            }
-
+                }
 
             if (Lollipop.calibrate_td_results && identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList().Count > 0)
             {
@@ -153,9 +152,9 @@ namespace ProteoformSuiteInternal
                     {
                         double theMZ = a.ToMassToChargeRatio(chargeToLookAt);
 
-                        var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - Lollipop.td_mass_tolerance.ToMassToChargeRatio(chargeToLookAt), theMZ + Lollipop.td_mass_tolerance.ToMassToChargeRatio(chargeToLookAt));
+                        var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - Lollipop.td_mass_tolerance/chargeToLookAt, theMZ + Lollipop.td_mass_tolerance/chargeToLookAt);
                         if (npwr == 0) break;
-                        //  if (npwr > 1) continue;
+                        if (npwr > 1) continue;
                         var closestPeak = fullMS1spectrum.GetClosestPeak(theMZ);
                         var closestPeakMZ = closestPeak.MZ;
                         var theTuple = Tuple.Create(closestPeakMZ, ms1RetentionTime);
@@ -163,14 +162,15 @@ namespace ProteoformSuiteInternal
                         {
                             peaksAddeddHashSet.Add(theTuple);
                             highestKnownChargeForThisProtein = Math.Max(highestKnownChargeForThisProtein, chargeToLookAt);
-                            trainingPointsToAverage.Add(new TrainingPoint(new DataPoint(closestPeakMZ, double.NaN, 1, closestPeak.Intensity, double.NaN, double.NaN, filename), closestPeakMZ - theMZ));
+                            //trainingPointsToAverage.Add(new TrainingPoint(new DataPoint(closestPeakMZ, double.NaN, 1, closestPeak.Intensity, double.NaN, double.NaN, filename), closestPeakMZ - theMZ));
+                            trainingPointsToAverage.Add(new TrainingPoint(new DataPoint(closestPeakMZ, double.NaN, 1, filename), closestPeakMZ - theMZ));
+
                         }
                         else break;
                     }
                     if (trainingPointsToAverage.Count == 0 && startingToAddCharges == true) break; //started adding and suddenly stopped, don't need to look at higher charges
-                    if ((trainingPointsToAverage.Count == 0 || (trainingPointsToAverage.Count == 1 && originalIntensities[0] < 0.65)) && (protein_charge <= chargeToLookAt)) break; //didn't find charge, no need to look at higher charges
-                    //if (trainingPointsToAverage.Count == 1 && originalIntensities[0] < 0.65) { } //not adding bc intensity too low
-                    else if (trainingPointsToAverage.Count < Math.Min(3, originalIntensities.Count()))
+                    if ((trainingPointsToAverage.Count == 0 || (trainingPointsToAverage.Count == 1)) && (protein_charge <= chargeToLookAt)) break; //didn't find charge, no need to look at higher charges
+                    if (trainingPointsToAverage.Count < Math.Min(3, originalIntensities.Count()))
                     {
                         //not adding bc count of training points to average is too low
                     }
@@ -179,7 +179,8 @@ namespace ProteoformSuiteInternal
                         addedAscan = true;
                         startingToAddCharges = true;
                         countForThisScan += 1;
-                        double[] inputs = new double[6] {1,  trainingPointsToAverage.Select(b => b.dp.mz).Average(), fullMS1scan.RetentionTime, trainingPointsToAverage.Select(b => b.dp.intensity).Average(), fullMS1scan.TotalIonCurrent, fullMS1scan.InjectionTime };
+                        //double[] inputs = new double[6] {1,  trainingPointsToAverage.Select(b => b.dp.mz).Average(), fullMS1scan.RetentionTime, trainingPointsToAverage.Select(b => b.dp.intensity).Sum(), fullMS1scan.TotalIonCurrent, fullMS1scan.InjectionTime };
+                        double[] inputs = new double[3] { 1, trainingPointsToAverage.Select(b => b.dp.mz).Average(), fullMS1scan.RetentionTime };
                         var a = new LabeledDataPoint(inputs, trainingPointsToAverage.Select(b => b.l).Median());
                         myCandidatePointsForThisMS1scan.Add(a);
                     }

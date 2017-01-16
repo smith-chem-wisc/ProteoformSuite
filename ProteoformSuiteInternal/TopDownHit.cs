@@ -87,30 +87,41 @@ namespace ProteoformSuiteInternal
         public double mz;
         public double rt;
         public int msnOrder;
-        public double intensity;
+       // public double intensity;
         public int SelectedIonGuessChargeStateGuess;
         public double IsolationMZ;
-        public double TotalIonCurrent;
-        public double InjectionTime;
+       // public double TotalIonCurrent;
+        //public double InjectionTime;
         public double relativeMZ;
         public string filename;
 
-        public DataPoint(double mz, double rt, int msnOrder, double intensity, double TotalIonCurrent, double InjectionTime, string filename, int SelectedIonGuessChargeStateGuess = 0, double IsolationMZ = 0, double relativeMZ = 0)
+        //public DataPoint(double mz, double rt, int msnOrder, double intensity, double TotalIonCurrent, double InjectionTime, string filename, int SelectedIonGuessChargeStateGuess = 0, double IsolationMZ = 0, double relativeMZ = 0)
+        //{
+        //    this.mz = mz;
+        //    this.rt = rt;
+        //    this.msnOrder = msnOrder;
+        //    this.intensity = intensity;
+        //    this.SelectedIonGuessChargeStateGuess = SelectedIonGuessChargeStateGuess;
+        //    this.IsolationMZ = IsolationMZ;
+        //    this.TotalIonCurrent = TotalIonCurrent;
+        //    this.InjectionTime = InjectionTime;
+        //    this.relativeMZ = relativeMZ;
+        //    this.filename = filename;
+        //}
+
+        public DataPoint(double mz, double rt, int msnOrder, string filename, int SelectedIonGuessChargeStateGuess = 0, double IsolationMZ = 0, double relativeMZ = 0)
         {
             this.mz = mz;
             this.rt = rt;
             this.msnOrder = msnOrder;
-            this.intensity = 0;
             this.SelectedIonGuessChargeStateGuess = SelectedIonGuessChargeStateGuess;
             this.IsolationMZ = IsolationMZ;
-            this.TotalIonCurrent = 0;
-            this.InjectionTime = 0;
             this.relativeMZ = relativeMZ;
             this.filename = filename;
         }
     }
 
-        public class LabeledDataPoint
+    public class LabeledDataPoint
     {
         public double[] inputs;
         public double output;

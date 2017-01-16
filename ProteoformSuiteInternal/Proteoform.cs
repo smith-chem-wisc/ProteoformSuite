@@ -573,6 +573,7 @@ namespace ProteoformSuiteInternal
         {
             get { return ptm_list_string(); }
         }
+        public double reported_mass { get; set; }
         private TopDownHit root;
         public List<TheoreticalProteoform> topdown_theoreticals = new List<TheoreticalProteoform>();
         public List<TopDownHit> topdown_hits;
@@ -601,6 +602,7 @@ namespace ProteoformSuiteInternal
             this.agg_rt = topdown_hits.Select(h => h.retention_time).Average(); //need to use average (no intensity info)
             this.monoisotopic_mass = topdown_hits.Select(h => (h.corrected_mass - Math.Round(h.corrected_mass - root.corrected_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.monoisotopic_mass;
+            this.reported_mass = topdown_hits.Select(h => (h.reported_mass - Math.Round(h.reported_mass - root.reported_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             int count = Lollipop.proteoform_community.topdown_proteoforms.Where(p => p.uniprot_id == this.uniprot_id).ToList().Count + 1;
             this.accession = accession + "_" + count + "_" + Math.Round(this.modified_mass, 2);
         }

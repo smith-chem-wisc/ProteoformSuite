@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ProteoformSuiteInternal;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace ProteoformSuiteInternal
 {
@@ -267,6 +268,53 @@ namespace ProteoformSuiteInternal
                 remaining = remaining.Except(inducted).ToList();
                 foreach (Proteoform member in new_family.proteoforms) member.family = new_family;
                 family_id++;
+            }
+
+            List<ExperimentalProteoform> in_peaks = experimental_proteoforms.Where(e => e.relationships.Where(r => r.accepted).ToList().Count > 0).ToList();
+            List<ExperimentalProteoform> out_peaks = experimental_proteoforms.Except(in_peaks).ToList();
+
+            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\in_peaks_max.tsv"))
+            {
+                writer.WriteLine("mass\trel_ab\tfract_ab\tintensity\tTIC\t");
+                foreach(ExperimentalProteoform e in in_peaks)
+                {
+                    writer.WriteLine(e.modified_mass + "\t" + e.aggregated_components.Max(c => c.relative_abundance) + "\t" + e.aggregated_components.Max(c => c.fract_abundance) + "\t" + e.aggregated_components.Max(c => c.intensity_sum) + "\t" + e.aggregated_components.Max(c => Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC));
+                }
+            }
+
+            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\in_peaks.tsv"))
+            {
+                writer.WriteLine("mass\trel_ab\tfract_ab\tintensity\tTIC\t");
+                foreach (ExperimentalProteoform e in in_peaks)
+                {
+                    foreach(Component c in e.aggregated_components)
+                    {
+                        writer.WriteLine(e.modified_mass + "\t" + c.relative_abundance + "\t" + c.fract_abundance + "\t" + c.intensity_sum + "\t" + Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC);
+                    }
+                }
+
+            }
+
+            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\out_peaks_max.tsv"))
+            {
+                writer.WriteLine("mass\trel_ab\tfract_ab\tintensity\tTIC\t");
+                foreach (ExperimentalProteoform e in out_peaks)
+                {
+                    writer.WriteLine(e.modified_mass + "\t" + e.aggregated_components.Max(c => c.relative_abundance) + "\t" + e.aggregated_components.Max(c => c.fract_abundance) + "\t" + e.aggregated_components.Max(c => c.intensity_sum) + "\t" + e.aggregated_components.Max(c => Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC));
+                }
+            }
+
+            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\out_peaks.tsv"))
+            {
+                writer.WriteLine("mass\trel_ab\tfract_ab\tintensity\tTIC\t");
+                foreach (ExperimentalProteoform e in out_peaks)
+                {
+                    foreach (Component c in e.aggregated_components)
+                    {
+                        writer.WriteLine(e.modified_mass + "\t" + c.relative_abundance + "\t" + c.fract_abundance + "\t" + c.intensity_sum + "\t" + Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC);
+                    }
+                }
+
             }
         }
 
