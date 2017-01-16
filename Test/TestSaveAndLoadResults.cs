@@ -16,7 +16,7 @@ namespace Test
         public void resultsIn_match_resultsOut_component_neucodepair_aggregatedproteoform()
         {
             // Create a couple raw components, make strings, read those strings, and make sure the components match
-
+            Lollipop.input_files.Clear();
             InputFile f1 = new InputFile(1, "UnitTestFiles\\file1.ext", Labeling.NeuCode, Purpose.Identification);
             InputFile f2 = new InputFile(2, "UnitTestFiles\\file2.ext", Labeling.NeuCode, Purpose.Identification);
             Lollipop.input_files.Add(f1);

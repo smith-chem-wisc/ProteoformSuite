@@ -91,23 +91,6 @@ namespace Test
         }
 
         [Test]
-        public void neucode_quantification()
-        {
-            Lollipop.neucode_labeled = true;
-            List<Component> quant_components_list = generate_neucode_quantitative_components();
-            List<Component> components = generate_neucode_components(starter_mass);
-            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, quant_components_list, true);
-            List<InputFile> inFileList = new List<InputFile>();
-            quant_components_list.ForEach(q => {
-                inFileList.Add(q.input_file);
-            });
-
-            weightedRatioIntensityVariance wRAWV  = e.weightedRatioAndWeightedVariance(inFileList.DistinctBy(x => x.UniqueId).ToList());
-            Assert.AreEqual(1, Math.Round(wRAWV.ratio)); //Ratio
-            Assert.AreEqual(150, wRAWV.intensity);
-        }
-
-        [Test]
         public void neucode_proteoform_calculate_properties()
         {
             Lollipop.neucode_labeled = true;
@@ -178,11 +161,6 @@ namespace Test
             Assert.AreEqual(1, e.aggregated_components.Count);
         }
 
-        [Test]
-        public void quantification()
-        {
-
-        }
 
         //Maximum number of missed
         int missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);

@@ -2,6 +2,8 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ProteoformSuite
@@ -18,26 +20,31 @@ namespace ProteoformSuite
 
         public void load_raw_components()
         {
-            if (Lollipop.input_files.Any(f => f.purpose == Purpose.Identification))
+            if (Lollipop.input_files.Any(f => f.purpose == Purpose.Quantification))
             {
-                if (Lollipop.raw_experimental_components.Count == 0)
-                    Lollipop.process_raw_components(); //Includes reading correction factors if present
-                this.FillRawExpComponentsTable();
-
-                if (Lollipop.raw_quantification_components.Count == 0)
-                {
-                    try
-                    {
-                        Lollipop.process_raw_quantification_components(); //Includes reading correction factors if present
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                }
-                if (Lollipop.raw_quantification_components.Count > 0)
-                    this.FillRawQuantificationComponentsTable();
+                Lollipop.getBiorepsFractionsList(); // list of bioreps with a list of fractions for each biorep
+                Lollipop.getObservationParameters(); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
             }
+                
+            Parallel.Invoke(
+                () => rEC(),
+                () => rQC()                
+                );
+            this.FillRawExpComponentsTable();
+            this.FillRawQuantificationComponentsTable();
+        }
+
+        public static void rEC()
+        {
+            if (Lollipop.raw_experimental_components.Count == 0)
+                Lollipop.process_raw_components(); //Includes reading correction factors if present
+        }
+
+        public static void rQC()
+        {           
+            if (Lollipop.raw_quantification_components.Count == 0)
+                Lollipop.process_raw_quantification_components();
+           
         }
 
         public DataGridView GetDGV()
@@ -53,8 +60,11 @@ namespace ProteoformSuite
 
         public void FillRawQuantificationComponentsTable()
         {
-            DisplayUtility.FillDataGridView(dgv_RawQuantComp_MI_masses, Lollipop.raw_quantification_components);
-            this.FormatRawQuantificationComponentsTable();
+            if (Lollipop.raw_quantification_components.Count() > 0)
+            {
+                DisplayUtility.FillDataGridView(dgv_RawQuantComp_MI_masses, Lollipop.raw_quantification_components);
+                this.FormatRawQuantificationComponentsTable();
+            }           
         }
 
         private void FormatRawExpComponentsTable()
@@ -177,19 +187,19 @@ namespace ProteoformSuite
         private void Format_QuantIndChgSts()
         {
             //round table values
-            dgv_RawQuantComp_IndChgSts.Columns["intensity"].DefaultCellStyle.Format = "0.####";
-            dgv_RawQuantComp_IndChgSts.Columns["mz_centroid"].DefaultCellStyle.Format = "0.####";
-            dgv_RawQuantComp_IndChgSts.Columns["calculated_mass"].DefaultCellStyle.Format = "0.####";
+            //dgv_RawQuantComp_IndChgSts.Columns["intensity"].DefaultCellStyle.Format = "0.####";
+            //dgv_RawQuantComp_IndChgSts.Columns["mz_centroid"].DefaultCellStyle.Format = "0.####";
+            //dgv_RawQuantComp_IndChgSts.Columns["calculated_mass"].DefaultCellStyle.Format = "0.####";
 
-            //set column header
-            dgv_RawQuantComp_IndChgSts.Columns["intensity"].HeaderText = "Intensity";
-            dgv_RawQuantComp_IndChgSts.Columns["mz_centroid"].HeaderText = "Centroid m/z";
-            dgv_RawQuantComp_IndChgSts.Columns["mz_correction"].HeaderText = "Lock-Mass Correction (m/z)";
-            dgv_RawQuantComp_IndChgSts.Columns["calculated_mass"].HeaderText = "Calculated Mass";
-            dgv_RawQuantComp_IndChgSts.Columns["charge_count"].HeaderText = "Charge Count";
+            ////set column header
+            //dgv_RawQuantComp_IndChgSts.Columns["intensity"].HeaderText = "Intensity";
+            //dgv_RawQuantComp_IndChgSts.Columns["mz_centroid"].HeaderText = "Centroid m/z";
+            //dgv_RawQuantComp_IndChgSts.Columns["mz_correction"].HeaderText = "Lock-Mass Correction (m/z)";
+            //dgv_RawQuantComp_IndChgSts.Columns["calculated_mass"].HeaderText = "Calculated Mass";
+            //dgv_RawQuantComp_IndChgSts.Columns["charge_count"].HeaderText = "Charge Count";
 
-            if (Lollipop.calibration_files().Count() == 0) dgv_RawQuantComp_IndChgSts.Columns["mz_correction"].Visible = false;
-            dgv_RawQuantComp_IndChgSts.AllowUserToAddRows = false;
+            //if (Lollipop.calibration_files().Count() == 0) dgv_RawQuantComp_IndChgSts.Columns["mz_correction"].Visible = false;
+            //dgv_RawQuantComp_IndChgSts.AllowUserToAddRows = false;
         }
 
     }
