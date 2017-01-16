@@ -512,12 +512,12 @@ namespace ProteoformSuite
                 dgvs.Add(proteoformFamilies.GetDGV());
                 SaveExcelFile(dgvs, "proteoform_families_table.xlsx");
             }
-            if (current_form == quantification)
-            {
-                dgvs.Add(quantification.Get_GoTerms_DGV());
-                dgvs.Add(quantification.Get_quant_results_DGV());
-                SaveExcelFile(dgvs, "quantification_table.xlsx");
-            }
+            //if (current_form == quantification)
+            //{
+            //    dgvs.Add(quantification.Get_GoTerms_DGV());
+            //    dgvs.Add(quantification.Get_quant_results_DGV());
+            //    SaveExcelFile(dgvs, "quantification_table.xlsx");
+            //}
             
         }
 

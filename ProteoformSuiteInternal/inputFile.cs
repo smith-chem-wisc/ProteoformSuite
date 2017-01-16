@@ -25,8 +25,8 @@ namespace ProteoformSuiteInternal
         public int biological_replicate { get; set; } = 1;
         public int fraction { get; set; } = 1;
         public int technical_replicate { get; set; } = 1;
-        public string lt_condition { get; set; } = "no_condition";
-        public string hv_condition { get; set; } = "no_condition";
+        public string lt_condition { get; set; } = "lt_condition";
+        public string hv_condition { get; set; } = "hv_condition";
 
         public double totalIntensity { get; set; } = 0;
 
@@ -54,6 +54,17 @@ namespace ProteoformSuiteInternal
             this.extension = Path.GetExtension(completePath);
             this.label = label;
             this.purpose = purpose;
+            this.instanceId = ++instanceCounter;
+        }
+
+        public InputFile(string completePath, Labeling label, Purpose purpose, int biorep)
+        {
+            this.path = Path.GetDirectoryName(completePath);
+            this.filename = Path.GetFileNameWithoutExtension(completePath);
+            this.extension = Path.GetExtension(completePath);
+            this.label = label;
+            this.purpose = purpose;
+            this.biological_replicate = biorep;
             this.instanceId = ++instanceCounter;
         }
 
