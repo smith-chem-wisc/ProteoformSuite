@@ -22,7 +22,7 @@ namespace ProteoformSuite
             {
                 if (Lollipop.raw_experimental_components.Count == 0)
                 {
-                    if (Lollipop.td_results) Lollipop.process_td_results();
+                    if (Lollipop.td_results) Lollipop.process_td_results(); //need to first process topdown results --> get MS1 scan #'s and correction functions (if calibrating)
                     Lollipop.process_raw_components(); //Includes reading correction factors if present
                     this.FillRawExpComponentsTable();
                 }

@@ -19,7 +19,7 @@ namespace ProteoformSuite
 {
     public partial class LoadResults : Form
     {
-        
+
         public LoadResults()
         {
             InitializeComponent();
@@ -29,7 +29,7 @@ namespace ProteoformSuite
 
         public void loadResults_Load(object sender, EventArgs e)
         { }
-        
+
         private void btn_neucode_CheckedChanged(object sender, EventArgs e)
         {
             if (btn_unlabeled.Checked)
@@ -107,9 +107,9 @@ namespace ProteoformSuite
 
                 if (acceptable_extensions.Contains(extension) && !Lollipop.input_files.Where(f => f.purpose == purpose).Any(f => f.filename == filename))
                 {
-                    
+
                     // this next section is commented out for testing. allows same files to be used for identification and quantification.
-                    
+
                     //// Handle the conflict of loading the same deconvolution results into identification and quantitation
                     //if ((purpose == Purpose.Identification || purpose == Purpose.Quantification) &&
                     //    (Lollipop.identification_files().Any(g => g.filename == filename) || Lollipop.quantification_files().Any(g => g.filename == filename)))
@@ -125,23 +125,42 @@ namespace ProteoformSuite
                     InputFile file = new InputFile(path, filename, extension, label, purpose);
                     Lollipop.input_files.Add(file);
                 }
-             }
+            }
         }
 
         private void match_files() //for dgv
         {
             // Look for results files with the same filename as a calibration file, and show that they're matched
-            foreach (InputFile file in Lollipop.calibration_files())
+            if (Lollipop.td_results)
             {
-                if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.RawFile).Select(f => f.filename).Contains(file.filename))
+                foreach (InputFile file in Lollipop.raw_files())
                 {
-                    IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.RawFile && f.filename == file.filename);
-                    InputFile matching_file = matching_files.First();
-                    if (matching_files.Count() != 1) MessageBox.Show("Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + ".");
-                    file.matchingCalibrationFile = true;
-                    matching_file.matchingCalibrationFile = true;
+                    if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.RawFile).Select(f => f.filename).Contains(file.filename))
+                    {
+                        IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.RawFile && f.filename == file.filename);
+                        InputFile matching_file = matching_files.First();
+                        if (matching_files.Count() != 1) MessageBox.Show("Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + ".");
+                        file.matchingCalibrationFile = true;
+                        matching_file.matchingCalibrationFile = true;
+                    }
                 }
             }
+            else
+            {
+                foreach (InputFile file in Lollipop.calibration_files())
+                {
+                    if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.RawFile).Select(f => f.filename).Contains(file.filename))
+                    {
+                        IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.RawFile && f.filename == file.filename);
+                        InputFile matching_file = matching_files.First();
+                        if (matching_files.Count() != 1) MessageBox.Show("Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + ".");
+                        file.matchingCalibrationFile = true;
+                        matching_file.matchingCalibrationFile = true;
+                    }
+                }
+            }
+
+
             refresh_dgvs();
 
             if (Lollipop.calibration_files().Count() > 0 && !Lollipop.calibration_files().Any(f => f.matchingCalibrationFile))
@@ -252,15 +271,35 @@ namespace ProteoformSuite
         private void btn_protCalibResultsAdd_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Title = "My Calibration Results Files";
-            openFileDialog1.Filter = "Text Files (*.txt, *.tsv) | *.txt; *.tsv";
+            if (Lollipop.td_results)
+            {
+                openFileDialog1.Title = "My Thermo Raw Files";
+                openFileDialog1.Filter = "Raw Files (*.raw) | *.raw";
+            }
+            else
+            {
+                openFileDialog1.Title = "My Calibration Results Files";
+                openFileDialog1.Filter = "Text Files (*.tsv) | *.tsv";
+            }
+
             openFileDialog1.Multiselect = true;
 
             DialogResult dr = openFileDialog1.ShowDialog();
             if (dr == DialogResult.OK)
-                enter_input_files(openFileDialog1.FileNames, new List<string> { ".tsv", ".txt" }, Purpose.Calibration);
+                if (Lollipop.td_results)
+                {
+                    enter_input_files(openFileDialog1.FileNames, new List<string> { ".raw" }, Purpose.RawFile);
+                    DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.raw_files());
 
-            DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
+                }
+                else
+                {
+                    enter_input_files(openFileDialog1.FileNames, new List<string> { ".tsv", ".txt" }, Purpose.Calibration);
+                    DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
+
+                }
+
+
             match_files();
         }
         private void bt_morpheusBUResultsAdd_Click(object sender, EventArgs e)
@@ -289,11 +328,10 @@ namespace ProteoformSuite
             int i = Lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).ToList().Count;
             if (i == 1) DisplayUtility.EditInputFileDGVs(dgv_tdFiles, Purpose.TopDown);  //adds drop-down column for dataresults first time td file added
             DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
-            for (int j = 0; j < i; j++ ) {InputFile input = (InputFile)dgv_tdFiles.Rows[j].DataBoundItem; dgv_tdFiles.Rows[j].Cells[0].Value = input.td_software; } //display
+            for (int j = 0; j < i; j++) { InputFile input = (InputFile)dgv_tdFiles.Rows[j].DataBoundItem; dgv_tdFiles.Rows[j].Cells[0].Value = input.td_software; } //display
             if (Lollipop.ptmlist_filepath.Length == 0) get_ptm_list();
             ProteomeDatabaseReader.oldPtmlistFilePath = Lollipop.ptmlist_filepath;
             Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist(); //need for reading in TD hit PTMs
-
         }
 
         // CLEAR BUTTONS
@@ -349,10 +387,10 @@ namespace ProteoformSuite
         private void btn_nextPane_Click(object sender, EventArgs e)
         {
             MessageBox.Show(
-                "The Results menu is what you're looking for.\n\n"+
-                "Stepping through each form will process the data one step at a time (this one is \"Load Deconvolution Results\"). "+
-                "This should help give you an idea of what this program does and what settings you would like to use.\n\nOn the other hand, you have the \"Full Run with Defaults\" button, "+
-                "which plows through each of those processing steps, after which you can view the results in those forms.\n\nBelow, there's another info-button for using presets for a full run.\n\n"+
+                "The Results menu is what you're looking for.\n\n" +
+                "Stepping through each form will process the data one step at a time (this one is \"Load Deconvolution Results\"). " +
+                "This should help give you an idea of what this program does and what settings you would like to use.\n\nOn the other hand, you have the \"Full Run with Defaults\" button, " +
+                "which plows through each of those processing steps, after which you can view the results in those forms.\n\nBelow, there's another info-button for using presets for a full run.\n\n" +
                 "We hope you enjoy trying Proteoform Suite! Please contact us if you have any questions. The public repository for this program is hosted on GitHub at https://github.com/smith-chem-wisc/proteoform-suite.", "How To Process Results", MessageBoxButtons.OK);
             ((ProteoformSweet)MdiParent).display_resultsMenu();
         }
@@ -360,9 +398,9 @@ namespace ProteoformSuite
         private void btn_fullRunWithPresets_Click(object sender, EventArgs e)
         {
             MessageBox.Show(
-                "The Method menu is what you're looking for.\n\n"+
-                "You can save your current presets (or just the defaults).\n\nYou can also \"Load & Run\" presets in a method file and run through all processing steps. If you specify files both here and in the method file, we give you the choice of which to use.\n\n"+
-                "Above is another info-button on how to process results without using presets.\n\n"+
+                "The Method menu is what you're looking for.\n\n" +
+                "You can save your current presets (or just the defaults).\n\nYou can also \"Load & Run\" presets in a method file and run through all processing steps. If you specify files both here and in the method file, we give you the choice of which to use.\n\n" +
+                "Above is another info-button on how to process results without using presets.\n\n" +
                 "We hope you enjoy trying Proteoform Suite! Please contact us if you have any questions. The public repository for this program is hosted on GitHub at https://github.com/smith-chem-wisc/proteoform-suite.", "How To Use Presets.", MessageBoxButtons.OK);
             ((ProteoformSweet)MdiParent).display_methodMenu();
         }
@@ -370,38 +408,40 @@ namespace ProteoformSuite
         private void cb_td_file_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.td_results = cb_td_file.Checked;
-            if (Lollipop.td_results)
-            {
-                MessageBox.Show("Please select corresponding Thermo data files.");
-                OpenFileDialog openFileDialog1 = new OpenFileDialog();
-                openFileDialog1.Title = "Thermo Data Files";
-                openFileDialog1.Filter = "Thermo Data Files (.raw) | *.raw";
-                openFileDialog1.Multiselect = true;
-                DialogResult dr = openFileDialog1.ShowDialog();
-                if (dr == DialogResult.OK)
-                    enter_input_files(openFileDialog1.FileNames, new List<string> { ".raw" }, Purpose.RawFile);
-                else { cb_td_file.Checked = false; Lollipop.td_results = false; return; }
-                //Make sure those files matched. 
-                foreach (InputFile file in Lollipop.identification_files())
-                {
-                    int matching_files = Lollipop.raw_files().Where(f => f.filename == file.filename).ToList().Count;
-                    if (matching_files > 1)
-                    {
-                        MessageBox.Show("There is more than one results file named " + file.filename + ". Please try again and choose one data file per one identification result file.");
-                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.RawFile); //start over....
-                        cb_td_file.Checked = false; Lollipop.td_results = false;
-                        return;
-                    }
-                    else if (matching_files < 1)
-                    {
-                        MessageBox.Show("There is no matching deconvolution result for the file " + file.filename + ". Please try again and select a data file with the same name as the identification result file.");
-                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.RawFile); //start over....
-                        cb_td_file.Checked = false; Lollipop.td_results = false;
-                        return;
-                    }
-                    else continue;
-                }
-            }
+            label3.Text = "Thermo Raw Files (.raw)";
+
+            //if (Lollipop.td_results)
+            //{
+            //    MessageBox.Show("Please select corresponding Thermo data files.");
+            //    OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            //    openFileDialog1.Title = "Thermo Data Files";
+            //    openFileDialog1.Filter = "Thermo Data Files (.raw) | *.raw";
+            //    openFileDialog1.Multiselect = true;
+            //    DialogResult dr = openFileDialog1.ShowDialog();
+            //    if (dr == DialogResult.OK)
+            //        enter_input_files(openFileDialog1.FileNames, new List<string> { ".raw" }, Purpose.RawFile);
+            //    else { cb_td_file.Checked = false; Lollipop.td_results = false; return; }
+            //    //Make sure those files matched. 
+            //    foreach (InputFile file in Lollipop.identification_files())
+            //    {
+            //        int matching_files = Lollipop.raw_files().Where(f => f.filename == file.filename).ToList().Count;
+            //        if (matching_files > 1)
+            //        {
+            //            MessageBox.Show("There is more than one results file named " + file.filename + ". Please try again and choose one data file per one identification result file.");
+            //            Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.RawFile); //start over....
+            //            cb_td_file.Checked = false; Lollipop.td_results = false;
+            //            return;
+            //        }
+            //        else if (matching_files < 1)
+            //        {
+            //            MessageBox.Show("There is no matching deconvolution result for the file " + file.filename + ". Please try again and select a data file with the same name as the identification result file.");
+            //            Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.RawFile); //start over....
+            //            cb_td_file.Checked = false; Lollipop.td_results = false;
+            //            return;
+            //        }
+            //        else continue;
+            //    }
+            //}
         }
 
         private void bt_clearResults_Click(object sender, EventArgs e)
@@ -425,8 +465,9 @@ namespace ProteoformSuite
                     cb_calibrate_td_results.Checked = false;
                     Lollipop.calibrate_td_results = false;
                 }
-                else if (Lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
+                else
                 {
+                    Lollipop.td_results = true;
                     Lollipop.calibrate_td_results = cb_calibrate_td_results.Checked;
                 }
             }
