@@ -57,9 +57,12 @@
             this.nud_minObservations = new System.Windows.Forms.NumericUpDown();
             this.cmbx_observationsTypeRequired = new System.Windows.Forms.ComboBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.cmbx_ratioNumerator = new System.Windows.Forms.ComboBox();
-            this.cmbx_ratioDenominator = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.cmbx_ratioDenominator = new System.Windows.Forms.ComboBox();
+            this.cmbx_ratioNumerator = new System.Windows.Forms.ComboBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.rb_allSampleGOTerms = new System.Windows.Forms.RadioButton();
+            this.rb_allTheoreticalGOTerms = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantification_results)).BeginInit();
             this.gb_quantDataDisplaySelection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).BeginInit();
@@ -74,6 +77,7 @@
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_minObservations)).BeginInit();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // dgv_quantification_results
@@ -402,22 +406,6 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Ratio";
             // 
-            // cmbx_ratioNumerator
-            // 
-            this.cmbx_ratioNumerator.FormattingEnabled = true;
-            this.cmbx_ratioNumerator.Location = new System.Drawing.Point(17, 17);
-            this.cmbx_ratioNumerator.Name = "cmbx_ratioNumerator";
-            this.cmbx_ratioNumerator.Size = new System.Drawing.Size(162, 21);
-            this.cmbx_ratioNumerator.TabIndex = 0;
-            // 
-            // cmbx_ratioDenominator
-            // 
-            this.cmbx_ratioDenominator.FormattingEnabled = true;
-            this.cmbx_ratioDenominator.Location = new System.Drawing.Point(281, 17);
-            this.cmbx_ratioDenominator.Name = "cmbx_ratioDenominator";
-            this.cmbx_ratioDenominator.Size = new System.Drawing.Size(162, 21);
-            this.cmbx_ratioDenominator.TabIndex = 1;
-            // 
             // label6
             // 
             this.label6.AutoSize = true;
@@ -427,12 +415,62 @@
             this.label6.TabIndex = 2;
             this.label6.Text = "divide by";
             // 
+            // cmbx_ratioDenominator
+            // 
+            this.cmbx_ratioDenominator.FormattingEnabled = true;
+            this.cmbx_ratioDenominator.Location = new System.Drawing.Point(281, 17);
+            this.cmbx_ratioDenominator.Name = "cmbx_ratioDenominator";
+            this.cmbx_ratioDenominator.Size = new System.Drawing.Size(162, 21);
+            this.cmbx_ratioDenominator.TabIndex = 1;
+            // 
+            // cmbx_ratioNumerator
+            // 
+            this.cmbx_ratioNumerator.FormattingEnabled = true;
+            this.cmbx_ratioNumerator.Location = new System.Drawing.Point(17, 17);
+            this.cmbx_ratioNumerator.Name = "cmbx_ratioNumerator";
+            this.cmbx_ratioNumerator.Size = new System.Drawing.Size(162, 21);
+            this.cmbx_ratioNumerator.TabIndex = 0;
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.rb_allTheoreticalGOTerms);
+            this.groupBox3.Controls.Add(this.rb_allSampleGOTerms);
+            this.groupBox3.Location = new System.Drawing.Point(1295, 406);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(188, 70);
+            this.groupBox3.TabIndex = 14;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Background GO Terms";
+            // 
+            // rb_allSampleGOTerms
+            // 
+            this.rb_allSampleGOTerms.AutoSize = true;
+            this.rb_allSampleGOTerms.Location = new System.Drawing.Point(23, 19);
+            this.rb_allSampleGOTerms.Name = "rb_allSampleGOTerms";
+            this.rb_allSampleGOTerms.Size = new System.Drawing.Size(79, 17);
+            this.rb_allSampleGOTerms.TabIndex = 0;
+            this.rb_allSampleGOTerms.TabStop = true;
+            this.rb_allSampleGOTerms.Text = "Sample Set";
+            this.rb_allSampleGOTerms.UseVisualStyleBackColor = true;
+            // 
+            // rb_allTheoreticalGOTerms
+            // 
+            this.rb_allTheoreticalGOTerms.AutoSize = true;
+            this.rb_allTheoreticalGOTerms.Location = new System.Drawing.Point(23, 39);
+            this.rb_allTheoreticalGOTerms.Name = "rb_allTheoreticalGOTerms";
+            this.rb_allTheoreticalGOTerms.Size = new System.Drawing.Size(97, 17);
+            this.rb_allTheoreticalGOTerms.TabIndex = 1;
+            this.rb_allTheoreticalGOTerms.TabStop = true;
+            this.rb_allTheoreticalGOTerms.Text = "Theoretical Set";
+            this.rb_allTheoreticalGOTerms.UseVisualStyleBackColor = true;
+            // 
             // Quantification
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2099, 892);
             this.ControlBox = false;
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.ct_proteoformIntensities);
@@ -464,6 +502,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nud_minObservations)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -496,5 +536,8 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox cmbx_ratioDenominator;
         private System.Windows.Forms.ComboBox cmbx_ratioNumerator;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.RadioButton rb_allTheoreticalGOTerms;
+        private System.Windows.Forms.RadioButton rb_allSampleGOTerms;
     }
 }
