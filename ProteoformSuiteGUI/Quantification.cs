@@ -55,10 +55,7 @@ namespace ProteoformSuite
         }
 
         private void Quantification_Load(object sender, EventArgs e)
-        {
-            initializeForm();
-            runTheGamut();
-        }
+        { }
 
         public DataGridView Get_quant_results_DGV()
         {
@@ -70,8 +67,36 @@ namespace ProteoformSuite
             return dgv_goAnalysis;
         }
 
-        private void initializeForm()
+        private void quantify()
         {
+            initialize();
+            computeBiorepIntensities();
+            defineAllObservedIntensityDistribution();
+            determineProteoformsMeetingCriteria();
+            defineSelectObservedIntensityDistribution();
+            defineSelectBackgroundIntensityDistribution();
+            plotBiorepIntensities();
+            proteoformQuantification();
+            DisplayUtility.FillDataGridView(dgv_quantification_results, qVals);
+            volcanoPlot();
+            interestingProteins = getInterestingProteins();
+            goTermNumbers = getGoTermNumbers(interestingProteins);
+            fillGoTermsTable();
+        }
+
+        public void perform_calculations()
+        {
+            if (Lollipop.quantification_files().Count() > 0 && qVals.Count <= 0) quantify();
+        }
+
+        private void btn_refreshCalculation_Click(object sender, EventArgs e)
+        {
+            quantify();
+        }
+
+        private void initialize()
+        {
+            //Initialize conditions
             List<string> conditions = Lollipop.ltConditionsBioReps.Keys.ToList();
             conditions.AddRange(Lollipop.hvConditionsBioReps.Keys.ToList());
             conditions = conditions.Distinct().ToList();
@@ -83,8 +108,9 @@ namespace ProteoformSuite
             else
                 cmbx_ratioDenominator.SelectedIndex = 0;
 
+            //Set parameters
             nud_bkgdShift.Value = (decimal)-2.0;
-            nud_bkgdWidth.Value = (decimal) 0.5;
+            nud_bkgdWidth.Value = (decimal)0.5;
 
             nud_bkgdShift.ValueChanged += new EventHandler(plotBiorepIntensitiesEvent);
             nud_bkgdWidth.ValueChanged += new EventHandler(plotBiorepIntensitiesEvent);
@@ -122,22 +148,6 @@ namespace ProteoformSuite
             //rb_allTheoreticalGOTerms.CheckedChanged += new EventHandler(goTermBackgroundChanged); // this is disabled to prevent two method calls.
 
             goMasterSet = getDatabaseGoNumbers();
-        }
-
-        private void runTheGamut()
-        {
-            computeBiorepIntensities();
-            defineAllObservedIntensityDistribution();
-            determineProteoformsMeetingCriteria();
-            defineSelectObservedIntensityDistribution();
-            defineSelectBackgroundIntensityDistribution();
-            plotBiorepIntensities();
-            proteoformQuantification();
-            DisplayUtility.FillDataGridView(dgv_quantification_results, qVals);
-            volcanoPlot();
-            interestingProteins = getInterestingProteins();
-            goTermNumbers = getGoTermNumbers(interestingProteins);
-            fillGoTermsTable();
         }
 
         private void fillGoTermsTable()
@@ -274,22 +284,25 @@ namespace ProteoformSuite
             object sync = new object();
 
             if (cmbx_observationsTypeRequired.SelectedIndex == 0)//single condition
-                Parallel.ForEach(Lollipop.proteoform_community.experimental_proteoforms, eP => 
+            {
+                Parallel.ForEach(Lollipop.proteoform_community.experimental_proteoforms, eP =>
                 {
                     foreach (string c in conditions)
                     {
-                        if (eP.biorepIntensityList.Where(bc => bc.condition == c).Select(b=>b.biorep).ToList().Count() == nud_minObservations.Value)
+                        if (eP.biorepIntensityList.Where(bc => bc.condition == c).Select(b => b.biorep).ToList().Count() == nud_minObservations.Value)
                         {
                             lock (sync)
                             {
                                 satisfactoryProteoformsCount++;
                                 sP.Add(eP);
-                            }                           
+                            }
                             break;
-                        }                           
+                        }
                     }
                 });
+            }
             else //any condition
+            {
                 Parallel.ForEach(Lollipop.proteoform_community.experimental_proteoforms, eP =>
                 {
                     if (eP.biorepIntensityList.Select(c => c.condition).Distinct().ToList().Count() == nud_minObservations.Value)
@@ -301,6 +314,8 @@ namespace ProteoformSuite
                         }
                     }
                 });
+            }
+
             satisfactoryProteoforms = sP.ToList();
         }
 
@@ -542,11 +557,6 @@ namespace ProteoformSuite
             return numbers;
         }
 
-        private void btn_refreshCalculation_Click(object sender, EventArgs e)
-        {
-            runTheGamut();
-        }
-
         private void goTermBackgroundChanged(object s, EventArgs e)
         {
             goMasterSet = getDatabaseGoNumbers();
@@ -555,5 +565,6 @@ namespace ProteoformSuite
             goTermNumbers = getGoTermNumbers(interestingProteins);
             fillGoTermsTable();
         }
+
     }
 }

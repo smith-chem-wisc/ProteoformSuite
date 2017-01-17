@@ -127,7 +127,6 @@ namespace ProteoformSuiteInternal
                     this.hv_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, false)));
                     this.heavy_observation_count = this.hv_quant_components.Count;
                 }
-
             }
             this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
         }
