@@ -114,7 +114,14 @@ namespace ProteoformSuite
             cmbx_goAspect.SelectedIndex = 0;
             cmbx_goAspect.SelectedIndexChanged += cmbx_goAspect_SelectedIndexChanged;
 
-            goMasterSet = getDatabaseGoNumbers(Lollipop.proteins);
+            rb_allSampleGOTerms.Enabled = false;
+            rb_allSampleGOTerms.Checked = true;
+            rb_allSampleGOTerms.Enabled = true;
+
+            rb_allSampleGOTerms.CheckedChanged += new EventHandler(goTermBackgroundChanged);
+            //rb_allTheoreticalGOTerms.CheckedChanged += new EventHandler(goTermBackgroundChanged); // this is disabled to prevent two method calls.
+
+            goMasterSet = getDatabaseGoNumbers();
         }
 
         private void runTheGamut()
@@ -140,159 +147,9 @@ namespace ProteoformSuite
 
         private void updateGoTermsTable(object s, EventArgs e)
         {
-            //if (!IsEmpty(quantTables))
-            //{
-            //    interestingProteins = getInterestingProteins();
-            //    goTermNumbers = getGoTermNumbers(interestingProteins);
-            //    fillGoTermsTable();
-            //}
-        }
-
-        private bool IsEmpty(DataSet dataSet)
-        {
-            foreach (DataTable table in dataSet.Tables)
-                if (table.Rows.Count != 0) return false;
-
-            return true;
-        }
-
-        private void createQuantificationTables()
-        {
-            //DataTable dt_ratio = new DataTable();
-            //dt_ratio.TableName = "ratio";
-            //DataTable dt_intensity = new DataTable();
-            //dt_intensity.TableName = "intensity";
-            //DataTable dt_variance = new DataTable();
-            //dt_variance.TableName = "variance";
-            //DataTable dt_pValue = new DataTable();
-            //dt_pValue.TableName = "pValue";
-
-            //quantTables.Tables.Add(dt_ratio);
-            //quantTables.Tables.Add(dt_intensity);
-            //quantTables.Tables.Add(dt_variance);
-            //quantTables.Tables.Add(dt_pValue);
-
-        }
-
-        private void addColumnsToDataSet()
-        {
-            //foreach (DataTable dt in quantTables.Tables)
-            //{
-            //    dt.Columns.Add("Experimental_Proteoform", typeof(String));
-            //    dt.Columns.Add("Theoretical_Proteoforms", typeof(String));
-
-            //    List<string> columnLabels = new List<string>();                    
-            //    if (Lollipop.neucode_labeled)
-            //    {
-            //        foreach (InputFile inputFile in Lollipop.input_files.Where(s => s.purpose == Purpose.Quantification))
-            //        {
-            //            columnLabels.Add("Ratio: " + inputFile.lt_condition + "/" + inputFile.hv_condition + "; BR-" + inputFile.biological_replicate + "; FR-" + inputFile.fraction + "; TR-" + inputFile.technical_replicate);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        foreach (InputFile inputFile in Lollipop.input_files)
-            //        {
-            //            columnLabels.Add("Condition: " + inputFile.lt_condition + "; BR-" + inputFile.biological_replicate + "; FR-" + inputFile.fraction + "; TR-" + inputFile.technical_replicate);
-            //        }
-            //    }
-            //    cmbx_quantColumns.Items.Clear();
-
-            //    foreach (string lbl in columnLabels.Distinct())
-            //    {
-            //        dt.Columns.Add(lbl, typeof(Double));
-            //        cmbx_quantColumns.Items.Add(lbl.ToString());
-            //    }
-
-            //    cmbx_quantColumns.SelectedIndex = 0;
-            //}
-        }
-
-        private void addRowsToDataSet()
-        {
-            //string[] columnNames = quantTables.Tables["ratio"].Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
-            //List<InputFile>[] inputFileLists = new List<InputFile>[columnNames.Count()];
-
-            //if (Lollipop.neucode_labeled)
-            //{
-            //    inputFileLists[0] = null;
-            //    inputFileLists[1] = null;
-            //    for (int i = 2; i < columnNames.Count(); i++)
-            //    {
-            //        string[] columnNamePieces = columnNames[i].Split('-').ToArray();
-            //        switch (columnNamePieces.Count())
-            //        {
-            //            case 1:
-            //                inputFileLists[i] = (from s in Lollipop.input_files where s.purpose == Purpose.Quantification select s).ToList();
-            //                break;
-            //            case 2:
-            //                inputFileLists[i] = (from s in Lollipop.input_files where s.purpose == Purpose.Quantification where s.biological_replicate == Convert.ToInt32(columnNamePieces[1]) select s).ToList();
-            //                break;
-            //            case 3:
-            //                inputFileLists[i] = (from s in Lollipop.input_files where s.purpose == Purpose.Quantification where s.biological_replicate == Convert.ToInt32(columnNamePieces[1].Split(';').ToList().First()) where s.fraction == Convert.ToInt32(columnNamePieces[2].Split(';').ToList().First()) select s).ToList();
-            //                break;
-            //            case 4:
-            //                inputFileLists[i] = (from s in Lollipop.input_files where s.purpose == Purpose.Quantification where s.biological_replicate == Convert.ToInt32(columnNamePieces[1].Split(';').ToList().First()) where s.fraction == Convert.ToInt32(columnNamePieces[2].Split(';').ToList().First()) where s.technical_replicate == Convert.ToInt32(columnNamePieces[3]) select s).ToList();
-            //                break;
-            //        }
-
-            //    }
-            //}
-            //else
-            //{
-            //    inputFileLists[0] = null;
-            //    inputFileLists[1] = null;
-            //    for (int i = 2; i < columnNames.Count(); i++)
-            //    {
-            //        string[] columnNamePieces = columnNames[i].Split('-').ToArray();
-            //        switch (columnNamePieces.Count())
-            //        {
-            //            case 1:
-            //                inputFileLists[i] = (from s in Lollipop.input_files select s).ToList();
-            //                break;
-            //            case 2:
-            //                inputFileLists[i] = (from s in Lollipop.input_files where s.biological_replicate == Convert.ToInt32(columnNamePieces[1]) select s).ToList();
-            //                break;
-            //            case 3:
-            //                inputFileLists[i] = (from s in Lollipop.input_files where s.biological_replicate == Convert.ToInt32(columnNamePieces[1].Split(';').ToList().First()) where s.fraction == Convert.ToInt32(columnNamePieces[2].Split(';').ToList().First()) select s).ToList();
-            //                break;
-            //            case 4:
-            //                inputFileLists[i] = (from s in Lollipop.input_files where s.biological_replicate == Convert.ToInt32(columnNamePieces[1].Split(';').ToList().First()) where s.fraction == Convert.ToInt32(columnNamePieces[2].Split(';').ToList().First()) where s.technical_replicate == Convert.ToInt32(columnNamePieces[3]) select s).ToList();
-            //                break;
-            //        }
-            //    }
-            //}
-
-            //foreach (ExperimentalProteoform eP in Lollipop.proteoform_community.experimental_proteoforms.Where(eP=>eP.accepted == true).ToList()) // we may want to limit this to select proteoforms
-            //{
-            //    object[] ratio = new object[columnNames.Count()];
-            //    object[] intensity = new object[columnNames.Count()];
-            //    object[] variance = new object[columnNames.Count()];
-            //    object[] pValue = new object[columnNames.Count()];
-
-            //    ratio[0] = eP.accession;
-            //    intensity[0] = eP.accession;
-            //    variance[0] = eP.accession;
-            //    pValue[0] = eP.accession;
-
-            //    ratio[1] = string.Join("; ", eP.family.theoretical_proteoforms.Select(t => t.accession).ToList());
-            //    intensity[1] = string.Join("; ", eP.family.theoretical_proteoforms.Select(t => t.accession).ToList());
-            //    variance[1] = string.Join("; ", eP.family.theoretical_proteoforms.Select(t => t.accession).ToList());
-            //    pValue[1] = string.Join("; ", eP.family.theoretical_proteoforms.Select(t => t.accession).ToList());
-
-            //    for (int i = 2; i < inputFileLists.Count(); i++)
-            //    {
-            //        ratio[i] = eP.weightedRatioAndWeightedVariance(inputFileLists[i].DistinctBy(x => x.UniqueId).ToList()).ratio;
-            //        intensity[i] = eP.weightedRatioAndWeightedVariance(inputFileLists[i].DistinctBy(x => x.UniqueId).ToList()).intensity;
-            //        variance[i] = eP.weightedRatioAndWeightedVariance(inputFileLists[i].DistinctBy(x => x.UniqueId).ToList()).variance;
-            //        pValue[i] = eP.weightedRatioAndWeightedVariance(inputFileLists[i].DistinctBy(x => x.UniqueId).ToList()).pValue;
-            //    }
-
-            //    quantTables.Tables["ratio"].Rows.Add(ratio);
-            //    quantTables.Tables["intensity"].Rows.Add(intensity);
-            //    quantTables.Tables["variance"].Rows.Add(variance);
-            //    quantTables.Tables["pValue"].Rows.Add(pValue);
-            //}
+            interestingProteins = getInterestingProteins();
+            goTermNumbers = getGoTermNumbers(interestingProteins);
+            fillGoTermsTable();
         }
 
         private void computeBiorepIntensities()
@@ -618,12 +475,34 @@ namespace ProteoformSuite
             return interestingProteins;
         }
 
-        private Dictionary<GoTerm, int> getDatabaseGoNumbers(Protein[] proteinList)
+        private Dictionary<GoTerm, int> getDatabaseGoNumbers()
         {
             Dictionary<GoTerm, int> numbers = new Dictionary<GoTerm, int>();
-
+            List<Protein> proteinList = new List<Protein>();
+            List<string> experimentalProteoformAcessionList = new List<string>();
             List<GoTerm> completeGoTermList = new List<GoTerm>();
             List<GoTerm> uniqueGoTermList = new List<GoTerm>();
+
+            if (rb_allTheoreticalGOTerms.Checked == true)
+                proteinList = Lollipop.proteins.ToList();
+            else
+            {
+                List<TheoreticalProteoform> theoreticalProteoformList = new List<TheoreticalProteoform>();
+                theoreticalProteoformList = Lollipop.proteoform_community.families.SelectMany(t => t.theoretical_proteoforms).ToList();
+
+                List<string> theoreticalAccessionList = new List<string>();
+                theoreticalAccessionList = theoreticalProteoformList.Select(a => a.accession).ToList();
+
+                foreach (string acc in theoreticalAccessionList)
+                {
+                    string someJunk = acc.Replace("_T", "!").Split('!').FirstOrDefault();
+                    Protein p = Lollipop.proteins.FirstOrDefault(protein => protein.accession == someJunk);
+                    if (p != null)
+                        if (!proteinList.Any(theoreticalProtein => theoreticalProtein.accession == p.accession))
+                            proteinList.Add(p);
+                }
+            }
+
             foreach (Protein p in proteinList)
             {
                 completeGoTermList.AddRange(p.goTerms);
@@ -666,6 +545,15 @@ namespace ProteoformSuite
         private void btn_refreshCalculation_Click(object sender, EventArgs e)
         {
             runTheGamut();
+        }
+
+        private void goTermBackgroundChanged(object s, EventArgs e)
+        {
+            goMasterSet = getDatabaseGoNumbers();
+            if(interestingProteins.Count()==0)
+                interestingProteins = getInterestingProteins();
+            goTermNumbers = getGoTermNumbers(interestingProteins);
+            fillGoTermsTable();
         }
     }
 }
