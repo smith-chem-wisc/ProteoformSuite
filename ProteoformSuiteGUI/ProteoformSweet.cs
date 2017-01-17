@@ -67,7 +67,10 @@ namespace ProteoformSuite
         
 
         // RESULTS TOOL STRIP
-        public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(loadDeconvolutionResults); }
+        public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(loadDeconvolutionResults);
+        }
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(rawExperimentalComponents);
@@ -83,7 +86,10 @@ namespace ProteoformSuite
             showForm(aggregatedProteoforms);
             if (run_when_form_loads) aggregatedProteoforms.aggregate_proteoforms();
         }
-        private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e) { showForm(theoreticalDatabase); }
+        private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(theoreticalDatabase);
+        }
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentalTheoreticalComparison);
@@ -99,7 +105,11 @@ namespace ProteoformSuite
             showForm(proteoformFamilies);
             proteoformFamilies.construct_families();
         }
-        private void quantificationToolStripMenuItem_Click(object sender, EventArgs e) { showForm(quantification); }
+        private void quantificationToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (run_when_form_loads) quantification.perform_calculations();
+            showForm(quantification);
+        }
         private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             resultsSummary.createResultsSummary();
@@ -384,29 +394,24 @@ namespace ProteoformSuite
             if (!load_method()) return;
             MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
 
-            if (full_run())
-            {
-                MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
-            }
-            else
-            {
-                MessageBox.Show("Method did not successfully run.");
-            }
-        }
+            if (full_run()) MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
+            else MessageBox.Show("Method did not successfully run.");
+         }
 
         public bool full_run()
         {
             clear_lists();
-            rawExperimentalComponents.load_raw_components();
-            aggregatedProteoforms.aggregate_proteoforms();
-            if (!File.Exists(Lollipop.uniprot_xml_filepath)) get_uniprot_xml(); 
+            if (!File.Exists(Lollipop.uniprot_xml_filepath)) get_uniprot_xml();
             if (!File.Exists(Lollipop.uniprot_xml_filepath)) { return false; } //user hit cancel
             if (!File.Exists(Lollipop.ptmlist_filepath)) get_ptm_list();
             if (!File.Exists(Lollipop.ptmlist_filepath)) { return false; } //user hit cancel
+            rawExperimentalComponents.load_raw_components();
+            aggregatedProteoforms.aggregate_proteoforms();
             theoreticalDatabase.make_databases();
             Lollipop.make_et_relationships();
             Lollipop.make_ee_relationships();
-            if (Lollipop.neucode_labeled) proteoformFamilies.construct_families(); 
+            if (Lollipop.neucode_labeled) proteoformFamilies.construct_families();
+            quantification.perform_calculations();
             prepare_figures_and_tables();
             this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
             return true;
@@ -421,8 +426,7 @@ namespace ProteoformSuite
                 () => experimentalTheoreticalComparison.FillTablesAndCharts(),
                 () => experimentExperimentComparison.FillTablesAndCharts()
             );
-            if (Lollipop.neucode_labeled)
-                neuCodePairs.GraphNeuCodePairs();
+            if (Lollipop.neucode_labeled) neuCodePairs.GraphNeuCodePairs();
         }
     
 
@@ -532,8 +536,7 @@ namespace ProteoformSuite
                 writer.ExportToExcel(dgvs, saveDialog.FileName);
                 MessageBox.Show("Successfully exported table.");
             }
-            else { return; }
+            else return; 
         }
-
     }
 }
