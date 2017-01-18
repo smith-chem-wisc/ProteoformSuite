@@ -69,7 +69,6 @@ namespace ProteoformSuite
 
         private void quantify()
         {
-            initialize();
             computeBiorepIntensities();
             defineAllObservedIntensityDistribution();
             determineProteoformsMeetingCriteria();
@@ -86,7 +85,11 @@ namespace ProteoformSuite
 
         public void perform_calculations()
         {
-            if (Lollipop.quantification_files().Count() > 0 && qVals.Count <= 0) quantify();
+            if (Lollipop.quantification_files().Count() > 0 && qVals.Count <= 0)
+            {
+                initialize();
+                quantify();
+            }
         }
 
         private void btn_refreshCalculation_Click(object sender, EventArgs e)
