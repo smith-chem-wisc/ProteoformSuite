@@ -199,15 +199,15 @@ namespace ProteoformSuiteInternal
                                     switch (description.Split(':')[0].ToString())
                                     {
                                         case "C":
-                                            go.aspect = aspect.cellularComponent;
+                                            go.aspect = Aspect.cellularComponent;
                                             go.description = description.Split(':')[1].ToString();
                                             break;
                                         case "F":
-                                            go.aspect = aspect.molecularFunction;
+                                            go.aspect = Aspect.molecularFunction;
                                             go.description = description.Split(':')[1].ToString();
                                             break;
                                         case "P":
-                                            go.aspect = aspect.biologicalProcess;
+                                            go.aspect = Aspect.biologicalProcess;
                                             go.description = description.Split(':')[1].ToString();
                                             break;
                                     }

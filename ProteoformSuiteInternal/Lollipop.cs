@@ -314,8 +314,8 @@ namespace ProteoformSuiteInternal
             {
                 Component root = remaining_proteoforms[0];
                 List<Component> tmp_remaining_proteoforms = remaining_proteoforms.ToList();
-                ExperimentalProteoform temp_pf = new ExperimentalProteoform("E_" + count, root, tmp_remaining_proteoforms, true); //first pass returns temporary proteoform
-                ExperimentalProteoform new_pf = new ExperimentalProteoform("E_" + count, temp_pf, tmp_remaining_proteoforms, true); //second pass uses temporary protoeform from first pass.
+                ExperimentalProteoform temp_pf = new ExperimentalProteoform("E" + count, root, tmp_remaining_proteoforms, true); //first pass returns temporary proteoform
+                ExperimentalProteoform new_pf = new ExperimentalProteoform("E" + count, temp_pf, tmp_remaining_proteoforms, true); //second pass uses temporary protoeform from first pass.
                 candidateExperimentalProteoforms.Add(new_pf);
                 remaining_proteoforms = tmp_remaining_proteoforms.Except(new_pf.aggregated_components).ToArray();
                 count += 1;
@@ -617,10 +617,10 @@ namespace ProteoformSuiteInternal
                 string protein_description = prot.description + "_" + listMemberNumber.ToString();
 
                 if (decoy_number < 0 )
-                    theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description, prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
+                    theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description, prot, isMetCleaved, 
                         unmodified_mass, lysine_count, prot.goTerms, ptm_set, proteoform_mass, true));
                 else
-                    theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot.name, prot.fragment, prot.begin + Convert.ToInt32(isMetCleaved), prot.end, 
+                    theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot, isMetCleaved, 
                         unmodified_mass, lysine_count, prot.goTerms , ptm_set, proteoform_mass, false));
                 listMemberNumber++;
             } 
@@ -688,8 +688,13 @@ namespace ProteoformSuiteInternal
         //PROTEOFORM FAMILIES -- see ProteoformCommunity
         public static string family_build_folder_path = "";
         public static int deltaM_edge_display_rounding = 2;
+        public static string[] node_positioning = new string[] { "Arbitrary Circle", "Mass X-Axis", "Circle by Mass" };
+        
+        public static string[] edge_labels = new string[] { "Mass Difference" };
 
         //QUANTIFICATION
+        public static string numerator_condition = "";
+        public static string denominator_condition = "";
         public static void getNormalizationFactors() //data is too noisy at present to make use of this
         {
             ////get the complete list of bioreps

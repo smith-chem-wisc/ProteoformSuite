@@ -6,12 +6,18 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-
-
 namespace ProteoformSuiteInternal
 {
     public static class ExtensionMethods
     {
+        public static IEnumerable<object> filter(IEnumerable<object> some_list, string s)
+        {
+            return some_list.Where(f =>
+                    f.GetType().GetProperties().Where(p => new Type[] { typeof(int), typeof(double), typeof(string), typeof(decimal), typeof(bool) }.Contains(p.PropertyType)).Any(i => i.GetValue(f).ToString().Contains(s)) ||
+                    f.GetType().GetFields().Where(i => !i.IsLiteral && new Type[] { typeof(int), typeof(double), typeof(string), typeof(decimal), typeof(bool) }.Contains(i.FieldType)).Any(i => i.GetValue(f).ToString().Contains(s))
+                );
+        }
+
         public static IEnumerable<T> DistinctBy<T, TKey>(this IEnumerable<T> items, Func<T, TKey> property) //this method can be used to make a distinct list of objects by one of the object properties
         {
             return items.GroupBy(property).Select(x => x.First());

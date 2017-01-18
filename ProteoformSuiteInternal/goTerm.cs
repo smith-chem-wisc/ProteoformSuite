@@ -11,10 +11,10 @@ namespace ProteoformSuiteInternal
     {
         public string id { get; set; }
         public string description { get; set; }
-        public aspect aspect { get; set; }
+        public Aspect aspect { get; set; }
     }
 
-    public enum aspect
+    public enum Aspect
     {
         molecularFunction,
         cellularComponent,

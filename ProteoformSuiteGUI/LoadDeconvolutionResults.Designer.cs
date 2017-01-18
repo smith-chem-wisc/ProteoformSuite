@@ -58,6 +58,11 @@
             this.bt_tdResultsClear = new System.Windows.Forms.Button();
             this.bt_clearResults = new System.Windows.Forms.Button();
             this.cb_run_when_load = new System.Windows.Forms.CheckBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.tb_identificationFilter = new System.Windows.Forms.TextBox();
+            this.tb_quantFilter = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_identificationFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantitationFiles)).BeginInit();
@@ -65,6 +70,7 @@
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_buFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_tdFiles)).BeginInit();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -387,9 +393,57 @@
             this.cb_run_when_load.UseVisualStyleBackColor = true;
             this.cb_run_when_load.CheckedChanged += new System.EventHandler(this.cb_run_when_load_CheckedChanged);
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.label7);
+            this.groupBox3.Controls.Add(this.label6);
+            this.groupBox3.Controls.Add(this.tb_quantFilter);
+            this.groupBox3.Controls.Add(this.tb_identificationFilter);
+            this.groupBox3.Location = new System.Drawing.Point(927, 610);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(254, 100);
+            this.groupBox3.TabIndex = 29;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Text Filters";
+            // 
+            // tb_identificationFilter
+            // 
+            this.tb_identificationFilter.Location = new System.Drawing.Point(8, 19);
+            this.tb_identificationFilter.Name = "tb_identificationFilter";
+            this.tb_identificationFilter.Size = new System.Drawing.Size(100, 20);
+            this.tb_identificationFilter.TabIndex = 29;
+            this.tb_identificationFilter.TextChanged += new System.EventHandler(this.tb_identificationFilter_TextChanged_1);
+            // 
+            // tb_quantFilter
+            // 
+            this.tb_quantFilter.Location = new System.Drawing.Point(8, 46);
+            this.tb_quantFilter.Name = "tb_quantFilter";
+            this.tb_quantFilter.Size = new System.Drawing.Size(100, 20);
+            this.tb_quantFilter.TabIndex = 30;
+            this.tb_quantFilter.TextChanged += new System.EventHandler(this.tb_quantFilter_TextChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(114, 22);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(105, 13);
+            this.label6.TabIndex = 31;
+            this.label6.Text = "Identification Results";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(114, 49);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(110, 13);
+            this.label7.TabIndex = 32;
+            this.label7.Text = "Quantification Results";
+            // 
             // LoadDeconvolutionResults
             // 
             this.ClientSize = new System.Drawing.Size(1362, 736);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.cb_run_when_load);
             this.Controls.Add(this.bt_clearResults);
             this.Controls.Add(this.bt_tdResultsAdd);
@@ -424,6 +478,8 @@
             this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_buFiles)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_tdFiles)).EndInit();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -461,5 +517,10 @@
         private System.Windows.Forms.CheckBox cb_td_file;
         private System.Windows.Forms.Button bt_clearResults;
         private System.Windows.Forms.CheckBox cb_run_when_load;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox tb_quantFilter;
+        private System.Windows.Forms.TextBox tb_identificationFilter;
     }
 }
