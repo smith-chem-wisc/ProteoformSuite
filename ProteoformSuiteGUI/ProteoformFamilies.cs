@@ -15,48 +15,62 @@ namespace ProteoformSuite
 {
     public partial class ProteoformFamilies : Form
     {
-        OpenFileDialog fileOpener = new OpenFileDialog();
-        FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
-        bool got_cyto_temp_folder = false;
-
+        //FORM OPERATION
         public ProteoformFamilies()
         {
             InitializeComponent();
         }
-
         private void ProteoformFamilies_Load(object sender, EventArgs e)
         { }
 
-        private void initialize_settings()
+        public void initialize_every_time()
         {
             this.tb_familyBuildFolder.Text = Lollipop.family_build_folder_path;
             this.nud_decimalRoundingLabels.Value = Convert.ToDecimal(Lollipop.deltaM_edge_display_rounding);
         }
 
+        private void initialize_settings()
+        {
+            //Initialize display options
+            cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
+            cmbx_nodeLayout.Items.AddRange(Lollipop.node_positioning);
+            cmbx_nodeLabelPositioning.Items.AddRange(CytoscapeScript.node_label_positions);
+            cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels);
+            cmbx_tableSelector.Items.AddRange(table_names);
+
+            cmbx_colorScheme.SelectedIndex = 0;
+            cmbx_nodeLayout.SelectedIndex = 0;
+            cmbx_nodeLabelPositioning.SelectedIndex = 0;
+            cmbx_edgeLabel.SelectedIndex = 0;
+
+            cmbx_tableSelector.SelectedIndexChanged -= cmbx_tableSelector_SelectedIndexChanged;
+            cmbx_tableSelector.SelectedIndex = 0;
+            cmbx_tableSelector.SelectedIndexChanged += cmbx_tableSelector_SelectedIndexChanged;
+
+            tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
+            tb_tableFilter.Text = "";
+            tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
+        }
+
         public void construct_families()
         {
-            initialize_settings();
+            initialize_every_time();
             if (Lollipop.proteoform_community.families.Count <= 0 && Lollipop.proteoform_community.has_e_proteoforms) run_the_gamut();
         }
 
         public DataGridView GetDGV()
         {
-            return dgv_proteoform_families;
+            return dgv_main;
         }
 
         private void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
+            initialize_settings();
             Lollipop.proteoform_community.construct_families();
-            fill_proteoform_families();
+            fill_proteoform_families("");
             update_figures_of_merit();
             this.Cursor = Cursors.Default;
-        }
-
-        private void fill_proteoform_families()
-        {
-            DisplayUtility.FillDataGridView(dgv_proteoform_families, Lollipop.proteoform_community.families.OrderByDescending(f => f.relation_count).ToList());
-            format_families_dgv();
         }
 
         private void update_figures_of_merit()
@@ -66,34 +80,72 @@ namespace ProteoformSuite
             this.tb_singleton_count.Text = Lollipop.proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString();
         }
 
-        private void format_families_dgv()
+
+        // MAIN TABLE CONTROL
+        private static string[] table_names = new string[5] 
         {
-            //set column header
-            //dgv_proteoform_families.Columns["family_id"].HeaderText = "Light Monoisotopic Mass";
-            dgv_proteoform_families.Columns["lysine_count"].HeaderText = "Lysine Count";
-            dgv_proteoform_families.Columns["experimental_count"].HeaderText = "Experimental Proteoforms";
-            dgv_proteoform_families.Columns["theoretical_count"].HeaderText = "Theoretical Proteoforms";
-            dgv_proteoform_families.Columns["relation_count"].HeaderText = "Relation Count";
-            dgv_proteoform_families.Columns["accession_list"].HeaderText = "Theoretical Accessions";
-            dgv_proteoform_families.Columns["name_list"].HeaderText = "Theoretical Names";
-            dgv_proteoform_families.Columns["experimentals_list"].HeaderText = "Experimental Accessions";
-            dgv_proteoform_families.Columns["agg_mass_list"].HeaderText = "Experimental Aggregated Masses";
-            dgv_proteoform_families.Columns["relations"].Visible = false;
-            dgv_proteoform_families.Columns["proteoforms"].Visible = false;
+            "Proteoform Families",
+            "Theoretical Proteoforms in Families",
+            "GO Terms of Families -- " + Aspect.biologicalProcess,
+            "GO Terms of Families -- " + Aspect.cellularComponent,
+            "GO Terms of Families -- " + Aspect.molecularFunction,
+        };
+
+        private void cmbx_tableSelector_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 1) fill_theoreticals(tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.biologicalProcess, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.cellularComponent, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 4) fill_go(Aspect.molecularFunction, tb_tableFilter.Text);
+        }
+
+        private void tb_tableFilter_TextChanged(object sender, EventArgs e)
+        {
+            if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 1) fill_theoreticals(tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.biologicalProcess, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.cellularComponent, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 4) fill_go(Aspect.molecularFunction, tb_tableFilter.Text);
+        }
+
+        private void fill_proteoform_families(string filter)
+        {
+            IEnumerable<object> families = filter == "" ?
+                Lollipop.proteoform_community.families.OrderByDescending(f => f.relation_count) :
+                ExtensionMethods.filter(Lollipop.proteoform_community.families.OrderByDescending(f => f.relation_count), filter);
+            DisplayUtility.FillDataGridView(dgv_main, families);
+            if (families.Count() > 0) DisplayUtility.format_families_dgv(dgv_main);
+        }
+
+        private void fill_theoreticals(string filter)
+        {
+            IEnumerable<object> theoreticals = filter == "" ?
+                Lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms) :
+                ExtensionMethods.filter(Lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms), filter);
+            DisplayUtility.FillDataGridView(dgv_main, theoreticals);
+            if (theoreticals.Count() > 0) DisplayUtility.FormatTheoreticalProteoformTable(dgv_main);
+        }
+
+        private void fill_go(Aspect aspect, string filter)
+        {
+            DisplayUtility.FillDataGridView(dgv_main, filter == "" ?
+                Lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.proteinList).SelectMany(g => g.goTerms).Where(g => g.aspect == aspect) :
+                ExtensionMethods.filter(Lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.proteinList).SelectMany(g => g.goTerms).Where(g => g.aspect == aspect), filter));
         }
 
         private void dgv_proteoform_families_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0) display_family_members(e.RowIndex, e.ColumnIndex);
+            if (cmbx_tableSelector.SelectedIndex == 0 && e.RowIndex >= 0) display_family_members(e.RowIndex, e.ColumnIndex);
         }
         private void dgv_proteoform_families_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.RowIndex >= 0) display_family_members(e.RowIndex, e.ColumnIndex);
+            if (cmbx_tableSelector.SelectedIndex == 0 && e.RowIndex >= 0) display_family_members(e.RowIndex, e.ColumnIndex);
         }
         private void display_family_members(int row_index, int column_index)
         {
-            ProteoformFamily selected_family = (ProteoformFamily)this.dgv_proteoform_families.Rows[row_index].DataBoundItem;
-            if (new List<string> { "theoretical_count", "accession_list","name_list" }.Contains(dgv_proteoform_families.Columns[column_index].Name))
+            ProteoformFamily selected_family = (ProteoformFamily)this.dgv_main.Rows[row_index].DataBoundItem;
+            if (new List<string> { "theoretical_count", "accession_list","name_list" }.Contains(dgv_main.Columns[column_index].Name))
             {
                 if (selected_family.theoretical_count > 0) 
                 {
@@ -102,7 +154,7 @@ namespace ProteoformSuite
                 }
                 else dgv_proteoform_family_members.Rows.Clear();
             }
-            else if (new List<string> { "experimental_count", "experimentals_list", "agg_mass_list" }.Contains(dgv_proteoform_families.Columns[column_index].Name))
+            else if (new List<string> { "experimental_count", "experimentals_list", "agg_mass_list" }.Contains(dgv_main.Columns[column_index].Name))
             {
                 if (selected_family.experimental_count > 0)
                 {
@@ -111,7 +163,7 @@ namespace ProteoformSuite
                 }
                 else dgv_proteoform_family_members.Rows.Clear();
             }
-            else if (dgv_proteoform_families.Columns[column_index].Name == "relation_count")
+            else if (dgv_main.Columns[column_index].Name == "relation_count")
             {
                 if (selected_family.relation_count > 0)
                 {
@@ -121,6 +173,12 @@ namespace ProteoformSuite
                 else dgv_proteoform_family_members.Rows.Clear();
             }
         }
+
+
+        // CYTOSCAPE VISUALIZATION
+        OpenFileDialog fileOpener = new OpenFileDialog();
+        FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+        bool got_cyto_temp_folder = false;
 
         private void btn_browseTempFolder_Click(object sender, EventArgs e)
         {
@@ -145,9 +203,10 @@ namespace ProteoformSuite
         {
             if (got_cyto_temp_folder) btn_buildAllFamilies.Enabled = true;
         }
+
         private void enable_buildSelectedFamilies_button()
         {
-            if (got_cyto_temp_folder && dgv_proteoform_families.SelectedRows.Count > 0) btn_buildSelectedFamilies.Enabled = true;
+            if (got_cyto_temp_folder && dgv_main.SelectedRows.Count > 0) btn_buildSelectedFamilies.Enabled = true;
         }
 
         private void btn_buildAllFamilies_Click(object sender, EventArgs e)
@@ -159,20 +218,32 @@ namespace ProteoformSuite
 
         private void btn_buildSelectedFamilies_Click(object sender, EventArgs e)
         {
-            //Check if there are any rows selected
-            int selected_row_sum = 0;
-            for (int i = 0; i < dgv_proteoform_families.SelectedCells.Count; i++) selected_row_sum += dgv_proteoform_families.SelectedCells[i].RowIndex;
-
             List<ProteoformFamily> families = new List<ProteoformFamily>();
-            if (dgv_proteoform_families.SelectedRows.Count > 0)
-                for (int i = 0; i < dgv_proteoform_families.SelectedRows.Count; i++)
-                    families.Add((ProteoformFamily)dgv_proteoform_families.SelectedRows[i].DataBoundItem);
+            if (cmbx_tableSelector.SelectedIndex == 0) families = (DisplayUtility.get_selected_objects(dgv_main).Select(o => (ProteoformFamily)o)).ToList();
+            else if (cmbx_tableSelector.SelectedIndex == 1)
+            {
+                families =
+                    (
+                    from f in Lollipop.proteoform_community.families
+                    from t in f.theoretical_proteoforms
+                    where DisplayUtility.get_selected_objects(dgv_main).Select(o => (TheoreticalProteoform)o).Contains(t)
+                    select f
+                    ).ToList();
+            }
             else
-                for (int i = 0; i < dgv_proteoform_families.SelectedCells.Count; i++)
-                    if (dgv_proteoform_families.SelectedCells[i].RowIndex != 0)
-                        families.Add((ProteoformFamily)dgv_proteoform_families.Rows[dgv_proteoform_families.SelectedCells[i].RowIndex].DataBoundItem);
+            {
+                families =
+                    (
+                    from f in Lollipop.proteoform_community.families
+                    from t in f.theoretical_proteoforms
+                    from p in t.proteinList
+                    from g in p.goTerms
+                    where DisplayUtility.get_selected_objects(dgv_main).Select(o => (GoTerm)o).Contains(g)
+                    select f
+                    ).ToList();
+            }
 
-            bool built = build_families(families);
+            bool built = build_families(families.Distinct().ToList());
             if (!built) return;
 
             string selected_family_string = "Finished building selected famil";
@@ -193,11 +264,11 @@ namespace ProteoformSuite
             }
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
-            CytoscapeScript c = new CytoscapeScript(families, time_stamp);
+            CytoscapeScript c = new CytoscapeScript(families, time_stamp, false, false, false, false, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString());
             File.WriteAllText(c.edges_path, c.edge_table);
             File.WriteAllText(c.nodes_path, c.node_table);
             File.WriteAllText(c.script_path, c.script);
-            c.write_styles();
+            c.write_styles(); //cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), "");
             return true;
         }
 
@@ -210,6 +281,11 @@ namespace ProteoformSuite
         private void nud_decimalRoundingLabels_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.deltaM_edge_display_rounding = Convert.ToInt32(this.nud_decimalRoundingLabels.Value);
+        }
+
+        private void btn_merge_Click(object sender, EventArgs e)
+        {
+            
         }
     }
 }

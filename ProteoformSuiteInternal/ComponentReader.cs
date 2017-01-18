@@ -67,7 +67,10 @@ namespace ProteoformSuiteInternal
                 }
                 return remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file);
             }
-            catch (IOException ex) { throw new IOException(ex.Message); }
+            catch (IOException ex)
+            {
+                throw new IOException(ex.Message);
+            }
         }
 
         private static List<Component> remove_monoisotopic_duplicates_harmonics_from_same_scan(List<Component> raw_components)

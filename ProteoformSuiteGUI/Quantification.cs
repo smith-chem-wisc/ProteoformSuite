@@ -10,50 +10,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.IO;
 
 namespace ProteoformSuite
 {
     public partial class Quantification : Form
     {
-        //DataSet quantTables = new DataSet();
-        Dictionary<GoTerm, int> goMasterSet = new Dictionary<GoTerm, int>();
-        List<Protein> interestingProteins = new List<Protein>();
-        List<GoTermNumber> goTermNumbers = new List<GoTermNumber>();
-        List<ExperimentalProteoform.quantitativeValues> qVals = new List<ExperimentalProteoform.quantitativeValues>();
-
-        //Variables Describing the Distribution of Observed and Imputed Proteoform Intensities
-        decimal observedAverageIntensity; //log base 2
-        decimal selectAverageIntensity; //log base 2
-        decimal observedStDev;
-        decimal selectStDev;
-        decimal observedGaussianArea;
-        decimal selectGaussianArea;
-        decimal observedGaussianHeight;
-        decimal selectGaussianHeight;
-        int numSelectMissingIntensities;
-        int numSelectProteoformIntensities;
-        SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>();
-        SortedDictionary<decimal, int> logSelectIntensityHistogram = new SortedDictionary<decimal, int>();
-
-        decimal bkgdAverageIntensity; //log base 2
-        decimal bkgdSelectAverageIntensity; //log base 2
-        decimal bkgdStDev;
-        decimal bkgdSelectStDev;
-        //decimal bkgdGaussianArea;
-        decimal bkgdSelectGaussianArea;
-        //decimal bkgdGaussianHeight;
-        decimal bkgdSelectGaussianHeight;
-        int numMeasuredProteoformIntensities;
-        //End -- Variables Describing the Distribution of Observed and Imputed Proteoform Intensities
-
-        int satisfactoryProteoformsCount;
-        List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>(); // these are proteoforms meeting the required number of observations.
-
+        // FORM OPERATION
         public Quantification()
         {
             InitializeComponent();
         }
-
         private void Quantification_Load(object sender, EventArgs e)
         { }
 
@@ -78,7 +45,7 @@ namespace ProteoformSuite
             proteoformQuantification();
             DisplayUtility.FillDataGridView(dgv_quantification_results, qVals);
             volcanoPlot();
-            interestingProteins = getInterestingProteins();
+            interestingProteins = getInterestingProteins(qVals);
             goTermNumbers = getGoTermNumbers(interestingProteins);
             fillGoTermsTable();
         }
@@ -97,6 +64,11 @@ namespace ProteoformSuite
             quantify();
         }
 
+        public void initialize_every_time()
+        {
+            this.tb_familyBuildFolder.Text = Lollipop.family_build_folder_path;
+        }
+
         private void initialize()
         {
             //Initialize conditions
@@ -106,10 +78,21 @@ namespace ProteoformSuite
             cmbx_ratioNumerator.Items.AddRange(conditions.ToArray());
             cmbx_ratioDenominator.Items.AddRange(conditions.ToArray());
             cmbx_ratioNumerator.SelectedIndex = 0;
-            if (conditions.Count() > 1)
-                cmbx_ratioDenominator.SelectedIndex = 1;
-            else
-                cmbx_ratioDenominator.SelectedIndex = 0;
+            cmbx_ratioDenominator.SelectedIndex = Convert.ToInt32(conditions.Count() > 1);
+            Lollipop.numerator_condition = cmbx_ratioNumerator.SelectedItem.ToString();
+            Lollipop.denominator_condition = cmbx_ratioDenominator.SelectedItem.ToString();
+
+            //Initialize display options
+            cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
+            cmbx_nodeLayout.Items.AddRange(Lollipop.node_positioning);
+            cmbx_nodeLabelPositioning.Items.AddRange(CytoscapeScript.node_label_positions);
+            cb_redBorder.Checked = true;
+            cb_boldLabel.Checked = true;
+            cb_moreOpacity.Checked = false;
+
+            cmbx_colorScheme.SelectedIndex = 0;
+            cmbx_nodeLayout.SelectedIndex = 0;
+            cmbx_nodeLabelPositioning.SelectedIndex = 0;
 
             //Set parameters
             nud_bkgdShift.Value = (decimal)-2.0;
@@ -135,9 +118,9 @@ namespace ProteoformSuite
             cmbx_observationsTypeRequired.Items.Add("Minimum Total from Any Condition");
             cmbx_observationsTypeRequired.SelectedIndex = 0;
 
-            cmbx_goAspect.Items.Add(aspect.biologicalProcess);
-            cmbx_goAspect.Items.Add(aspect.cellularComponent);
-            cmbx_goAspect.Items.Add(aspect.molecularFunction);
+            cmbx_goAspect.Items.Add(Aspect.biologicalProcess);
+            cmbx_goAspect.Items.Add(Aspect.cellularComponent);
+            cmbx_goAspect.Items.Add(Aspect.molecularFunction);
 
             cmbx_goAspect.SelectedIndexChanged -= cmbx_goAspect_SelectedIndexChanged; //disable event on load to prevent premature firing
             cmbx_goAspect.SelectedIndex = 0;
@@ -153,17 +136,34 @@ namespace ProteoformSuite
             goMasterSet = getDatabaseGoNumbers();
         }
 
-        private void fillGoTermsTable()
-        {
-            DisplayUtility.FillDataGridView(dgv_goAnalysis, goTermNumbers.Where(x => x.goTerm.aspect.ToString() == cmbx_goAspect.SelectedItem.ToString()));
-        }
 
-        private void updateGoTermsTable(object s, EventArgs e)
-        {
-            interestingProteins = getInterestingProteins();
-            goTermNumbers = getGoTermNumbers(interestingProteins);
-            fillGoTermsTable();
-        }
+        // CALCULATING DISTRIBUTION OF OBSERVED AND IMPUTED PROTEOFORM INTENSITIES
+        decimal observedAverageIntensity; //log base 2
+        decimal selectAverageIntensity; //log base 2
+        decimal observedStDev;
+        decimal selectStDev;
+        decimal observedGaussianArea;
+        decimal selectGaussianArea;
+        decimal observedGaussianHeight;
+        decimal selectGaussianHeight;
+        int numSelectMissingIntensities;
+        int numSelectProteoformIntensities;
+        SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>();
+        SortedDictionary<decimal, int> logSelectIntensityHistogram = new SortedDictionary<decimal, int>();
+
+        int satisfactoryProteoformsCount;
+        List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>(); // these are proteoforms meeting the required number of observations.
+
+        decimal bkgdAverageIntensity; //log base 2
+        decimal bkgdSelectAverageIntensity; //log base 2
+        decimal bkgdStDev;
+        decimal bkgdSelectStDev;
+        //decimal bkgdGaussianArea;
+        decimal bkgdSelectGaussianArea;
+        //decimal bkgdGaussianHeight;
+        decimal bkgdSelectGaussianHeight;
+        int numMeasuredProteoformIntensities;
+        //End -- Variables Describing the Distribution of Observed and Imputed Proteoform Intensities
 
         private void computeBiorepIntensities()
         {
@@ -263,18 +263,6 @@ namespace ProteoformSuite
             selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
         }
 
-        //private void defineAllBackgroundIntensityDistribution()
-        //{
-        //    bkgdAverageIntensity = observedAverageIntensity + nud_bkgdShift.Value * observedStDev;
-        //    bkgdStDev = observedStDev * nud_bkgdWidth.Value;
-        //    int numMeasurableIntensities = Lollipop.quantBioFracCombos.Keys.Count() * Lollipop.proteoform_community.experimental_proteoforms.Count();
-        //    if (Lollipop.neucode_labeled)
-        //        numMeasurableIntensities = numMeasurableIntensities * 2;
-        //    numMissingIntensities = numMeasurableIntensities - numMeasuredProteoformIntensities;
-        //    bkgdGaussianArea = observedGaussianArea / numMeasuredProteoformIntensities * numMissingIntensities;
-        //    bkgdGaussianHeight = bkgdGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)bkgdStDev, 2));
-        //}
-
         private void determineProteoformsMeetingCriteria()
         {
             List<string> conditions = Lollipop.ltConditionsBioReps.Keys.ToList();
@@ -304,6 +292,7 @@ namespace ProteoformSuite
                     }
                 });
             }
+
             else //any condition
             {
                 Parallel.ForEach(Lollipop.proteoform_community.experimental_proteoforms, eP =>
@@ -327,8 +316,7 @@ namespace ProteoformSuite
             bkgdSelectAverageIntensity = observedAverageIntensity + nud_bkgdShift.Value * observedStDev;
             bkgdSelectStDev = observedStDev * nud_bkgdWidth.Value;
             int numSelectMeasurableIntensities = Lollipop.quantBioFracCombos.Keys.Count() * satisfactoryProteoforms.Count();
-            if (Lollipop.neucode_labeled)
-                numSelectMeasurableIntensities = numSelectMeasurableIntensities * 2;
+            if (Lollipop.neucode_labeled) numSelectMeasurableIntensities = numSelectMeasurableIntensities * 2;
             int numSelectMeasuredIntensities = 0;
             foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
             {
@@ -380,13 +368,13 @@ namespace ProteoformSuite
             string numerator = cmbx_ratioNumerator.SelectedItem.ToString();
             string denominator = cmbx_ratioDenominator.SelectedItem.ToString();
 
-            Parallel.ForEach(satisfactoryProteoforms.Where(eP => eP.accepted == true).ToList(), eP =>
+            Parallel.ForEach(satisfactoryProteoforms.Where(eP => eP.accepted == true), eP =>
             {
                 lock (sync)
                 {
                     qVals.Add(new ExperimentalProteoform.quantitativeValues(eP, bkgdAverageIntensity, bkgdStDev, numerator, denominator)); // those are log2 intensities
-                }               
-            }); 
+                }
+            });
         }
 
         private void volcanoPlot()
@@ -404,94 +392,11 @@ namespace ProteoformSuite
             }
         }
 
-        //private Color HeatMapColor(double value, double min, double max)//(double value, double min, double max)
-        //{
-        //    double val;
-        //    int r = 0;
-        //    int g = 0;
-        //    int b = 0;
-        //    double middleValue = (max - min) / 2 + min;
 
-        //    if (value > (min + (max - min) / 2)) // positive - green
-        //    {
-        //        val = (Math.Min(value, max) - middleValue) / (max - middleValue);
-        //        g = Convert.ToByte(255 * val);
-        //    }
-        //    else // negative red
-        //    {
-        //        val = (middleValue - Math.Max(value, min)) / (middleValue - min);
-        //        r = Convert.ToByte(255 * val);
-        //    }
-        //    return Color.FromArgb(255, r, g, b);
-        //}
-
-        //private void dgv_quantification_results_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
-        //{
-        //    foreach (DataGridViewRow dataRow in dgv_quantification_results.Rows)
-        //    {
-        //        foreach (DataGridViewCell oneCell in dataRow.Cells)
-        //        {
-        //            double d = 0;
-        //            if (oneCell.Value != null)
-        //            {
-        //                Double.TryParse(oneCell.Value.ToString(), out d);
-        //            }
-        //            if (d == 0)
-        //            {
-        //                dgv_quantification_results.Rows[oneCell.RowIndex].Cells[oneCell.ColumnIndex].Style.BackColor = Color.White;
-        //            }
-        //            else
-        //            {
-        //                dgv_quantification_results.Rows[oneCell.RowIndex].Cells[oneCell.ColumnIndex].Style.BackColor = HeatMapColor(d, -1, 1);
-        //            }
-        //        }
-        //    }
-        //}
-
-
-        private void cmbx_goAspect_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            fillGoTermsTable();
-        }
-
-        private List<Protein> getInterestingProteins()
-        {
-            List<ExperimentalProteoform.quantitativeValues> interestingQuantValues = new List<ExperimentalProteoform.quantitativeValues>();
-            interestingQuantValues.AddRange(qVals.Where(q => q.intensitySum > nud_intensity.Value && Math.Abs(q.logFoldChange) > nud_ratio.Value && q.pValue < nud_pValue.Value).ToList());
-            List<string> distinctAccessions = new List<string>();
-            distinctAccessions.AddRange(interestingQuantValues.Select(a => a.accession).ToList());
-
-            foreach (string acc in distinctAccessions) // here were getting the accession numbers of the proteins linked to interesting experimental proteoforms
-            {
-
-                ExperimentalProteoform interestingProteoform = Lollipop.proteoform_community.experimental_proteoforms.Where(iP => iP.accession == acc).FirstOrDefault();
-                List<ProteoformFamily> famlist = new List<ProteoformFamily>();
-                if (interestingProteoform != null)
-                    famlist = Lollipop.proteoform_community.families.Where(fam => fam.experimental_proteoforms.Contains(interestingProteoform)).ToList(); // proteoform families containing the selected experimental proteoform
-                List<TheoreticalProteoform> tpList = new List<TheoreticalProteoform>();
-                if (famlist.Count() > 0)
-                {
-                    foreach (ProteoformFamily pf in famlist)
-                    {
-                        if (pf.theoretical_proteoforms.Count() > 0)
-                            tpList.AddRange(famlist.SelectMany(t => t.theoretical_proteoforms));
-                    }
-                }
-                List<string> tlist = new List<string>();
-                if (tpList.Count() > 0)
-                    tlist = tpList.Select(tacc => tacc.accession).ToList();
-                foreach (string accession in tlist)
-                {
-                    string someJunk = accession.Replace("_T", "!").Split('!').FirstOrDefault();
-                    Protein p = Lollipop.proteins.FirstOrDefault(protein => protein.accession == someJunk);
-                    if (p != null)
-                        if (!interestingProteins.Any(theoreticalProtein => theoreticalProtein.accession == p.accession))
-                            interestingProteins.Add(p);
-                }
-                
-            }
-            return interestingProteins;
-        }
+        // GO TERM SIGNIFICANCE
+        Dictionary<GoTerm, int> goMasterSet = new Dictionary<GoTerm, int>();
+        List<GoTermNumber> goTermNumbers = new List<GoTermNumber>();
+        List<GoTermNumber> interesting_go_terms = new List<GoTermNumber>();
 
         private Dictionary<GoTerm, int> getDatabaseGoNumbers()
         {
@@ -515,9 +420,8 @@ namespace ProteoformSuite
                 {
                     string someJunk = acc.Replace("_T", "!").Split('!').FirstOrDefault();
                     Protein p = Lollipop.proteins.FirstOrDefault(protein => protein.accession == someJunk);
-                    if (p != null)
-                        if (!proteinList.Any(theoreticalProtein => theoreticalProtein.accession == p.accession))
-                            proteinList.Add(p);
+                    if (p != null && !proteinList.Any(theoreticalProtein => theoreticalProtein.accession == p.accession))
+                        proteinList.Add(p);
                 }
             }
 
@@ -563,11 +467,276 @@ namespace ProteoformSuite
         private void goTermBackgroundChanged(object s, EventArgs e)
         {
             goMasterSet = getDatabaseGoNumbers();
-            if(interestingProteins.Count()==0)
-                interestingProteins = getInterestingProteins();
+            if(interestingProteins.Count() <= 0) interestingProteins = getInterestingProteins(qVals);
             goTermNumbers = getGoTermNumbers(interestingProteins);
             fillGoTermsTable();
         }
 
+        private void fillGoTermsTable()
+        {
+            this.interesting_go_terms = goTermNumbers.Where(x => x.goTerm.aspect.ToString() == cmbx_goAspect.SelectedItem.ToString()).ToList();
+            DisplayUtility.FillDataGridView(dgv_goAnalysis, goTermNumbers.Where(x => x.goTerm.aspect.ToString() == cmbx_goAspect.SelectedItem.ToString()));
+        }
+
+        private void updateGoTermsTable(object s, EventArgs e)
+        {
+            interestingProteins = getInterestingProteins(qVals);
+            goTermNumbers = getGoTermNumbers(interestingProteins);
+            fillGoTermsTable();
+        }
+
+        private void cmbx_goAspect_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            fillGoTermsTable();
+        }
+
+
+        // GETTING SIGNIFICANT PROTS
+        List<Protein> interestingProteins = new List<Protein>();
+        List<ExperimentalProteoform.quantitativeValues> qVals = new List<ExperimentalProteoform.quantitativeValues>();
+
+        private List<ExperimentalProteoform> getInterestingProteoforms(List<ExperimentalProteoform.quantitativeValues> qvals)
+        {
+            List<ExperimentalProteoform.quantitativeValues> interestingQuantValues = qvals.Where(q => q.intensitySum > nud_intensity.Value && Math.Abs(q.logFoldChange) > nud_ratio.Value && q.pValue < nud_pValue.Value).ToList();
+            List<string> distinctAccessions = interestingQuantValues.Select(a => a.accession).ToList();
+            List<ExperimentalProteoform> interestingProteoforms = Lollipop.proteoform_community.experimental_proteoforms.Where(p => distinctAccessions.Contains(p.accession)).ToList();
+            interestingProteoforms.ForEach(e => e.quant.significant = true);
+            return interestingProteoforms;
+        }
+
+        private List<ProteoformFamily> getInterestingFamilies(List<ExperimentalProteoform.quantitativeValues> qvals)
+        {
+            IEnumerable<ProteoformFamily> interesting_families =
+                from exp in this.getInterestingProteoforms(qvals)
+                from fam in Lollipop.proteoform_community.families
+                where fam.experimental_proteoforms.Contains(exp)
+                select fam;
+            return interesting_families.ToList();
+        }
+
+        private List<ProteoformFamily> getInterestingFamilies(List<GoTermNumber> go_terms_numbers)
+        {
+            IEnumerable<ProteoformFamily> interesting_families =
+                from fam in Lollipop.proteoform_community.families
+                where fam.theoretical_proteoforms.Any(t => t.proteinList.Any(p => p.goTerms.Any(g => go_terms_numbers.Select(n => n.goTerm).Contains(g))))
+                select fam;
+            return interesting_families.ToList();
+        }
+
+        private List<Protein> getInterestingProteins(List<ExperimentalProteoform.quantitativeValues> qvals)
+        {
+            IEnumerable<string> interesting_theo_accessions = getInterestingFamilies(qvals).SelectMany(f => f.theoretical_proteoforms).Select(theo => theo.accession);
+            foreach (string accession in interesting_theo_accessions)
+            {
+                string someJunk = accession.Replace("_T", "!").Split('!').FirstOrDefault();
+                Protein p = Lollipop.proteins.FirstOrDefault(protein => protein.accession == someJunk);
+                if (p != null && !interestingProteins.Any(theoreticalProtein => theoreticalProtein.accession == p.accession))
+                    interestingProteins.Add(p);
+            }
+            return interestingProteins;
+        }
+
+
+        // CYTOSCAPE VISUALIZATION
+        OpenFileDialog fileOpener = new OpenFileDialog();
+        FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+        bool got_cyto_temp_folder = false;
+
+        private void btn_browseTempFolder_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = this.folderBrowser.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                string temp_folder_path = folderBrowser.SelectedPath;
+                tb_familyBuildFolder.Text = temp_folder_path; //triggers TextChanged method
+            }
+        }
+
+        private void tb_familyBuildFolder_TextChanged(object sender, EventArgs e)
+        {
+            string path = tb_familyBuildFolder.Text;
+            Lollipop.family_build_folder_path = path;
+            got_cyto_temp_folder = true;
+            enable_buildAllFamilies_button();
+            enable_buildSelectedFamilies_button();
+        }
+
+        private void enable_buildAllFamilies_button()
+        {
+            if (got_cyto_temp_folder) btn_buildAllFamilies.Enabled = true;
+        }
+
+        private void enable_buildSelectedFamilies_button()
+        {
+            if (got_cyto_temp_folder && dgv_quantification_results.SelectedRows.Count > 0) btn_buildSelectedQuantFamilies.Enabled = true;
+        }
+
+        private void btn_buildAllQuantifiedFamilies_Click(object sender, EventArgs e)
+        {
+            bool built = build_families(getInterestingFamilies(qVals).Distinct().ToList());
+            if (!built) return;
+            MessageBox.Show("Finished building all families.\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
+        }
+
+        private void btn_buildSelectedQuantFamilies_Click(object sender, EventArgs e)
+        {
+            List<ExperimentalProteoform.quantitativeValues> selected_qvals = (DisplayUtility.get_selected_objects(dgv_quantification_results).Select(o => (ExperimentalProteoform.quantitativeValues)o)).ToList();
+            List<ProteoformFamily> selected_families = getInterestingFamilies(selected_qvals).Distinct().ToList();
+            bool built = build_families(selected_families);
+            if (!built) return;
+
+            string selected_family_string = "Finished building selected famil";
+            if (selected_families.Count() == 1) selected_family_string += "y :";
+            else selected_family_string += "ies :";
+            if (selected_families.Count() > 3) selected_family_string = String.Join(", ", selected_families.Select(f => f.family_id).ToList().Take(3)) + ". . .";
+            else selected_family_string = String.Join(", ", selected_families.Select(f => f.family_id));
+            MessageBox.Show(selected_family_string + ".\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
+        }
+
+        private void btn_buildFamiliesAllGO_Click(object sender, EventArgs e)
+        {
+            bool built = build_families(getInterestingFamilies(interesting_go_terms).Distinct().ToList());
+            if (!built) return;
+            MessageBox.Show("Finished building all families.\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
+        }
+
+        private void btn_buildFromSelectedGoTerms_Click(object sender, EventArgs e)
+        {
+            List<GoTermNumber> selected_gos = (DisplayUtility.get_selected_objects(dgv_goAnalysis).Select(o => (GoTermNumber)o)).ToList();
+            List<ProteoformFamily> selected_families = getInterestingFamilies(selected_gos).Distinct().ToList();
+            bool built = build_families(selected_families);
+            if (!built) return;
+
+            string selected_family_string = "Finished building selected famil";
+            if (selected_families.Count() == 1) selected_family_string += "y :";
+            else selected_family_string += "ies :";
+            if (selected_families.Count() > 3) selected_family_string = String.Join(", ", selected_families.Select(f => f.family_id).ToList().Take(3)) + ". . .";
+            else selected_family_string = String.Join(", ", selected_families.Select(f => f.family_id));
+            MessageBox.Show(selected_family_string + ".\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
+        }
+
+        private bool build_families(List<ProteoformFamily> families)
+        {
+            //Check if valid folder
+            if (Lollipop.family_build_folder_path == "" || !Directory.Exists(Lollipop.family_build_folder_path))
+            {
+                MessageBox.Show("Please choose a folder in which the families will be built, so you can load them into Cytoscape.");
+                return false;
+            }
+            string time_stamp = SaveState.time_stamp();
+            tb_recentTimeStamp.Text = time_stamp;
+            CytoscapeScript c = new CytoscapeScript(families, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString());
+            File.WriteAllText(c.edges_path, c.edge_table);
+            File.WriteAllText(c.nodes_path, c.node_table);
+            File.WriteAllText(c.script_path, c.script);
+            c.write_styles(); //cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), "");
+            return true;
+        }
+
+        private void cmbx_ratioNumerator_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Lollipop.numerator_condition = cmbx_ratioNumerator.SelectedItem.ToString();
+        }
+
+        private void cmbx_ratioDenominator_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Lollipop.denominator_condition = cmbx_ratioDenominator.SelectedItem.ToString();
+        }
     }
 }
+
+
+
+// METHODS NOT IN USE
+
+//DataSet quantTables = new DataSet();
+
+//private Color HeatMapColor(double value, double min, double max)//(double value, double min, double max)
+//{
+//    double val;
+//    int r = 0;
+//    int g = 0;
+//    int b = 0;
+//    double middleValue = (max - min) / 2 + min;
+
+//    if (value > (min + (max - min) / 2)) // positive - green
+//    {
+//        val = (Math.Min(value, max) - middleValue) / (max - middleValue);
+//        g = Convert.ToByte(255 * val);
+//    }
+//    else // negative red
+//    {
+//        val = (middleValue - Math.Max(value, min)) / (middleValue - min);
+//        r = Convert.ToByte(255 * val);
+//    }
+//    return Color.FromArgb(255, r, g, b);
+//}
+
+//private void dgv_quantification_results_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
+//{
+//    foreach (DataGridViewRow dataRow in dgv_quantification_results.Rows)
+//    {
+//        foreach (DataGridViewCell oneCell in dataRow.Cells)
+//        {
+//            double d = 0;
+//            if (oneCell.Value != null)
+//            {
+//                Double.TryParse(oneCell.Value.ToString(), out d);
+//            }
+//            if (d == 0)
+//            {
+//                dgv_quantification_results.Rows[oneCell.RowIndex].Cells[oneCell.ColumnIndex].Style.BackColor = Color.White;
+//            }
+//            else
+//            {
+//                dgv_quantification_results.Rows[oneCell.RowIndex].Cells[oneCell.ColumnIndex].Style.BackColor = HeatMapColor(d, -1, 1);
+//            }
+//        }
+//    }
+//}
+
+//private void defineAllBackgroundIntensityDistribution()
+//{
+//    bkgdAverageIntensity = observedAverageIntensity + nud_bkgdShift.Value * observedStDev;
+//    bkgdStDev = observedStDev * nud_bkgdWidth.Value;
+//    int numMeasurableIntensities = Lollipop.quantBioFracCombos.Keys.Count() * Lollipop.proteoform_community.experimental_proteoforms.Count();
+//    if (Lollipop.neucode_labeled)
+//        numMeasurableIntensities = numMeasurableIntensities * 2;
+//    numMissingIntensities = numMeasurableIntensities - numMeasuredProteoformIntensities;
+//    bkgdGaussianArea = observedGaussianArea / numMeasuredProteoformIntensities * numMissingIntensities;
+//    bkgdGaussianHeight = bkgdGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)bkgdStDev, 2));
+//}
+
+//private List<Protein> getInterestingProteins()
+//{
+//    List<ExperimentalProteoform.quantitativeValues> interestingQuantValues = qVals.Where(q => q.intensitySum > nud_intensity.Value && Math.Abs(q.logFoldChange) > nud_ratio.Value && q.pValue < nud_pValue.Value).ToList();
+//    List<string> distinctAccessions = interestingQuantValues.Select(a => a.accession).ToList();
+
+//    foreach (string acc in distinctAccessions) // here we're getting the accession numbers of the proteins linked to interesting experimental proteoforms
+//    {
+//        ExperimentalProteoform interestingProteoform = Lollipop.proteoform_community.experimental_proteoforms.Where(iP => iP.accession == acc).FirstOrDefault();
+//        List<ProteoformFamily> famlist = new List<ProteoformFamily>();
+//        if (interestingProteoform != null)
+//            famlist = Lollipop.proteoform_community.families.Where(fam => fam.experimental_proteoforms.Contains(interestingProteoform)).ToList(); // proteoform families containing the selected experimental proteoform
+//        List<TheoreticalProteoform> tpList = new List<TheoreticalProteoform>();
+//        if (famlist.Count() > 0)
+//        {
+//            foreach (ProteoformFamily pf in famlist)
+//            {
+//                if (pf.theoretical_proteoforms.Count() > 0)
+//                    tpList.AddRange(famlist.SelectMany(t => t.theoretical_proteoforms));
+//            }
+//        }
+
+//        List<string> tlist = tlist = tpList.Select(tacc => tacc.accession).ToList();
+//        foreach (string accession in tlist)
+//        {
+//            string someJunk = accession.Replace("_T", "!").Split('!').FirstOrDefault();
+//            Protein p = Lollipop.proteins.FirstOrDefault(protein => protein.accession == someJunk);
+//            if (p != null && !interestingProteins.Any(theoreticalProtein => theoreticalProtein.accession == p.accession))
+//                interestingProteins.Add(p);
+//        }
+
+//    }
+//    return interestingProteins;
+//}

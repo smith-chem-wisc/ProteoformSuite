@@ -108,6 +108,7 @@ namespace ProteoformSuite
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (run_when_form_loads) quantification.perform_calculations();
+            quantification.initialize_every_time();
             showForm(quantification);
         }
         private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
@@ -199,12 +200,8 @@ namespace ProteoformSuite
             openXmlDialog.Title = "UniProt XML Format Database";
             DialogResult dr = this.openXmlDialog.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                string uniprotXmlFile = openXmlDialog.FileName;
- 
-                    Lollipop.uniprot_xml_filepath = uniprotXmlFile;
-                }
-            else { return; }
+                Lollipop.uniprot_xml_filepath = openXmlDialog.FileName;
+            else return;
         }
 
         private void openCurrentPageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -261,8 +258,8 @@ namespace ProteoformSuite
                         MessageBox.Show("File format incorrect.");
                         return;
                     }
-                        theoreticalDatabase.load_dgv();
-                        MessageBox.Show("Successfully read in theoretical proteoforms."); 
+                    theoreticalDatabase.load_dgv();
+                    MessageBox.Show("Successfully read in theoretical proteoforms."); 
                 }
                 else return; 
             }
@@ -392,7 +389,7 @@ namespace ProteoformSuite
             if (result == DialogResult.Cancel) return;
 
             if (!load_method()) return;
-            MessageBox.Show("Successfully loaded method. Will run the method now.\n\nWill show as non-responsive.");
+            MessageBox.Show("Successfully loaded method. Will run the method now.");
 
             if (full_run()) MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
             else MessageBox.Show("Method did not successfully run.");
@@ -402,9 +399,10 @@ namespace ProteoformSuite
         {
             clear_lists();
             if (!File.Exists(Lollipop.uniprot_xml_filepath)) get_uniprot_xml();
-            if (!File.Exists(Lollipop.uniprot_xml_filepath)) { return false; } //user hit cancel
+            if (!File.Exists(Lollipop.uniprot_xml_filepath)) return false; //user hit cancel
             if (!File.Exists(Lollipop.ptmlist_filepath)) get_ptm_list();
-            if (!File.Exists(Lollipop.ptmlist_filepath)) { return false; } //user hit cancel
+            if (!File.Exists(Lollipop.ptmlist_filepath)) return false; //user hit cancel
+            this.Cursor = Cursors.WaitCursor;
             rawExperimentalComponents.load_raw_components();
             aggregatedProteoforms.aggregate_proteoforms();
             theoreticalDatabase.make_databases();
@@ -414,12 +412,14 @@ namespace ProteoformSuite
             quantification.perform_calculations();
             prepare_figures_and_tables();
             this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
+            this.Cursor = Cursors.Default;
             return true;
         }
 
         private void prepare_figures_and_tables()
         {
-            Parallel.Invoke(
+            Parallel.Invoke
+            (
                 () => rawExperimentalComponents.FillRawExpComponentsTable(),
                 () => aggregatedProteoforms.FillAggregatesTable(),
                 () => theoreticalDatabase.FillDataBaseTable("Target"),
@@ -496,26 +496,25 @@ namespace ProteoformSuite
             {
                 dgvs.Add(experimentalTheoreticalComparison.GetETPeaksDGV());
                 dgvs.Add(experimentalTheoreticalComparison.GetETRelationsDGV());
-                SaveExcelFile(dgvs,  "experimental_theoretical_comparison_table.xlsx");
+                SaveExcelFile(dgvs, "experimental_theoretical_comparison_table.xlsx");
             }
             if ( current_form == experimentExperimentComparison)
             {
                 dgvs.Add(experimentExperimentComparison.GetEEPeaksDGV());
                 dgvs.Add(experimentExperimentComparison.GetEERelationDGV());
-                SaveExcelFile(dgvs,  "experiment_experiment_comparison_table.xlsx");
+                SaveExcelFile(dgvs, "experiment_experiment_comparison_table.xlsx");
             }
             if (current_form == proteoformFamilies)
             {
                 dgvs.Add(proteoformFamilies.GetDGV());
                 SaveExcelFile(dgvs, "proteoform_families_table.xlsx");
             }
-            //if (current_form == quantification)
-            //{
-            //    dgvs.Add(quantification.Get_GoTerms_DGV());
-            //    dgvs.Add(quantification.Get_quant_results_DGV());
-            //    SaveExcelFile(dgvs, "quantification_table.xlsx");
-            //}
-            
+            if (current_form == quantification)
+            {
+                dgvs.Add(quantification.Get_GoTerms_DGV());
+                dgvs.Add(quantification.Get_quant_results_DGV());
+                SaveExcelFile(dgvs, "quantification_table.xlsx");
+            }
         }
 
         public void SaveExcelFile(List<DataGridView> dgvs, string filename)
