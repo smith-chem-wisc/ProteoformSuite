@@ -53,8 +53,8 @@
             this.resultsSummaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -90,7 +90,7 @@
             this.openCurrentPageToolStripMenuItem,
             this.openAllToolStripMenuItem});
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.openToolStripMenuItem.Text = "Open";
             // 
             // openCurrentPageToolStripMenuItem
@@ -113,7 +113,7 @@
             this.saveCurrentPageToolStripMenuItem,
             this.saveAllToolStripMenuItem1});
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.saveToolStripMenuItem.Text = "Save";
             // 
             // saveCurrentPageToolStripMenuItem
@@ -133,21 +133,21 @@
             // exportTablesToolStripMenuItem
             // 
             this.exportTablesToolStripMenuItem.Name = "exportTablesToolStripMenuItem";
-            this.exportTablesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exportTablesToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.exportTablesToolStripMenuItem.Text = "Export Table";
             this.exportTablesToolStripMenuItem.Click += new System.EventHandler(this.exportTablesToolStripMenuItem_Click);
             // 
             // printToolStripMenuItem
             // 
             this.printToolStripMenuItem.Name = "printToolStripMenuItem";
-            this.printToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.printToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.printToolStripMenuItem.Text = "Print";
             this.printToolStripMenuItem.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -229,7 +229,7 @@
             this.quantificationToolStripMenuItem.Name = "quantificationToolStripMenuItem";
             this.quantificationToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.quantificationToolStripMenuItem.Text = "Quantification";
-            this.quantificationToolStripMenuItem.Click += new System.EventHandler(this.quantificationToolStripMenuItem_Click_1);
+            this.quantificationToolStripMenuItem.Click += new System.EventHandler(this.quantificationToolStripMenuItem_Click);
             // 
             // resultsSummaryToolStripMenuItem
             // 
@@ -255,19 +255,19 @@
             this.saveMethodToolStripMenuItem1.Text = "Save Method";
             this.saveMethodToolStripMenuItem1.Click += new System.EventHandler(this.saveMethodToolStripMenuItem1_Click);
             // 
-            // loadRunToolStripMenuItem
-            // 
-            this.loadRunToolStripMenuItem.Name = "loadRunToolStripMenuItem";
-            this.loadRunToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.loadRunToolStripMenuItem.Text = "Load && Run";
-            this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
-            // 
             // loadSettingsToolStripMenuItem
             // 
             this.loadSettingsToolStripMenuItem.Name = "loadSettingsToolStripMenuItem";
             this.loadSettingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.loadSettingsToolStripMenuItem.Text = "Load Settings";
             this.loadSettingsToolStripMenuItem.Click += new System.EventHandler(this.loadSettingsToolStripMenuItem_Click);
+            // 
+            // loadRunToolStripMenuItem
+            // 
+            this.loadRunToolStripMenuItem.Name = "loadRunToolStripMenuItem";
+            this.loadRunToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadRunToolStripMenuItem.Text = "Load && Run";
+            this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
             // 
             // ProteoformSweet
             // 

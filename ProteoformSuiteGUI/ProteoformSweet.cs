@@ -464,13 +464,6 @@ namespace ProteoformSuite
             runMethodToolStripMenuItem.ShowDropDown();
         }
 
-        private void quantificationToolStripMenuItem_Click_1(object sender, EventArgs e)
-        {
-            quantification.MdiParent = this;
-            quantification.WindowState = FormWindowState.Maximized;
-            quantification.Show();
-        }
-
         private void exportTablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             export_table();
