@@ -79,6 +79,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestComponent.cs" />
     <Compile Include="TestQuantification.cs" />
     <Compile Include="TestSaveState.cs" />
     <Compile Include="TestExperimentalProteoform.cs" />
