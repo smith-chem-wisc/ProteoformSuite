@@ -25,6 +25,10 @@ namespace ProteoformSuiteInternal
         {
             this.charge_states.Add(new ChargeState(charge_row, correction));
         }
+        public void add_charge_state(ChargeState cs)
+        {
+            this.charge_states.Add(new ChargeState(cs));
+        }
         private int Num_charge_states { get; set; } = 0;
         public int num_charge_states
         {
@@ -66,7 +70,7 @@ namespace ProteoformSuiteInternal
         public void attemptToSetIntensity(double fromFileIntensity)
         {
             if (charge_states.Select(cs => cs.charge_count).ToList().Count() > 0)
-                throw new ArgumentException("Charge state data exists that can't be overwritten with input");
+                throw new ArgumentException("Charge state data exists that can't be overwritten with intensity input");
             else
                 Intensity_sum = fromFileIntensity;
         }
@@ -83,7 +87,7 @@ namespace ProteoformSuiteInternal
         public void attemptToSetWeightedMonoisotopic_mass(double fromFileMass)
         {
             if (charge_states.Select(cs => cs.charge_count).ToList().Count() > 0)
-                throw new ArgumentException("Charge state data exists that can't be overwritten with input");
+                throw new ArgumentException("Charge state data exists that can't be overwritten with mass input");
             else
                 Weighted_monoisotopic_mass = fromFileMass;
         }
@@ -222,9 +226,16 @@ namespace ProteoformSuiteInternal
         {
             this.charge_count = Convert.ToInt32(charge_row[0]);
             this.intensity = Convert.ToDouble(charge_row[1]);
-            this.mz_centroid = Convert.ToDouble(charge_row[2]);
-            //this.reported_mass = Convert.ToDouble(charge_row[3]); // this value is junk so we don't even read/store it. If we redo data input and use another source, we could bring it back.
-            this.calculated_mass = correct_calculated_mass(mz_correction);
+            this.mz_centroid = correct_calculated_mz(Convert.ToDouble(charge_row[2]), mz_correction); //no point to keeping the uncorrected mz if there is a correction.
+            this.calculated_mass = correct_calculated_mass();
+        }
+
+        public ChargeState(ChargeState cs)
+        {
+            this.charge_count = cs.charge_count;
+            this.intensity = cs.intensity;
+            this.mz_centroid = cs.mz_centroid;
+            this.calculated_mass = cs.calculated_mass;
         }
 
         //For testing
@@ -232,13 +243,18 @@ namespace ProteoformSuiteInternal
         {
             this.charge_count = charge_count;
             this.intensity = intensity;
-            this.mz_centroid = mz_centroid;
-            this.calculated_mass = correct_calculated_mass(mz_correction);
+            this.mz_centroid = correct_calculated_mz(mz_centroid, mz_correction);
+            this.calculated_mass = correct_calculated_mass();
         }
 
-        public double correct_calculated_mass(double mz_correction) // the correction is a linear shift to m/z
+        public double correct_calculated_mz(double mz, double mz_correction) // the correction is a linear shift to m/z
         {
-            return (this.charge_count * (this.mz_centroid + mz_correction - 1.00727645D));//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
+            return (mz + mz_correction);//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
+        }
+
+        public double correct_calculated_mass() // the correction is a linear shift to m/z
+        {
+            return (this.charge_count * this.mz_centroid - this.charge_count * 1.00727645D);//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
         }
 
         public ChargeState mergeTheseChargeStates(ChargeState csToMerge)
@@ -246,8 +262,8 @@ namespace ProteoformSuiteInternal
             if(csToMerge != null)
             {
                 double totalIntensity = this.intensity + csToMerge.intensity;
-                this.calculated_mass = (this.intensity * this.calculated_mass + csToMerge.intensity * csToMerge.calculated_mass) /totalIntensity; //this is a weighted calculation of m/z based on the intenity of each ChargeState object
-                this.mz_centroid = (this.intensity * this.mz_centroid + csToMerge.intensity * csToMerge.mz_centroid) / totalIntensity;
+                this.calculated_mass = (this.intensity * this.calculated_mass + csToMerge.intensity * csToMerge.calculated_mass) /totalIntensity; 
+                this.mz_centroid = (this.calculated_mass + 1.00727645D * this.charge_count) /this.charge_count;
                 this.intensity = totalIntensity;
             }
             return this;
