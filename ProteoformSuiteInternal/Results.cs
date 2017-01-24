@@ -22,14 +22,13 @@ namespace ProteoformSuiteInternal
             {
                 string[] line = lines[x].Split('\t');
                 Component component = new Component();
-                component.id = (line[0]).ToString();
-                component.id = line[0].ToString();
+                component.id = line[0];
                 component.reported_monoisotopic_mass = Convert.ToDouble(line[1]);
-                component.attemptToSetWeightedMonoisotopic_mass(Convert.ToDouble(line[2]));
+                component.weighted_monoisotopic_mass = Convert.ToDouble(line[2]);
                 //component.corrected_mass = Convert.ToDouble(line[3]);
-                component.attemptToSetIntensity(Convert.ToDouble(line[4])); // there is no charge state data. we read in the intensity and store it using a method inside the component class
+                component.intensity_sum = Convert.ToDouble(line[4]); // there is no charge state data. we read in the intensity and store it using a method inside the component class
                 component.intensity_reported = Convert.ToDouble(line[4]);
-                component.attemptToSetNumChargeStates(Convert.ToInt16(line[5])); // there is no charge state data. we read in the intensity and store it using a method inside the component class
+                component.num_charge_states = Convert.ToInt16(line[5]); // there is no charge state data. we read in the intensity and store it using a method inside the component class
                 component.delta_mass = Convert.ToDouble(line[6]);
                 component.relative_abundance = Convert.ToDouble(line[7]);
                 component.fract_abundance = Convert.ToDouble(line[8]);
@@ -49,8 +48,7 @@ namespace ProteoformSuiteInternal
                     component.accepted = Convert.ToBoolean(line[13]);
                 }
 
-
-                lock (lockThread) { Lollipop.raw_experimental_components.Add(component); }
+                lock (Lollipop.raw_experimental_components) Lollipop.raw_experimental_components.Add(component); 
             });
         }
 

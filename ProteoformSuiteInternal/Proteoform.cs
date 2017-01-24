@@ -29,15 +29,15 @@ namespace ProteoformSuiteInternal
                 this.is_target = false;
                 this.is_decoy = true;
             }
-        }       public Proteoform(string accession)
+        }
+
+        public Proteoform(string accession)
         {
             this.accession = accession;
         }
 
         public Proteoform()
-        {
-
-        }
+        { }
 
         public List<Proteoform> get_connected_proteoforms()
         {
@@ -51,131 +51,38 @@ namespace ProteoformSuiteInternal
     //"ExperimentalProteoform" and "TheoreticalProteoform" objects
     public class ExperimentalProteoform : Proteoform
     {
-        private Component root;
+        // PROPERTIES
+        public Component root;
         public List<Component> aggregated_components { get; set; } = new List<Component>();
+        public List<Component> lt_verification_components { get; set; } = new List<Component>();
+        public List<Component> hv_verification_components { get; set; } = new List<Component>();
         public List<Component> lt_quant_components { get; set; } = new List<Component>();
         public List<Component> hv_quant_components { get; set; } = new List<Component>();
-
-        //public List<bftIntensity> bftIntensityList { get; set; } = new List<ProteoformSuiteInternal.bftIntensity>();
         public List<biorepIntensity> biorepIntensityList { get; set; } = new List<biorepIntensity>(); //(bool light = true, int biorep, double intensity)
         public quantitativeValues quant { get; set; }
-
         public bool accepted { get; set; } = true;
         public double agg_mass { get; set; } = 0;
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
+        public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once. 
         public int observation_count
         {
             get { return aggregated_components.Count; }
         }
-        public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once. 
-        public int light_observation_count// this should get deleted at some point. just for testing.
+        public int light_observation_count
         {
             get { return lt_quant_components.Count; }
-            set { }
         }
-        public int heavy_observation_count// this should get deleted at some point. just for testing.
+        public int heavy_observation_count
         {
-            get { return lt_quant_components.Count; }
-            set { }
+            get { return hv_quant_components.Count; }
         }
-        public double aggregated_observation_range // this should get deleted at some point. just for testing.
+
+        // CONTRUCTORS
+        public ExperimentalProteoform(ExperimentalProteoform eP)
         {
-            get
-            {
-                if (aggregated_components.Count > 0)
-                {
-                    List<Component> lights = new List<Component>();
-                    if (Lollipop.neucode_labeled)
-                    {
-                        foreach (Component l in aggregated_components)                       
-                            lights.Add(((NeuCodePair)l).neuCodeLight);                       
-                    }
-                    else
-                    {
-                        foreach (Component l in aggregated_components)                     
-                            lights.Add(l);                      
-                    }
-                    List<double> masses = lights.Select(lt => lt.weighted_monoisotopic_mass).ToList();
-                    return (masses.Max() - masses.Min()) / 1000000d * masses.Average();
-                }
-                else
-                    return 0d;
-            }
-            set { }
+            copy(eP);
         }
-
-        public ExperimentalProteoform(ExperimentalProteoform eP) 
-        {
-            this.agg_intensity = eP.agg_intensity;
-            this.agg_mass = eP.agg_mass;
-            this.agg_rt = eP.agg_rt;
-        }
-
-        public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession)
-        {
-            this.root = root;
-            this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
-            this.calculate_properties();
-            if (quantitative_observations.Count > 0)
-            {
-                this.lt_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, true)));
-
-                this.light_observation_count = this.lt_quant_components.Count;
-                if (Lollipop.neucode_labeled)
-                {
-                    this.hv_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, false)));
-                    this.heavy_observation_count = this.hv_quant_components.Count;
-                }
-            }
-            this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
-        }
-
-        public ExperimentalProteoform(string accession, ExperimentalProteoform temp, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession) //this is for first mass of aggregate components. uses a temporary component
-        {
-            Component root = new Component();
-            NeuCodePair ncRoot = new NeuCodePair();
-            if (Lollipop.neucode_labeled)
-            {
-                ((Component)ncRoot).attemptToSetWeightedMonoisotopic_mass(temp.agg_mass);
-                ((Component)ncRoot).attemptToSetIntensity(temp.agg_intensity);
-                ncRoot.rt_apex = temp.agg_rt;
-                ncRoot.lysine_count = temp.lysine_count;
-                
-                this.root = ncRoot;
-                this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
-                this.calculate_properties();
-                if (quantitative_observations.Count > 0)
-                {
-                    this.lt_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, true)));
-                    this.light_observation_count = this.lt_quant_components.Count;
-                    if (Lollipop.neucode_labeled)
-                    {
-                        this.hv_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, false)));
-                        this.heavy_observation_count = this.hv_quant_components.Count;
-                    }
-
-                }
-                this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
-            }
-            else
-            {
-                root.attemptToSetWeightedMonoisotopic_mass(temp.agg_mass);
-                root.attemptToSetIntensity(temp.agg_intensity);
-                root.rt_apex = temp.agg_rt;
-
-                this.root = root;
-                this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
-                this.calculate_properties();
-                if (quantitative_observations.Count > 0)
-                {
-                    this.lt_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, true)));
-                    this.light_observation_count = this.lt_quant_components.Count;
-                }
-                this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
-            }           
-        }
-
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession)
         {
             this.root = root;
@@ -184,14 +91,20 @@ namespace ProteoformSuiteInternal
             this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
         }
 
+        public ExperimentalProteoform(string accession, Component root, bool is_target) : base(accession)
+        {
+            this.root = root;
+            this.is_target = is_target;
+        }
+
         public ExperimentalProteoform(string accession, ExperimentalProteoform temp, List<Component> candidate_observations, bool is_target) : base(accession) //this is for first mass of aggregate components. uses a temporary component
         {
             Component root = new Component();
             NeuCodePair ncRoot = new NeuCodePair();
             if (Lollipop.neucode_labeled)
             {
-                ((Component)ncRoot).attemptToSetWeightedMonoisotopic_mass(temp.agg_mass);
-                ((Component)ncRoot).attemptToSetIntensity(temp.agg_intensity);
+                ((Component)ncRoot).weighted_monoisotopic_mass = temp.agg_mass;
+                ((Component)ncRoot).intensity_sum = temp.agg_intensity;
                 ncRoot.rt_apex = temp.agg_rt;
                 ncRoot.lysine_count = temp.lysine_count;
 
@@ -202,8 +115,8 @@ namespace ProteoformSuiteInternal
             }
             else
             {
-                root.attemptToSetWeightedMonoisotopic_mass(temp.agg_mass);
-                root.attemptToSetIntensity(temp.agg_intensity);
+                root.weighted_monoisotopic_mass = temp.agg_mass;
+                root.intensity_sum = temp.agg_intensity;
                 root.rt_apex = temp.agg_rt;
 
                 this.root = root;
@@ -212,29 +125,60 @@ namespace ProteoformSuiteInternal
                 this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
         }
-
-
-        public ExperimentalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession)
+        private void copy(ExperimentalProteoform e)
         {
-            this.aggregated_components = new List<Component>() { root };
-            this.accession = accession;
-            this.modified_mass = modified_mass;
-            this.lysine_count = lysine_count;
-            if (!is_target)
+            this.root = e.root;
+            this.agg_intensity = e.agg_intensity;
+            this.agg_mass = e.agg_mass;
+            this.modified_mass = e.modified_mass;
+            this.agg_rt = e.agg_rt;
+            this.lysine_count = e.lysine_count;
+            this.accepted = e.accepted;
+            this.quant = e.quant;
+            this.mass_shifted = e.mass_shifted;
+            this.is_target = e.is_target;
+            this.is_decoy = e.is_decoy;
+            this.family = e.family;
+            this.aggregated_components = new List<Component>(e.aggregated_components);
+            this.lt_quant_components = new List<Component>(e.lt_quant_components);
+            this.lt_verification_components = new List<Component>(e.lt_verification_components);
+            this.hv_quant_components = new List<Component>(e.hv_quant_components);
+            this.hv_verification_components = new List<Component>(e.hv_verification_components);
+        }
+
+        // AGGREGATION METHODS
+        public void aggregate()
+        {
+            ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", this.root, Lollipop.remaining_components.ToList(), true); //first pass returns temporary proteoform
+            ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, Lollipop.remaining_components.ToList(), true); //second pass uses temporary protoeform from first pass.
+            copy(new_pf);
+            this.root = temp_pf.root; //maintain the original component root
+        }
+
+        public void verify()
+        {
+            foreach (Component c in Lollipop.remaining_verification_components)
             {
-                this.is_target = false;
-                this.is_decoy = true;
+                if (this.includes(c, this, true))
+                    lt_verification_components.Add(c);
+                if (Lollipop.neucode_labeled && this.includes(c, this, false))
+                    hv_verification_components.Add(c);
             }
         }
 
-        //for Tests
-        public ExperimentalProteoform(string accession) : base(accession)
+        public void aggregate_and_verify()
         {
-            this.aggregated_components = new List<Component>() { root };
-            this.accession = accession;
+            aggregate();
+            verify();
         }
 
-        
+        public void assign_quantitative_components()
+        {
+            lt_quant_components.AddRange(Lollipop.remaining_components.Where(r => this.includes(r, this, true)));
+            //ep.getBiorepAndFractionIntensities(false); //split lt components by biorep and fraction
+            hv_quant_components.AddRange(Lollipop.remaining_components.Where(r => this.includes(r, this, false)));
+            //ep.getBiorepAndFractionIntensities(true); //split hv components by biorep and fraction
+        }
 
         public void calculate_properties()
         {
@@ -278,9 +222,9 @@ namespace ProteoformSuiteInternal
         public bool includes(Component candidate, ExperimentalProteoform root, bool light)
         {
             double corrected_mass = root.agg_mass;
-            if (!light)       
+            if (!light)
                 corrected_mass = corrected_mass + root.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
-            
+
             bool does_include = tolerable_rt(candidate, root.agg_rt) && tolerable_mass(candidate, corrected_mass);
             if (candidate is NeuCodePair) does_include = does_include && tolerable_lysCt((NeuCodePair)candidate, root.lysine_count);
             return does_include;
@@ -316,225 +260,14 @@ namespace ProteoformSuiteInternal
             return false;
         }
 
-        public void shift_masses(int shift)
-        {
-            if (Lollipop.neucode_labeled)
-            {
-                foreach (Component c in this.aggregated_components)
-                {
-                    ((NeuCodePair)c).manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                    ((NeuCodePair)c).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                    ((NeuCodePair)c).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                }
-            }
-            else //unlabeled
-            {
-                foreach (Component c in this.aggregated_components)
-                {
-                    c.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                }
-            }
-            this.mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
-        }
 
-        //private static int allBioreps()
-        //{
-        //    return Lollipop.input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList().Count();
-        //}
-
-        //private static int allFractions()
-        //{
-        //    List<int> bioreps =  Lollipop.input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
-        //    int allFractionsCount = 0;
-        //    foreach (int br in bioreps)
-        //    {
-        //        allFractionsCount += Lollipop.input_files.Where(q => q.purpose == Purpose.Quantification).Where(rep => rep.biological_replicate == br).Select(f => f.fraction).Distinct().ToList().Count();
-        //    }
-        //    return allFractionsCount;
-        //}
-
-        //Quantitative Class and Methods
-        //public class qVals
-        //{
-        //    public double ratio { get; set; }
-        //    public double intensity { get; set; }
-        //    public double fraction { get; set; }
-        //    public List<Component> light { get; set; }
-        //    public List<Component> heavy { get; set; }
-        //}
-
-        //public weightedRatioIntensityVariance weightedRatioAndWeightedVariance(List<InputFile> inputFileList) //the inputFileList is a list of "quantitative" input files
-        //{
-        //    List<qVals> quantitativeValues = new List<qVals>();
-        //    weightedRatioIntensityVariance wRIV = new weightedRatioIntensityVariance();
-
-        //    double squaredVariance = 0;
-
-        //    inputFileList.ForEach(inFile =>
-        //    {
-        //        qVals q = new qVals();
-        //        q.light = (from s in lt_quant_components where s.input_file == inFile select s).ToList();
-        //        q.heavy = (from s in hv_quant_components where s.input_file == inFile select s).ToList();
-        //        double numerator = (from s in lt_quant_components where s.input_file == inFile select s.intensity_sum).Sum();
-        //        double denominator = (from s in hv_quant_components where s.input_file == inFile select s.intensity_sum).Sum();
-        //        if (numerator == 0)
-        //            numerator = numerator + 1000;//adding 1000 to deal with missing values
-        //        if (denominator == 0)
-        //            denominator = denominator + 1000;//adding 1000 to deal with missing values
-        //        q.ratio = Math.Log(numerator / denominator, 2);
-        //        q.intensity = numerator + denominator;
-
-        //        if ((q.light.Count() + q.heavy.Count()) > 0)
-        //            quantitativeValues.Add(q);
-        //    });
-
-        //    wRIV.intensity = quantitativeValues.Sum(s => s.intensity);
-
-        //    if (wRIV.intensity > 0)
-        //    {
-        //        quantitativeValues.ForEach(q => {
-        //            wRIV.ratio = wRIV.ratio + q.ratio * q.intensity / wRIV.intensity;
-        //            q.fraction = (double)q.intensity / wRIV.intensity;
-        //        });
-        //        quantitativeValues.ForEach(q => {
-        //            squaredVariance = squaredVariance + q.fraction * Math.Pow((q.ratio - wRIV.ratio), 2);
-        //        });
-        //        wRIV.pValue = pValueFromPermutation(quantitativeValues, wRIV.intensity, wRIV.ratio);
-        //    }
-
-        //    if (squaredVariance > 0)
-        //        wRIV.variance = Math.Pow(squaredVariance, 0.5);
-
-        //    return wRIV;
-        //}
-
-        //private double pValueFromPermutation(List<qVals> quantitativeValues, double totalIntensity, double realRatio)
-        //{
-        //    double pValue = 0;
-        //    int maxPermutations = 5000;
-        //    ConcurrentBag<double> permutedRatios = new ConcurrentBag<double>();
-
-        //    Parallel.For(0, maxPermutations, i =>
-        //    {
-        //        double someRatio = 0;
-        //        quantitativeValues.ForEach(q =>
-        //        {
-        //            IList<Component> combined = new List<Component>();
-        //            combined = q.light.Concat(q.heavy).ToList();
-        //            combined.Shuffle();
-        //            double numerator = (from s in combined.Take(q.light.Count()) select s.intensity_sum).Sum();
-        //            double denominator = (from s in combined.Skip(q.light.Count()).Take(q.heavy.Count()) select s.intensity_sum).Sum();
-
-        //            if (numerator == 0) numerator = numerator + 1000; //adding 1000 to deal with missing values
-        //            if (denominator == 0) denominator = denominator + 1000; //adding 1000 to deal with missing values
-        //            someRatio = someRatio + Math.Log(numerator / denominator, 2) * q.intensity / totalIntensity;
-        //        });
-        //        permutedRatios.Add(someRatio);
-        //    });
-
-        //    if (realRatio > 0)
-        //        pValue = (double)permutedRatios.Count(x => x > realRatio) / permutedRatios.Count();
-        //    else
-        //        pValue = (double)permutedRatios.Count(x => x < realRatio) / permutedRatios.Count();
-        //    return pValue;
-        //}
-
-        //public double bftAggIntensityValue(int b, int f, int t, bool light)
-        //{
-        //    List<bftIntensity> subList = new List<ProteoformSuiteInternal.bftIntensity>();
-
-        //    if (light)
-        //    {
-        //        if (b != -1)
-        //            subList = this.bftIntensityList.Where(bft => bft.biorep == b).ToList();
-        //        if (subList.Count != 0 )
-        //            if (f != -1)
-        //                subList = subList.Where(bft => bft.fraction == f).ToList();
-        //        if (subList.Count != 0)
-        //            if (t != -1)
-        //                subList = subList.Where(bft => bft.techrep == t).ToList();
-        //        if (subList.Count != 0)
-        //            subList = subList.Where(bft => bft.light == true).ToList();
-        //    }            
-        //    else
-        //    {
-        //        if (b != -1)
-        //            subList = this.bftIntensityList.Where(bft => bft.biorep == b).ToList();
-        //        if (subList.Count != 0)
-        //            if (f != -1)
-        //                subList = subList.Where(bft => bft.fraction == f).ToList();
-        //        if (subList.Count != 0)
-        //            if (t != -1)
-        //                subList = subList.Where(bft => bft.techrep == t).ToList();
-        //        if (subList.Count != 0)
-        //            subList = subList.Where(bft => bft.light == false).ToList();
-        //    }
-
-        //    if (subList.Count != 0)
-        //        return subList.Select(i => i.intensity).Sum();
-        //    else
-        //        return 0;
-        //}
-
-        //public double biorepAggIntensityValue(int b, bool light)
-        //{
-        //    List<biorepIntensity> subList = new List<biorepIntensity>();
-
-        //    if (light)
-        //    {
-        //        subList = this.biorepIntensityList.Where(proteoform => proteoform.biorep == b).ToList();
-        //        if (subList.Count != 0)
-        //            subList = subList.Where(proteoform => proteoform.light == true).ToList();
-        //    }
-        //    else
-        //    {
-        //        subList = this.biorepIntensityList.Where(proteoform => proteoform.biorep == b).ToList();
-        //        if (subList.Count != 0)
-        //            subList = subList.Where(proteoform => proteoform.light == false).ToList();
-        //    }
-
-        //    if (subList.Count != 0)
-        //        return subList.Select(i => i.intensity).Sum();
-        //    else
-        //        return 0;
-        //}
-
-        //public void make_bftList()
-        //{
-        //    this.bftIntensityList.Clear();
-        //    foreach (int b in this.lt_quant_components.Select(c=>c.input_file.biological_replicate).Distinct())
-        //    {
-        //        foreach (int f in this.lt_quant_components.Where(c => c.input_file.biological_replicate==b).Select(f=>f.input_file.fraction).Distinct())
-        //        {
-        //            foreach (int t in this.lt_quant_components.Where(c => c.input_file.biological_replicate == b && c.input_file.fraction==f).Select(t => t.input_file.technical_replicate).Distinct())
-        //            {
-        //                this.bftIntensityList.Add(new bftIntensity(true, b, f, t, this.lt_quant_components.Where(c => c.input_file.biological_replicate == b && c.input_file.fraction == f && c.input_file.technical_replicate == t).Select(i => i.intensity_sum).ToList().Sum()));
-        //            }
-        //        }
-
-        //    }
-        //    if (Lollipop.neucode_labeled)
-        //    {
-        //        foreach (int b in this.hv_quant_components.Select(c => c.input_file.biological_replicate).Distinct())
-        //        {
-        //            foreach (int f in this.hv_quant_components.Where(c => c.input_file.biological_replicate == b).Select(f => f.input_file.fraction).Distinct())
-        //            {
-        //                foreach (int t in this.hv_quant_components.Where(c => c.input_file.biological_replicate == b && c.input_file.fraction == f).Select(t => t.input_file.technical_replicate).Distinct())
-        //                {
-        //                    this.bftIntensityList.Add(new bftIntensity(false, b, f, t, this.hv_quant_components.Where(c => c.input_file.biological_replicate == b && c.input_file.fraction == f && c.input_file.technical_replicate == t).Select(i => i.intensity_sum).ToList().Sum()));
-        //                }
-        //            }
-
-        //        }
-        //    }
-        //}
-
+        // QUANTITATION CLASS AND METHODS
         public void make_biorepIntensityList()
         {
             this.biorepIntensityList.Clear();
             foreach (string condition in Lollipop.ltConditionsBioReps.Keys)
             {
-                foreach (int b in this.lt_quant_components.Where(c=>c.input_file.lt_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())
+                foreach (int b in this.lt_quant_components.Where(c => c.input_file.lt_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())
                 {
                     this.biorepIntensityList.Add(new biorepIntensity(true, false, b, condition, this.lt_quant_components.Where(c => c.input_file.biological_replicate == b).Select(i => i.intensity_sum).ToList().Sum()));
                 }
@@ -594,77 +327,39 @@ namespace ProteoformSuiteInternal
             private List<biorepIntensity> imputedIntensities(bool light, List<biorepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev)
             {
                 List<biorepIntensity> imputedBioreps = new List<biorepIntensity>();
-                if (light)
-                    foreach (KeyValuePair<string, List<int>> entry in Lollipop.ltConditionsBioReps)//keys are conditions and values are bioreps.
+                foreach (KeyValuePair<string, List<int>> entry in light ? Lollipop.ltConditionsBioReps : Lollipop.hvConditionsBioReps)//keys are conditions and values are bioreps.
+                {
+                    foreach (int biorep in entry.Value)
                     {
-                        foreach (int biorep in entry.Value)
-                        {
-                            if (!observedBioreps.Where(l => l.light == true).Select(k => k.condition).Contains(entry.Key)) // no bioreps observed from this conditon at all
-                            {
-                                Random rand = new Random(); //reuse this if you are generating many
-                                double u1 = rand.NextDouble(); //these are uniform(0,1) random doubles
-                                double u2 = rand.NextDouble();
-                                double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-                                double logIntensity = (double)bkgdAverageIntensity + (double)bkgdStDev * randStdNormal;
-                                double intensity = Math.Pow(2, logIntensity);
-                                imputedBioreps.Add(new biorepIntensity(light, true, biorep, entry.Key, intensity));//random normal(mean,stdDev^2)
-                            }
-                            else
-                            if (!observedBioreps.Where(k => k.condition == entry.Key && k.light == true).Select(b => b.biorep).Contains(biorep)) //this condtion was observed but this biorep was not
-                            {
-                                Random rand = new Random(); //reuse this if you are generating many
-                                double u1 = rand.NextDouble(); //these are uniform(0,1) random doubles
-                                double u2 = rand.NextDouble();
-                                double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-                                double logIntensity = (double)bkgdAverageIntensity + (double)bkgdStDev * randStdNormal;
-                                double intensity = Math.Pow(2, logIntensity);
-                                imputedBioreps.Add(new biorepIntensity(light, true, biorep, entry.Key, intensity));//random normal(mean,stdDev^2)
-                            }
-                        }                    
+                        if (!observedBioreps.Where(l => l.light == light).Select(k => k.condition).Contains(entry.Key)) // no bioreps observed from this conditon at all
+                            add_biorep_intensity(imputedBioreps, bkgdAverageIntensity, bkgdStDev, biorep, entry.Key, light);
+                        else if (!observedBioreps.Where(l => l.condition == entry.Key && l.light == light).Select(b => b.biorep).Contains(biorep)) //this condtion was observed but this biorep was not
+                            add_biorep_intensity(imputedBioreps, bkgdAverageIntensity, bkgdStDev, biorep, entry.Key, light);
                     }
-                else
-                    foreach (KeyValuePair<string, List<int>> entry in Lollipop.hvConditionsBioReps)//keys are conditions and values are bioreps.
-                    {
-                        foreach (int biorep in entry.Value)
-                        {
-                            if (!observedBioreps.Where(h => h.light == false).Select(k => k.condition).Contains(entry.Key)) // no bioreps observed from this conditon at all
-                            {
-                                Random rand = new Random(); //reuse this if you are generating many
-                                double u1 = rand.NextDouble(); //these are uniform(0,1) random doubles
-                                double u2 = rand.NextDouble();
-                                double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-                                double logIntensity = (double)bkgdAverageIntensity + (double)bkgdStDev * randStdNormal;
-                                double intensity = Math.Pow(2, logIntensity);
-                                imputedBioreps.Add(new biorepIntensity(light, true, biorep, entry.Key, intensity));//random normal(mean,stdDev^2)
-                            }
-                            else
-                            if (!observedBioreps.Where(k => k.condition == entry.Key && k.light == false).Select(b => b.biorep).Contains(biorep)) //this condtion was observed but this biorep was not
-                            {
-                                Random rand = new Random(); //reuse this if you are generating many
-                                double u1 = rand.NextDouble(); //these are uniform(0,1) random doubles
-                                double u2 = rand.NextDouble();
-                                double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-                                double logIntensity = (double)bkgdAverageIntensity + (double)bkgdStDev * randStdNormal;
-                                double intensity = Math.Pow(2, logIntensity);
-                                imputedBioreps.Add(new biorepIntensity(light, true, biorep, entry.Key, intensity));//random normal(mean,stdDev^2)
-                            }
-                        }
-
-                        
-                    }
-
+                }
                 return imputedBioreps;
             }
 
-            private decimal Variance(decimal logFoldChange, List<biorepIntensity>lights, List<biorepIntensity>heavys)
+            private void add_biorep_intensity(List<biorepIntensity> b, decimal bkgdAverageIntensity, decimal bkgdStDev, int biorep, string key, bool light)
+            {
+                Random rand = new Random(); //reuse this if you are generating many
+                double u1 = rand.NextDouble(); //these are uniform(0,1) random doubles
+                double u2 = rand.NextDouble();
+                double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
+                double logIntensity = (double)bkgdAverageIntensity + (double)bkgdStDev * randStdNormal;
+                double intensity = Math.Pow(2, logIntensity);
+                b.Add(new biorepIntensity(light, true, biorep, key, intensity));//random normal(mean,stdDev^2)
+            }
+
+            private decimal Variance(decimal logFoldChange, List<biorepIntensity> lights, List<biorepIntensity> heavys)
             {
                 decimal squaredVariance = 0;
-                foreach (int biorep in lights.Select(b=>b.biorep).ToList())
+                foreach (int biorep in lights.Select(b => b.biorep).ToList())
                 {
-                    decimal logRepRatio = (decimal)Math.Log((double)(((decimal)lights.Where(b => b.biorep == biorep).Select(i => i.intensity).ToList().Sum()) / ((decimal)heavys.Where(b => b.biorep == biorep).Select(i => i.intensity).ToList().Sum())),2);
+                    decimal logRepRatio = (decimal)Math.Log((double)(((decimal)lights.Where(b => b.biorep == biorep).Select(i => i.intensity).ToList().Sum()) / ((decimal)heavys.Where(b => b.biorep == biorep).Select(i => i.intensity).ToList().Sum())), 2);
                     squaredVariance = squaredVariance + (decimal)Math.Pow(((double)logRepRatio - (double)logFoldChange), 2);
                 }
-                return (decimal)Math.Pow((double)squaredVariance,0.5);
+                return (decimal)Math.Pow((double)squaredVariance, 0.5);
             }
 
             private decimal PValue(decimal logFoldChange, List<biorepIntensity> lights, List<biorepIntensity> heavys)
@@ -688,8 +383,69 @@ namespace ProteoformSuiteInternal
                 else
                     pValue = (decimal)(1M / maxPermutations) + (decimal)permutedRatios.Count(x => x < logFoldChange) / (decimal)permutedRatios.Count(); //adding a slight positive shift so that later logarithms don't produce fault
                 return pValue;
-            } 
+            }
         }
+
+        // OTHER METHODS
+        public void shift_masses(int shift)
+        {
+            if (Lollipop.neucode_labeled)
+            {
+                foreach (Component c in this.aggregated_components)
+                {
+                    ((NeuCodePair)c).manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    ((NeuCodePair)c).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    ((NeuCodePair)c).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                }
+            }
+            else //unlabeled
+            {
+                foreach (Component c in this.aggregated_components)
+                {
+                    c.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                }
+            }
+            this.mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
+        }
+        
+
+        // TESTING METHODS
+        public ExperimentalProteoform(string accession) : base(accession)
+        {
+            this.aggregated_components = new List<Component>() { root };
+            this.accession = accession;
+        }
+        public ExperimentalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession)
+        {
+            this.aggregated_components = new List<Component>() { root };
+            this.accession = accession;
+            this.modified_mass = modified_mass;
+            this.lysine_count = lysine_count;
+            if (!is_target)
+            {
+                this.is_target = false;
+                this.is_decoy = true;
+            }
+        }
+        public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession)
+        {
+            this.root = root;
+            this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
+            this.calculate_properties();
+            if (quantitative_observations.Count > 0)
+            {
+                this.lt_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, true)));
+                if (Lollipop.neucode_labeled) this.hv_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, false)));
+            }
+            this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
+        }
+
+        
+        
+
+        
+
+        
 
     }
 
@@ -845,3 +601,268 @@ namespace ProteoformSuiteInternal
 
     
 }
+
+// UNUSED METHODS
+
+//public ExperimentalProteoform(string accession, ExperimentalProteoform temp, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession) //this is for first mass of aggregate components. uses a temporary component
+//        {
+//    Component root = new Component();
+//    NeuCodePair ncRoot = new NeuCodePair();
+//    if (Lollipop.neucode_labeled)
+//    {
+//        ((Component)ncRoot).attemptToSetWeightedMonoisotopic_mass(temp.agg_mass);
+//        ((Component)ncRoot).attemptToSetIntensity(temp.agg_intensity);
+//        ncRoot.rt_apex = temp.agg_rt;
+//        ncRoot.lysine_count = temp.lysine_count;
+
+//        this.root = ncRoot;
+//        this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
+//        this.calculate_properties();
+//        if (quantitative_observations.Count > 0)
+//        {
+//            this.lt_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, true)));
+//            this.light_observation_count = this.lt_quant_components.Count;
+//            if (Lollipop.neucode_labeled)
+//            {
+//                this.hv_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, false)));
+//                this.heavy_observation_count = this.hv_quant_components.Count;
+//            }
+
+//        }
+//        this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
+//    }
+//    else
+//    {
+//        root.attemptToSetWeightedMonoisotopic_mass(temp.agg_mass);
+//        root.attemptToSetIntensity(temp.agg_intensity);
+//        root.rt_apex = temp.agg_rt;
+
+//        this.root = root;
+//        this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
+//        this.calculate_properties();
+//        if (quantitative_observations.Count > 0)
+//        {
+//            this.lt_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, true)));
+//            this.light_observation_count = this.lt_quant_components.Count;
+//        }
+//        this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
+//    }
+//}
+
+//private static int allBioreps()
+//{
+//    return Lollipop.input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList().Count();
+//}
+
+//private static int allFractions()
+//{
+//    List<int> bioreps =  Lollipop.input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
+//    int allFractionsCount = 0;
+//    foreach (int br in bioreps)
+//    {
+//        allFractionsCount += Lollipop.input_files.Where(q => q.purpose == Purpose.Quantification).Where(rep => rep.biological_replicate == br).Select(f => f.fraction).Distinct().ToList().Count();
+//    }
+//    return allFractionsCount;
+//}
+
+//Quantitative Class and Methods
+//public class qVals
+//{
+//    public double ratio { get; set; }
+//    public double intensity { get; set; }
+//    public double fraction { get; set; }
+//    public List<Component> light { get; set; }
+//    public List<Component> heavy { get; set; }
+//}
+
+//public weightedRatioIntensityVariance weightedRatioAndWeightedVariance(List<InputFile> inputFileList) //the inputFileList is a list of "quantitative" input files
+//{
+//    List<qVals> quantitativeValues = new List<qVals>();
+//    weightedRatioIntensityVariance wRIV = new weightedRatioIntensityVariance();
+
+//    double squaredVariance = 0;
+
+//    inputFileList.ForEach(inFile =>
+//    {
+//        qVals q = new qVals();
+//        q.light = (from s in lt_quant_components where s.input_file == inFile select s).ToList();
+//        q.heavy = (from s in hv_quant_components where s.input_file == inFile select s).ToList();
+//        double numerator = (from s in lt_quant_components where s.input_file == inFile select s.intensity_sum).Sum();
+//        double denominator = (from s in hv_quant_components where s.input_file == inFile select s.intensity_sum).Sum();
+//        if (numerator == 0)
+//            numerator = numerator + 1000;//adding 1000 to deal with missing values
+//        if (denominator == 0)
+//            denominator = denominator + 1000;//adding 1000 to deal with missing values
+//        q.ratio = Math.Log(numerator / denominator, 2);
+//        q.intensity = numerator + denominator;
+
+//        if ((q.light.Count() + q.heavy.Count()) > 0)
+//            quantitativeValues.Add(q);
+//    });
+
+//    wRIV.intensity = quantitativeValues.Sum(s => s.intensity);
+
+//    if (wRIV.intensity > 0)
+//    {
+//        quantitativeValues.ForEach(q => {
+//            wRIV.ratio = wRIV.ratio + q.ratio * q.intensity / wRIV.intensity;
+//            q.fraction = (double)q.intensity / wRIV.intensity;
+//        });
+//        quantitativeValues.ForEach(q => {
+//            squaredVariance = squaredVariance + q.fraction * Math.Pow((q.ratio - wRIV.ratio), 2);
+//        });
+//        wRIV.pValue = pValueFromPermutation(quantitativeValues, wRIV.intensity, wRIV.ratio);
+//    }
+
+//    if (squaredVariance > 0)
+//        wRIV.variance = Math.Pow(squaredVariance, 0.5);
+
+//    return wRIV;
+//}
+
+//private double pValueFromPermutation(List<qVals> quantitativeValues, double totalIntensity, double realRatio)
+//{
+//    double pValue = 0;
+//    int maxPermutations = 5000;
+//    ConcurrentBag<double> permutedRatios = new ConcurrentBag<double>();
+
+//    Parallel.For(0, maxPermutations, i =>
+//    {
+//        double someRatio = 0;
+//        quantitativeValues.ForEach(q =>
+//        {
+//            IList<Component> combined = new List<Component>();
+//            combined = q.light.Concat(q.heavy).ToList();
+//            combined.Shuffle();
+//            double numerator = (from s in combined.Take(q.light.Count()) select s.intensity_sum).Sum();
+//            double denominator = (from s in combined.Skip(q.light.Count()).Take(q.heavy.Count()) select s.intensity_sum).Sum();
+
+//            if (numerator == 0) numerator = numerator + 1000; //adding 1000 to deal with missing values
+//            if (denominator == 0) denominator = denominator + 1000; //adding 1000 to deal with missing values
+//            someRatio = someRatio + Math.Log(numerator / denominator, 2) * q.intensity / totalIntensity;
+//        });
+//        permutedRatios.Add(someRatio);
+//    });
+
+//    if (realRatio > 0)
+//        pValue = (double)permutedRatios.Count(x => x > realRatio) / permutedRatios.Count();
+//    else
+//        pValue = (double)permutedRatios.Count(x => x < realRatio) / permutedRatios.Count();
+//    return pValue;
+//}
+
+//public double bftAggIntensityValue(int b, int f, int t, bool light)
+//{
+//    List<bftIntensity> subList = new List<ProteoformSuiteInternal.bftIntensity>();
+
+//    if (light)
+//    {
+//        if (b != -1)
+//            subList = this.bftIntensityList.Where(bft => bft.biorep == b).ToList();
+//        if (subList.Count != 0 )
+//            if (f != -1)
+//                subList = subList.Where(bft => bft.fraction == f).ToList();
+//        if (subList.Count != 0)
+//            if (t != -1)
+//                subList = subList.Where(bft => bft.techrep == t).ToList();
+//        if (subList.Count != 0)
+//            subList = subList.Where(bft => bft.light == true).ToList();
+//    }            
+//    else
+//    {
+//        if (b != -1)
+//            subList = this.bftIntensityList.Where(bft => bft.biorep == b).ToList();
+//        if (subList.Count != 0)
+//            if (f != -1)
+//                subList = subList.Where(bft => bft.fraction == f).ToList();
+//        if (subList.Count != 0)
+//            if (t != -1)
+//                subList = subList.Where(bft => bft.techrep == t).ToList();
+//        if (subList.Count != 0)
+//            subList = subList.Where(bft => bft.light == false).ToList();
+//    }
+
+//    if (subList.Count != 0)
+//        return subList.Select(i => i.intensity).Sum();
+//    else
+//        return 0;
+//}
+
+//public double biorepAggIntensityValue(int b, bool light)
+//{
+//    List<biorepIntensity> subList = new List<biorepIntensity>();
+
+//    if (light)
+//    {
+//        subList = this.biorepIntensityList.Where(proteoform => proteoform.biorep == b).ToList();
+//        if (subList.Count != 0)
+//            subList = subList.Where(proteoform => proteoform.light == true).ToList();
+//    }
+//    else
+//    {
+//        subList = this.biorepIntensityList.Where(proteoform => proteoform.biorep == b).ToList();
+//        if (subList.Count != 0)
+//            subList = subList.Where(proteoform => proteoform.light == false).ToList();
+//    }
+
+//    if (subList.Count != 0)
+//        return subList.Select(i => i.intensity).Sum();
+//    else
+//        return 0;
+//}
+
+//public void make_bftList()
+//{
+//    this.bftIntensityList.Clear();
+//    foreach (int b in this.lt_quant_components.Select(c=>c.input_file.biological_replicate).Distinct())
+//    {
+//        foreach (int f in this.lt_quant_components.Where(c => c.input_file.biological_replicate==b).Select(f=>f.input_file.fraction).Distinct())
+//        {
+//            foreach (int t in this.lt_quant_components.Where(c => c.input_file.biological_replicate == b && c.input_file.fraction==f).Select(t => t.input_file.technical_replicate).Distinct())
+//            {
+//                this.bftIntensityList.Add(new bftIntensity(true, b, f, t, this.lt_quant_components.Where(c => c.input_file.biological_replicate == b && c.input_file.fraction == f && c.input_file.technical_replicate == t).Select(i => i.intensity_sum).ToList().Sum()));
+//            }
+//        }
+
+//    }
+//    if (Lollipop.neucode_labeled)
+//    {
+//        foreach (int b in this.hv_quant_components.Select(c => c.input_file.biological_replicate).Distinct())
+//        {
+//            foreach (int f in this.hv_quant_components.Where(c => c.input_file.biological_replicate == b).Select(f => f.input_file.fraction).Distinct())
+//            {
+//                foreach (int t in this.hv_quant_components.Where(c => c.input_file.biological_replicate == b && c.input_file.fraction == f).Select(t => t.input_file.technical_replicate).Distinct())
+//                {
+//                    this.bftIntensityList.Add(new bftIntensity(false, b, f, t, this.hv_quant_components.Where(c => c.input_file.biological_replicate == b && c.input_file.fraction == f && c.input_file.technical_replicate == t).Select(i => i.intensity_sum).ToList().Sum()));
+//                }
+//            }
+
+//        }
+//    }
+//}
+
+//public double aggregated_observation_range // this should get deleted at some point. just for testing.
+//{
+//    get
+//    {
+//        if (aggregated_components.Count > 0)
+//        {
+//            List<Component> lights = new List<Component>();
+//            if (Lollipop.neucode_labeled)
+//            {
+//                foreach (Component l in aggregated_components)                       
+//                    lights.Add(((NeuCodePair)l).neuCodeLight);                       
+//            }
+//            else
+//            {
+//                foreach (Component l in aggregated_components)                     
+//                    lights.Add(l);                      
+//            }
+//            List<double> masses = lights.Select(lt => lt.weighted_monoisotopic_mass).ToList();
+//            return (masses.Max() - masses.Min()) / 1000000d * masses.Average();
+//        }
+//        else
+//            return 0d;
+//    }
+//    set { }
+//}

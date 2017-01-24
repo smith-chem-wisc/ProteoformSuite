@@ -44,6 +44,7 @@ namespace Test
 
             ChargeState cs1 = new ChargeState(10, 200d, 100d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
             createdComponent2.add_charge_state(cs1);
+            createdComponent2.calculate_properties();
 
             Assert.AreEqual("0_2", createdComponent2.id);
             Assert.AreEqual(989.9d, createdComponent2.reported_monoisotopic_mass);
@@ -166,14 +167,15 @@ namespace Test
         {
             ChargeState chargeState1 = new ChargeState(10, 1, 100, 0);
             testComponent1.add_charge_state(chargeState1);
+            testComponent1.calculate_properties();
             Assert.AreEqual(1, testComponent1.num_charge_states);
-            Assert.That(() => testComponent1.attemptToSetNumChargeStates(2), Throws.TypeOf<ArgumentException>()
+            Assert.That(() => testComponent1.num_charge_states = 2, Throws.TypeOf<ArgumentException>()
                     .With.Property("Message")
                     .EqualTo("Charge state data exists that can't be overwritten with input"));
-            Assert.That(() => testComponent1.attemptToSetIntensity(2d), Throws.TypeOf<ArgumentException>()
+            Assert.That(() => testComponent1.intensity_sum = 2d, Throws.TypeOf<ArgumentException>()
                     .With.Property("Message")
                     .EqualTo("Charge state data exists that can't be overwritten with intensity input"));
-            Assert.That(() => testComponent1.attemptToSetWeightedMonoisotopic_mass(2d), Throws.TypeOf<ArgumentException>()
+            Assert.That(() => testComponent1.weighted_monoisotopic_mass = 2d, Throws.TypeOf<ArgumentException>()
                     .With.Property("Message")
                     .EqualTo("Charge state data exists that can't be overwritten with mass input"));
         }

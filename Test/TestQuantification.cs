@@ -37,8 +37,8 @@ namespace Test
                 heavy.id = (DateTime.Now.Ticks + 1).ToString();
                 //light.id = 1.ToString();
                 //heavy.id = 2.ToString();
-                light.attemptToSetWeightedMonoisotopic_mass(mass);
-                heavy.attemptToSetWeightedMonoisotopic_mass(mass + lysineCount * Lollipop.NEUCODE_LYSINE_MASS_SHIFT);
+                light.weighted_monoisotopic_mass = (mass);
+                heavy.weighted_monoisotopic_mass = (mass + lysineCount * Lollipop.NEUCODE_LYSINE_MASS_SHIFT);
                 light.intensity_sum_olcs = lightIntensity; //using the special intensity sum for overlapping charge states in a neucode pair
                 heavy.intensity_sum_olcs = heavyIntensity; //using the special intensity sum for overlapping charge states in a neucode pair
                 light.rt_apex = starter_rt;
@@ -73,10 +73,10 @@ namespace Test
             heavy.id = (DateTime.Now.Ticks + 1).ToString();
             //light.id = 1.ToString();
             //heavy.id = 2.ToString();
-            light.attemptToSetWeightedMonoisotopic_mass(mass);
-            heavy.attemptToSetWeightedMonoisotopic_mass(mass + lysineCount * Lollipop.NEUCODE_LYSINE_MASS_SHIFT);
-            light.attemptToSetIntensity(lightIntensity); //using the special intensity sum for overlapping charge states in a neucode pair
-            heavy.attemptToSetIntensity(heavyIntensity);
+            light.weighted_monoisotopic_mass = (mass);
+            heavy.weighted_monoisotopic_mass = (mass + lysineCount * Lollipop.NEUCODE_LYSINE_MASS_SHIFT);
+            light.intensity_sum  = lightIntensity; //using the special intensity sum for overlapping charge states in a neucode pair
+            heavy.intensity_sum = heavyIntensity;
             light.rt_apex = starter_rt;
             heavy.rt_apex = starter_rt;
             light.accepted = true;

@@ -25,7 +25,7 @@ namespace ProteoformSuite
 
         private bool ready_to_aggregate()
         {
-            return Lollipop.neucode_labeled && Lollipop.raw_neucode_pairs.Count > 0 || Lollipop.raw_experimental_components.Count > 0;
+            return Lollipop.proteoform_community.experimental_proteoforms.Length <= 0 && (Lollipop.neucode_labeled && Lollipop.raw_neucode_pairs.Count > 0 || Lollipop.raw_experimental_components.Count > 0);
         }
 
         public void aggregate_proteoforms()
@@ -39,7 +39,7 @@ namespace ProteoformSuite
                 updateFiguresOfMerit();
                 this.Cursor = Cursors.Default;
             }
-            else { MessageBox.Show("Go back and load in deconvolution results."); }
+            else if (Lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
         }
 
         public DataGridView GetDGV()
