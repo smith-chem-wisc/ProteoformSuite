@@ -275,46 +275,22 @@ namespace ProteoformSuiteInternal
 
             using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\in_peaks_max.tsv"))
             {
-                writer.WriteLine("mass\trel_ab\tfract_ab\tintensity\tTIC\t");
+                writer.WriteLine("E_accession\tmass\trel_ab\tfract_ab\tintensity\tTIC\tagg_count\tnum_cs\tetd_relations\tS_to_average_noise\tS_to_N_max\tS_to_N_weighted_average\tS_to_N_average\tS_to_N_sum");
                 foreach(ExperimentalProteoform e in in_peaks)
                 {
-                    writer.WriteLine(e.modified_mass + "\t" + e.aggregated_components.Max(c => c.relative_abundance) + "\t" + e.aggregated_components.Max(c => c.fract_abundance) + "\t" + e.aggregated_components.Max(c => c.intensity_sum) + "\t" + e.aggregated_components.Max(c => Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC));
+                    writer.WriteLine(e. accession + "\t" + e.modified_mass + "\t" + e.aggregated_components.Max(c => c.relative_abundance) + "\t" + e.aggregated_components.Max(c => c.fract_abundance) + "\t" + e.aggregated_components.Max(c => c.intensity_sum) + "\t" + e.aggregated_components.Max(c => Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC) + "\t" + e.observation_count + "\t" + e.aggregated_components.Max(c => c.num_charge_states)  + "\t" + e.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count
+                        + "\t" + e.aggregated_components.Max(c => c.signal_to_average_noise) + "\t" + e.aggregated_components.Max(c => c.max_CS_signal_to_noise) + "\t" + e.aggregated_components.Max(c => c.weighted_signal_to_noise) + "\t" + e.aggregated_components.Max(c => c.average_signal_to_noise) + "\t" + e.aggregated_components.Max(c => c.sum_CS_signal_to_noise)) ;
                 }
-            }
-
-            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\in_peaks.tsv"))
-            {
-                writer.WriteLine("mass\trel_ab\tfract_ab\tintensity\tTIC\t");
-                foreach (ExperimentalProteoform e in in_peaks)
-                {
-                    foreach(Component c in e.aggregated_components)
-                    {
-                        writer.WriteLine(e.modified_mass + "\t" + c.relative_abundance + "\t" + c.fract_abundance + "\t" + c.intensity_sum + "\t" + Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC);
-                    }
-                }
-
             }
 
             using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\out_peaks_max.tsv"))
             {
-                writer.WriteLine("mass\trel_ab\tfract_ab\tintensity\tTIC\t");
+                writer.WriteLine("E_accession\tmass\trel_ab\tfract_ab\tintensity\tTIC\tagg_count\tnum_cs\tetd_relations\tS_to_average_noise\tS_to_N_max\tS_to_N_weighted_average\tS_to_N_average\tS_to_N_sum");
                 foreach (ExperimentalProteoform e in out_peaks)
                 {
-                    writer.WriteLine(e.modified_mass + "\t" + e.aggregated_components.Max(c => c.relative_abundance) + "\t" + e.aggregated_components.Max(c => c.fract_abundance) + "\t" + e.aggregated_components.Max(c => c.intensity_sum) + "\t" + e.aggregated_components.Max(c => Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC));
+                    writer.WriteLine(e.accession + "\t" + e.modified_mass + "\t" + e.aggregated_components.Max(c => c.relative_abundance) + "\t" + e.aggregated_components.Max(c => c.fract_abundance) + "\t" + e.aggregated_components.Max(c => c.intensity_sum) + "\t" + e.aggregated_components.Max(c => Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC) + "\t" + e.observation_count + "\t" + e.aggregated_components.Max(c => c.num_charge_states) + "\t" + e.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count
+                        + "\t" + e.aggregated_components.Max(c => c.signal_to_average_noise) + "\t" + e.aggregated_components.Max(c => c.max_CS_signal_to_noise) + "\t" + e.aggregated_components.Max(c => c.weighted_signal_to_noise) + "\t" + e.aggregated_components.Max(c => c.average_signal_to_noise) + "\t" + e.aggregated_components.Max(c => c.sum_CS_signal_to_noise));
                 }
-            }
-
-            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\out_peaks.tsv"))
-            {
-                writer.WriteLine("mass\trel_ab\tfract_ab\tintensity\tTIC\t");
-                foreach (ExperimentalProteoform e in out_peaks)
-                {
-                    foreach (Component c in e.aggregated_components)
-                    {
-                        writer.WriteLine(e.modified_mass + "\t" + c.relative_abundance + "\t" + c.fract_abundance + "\t" + c.intensity_sum + "\t" + Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC);
-                    }
-                }
-
             }
         }
 

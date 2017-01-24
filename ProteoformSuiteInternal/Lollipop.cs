@@ -53,9 +53,9 @@ namespace ProteoformSuiteInternal
                 correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
             object sync = new object();
            // Parallel.ForEach(input_files.Where(f => f.purpose == Purpose.Identification).ToList(), file =>
-            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\A17C_fract7_correction_attributes_mass.tsv"))
-            {
-                writer.WriteLine("filename\tmz_centroid\tretention_time\tintensity\tTIC\tinjection_time\tmz_correction\tmass_correction");
+           // using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\A17ABC_correction_attributes_mass.tsv"))
+           // {
+               // writer.WriteLine("filename\tmz_centroid\tretention_time\tintensity\tTIC\tinjection_time\tmz_correction\tmass_correction");
                 foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.Identification).ToList())
                 {
                     ComponentReader componentReader = new ComponentReader();
@@ -63,21 +63,20 @@ namespace ProteoformSuiteInternal
 
                     if (Lollipop.calibrate_td_results && td_calibration_functions.ContainsKey(file.filename))
                     {
-                        CalibrationFunction bestCf = td_calibration_functions[file.filename];
+                        Func<double[], double> bestCf = td_calibration_functions[file.filename];
                         foreach (Component comp in someComponents)
                         {
                             double rt = Convert.ToDouble(comp.rt_range.Split('-')[0]);
                             MsScan scan = Ms_scans.Where(s => s.filename == file.filename && s.scan_number == Convert.ToInt16(comp.scan_range.Split('-')[0])).First();
+                            TdMzCal.get_signal_to_noise(comp);
+                        
                             //Func<ChargeState, double> theFUnc = x => x.mz_centroid - bestCf.Predict(new double[6] { 1, x.mz_centroid, rt, x.intensity, scan.TIC, scan.injection_time });
-                            Func<ChargeState, double> theFUnc = x => x.mz_centroid - bestCf.Predict(new double[3] { 1, x.mz_centroid, rt});
-
                             foreach (ChargeState cs in comp.charge_states)
                             {
-                                double correction = (theFUnc(cs) - cs.mz_centroid);
-                                cs.calculated_mass = cs.correct_calculated_mass(theFUnc(cs) - cs.mz_centroid);
-                                writer.WriteLine(file.filename + "\t" + cs.mz_centroid + "\t" + rt + "\t" + cs.intensity + "\t" + scan.TIC + "\t" + scan.injection_time + "\t" + correction + "\t" + correction * cs.charge_count);
+                                double correction = -1 * bestCf(new double[] { cs.mz_centroid, rt});
+                                cs.calculated_mass = cs.correct_calculated_mass(correction);
+                                //writer.WriteLine(file.filename + "\t" + cs.mz_centroid + "\t" + rt + "\t" + cs.intensity + "\t" + scan.TIC + "\t" + scan.injection_time + "\t" + correction + "\t" + correction * cs.charge_count);
                             }
-
                             // double correction = td_corrections[comp.input_file.filename](Convert.ToDouble(comp.rt_range.Split('-')[0]));
                             comp.topdown_correction = comp.weighted_monoisotopic_mass - comp.uncalibrated_monoisotopic_mass; //helpful to see topdown correction
                         }
@@ -89,7 +88,7 @@ namespace ProteoformSuiteInternal
                             raw_experimental_components.AddRange(someComponents);
                         }
                     //);
-                }
+               // }
                 if (neucode_labeled)
                 {
                     process_neucode_components();
@@ -224,6 +223,16 @@ namespace ProteoformSuiteInternal
                 Lollipop.proteoform_community.experimental_proteoforms = assignQuantificationComponents(vettedExperimentalProteoforms).ToArray();
             else
                 Lollipop.proteoform_community.experimental_proteoforms = vettedExperimentalProteoforms.ToArray();
+            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\file_number_components_experimentals.tsv"))
+            {
+                writer.WriteLine("filename\\components\\agg_3cs");
+                foreach(InputFile file in identification_files())
+                {
+                    int comps = Lollipop.raw_experimental_components.Where(c => c.input_file == file).ToList().Count;
+                    int exp = Lollipop.proteoform_community.experimental_proteoforms.Where(e => e.aggregated_components.Where(c => c.input_file == file).ToList().Count > 0).ToList().Count;
+                    writer.WriteLine(file.filename + "\t" + comps + "\t" + exp);
+                }
+            }
         }
 
         public static List<ExperimentalProteoform> createProteoforms()
@@ -616,9 +625,11 @@ namespace ProteoformSuiteInternal
 
         //TOPDOWN DATA
         public static List<MsScan> Ms_scans = new List<MsScan>();
-        public static double td_mass_tolerance = .05; //Da, mass tolerance for TDPortal
-        public static Dictionary<string, CalibrationFunction> td_calibration_functions = new Dictionary<string, CalibrationFunction> ();
-
+        public static Dictionary<string, Func<double[], double>> td_calibration_functions = new Dictionary<string, Func<double[], double>> ();
+        public static int hits = 0;
+        public static int tight_mass_hits = 0;
+        public static int training_points = 0;
+        public static List<TopDownHit> hits_used = new List<TopDownHit>();
 
         public static void process_td_results()
         {
@@ -629,7 +640,7 @@ namespace ProteoformSuiteInternal
             }
             using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\hit_scan_attributes.tsv"))
             {
-                writer.WriteLine("filename\treported_mass\ttheoretical_mass\tcorrected_mass\tretention_time\tmz_centroid\tinjection_time\tTIC\tintensity\tmass_error");
+                writer.WriteLine("filename\thits\tabs_mass_hits\ttraining_points\treported_mass\ttheoretical_mass\tcorrected_mass\tretention_time\tmz_centroid\tinjection_time\tTIC\tintensity\tmass_error");
                 //get MS1 scan numbers and corrections (if calibrate td results)
                 foreach (string filename in top_down_hits.Select(h => h.filename).Distinct())
                 {
@@ -638,85 +649,26 @@ namespace ProteoformSuiteInternal
                     {
                         InputFile raw_file = raw_files.First();
                       //  first step opens raw file and gets MS1 scan numbers... if calibrating, goes on to calibrate. 
-                        CalibrationFunction bestCf = TdMzCal.Run_TdMzCal(filename, raw_file.path + "\\" + raw_file.filename + raw_file.extension, top_down_hits.Where(h => h.filename == filename).ToList());
+                        Func<double[], double> bestCf = TdMzCal.Run_TdMzCal(filename, raw_file.path + "\\" + raw_file.filename + raw_file.extension, top_down_hits.Where(h => h.filename == filename).ToList());
                         if (bestCf != null && Lollipop.calibrate_td_results)
                         {
                             td_calibration_functions.Add(filename, bestCf);
-                            foreach (TopDownHit hit in Lollipop.top_down_hits.Where(h => h.filename == filename).ToList())
+                            //need to calibrate all the others
+                            foreach (TopDownHit hit in Lollipop.top_down_hits.Where(h =>  h.filename == filename).ToList())
                             {
-                                //Func<TopDownHit, double> theFUnc = x => x.mz - bestCf.Predict(new double[6] { 1, x.mz, x.ms_scan.retention_time, x.intensity, x.ms_scan.TIC, x.ms_scan.injection_time });
-                                Func<TopDownHit, double> theFUnc = x => x.mz - bestCf.Predict(new double[3] { 1, x.mz, x.ms_scan.retention_time });
-                                hit.corrected_mass = theFUnc(hit).ToMass(hit.charge);
-                                if (hit.result_set == Result_Set.tight_absolute_mass)
+                                hit.corrected_mass = (hit.mz - bestCf(new double[] { hit.mz, hit.retention_time })).ToMass(hit.charge);
+
+                                if (hit.result_set == Result_Set.tight_absolute_mass && hits_used.Contains(hit))
                                 {
-                                    double original_mass_error = (hit.reported_mass - hit.theoretical_mass) - Math.Round(hit.reported_mass - hit.theoretical_mass, 0);
-                                    writer.WriteLine(hit.filename + "\t" + hit.reported_mass + "\t" + hit.theoretical_mass + "\t" + hit.corrected_mass + "\t" +  hit.retention_time + "\t" + hit.mz + "\t" + hit.ms_scan.injection_time + "\t" + hit.ms_scan.TIC + "\t" + hit.intensity + "\t" + original_mass_error);
+                                    MsScan ms1_scan = Lollipop.Ms_scans.Where(s => s.ms_order == 1 && s.scan_number < hit.scan).ToList().OrderBy(m => hit.scan - m.scan_number).ToList().First();
+                                    writer.WriteLine(hit.filename +  "\t" + hits+ "\t" + tight_mass_hits + "\t" + training_points +  "\t" + hit.reported_mass + "\t" + hit.theoretical_mass + "\t" + hit.corrected_mass + "\t" +  hit.retention_time + "\t" + hit.mz + "\t" + ms1_scan.injection_time + "\t" + ms1_scan.TIC + "\t" + hit.intensity);
                                 }
                             }
                         }
                     }
-
-                    //if (top_down_hits.Where(h => h.filename == filename && h.result_set == Result_Set.tight_absolute_mass).ToList().Count >= 5)
-                    //{
-                    //    List<TrainingHit> training_points = ThermoFileReader.GetTrainingPoints(top_down_hits.Where(h => h.filename == filename && h.result_set == Result_Set.tight_absolute_mass).ToList(), filename);
-                    //    Func<double, double> f = get_td_corrections(training_points);
-                    //    td_corrections.Add(filename, f);
-                    //    foreach (TopDownHit td_hit in Lollipop.top_down_hits.Where(h => h.filename == filename).ToList())
-                    //    {
-                    //        td_hit.corrected_mass = td_hit.reported_mass + f(td_hit.retention_time);
-                    //    }
-                    //}
-
-                    //else
-                    //{
-                    //    Lollipop.top_down_hits = Lollipop.top_down_hits.Except(top_down_hits.Where(h => h.filename == filename)).ToList();
-                    //}
                 }
             }
         }
-
-        //private static Func<double, double> get_td_corrections(List<TopDownHit> td_training_hits)
-        //{
-        //    List<TdTrainingPoint> training_points = new List<TdTrainingPoint>();
-        //    List<double> delta_mass_list = td_training_hits.Select(h => (h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0)).ToList().OrderBy(m => m).ToList();
-
-        //    foreach(TopDownHit hit in td_training_hits)
-        //    {
-        //        double mass_error = (hit.theoretical_mass - hit.reported_mass) - Math.Round(hit.theoretical_mass - hit.reported_mass, 0);
-        //        training_points.Add(new TdTrainingPoint(hit.reported_mass, hit.theoretical_mass, mass_error, )
-        //    }
-
-
-        //    double percent_in_window = 1;
-
-
-
-        //    int start = 0; //start index
-        //    int end = delta_mass_list.Count - 1; //end index
-        //    while (percent_in_window > .95)  //decrease window until ~95% of points in it
-        //    {
-        //        List<double> delta_mass_list_minus_start = delta_mass_list.GetRange(start + 1, end);
-        //        double start_range = delta_mass_list_minus_start.Max() - delta_mass_list_minus_start.Min();
-        //        List<double> delta_mass_list_minus_end = delta_mass_list.GetRange(start, end);
-        //        double end_range = delta_mass_list_minus_end.Max() - delta_mass_list_minus_end.Min();
-        //        if (start_range < end_range) start++; //if window smaller from removing first delta m, keep this window
-        //        else end--; //if window smaller from removing last delta m, keep this window
-
-        //        percent_in_window = delta_mass_list.GetRange(start, end).ToList().Count / delta_mass_list.Count;
-        //    }
-
-        //    //kinear fit, mass correction vs. retention time
-        //    List<TopDownHit> td_training_hits_use = td_training_hits.OrderBy(h => ((h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0))).ToList().GetRange( start, end).ToList();
-        //    double[] mass_corrections = td_training_hits_use.Select(h => (h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0)).ToArray();
-        //    double[] x_vals = td_training_hits_use.Select(h => h.retention_time).ToArray();
-
-        //    var ye = new Func<double, double>[2];
-        //    ye[0] = a => 1;
-        //    ye[1] = a => a;
-
-        //    Func<double, double> f = Fit.LinearGenericFunc(x_vals, mass_corrections, ye);
-        //    return f;
-        //}
 
         public static void aggregate_td_hits()
         {
