@@ -36,11 +36,11 @@ namespace ProteoformSuiteInternal
 
             this.lysine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.weighted_monoisotopic_mass - firstCorrection) / Lollipop.NEUCODE_LYSINE_MASS_SHIFT, 0, MidpointRounding.AwayFromZero)));
             this.intensity_ratio = neuCodeLight.intensity_sum_olcs / neuCodeHeavy.intensity_sum_olcs; //ratio of overlapping charge states
+            this.neuCodeCorrection = Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * Lollipop.MONOISOTOPIC_UNIT_MASS;
 
             //marking pair as accepted or not when it's created
             set_accepted();
-
-            this.neuCodeCorrection = Math.Round((this.lysine_count * 0.1667 - 0.4), 0, MidpointRounding.AwayFromZero) * Lollipop.MONOISOTOPIC_UNIT_MASS;
+            this.calculate_properties();
         }
 
         public void set_accepted()
@@ -63,8 +63,6 @@ namespace ProteoformSuiteInternal
         }
 
         public NeuCodePair()
-        {
-
-        }
+        { }
     }
 }
