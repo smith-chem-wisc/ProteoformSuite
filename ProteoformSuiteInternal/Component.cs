@@ -58,7 +58,7 @@ namespace ProteoformSuiteInternal
         public double intensity_sum //intensity sum for all charge states. Different value that what is reported by deconv 4.0 for some reason
         {
             get
-            { 
+            {
                 if (charge_states.Select(cs => cs.charge_count).ToList().Count() > 0) { return charge_states.Select(cs => cs.intensity).ToList().Sum(); }
                 else { return Intensity_sum; }
             }
@@ -74,12 +74,18 @@ namespace ProteoformSuiteInternal
         private double Weighted_monoisotopic_mass { get; set; } = 0;
         public double weighted_monoisotopic_mass
         {
-            get 
+            get
             {
-                if (charge_states.Select(cs=>cs.charge_count).ToList().Count() > 0) { return this.charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum() + manual_mass_shift + neuCodeCorrection + topdown_correction; }
+                if (charge_states.Select(cs => cs.charge_count).ToList().Count() > 0) { return this.charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum() + manual_mass_shift + neuCodeCorrection; }
                 else { return Weighted_monoisotopic_mass; }
             }
         } //this is computed as the weighted sum of charge state masses.
+
+        public double weighted_signal_to_noise { get; set; }
+        public double average_signal_to_noise {get; set;}
+        public double signal_to_average_noise { get; set; }
+        public double max_CS_signal_to_noise { get; set; }
+        public double sum_CS_signal_to_noise { get; set; }
 
         //not calibrated with either lock mass or top down data... 
         public double uncalibrated_monoisotopic_mass
@@ -236,6 +242,7 @@ namespace ProteoformSuiteInternal
         public double intensity { get; set; } //value from deconv 4.0
         public double mz_centroid { get; set; } //value from deconv 4.0
         public double calculated_mass { get; set; }  // the value reported by decon 4.0 is incorrect, so we calculate it from m/z and charge (including correction when necessary)
+        public double signal_to_noise { get; set; } //weighted average of s/n
 
         public ChargeState(List<string> charge_row, double mz_correction) //the correction used is determined from measurement of lock-mass compound. It is read in at the same time the data is read in. We do not keep track of the correction because it adds confusion when charge states are combined.
         {

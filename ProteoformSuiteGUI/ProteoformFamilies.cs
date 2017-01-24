@@ -232,7 +232,7 @@ namespace ProteoformSuite
                         }
                         foreach (ExperimentalProteoform exp in family.experimental_proteoforms)
                         {
-                            writer.WriteLine(String.Join("\t", fam_id, "Experimental", exp.accession, "" , exp.modified_mass, ""));
+                            writer.WriteLine(String.Join("\t", fam_id, "Experimental", exp.accession, "", exp.modified_mass, ""));
                         }
                         foreach (TopDownProteoform td in family.topdown_proteoforms)
                         {
@@ -243,6 +243,48 @@ namespace ProteoformSuite
                 }
                 MessageBox.Show("Successfully exported list of proteoforms in identified families.");
             }
+            else return;
+            }
+
+        private void bt_export_inclusion_list_Click(object sender, EventArgs e)
+        {
+            //maybe make selected families button?? 
+            //exports an inclusion list of any experimental proteoforms not in an e-td pair 
+            //to do... check raw file and not put anything on inclusion list that was already fragmented
+
+            DialogResult dr = this.folderBrowser.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                string folder_path = folderBrowser.SelectedPath;
+                int inclusion_list_num = 1;
+                //int list_count = 0;
+                int experimental_num = 0;
+                //experimentals in relations without topdown relations
+                // ExperimentalProteoform[] experimentals = Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList().Where(p => p.relationships.Count > 0).ToList().OrderBy(p => p.agg_intensity).ToArray();
+
+                //experimentals without topdown relations
+                ExperimentalProteoform[] experimentals = Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList().OrderBy(p => p.agg_intensity).ToArray();
+
+                while (experimental_num < experimentals.Length)
+                {
+                    using (var writer = new StreamWriter(folder_path + "\\inclusion_list_" + inclusion_list_num + ".txt"))
+                    {
+                        //while count is less than maximum export inclusion list with highest intensity items 
+                        //while (list_count < 100)
+                        while(experimental_num < experimentals.Length)
+                        {
+                            //max intensity charge state of the max intensity component
+                            ChargeState best_charge_state = (experimentals[experimental_num].aggregated_components.OrderBy(c => c.intensity_sum).First().charge_states.OrderBy(c => c.intensity).First());
+                            writer.WriteLine(best_charge_state.mz_centroid + "\t" + "\t" + best_charge_state.charge_count);
+                            experimental_num++;
+                        }
+                        //list_count = 0;
+                        inclusion_list_num++;
+                    }
+                }
+                MessageBox.Show("Successfully exported inclusion list(s).");
+            }
+            else return;
         }
     }
 }
