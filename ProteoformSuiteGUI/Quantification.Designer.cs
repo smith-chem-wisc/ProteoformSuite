@@ -578,6 +578,7 @@
             // cb_moreOpacity
             // 
             this.cb_moreOpacity.AutoSize = true;
+            this.cb_moreOpacity.Enabled = false;
             this.cb_moreOpacity.Location = new System.Drawing.Point(21, 76);
             this.cb_moreOpacity.Name = "cb_moreOpacity";
             this.cb_moreOpacity.Size = new System.Drawing.Size(96, 17);

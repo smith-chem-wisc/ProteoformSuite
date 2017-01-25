@@ -310,23 +310,26 @@ namespace ProteoformSuiteInternal
                 //numerator and denominator not used yet b/c of the programming that would require.
                 eP.quant = this;
                 accession = eP.accession;
-                lightBiorepIntensities = eP.biorepIntensityList.Where(b => b.light).ToList();
-                lightImputedIntensities = imputedIntensities(true, lightBiorepIntensities, bkgdAverageIntensity, bkgdStDev);
-                lightIntensitySum = (decimal)lightBiorepIntensities.Select(i => i.intensity).Sum() + (decimal)lightImputedIntensities.Select(i => i.intensity).Sum();
-                List<biorepIntensity> allLights = lightBiorepIntensities.Concat(lightImputedIntensities).ToList();
-
-                List<biorepIntensity> allHeavys = new List<biorepIntensity>();
-                if (Lollipop.neucode_labeled)
+                if (eP.lt_quant_components.Count > 0 || eP.hv_quant_components.Count > 0)
                 {
-                    heavyBiorepIntensities = eP.biorepIntensityList.Where(b => !b.light).ToList();
-                    heavyImputedIntensities = imputedIntensities(false, heavyBiorepIntensities, bkgdAverageIntensity, bkgdStDev);
-                    heavyIntensitySum = (decimal)heavyBiorepIntensities.Select(i => i.intensity).Sum() + (decimal)heavyImputedIntensities.Select(i => i.intensity).Sum();
-                    allHeavys = heavyBiorepIntensities.Concat(heavyImputedIntensities).ToList();
+                    lightBiorepIntensities = eP.biorepIntensityList.Where(b => b.light).ToList();
+                    lightImputedIntensities = imputedIntensities(true, lightBiorepIntensities, bkgdAverageIntensity, bkgdStDev);
+                    lightIntensitySum = (decimal)lightBiorepIntensities.Select(i => i.intensity).Sum() + (decimal)lightImputedIntensities.Select(i => i.intensity).Sum();
+                    List<biorepIntensity> allLights = lightBiorepIntensities.Concat(lightImputedIntensities).ToList();
+
+                    List<biorepIntensity> allHeavys = new List<biorepIntensity>();
+                    if (Lollipop.neucode_labeled)
+                    {
+                        heavyBiorepIntensities = eP.biorepIntensityList.Where(b => !b.light).ToList();
+                        heavyImputedIntensities = imputedIntensities(false, heavyBiorepIntensities, bkgdAverageIntensity, bkgdStDev);
+                        heavyIntensitySum = (decimal)heavyBiorepIntensities.Select(i => i.intensity).Sum() + (decimal)heavyImputedIntensities.Select(i => i.intensity).Sum();
+                        allHeavys = heavyBiorepIntensities.Concat(heavyImputedIntensities).ToList();
+                    }
+                    intensitySum = lightIntensitySum + heavyIntensitySum;
+                    logFoldChange = (decimal)Math.Log((double)lightIntensitySum / (double)heavyIntensitySum, 2); // Will get divide by zero error if not neuCode labeled, right? -AC
+                    variance = Variance(logFoldChange, allLights, allHeavys);
+                    pValue = PValue(logFoldChange, allLights, allHeavys);
                 }
-                intensitySum = lightIntensitySum + heavyIntensitySum;
-                logFoldChange = (decimal)Math.Log((double)lightIntensitySum / (double)heavyIntensitySum, 2); // Will get divide by zero error if not neuCode labeled, right? -AC
-                variance = Variance(logFoldChange, allLights, allHeavys);
-                pValue = PValue(logFoldChange, allLights, allHeavys);
             }
 
             private List<biorepIntensity> imputedIntensities(bool light, List<biorepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev)

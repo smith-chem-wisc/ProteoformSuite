@@ -363,18 +363,13 @@ namespace ProteoformSuite
                 ct_proteoformIntensities.Series["Fit + Projected"].Points.AddXY(entry.Key, sumIntensity);
             }
         }
-
+        
         private void proteoformQuantification()
         {
-            qVals.Clear();
-            object sync = new object();
             string numerator = cmbx_ratioNumerator.SelectedItem.ToString();
             string denominator = cmbx_ratioDenominator.SelectedItem.ToString();
-
-            foreach (ExperimentalProteoform eP in satisfactoryProteoforms.Where(eP => eP.accepted == true))
-            {
-                qVals.Add(new ExperimentalProteoform.quantitativeValues(eP, bkgdAverageIntensity, bkgdStDev, numerator, denominator)); // those are log2 intensities
-            }
+            Parallel.ForEach(Lollipop.proteoform_community.experimental_proteoforms, eP => new ExperimentalProteoform.quantitativeValues(eP, bkgdAverageIntensity, bkgdStDev, numerator, denominator));
+            qVals = satisfactoryProteoforms.Where(eP => eP.accepted == true).Select(e => e.quant).ToList();
         }
 
         private void volcanoPlot()

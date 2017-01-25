@@ -202,7 +202,7 @@ namespace ProteoformSuiteInternal
 
                 //NODE PROPERTIES
                 double max_total_intensity = quantitative ? 
-                    (double)Lollipop.proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Where(p => p.lt_quant_components.Count > 0 && p.hv_quant_components.Count > 0).Max(p => p.quant.intensitySum) : 
+                    (double)Lollipop.proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Max(p => p.quant.intensitySum) : 
                     Lollipop.proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity);
                 writer.WriteStartElement("node");
                 writer.WriteStartElement("dependency");
@@ -233,7 +233,7 @@ namespace ProteoformSuiteInternal
                     if (style.Key == "NODE_FILL_COLOR")
                         write_discreteMapping(writer, "string", proteoform_type_header, new List<Tuple<string, string>>()
                         {
-                            new Tuple<string, string>(color_schemes[this.color_scheme][0], experimental_label),
+                            new Tuple<string, string>(quantitative ? "#FFFFFF" : color_schemes[this.color_scheme][0], experimental_label),
                             new Tuple<string, string>(color_schemes[this.color_scheme][1], modified_theoretical_label),
                             new Tuple<string, string>(color_schemes[this.color_scheme][2], unmodified_theoretical_label)
                         });
@@ -254,6 +254,7 @@ namespace ProteoformSuiteInternal
                     if (style.Key == "NODE_BORDER_PAINT" && quantitative && quantitative_redBorder)
                         write_discreteMapping(writer, "boolean", significant_header, new List<Tuple<string, string>>()
                         {
+                            new Tuple<string, string>("#FFFFFF", "False"),
                             new Tuple<string, string>("#FF0033", "True")
                         });
                     if (style.Key == "NODE_TRANSPARENCY" && quantitative && quantitative_moreOpacity)
