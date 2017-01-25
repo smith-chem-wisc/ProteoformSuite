@@ -28,12 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.dgv_quantification_results = new System.Windows.Forms.DataGridView();
             this.gb_quantDataDisplaySelection = new System.Windows.Forms.GroupBox();
             this.btn_refreshCalculation = new System.Windows.Forms.Button();
@@ -64,7 +64,10 @@
             this.rb_allTheoreticalGOTerms = new System.Windows.Forms.RadioButton();
             this.rb_allSampleGOTerms = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btn_buildFamiliesAllGO = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
             this.btn_buildFromSelectedGoTerms = new System.Windows.Forms.Button();
+            this.cmbx_edgeLabel = new System.Windows.Forms.ComboBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.cb_moreOpacity = new System.Windows.Forms.CheckBox();
             this.cb_boldLabel = new System.Windows.Forms.CheckBox();
@@ -84,9 +87,6 @@
             this.label_tempFileFolder = new System.Windows.Forms.Label();
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
-            this.label11 = new System.Windows.Forms.Label();
-            this.cmbx_edgeLabel = new System.Windows.Forms.ComboBox();
-            this.btn_buildFamiliesAllGO = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantification_results)).BeginInit();
             this.gb_quantDataDisplaySelection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).BeginInit();
@@ -213,15 +213,15 @@
             // 
             // ct_volcano_logFold_logP
             // 
-            chartArea3.Name = "ChartArea1";
-            this.ct_volcano_logFold_logP.ChartAreas.Add(chartArea3);
+            chartArea1.Name = "ChartArea1";
+            this.ct_volcano_logFold_logP.ChartAreas.Add(chartArea1);
             this.ct_volcano_logFold_logP.Location = new System.Drawing.Point(523, 32);
             this.ct_volcano_logFold_logP.Margin = new System.Windows.Forms.Padding(2);
             this.ct_volcano_logFold_logP.Name = "ct_volcano_logFold_logP";
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series4.Name = "Series1";
-            this.ct_volcano_logFold_logP.Series.Add(series4);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series1.Name = "Series1";
+            this.ct_volcano_logFold_logP.Series.Add(series1);
             this.ct_volcano_logFold_logP.Size = new System.Drawing.Size(476, 298);
             this.ct_volcano_logFold_logP.TabIndex = 6;
             this.ct_volcano_logFold_logP.Text = "Volcano";
@@ -364,22 +364,22 @@
             // 
             // ct_proteoformIntensities
             // 
-            chartArea4.Name = "ChartArea1";
-            this.ct_proteoformIntensities.ChartAreas.Add(chartArea4);
-            legend2.Name = "Legend1";
-            this.ct_proteoformIntensities.Legends.Add(legend2);
+            chartArea2.Name = "ChartArea1";
+            this.ct_proteoformIntensities.ChartAreas.Add(chartArea2);
+            legend1.Name = "Legend1";
+            this.ct_proteoformIntensities.Legends.Add(legend1);
             this.ct_proteoformIntensities.Location = new System.Drawing.Point(55, 518);
             this.ct_proteoformIntensities.Name = "ct_proteoformIntensities";
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series5.Legend = "Legend1";
-            series5.Name = "Series1";
-            series6.ChartArea = "ChartArea1";
-            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series6.Legend = "Legend1";
-            series6.Name = "Series2";
-            this.ct_proteoformIntensities.Series.Add(series5);
-            this.ct_proteoformIntensities.Series.Add(series6);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Legend = "Legend1";
+            series3.Name = "Series2";
+            this.ct_proteoformIntensities.Series.Add(series2);
+            this.ct_proteoformIntensities.Series.Add(series3);
             this.ct_proteoformIntensities.Size = new System.Drawing.Size(452, 357);
             this.ct_proteoformIntensities.TabIndex = 11;
             this.ct_proteoformIntensities.Text = "log2_intensity";
@@ -523,6 +523,27 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Quantified Family Display with Cytoscape";
             // 
+            // btn_buildFamiliesAllGO
+            // 
+            this.btn_buildFamiliesAllGO.Location = new System.Drawing.Point(51, 182);
+            this.btn_buildFamiliesAllGO.Name = "btn_buildFamiliesAllGO";
+            this.btn_buildFamiliesAllGO.Size = new System.Drawing.Size(255, 23);
+            this.btn_buildFamiliesAllGO.TabIndex = 61;
+            this.btn_buildFamiliesAllGO.Text = "Build Families with All GO Terms Above Thresholds";
+            this.btn_buildFamiliesAllGO.UseVisualStyleBackColor = true;
+            this.btn_buildFamiliesAllGO.Click += new System.EventHandler(this.btn_buildFamiliesAllGO_Click);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.BackColor = System.Drawing.SystemColors.Control;
+            this.label11.Location = new System.Drawing.Point(555, 142);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(116, 13);
+            this.label11.TabIndex = 60;
+            this.label11.Text = "Edge Label Information";
+            // 
             // btn_buildFromSelectedGoTerms
             // 
             this.btn_buildFromSelectedGoTerms.Location = new System.Drawing.Point(51, 211);
@@ -532,6 +553,15 @@
             this.btn_buildFromSelectedGoTerms.Text = "Build Families with Selected GO Terms";
             this.btn_buildFromSelectedGoTerms.UseVisualStyleBackColor = true;
             this.btn_buildFromSelectedGoTerms.Click += new System.EventHandler(this.btn_buildFromSelectedGoTerms_Click);
+            // 
+            // cmbx_edgeLabel
+            // 
+            this.cmbx_edgeLabel.Enabled = false;
+            this.cmbx_edgeLabel.FormattingEnabled = true;
+            this.cmbx_edgeLabel.Location = new System.Drawing.Point(428, 140);
+            this.cmbx_edgeLabel.Name = "cmbx_edgeLabel";
+            this.cmbx_edgeLabel.Size = new System.Drawing.Size(121, 21);
+            this.cmbx_edgeLabel.TabIndex = 59;
             // 
             // groupBox5
             // 
@@ -639,6 +669,7 @@
             // 
             // cmbx_nodeLayout
             // 
+            this.cmbx_nodeLayout.Enabled = false;
             this.cmbx_nodeLayout.FormattingEnabled = true;
             this.cmbx_nodeLayout.Location = new System.Drawing.Point(428, 59);
             this.cmbx_nodeLayout.Name = "cmbx_nodeLayout";
@@ -716,36 +747,6 @@
             this.btn_browseTempFolder.Text = "Browse";
             this.btn_browseTempFolder.UseVisualStyleBackColor = true;
             this.btn_browseTempFolder.Click += new System.EventHandler(this.btn_browseTempFolder_Click);
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.BackColor = System.Drawing.SystemColors.Control;
-            this.label11.Location = new System.Drawing.Point(555, 142);
-            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(116, 13);
-            this.label11.TabIndex = 60;
-            this.label11.Text = "Edge Label Information";
-            // 
-            // cmbx_edgeLabel
-            // 
-            this.cmbx_edgeLabel.Enabled = false;
-            this.cmbx_edgeLabel.FormattingEnabled = true;
-            this.cmbx_edgeLabel.Location = new System.Drawing.Point(428, 140);
-            this.cmbx_edgeLabel.Name = "cmbx_edgeLabel";
-            this.cmbx_edgeLabel.Size = new System.Drawing.Size(121, 21);
-            this.cmbx_edgeLabel.TabIndex = 59;
-            // 
-            // btn_buildFamiliesAllGO
-            // 
-            this.btn_buildFamiliesAllGO.Location = new System.Drawing.Point(51, 182);
-            this.btn_buildFamiliesAllGO.Name = "btn_buildFamiliesAllGO";
-            this.btn_buildFamiliesAllGO.Size = new System.Drawing.Size(255, 23);
-            this.btn_buildFamiliesAllGO.TabIndex = 61;
-            this.btn_buildFamiliesAllGO.Text = "Build Families with All GO Terms Above Thresholds";
-            this.btn_buildFamiliesAllGO.UseVisualStyleBackColor = true;
-            this.btn_buildFamiliesAllGO.Click += new System.EventHandler(this.btn_buildFamiliesAllGO_Click);
             // 
             // Quantification
             // 

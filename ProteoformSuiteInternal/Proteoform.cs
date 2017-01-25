@@ -174,10 +174,15 @@ namespace ProteoformSuiteInternal
 
         public void assign_quantitative_components()
         {
-            lt_quant_components.AddRange(Lollipop.remaining_components.Where(r => this.includes(r, this, true)));
-            //ep.getBiorepAndFractionIntensities(false); //split lt components by biorep and fraction
-            hv_quant_components.AddRange(Lollipop.remaining_components.Where(r => this.includes(r, this, false)));
-            //ep.getBiorepAndFractionIntensities(true); //split hv components by biorep and fraction
+            foreach (Component c in Lollipop.remaining_components)
+            {
+                if (this.includes(c, this, true)) lt_quant_components.Add(c);
+                if (this.includes(c, this, false)) hv_quant_components.Add(c);
+            }
+            //lt_quant_components.AddRange(Lollipop.remaining_components.Where(r => this.includes(r, this, true)));
+            ////ep.getBiorepAndFractionIntensities(false); //split lt components by biorep and fraction
+            //hv_quant_components.AddRange(Lollipop.remaining_components.Where(r => this.includes(r, this, false)));
+            ////ep.getBiorepAndFractionIntensities(true); //split hv components by biorep and fraction
         }
 
         public void calculate_properties()
@@ -372,8 +377,8 @@ namespace ProteoformSuiteInternal
                 {
                     List<double> combined = lights.Select(j => j.intensity).Concat(heavys.Select(j => j.intensity)).ToList();
                     combined.Shuffle();
-                    double numerator = (from s in combined.Take(lights.Count()) select s).Sum();
-                    double denominator = (from s in combined.Skip(lights.Count()).Take(heavys.Count()) select s).Sum();
+                    double numerator = combined.Take(lights.Count).Sum();
+                    double denominator = combined.Skip(lights.Count).Take(heavys.Count).Sum();
                     decimal someRatio = (decimal)Math.Log(numerator / denominator, 2);
                     permutedRatios.Add(someRatio);
                 });

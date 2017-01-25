@@ -36,6 +36,7 @@ namespace ProteoformSuite
 
         private void quantify()
         {
+            this.Cursor = Cursors.WaitCursor;
             computeBiorepIntensities();
             defineAllObservedIntensityDistribution();
             determineProteoformsMeetingCriteria();
@@ -48,11 +49,12 @@ namespace ProteoformSuite
             interestingProteins = getInterestingProteins(qVals);
             goTermNumbers = getGoTermNumbers(interestingProteins);
             fillGoTermsTable();
+            this.Cursor = Cursors.Default;
         }
 
         public void perform_calculations()
         {
-            if (Lollipop.quantification_files().Count() > 0 && qVals.Count <= 0)
+            if (Lollipop.quantification_files().Count() > 0 && Lollipop.proteoform_community.experimental_proteoforms.Length > 0 && qVals.Count <= 0)
             {
                 initialize();
                 quantify();
@@ -81,6 +83,7 @@ namespace ProteoformSuite
             cmbx_ratioDenominator.SelectedIndex = Convert.ToInt32(conditions.Count() > 1);
             Lollipop.numerator_condition = cmbx_ratioNumerator.SelectedItem.ToString();
             Lollipop.denominator_condition = cmbx_ratioDenominator.SelectedItem.ToString();
+            cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels);
 
             //Initialize display options
             cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
@@ -368,13 +371,10 @@ namespace ProteoformSuite
             string numerator = cmbx_ratioNumerator.SelectedItem.ToString();
             string denominator = cmbx_ratioDenominator.SelectedItem.ToString();
 
-            Parallel.ForEach(satisfactoryProteoforms.Where(eP => eP.accepted == true), eP =>
+            foreach (ExperimentalProteoform eP in satisfactoryProteoforms.Where(eP => eP.accepted == true))
             {
-                lock (sync)
-                {
-                    qVals.Add(new ExperimentalProteoform.quantitativeValues(eP, bkgdAverageIntensity, bkgdStDev, numerator, denominator)); // those are log2 intensities
-                }
-            });
+                qVals.Add(new ExperimentalProteoform.quantitativeValues(eP, bkgdAverageIntensity, bkgdStDev, numerator, denominator)); // those are log2 intensities
+            }
         }
 
         private void volcanoPlot()
