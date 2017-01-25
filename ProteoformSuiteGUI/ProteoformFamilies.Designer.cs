@@ -258,6 +258,7 @@
             // 
             // cmbx_nodeLayout
             // 
+            this.cmbx_nodeLayout.Enabled = false;
             this.cmbx_nodeLayout.FormattingEnabled = true;
             this.cmbx_nodeLayout.Location = new System.Drawing.Point(7, 111);
             this.cmbx_nodeLayout.Name = "cmbx_nodeLayout";
@@ -346,6 +347,7 @@
             // 
             // btn_merge
             // 
+            this.btn_merge.Enabled = false;
             this.btn_merge.Location = new System.Drawing.Point(97, 201);
             this.btn_merge.Name = "btn_merge";
             this.btn_merge.Size = new System.Drawing.Size(195, 23);

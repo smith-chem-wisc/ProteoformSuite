@@ -201,7 +201,9 @@ namespace ProteoformSuiteInternal
                 writer.WriteEndElement();
 
                 //NODE PROPERTIES
-                double max_total_intensity = quantitative ? (double)Lollipop.proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Max(p => p.quant.intensitySum) : Lollipop.proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity);
+                double max_total_intensity = quantitative ? 
+                    (double)Lollipop.proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Where(p => p.lt_quant_components.Count > 0 && p.hv_quant_components.Count > 0).Max(p => p.quant.intensitySum) : 
+                    Lollipop.proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity);
                 writer.WriteStartElement("node");
                 writer.WriteStartElement("dependency");
                 writer.WriteAttributeString("name", "nodeCustomGraphicsSizeSync");

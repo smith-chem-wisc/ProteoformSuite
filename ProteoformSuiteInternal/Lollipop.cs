@@ -396,7 +396,7 @@ namespace ProteoformSuiteInternal
         public static void assignQuantificationComponents()  // this is only need for neucode labeled data. quantitative components for unlabelled are assigned elsewhere "vetExperimentalProteoforms"
         {
             List<ExperimentalProteoform> proteoforms = vetted_proteoforms.OrderByDescending(x => x.agg_intensity).ToList();
-            List<Component> remaining = new List<Component>(Lollipop.raw_quantification_components);
+            remaining_components = new List<Component>(Lollipop.raw_quantification_components);
 
             ExperimentalProteoform p = proteoforms[0];
             List<ExperimentalProteoform> running = new List<ExperimentalProteoform>();
@@ -419,7 +419,7 @@ namespace ProteoformSuiteInternal
 
                 foreach (ExperimentalProteoform e in running)
                 {
-                    remaining = remaining.Except(e.lt_quant_components.Concat(e.hv_quant_components)).ToList();
+                    remaining_components = remaining_components.Except(e.lt_quant_components.Concat(e.hv_quant_components)).ToList();
                     proteoforms.Remove(e);
                 }
 
