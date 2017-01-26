@@ -37,12 +37,12 @@ namespace ProteoformSuiteInternal
 
             Parallel.ForEach(pfs1, pf1 => 
             {
-                lock (sync)
+                lock (sync) // I think that having the lock like this means the loop isn't really parallel. 
                 {
-                    IEnumerable<Proteoform> candidate_pfs2 = pfs2.
+                    List<Proteoform> candidate_pfs2 = pfs2.
                         Where(pf2 => (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
                             && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
-                            && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference);
+                            && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference).ToList();
 
                     foreach (string accession in new HashSet<string>(candidate_pfs2.Select(p => p.accession)))
                     {

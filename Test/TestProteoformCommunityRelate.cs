@@ -406,14 +406,14 @@ namespace Test
             Assert.AreEqual(1, rel.nearby_relations_count);  //shows that calculate_unadjusted_group_count works
             //Assert.AreEqual(1, rel.mass_difference_group.Count);  //I don't think we need this test anymore w/ way peaks are made -LVS
             Assert.AreEqual(-1, rel.lysine_count);
-            Assert.IsNull(rel.name);
+            Assert.IsNull(rel.name_2);
             Assert.AreEqual(1, rel.num_observations_1);
             Assert.AreEqual(0, rel.num_observations_2);
             Assert.IsTrue(rel.outside_no_mans_land);
             Assert.IsNull(rel.peak);
             Assert.AreEqual(0, rel.proteoform_mass_1);
             Assert.AreEqual(0, rel.proteoform_mass_2);
-            Assert.AreEqual("unmodified", rel.ptm_list);
+            Assert.AreEqual("unmodified", rel.ptm_list_2);
             Assert.AreEqual(1, rel.nearby_relations_count);
         }
     }

@@ -79,6 +79,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestComponent.cs" />
+    <Compile Include="TestQuantification.cs" />
     <Compile Include="TestSaveState.cs" />
     <Compile Include="TestExperimentalProteoform.cs" />
     <Compile Include="TestFindRawComponentsAndNeuCodePairs.cs" />
@@ -89,7 +91,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestDeltaMassPeak.cs" />
     <Compile Include="TestProteoformCommunityRelate.cs" />
-    <Compile Include="TestCyotoscapeScript.cs" />
+    <Compile Include="TestCytoscapeScript.cs" />
     <Compile Include="TestProteoformFamilies.cs" />
     <Compile Include="TestSaveAndLoadResults.cs" />
     <Compile Include="TestTheoreticalDatabaseCreate.cs" />

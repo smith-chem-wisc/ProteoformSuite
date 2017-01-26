@@ -238,7 +238,7 @@
             this.quantificationToolStripMenuItem.Name = "quantificationToolStripMenuItem";
             this.quantificationToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.quantificationToolStripMenuItem.Text = "Quantification";
-            this.quantificationToolStripMenuItem.Click += new System.EventHandler(this.quantificationToolStripMenuItem_Click_1);
+            this.quantificationToolStripMenuItem.Click += new System.EventHandler(this.quantificationToolStripMenuItem_Click);
             // 
             // resultsSummaryToolStripMenuItem
             // 
