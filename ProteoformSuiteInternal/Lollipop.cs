@@ -136,19 +136,13 @@ namespace ProteoformSuiteInternal
                         foreach (Component comp in someComponents)
                         {
                             double rt = Convert.ToDouble(comp.rt_range.Split('-')[0]);
-                            MsScan scan = Ms_scans.Where(s => s.filename == file.filename && s.scan_number == Convert.ToInt16(comp.scan_range.Split('-')[0])).First();
                             TdMzCal.get_signal_to_noise(comp);
-
-                            //Func<ChargeState, double> theFUnc = x => x.mz_centroid - bestCf.Predict(new double[6] { 1, x.mz_centroid, rt, x.intensity, scan.TIC, scan.injection_time });
                             foreach (ChargeState cs in comp.charge_states)
                             {
                                 double correction = -1 * bestCf(new double[] { cs.mz_centroid, rt });
                                 cs.mz_centroid = cs.correct_calculated_mz(cs.mz_centroid, correction);
                                 cs.calculated_mass = cs.correct_calculated_mass(cs.mz_centroid);
-                                //writer.WriteLine(file.filename + "\t" + cs.mz_centroid + "\t" + rt + "\t" + cs.intensity + "\t" + scan.TIC + "\t" + scan.injection_time + "\t" + correction + "\t" + correction * cs.charge_count);
                             }
-                            // double correction = td_corrections[comp.input_file.filename](Convert.ToDouble(comp.rt_range.Split('-')[0]));
-                            comp.topdown_correction = comp.weighted_monoisotopic_mass - comp.uncalibrated_monoisotopic_mass; //helpful to see topdown correction
                         }
                     }
                     //don't add components if calibrating td results and no calibration function for that file 
@@ -618,10 +612,10 @@ namespace ProteoformSuiteInternal
 
                 if (decoy_number < 0 )
                     theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description, prot, isMetCleaved, 
-                        unmodified_mass, lysine_count, prot.goTerms, ptm_set, proteoform_mass, theoretical_proteoforms[0].gene_id, true));
+                        unmodified_mass, lysine_count, prot.goTerms, ptm_set, proteoform_mass, prot.gene_id, true));
                 else
                     theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot, isMetCleaved, 
-                        unmodified_mass, lysine_count, prot.goTerms , ptm_set, proteoform_mass, theoretical_proteoforms[0].gene_id, false));
+                        unmodified_mass, lysine_count, prot.goTerms , ptm_set, proteoform_mass, prot.gene_id, false));
                 listMemberNumber++;
             } 
         }
