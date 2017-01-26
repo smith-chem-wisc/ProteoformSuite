@@ -37,7 +37,6 @@ namespace ProteoformSuiteInternal
                 cs.signal_to_avg_noise = cs.intensity / scan.noises.Average();
                 cs.signal_to_noise = scan.peak_y[index_peak] / scan.noises[index_peak]; 
             }
-
             comp.weighted_signal_to_noise = comp.charge_states.Select(charge_state => charge_state.intensity / comp.intensity_sum * charge_state.signal_to_noise).Sum();
             comp.weighted_signal_to_average_noise = comp.charge_states.Select(charge_state => charge_state.intensity / comp.intensity_sum * charge_state.signal_to_avg_noise).Sum();
             comp.max_signal_to_average_noise = comp.charge_states.Max(cs => cs.signal_to_avg_noise);
