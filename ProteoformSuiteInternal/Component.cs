@@ -82,10 +82,9 @@ namespace ProteoformSuiteInternal
         } //this is computed as the weighted sum of charge state masses.
 
         public double weighted_signal_to_noise { get; set; }
-        public double average_signal_to_noise {get; set;}
-        public double signal_to_average_noise { get; set; }
-        public double max_CS_signal_to_noise { get; set; }
-        public double sum_CS_signal_to_noise { get; set; }
+        public double weighted_signal_to_average_noise { get; set; }
+        public double max_signal_to_noise { get; set; }
+        public double max_signal_to_average_noise { get; set; }
 
         //not calibrated with either lock mass or top down data... 
         public double uncalibrated_monoisotopic_mass
@@ -242,7 +241,8 @@ namespace ProteoformSuiteInternal
         public double intensity { get; set; } //value from deconv 4.0
         public double mz_centroid { get; set; } //value from deconv 4.0
         public double calculated_mass { get; set; }  // the value reported by decon 4.0 is incorrect, so we calculate it from m/z and charge (including correction when necessary)
-        public double signal_to_noise { get; set; } //weighted average of s/n
+        public double signal_to_noise { get; set; }  //intensity of tallest isotope peak / noise at that peak
+        public double signal_to_avg_noise { get; set; } //isotope sum intensity / average spectrum noise
 
         public ChargeState(List<string> charge_row, double mz_correction) //the correction used is determined from measurement of lock-mass compound. It is read in at the same time the data is read in. We do not keep track of the correction because it adds confusion when charge states are combined.
         {

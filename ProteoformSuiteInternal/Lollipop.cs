@@ -52,15 +52,15 @@ namespace ProteoformSuiteInternal
             if (input_files.Any(f => f.purpose == Purpose.Calibration))
                 correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
             object sync = new object();
-           // Parallel.ForEach(input_files.Where(f => f.purpose == Purpose.Identification).ToList(), file =>
-           // using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\A17ABC_correction_attributes_mass.tsv"))
-           // {
-               // writer.WriteLine("filename\tmz_centroid\tretention_time\tintensity\tTIC\tinjection_time\tmz_correction\tmass_correction");
-                foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.Identification).ToList())
+            // Parallel.ForEach(input_files.Where(f => f.purpose == Purpose.Identification).ToList(), file =>
+            // using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\A17ABC_correction_attributes_mass.tsv"))
+            // {
+            // writer.WriteLine("filename\tmz_centroid\tretention_time\tintensity\tTIC\tinjection_time\tmz_correction\tmass_correction");
+            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.Identification).ToList())
+            {
+                ComponentReader componentReader = new ComponentReader();
+                List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors, Lollipop.Ms_scans.Where(s => s.filename == file.filename && s.ms_order == 1).ToList().Select(s => s.scan_number).ToList());
                 {
-                    ComponentReader componentReader = new ComponentReader();
-                    List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors, Lollipop.Ms_scans.Where(s => s.filename == file.filename && s.ms_order == 1).ToList().Select(s => s.scan_number).ToList());
-
                     if (Lollipop.calibrate_td_results && td_calibration_functions.ContainsKey(file.filename))
                     {
                         Func<double[], double> bestCf = td_calibration_functions[file.filename];
@@ -69,11 +69,11 @@ namespace ProteoformSuiteInternal
                             double rt = Convert.ToDouble(comp.rt_range.Split('-')[0]);
                             MsScan scan = Ms_scans.Where(s => s.filename == file.filename && s.scan_number == Convert.ToInt16(comp.scan_range.Split('-')[0])).First();
                             TdMzCal.get_signal_to_noise(comp);
-                        
+
                             //Func<ChargeState, double> theFUnc = x => x.mz_centroid - bestCf.Predict(new double[6] { 1, x.mz_centroid, rt, x.intensity, scan.TIC, scan.injection_time });
                             foreach (ChargeState cs in comp.charge_states)
                             {
-                                double correction = -1 * bestCf(new double[] { cs.mz_centroid, rt});
+                                double correction = -1 * bestCf(new double[] { cs.mz_centroid, rt });
                                 cs.calculated_mass = cs.correct_calculated_mass(correction);
                                 //writer.WriteLine(file.filename + "\t" + cs.mz_centroid + "\t" + rt + "\t" + cs.intensity + "\t" + scan.TIC + "\t" + scan.injection_time + "\t" + correction + "\t" + correction * cs.charge_count);
                             }
@@ -88,10 +88,11 @@ namespace ProteoformSuiteInternal
                             raw_experimental_components.AddRange(someComponents);
                         }
                     //);
-               // }
-                if (neucode_labeled)
-                {
-                    process_neucode_components();
+                    // }
+                    if (neucode_labeled)
+                    {
+                        process_neucode_components();
+                    }
                 }
             }
         }
@@ -223,14 +224,14 @@ namespace ProteoformSuiteInternal
                 Lollipop.proteoform_community.experimental_proteoforms = assignQuantificationComponents(vettedExperimentalProteoforms).ToArray();
             else
                 Lollipop.proteoform_community.experimental_proteoforms = vettedExperimentalProteoforms.ToArray();
-            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\file_number_components_experimentals.tsv"))
+           // using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\file_number_components_experimentals.tsv"))
             {
-                writer.WriteLine("filename\\components\\agg_3cs");
+             //   writer.WriteLine("filename\\components\\agg_3cs");
                 foreach(InputFile file in identification_files())
                 {
                     int comps = Lollipop.raw_experimental_components.Where(c => c.input_file == file).ToList().Count;
                     int exp = Lollipop.proteoform_community.experimental_proteoforms.Where(e => e.aggregated_components.Where(c => c.input_file == file).ToList().Count > 0).ToList().Count;
-                    writer.WriteLine(file.filename + "\t" + comps + "\t" + exp);
+                  //  writer.WriteLine(file.filename + "\t" + comps + "\t" + exp);
                 }
             }
         }
@@ -638,9 +639,9 @@ namespace ProteoformSuiteInternal
                 List<TopDownHit> td_file_hits = TdBuReader.ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_software);
                 top_down_hits.AddRange(td_file_hits);
             }
-            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\hit_scan_attributes.tsv"))
+          //  using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\hit_scan_attributes.tsv"))
             {
-                writer.WriteLine("filename\thits\tabs_mass_hits\ttraining_points\treported_mass\ttheoretical_mass\tcorrected_mass\tretention_time\tmz_centroid\tinjection_time\tTIC\tintensity\tmass_error");
+              //  writer.WriteLine("filename\thits\tabs_mass_hits\ttraining_points\treported_mass\ttheoretical_mass\tcorrected_mass\tretention_time\tmz_centroid\tinjection_time\tTIC\tintensity\tmass_error");
                 //get MS1 scan numbers and corrections (if calibrate td results)
                 foreach (string filename in top_down_hits.Select(h => h.filename).Distinct())
                 {
@@ -661,7 +662,7 @@ namespace ProteoformSuiteInternal
                                 if (hit.result_set == Result_Set.tight_absolute_mass && hits_used.Contains(hit))
                                 {
                                     MsScan ms1_scan = Lollipop.Ms_scans.Where(s => s.ms_order == 1 && s.scan_number < hit.scan).ToList().OrderBy(m => hit.scan - m.scan_number).ToList().First();
-                                    writer.WriteLine(hit.filename +  "\t" + hits+ "\t" + tight_mass_hits + "\t" + training_points +  "\t" + hit.reported_mass + "\t" + hit.theoretical_mass + "\t" + hit.corrected_mass + "\t" +  hit.retention_time + "\t" + hit.mz + "\t" + ms1_scan.injection_time + "\t" + ms1_scan.TIC + "\t" + hit.intensity);
+                                    //writer.WriteLine(hit.filename +  "\t" + hits+ "\t" + tight_mass_hits + "\t" + training_points +  "\t" + hit.reported_mass + "\t" + hit.theoretical_mass + "\t" + hit.corrected_mass + "\t" +  hit.retention_time + "\t" + hit.mz + "\t" + ms1_scan.injection_time + "\t" + ms1_scan.TIC + "\t" + hit.intensity);
                                 }
                             }
                         }
