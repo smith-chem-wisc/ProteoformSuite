@@ -144,7 +144,6 @@ namespace ProteoformSuiteInternal
             this.charge_states = c.charge_states;
             this.intensity_sum_olcs = c.intensity_sum_olcs;
             this.accepted = c.accepted;
-
             this.num_detected_intervals = c.num_detected_intervals;
             if (c.charge_states.Count > 0) this.charge_states = c.charge_states;
             else this.num_charge_states = c.num_charge_states;
@@ -166,6 +165,7 @@ namespace ProteoformSuiteInternal
                 this.intensity_sum = charge_states.Select(cs => cs.intensity).Sum();
                 this.weighted_monoisotopic_mass = this.charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum() + manual_mass_shift + neuCodeCorrection;
                 this.num_charge_states = charge_states.Count;
+                //put here?
                 this.calculating_properties = false;
             }
         }

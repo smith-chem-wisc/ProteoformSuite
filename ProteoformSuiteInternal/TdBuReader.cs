@@ -75,9 +75,18 @@ namespace ProteoformSuiteInternal
                                 int position = 0;
                                 if (new_modification[1] == "N")
                                 {
-                                    if (cellStrings[10].Split(':')[1] == "1458")
+                                if (cellStrings[10].Split(':')[1] == "1458")
+                                {
+                                    try
                                     {
-                                        ptm_list.Add(new Ptm(position, Lollipop.uniprotModificationTable["N-acetylmethionine"])); 
+                                        Modification mod = Lollipop.uniprotModificationTable.Values.Where(m => m.ptm_category == "Acetylation" && m.target_aas.Contains(cellStrings[4][0])).ToList().First();
+                                        ptm_list.Add(new Ptm(position, mod));
+                                    }
+                                    //found one case where PTM not in ptmlist.txt (acetylasparagine)
+                                    catch
+                                    {
+                                        ptm_list.Add(new Ptm(position, new Modification("N-acetylation")));
+                                    }
                                     }
                                 }
                                 //I have not seen a case of c-term modification, don't know formatting of td file output 

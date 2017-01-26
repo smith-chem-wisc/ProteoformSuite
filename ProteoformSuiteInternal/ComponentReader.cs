@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using IO.Thermo;
 
 namespace ProteoformSuiteInternal
 {
@@ -88,8 +89,7 @@ namespace ProteoformSuiteInternal
         private void add_component(Component c)
         {
             if (!Lollipop.td_results || acceptable_td_component(c))
-            {
-                TdMzCal.get_signal_to_noise(c);
+            {          
                 c.calculate_properties();
                 this.raw_components_in_file.Add(c);
             }
@@ -207,6 +207,11 @@ namespace ProteoformSuiteInternal
                         }
                     }
                 }
+            }
+
+            foreach(Component c in raw_components.Except(removeThese))
+            {
+                TdMzCal.get_signal_to_noise(c);
             }
             return raw_components.Except(removeThese).ToList();
         }
