@@ -328,35 +328,96 @@ namespace ProteoformSuite
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
                 string folder_path = folderBrowser.SelectedPath;
-                int inclusion_list_num = 1;
-                //int list_count = 0;
-                int experimental_num = 0;
-                //experimentals in relations without topdown relations
-                // ExperimentalProteoform[] experimentals = Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList().Where(p => p.relationships.Count > 0).ToList().OrderBy(p => p.agg_intensity).ToArray();
 
-                //experimentals without topdown relations
-                ExperimentalProteoform[] experimentals = Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList().OrderBy(p => p.agg_intensity).ToArray();
-
-                while (experimental_num < experimentals.Length)
+                List<ExperimentalProteoform> experimentals = new List<ExperimentalProteoform>();
+                if (cb_inclusion_list_family.Checked)
                 {
-                    using (var writer = new StreamWriter(folder_path + "\\inclusion_list_" + inclusion_list_num + ".txt"))
+                    if (cb_inclusion_list_identified_family.Checked)
+                        //family not null, ET relation in family, e proteoform not in topdown relation
+                        experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.etd).ToList().Count > 0 && p.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
+
+                    if (cb_inclusion_list_unidentified_fam.Checked)
                     {
-                        //while count is less than maximum export inclusion list with highest intensity items 
-                        //while (list_count < 100)
-                        while (experimental_num < experimentals.Length)
-                        {
-                            //max intensity charge state of the max intensity component
-                            ChargeState best_charge_state = (experimentals[experimental_num].aggregated_components.OrderBy(c => c.intensity_sum).First().charge_states.OrderBy(c => c.intensity).First());
-                            writer.WriteLine(best_charge_state.mz_centroid + "\t" + "\t" + best_charge_state.charge_count);
-                            experimental_num++;
-                        }
-                        //list_count = 0;
-                        inclusion_list_num++;
+                        experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
+                    }
+
+                    //FOR TEST WILL DELETE THIS
+                    if (cb_inclusion_list_1T.Checked)
+                    {
+                        experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et).ToList().Count == 1 && p.family.relations.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
                     }
                 }
-                MessageBox.Show("Successfully exported inclusion list(s).");
+
+                else
+                {
+                    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family == null));
+                }
+                foreach (ExperimentalProteoform exp in experimentals)
+                {
+                    using (var writer = new StreamWriter(folder_path + "\\inclusion_list.txt"))
+                    {
+                        //max intensity charge state of the max intensity component
+                        //ChargeState best_charge_state = (experimentals[experimental_num].aggregated_components.OrderBy(c => c.intensity_sum).First().charge_states.OrderBy(c => c.intensity).First());
+                        if (!cb_inclusion_list_charge_state.Checked)
+                        {
+                            foreach (ChargeState cs in exp.aggregated_components.OrderBy(c => c.intensity_sum).ToList().First().charge_states)
+                            {
+                                if (cs.charge_count <= 25)
+                                {
+                                    writer.WriteLine(cs.mz_centroid + "\t" + cs.charge_count);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ChargeState cs = exp.aggregated_components.OrderBy(c => c.intensity_sum).ToList().First().charge_states.Where(c => c.charge_count <= 25).ToList().OrderBy(c => c.intensity).ToList().First();
+                            if (cs.charge_count <= 25)
+                            {
+                                writer.WriteLine(cs.mz_centroid + "\t" + "\t" + cs.charge_count);
+                            }
+                        }
+                    }
+                }
             }
             else return;
+                MessageBox.Show("Successfully exported inclusion list(s).");
+            }
+        
+
+        private void cb_inclusion_list_family_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!cb_inclusion_list_family.Checked)
+            {
+                cb_inclusion_list_identified_family.Checked = false;
+                cb_inclusion_list_unidentified_fam.Checked = false;
+            }
+            if (cb_inclusion_list_family.Checked)
+            {
+                cb_inclusion_list_identified_family.Checked = true;
+                cb_inclusion_list_unidentified_fam.Checked = true;
+            }
+        }
+
+        private void cb_inclusion_list_identified_family_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!cb_inclusion_list_identified_family.Checked)
+            {
+                if (!cb_inclusion_list_unidentified_fam.Checked && cb_inclusion_list_family.Checked && !cb_inclusion_list_1T.Checked)
+                {
+                    cb_inclusion_list_family.Checked = false;
+                }
+            }
+        }
+
+        private void cb_inclusion_list_unidentified_fam_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!cb_inclusion_list_unidentified_fam.Checked)
+            {
+                if (!cb_inclusion_list_identified_family.Checked && cb_inclusion_list_family.Checked && !cb_inclusion_list_1T.Checked)
+                {
+                    cb_inclusion_list_family.Checked = false;
+                }
+            }
         }
         private void btn_merge_Click(object sender, EventArgs e)
         {
