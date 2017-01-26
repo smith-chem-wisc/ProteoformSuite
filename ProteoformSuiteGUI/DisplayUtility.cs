@@ -306,5 +306,46 @@ namespace ProteoformSuite
             dgv.DataSource = sbl;
         }
 
+        public static object[] get_selected_objects(DataGridView dgv)
+        {
+            //Check if there are any rows selected
+            //int selected_row_sum = 0;
+            //for (int i = 0; i < dgv.SelectedCells.Count; i++) selected_row_sum += dgv.SelectedCells[i].RowIndex;
+
+            List<object> items = new List<object>();
+            if (dgv.SelectedRows.Count > 0)
+                for (int i = 0; i < dgv.SelectedRows.Count; i++)
+                    items.Add(dgv.SelectedRows[i].DataBoundItem);
+            else
+            {
+                List<int> rows = new List<int>();
+                for (int i = 0; i < dgv.SelectedCells.Count; i++) rows.Add(dgv.SelectedCells[i].RowIndex);
+                rows = rows.Distinct().ToList();
+                foreach (int row_index in rows)
+                    items.Add(dgv.Rows[row_index].DataBoundItem);
+            }
+            //else
+            //    for (int i = 0; i < dgv.SelectedCells.Count; i++)
+            //        if (dgv.SelectedCells[i].RowIndex != 0)
+            //            items.Add(dgv.Rows[dgv.SelectedCells[i].RowIndex].DataBoundItem);
+
+            return items.ToArray();
+        }
+
+        public static void format_families_dgv(DataGridView dgv)
+        {
+            //set column header
+            //dgv_proteoform_families.Columns["family_id"].HeaderText = "Light Monoisotopic Mass";
+            dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
+            dgv.Columns["experimental_count"].HeaderText = "Experimental Proteoforms";
+            dgv.Columns["theoretical_count"].HeaderText = "Theoretical Proteoforms";
+            dgv.Columns["relation_count"].HeaderText = "Relation Count";
+            dgv.Columns["accession_list"].HeaderText = "Theoretical Accessions";
+            dgv.Columns["name_list"].HeaderText = "Theoretical Names";
+            dgv.Columns["experimentals_list"].HeaderText = "Experimental Accessions";
+            dgv.Columns["agg_mass_list"].HeaderText = "Experimental Aggregated Masses";
+            dgv.Columns["relations"].Visible = false;
+            dgv.Columns["proteoforms"].Visible = false;
+        }
     }
 }

@@ -338,7 +338,7 @@ namespace ProteoformSuite
         // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
         {
-                Lollipop.min_peak_count_et = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
+            Lollipop.min_peak_count_et = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
             if (compared_et)
             { 
                 Parallel.ForEach(Lollipop.et_peaks, p =>
@@ -346,9 +346,10 @@ namespace ProteoformSuite
                 dgv_ET_Pairs.Refresh();
                 dgv_ET_Peak_List.Refresh();
             }
-                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
-                StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count_et };
-                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+            StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count_et };
+            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+            this.updateFiguresOfMerit();
         }
 
         Point? ct_ET_Histogram_prevPosition = null;

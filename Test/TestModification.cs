@@ -15,13 +15,13 @@ namespace Test
         {
             List<Modification> listForPosition1 = new List<Modification>();
 
-            listForPosition1.Add(new Modification("description1", "acession1", "featureType1", "position1", new char[] { 'K' }, 1, 1.1));
-            listForPosition1.Add(new Modification("description2", "acession2", "featureType2", "position2", new char[] { 'K' }, 2, 2.1));
+            listForPosition1.Add(new Modification("description1", "acession1", "featureType1", "position1", new char[] { 'K' }, 1, 1.1, "ptmCategory1", "resid1", "chemicalFormula1"));
+            listForPosition1.Add(new Modification("description2", "acession2", "featureType2", "position2", new char[] { 'K' }, 2, 2.1, "ptmCategory2", "resid2", "chemicalFormula2"));
 
             List<Modification> listForPosition2 = new List<Modification>();
 
-            listForPosition2.Add(new Modification("description3", "acession3", "featureType3", "position3", new char[] { 'K' }, 3, 3.1));
-            listForPosition2.Add(new Modification("description4", "acession4", "featureType4", "position4", new char[] { 'K' }, 4, 4.1));
+            listForPosition2.Add(new Modification("description3", "acession3", "featureType3", "position3", new char[] { 'K' }, 3, 3.1, "ptmCategory3", "resid3", "chemicalFormula3"));
+            listForPosition2.Add(new Modification("description4", "acession4", "featureType4", "position4", new char[] { 'K' }, 4, 4.1, "ptmCategory4", "resid4", "chemicalFormula4"));
 
             Dictionary<int, List<Modification>> ptm_data = new Dictionary<int, List<Modification>>();
             ptm_data.Add(1, listForPosition1);
@@ -49,13 +49,13 @@ namespace Test
         {
             List<Modification> listForPosition1 = new List<Modification>();
 
-            listForPosition1.Add(new Modification("description1", "acession1", "featureType1", "position1", new char[] { 'K' }, 1.1, 1.1));
-            listForPosition1.Add(new Modification("description2", "acession2", "featureType2", "position2", new char[] { 'K' }, 2.01, 2.01));
+            listForPosition1.Add(new Modification("description1", "acession1", "featureType1", "position1", new char[] { 'K' }, 1.1, 1.1, "", "", ""));
+            listForPosition1.Add(new Modification("description2", "acession2", "featureType2", "position2", new char[] { 'K' }, 2.01, 2.01, "", "", ""));
 
             List<Modification> listForPosition2 = new List<Modification>();
 
-            listForPosition2.Add(new Modification("description3", "acession3", "featureType3", "position3", new char[] { 'K' }, 3.001, 3.001));
-            listForPosition2.Add(new Modification("description4", "acession4", "featureType4", "position4", new char[] { 'K' }, 4.0001, 4.0001));
+            listForPosition2.Add(new Modification("description3", "acession3", "featureType3", "position3", new char[] { 'K' }, 3.001, 3.001, "", "", ""));
+            listForPosition2.Add(new Modification("description4", "acession4", "featureType4", "position4", new char[] { 'K' }, 4.0001, 4.0001, "", "", ""));
 
             Dictionary<int, List<Modification>> ptm_data = new Dictionary<int, List<Modification>>();
             ptm_data.Add(1, listForPosition1);
@@ -78,15 +78,15 @@ namespace Test
         public void TestPtmCombos3()
         {
             List<Modification> listForPosition1 = new List<Modification>();
-            listForPosition1.Add(new Modification("description1", "acession1", "featureType1", "position1", new char[] { 'K' }, 1, 1));
+            listForPosition1.Add(new Modification("description1", "acession1", "featureType1", "position1", new char[] { 'K' }, 1, 1, "ptmCategory1", "resid1", "chemicalFormula1"));
             List<Modification> listForPosition2 = new List<Modification>();
-            listForPosition2.Add(new Modification("description2", "acession2", "featureType2", "position2", new char[] { 'K' }, 1, 1));
+            listForPosition2.Add(new Modification("description2", "acession2", "featureType2", "position2", new char[] { 'K' }, 1, 1, "ptmCategory2", "resid2", "chemicalFormula2"));
             List<Modification> listForPosition3 = new List<Modification>();
-            listForPosition3.Add(new Modification("description3", "acession3", "featureType3", "position3", new char[] { 'K' }, 1, 1));
+            listForPosition3.Add(new Modification("description3", "acession3", "featureType3", "position3", new char[] { 'K' }, 1, 1, "ptmCategory3", "resid3", "chemicalFormula3"));
             List<Modification> listForPosition4 = new List<Modification>();
-            listForPosition4.Add(new Modification("description4", "acession4", "featureType4", "position4", new char[] { 'K' }, 1, 1));
+            listForPosition4.Add(new Modification("description4", "acession4", "featureType4", "position4", new char[] { 'K' }, 1, 1, "ptmCategory4", "resid4", "chemicalFormula4"));
             List<Modification> listForPosition5 = new List<Modification>();
-            listForPosition5.Add(new Modification("description5", "acession5", "featureType5", "position5", new char[] { 'K' }, 100, 100));
+            listForPosition5.Add(new Modification("description5", "acession5", "featureType5", "position5", new char[] { 'K' }, 100, 100, "ptmCategory5", "resid5", "chemicalFormula5"));
 
             Dictionary<int, List<Modification>> ptm_data = new Dictionary<int, List<Modification>>();
             ptm_data.Add(1, listForPosition1);
@@ -108,16 +108,16 @@ namespace Test
         public void TestPtmCombos4()
         {
             List<Modification> listForPosition1 = new List<Modification>();
-            listForPosition1.Add(new Modification("description1", "acession1", "featureType1", "position1", new char[] { 'K' }, 1, 1));
+            listForPosition1.Add(new Modification("description1", "acession1", "featureType1", "position1", new char[] { 'K' }, 1, 1, "ptmCategory1", "resid1", "chemicalFormula1"));
             List<Modification> listForPosition2 = new List<Modification>();
-            listForPosition2.Add(new Modification("description2", "acession2", "featureType2", "position2", new char[] { 'K' }, 1, 1));
+            listForPosition2.Add(new Modification("description2", "acession2", "featureType2", "position2", new char[] { 'K' }, 1, 1, "ptmCategory2", "resid2", "chemicalFormula2"));
             List<Modification> listForPosition3 = new List<Modification>();
-            listForPosition3.Add(new Modification("description3", "acession3", "featureType3", "position3", new char[] { 'K' }, 1, 1));
+            listForPosition3.Add(new Modification("description3", "acession3", "featureType3", "position3", new char[] { 'K' }, 1, 1, "ptmCategory3", "resid3", "chemicalFormula3"));
             List<Modification> listForPosition4 = new List<Modification>();
-            listForPosition4.Add(new Modification("description4", "acession4", "featureType4", "position4", new char[] { 'K' }, 1, 1));
+            listForPosition4.Add(new Modification("description4", "acession4", "featureType4", "position4", new char[] { 'K' }, 1, 1, "ptmCategory4", "resid4", "chemicalFormula14"));
             List<Modification> listForPosition5 = new List<Modification>();
-            listForPosition5.Add(new Modification("description5", "acession5", "featureType5", "position5", new char[] { 'K' }, 100, 100));
-            listForPosition5.Add(new Modification("description6", "acession6", "featureType6", "position6", new char[] { 'K' }, 200, 100));
+            listForPosition5.Add(new Modification("description5", "acession5", "featureType5", "position5", new char[] { 'K' }, 100, 100, "ptmCategory5", "resid5", "chemicalFormula15"));
+            listForPosition5.Add(new Modification("description6", "acession6", "featureType6", "position6", new char[] { 'K' }, 200, 100, "ptmCategory6", "resid6", "chemicalFormula6"));
 
             Dictionary<int, List<Modification>> ptm_data = new Dictionary<int, List<Modification>>();
             ptm_data.Add(1, listForPosition1);
