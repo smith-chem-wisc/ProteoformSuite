@@ -33,8 +33,6 @@ namespace ProteoformSuiteInternal
             }
         }
         public double neuCodeCorrection { get; set; } = 0;
-        public double topdown_correction { get; set; } = 0;
-
         private int Num_charge_states { get; set; } = 0;
         public int num_charge_states
         {
@@ -88,14 +86,6 @@ namespace ProteoformSuiteInternal
         public double weighted_signal_to_average_noise { get; set; }
         public double max_signal_to_noise { get; set; }
         public double max_signal_to_average_noise { get; set; }
-
-        //not calibrated with top down data
-        public double uncalibrated_monoisotopic_mass
-        {
-            get {
-                return charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass_reported).Sum();
-                }
-        }
         
 
         public void attemptToSetWeightedMonoisotopic_mass(double fromFileMass)
