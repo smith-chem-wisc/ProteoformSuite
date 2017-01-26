@@ -21,21 +21,27 @@ namespace ProteoformSuiteInternal
         //parameters
         public static double fineResolution = 0.1;
 
-        public static void get_signal_to_noise(Component c)
+        public static void get_signal_to_noise(Component comp)
         {
-                MsScan scan = Lollipop.Ms_scans.Where(s => s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First();
-                foreach (ChargeState cs in c.charge_states)
-                {
-                    int index_peak = scan.peak_x.Select((x, i) => new { Index = i, Distance = Math.Abs(cs.mz_centroid - x) }).OrderBy(x => x.Distance).First().Index;
-                    cs.signal_to_noise = (double)scan.peak_y[index_peak] / scan.noises[index_peak];
-                }
+            UsefulProteomicsDatabases.Loaders.LoadElements("elements.dat");
 
-                c.sum_CS_signal_to_noise = c.charge_states.Select(cs => cs.signal_to_noise).Sum();
-                c.weighted_signal_to_noise = c.charge_states.Select(charge_state => charge_state.intensity / c.intensity_sum * charge_state.signal_to_noise).Sum();
-                c.max_CS_signal_to_noise = c.charge_states.Max(cs => cs.signal_to_noise);
-                c.average_signal_to_noise = c.charge_states.Average(cs => cs.signal_to_noise);
-                c.signal_to_average_noise = c.intensity_sum / scan.noises.Average();
+            MsScan scan = Lollipop.Ms_scans.Where(s => s.scan_number == Convert.ToInt16(comp.scan_range.Split('-')[0])).First();
+            foreach (ChargeState cs in comp.charge_states)
+            {
+                double monoisotopic_averagine = 111.0543053;
+                double average_averagine = 111.1234625;
+                double average_mass = cs.mz_centroid.ToMass(cs.charge_count) / monoisotopic_averagine * average_averagine;
+                int units_over = Convert.ToInt16(average_mass - cs.mz_centroid.ToMass(cs.charge_count));
+                double mz_average = cs.mz_centroid + units_over * Lollipop.MONOISOTOPIC_UNIT_MASS / cs.charge_count;
+                int index_peak = scan.peak_x.Select((x, i) => new { Index = i, Distance = Math.Abs(mz_average - x) }).OrderBy(x => x.Distance).First().Index;
+                cs.signal_to_avg_noise = cs.intensity / scan.noises.Average();
+                cs.signal_to_noise = scan.peak_y[index_peak] / scan.noises[index_peak]; 
+            }
 
+            comp.weighted_signal_to_noise = comp.charge_states.Select(charge_state => charge_state.intensity / comp.intensity_sum * charge_state.signal_to_noise).Sum();
+            comp.weighted_signal_to_average_noise = comp.charge_states.Select(charge_state => charge_state.intensity / comp.intensity_sum * charge_state.signal_to_avg_noise).Sum();
+            comp.max_signal_to_average_noise = comp.charge_states.Max(cs => cs.signal_to_avg_noise);
+            comp.max_signal_to_noise = comp.charge_states.Max(cs => cs.signal_to_noise);
         }
 
 

@@ -37,12 +37,12 @@ namespace ProteoformSuiteInternal
 
             Parallel.ForEach(pfs1, pf1 => 
             {
-                lock (sync)
+                lock (sync) // I think that having the lock like this means the loop isn't really parallel. 
                 {
-                    IEnumerable<Proteoform> candidate_pfs2 = pfs2.
+                    List<Proteoform> candidate_pfs2 = pfs2.
                         Where(pf2 => (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
                             && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
-                            && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference);
+                            && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference).ToList();
 
                     foreach (string accession in new HashSet<string>(candidate_pfs2.Select(p => p.accession)))
                     {
@@ -273,25 +273,27 @@ namespace ProteoformSuiteInternal
             List<ExperimentalProteoform> in_peaks = experimental_proteoforms.Where(e => e.relationships.Where(r => r.accepted).ToList().Count > 0).ToList();
             List<ExperimentalProteoform> out_peaks = experimental_proteoforms.Except(in_peaks).ToList();
 
-            //using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\in_peaks_max.tsv"))
-            //{
-            //    writer.WriteLine("E_accession\tmass\trel_ab\tfract_ab\tintensity\tTIC\tagg_count\tnum_cs\tetd_relations\tS_to_average_noise\tS_to_N_max\tS_to_N_weighted_average\tS_to_N_average\tS_to_N_sum");
-            //    foreach(ExperimentalProteoform e in in_peaks)
-            //    {
-            //        writer.WriteLine(e. accession + "\t" + e.modified_mass + "\t" + e.aggregated_components.Max(c => c.relative_abundance) + "\t" + e.aggregated_components.Max(c => c.fract_abundance) + "\t" + e.aggregated_components.Max(c => c.intensity_sum) + "\t" + e.aggregated_components.Max(c => Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC) + "\t" + e.observation_count + "\t" + e.aggregated_components.Max(c => c.num_charge_states)  + "\t" + e.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count
-            //            + "\t" + e.aggregated_components.Max(c => c.signal_to_average_noise) + "\t" + e.aggregated_components.Max(c => c.max_CS_signal_to_noise) + "\t" + e.aggregated_components.Max(c => c.weighted_signal_to_noise) + "\t" + e.aggregated_components.Max(c => c.average_signal_to_noise) + "\t" + e.aggregated_components.Max(c => c.sum_CS_signal_to_noise)) ;
-            //    }
-            //}
+            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\in_peaks_max.tsv"))
+            {
+                writer.WriteLine("E_accession\tmass\trel_ab\tfract_ab\tintensity\tTIC\tagg_count\tnum_cs\tetd_relations\tS_to_avg_noise_avg\tS_to_N_avg\tS_to_avg_noise_max\tS_to_noise_max");
+                foreach(ExperimentalProteoform e in in_peaks)
+                {
+                    writer.WriteLine(e. accession + "\t" + e.modified_mass + "\t" + e.aggregated_components.Max(c => c.relative_abundance) + "\t" + e.aggregated_components.Max(c => c.fract_abundance) + "\t" + e.aggregated_components.Max(c => c.intensity_sum) + "\t" + e.aggregated_components.Max(c => Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC) + "\t" + e.observation_count + "\t" + e.aggregated_components.Max(c => c.num_charge_states)  + "\t" + e.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count
+                        + "\t" + e.aggregated_components.Max(c => c.weighted_signal_to_average_noise) + "\t" + e.aggregated_components.Max(c => c.weighted_signal_to_noise) + "\t" +
+                        e.aggregated_components.Max(c => c.max_signal_to_average_noise) + "\t" + e.aggregated_components.Max(c => c.max_signal_to_noise)) ;
+                }
+            }
 
-            //using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\out_peaks_max.tsv"))
-            //{
-            //    writer.WriteLine("E_accession\tmass\trel_ab\tfract_ab\tintensity\tTIC\tagg_count\tnum_cs\tetd_relations\tS_to_average_noise\tS_to_N_max\tS_to_N_weighted_average\tS_to_N_average\tS_to_N_sum");
-            //    foreach (ExperimentalProteoform e in out_peaks)
-            //    {
-            //        writer.WriteLine(e.accession + "\t" + e.modified_mass + "\t" + e.aggregated_components.Max(c => c.relative_abundance) + "\t" + e.aggregated_components.Max(c => c.fract_abundance) + "\t" + e.aggregated_components.Max(c => c.intensity_sum) + "\t" + e.aggregated_components.Max(c => Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC) + "\t" + e.observation_count + "\t" + e.aggregated_components.Max(c => c.num_charge_states) + "\t" + e.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count
-            //            + "\t" + e.aggregated_components.Max(c => c.signal_to_average_noise) + "\t" + e.aggregated_components.Max(c => c.max_CS_signal_to_noise) + "\t" + e.aggregated_components.Max(c => c.weighted_signal_to_noise) + "\t" + e.aggregated_components.Max(c => c.average_signal_to_noise) + "\t" + e.aggregated_components.Max(c => c.sum_CS_signal_to_noise));
-            //    }
-            //}
+            using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\out_peaks_max.tsv"))
+            {
+                writer.WriteLine("E_accession\tmass\trel_ab\tfract_ab\tintensity\tTIC\tagg_count\tnum_cs\tetd_relations\tS_to_avg_noise_avg\tS_to_N_avg\tS_to_avg_noise_max\tS_to_noise_max");
+                foreach (ExperimentalProteoform e in out_peaks)
+                {
+                    writer.WriteLine(e.accession + "\t" + e.modified_mass + "\t" + e.aggregated_components.Max(c => c.relative_abundance) + "\t" + e.aggregated_components.Max(c => c.fract_abundance) + "\t" + e.aggregated_components.Max(c => c.intensity_sum) + "\t" + e.aggregated_components.Max(c => Lollipop.Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First().TIC) + "\t" + e.observation_count + "\t" + e.aggregated_components.Max(c => c.num_charge_states) + "\t" + e.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count
+        + "\t" + e.aggregated_components.Max(c => c.weighted_signal_to_average_noise) + "\t" + e.aggregated_components.Max(c => c.weighted_signal_to_noise) + "\t" +
+        e.aggregated_components.Max(c => c.max_signal_to_average_noise) + "\t" + e.aggregated_components.Max(c => c.max_signal_to_noise));
+                }
+            }
         }
 
         public List<Proteoform> construct_family(List<Proteoform> seed)

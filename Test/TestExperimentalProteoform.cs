@@ -31,8 +31,8 @@ namespace Test
                 heavy.input_file = inFile;
                 light.id = 1.ToString();
                 heavy.id = 2.ToString();
-                light.attemptToSetWeightedMonoisotopic_mass(starter_mass);
-                heavy.attemptToSetWeightedMonoisotopic_mass(starter_mass + starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT);
+                light.weighted_monoisotopic_mass = starter_mass;
+                heavy.weighted_monoisotopic_mass = starter_mass + starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
                 light.intensity_sum_olcs = starter_intensity; //using the special intensity sum for overlapping charge states in a neucode pair
                 heavy.intensity_sum_olcs = starter_intensity / 2; //using the special intensity sum for overlapping charge states in a neucode pair
                 light.rt_apex = starter_rt;
@@ -45,6 +45,7 @@ namespace Test
                 heavy.charge_states = new List<ChargeState> { heavy_charge_state };
                 NeuCodePair n = new NeuCodePair(light, heavy);
                 n.lysine_count = starter_lysine_count;
+                n.calculate_properties();
                 components.Add(n);
             }
             return components;
@@ -61,16 +62,18 @@ namespace Test
             heavy.input_file = inFile;
             light.id = 1.ToString();
             heavy.id = 2.ToString();
-            light.attemptToSetWeightedMonoisotopic_mass(starter_mass);
-            heavy.attemptToSetWeightedMonoisotopic_mass(starter_mass + starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT);
-            light.attemptToSetIntensity(starter_intensity); //using the special intensity sum for overlapping charge states in a neucode pair
-            heavy.attemptToSetIntensity(starter_intensity / 2);
+            light.weighted_monoisotopic_mass = starter_mass;
+            heavy.weighted_monoisotopic_mass = starter_mass + starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
+            light.intensity_sum = starter_intensity; //using the special intensity sum for overlapping charge states in a neucode pair
+            heavy.intensity_sum = starter_intensity / 2;
             light.rt_apex = starter_rt;
             heavy.rt_apex = starter_rt;
             light.accepted = true;
             heavy.accepted = true;
             components.Add(light);
             components.Add(heavy);
+            light.calculate_properties();
+            heavy.calculate_properties();
             return components;
         }
 
@@ -81,30 +84,13 @@ namespace Test
             {
                 Component c = new Component();
                 c.id = i.ToString();
-                c.attemptToSetWeightedMonoisotopic_mass(starter_mass);
-                c.attemptToSetIntensity(starter_intensity);
+                c.weighted_monoisotopic_mass = starter_mass;
+                c.intensity_sum = starter_intensity;
                 c.rt_apex = starter_rt;
                 c.accepted = true;
                 components.Add(c);
             }
             return components;
-        }
-
-        [Test]
-        public void neucode_quantification()
-        {
-            Lollipop.neucode_labeled = true;
-            List<Component> quant_components_list = generate_neucode_quantitative_components();
-            List<Component> components = generate_neucode_components(starter_mass);
-            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, quant_components_list, true);
-            List<InputFile> inFileList = new List<InputFile>();
-            quant_components_list.ForEach(q => {
-                inFileList.Add(q.input_file);
-            });
-
-            weightedRatioIntensityVariance wRAWV  = e.weightedRatioAndWeightedVariance(inFileList.DistinctBy(x => x.UniqueId).ToList());
-            Assert.AreEqual(1, Math.Round(wRAWV.ratio)); //Ratio
-            Assert.AreEqual(150, wRAWV.intensity);
         }
 
         [Test]
@@ -142,7 +128,7 @@ namespace Test
         {
             //Make a monoisotopic error, and test that it removes it before aggregation
             List<Component> components = generate_neucode_components(starter_mass);
-            components[4].attemptToSetWeightedMonoisotopic_mass(starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS);
+            components[4].weighted_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             double expected_agg_intensity = components.Count * starter_intensity;
             double intensity_normalization_factor = components.Count * starter_intensity / expected_agg_intensity;
@@ -178,11 +164,6 @@ namespace Test
             Assert.AreEqual(1, e.aggregated_components.Count);
         }
 
-        [Test]
-        public void quantification()
-        {
-
-        }
 
         //Maximum number of missed
         int missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
@@ -197,11 +178,11 @@ namespace Test
 
             // in bounds lowest monoisotopic error
             components[1].charge_states.Clear(); // must clear charge states because you can't set the weighted monoisotopic mass if there are charge states.
-            components[1].attemptToSetWeightedMonoisotopic_mass(min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance));
+            components[1].weighted_monoisotopic_mass = min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance);
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
             // in bounds highest monoisotopic error
-            components[1].attemptToSetWeightedMonoisotopic_mass(max_monoisotopic_mass + max_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance));
+            components[1].weighted_monoisotopic_mass = max_monoisotopic_mass + max_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance);
             e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
         }
@@ -216,11 +197,11 @@ namespace Test
 
             // below lowest monoisotopic tolerance
             components[1].charge_states.Clear(); // must clear charge states because you can't set the weighted monoisotopic mass if there are charge states.
-            components[1].attemptToSetWeightedMonoisotopic_mass(min_monoisotopic_mass - 100);
+            components[1].weighted_monoisotopic_mass = min_monoisotopic_mass - 100;
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
             // above highest monoisotopic tolerance
-            components[1].attemptToSetWeightedMonoisotopic_mass(max_monoisotopic_mass + 100);
+            components[1].weighted_monoisotopic_mass = (max_monoisotopic_mass + 100);
             e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
         }
@@ -236,11 +217,11 @@ namespace Test
 
             // in bounds lowest monoisotopic error
             components[1].charge_states.Clear(); // must clear charge states because you can't set the weighted monoisotopic mass if there are charge states.
-            components[1].attemptToSetWeightedMonoisotopic_mass(min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance));
+            components[1].weighted_monoisotopic_mass = (min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance));
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
             // in bounds highest monoisotopic error
-            components[1].attemptToSetWeightedMonoisotopic_mass(max_monoisotopic_mass + max_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance));
+            components[1].weighted_monoisotopic_mass = (max_monoisotopic_mass + max_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance));
             e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(2, e.aggregated_components.Count);
         }
@@ -256,11 +237,11 @@ namespace Test
 
             // below lowest monoisotopic tolerance
             components[1].charge_states.Clear(); // must clear charge states because you can't set the weighted monoisotopic mass if there are charge states.
-            components[1].attemptToSetWeightedMonoisotopic_mass(min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance) - Double.MinValue);
+            components[1].weighted_monoisotopic_mass = (min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance) - Double.MinValue);
             ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
             // above highest monoisotopic tolerance
-            components[1].attemptToSetWeightedMonoisotopic_mass(max_monoisotopic_mass + max_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance) + Double.MinValue);
+            components[1].weighted_monoisotopic_mass = (max_monoisotopic_mass + max_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance) + Double.MinValue);
             e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
         }

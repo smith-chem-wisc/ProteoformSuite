@@ -17,14 +17,10 @@ namespace ProteoformSuiteInternal
                 _grouped_relations = value;
                 this.peak_relation_group_count = value.Count;
                 this.peak_deltaM_average = value.Select(r => r.delta_mass).Average();
-                if (grouped_relations[0].connected_proteoforms[1] is TheoreticalProteoform)
-                {
-                    this.peak_accepted = this.peak_relation_group_count >= Lollipop.min_peak_count_et;
-                }
-                else
-                {
-                    this.peak_accepted = this.peak_relation_group_count >= Lollipop.min_peak_count_ee;
-                }
+                if (grouped_relations[0].connected_proteoforms[1] is TheoreticalProteoform)               
+                    this.peak_accepted = this.peak_relation_group_count >= Lollipop.min_peak_count_et;               
+                else               
+                    this.peak_accepted = this.peak_relation_group_count >= Lollipop.min_peak_count_ee;               
             }
         }
         public double peak_deltaM_average { get; set; }
@@ -72,11 +68,15 @@ namespace ProteoformSuiteInternal
             for (int i = 0; i < Lollipop.relation_group_centering_iterations; i++)
             {
                 double center_deltaM;
-                if (i > 0) center_deltaM = peak_deltaM_average;
-                else center_deltaM = this.delta_mass;
                 double peak_width_base;
                 if (ungrouped_relations[0].connected_proteoforms[1] is TheoreticalProteoform) peak_width_base = Lollipop.peak_width_base_et;
                 else peak_width_base = Lollipop.peak_width_base_ee;
+                if (i > 0)
+                
+                    center_deltaM = peak_deltaM_average;
+
+                else center_deltaM = this.delta_mass;
+                                
                 double lower_limit_of_peak_width = center_deltaM - peak_width_base / 2;
                 double upper_limit_of_peak_width = center_deltaM + peak_width_base / 2;
                 this.grouped_relations = ungrouped_relations.

@@ -486,5 +486,16 @@ namespace ProteoformSuite
             else if (dr == DialogResult.Cancel) return;
             else return;
         }
+
+        // FILTERS
+        private void tb_identificationFilter_TextChanged_1(object sender, EventArgs e)
+        {
+            DisplayUtility.FillDataGridView(dgv_identificationFiles, ExtensionMethods.filter(Lollipop.identification_files(), tb_identificationFilter.Text));
+        }
+
+        private void tb_quantFilter_TextChanged(object sender, EventArgs e)
+        {
+            DisplayUtility.FillDataGridView(dgv_quantitationFiles, ExtensionMethods.filter(Lollipop.identification_files(), tb_identificationFilter.Text));
+        }
     }
 }
