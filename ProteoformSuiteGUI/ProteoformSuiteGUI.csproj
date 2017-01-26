@@ -232,6 +232,7 @@
     <EmbeddedResource Include="TopDown.resx">
       <DependentUpon>TopDown.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

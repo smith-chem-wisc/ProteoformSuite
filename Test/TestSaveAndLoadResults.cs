@@ -16,7 +16,7 @@ namespace Test
         public void resultsIn_match_resultsOut_component_neucodepair_aggregatedproteoform()
         {
             // Create a couple raw components, make strings, read those strings, and make sure the components match
-
+            Lollipop.input_files.Clear();
             InputFile f1 = new InputFile(1, "UnitTestFiles\\file1.ext", Labeling.NeuCode, Purpose.Identification);
             InputFile f2 = new InputFile(2, "UnitTestFiles\\file2.ext", Labeling.NeuCode, Purpose.Identification);
             Lollipop.input_files.Add(f1);
@@ -28,12 +28,12 @@ namespace Test
             c2.id = 2.ToString();
             c1.reported_monoisotopic_mass = 1.0;
             c2.reported_monoisotopic_mass = 2.0;
-            c1.attemptToSetWeightedMonoisotopic_mass(1.1);
-            c2.attemptToSetWeightedMonoisotopic_mass(2.1);
-            c1.attemptToSetIntensity(100.0);
-            c2.attemptToSetIntensity(200.0);
-            c1.attemptToSetNumChargeStates(5);
-            c2.attemptToSetNumChargeStates(6);
+            c1.weighted_monoisotopic_mass = (1.1);
+            c2.weighted_monoisotopic_mass = (2.1);
+            c1.intensity_sum = 100.0;
+            c2.intensity_sum = 200.0;
+            c1.num_charge_states = 5;
+            c2.num_charge_states = 6;
             c1.delta_mass = 10.0;
             c2.delta_mass = 20.0;
             c1.relative_abundance = 0.5;

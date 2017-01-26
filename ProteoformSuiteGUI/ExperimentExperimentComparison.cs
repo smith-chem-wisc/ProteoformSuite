@@ -212,9 +212,9 @@ namespace ProteoformSuite
         }
         private void cb_Graph_lowerThreshold_CheckedChanged(object sender, EventArgs e)
         {
-                if (cb_Graph_lowerThreshold.Checked)
-                    ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
-                else if (!cb_Graph_lowerThreshold.Checked) ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+            if (cb_Graph_lowerThreshold.Checked)
+                ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
+            else if (!cb_Graph_lowerThreshold.Checked) ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
         }
 
         Point? ct_EE_Histogram_prevPosition = null;
@@ -258,9 +258,10 @@ namespace ProteoformSuite
                 dgv_EE_Peaks.Refresh();
                 dgv_EE_Relations.Refresh();
             }
-                ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
-                StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count_ee };
-                ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+            ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+            StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count_ee };
+            ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+            this.updateFiguresOfMerit();
         }
 
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
