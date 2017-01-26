@@ -16,8 +16,10 @@ namespace ProteoformSuiteInternal
         private static List<NeuCodePair> neucodePairs_in_file = new List<NeuCodePair>();
         private List<int> MS1_scans = new List<int>();
 
+
         public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction>correctionFactors, List<int> MS1_scans)
         {
+            Func<double[], double> bestCf = Lollipop.td_calibration_functions[file.filename];
             this.MS1_scans.Clear();
             this.MS1_scans = MS1_scans;
             this.raw_components_in_file.Clear();
@@ -35,6 +37,7 @@ namespace ProteoformSuiteInternal
                     Component new_component = new Component();
                     int charge_row_index = 0;
                     string scan_range = "";
+                    string rt_range = "";
                     for (int i = 0; i < rowcollection.Count(); i++)
                     {
                         if (i == 0) continue; //skip component header
@@ -54,6 +57,7 @@ namespace ProteoformSuiteInternal
                             new_component = new Component(cellStrings, file); // starting fresh here with a newly created componet.
                             charge_row_index = 0;
                             scan_range = cellStrings[8];
+                            rt_range = cellStrings[9];
                         }
                         else if (cellStrings.Count == 4) //charge-state row
                         {
@@ -62,7 +66,13 @@ namespace ProteoformSuiteInternal
                                 charge_row_index += 1;
                                 continue; //skip charge state headers
                             }
-                            else new_component.add_charge_state(cellStrings, GetCorrectionFactor(file.filename, scan_range, correctionFactors));
+                            else
+                            {
+                                double correction = 0;
+                                if (Lollipop.calibrate_td_results) correction = -1 * bestCf(new double[] { Convert.ToDouble(cellStrings[2]), Convert.ToDouble(rt_range.Split('-')[0]) });
+                                else correction = GetCorrectionFactor(file.filename, scan_range, correctionFactors);
+                                new_component.add_charge_state(cellStrings, correction);
+                            }
                         }
                     }
                     add_component(new_component); //add the final component
@@ -79,6 +89,7 @@ namespace ProteoformSuiteInternal
         {
             if (!Lollipop.td_results || acceptable_td_component(c))
             {
+                TdMzCal.get_signal_to_noise(c);
                 c.calculate_properties();
                 this.raw_components_in_file.Add(c);
             }

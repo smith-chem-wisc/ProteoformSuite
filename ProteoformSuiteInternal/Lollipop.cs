@@ -123,47 +123,34 @@ namespace ProteoformSuiteInternal
             if (input_files.Any(f => f.purpose == Purpose.Calibration))
                 correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
             object sync = new object();
-           // Parallel.ForEach(input_files.Where(f => f.purpose == Purpose.Identification), file =>
-              foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.Identification).ToList())
-                {
+            // Parallel.ForEach(input_files.Where(f => f.purpose == Purpose.Identification), file =>
+            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.Identification).ToList())
+            {
                 ComponentReader componentReader = new ComponentReader();
-                    List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors, Lollipop.Ms_scans.Where(s => s.filename == file.filename && s.ms_order == 1).ToList().Select(s => s.scan_number).ToList());
-                    lock (raw_experimental_components)
+                if (!Lollipop.calibrate_td_results || td_calibration_functions.ContainsKey(file.filename))
                 {
-                    if (Lollipop.calibrate_td_results && td_calibration_functions.ContainsKey(file.filename))
-                    {
-                        Func<double[], double> bestCf = td_calibration_functions[file.filename];
-                        foreach (Component comp in someComponents)
-                        {
-                            double rt = Convert.ToDouble(comp.rt_range.Split('-')[0]);
-                            TdMzCal.get_signal_to_noise(comp);
-                            foreach (ChargeState cs in comp.charge_states)
-                            {
-                                double correction = -1 * bestCf(new double[] { cs.mz_centroid, rt });
-                                cs.mz_centroid = cs.correct_calculated_mz(cs.mz_centroid, correction);
-                                cs.calculated_mass = cs.correct_calculated_mass(cs.mz_centroid);
-                            }
-                        }
-                    }
+                    List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors, Lollipop.Ms_scans.Where(s => s.filename == file.filename && s.ms_order == 1).ToList().Select(s => s.scan_number).ToList());
                     //don't add components if calibrating td results and no calibration function for that file 
                     if (!Lollipop.calibrate_td_results || (Lollipop.calibrate_td_results && td_calibration_functions.ContainsKey(file.filename)))
                         lock (sync)
                         {
                             raw_experimental_components.AddRange(someComponents);
                         }
-                    //);
-                    // }
-                    if (neucode_labeled)
-                    {
-                        process_neucode_components();
-                    }
                 }
+                //);
+                // }
+                if (neucode_labeled)
+                {
+                    process_neucode_components();
+                }
+
             }
             if (neucode_labeled)
                 process_neucode_components();
         }
 
-            private static void process_neucode_components()
+
+        private static void process_neucode_components()
         {
             object sync = new object();
             HashSet<string> input_files = new HashSet<string>(raw_experimental_components.Select(c => c.input_file.UniqueId.ToString()));
