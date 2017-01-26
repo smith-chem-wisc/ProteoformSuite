@@ -754,7 +754,6 @@ namespace ProteoformSuiteInternal
             }
           //  using (var writer = new StreamWriter("C:\\Users\\LeahSchaffer\\Desktop\\hit_scan_attributes.tsv"))
             {
-              //  writer.WriteLine("filename\thits\tabs_mass_hits\ttraining_points\treported_mass\ttheoretical_mass\tcorrected_mass\tretention_time\tmz_centroid\tinjection_time\tTIC\tintensity\tmass_error");
                 //get MS1 scan numbers and corrections (if calibrate td results)
                 foreach (string filename in top_down_hits.Select(h => h.filename).Distinct())
                 {
@@ -775,7 +774,6 @@ namespace ProteoformSuiteInternal
                                 if (hit.result_set == Result_Set.tight_absolute_mass && hits_used.Contains(hit))
                                 {
                                     MsScan ms1_scan = Lollipop.Ms_scans.Where(s => s.ms_order == 1 && s.scan_number < hit.scan).ToList().OrderBy(m => hit.scan - m.scan_number).ToList().First();
-                                    //writer.WriteLine(hit.filename +  "\t" + hits+ "\t" + tight_mass_hits + "\t" + training_points +  "\t" + hit.reported_mass + "\t" + hit.theoretical_mass + "\t" + hit.corrected_mass + "\t" +  hit.retention_time + "\t" + hit.mz + "\t" + ms1_scan.injection_time + "\t" + ms1_scan.TIC + "\t" + hit.intensity);
                                 }
                             }
                         }
