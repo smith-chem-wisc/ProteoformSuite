@@ -59,10 +59,11 @@
             this.bt_clearResults = new System.Windows.Forms.Button();
             this.cb_run_when_load = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.tb_identificationFilter = new System.Windows.Forms.TextBox();
-            this.tb_quantFilter = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tb_quantFilter = new System.Windows.Forms.TextBox();
+            this.tb_identificationFilter = new System.Windows.Forms.TextBox();
+            this.cb_advanced_user = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_identificationFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantitationFiles)).BeginInit();
@@ -94,6 +95,7 @@
             this.cb_td_file.TabIndex = 2;
             this.cb_td_file.Text = "Top-down Deconvolution File";
             this.cb_td_file.UseVisualStyleBackColor = true;
+            this.cb_td_file.Visible = false;
             this.cb_td_file.CheckedChanged += new System.EventHandler(this.cb_td_file_CheckedChanged);
             // 
             // btn_unlabeled
@@ -197,6 +199,7 @@
             this.btn_protCalibResultsAdd.TabIndex = 12;
             this.btn_protCalibResultsAdd.Text = "Add";
             this.btn_protCalibResultsAdd.UseVisualStyleBackColor = true;
+            this.btn_protCalibResultsAdd.Visible = false;
             this.btn_protCalibResultsAdd.Click += new System.EventHandler(this.btn_protCalibResultsAdd_Click);
             // 
             // btn_protCalibResultsClear
@@ -207,6 +210,7 @@
             this.btn_protCalibResultsClear.TabIndex = 11;
             this.btn_protCalibResultsClear.Text = "Clear";
             this.btn_protCalibResultsClear.UseVisualStyleBackColor = true;
+            this.btn_protCalibResultsClear.Visible = false;
             this.btn_protCalibResultsClear.Click += new System.EventHandler(this.btn_protCalibResultsClear_Click);
             // 
             // dgv_identificationFiles
@@ -245,6 +249,7 @@
             this.dgv_calibrationFiles.Name = "dgv_calibrationFiles";
             this.dgv_calibrationFiles.Size = new System.Drawing.Size(287, 463);
             this.dgv_calibrationFiles.TabIndex = 15;
+            this.dgv_calibrationFiles.Visible = false;
             this.dgv_calibrationFiles.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_calibrationResults_CellFormatting);
             this.dgv_calibrationFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_calibrationResults_DragDrop);
             this.dgv_calibrationFiles.DragEnter += new System.Windows.Forms.DragEventHandler(this.dgv_calibrationResults_DragEnter);
@@ -299,6 +304,7 @@
             this.dgv_buFiles.Name = "dgv_buFiles";
             this.dgv_buFiles.Size = new System.Drawing.Size(287, 463);
             this.dgv_buFiles.TabIndex = 18;
+            this.dgv_buFiles.Visible = false;
             // 
             // dgv_tdFiles
             // 
@@ -309,6 +315,7 @@
             this.dgv_tdFiles.Name = "dgv_tdFiles";
             this.dgv_tdFiles.Size = new System.Drawing.Size(275, 463);
             this.dgv_tdFiles.TabIndex = 19;
+            this.dgv_tdFiles.Visible = false;
             // 
             // label4
             // 
@@ -338,6 +345,7 @@
             this.bt_morpheusBUResultsAdd.TabIndex = 23;
             this.bt_morpheusBUResultsAdd.Text = "Add";
             this.bt_morpheusBUResultsAdd.UseVisualStyleBackColor = true;
+            this.bt_morpheusBUResultsAdd.Visible = false;
             this.bt_morpheusBUResultsAdd.Click += new System.EventHandler(this.bt_morpheusBUResultsAdd_Click);
             // 
             // bt_morpheusBUResultsClear
@@ -348,6 +356,7 @@
             this.bt_morpheusBUResultsClear.TabIndex = 22;
             this.bt_morpheusBUResultsClear.Text = "Clear";
             this.bt_morpheusBUResultsClear.UseVisualStyleBackColor = true;
+            this.bt_morpheusBUResultsClear.Visible = false;
             this.bt_morpheusBUResultsClear.Click += new System.EventHandler(this.bt_morpheusBUResultsClear_Click);
             // 
             // bt_tdResultsAdd
@@ -358,6 +367,7 @@
             this.bt_tdResultsAdd.TabIndex = 25;
             this.bt_tdResultsAdd.Text = "Add";
             this.bt_tdResultsAdd.UseVisualStyleBackColor = true;
+            this.bt_tdResultsAdd.Visible = false;
             this.bt_tdResultsAdd.Click += new System.EventHandler(this.bt_tdResultsAdd_Click);
             // 
             // bt_tdResultsClear
@@ -368,6 +378,7 @@
             this.bt_tdResultsClear.TabIndex = 24;
             this.bt_tdResultsClear.Text = "Clear";
             this.bt_tdResultsClear.UseVisualStyleBackColor = true;
+            this.bt_tdResultsClear.Visible = false;
             this.bt_tdResultsClear.Click += new System.EventHandler(this.bt_tdResultsClear_Click);
             // 
             // bt_clearResults
@@ -406,21 +417,14 @@
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Text Filters";
             // 
-            // tb_identificationFilter
+            // label7
             // 
-            this.tb_identificationFilter.Location = new System.Drawing.Point(8, 19);
-            this.tb_identificationFilter.Name = "tb_identificationFilter";
-            this.tb_identificationFilter.Size = new System.Drawing.Size(100, 20);
-            this.tb_identificationFilter.TabIndex = 29;
-            this.tb_identificationFilter.TextChanged += new System.EventHandler(this.tb_identificationFilter_TextChanged_1);
-            // 
-            // tb_quantFilter
-            // 
-            this.tb_quantFilter.Location = new System.Drawing.Point(8, 46);
-            this.tb_quantFilter.Name = "tb_quantFilter";
-            this.tb_quantFilter.Size = new System.Drawing.Size(100, 20);
-            this.tb_quantFilter.TabIndex = 30;
-            this.tb_quantFilter.TextChanged += new System.EventHandler(this.tb_quantFilter_TextChanged);
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(114, 49);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(110, 13);
+            this.label7.TabIndex = 32;
+            this.label7.Text = "Quantification Results";
             // 
             // label6
             // 
@@ -431,18 +435,37 @@
             this.label6.TabIndex = 31;
             this.label6.Text = "Identification Results";
             // 
-            // label7
+            // tb_quantFilter
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(114, 49);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(110, 13);
-            this.label7.TabIndex = 32;
-            this.label7.Text = "Quantification Results";
+            this.tb_quantFilter.Location = new System.Drawing.Point(8, 46);
+            this.tb_quantFilter.Name = "tb_quantFilter";
+            this.tb_quantFilter.Size = new System.Drawing.Size(100, 20);
+            this.tb_quantFilter.TabIndex = 30;
+            this.tb_quantFilter.TextChanged += new System.EventHandler(this.tb_quantFilter_TextChanged);
+            // 
+            // tb_identificationFilter
+            // 
+            this.tb_identificationFilter.Location = new System.Drawing.Point(8, 19);
+            this.tb_identificationFilter.Name = "tb_identificationFilter";
+            this.tb_identificationFilter.Size = new System.Drawing.Size(100, 20);
+            this.tb_identificationFilter.TabIndex = 29;
+            this.tb_identificationFilter.TextChanged += new System.EventHandler(this.tb_identificationFilter_TextChanged_1);
+            // 
+            // cb_advanced_user
+            // 
+            this.cb_advanced_user.AutoSize = true;
+            this.cb_advanced_user.Location = new System.Drawing.Point(179, 587);
+            this.cb_advanced_user.Name = "cb_advanced_user";
+            this.cb_advanced_user.Size = new System.Drawing.Size(100, 17);
+            this.cb_advanced_user.TabIndex = 30;
+            this.cb_advanced_user.Text = "Advanced User";
+            this.cb_advanced_user.UseVisualStyleBackColor = true;
+            this.cb_advanced_user.CheckedChanged += new System.EventHandler(this.cb_advanced_user_CheckedChanged);
             // 
             // LoadDeconvolutionResults
             // 
             this.ClientSize = new System.Drawing.Size(1362, 736);
+            this.Controls.Add(this.cb_advanced_user);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.cb_run_when_load);
             this.Controls.Add(this.bt_clearResults);
@@ -522,5 +545,6 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox tb_quantFilter;
         private System.Windows.Forms.TextBox tb_identificationFilter;
+        private System.Windows.Forms.CheckBox cb_advanced_user;
     }
 }
