@@ -129,7 +129,9 @@ namespace ProteoformSuiteInternal
                 ComponentReader componentReader = new ComponentReader();
                 if (!Lollipop.calibrate_td_results || td_calibration_functions.ContainsKey(file.filename))
                 {
-                    List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors, Lollipop.Ms_scans.Where(s => s.filename == file.filename && s.ms_order == 1).ToList().Select(s => s.scan_number).ToList());
+                    List < int > ms_scans = new List<int>();
+                    if (td_results) Lollipop.Ms_scans.Where(s => s.filename == file.filename && s.ms_order == 1).ToList().Select(s => s.scan_number).ToList();
+                    List<Component> someComponents = componentReader.read_components_from_xlsx(file, correctionFactors, ms_scans);
                     //don't add components if calibrating td results and no calibration function for that file 
                     if (!Lollipop.calibrate_td_results || (Lollipop.calibrate_td_results && td_calibration_functions.ContainsKey(file.filename)))
                         lock (sync)
