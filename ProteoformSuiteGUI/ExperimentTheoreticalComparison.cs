@@ -93,6 +93,7 @@ namespace ProteoformSuite
             List<DeltaMassPeak> big_peaks = Lollipop.et_peaks.Where(p => p.peak_accepted).ToList();
             tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.grouped_relations.Count).Sum().ToString();
             tb_TotalPeaks.Text = big_peaks.Count.ToString();
+            tb_max_accepted_fdr.Text = Lollipop.et_peaks.Where(p => p.peak_accepted).Max(p => p.peak_group_fdr).ToString();
         }
 
         private void FillETRelationsGridView()
@@ -202,6 +203,7 @@ namespace ProteoformSuite
                 }
                 Lollipop.regroup_components();
             }
+            tb_max_accepted_fdr.Text = Lollipop.et_peaks.Where(p => p.peak_accepted).Max(p => p.peak_group_fdr).ToString();
         }
 
         //will leave option to change one at a time by right clicking

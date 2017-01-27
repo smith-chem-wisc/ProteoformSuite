@@ -410,6 +410,20 @@ namespace ProteoformSuite
         }
 
 
+        private void cb_advanced_user_CheckedChanged(object sender, EventArgs e)
+        {
+            cb_td_file.Visible = true;
+            dgv_calibrationFiles.Visible = true;
+            btn_protCalibResultsAdd.Visible = true;
+            btn_protCalibResultsClear.Visible = true;
+            dgv_tdFiles.Visible = true;
+            bt_tdResultsAdd.Visible = true;
+            bt_tdResultsClear.Visible = true;
+            dgv_buFiles.Visible = true;
+            bt_morpheusBUResultsAdd.Visible = true;
+            bt_morpheusBUResultsClear.Visible = true;
+        }
+
         // FILTERS
         private void tb_identificationFilter_TextChanged_1(object sender, EventArgs e)
         {
@@ -420,5 +434,6 @@ namespace ProteoformSuite
         {
             DisplayUtility.FillDataGridView(dgv_quantitationFiles, ExtensionMethods.filter(Lollipop.identification_files(), tb_identificationFilter.Text));
         }
+
     }
 }
