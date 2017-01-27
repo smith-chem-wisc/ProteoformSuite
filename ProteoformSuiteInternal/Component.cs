@@ -274,7 +274,7 @@ namespace ProteoformSuiteInternal
             this.charge_count = charge_count;
             this.intensity = intensity;
             this.mz_centroid = correct_calculated_mz(mz_centroid, mz_correction);
-            this.calculated_mass = correct_calculated_mass(mz_centroid);
+            this.calculated_mass = correct_calculated_mass();
         }
 
         public double correct_calculated_mz(double mz, double mz_correction) // the correction is a linear shift to m/z
@@ -282,10 +282,16 @@ namespace ProteoformSuiteInternal
             return (mz + mz_correction);//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
         }
 
+        public double correct_calculated_mass() // the correction is a linear shift to m/z
+        {
+            return (this.charge_count * this.mz_centroid - this.charge_count * 1.00727645D);//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
+        }
+
         public double correct_calculated_mass(double mz) // the correction is a linear shift to m/z
         {
             return (this.charge_count * mz - this.charge_count * 1.00727645D);//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
         }
+
 
         public ChargeState mergeTheseChargeStates(ChargeState csToMerge)
         {

@@ -20,7 +20,9 @@ namespace ProteoformSuiteInternal
 
         public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction>correctionFactors, List<int> MS1_scans)
         {
-            Func<double[], double> bestCf = Lollipop.td_calibration_functions[file.filename];
+
+            Func<double[], double> bestCf = null;
+            if (Lollipop.calibrate_td_results) bestCf = Lollipop.td_calibration_functions[file.filename];
             this.MS1_scans.Clear();
             this.MS1_scans = MS1_scans;
             this.raw_components_in_file.Clear();
@@ -209,9 +211,12 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            foreach(Component c in raw_components.Except(removeThese))
+            if (Lollipop.td_results)
             {
-                TdMzCal.get_signal_to_noise(c);
+                foreach (Component c in raw_components.Except(removeThese))
+                {
+                    TdMzCal.get_signal_to_noise(c);
+                }
             }
             return raw_components.Except(removeThese).ToList();
         }

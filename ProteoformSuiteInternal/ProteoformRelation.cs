@@ -158,7 +158,7 @@ namespace ProteoformSuiteInternal
         }
         public double agg_RT_2
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt; } catch { return Double.NaN; } }
+            get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt; } catch { return 0; } }
 
         }
         public int num_observations_2
