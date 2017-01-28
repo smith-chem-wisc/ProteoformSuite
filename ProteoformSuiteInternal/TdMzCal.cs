@@ -32,14 +32,10 @@ namespace ProteoformSuiteInternal
                 double average_averagine = 111.1234625;
                 double average_mass = cs.mz_centroid.ToMass(cs.charge_count) / monoisotopic_averagine * average_averagine;
                 int units_over = Convert.ToInt16(average_mass - cs.mz_centroid.ToMass(cs.charge_count));
-                double mz_average = cs.mz_centroid + units_over * Lollipop.MONOISOTOPIC_UNIT_MASS / cs.charge_count;
+                double mz_average = cs.mz_centroid + (units_over * Lollipop.MONOISOTOPIC_UNIT_MASS / cs.charge_count);
                 int index_peak = scan.peak_x.Select((x, i) => new { Index = i, Distance = Math.Abs(mz_average - x) }).OrderBy(x => x.Distance).First().Index;
-                cs.signal_to_avg_noise = cs.intensity / scan.noises.Average();
                 cs.signal_to_noise = scan.peak_y[index_peak] / scan.noises[index_peak]; 
             }
-            comp.weighted_signal_to_noise = comp.charge_states.Select(charge_state => charge_state.intensity / comp.intensity_sum * charge_state.signal_to_noise).Sum();
-            comp.weighted_signal_to_average_noise = comp.charge_states.Select(charge_state => charge_state.intensity / comp.intensity_sum * charge_state.signal_to_avg_noise).Sum();
-            comp.max_signal_to_average_noise = comp.charge_states.Max(cs => cs.signal_to_avg_noise);
             comp.max_signal_to_noise = comp.charge_states.Max(cs => cs.signal_to_noise);
         }
 

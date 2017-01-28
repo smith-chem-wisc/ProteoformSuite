@@ -28,13 +28,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series13 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea8 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend4 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series14 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series15 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series16 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.dgv_EE_Peaks = new System.Windows.Forms.DataGridView();
@@ -65,7 +65,6 @@
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
-            this.bt_neucode_EE_pairs = new System.Windows.Forms.Button();
             this.bt_compare_EE = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -74,9 +73,6 @@
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.cb_limit_to_NC_EE_pairs = new System.Windows.Forms.CheckBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.nud_NC_EE_masstol = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
@@ -118,7 +114,6 @@
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_NC_EE_masstol)).BeginInit();
             this.SuspendLayout();
             // 
             // button1
@@ -142,7 +137,7 @@
             this.dgv_EE_Peaks.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_EE_Peaks.Location = new System.Drawing.Point(0, 0);
             this.dgv_EE_Peaks.Name = "dgv_EE_Peaks";
-            this.dgv_EE_Peaks.Size = new System.Drawing.Size(208, 281);
+            this.dgv_EE_Peaks.Size = new System.Drawing.Size(208, 222);
             this.dgv_EE_Peaks.TabIndex = 1;
             // 
             // nUD_EE_Upper_Bound
@@ -356,17 +351,17 @@
             // 
             // ct_EE_Histogram
             // 
-            chartArea7.Name = "ChartArea1";
-            this.ct_EE_Histogram.ChartAreas.Add(chartArea7);
+            chartArea1.Name = "ChartArea1";
+            this.ct_EE_Histogram.ChartAreas.Add(chartArea1);
             this.ct_EE_Histogram.Cursor = System.Windows.Forms.Cursors.Default;
             this.ct_EE_Histogram.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_EE_Histogram.Location = new System.Drawing.Point(0, 0);
             this.ct_EE_Histogram.Name = "ct_EE_Histogram";
-            series13.ChartArea = "ChartArea1";
-            series13.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series13.Legend = "Legend1";
-            series13.Name = "relations";
-            this.ct_EE_Histogram.Series.Add(series13);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series1.Legend = "Legend1";
+            series1.Name = "relations";
+            this.ct_EE_Histogram.Series.Add(series1);
             this.ct_EE_Histogram.Size = new System.Drawing.Size(466, 243);
             this.ct_EE_Histogram.TabIndex = 16;
             this.ct_EE_Histogram.TabStop = false;
@@ -384,33 +379,33 @@
             // 
             // ct_EE_peakList
             // 
-            chartArea8.Name = "ChartArea1";
-            this.ct_EE_peakList.ChartAreas.Add(chartArea8);
+            chartArea2.Name = "ChartArea1";
+            this.ct_EE_peakList.ChartAreas.Add(chartArea2);
             this.ct_EE_peakList.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ct_EE_peakList.Enabled = false;
-            legend4.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
-            legend4.Name = "Legend1";
-            this.ct_EE_peakList.Legends.Add(legend4);
+            legend1.Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Top;
+            legend1.Name = "Legend1";
+            this.ct_EE_peakList.Legends.Add(legend1);
             this.ct_EE_peakList.Location = new System.Drawing.Point(0, 0);
             this.ct_EE_peakList.Name = "ct_EE_peakList";
-            series14.ChartArea = "ChartArea1";
-            series14.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series14.Legend = "Legend1";
-            series14.MarkerSize = 10;
-            series14.Name = "Peak Count";
-            series15.ChartArea = "ChartArea1";
-            series15.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series15.Legend = "Legend1";
-            series15.Name = "Nearby Relations";
-            series16.ChartArea = "ChartArea1";
-            series16.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series16.Legend = "Legend1";
-            series16.MarkerSize = 10;
-            series16.Name = "Decoy Count";
-            this.ct_EE_peakList.Series.Add(series14);
-            this.ct_EE_peakList.Series.Add(series15);
-            this.ct_EE_peakList.Series.Add(series16);
-            this.ct_EE_peakList.Size = new System.Drawing.Size(235, 281);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series2.Legend = "Legend1";
+            series2.MarkerSize = 10;
+            series2.Name = "Peak Count";
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Legend = "Legend1";
+            series3.Name = "Nearby Relations";
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series4.Legend = "Legend1";
+            series4.MarkerSize = 10;
+            series4.Name = "Decoy Count";
+            this.ct_EE_peakList.Series.Add(series2);
+            this.ct_EE_peakList.Series.Add(series3);
+            this.ct_EE_peakList.Series.Add(series4);
+            this.ct_EE_peakList.Size = new System.Drawing.Size(235, 222);
             this.ct_EE_peakList.TabIndex = 2;
             this.ct_EE_peakList.TabStop = false;
             this.ct_EE_peakList.Text = "eePeakList";
@@ -468,10 +463,6 @@
             // 
             // splitContainer5.Panel2
             // 
-            this.splitContainer5.Panel2.Controls.Add(this.label9);
-            this.splitContainer5.Panel2.Controls.Add(this.nud_NC_EE_masstol);
-            this.splitContainer5.Panel2.Controls.Add(this.cb_limit_to_NC_EE_pairs);
-            this.splitContainer5.Panel2.Controls.Add(this.bt_neucode_EE_pairs);
             this.splitContainer5.Panel2.Controls.Add(this.bt_compare_EE);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox4);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox3);
@@ -479,7 +470,7 @@
             this.splitContainer5.Panel2.Controls.Add(this.groupBox1);
             this.splitContainer5.Panel2MinSize = 100;
             this.splitContainer5.Size = new System.Drawing.Size(455, 623);
-            this.splitContainer5.SplitterDistance = 285;
+            this.splitContainer5.SplitterDistance = 226;
             this.splitContainer5.TabIndex = 2;
             // 
             // splitContainer4
@@ -497,25 +488,14 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.ct_EE_peakList);
-            this.splitContainer4.Size = new System.Drawing.Size(455, 285);
+            this.splitContainer4.Size = new System.Drawing.Size(455, 226);
             this.splitContainer4.SplitterDistance = 212;
             this.splitContainer4.TabIndex = 18;
-            // 
-            // bt_neucode_EE_pairs
-            // 
-            this.bt_neucode_EE_pairs.Dock = System.Windows.Forms.DockStyle.Top;
-            this.bt_neucode_EE_pairs.Location = new System.Drawing.Point(0, 0);
-            this.bt_neucode_EE_pairs.Name = "bt_neucode_EE_pairs";
-            this.bt_neucode_EE_pairs.Size = new System.Drawing.Size(451, 23);
-            this.bt_neucode_EE_pairs.TabIndex = 33;
-            this.bt_neucode_EE_pairs.Text = "Import EE Relations";
-            this.bt_neucode_EE_pairs.UseVisualStyleBackColor = true;
-            this.bt_neucode_EE_pairs.Click += new System.EventHandler(this.bt_neucode_EE_pairs_Click);
             // 
             // bt_compare_EE
             // 
             this.bt_compare_EE.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bt_compare_EE.Location = new System.Drawing.Point(0, 307);
+            this.bt_compare_EE.Location = new System.Drawing.Point(0, 366);
             this.bt_compare_EE.Name = "bt_compare_EE";
             this.bt_compare_EE.Size = new System.Drawing.Size(451, 23);
             this.bt_compare_EE.TabIndex = 31;
@@ -529,7 +509,7 @@
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox4.Controls.Add(this.nUD_EE_Upper_Bound);
             this.groupBox4.Controls.Add(this.label10);
-            this.groupBox4.Location = new System.Drawing.Point(218, 92);
+            this.groupBox4.Location = new System.Drawing.Point(218, 151);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(160, 83);
             this.groupBox4.TabIndex = 30;
@@ -543,7 +523,7 @@
             this.groupBox3.Controls.Add(this.xMinEE);
             this.groupBox3.Controls.Add(this.xMaxEE);
             this.groupBox3.Controls.Add(this.yMinEE);
-            this.groupBox3.Location = new System.Drawing.Point(198, 192);
+            this.groupBox3.Location = new System.Drawing.Point(198, 251);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(245, 106);
             this.groupBox3.TabIndex = 29;
@@ -557,7 +537,7 @@
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.nUD_NoManLower);
             this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Location = new System.Drawing.Point(12, 192);
+            this.groupBox2.Location = new System.Drawing.Point(12, 251);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(180, 106);
             this.groupBox2.TabIndex = 0;
@@ -574,7 +554,7 @@
             this.groupBox1.Controls.Add(this.cb_Graph_lowerThreshold);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.nUD_PeakWidthBase);
-            this.groupBox1.Location = new System.Drawing.Point(12, 15);
+            this.groupBox1.Location = new System.Drawing.Point(12, 74);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(200, 171);
             this.groupBox1.TabIndex = 28;
@@ -631,40 +611,6 @@
             this.splitContainer3.SplitterDistance = 409;
             this.splitContainer3.TabIndex = 17;
             // 
-            // cb_limit_to_NC_EE_pairs
-            // 
-            this.cb_limit_to_NC_EE_pairs.AutoSize = true;
-            this.cb_limit_to_NC_EE_pairs.Location = new System.Drawing.Point(260, 34);
-            this.cb_limit_to_NC_EE_pairs.Name = "cb_limit_to_NC_EE_pairs";
-            this.cb_limit_to_NC_EE_pairs.Size = new System.Drawing.Size(148, 17);
-            this.cb_limit_to_NC_EE_pairs.TabIndex = 34;
-            this.cb_limit_to_NC_EE_pairs.Text = "Limit to Neucode EE pairs";
-            this.cb_limit_to_NC_EE_pairs.UseVisualStyleBackColor = true;
-            this.cb_limit_to_NC_EE_pairs.Visible = false;
-            this.cb_limit_to_NC_EE_pairs.CheckedChanged += new System.EventHandler(this.cb_limit_to_NC_EE_pairs_CheckedChanged);
-            // 
-            // label9
-            // 
-            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(320, 55);
-            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(166, 13);
-            this.label9.TabIndex = 37;
-            this.label9.Text = "Mass Tolerance for Neucode Pair";
-            this.label9.Visible = false;
-            // 
-            // nud_NC_EE_masstol
-            // 
-            this.nud_NC_EE_masstol.DecimalPlaces = 2;
-            this.nud_NC_EE_masstol.Location = new System.Drawing.Point(254, 53);
-            this.nud_NC_EE_masstol.Name = "nud_NC_EE_masstol";
-            this.nud_NC_EE_masstol.Size = new System.Drawing.Size(61, 20);
-            this.nud_NC_EE_masstol.TabIndex = 38;
-            this.nud_NC_EE_masstol.Visible = false;
-            this.nud_NC_EE_masstol.ValueChanged += new System.EventHandler(this.nud_NC_EE_masstol_ValueChanged);
-            // 
             // ExperimentExperimentComparison
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -702,7 +648,6 @@
             this.splitContainer6.ResumeLayout(false);
             this.splitContainer5.Panel1.ResumeLayout(false);
             this.splitContainer5.Panel2.ResumeLayout(false);
-            this.splitContainer5.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).EndInit();
             this.splitContainer5.ResumeLayout(false);
             this.splitContainer4.Panel1.ResumeLayout(false);
@@ -721,7 +666,6 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.nud_NC_EE_masstol)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -766,10 +710,6 @@
         private System.Windows.Forms.Button bt_compare_EE;
         private System.Windows.Forms.NumericUpDown nUD_MaxRetTimeDifference;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button bt_neucode_EE_pairs;
-        private System.Windows.Forms.CheckBox cb_limit_to_NC_EE_pairs;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.NumericUpDown nud_NC_EE_masstol;
     }
 }
 

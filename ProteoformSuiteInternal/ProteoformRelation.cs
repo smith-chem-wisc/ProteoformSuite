@@ -191,7 +191,7 @@ namespace ProteoformSuiteInternal
         }
         public int psm_count_TD
         {
-            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).TD_proteoforms.Count; } catch { return 0; } }
+            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count; } catch { return 0; } }
         }
         public string of_interest
         {

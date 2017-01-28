@@ -495,7 +495,6 @@ namespace ProteoformSuiteInternal
         private int _psm_count_BU;
         public int psm_count_BU { set { _psm_count_BU = value; } get { if (!Lollipop.opened_results_originally) return psm_list.Count; else return _psm_count_BU; } }
         public string of_interest { get; set; } = "";
-        public List<TopDownProteoform> TD_proteoforms { get; set; } = new List<TopDownProteoform>();
 
         public TheoreticalProteoform(string accession, string description, Protein protein, bool is_metCleaved, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, string gene_id, bool is_target) : 
             base(accession, modified_mass, lysine_count, is_target)
@@ -510,7 +509,6 @@ namespace ProteoformSuiteInternal
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
             this.gene_id = gene_id;
-            if (Lollipop.td_results) match_theoreticals();
         }
 
         public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, string gene_id, bool is_target) :
@@ -525,13 +523,6 @@ namespace ProteoformSuiteInternal
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
             this.gene_id = gene_id;
-        }
-
-        private void match_theoreticals()
-        {
-            List<TopDownProteoform> topdowns = Lollipop.proteoform_community.topdown_proteoforms.Where(td => td.accession == this.accession_reduced).ToList();
-            Parallel.ForEach<TopDownProteoform>(topdowns, td => td.topdown_theoreticals.Add(this));
-            this.TD_proteoforms.AddRange(topdowns);
         }
 
         //for reading in neucode pairs
@@ -651,19 +642,18 @@ namespace ProteoformSuiteInternal
         public int start_index { get; set; }
         public int stop_index { get; set; }
         public List<Ptm> ptm_list { get; set; } = new List<Ptm>();
-        public double monoisotopic_mass { get; set; }
+        public double monoisotopic_mass { get; set; } //calibrated mass
         public double theoretical_mass { get; set; }
         public double agg_rt { get; set; }
         public string ptm_descriptions
         {
             get { return ptm_list_string(); }
         }
-        public double reported_mass { get; set; }
+        public double reported_mass { get; set; } //reported, uncalibrated
         private TopDownHit root;
-        public List<TheoreticalProteoform> topdown_theoreticals = new List<TheoreticalProteoform>();
         public List<TopDownHit> topdown_hits;
-        public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count; } }
-        public int ttd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count; } }
+        public TopDownProteoformGroup topdown_group { get; set; }
+
 
 
         public TopDownProteoform(string accession, TopDownHit root, List<TopDownHit> candidate_hits) : base(accession)
@@ -688,8 +678,7 @@ namespace ProteoformSuiteInternal
             this.monoisotopic_mass = topdown_hits.Select(h => (h.corrected_mass - Math.Round(h.corrected_mass - root.corrected_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.monoisotopic_mass;
             this.reported_mass = topdown_hits.Select(h => (h.reported_mass - Math.Round(h.reported_mass - root.reported_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
-            int count = Lollipop.proteoform_community.topdown_proteoforms.Where(p => p.uniprot_id == this.uniprot_id).ToList().Count + 1;
-            this.accession = accession + "_" + count + "_" + Math.Round(this.modified_mass, 2);
+            this.accession = accession + "_" + Math.Round(this.modified_mass, 2);
         }
 
         public bool includes(TopDownHit candidate)
@@ -726,6 +715,23 @@ namespace ProteoformSuiteInternal
             string _modifications_string = "";
             foreach (Ptm ptm in ((TopDownProteoform)this).ptm_list) _modifications_string += (ptm.modification.description + "@" + ptm.position + "; ");
             return _modifications_string;
+        }
+    }
+
+    public class TopDownProteoformGroup
+    {
+        public List<TopDownProteoform> topdown_proteoforms { get; set; } = new List<TopDownProteoform>();
+        public TopDownProteoform root { get; set; }
+        public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count; } }
+        public int ttd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count; } }
+        public List<ProteoformRelation> relationships { get; set; }  = new List<ProteoformRelation>();
+
+        public TopDownProteoformGroup(TopDownProteoform root, List<TopDownProteoform> candidate_proteoforms)
+        {
+            this.root = root;
+            this.topdown_proteoforms.Add(root);
+            this.topdown_proteoforms.AddRange(candidate_proteoforms);
+            foreach (TopDownProteoform p in topdown_proteoforms) p.topdown_group = this;
         }
     }
 }

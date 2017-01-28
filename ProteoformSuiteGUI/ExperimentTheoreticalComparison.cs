@@ -32,8 +32,6 @@ namespace ProteoformSuite
 
         public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
         {
-            if (Lollipop.neucode_labeled) bt_neucode_ET_pairs.Text = "Export Neucode ET Relations";
-            else bt_neucode_ET_pairs.Text = "Import Neucode ET Relations";
         }
 
         public void compare_et()
@@ -288,10 +286,6 @@ namespace ProteoformSuite
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
             nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(Lollipop.min_peak_count_et); // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
-
-            nud_NC_ET_masstol.Minimum = 0;
-            nud_NC_ET_masstol.Maximum = 5;
-            nud_NC_ET_masstol.Value = Convert.ToDecimal(Lollipop.NC_et_mass_tol);
         }
 
         private void nUD_ET_Lower_Bound_ValueChanged(object sender, EventArgs e) // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
@@ -406,51 +400,6 @@ namespace ProteoformSuite
                  }
             string results_rows = String.Join(Environment.NewLine, rows.Select(r => r.ToString()));
             return tsv_header + "\n" + results_rows;
-        }
-
-        private void bt_neucode_ET_pairs_Click(object sender, EventArgs e)
-        {
-            if (Lollipop.neucode_labeled)
-            {
-                SaveFileDialog saveDialog = new SaveFileDialog();
-                saveDialog.Filter = "Proteoforms Families (.tsv) | *.tsv";
-                DialogResult dr = saveDialog.ShowDialog();
-                if (dr == System.Windows.Forms.DialogResult.OK)
-                {
-                    File.WriteAllText(saveDialog.FileName, ET_relations_list());
-                    MessageBox.Show("Successfully exported neucode experiment-theoretical pairs.");
-                }
-                else { return; }
-            }
-
-            else
-            {
-                OpenFileDialog openDialog = new OpenFileDialog();
-                openDialog.Filter = "ET Relations (.tsv) | *.tsv";
-                DialogResult dr = openDialog.ShowDialog();
-                if (dr == System.Windows.Forms.DialogResult.OK)
-                {
-                    string[] et_relations = File.ReadAllLines(openDialog.FileName);
-                    Lollipop.read_neucode_et_relationships(et_relations);
-                    cb_limit_NC_ET_pairs.Visible = true;
-                    cb_limit_NC_ET_pairs.Checked = true;
-                    label9.Visible = true;
-                    nud_NC_ET_masstol.Visible = true;
-                    Lollipop.limit_NC_et_pairs = true;
-                    MessageBox.Show("Successfully imported neucode experiment-theoretical pairs.");
-                }
-                else { return; }
-            }
-        }
-
-        private void cb_limit_NC_ET_pairs_CheckedChanged(object sender, EventArgs e)
-        {
-            Lollipop.limit_NC_et_pairs = cb_limit_NC_ET_pairs.Checked;
-        }
-
-        private void nud_NC_ET_masstol_ValueChanged(object sender, EventArgs e)
-        {
-            Lollipop.NC_et_mass_tol = Convert.ToDouble(nud_NC_ET_masstol.Value);
         }
     }
 

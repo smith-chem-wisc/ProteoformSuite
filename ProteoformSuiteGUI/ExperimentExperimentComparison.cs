@@ -32,8 +32,6 @@ namespace ProteoformSuite
 
         public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
         {
-            if (Lollipop.neucode_labeled) bt_neucode_EE_pairs.Text = "Export Neucode EE Pairs";
-            else bt_neucode_EE_pairs.Text = "Import Neucode EE Pairs";
         }
 
         public void compare_ee()
@@ -171,11 +169,6 @@ namespace ProteoformSuite
             nUD_MaxRetTimeDifference.Minimum = 0;
             nUD_MaxRetTimeDifference.Maximum = 60;
             nUD_MaxRetTimeDifference.Value = Convert.ToDecimal(Lollipop.ee_max_RetentionTime_difference);
-
-            nud_NC_EE_masstol.Minimum = 0;
-            nud_NC_EE_masstol.Maximum = 5;
-            nud_NC_EE_masstol.Value = Convert.ToDecimal(Lollipop.NC_ee_mass_tol);
-
         }
 
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
@@ -291,48 +284,6 @@ namespace ProteoformSuite
             }
             string results_rows = String.Join(Environment.NewLine, rows.Select(r => r.ToString()));
             return tsv_header + "\n" + results_rows;
-        }
-
-        private void bt_neucode_EE_pairs_Click(object sender, EventArgs e)
-        {
-            if (Lollipop.neucode_labeled)
-            {
-                SaveFileDialog saveDialog = new SaveFileDialog();
-                saveDialog.Filter = "Proteoforms Families (.tsv) | *.tsv";
-                DialogResult dr = saveDialog.ShowDialog();
-                if (dr == System.Windows.Forms.DialogResult.OK)
-                {
-                    File.WriteAllText(saveDialog.FileName, ET_relations_list());
-                    MessageBox.Show("Successfully exported neucode experiment-experiment pairs.");
-                }
-            }
-            else
-            {
-                OpenFileDialog openDialog = new OpenFileDialog();
-                openDialog.Filter = "EE Relations (.tsv) | *.tsv";
-                DialogResult dr = openDialog.ShowDialog();
-                if (dr == System.Windows.Forms.DialogResult.OK)
-                {
-                    string[] ee_relations = File.ReadAllLines(openDialog.FileName);
-                    Lollipop.read_neucode_ee_relationships(ee_relations);
-                    cb_limit_to_NC_EE_pairs.Visible = true;
-                    cb_limit_to_NC_EE_pairs.Checked = true;
-                    nud_NC_EE_masstol.Visible = true;
-                    Lollipop.limit_NC_ee_pairs = true;
-                    label9.Visible = true; 
-                    MessageBox.Show("Successfully imported neucode experiment-experiment pairs.");
-                }
-            }
-        }
-
-        private void cb_limit_to_NC_EE_pairs_CheckedChanged(object sender, EventArgs e)
-        {
-            Lollipop.limit_NC_ee_pairs = cb_limit_to_NC_EE_pairs.Checked;
-        }
-
-        private void nud_NC_EE_masstol_ValueChanged(object sender, EventArgs e)
-        {
-            Lollipop.NC_ee_mass_tol = Convert.ToDouble(nud_NC_EE_masstol.Value);
-        }
-    }
+        }     
+   }
 }
