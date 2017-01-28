@@ -150,6 +150,7 @@
             this.label3.Size = new System.Drawing.Size(293, 20);
             this.label3.TabIndex = 6;
             this.label3.Text = "Deconvolution Calibration Files (.txt, .tsv)";
+            this.label3.Visible = false;
             // 
             // btn_protIdResultsClear
             // 
@@ -326,6 +327,7 @@
             this.label4.Size = new System.Drawing.Size(183, 20);
             this.label4.TabIndex = 20;
             this.label4.Text = "Top-Down Results (.xlsx)";
+            this.label4.Visible = false;
             // 
             // label5
             // 
@@ -336,6 +338,7 @@
             this.label5.Size = new System.Drawing.Size(258, 20);
             this.label5.TabIndex = 21;
             this.label5.Text = "Morpheus Bottom-Up Results (.tsv)";
+            this.label5.Visible = false;
             // 
             // bt_morpheusBUResultsAdd
             // 
@@ -441,6 +444,7 @@
             this.tb_quantFilter.Name = "tb_quantFilter";
             this.tb_quantFilter.Size = new System.Drawing.Size(100, 20);
             this.tb_quantFilter.TabIndex = 30;
+            this.tb_quantFilter.Visible = false;
             this.tb_quantFilter.TextChanged += new System.EventHandler(this.tb_quantFilter_TextChanged);
             // 
             // tb_identificationFilter
@@ -537,7 +541,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.DataGridView dgv_tdFiles;
         private System.Windows.Forms.DataGridView dgv_buFiles;
-        private System.Windows.Forms.CheckBox cb_td_file;
         private System.Windows.Forms.Button bt_clearResults;
         private System.Windows.Forms.CheckBox cb_run_when_load;
         private System.Windows.Forms.GroupBox groupBox3;
@@ -546,5 +549,6 @@
         private System.Windows.Forms.TextBox tb_quantFilter;
         private System.Windows.Forms.TextBox tb_identificationFilter;
         private System.Windows.Forms.CheckBox cb_advanced_user;
+        private System.Windows.Forms.CheckBox cb_td_file;
     }
 }
