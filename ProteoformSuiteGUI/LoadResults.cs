@@ -363,7 +363,7 @@ namespace ProteoformSuite
         {
             Lollipop.input_files = Lollipop.input_files.Except(Lollipop.topdown_files()).ToList();
             DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
-            Lollipop.proteoform_community.topdown_proteoforms.Clear();
+            Lollipop.proteoform_community.topdown_proteoform_groups.Clear();
             match_files();
         }
 

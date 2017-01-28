@@ -242,7 +242,7 @@ namespace ProteoformSuiteInternal
         private static string theoretical_proteoform_as_tsv_row(TheoreticalProteoform t, string database)
         {
             return String.Join("\t", new List<string> { t.accession.ToString(), t.modified_mass.ToString(), t.lysine_count.ToString(), t.is_target.ToString(), t.is_decoy.ToString(),
-                t.description.ToString(), t.name.ToString(), t.fragment.ToString(), t.begin.ToString(), t.end.ToString(), t.unmodified_mass.ToString(), t.ptm_descriptions.ToString(), t.ptm_mass.ToString(), database, t.psm_count_BU.ToString(), t.TD_proteoforms.Count.ToString() });
+                t.description.ToString(), t.name.ToString(), t.fragment.ToString(), t.begin.ToString(), t.end.ToString(), t.unmodified_mass.ToString(), t.ptm_descriptions.ToString(), t.ptm_mass.ToString(), database, t.psm_count_BU.ToString(), t.relationships.Where(r => r.relation_type == ProteoformComparison.ttd).Count().ToString() });
         }
 
         // PROTEOFORM RELATION I/O
