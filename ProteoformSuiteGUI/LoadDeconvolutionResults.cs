@@ -23,8 +23,6 @@ namespace ProteoformSuite
         public LoadDeconvolutionResults()
         {
             InitializeComponent();
-            this.dgv_tdFiles.CurrentCellDirtyStateChanged += new EventHandler(this.dgv_tdFiles_CurrentCellDirtyStateChanged); //makes the change immediate and automatic
-            this.dgv_tdFiles.CellValueChanged += new DataGridViewCellEventHandler(this.dgv_tdFiles_ComboBoxChanged);
         }
 
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
@@ -133,9 +131,9 @@ namespace ProteoformSuite
             // Look for results files with the same filename as a calibration file, and show that they're matched
             foreach (InputFile file in Lollipop.calibration_files())
             {
-                if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.TopDownIDResults).Select(f => f.filename).Contains(file.filename))
+                if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration).Select(f => f.filename).Contains(file.filename))
                 {
-                    IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.TopDownIDResults && f.filename == file.filename);
+                    IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.filename == file.filename);
                     InputFile matching_file = matching_files.First();
                     if (matching_files.Count() != 1) MessageBox.Show("Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + ".");
                     file.matchingCalibrationFile = true;
@@ -203,22 +201,6 @@ namespace ProteoformSuite
                 return propertyInfo.GetValue(property, null).ToString();
             }
         }
-
-        private void dgv_tdFiles_ComboBoxChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.ColumnIndex == 0 && e.RowIndex >= 0) //make sure it's combobox
-            {
-                TDProgram selectedValue = (TDProgram)dgv_tdFiles.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
-                InputFile selectedFile = (InputFile)this.dgv_tdFiles.Rows[e.RowIndex].DataBoundItem;
-                selectedFile.td_program = selectedValue;
-            }
-        }
-
-        private void dgv_tdFiles_CurrentCellDirtyStateChanged(object sender, EventArgs e)
-        {
-            if (dgv_tdFiles.IsCurrentCellDirty) dgv_tdFiles.CommitEdit(DataGridViewDataErrorContexts.Commit);
-        }
-
 
         // ADD BUTTONS
         private void btn_protIdResultsAdd_Click(object sender, EventArgs e)
@@ -289,7 +271,6 @@ namespace ProteoformSuite
             int i = Lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).ToList().Count;
             if (i == 1) DisplayUtility.EditInputFileDGVs(dgv_tdFiles, Purpose.TopDown);  //adds drop-down column for dataresults first time td file added
             DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
-            for (int j = 0; j < i; j++ ) {InputFile input = (InputFile)dgv_tdFiles.Rows[j].DataBoundItem; dgv_tdFiles.Rows[j].Cells[0].Value = input.td_program; }
         }
 
         // CLEAR BUTTONS
@@ -365,38 +346,6 @@ namespace ProteoformSuite
         private void cb_td_file_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.td_results = cb_td_file.Checked;
-            if (Lollipop.td_results)
-            {
-                MessageBox.Show("Please select the a list of scan #'s corresponding to MS1 scans.");
-                OpenFileDialog openFileDialog1 = new OpenFileDialog();
-                openFileDialog1.Title = "MS1 Scans";
-                openFileDialog1.Filter = "MS1 Scans (.txt) | *.txt";
-                openFileDialog1.Multiselect = true; //TODO: ADD THERMO RAW FILE READER OPTION TO FIND MS-1 SCAN #'S IN SUITE?
-                DialogResult dr = openFileDialog1.ShowDialog();
-                if (dr == DialogResult.OK)
-                    enter_input_files(openFileDialog1.FileNames, new List<string> { ".txt" }, Purpose.TopDownIDResults);
-                else { cb_td_file.Checked = false; Lollipop.td_results = false; return; }
-                //Make sure those files matched. 
-                foreach (InputFile file in Lollipop.topdownID_files())
-                {
-                    int matching_files = Lollipop.identification_files().Where(f => f.filename == file.filename).ToList().Count;
-                    if (matching_files > 1)
-                    {
-                        MessageBox.Show("There is more than one results file named " + file.filename + ". Please try again and choose one file per one identification result file.");
-                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.TopDownIDResults); //start over....
-                        cb_td_file.Checked = false; Lollipop.td_results = false;
-                        return;
-                    }
-                    else if (matching_files < 1)
-                    {
-                        MessageBox.Show("There is no matching deconvolution result for the file " + file.filename + ". Please try again and select a file with the same name as the identification result file.");
-                        Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.TopDownIDResults); //start over....
-                        cb_td_file.Checked = false; Lollipop.td_results = false;
-                        return;
-                    }
-                    else continue;
-                }
-            }
         }
 
         private void bt_clearResults_Click(object sender, EventArgs e)
@@ -412,16 +361,40 @@ namespace ProteoformSuite
 
         private void cb_advanced_user_CheckedChanged(object sender, EventArgs e)
         {
-            cb_td_file.Visible = true;
-            dgv_calibrationFiles.Visible = true;
-            btn_protCalibResultsAdd.Visible = true;
-            btn_protCalibResultsClear.Visible = true;
-            dgv_tdFiles.Visible = true;
-            bt_tdResultsAdd.Visible = true;
-            bt_tdResultsClear.Visible = true;
-            dgv_buFiles.Visible = true;
-            bt_morpheusBUResultsAdd.Visible = true;
-            bt_morpheusBUResultsClear.Visible = true;
+            if (cb_advanced_user.Checked)
+            {
+                dgv_calibrationFiles.Visible = true;
+                btn_protCalibResultsAdd.Visible = true;
+                btn_protCalibResultsClear.Visible = true;
+                dgv_buFiles.Visible = true;
+                bt_morpheusBUResultsAdd.Visible = true;
+                bt_morpheusBUResultsClear.Visible = true;
+                label3.Visible = true;
+                label5.Visible = true;
+                //cb_td_file.Visible = true;  not functioning keep invisible for now
+                //  dgv_tdFiles.Visible = true;
+                // bt_tdResultsAdd.Visible = true;
+                // bt_tdResultsClear.Visible = true;
+                //label4.Visible = true;
+
+            }
+            else
+            {
+                dgv_calibrationFiles.Visible = false;
+                btn_protCalibResultsAdd.Visible = false;
+                btn_protCalibResultsClear.Visible = false;
+                dgv_buFiles.Visible = false;
+                bt_morpheusBUResultsAdd.Visible = false;
+                bt_morpheusBUResultsClear.Visible = false;
+                label3.Visible = false;
+                label5.Visible = false;
+                //cb_td_file.Visible = false;  not functioning keep invisible for now
+                //  dgv_tdFiles.Visible = false;
+                // bt_tdResultsAdd.Visible = false;
+                // bt_tdResultsClear.Visible = false;
+                //label4.Visible = false;
+            }
+
         }
 
         // FILTERS
