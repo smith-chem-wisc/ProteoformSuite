@@ -64,48 +64,40 @@ namespace ProteoformSuiteInternal
 
                         //get ptms on proteoform
                         List<Ptm> ptm_list = new List<Ptm>();
-                        string modification_description = cellStrings[8];
-                        modification_description = modification_description.Replace(", ", ";");
-                        string[] modifications = modification_description.Split(';');
-                        for (int j = 0; j < modifications.Length; j++)
+                    //N-term modifications
+                    if (cellStrings[10].Length > 0)
+                    {
+                        int position = 0;
+                        if (cellStrings[10].Split(':')[1] == "1458")
                         {
-                            string[] new_modification = modifications[j].Split('@');
-                            if (new_modification.Length > 1)
+                            try
                             {
-                                int position = 0;
-                                if (new_modification[1] == "N")
-                                {
-                                if (cellStrings[10].Split(':')[1] == "1458")
-                                {
-                                    try
-                                    {
-                                        Modification mod = Lollipop.uniprotModificationTable.Values.Where(m => m.ptm_category == "Acetylation" && m.target_aas.Contains(cellStrings[4][0])).ToList().First();
-                                        ptm_list.Add(new Ptm(position, mod));
-                                    }
-                                    //found one case where PTM not in ptmlist.txt (acetylasparagine)
-                                    catch
-                                    {
-                                        ptm_list.Add(new Ptm(position, new Modification("N-acetylation")));
-                                    }
-                                    }
-                                }
-                                //I have not seen a case of c-term modification, don't know formatting of td file output 
-                                else
-                                {
-                                    string[] res_ids = cellStrings[9].Split('|');
-                                    foreach (string new_ptm in res_ids)
-                                    {
-                                        string resid = new_ptm.Split(':')[1].Split('@')[0];
-                                        while (resid.Length < 4) resid = "0" + resid;
-                                        resid = "AA" + resid;
-                                        if (new_modification[1] == "C") position = cellStrings[3].Length - 1;
-                                        else position = Convert.ToInt16(new_ptm.Split(':')[1].Split('@')[1]);
-                                        Modification mod = Lollipop.uniprotModificationTable.Values.Where(m => m.resid == resid).First();
-                                        ptm_list.Add(new Ptm(position, mod));
-                                    }
-                                }
+                                Modification mod = Lollipop.uniprotModificationTable.Values.Where(m => m.ptm_category == "Acetylation" && m.target_aas.Contains(cellStrings[4][0])).ToList().First();
+                                ptm_list.Add(new Ptm(position, mod));
+                            }
+                            //found one case where PTM not in ptmlist.txt (acetylasparagine)
+                            catch
+                            {
+                                ptm_list.Add(new Ptm(position, new Modification("N-acetylation")));
                             }
                         }
+                    }
+                    //don't have example of c-term modification to write code
+                    //other mods
+                    if (cellStrings[9].Length > 0)
+                    {
+                        string[] res_ids = cellStrings[9].Split('|');
+                        foreach (string new_ptm in res_ids)
+                        {
+                            string resid = new_ptm.Split(':')[1].Split('@')[0];
+                            while (resid.Length < 4) resid = "0" + resid;
+                            resid = "AA" + resid;
+                            int position = Convert.ToInt16(new_ptm.Split(':')[1].Split('@')[1]);
+                            Modification mod = Lollipop.uniprotModificationTable.Values.Where(m => m.resid == resid).First();
+                            ptm_list.Add(new Ptm(position, mod));
+                        }
+                    }
+                   
                         string[] full_filename = cellStrings[14].Split('.');
 
                         Result_Set result_set = new Result_Set();

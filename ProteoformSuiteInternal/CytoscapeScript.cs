@@ -91,7 +91,7 @@ namespace ProteoformSuiteInternal
         {
             string tsv_header = "accession_1\t" + lysine_count_header + "\taccession_2\t" + delta_mass_header;
             string edge_rows = "";
-            foreach (ProteoformRelation r in families.SelectMany(f => f.relations))
+            foreach (ProteoformRelation r in families.SelectMany(f => f.relations).Distinct())
             {
                 double mass_label = r.peak_center_deltaM;
                 if (r.relation_type == ProteoformComparison.etd) mass_label = r.delta_mass;

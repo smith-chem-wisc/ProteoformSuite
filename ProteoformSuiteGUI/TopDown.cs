@@ -24,7 +24,7 @@ namespace ProteoformSuite
 
         public void load_dgv()
         {
-            DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.topdown_proteoform_groups.Select (g => g.root));
+            DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.topdown_proteoform_groups.Select(g => g.root));
             load_colors();
             load_ptm_colors();
         }
