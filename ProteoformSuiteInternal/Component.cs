@@ -22,6 +22,8 @@ namespace ProteoformSuiteInternal
         public string rt_range { get; set; }
         public double rt_apex { get; set; }
         public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
+        public List<Component> incorporated_missed_monoisotopics = new List<Component>();
+
         private double _manual_mass_shift { get; set; } = 0; // added or substracted from weighted monoisotopic mass. This value is adjusted manually after observing ET histograms. Eventually also after see EE histograms. 
         public double manual_mass_shift
         {
@@ -175,6 +177,7 @@ namespace ProteoformSuiteInternal
 
         public Component mergeTheseComponents(Component cpToMerge) //this method is used just after initial read of components to get rid of missed monoisotopics in the same scan.
         {
+            //Note: the max missed monoisotopics is hard coded for now. Need more analysis to see whether this should be subject to user adjustment.
             if (Math.Abs((this.weighted_monoisotopic_mass - cpToMerge.weighted_monoisotopic_mass)) <= (3*Lollipop.MONOISOTOPIC_UNIT_MASS + Math.Max(this.weighted_monoisotopic_mass, cpToMerge.weighted_monoisotopic_mass)/1000000d*(double)Lollipop.mass_tolerance))
             {// we're merging missed monoisotopics
                 foreach (ChargeState cpCS in cpToMerge.charge_states)

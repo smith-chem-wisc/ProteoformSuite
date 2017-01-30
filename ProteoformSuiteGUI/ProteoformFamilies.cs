@@ -364,7 +364,9 @@ namespace ProteoformSuite
                             {
                                 if (cs.charge_count <= 25)
                                 {
-                                    writer.WriteLine(cs.mz_centroid + "\t" + cs.charge_count);
+                                    //want calibrated mass m/z
+                                    double mz = cs.calculated_mass / cs.charge_count + cs.charge_count * 1.007276466879;
+                                    writer.WriteLine(mz + "\t" + cs.charge_count);
                                 }
                             }
                         }
@@ -373,7 +375,9 @@ namespace ProteoformSuite
                             ChargeState cs = exp.aggregated_components.OrderBy(c => c.intensity_sum).ToList().First().charge_states.Where(c => c.charge_count <= 25).ToList().OrderBy(c => c.intensity).ToList().First();
                             if (cs.charge_count <= 25)
                             {
-                                writer.WriteLine(cs.mz_centroid + "\t" + "\t" + cs.charge_count);
+                                //want calibrated mass m/z
+                                double mz = cs.calculated_mass / cs.charge_count + cs.charge_count * 1.007276466879;
+                                writer.WriteLine(mz + "\t" + cs.charge_count);
                             }
                         }
                     }

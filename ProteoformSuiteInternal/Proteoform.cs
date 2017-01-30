@@ -212,10 +212,12 @@ namespace ProteoformSuiteInternal
             }
             if (root is NeuCodePair) this.lysine_count = ((NeuCodePair)this.root).lysine_count;
             this.modified_mass = this.agg_mass;
-            if (Lollipop.identification_files().Count() > 0) this.accepted = this.aggregated_components.Count >= Lollipop.min_agg_count && this.aggregated_components.Select (c => c.input_file.biological_replicate).Distinct().ToList().Count >= Lollipop.min_num_bioreps;
-            //for tests
-            else this.accepted = this.aggregated_components.Count >= Lollipop.min_agg_count; 
-        }
+            try
+            {
+                this.accepted = this.aggregated_components.Count >= Lollipop.min_agg_count && this.aggregated_components.Select(c => c.input_file.biological_replicate).Distinct().ToList().Count >= Lollipop.min_num_bioreps;
+            }//for tests
+            catch { this.accepted = this.aggregated_components.Count >= Lollipop.min_agg_count; }
+            }
 
         //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on 
         //lysine count first, and then aggregated based on mass and retention time afterwards, which may give a slightly different root for the 

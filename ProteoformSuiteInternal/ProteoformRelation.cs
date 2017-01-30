@@ -89,6 +89,12 @@ namespace ProteoformSuiteInternal
             return this.nearby_relations;
         }
 
+        //public void generate_peak()
+        //{
+        //    this.peak = new DeltaMassPeak(this, Lollipop.proteoform_community.remaining_relations_outside_no_mans);
+        //    if (Lollipop.decoy_databases > 0) this.peak.calculate_fdr(Lollipop.ed_relations);
+        //}
+
         // FOR DATAGRIDVIEW DISPLAY
         public int peak_center_count
         {

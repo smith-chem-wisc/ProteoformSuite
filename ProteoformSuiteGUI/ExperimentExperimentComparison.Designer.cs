@@ -73,6 +73,8 @@
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.tb_max_accepted_fdr = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
@@ -257,7 +259,7 @@
             this.cb_Graph_lowerThreshold.AutoSize = true;
             this.cb_Graph_lowerThreshold.Checked = true;
             this.cb_Graph_lowerThreshold.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_Graph_lowerThreshold.Location = new System.Drawing.Point(52, 98);
+            this.cb_Graph_lowerThreshold.Location = new System.Drawing.Point(117, 52);
             this.cb_Graph_lowerThreshold.Name = "cb_Graph_lowerThreshold";
             this.cb_Graph_lowerThreshold.Size = new System.Drawing.Size(55, 17);
             this.cb_Graph_lowerThreshold.TabIndex = 27;
@@ -547,6 +549,8 @@
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox1.Controls.Add(this.tb_max_accepted_fdr);
+            this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.nUD_MaxRetTimeDifference);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.nUD_PeakCountMinThreshold);
@@ -610,6 +614,26 @@
             this.splitContainer3.Size = new System.Drawing.Size(470, 660);
             this.splitContainer3.SplitterDistance = 409;
             this.splitContainer3.TabIndex = 17;
+            // 
+            // tb_max_accepted_fdr
+            // 
+            this.tb_max_accepted_fdr.Location = new System.Drawing.Point(132, 96);
+            this.tb_max_accepted_fdr.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_max_accepted_fdr.Name = "tb_max_accepted_fdr";
+            this.tb_max_accepted_fdr.ReadOnly = true;
+            this.tb_max_accepted_fdr.Size = new System.Drawing.Size(86, 20);
+            this.tb_max_accepted_fdr.TabIndex = 31;
+            // 
+            // label9
+            // 
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(-1, 99);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(129, 13);
+            this.label9.TabIndex = 30;
+            this.label9.Text = "Max Accepted Peak FDR";
             // 
             // ExperimentExperimentComparison
             // 
@@ -710,6 +734,8 @@
         private System.Windows.Forms.Button bt_compare_EE;
         private System.Windows.Forms.NumericUpDown nUD_MaxRetTimeDifference;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox tb_max_accepted_fdr;
+        private System.Windows.Forms.Label label9;
     }
 }
 
