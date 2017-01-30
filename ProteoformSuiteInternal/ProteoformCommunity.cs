@@ -171,13 +171,12 @@ namespace ProteoformSuiteInternal
                         {
                             theo = theoreticals.Where(t => t.accession_reduced == td.accession.Split('_')[0] && t.ptm_list.Count
                                 == td.ptm_list.Count).OrderBy(t => Math.Abs(t.modified_mass - td.theoretical_mass)).First();
-
                         }
                         catch
                         {
 
-                            if (td.ptm_list.Count == 0) continue; //if can't find match to unmodified topdown, nothing to do
-                                                                          //if modified topdown, compare with unmodified theoretical
+                            if (td.ptm_list.Count == 0) continue; //if can't find match to unmodified topdown, nothing to do (not in database)
+                                                                  //if modified topdown, compare with unmodified theoretical
                             else
                             {
                                 try

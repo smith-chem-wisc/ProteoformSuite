@@ -255,7 +255,7 @@ namespace ProteoformSuiteInternal
         //AGGREGATED PROTEOFORMS
         public static ProteoformCommunity proteoform_community = new ProteoformCommunity();
         public static List<ExperimentalProteoform> vetted_proteoforms = new List<ExperimentalProteoform>();
-        public static Component[] ordered_components = new Component[0];
+        public static Component[] ordered_components;
         public static List<Component> remaining_components = new List<Component>();
         public static List<Component> remaining_verification_components = new List<Component>();
         public static decimal mass_tolerance = 3; //ppm
@@ -266,7 +266,8 @@ namespace ProteoformSuiteInternal
         public static int min_agg_count = 1;
         public static int min_num_CS = 1;
         public static double RT_tol_NC = 10;
-        public static int min_num_bioreps;
+        public static int min_num_bioreps = 0;
+        public static double min_signal_to_noise = 0;
 
         public static void aggregate_proteoforms()
         {
@@ -283,11 +284,15 @@ namespace ProteoformSuiteInternal
         public static List<ExperimentalProteoform> createProteoforms()
         {
             List<ExperimentalProteoform> candidateExperimentalProteoforms = new List<ExperimentalProteoform>();
+            ordered_components = new Component[0];
+            remaining_components.Clear();
+            remaining_verification_components.Clear();
+            vetted_proteoforms.Clear();
 
             // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
             ordered_components = Lollipop.neucode_labeled ?
                 Lollipop.raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true && p.relative_abundance >= Lollipop.min_rel_abundance && p.num_charge_states >= Lollipop.min_num_CS).ToArray() :
-                Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.relative_abundance >= Lollipop.min_rel_abundance && p.num_charge_states >= Lollipop.min_num_CS).ToArray();
+                Lollipop.raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.max_signal_to_noise >= min_signal_to_noise && p.accepted == true && p.relative_abundance >= Lollipop.min_rel_abundance && p.num_charge_states >= Lollipop.min_num_CS).ToArray();
             remaining_components = ordered_components.ToList();
 
             Component root = ordered_components[0];

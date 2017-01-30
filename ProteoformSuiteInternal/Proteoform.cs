@@ -212,7 +212,9 @@ namespace ProteoformSuiteInternal
             }
             if (root is NeuCodePair) this.lysine_count = ((NeuCodePair)this.root).lysine_count;
             this.modified_mass = this.agg_mass;
-            this.accepted = this.aggregated_components.Count >= Lollipop.min_agg_count; 
+            if (Lollipop.identification_files().Count() > 0) this.accepted = this.aggregated_components.Count >= Lollipop.min_agg_count && this.aggregated_components.Select (c => c.input_file.biological_replicate).Distinct().ToList().Count >= Lollipop.min_num_bioreps;
+            //for tests
+            else this.accepted = this.aggregated_components.Count >= Lollipop.min_agg_count; 
         }
 
         //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on 
@@ -654,8 +656,6 @@ namespace ProteoformSuiteInternal
         public List<TopDownHit> topdown_hits;
         public TopDownProteoformGroup topdown_group { get; set; }
 
-
-
         public TopDownProteoform(string accession, TopDownHit root, List<TopDownHit> candidate_hits) : base(accession)
         {
             this.root = root;
@@ -720,7 +720,7 @@ namespace ProteoformSuiteInternal
 
     public class TopDownProteoformGroup
     {
-        public List<TopDownProteoform> topdown_proteoforms { get; set; } = new List<TopDownProteoform>();
+        public List<TopDownProteoform> topdown_proteoforms;
         public TopDownProteoform root { get; set; }
         public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count; } }
         public int ttd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count; } }
@@ -729,7 +729,7 @@ namespace ProteoformSuiteInternal
         public TopDownProteoformGroup(TopDownProteoform root, List<TopDownProteoform> candidate_proteoforms)
         {
             this.root = root;
-            this.topdown_proteoforms.Add(root);
+            this.topdown_proteoforms = new List<TopDownProteoform>() { root };
             this.topdown_proteoforms.AddRange(candidate_proteoforms);
             foreach (TopDownProteoform p in topdown_proteoforms) p.topdown_group = this;
         }
