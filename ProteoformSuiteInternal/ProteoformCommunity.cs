@@ -32,19 +32,24 @@ namespace ProteoformSuiteInternal
         {
             ConcurrentBag<ProteoformRelation> relations = new ConcurrentBag<ProteoformRelation>();
 
+            foreach (Proteoform pf1 in pfs1) // thread-unsafe portion, accessing pfs2
+            {
+                pf1.candidate_relatives = pfs2
+                    .Where(pf2 => (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
+                        && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
+                        && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference).ToList();
+            }
+
             Parallel.ForEach(pfs1, pf1 => 
             {
-                    List<Proteoform> candidate_pfs2 = pfs2.
-                        Where(pf2 => (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
-                            && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
-                            && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference).ToList();
-
-                    foreach (string accession in new HashSet<string>(candidate_pfs2.Select(p => p.accession)))
+                lock (pf1)
+                    foreach (string accession in new HashSet<string>(pf1.candidate_relatives.Select(p => p.accession)))
                     {
-                        List<Proteoform> candidate_pfs2_with_accession = candidate_pfs2.Where(x => x.accession == accession).ToList();
+                        List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.Where(x => x.accession == accession).ToList();
                         candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
                         Proteoform best_pf2 = candidate_pfs2_with_accession.First();
-                        lock (relations) relations.Add(new ProteoformRelation(pf1, best_pf2, relation_type, pf1.modified_mass - best_pf2.modified_mass));
+                        lock (best_pf2) lock (relations)
+                                relations.Add(new ProteoformRelation(pf1, best_pf2, relation_type, pf1.modified_mass - best_pf2.modified_mass));
                     }
             });
 
