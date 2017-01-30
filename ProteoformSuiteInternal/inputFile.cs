@@ -18,6 +18,7 @@ namespace ProteoformSuiteInternal
             get { return this.instanceId; }
             set { this.instanceId = value; }
         }
+        public ComponentReader reader = new ComponentReader();
 
         public bool matchingCalibrationFile { get; set; } = false;
 

@@ -206,6 +206,7 @@
             // 
             // tb_UniProtPtmList_Path
             // 
+            this.tb_UniProtPtmList_Path.Enabled = false;
             this.tb_UniProtPtmList_Path.Location = new System.Drawing.Point(7, 75);
             this.tb_UniProtPtmList_Path.Margin = new System.Windows.Forms.Padding(2);
             this.tb_UniProtPtmList_Path.Name = "tb_UniProtPtmList_Path";
@@ -372,6 +373,7 @@
             // 
             // tb_UniProtXML_Path
             // 
+            this.tb_UniProtXML_Path.Enabled = false;
             this.tb_UniProtXML_Path.Location = new System.Drawing.Point(7, 31);
             this.tb_UniProtXML_Path.Margin = new System.Windows.Forms.Padding(2);
             this.tb_UniProtXML_Path.Name = "tb_UniProtXML_Path";
