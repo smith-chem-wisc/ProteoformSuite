@@ -133,9 +133,7 @@ namespace ProteoformSuiteInternal
             {
                 foreach (string scan_range in inputFile.reader.scan_ranges)
                 {
-                    //Lollipop.raw_neucode_pairs.AddRange(
                     find_neucode_pairs(inputFile.reader.final_components.Where(c => c.scan_range == scan_range));
-                        //);
                 }
             }
         }

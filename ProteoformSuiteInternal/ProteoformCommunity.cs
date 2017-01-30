@@ -139,50 +139,6 @@ namespace ProteoformSuiteInternal
             return peaks;
         }
 
-        //public List<ProteoformRelation> grouped_relations = new List<ProteoformRelation>();
-        //public List<ProteoformRelation> remaining_relations_outside_no_mans = new List<ProteoformRelation>();
-        //public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
-        //{
-        //    //order by E intensity, then by descending unadjusted_group_count (running sum) before forming peaks, and analyze only relations outside of no-man's-land
-        //    List<ProteoformRelation> remaining_relations_outside_no_mans = relations.OrderByDescending(r => r.nearby_relations_count).ThenByDescending(r => r.agg_intensity_1).Where(r => r.outside_no_mans_land).ToList(); // Group count is the primary sort
-        //    List<DeltaMassPeak> peaks = new List<DeltaMassPeak>();
-
-        //    ProteoformRelation root = remaining_relations_outside_no_mans[0];
-        //    List<ProteoformRelation> running = new List<ProteoformRelation>();
-        //    List<Thread> active = new List<Thread>();
-        //    while (remaining_relations_outside_no_mans.Count > 0 || active.Count > 0)
-        //    {
-        //        while (root != null && active.Count < Environment.ProcessorCount)
-        //        {
-        //            Thread t = new Thread(new ThreadStart(root.generate_peak));
-        //            t.Start();
-        //            running.Add(root);
-        //            active.Add(t);
-        //            root = find_next_root(remaining_relations_outside_no_mans, running);
-        //        }
-
-        //        foreach (Thread t in active)
-        //        {
-        //            t.Join();
-        //        }
-
-        //        foreach (ProteoformRelation r in running)
-        //        {
-        //            peaks.Add(r.peak);
-        //            List<ProteoformRelation> mass_differences_in_peak = r.peak.grouped_relations;
-        //            relations_in_peaks.AddRange(mass_differences_in_peak);
-        //            grouped_relations.AddRange(mass_differences_in_peak);
-        //            remaining_relations_outside_no_mans = exclusive_relation_group(remaining_relations_outside_no_mans, grouped_relations);
-        //        }
-
-        //        running.Clear();
-        //        active.Clear();
-        //        root = find_next_root(remaining_relations_outside_no_mans, running);
-        //    }
-        //    this.delta_mass_peaks.AddRange(peaks);
-        //    return peaks;
-        //}
-
         public static ProteoformRelation find_next_root(List<ProteoformRelation> ordered, List<ProteoformRelation> running)
         {
             return ordered.FirstOrDefault(r =>
@@ -229,3 +185,49 @@ namespace ProteoformSuiteInternal
         }
     }
 }
+
+// THREADING DELTAMASSPEAK FINDING (draft, not validated)
+
+//public List<ProteoformRelation> grouped_relations = new List<ProteoformRelation>();
+//public List<ProteoformRelation> remaining_relations_outside_no_mans = new List<ProteoformRelation>();
+//public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
+//{
+//    //order by E intensity, then by descending unadjusted_group_count (running sum) before forming peaks, and analyze only relations outside of no-man's-land
+//    List<ProteoformRelation> remaining_relations_outside_no_mans = relations.OrderByDescending(r => r.nearby_relations_count).ThenByDescending(r => r.agg_intensity_1).Where(r => r.outside_no_mans_land).ToList(); // Group count is the primary sort
+//    List<DeltaMassPeak> peaks = new List<DeltaMassPeak>();
+
+//    ProteoformRelation root = remaining_relations_outside_no_mans[0];
+//    List<ProteoformRelation> running = new List<ProteoformRelation>();
+//    List<Thread> active = new List<Thread>();
+//    while (remaining_relations_outside_no_mans.Count > 0 || active.Count > 0)
+//    {
+//        while (root != null && active.Count < Environment.ProcessorCount)
+//        {
+//            Thread t = new Thread(new ThreadStart(root.generate_peak));
+//            t.Start();
+//            running.Add(root);
+//            active.Add(t);
+//            root = find_next_root(remaining_relations_outside_no_mans, running);
+//        }
+
+//        foreach (Thread t in active)
+//        {
+//            t.Join();
+//        }
+
+//        foreach (ProteoformRelation r in running)
+//        {
+//            peaks.Add(r.peak);
+//            List<ProteoformRelation> mass_differences_in_peak = r.peak.grouped_relations;
+//            relations_in_peaks.AddRange(mass_differences_in_peak);
+//            grouped_relations.AddRange(mass_differences_in_peak);
+//            remaining_relations_outside_no_mans = exclusive_relation_group(remaining_relations_outside_no_mans, grouped_relations);
+//        }
+
+//        running.Clear();
+//        active.Clear();
+//        root = find_next_root(remaining_relations_outside_no_mans, running);
+//    }
+//    this.delta_mass_peaks.AddRange(peaks);
+//    return peaks;
+//}

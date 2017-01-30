@@ -54,11 +54,6 @@ namespace ProteoformSuiteInternal
                 this.accepted = false;
         }
 
-        public void verify()
-        {
-
-        }
-
         public NeuCodePair(Component neucodeLight, Component neucodeHeavy) : base(neucodeLight) //need this to open and read in tsv files
         {
             this.neuCodeLight = neucodeLight;
