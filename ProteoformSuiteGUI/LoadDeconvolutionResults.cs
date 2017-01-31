@@ -358,55 +358,32 @@ namespace ProteoformSuite
             ProteoformSweet.run_when_form_loads = cb_run_when_load.Checked;
         }
 
-
         private void cb_advanced_user_CheckedChanged(object sender, EventArgs e)
         {
-            if (cb_advanced_user.Checked)
-            {
-                dgv_calibrationFiles.Visible = true;
-                btn_protCalibResultsAdd.Visible = true;
-                btn_protCalibResultsClear.Visible = true;
-                dgv_buFiles.Visible = true;
-                bt_morpheusBUResultsAdd.Visible = true;
-                bt_morpheusBUResultsClear.Visible = true;
-                label3.Visible = true;
-                label5.Visible = true;
-                //cb_td_file.Visible = true;  not functioning keep invisible for now
-                //  dgv_tdFiles.Visible = true;
-                // bt_tdResultsAdd.Visible = true;
-                // bt_tdResultsClear.Visible = true;
-                //label4.Visible = true;
-
-            }
-            else
-            {
-                dgv_calibrationFiles.Visible = false;
-                btn_protCalibResultsAdd.Visible = false;
-                btn_protCalibResultsClear.Visible = false;
-                dgv_buFiles.Visible = false;
-                bt_morpheusBUResultsAdd.Visible = false;
-                bt_morpheusBUResultsClear.Visible = false;
-                label3.Visible = false;
-                label5.Visible = false;
-                //cb_td_file.Visible = false;  not functioning keep invisible for now
-                //  dgv_tdFiles.Visible = false;
-                // bt_tdResultsAdd.Visible = false;
-                // bt_tdResultsClear.Visible = false;
-                //label4.Visible = false;
-            }
-
+            dgv_calibrationFiles.Visible = cb_advanced_user.Checked;
+            btn_protCalibResultsAdd.Visible = cb_advanced_user.Checked;
+            btn_protCalibResultsClear.Visible = cb_advanced_user.Checked;
+            dgv_buFiles.Visible = cb_advanced_user.Checked;
+            bt_morpheusBUResultsAdd.Visible = cb_advanced_user.Checked;
+            bt_morpheusBUResultsClear.Visible = cb_advanced_user.Checked;
+            label3.Visible = cb_advanced_user.Checked;
+            label5.Visible = cb_advanced_user.Checked;
+            //cb_td_file.Visible = cb_advanced_user.Checked;  not functioning keep invisible for now
+            //dgv_tdFiles.Visible = cb_advanced_user.Checked;
+            //bt_tdResultsAdd.Visible = cb_advanced_user.Checked;
+            //bt_tdResultsClear.Visible = cb_advanced_user.Checked;
+            //label4.Visible = cb_advanced_user.Checked;
         }
 
         // FILTERS
-        private void tb_identificationFilter_TextChanged_1(object sender, EventArgs e)
+        private void tb_identificationFilter_TextChanged(object sender, EventArgs e)
         {
             DisplayUtility.FillDataGridView(dgv_identificationFiles, ExtensionMethods.filter(Lollipop.identification_files(), tb_identificationFilter.Text));
         }
 
         private void tb_quantFilter_TextChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_quantitationFiles, ExtensionMethods.filter(Lollipop.identification_files(), tb_identificationFilter.Text));
+            DisplayUtility.FillDataGridView(dgv_quantitationFiles, ExtensionMethods.filter(Lollipop.quantification_files(), tb_quantFilter.Text));
         }
-
     }
 }
