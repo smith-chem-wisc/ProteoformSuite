@@ -132,28 +132,26 @@ namespace ProteoformSuite
             if (Lollipop.td_results)
             {
                 foreach (InputFile file in Lollipop.raw_files())
-                {
-                    if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.RawFile).Select(f => f.filename).Contains(file.filename))
+                    if (Lollipop.input_files.Where(f => f.purpose != Purpose.RawFile).Select(f => f.filename).Contains(file.filename))
                     {
-                        IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.purpose != Purpose.RawFile && f.filename == file.filename);
+                        IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.RawFile && f.filename == file.filename);
                         InputFile matching_file = matching_files.First();
                         if (matching_files.Count() != 1) MessageBox.Show("Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + ".");
                         file.matchingCalibrationFile = true;
                         matching_file.matchingCalibrationFile = true;
                     }
-                }
             }
             else
             {
-                foreach(InputFile file in Lollipop.identification_files())
-                if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration).Select(f => f.filename).Contains(file.filename))
-                {
-                    IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.filename == file.filename);
-                    InputFile matching_file = matching_files.First();
-                    if (matching_files.Count() != 1) MessageBox.Show("Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + ".");
-                    file.matchingCalibrationFile = true;
-                    matching_file.matchingCalibrationFile = true;
-                }
+                foreach (InputFile file in Lollipop.calibration_files())
+                    if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration).Select(f => f.filename).Contains(file.filename))
+                    {
+                        IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration  && f.filename == file.filename);
+                        InputFile matching_file = matching_files.First();
+                        if (matching_files.Count() != 1) MessageBox.Show("Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + ".");
+                        file.matchingCalibrationFile = true;
+                        matching_file.matchingCalibrationFile = true;
+                    }
             }
             refresh_dgvs();
 
@@ -481,6 +479,7 @@ namespace ProteoformSuite
                 bt_tdResultsAdd.Visible = true;
                 bt_tdResultsClear.Visible = true;
                 label4.Visible = true;
+                cb_calibrate_td_results.Visible = true;
 
             }
             else
@@ -498,6 +497,7 @@ namespace ProteoformSuite
                 bt_tdResultsAdd.Visible = false;
                 bt_tdResultsClear.Visible = false;
                 label4.Visible = false;
+                cb_calibrate_td_results.Visible = false;
             }
 
         }

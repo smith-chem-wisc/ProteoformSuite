@@ -204,7 +204,7 @@ namespace ProteoformSuite
                 }
                 Lollipop.regroup_components();
             }
-            tb_max_accepted_fdr.Text = Lollipop.et_peaks.Where(p => p.peak_accepted).Max(p => p.peak_group_fdr).ToString();
+            if (Lollipop.ed_relations.Count > 0) tb_max_accepted_fdr.Text = Lollipop.et_peaks.Where(p => p.peak_accepted).Max(p => p.peak_group_fdr).ToString();
         }
 
         //will leave option to change one at a time by right clicking

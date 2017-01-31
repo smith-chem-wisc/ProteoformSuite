@@ -97,6 +97,7 @@
             this.cb_calibrate_td_results.TabIndex = 28;
             this.cb_calibrate_td_results.Text = "Calibrate with Top-down Results";
             this.cb_calibrate_td_results.UseVisualStyleBackColor = true;
+            this.cb_calibrate_td_results.Visible = false;
             this.cb_calibrate_td_results.CheckedChanged += new System.EventHandler(this.cb_calibrate_td_results_CheckedChanged);
             // 
             // cb_td_file
@@ -158,11 +159,11 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.Location = new System.Drawing.Point(619, 13);
+            this.label3.Location = new System.Drawing.Point(633, 13);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(293, 20);
+            this.label3.Size = new System.Drawing.Size(264, 20);
             this.label3.TabIndex = 6;
-            this.label3.Text = "Deconvolution Calibration Files (.txt, .tsv)";
+            this.label3.Text = "Deconvolution Calibration Files (.tsv)";
             this.label3.Visible = false;
             // 
             // btn_protIdResultsClear
