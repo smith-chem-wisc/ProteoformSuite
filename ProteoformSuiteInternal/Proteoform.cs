@@ -166,15 +166,6 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        //for reading in neucode EE pairs
-        public ExperimentalProteoform(string accession, double agg_mass, int lysine_count, double agg_rt) : base(accession)
-        {
-            this.accession = accession;
-            this.agg_mass = agg_mass;
-            this.lysine_count = lysine_count;
-            this.agg_rt = agg_rt;
-        }
-
         public void aggregate_and_verify()
         {
             aggregate();

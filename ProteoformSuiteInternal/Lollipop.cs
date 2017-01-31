@@ -66,7 +66,7 @@ namespace ProteoformSuiteInternal
                 if (fractions != null)
                     fractions = fractions.Distinct().ToList();
                 quantBioFracCombos.Add(b, fractions);
-            }           
+            }
         }
 
         public static void getObservationParameters() //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
@@ -102,7 +102,7 @@ namespace ProteoformSuiteInternal
                 List<int> bioreps = Lollipop.quantification_files().Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).ToList();
                 bioreps = bioreps.Distinct().ToList();
                 hvConditionsBioReps.Add(condition, bioreps);
-                
+
             }
 
             int minLt = ltConditionsBioReps.Values.Select(v => v.Count).ToList().Min();
@@ -122,26 +122,23 @@ namespace ProteoformSuiteInternal
             if (input_files.Any(f => f.purpose == Purpose.Calibration))
                 correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
             object sync = new object();
-            // Parallel.ForEach(input_files.Where(f => f.purpose == Purpose.Identification), file =>
-            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.Identification).ToList())
-            {
-                if (!Lollipop.calibrate_td_results || td_calibration_functions.ContainsKey(file.filename))
-                {
-                    lock (raw_experimental_components)
-                    {
-                        List<int> ms_scans = new List<int>();
-                        if (td_results) ms_scans = Lollipop.Ms_scans.Where(s => s.filename == file.filename && s.ms_order == 1).ToList().Select(s => s.scan_number).ToList();
-                        List<Component> someComponents = file.reader.read_components_from_xlsx(file, correctionFactors, ms_scans);
-                        //don't add components if calibrating td results and no calibration function for that file 
-                        lock (sync)
-                        {
-                            raw_experimental_components.AddRange(someComponents);
-                        }
-                        //);
-                        // }
-                    }
-                }
-            }
+            Parallel.ForEach(input_files.Where(f => f.purpose == Purpose.Identification), file =>
+           {
+               if (!Lollipop.calibrate_td_results || td_calibration_functions.ContainsKey(file.filename))
+               {
+                   lock (raw_experimental_components)
+                   {
+                       List<int> ms_scans = new List<int>();
+                       if (td_results) ms_scans = Lollipop.Ms_scans.Where(s => s.filename == file.filename && s.ms_order == 1).ToList().Select(s => s.scan_number).ToList();
+                       List<Component> someComponents = file.reader.read_components_from_xlsx(file, correctionFactors, ms_scans);
+                       //don't add components if calibrating td results and no calibration function for that file 
+                       lock (sync)
+                       {
+                           raw_experimental_components.AddRange(someComponents);
+                       }
+                   }
+               }
+           });
             if (neucode_labeled)
                 process_neucode_components();
         }
@@ -396,7 +393,7 @@ namespace ProteoformSuiteInternal
                 {
                     if (e.lt_verification_components.Count > 0 || Lollipop.neucode_labeled && e.lt_verification_components.Count > 0 && e.hv_verification_components.Count > 0)
                     {
-                        e.accepted = true;
+                       // e.accepted = true;
                         Lollipop.vetted_proteoforms.Add(e);
                     }
                     Lollipop.remaining_verification_components = Lollipop.remaining_verification_components.Except(e.lt_verification_components.Concat(e.hv_verification_components)).ToList();
