@@ -45,7 +45,6 @@ namespace Test
             ChargeState cs1 = new ChargeState(10, 200d, 100d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
             createdComponent2.add_charge_state(cs1);
             createdComponent2.calculate_properties();
-
             Assert.AreEqual("0_2", createdComponent2.id);
             Assert.AreEqual(989.9d, createdComponent2.reported_monoisotopic_mass);
             Assert.AreEqual(99.9d, createdComponent2.intensity_reported);
