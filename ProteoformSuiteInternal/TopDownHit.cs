@@ -30,6 +30,7 @@ namespace ProteoformSuiteInternal
         public double mass_error { get; set; }
         public double mz { get; set; }
         public double intensity { get; set; } //precursor ion intensity
+        public bool targeted { get; set; }
 
         public TopDownHit(string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double score, Result_Set result_set)
         {

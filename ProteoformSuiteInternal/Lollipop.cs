@@ -676,6 +676,7 @@ namespace ProteoformSuiteInternal
         public static List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
         public static List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
         public static List<ProteoformRelation> td_relations = new List<ProteoformRelation>(); //td data
+        public static List<ProteoformRelation> targerted_td_relations = new List<ProteoformRelation>();
 
         public static void make_et_relationships()
         {
@@ -706,7 +707,7 @@ namespace ProteoformSuiteInternal
         {
             foreach (InputFile file in Lollipop.topdown_files().Where(f => f.targeted_td_result == targeted_results).ToList())
             {
-                    hits_to_process.AddRange(TdBuReader.ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_software));
+               hits_to_process.AddRange(TdBuReader.ReadTDFile(file.path + "\\" + file.filename + file.extension, file.td_software));
             }
                 //get MS1 scan numbers and corrections (if calibrate td results)
                 foreach (string filename in hits_to_process.Select(h => h.filename).Distinct())
@@ -723,6 +724,7 @@ namespace ProteoformSuiteInternal
                             //need to calibrate all the others
                             foreach (TopDownHit hit in hits_to_process.Where(h =>  h.filename == filename).ToList())
                             {
+                                hit.targeted = targeted_results;
                                 if (hit.result_set == Result_Set.find_unexpected_mods) hit.corrected_mass = hit.theoretical_mass;
                                 else  hit.corrected_mass = (hit.mz - bestCf(new double[] { hit.mz, hit.retention_time })).ToMass(hit.charge);
                             }
@@ -738,7 +740,6 @@ namespace ProteoformSuiteInternal
             TopDownHit[] remaining_td_hits = new TopDownHit[0];
             //aggregate to td hit w/ highest C score
             remaining_td_hits = hits_to_aggregate.OrderByDescending(t => t.score).ToArray();
-
             while (remaining_td_hits.Length > 0)
             {
                 TopDownHit root = remaining_td_hits[0];
@@ -749,7 +750,8 @@ namespace ProteoformSuiteInternal
                 remaining_td_hits = tmp_remaining_td_hits.Except(new_pf.topdown_hits).ToArray();
             }
             topdown_proteoforms = topdown_proteoforms.Where(p => p != null).ToList();
-            Lollipop.proteoform_community.topdown_proteoforms = topdown_proteoforms.ToArray();
+            if (!targeted_results) Lollipop.proteoform_community.topdown_proteoforms = topdown_proteoforms.ToArray();
+            else Lollipop.proteoform_community.targeted_topdown_proteoforms = topdown_proteoforms;
         }
 
         public static void make_td_relationships()
@@ -760,7 +762,7 @@ namespace ProteoformSuiteInternal
 
         public static void make_targeted_td_relationships()
         {
-            td_relations.AddRange(Lollipop.proteoform_community.relate_targeted_td(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted && p.etd_match_count == 0).ToList(), Lollipop.proteoform_community.targeted_topdown_proteoforms));
+             targerted_td_relations = Lollipop.proteoform_community.relate_targeted_td(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted && p.etd_match_count == 0).ToList(), Lollipop.proteoform_community.targeted_topdown_proteoforms);
         }
 
         //PROTEOFORM FAMILIES -- see ProteoformCommunity

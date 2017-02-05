@@ -653,6 +653,7 @@ namespace ProteoformSuiteInternal
         public bool observed_theoretical_mass { get; set; } = false; //if tight abs mass or biomarker search, observed mass is close to theoretical. If only find unexpected mods search result, could be co-isolation
         public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count; } }
         public int ttd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count; } }
+        public bool targeted { get; set; } = false;
 
         public TopDownProteoform(string accession, TopDownHit root, List<TopDownHit> candidate_hits) : base(accession)
         {
@@ -667,6 +668,7 @@ namespace ProteoformSuiteInternal
             this.topdown_hits = new List<TopDownHit>() { root };
             this.topdown_hits.AddRange(candidate_hits);
             this.calculate_properties();
+            this.targeted = root.targeted;
         }
 
 
