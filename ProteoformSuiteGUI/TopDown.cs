@@ -55,9 +55,11 @@ namespace ProteoformSuite
         private void clear_lists()
         {
             Lollipop.td_relations.Clear();
+            Lollipop.targerted_td_relations.Clear();
             foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.etd);
             foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ttd);
             foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ettd);
+            foreach (Proteoform p in Lollipop.proteoform_community.targeted_topdown_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ettd);
             dgv_TD_proteoforms.DataSource = null;
             dgv_TD_proteoforms.Rows.Clear();
         }
@@ -80,6 +82,9 @@ namespace ProteoformSuite
 
         private void bt_targeted_td_relations_Click(object sender, EventArgs e)
         {
+            Lollipop.targerted_td_relations.Clear();
+            foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ettd);
+            foreach (Proteoform p in Lollipop.proteoform_community.targeted_topdown_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ettd);
             Lollipop.make_targeted_td_relationships();
         }
 
@@ -103,11 +108,7 @@ namespace ProteoformSuite
                     ExperimentalProteoform exp = (ExperimentalProteoform)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem;
                     if (exp.family != null)
                     {
-                        List<Proteoform> proteoforms = new List<Proteoform>();
-                        proteoforms.AddRange(exp.family.topdown_proteoforms);
-                        proteoforms.AddRange(exp.family.theoretical_proteoforms);
-                        proteoforms.AddRange(exp.relationships.Where(r => r.relation_type == ProteoformComparison.ettd).Select(r => r.connected_proteoforms[0]));
-                        DisplayUtility.FillDataGridView(dgv_TD_family, proteoforms);  //show E-TD or ET relations (identified)
+                        DisplayUtility.FillDataGridView(dgv_TD_family, exp.family.relations.Where(r => r.relation_type == ProteoformComparison.etd || r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.ettd).ToList());  //show E-TD or ET relations (identified)
                     }
                 }
             }

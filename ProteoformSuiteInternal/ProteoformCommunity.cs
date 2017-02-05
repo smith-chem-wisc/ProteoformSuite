@@ -182,7 +182,6 @@ namespace ProteoformSuiteInternal
             List<ProteoformRelation> td_relations = new List<ProteoformRelation>();
             int max_missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
             List<int> missed_monoisotopics_range = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
-            List<ProteoformRelation> etd_full_relations = new List<ProteoformRelation>();
             foreach (TopDownProteoform td_proteoform in topdown_proteoforms)
             {
                 foreach (int m in missed_monoisotopics_range)
@@ -195,20 +194,11 @@ namespace ProteoformSuiteInternal
                     foreach (ExperimentalProteoform e in matching_e)
                     {
                         ProteoformRelation td_relation = new ProteoformRelation(td_proteoform, e, ProteoformComparison.ettd, (e.modified_mass - td_proteoform.modified_mass));
-                        etd_full_relations.Add(td_relation);
+                        td_relation.accepted = true;
+                        td_relation.connected_proteoforms[0].relationships.Add(td_relation);
+                        td_relation.connected_proteoforms[1].relationships.Add(td_relation);
+                        td_relations.Add(td_relation);
                     }
-                }
-            }
-
-            if (etd_full_relations.Count > 0)
-            {
-                foreach (ExperimentalProteoform e in etd_full_relations.Select(r => r.connected_proteoforms[1]).Distinct())
-                {
-                    ProteoformRelation best = etd_full_relations.OrderBy(x => Math.Abs(x.delta_mass - Math.Round(x.delta_mass, 0))).First();
-                    best.accepted = true;
-                    best.connected_proteoforms[0].relationships.Add(best);
-                    best.connected_proteoforms[1].relationships.Add(best);
-                    td_relations.Add(best);
                 }
             }
             return td_relations;

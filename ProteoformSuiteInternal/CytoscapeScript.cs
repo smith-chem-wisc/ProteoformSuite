@@ -87,6 +87,7 @@ namespace ProteoformSuiteInternal
         public static string unmodified_theoretical_label = "theo";
         public static string td_label = "td";
         public static string modified_theoretical_label = "ptm";
+        public static string targeted_td_label = "targeted_td";
         public string get_cytoscape_edges_tsv(List<ProteoformFamily> families)
         {
             string tsv_header = "accession_1\t" + lysine_count_header + "\taccession_2\t" + delta_mass_header;
@@ -147,9 +148,15 @@ namespace ProteoformSuiteInternal
                 string mock_intensity = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p), node_type, mock_intensity }) + Environment.NewLine;
             }
-            foreach (TopDownProteoform p in families.SelectMany(f => f.topdown_proteoforms))
+            foreach (TopDownProteoform p in families.SelectMany(f => f.topdown_proteoforms.Where(p => !p.targeted).ToList()))
             {
                 string node_type = td_label;
+                string mock_intensity = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
+                node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p), node_type, mock_intensity }) + Environment.NewLine;
+            }
+            foreach (TopDownProteoform p in families.SelectMany(f => f.topdown_proteoforms.Where(p => p.targeted).ToList()))
+            {
+                string node_type = targeted_td_label;
                 string mock_intensity = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p), node_type, mock_intensity }) + Environment.NewLine;
             }
@@ -176,12 +183,12 @@ namespace ProteoformSuiteInternal
         //Colors: exp, ptm, theo, pie
         public Dictionary<string, List<string>> color_schemes = new Dictionary<string, List<string>>
         {
-            { color_scheme_names[0], new List<string> { "#3333FF", "#00CC00", "#FF0000", "#FFFF00" } },
-            { color_scheme_names[1], new List<string> { "#9886E8", "#97CACB", "#FF77A1", "#FFFFBE" } },
-            { color_scheme_names[2], new List<string> { "#2F5E91", "#2D6A00", "#F45512", "#916415" } },
-            { color_scheme_names[3], new List<string> { "#5338FF", "#1F8A70", "#FF6533", "#FFE11A" } },
-            { color_scheme_names[4], new List<string> { "#A8E1FF", "#B29162", "#B26276", "#FFF08C" } },
-            { color_scheme_names[5], new List<string> { "#3D8A99", "#979C9C", "#963C4B", "#F2EBC7" } }
+            { color_scheme_names[0], new List<string> { "#3333FF", "#00CC00", "#FF0000", "#FFFF00" , "#FFE3EB"} },
+            { color_scheme_names[1], new List<string> { "#9886E8", "#97CACB", "#FF77A1", "#FFFFBE", "FFE3EB" } },
+            { color_scheme_names[2], new List<string> { "#2F5E91", "#2D6A00", "#F45512", "#916415", "FFE3EB" } },
+            { color_scheme_names[3], new List<string> { "#5338FF", "#1F8A70", "#FF6533", "#FFE11A", "FFE3EB" } },
+            { color_scheme_names[4], new List<string> { "#A8E1FF", "#B29162", "#B26276", "#FFF08C", "FFE3EB" } },
+            { color_scheme_names[5], new List<string> { "#3D8A99", "#979C9C", "#963C4B", "#F2EBC7", "FFE3EB" } }
         };
 
         public static string[] node_label_positions = new string[3] 
@@ -257,7 +264,8 @@ namespace ProteoformSuiteInternal
                             new Tuple<string, string>(quantitative ? "#FFFFFF" : color_schemes[this.color_scheme][0], experimental_label),
                             new Tuple<string, string>(color_schemes[this.color_scheme][1], modified_theoretical_label),
                             new Tuple<string, string>(color_schemes[this.color_scheme][2], unmodified_theoretical_label),
-                            new Tuple<string, string>(color_schemes[this.color_scheme][3], td_label)
+                            new Tuple<string, string>(color_schemes[this.color_scheme][3], td_label),
+                            new Tuple<string, string>(color_schemes[this.color_scheme][4], targeted_td_label)
                         });
                     if (style.Key == "NODE_LABEL_COLOR") write_passthrough(writer, "string", "shared name");
                     if (style.Key == "NODE_LABEL") write_passthrough(writer, "string", "name");
