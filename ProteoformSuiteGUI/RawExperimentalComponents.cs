@@ -25,7 +25,11 @@ namespace ProteoformSuite
                 Lollipop.getBiorepsFractionsList(); // list of bioreps with a list of fractions for each biorep
                 Lollipop.getObservationParameters(); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
             }
-            if (Lollipop.td_results) Lollipop.process_td_results(); //need to first process topdown results --> get MS1 scan #'s and correction functions (if calibrating)
+            if (Lollipop.td_results)
+            {
+                Lollipop.process_td_results(Lollipop.top_down_hits, false); //need to first process topdown results --> get MS1 scan #'s and correction functions (if calibrating)
+                Lollipop.process_td_results(Lollipop.top_down_hits_targeted_results, true);
+            }
             Parallel.Invoke(
                 () => rEC(),
                 () => rQC()                

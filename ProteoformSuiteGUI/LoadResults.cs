@@ -384,39 +384,6 @@ namespace ProteoformSuite
         {
             Lollipop.td_results = cb_td_file.Checked;
             label3.Text = "Thermo Raw Files (.raw)";
-
-            //if (Lollipop.td_results)
-            //{
-            //    MessageBox.Show("Please select corresponding Thermo data files.");
-            //    OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            //    openFileDialog1.Title = "Thermo Data Files";
-            //    openFileDialog1.Filter = "Thermo Data Files (.raw) | *.raw";
-            //    openFileDialog1.Multiselect = true;
-            //    DialogResult dr = openFileDialog1.ShowDialog();
-            //    if (dr == DialogResult.OK)
-            //        enter_input_files(openFileDialog1.FileNames, new List<string> { ".raw" }, Purpose.RawFile);
-            //    else { cb_td_file.Checked = false; Lollipop.td_results = false; return; }
-            //    //Make sure those files matched. 
-            //    foreach (InputFile file in Lollipop.identification_files())
-            //    {
-            //        int matching_files = Lollipop.raw_files().Where(f => f.filename == file.filename).ToList().Count;
-            //        if (matching_files > 1)
-            //        {
-            //            MessageBox.Show("There is more than one results file named " + file.filename + ". Please try again and choose one data file per one identification result file.");
-            //            Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.RawFile); //start over....
-            //            cb_td_file.Checked = false; Lollipop.td_results = false;
-            //            return;
-            //        }
-            //        else if (matching_files < 1)
-            //        {
-            //            MessageBox.Show("There is no matching deconvolution result for the file " + file.filename + ". Please try again and select a data file with the same name as the identification result file.");
-            //            Lollipop.input_files.RemoveAll(p => p.purpose == Purpose.RawFile); //start over....
-            //            cb_td_file.Checked = false; Lollipop.td_results = false;
-            //            return;
-            //        }
-            //        else continue;
-            //    }
-            //}
         }
 
         private void bt_clearResults_Click(object sender, EventArgs e)

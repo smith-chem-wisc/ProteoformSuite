@@ -34,12 +34,14 @@
             this.rtb_sequence = new System.Windows.Forms.RichTextBox();
             this.dgv_TD_family = new System.Windows.Forms.DataGridView();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.cmbx_td_or_e_proteoforms = new System.Windows.Forms.ComboBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tb_td_relations = new System.Windows.Forms.TextBox();
+            this.bt_load_td = new System.Windows.Forms.Button();
             this.bt_td_relations = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.tb_tdProteoforms = new System.Windows.Forms.TextBox();
-            this.bt_load_td = new System.Windows.Forms.Button();
-            this.label2 = new System.Windows.Forms.Label();
-            this.tb_td_relations = new System.Windows.Forms.TextBox();
+            this.bt_targeted_td_relations = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -129,6 +131,8 @@
             // 
             // splitContainer3.Panel1
             // 
+            this.splitContainer3.Panel1.Controls.Add(this.bt_targeted_td_relations);
+            this.splitContainer3.Panel1.Controls.Add(this.cmbx_td_or_e_proteoforms);
             this.splitContainer3.Panel1.Controls.Add(this.label2);
             this.splitContainer3.Panel1.Controls.Add(this.tb_td_relations);
             this.splitContainer3.Panel1.Controls.Add(this.bt_load_td);
@@ -142,6 +146,41 @@
             this.splitContainer3.Size = new System.Drawing.Size(976, 622);
             this.splitContainer3.SplitterDistance = 73;
             this.splitContainer3.TabIndex = 2;
+            // 
+            // cmbx_td_or_e_proteoforms
+            // 
+            this.cmbx_td_or_e_proteoforms.FormattingEnabled = true;
+            this.cmbx_td_or_e_proteoforms.Location = new System.Drawing.Point(12, 50);
+            this.cmbx_td_or_e_proteoforms.Name = "cmbx_td_or_e_proteoforms";
+            this.cmbx_td_or_e_proteoforms.Size = new System.Drawing.Size(121, 21);
+            this.cmbx_td_or_e_proteoforms.TabIndex = 6;
+            this.cmbx_td_or_e_proteoforms.SelectedIndexChanged += new System.EventHandler(this.cmbx_td_or_e_proteoforms_SelectedIndexChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(118, 32);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(101, 13);
+            this.label2.TabIndex = 5;
+            this.label2.Text = "TopDown Relations";
+            // 
+            // tb_td_relations
+            // 
+            this.tb_td_relations.Location = new System.Drawing.Point(12, 29);
+            this.tb_td_relations.Name = "tb_td_relations";
+            this.tb_td_relations.Size = new System.Drawing.Size(100, 20);
+            this.tb_td_relations.TabIndex = 4;
+            // 
+            // bt_load_td
+            // 
+            this.bt_load_td.Location = new System.Drawing.Point(283, -1);
+            this.bt_load_td.Name = "bt_load_td";
+            this.bt_load_td.Size = new System.Drawing.Size(185, 23);
+            this.bt_load_td.TabIndex = 3;
+            this.bt_load_td.Text = "Aggregate TopDown Proteoforms";
+            this.bt_load_td.UseVisualStyleBackColor = true;
+            this.bt_load_td.Click += new System.EventHandler(this.bt_load_td_Click);
             // 
             // bt_td_relations
             // 
@@ -169,31 +208,16 @@
             this.tb_tdProteoforms.Size = new System.Drawing.Size(100, 20);
             this.tb_tdProteoforms.TabIndex = 0;
             // 
-            // bt_load_td
+            // bt_targeted_td_relations
             // 
-            this.bt_load_td.Location = new System.Drawing.Point(283, -1);
-            this.bt_load_td.Name = "bt_load_td";
-            this.bt_load_td.Size = new System.Drawing.Size(185, 23);
-            this.bt_load_td.TabIndex = 3;
-            this.bt_load_td.Text = "Aggregate TopDown Proteoforms";
-            this.bt_load_td.UseVisualStyleBackColor = true;
-            this.bt_load_td.Click += new System.EventHandler(this.bt_load_td_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(118, 32);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(101, 13);
-            this.label2.TabIndex = 5;
-            this.label2.Text = "TopDown Relations";
-            // 
-            // tb_td_relations
-            // 
-            this.tb_td_relations.Location = new System.Drawing.Point(12, 29);
-            this.tb_td_relations.Name = "tb_td_relations";
-            this.tb_td_relations.Size = new System.Drawing.Size(100, 20);
-            this.tb_td_relations.TabIndex = 4;
+            this.bt_targeted_td_relations.Enabled = false;
+            this.bt_targeted_td_relations.Location = new System.Drawing.Point(688, 1);
+            this.bt_targeted_td_relations.Name = "bt_targeted_td_relations";
+            this.bt_targeted_td_relations.Size = new System.Drawing.Size(208, 23);
+            this.bt_targeted_td_relations.TabIndex = 7;
+            this.bt_targeted_td_relations.Text = "Check Targeted TopDown Validation";
+            this.bt_targeted_td_relations.UseVisualStyleBackColor = true;
+            this.bt_targeted_td_relations.Click += new System.EventHandler(this.bt_targeted_td_relations_Click);
             // 
             // TopDown
             // 
@@ -237,5 +261,7 @@
         private System.Windows.Forms.Button bt_load_td;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tb_td_relations;
+        private System.Windows.Forms.ComboBox cmbx_td_or_e_proteoforms;
+        private System.Windows.Forms.Button bt_targeted_td_relations;
     }
 }

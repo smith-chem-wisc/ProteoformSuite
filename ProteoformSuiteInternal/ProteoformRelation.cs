@@ -13,7 +13,8 @@ namespace ProteoformSuiteInternal
         ee, //Experiment-Experiment comparisons
         ef,  //Experiment-Experiment comparisons using unequal lysine counts
         etd, //Experiment-TopDown comparison (from TD data)
-        ttd //Theoretical-TopDown comprison (from TD data)
+        ttd, //Theoretical-TopDown comprison (from TD data)
+        ettd //Experiment-Targeted-Topdown comparison (see which are validated)
     }
 
     //I have not used MassDifference objects in the logic, since it is better to cast the comparisons immediately as
