@@ -77,6 +77,9 @@ namespace ProteoformSuiteInternal
         {
             get { return hv_quant_components.Count; }
         }
+        public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count; } }
+        public int et_accepted_relations { get { return relationships.Where(r => r.relation_type == ProteoformComparison.et && r.accepted).ToList().Count; } }
+        public int targeted_etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ettd).ToList().Count; } }
 
         // CONTRUCTORS
         public ExperimentalProteoform(ExperimentalProteoform eP)
@@ -645,6 +648,8 @@ namespace ProteoformSuiteInternal
             get { return ptm_list_string(); }
         }
         public double reported_mass { get; set; } //reported, uncalibrated
+        public int etd_match_count { get { return topdown_group.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count; } }
+        public int ttd_match_count { get { return topdown_group.relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count; } }
         private TopDownHit root;
         public List<TopDownHit> topdown_hits;
         public TopDownProteoformGroup topdown_group { get; set; }
@@ -715,8 +720,6 @@ namespace ProteoformSuiteInternal
     {
         public List<TopDownProteoform> topdown_proteoforms;
         public TopDownProteoform root { get; set; }
-        public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count; } }
-        public int ttd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count; } }
         public List<ProteoformRelation> relationships { get; set; }  = new List<ProteoformRelation>();
 
         public TopDownProteoformGroup(TopDownProteoform root, List<TopDownProteoform> candidate_proteoforms)

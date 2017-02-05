@@ -48,7 +48,6 @@ namespace ProteoformSuiteInternal
 
             foreach (IMsDataScan<ThermoSpectrum> spectrum in myMsDataFile)
             {
-                spectrum.MassSpectrum.GetSignalToNoise(4);
                 MsScan scan = new ProteoformSuiteInternal.MsScan(spectrum.MsnOrder, spectrum.OneBasedScanNumber, filename, spectrum.RetentionTime, spectrum.InjectionTime, spectrum.TotalIonCurrent, spectrum.MassSpectrum.xArray, spectrum.MassSpectrum.yArray, spectrum.MassSpectrum.GetNoises());
                 Lollipop.Ms_scans.Add(scan);
             }
@@ -88,7 +87,6 @@ namespace ProteoformSuiteInternal
                     percent_in_window = (double)mass_errors.GetRange(start, count).ToList().Count / mass_errors.Count;
                 }
                 List<TopDownHit> identifications_to_use = identifications_tight_mass.OrderBy(h => ((h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0))).ToList().GetRange(start, count).ToList();
-                Lollipop.hits_used.AddRange(identifications_to_use);
 
                 List<LabeledDataPoint> pointList = new List<LabeledDataPoint>();
                     pointList = GetDataPoints(myMsDataFile, identifications_to_use);

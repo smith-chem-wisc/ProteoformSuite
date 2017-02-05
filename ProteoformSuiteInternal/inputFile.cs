@@ -37,6 +37,7 @@ namespace ProteoformSuiteInternal
         public Purpose purpose { get; set; } //ID, Quant, Calib, Bottom-Up or Top-Down
         public Labeling label { get; set; }
         public TDSoftware td_software { get; set; } = TDSoftware.NRTDP;
+        public bool targeted_td_result { get; set; } = false;
 
         public InputFile(string path, string filename, string extension, Labeling label, Purpose purpose)
         {
