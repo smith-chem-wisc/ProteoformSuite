@@ -725,7 +725,8 @@ namespace ProteoformSuiteInternal
                             //need to calibrate all the others
                             foreach (TopDownHit hit in Lollipop.top_down_hits.Where(h =>  h.filename == filename).ToList())
                             {
-                                hit.corrected_mass = (hit.mz - bestCf(new double[] { hit.mz, hit.retention_time })).ToMass(hit.charge);
+                                if (hit.result_set == Result_Set.find_unexpected_mods) hit.corrected_mass = hit.theoretical_mass;
+                                else  hit.corrected_mass = (hit.mz - bestCf(new double[] { hit.mz, hit.retention_time })).ToMass(hit.charge);
                             }
                         }
                     }
@@ -746,34 +747,18 @@ namespace ProteoformSuiteInternal
                 TopDownHit root = remaining_td_hits[0];
                 List<TopDownHit> tmp_remaining_td_hits = remaining_td_hits.ToList();
                 //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within mass tolerance used for agg
-                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, tmp_remaining_td_hits.Where(h => h.accession == root.accession && h.theoretical_mass == root.theoretical_mass).ToList());
+                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, tmp_remaining_td_hits.Where(h => h.accession == root.accession && h.same_ptm_hits(root)).ToList());
                 topdown_proteoforms.Add(new_pf);
                 remaining_td_hits = tmp_remaining_td_hits.Except(new_pf.topdown_hits).ToArray();
             }
             topdown_proteoforms = topdown_proteoforms.Where(p => p != null).ToList();
-
-            //group topdown proteoforms into groups by accession/theoretical
-            Lollipop.proteoform_community.topdown_proteoform_groups.Clear();
-            TopDownProteoform[] remaining_td_proteoforms = new TopDownProteoform[0];
-            //make root closest the theoretical mass
-            remaining_td_proteoforms = topdown_proteoforms.OrderBy(t => Math.Abs(t.monoisotopic_mass - t.theoretical_mass - Math.Round (t.monoisotopic_mass - t.theoretical_mass, 0))).ToArray();
-
-            while (remaining_td_proteoforms.Length > 0)
-            {
-                TopDownProteoform root = remaining_td_proteoforms[0];
-                List<TopDownProteoform> tmp_remaining_td_proteoforms = remaining_td_proteoforms.ToList();
-                //candiate topdown proteoforms are those with the same theoretical mass
-                TopDownProteoformGroup new_pg = new TopDownProteoformGroup(root, tmp_remaining_td_proteoforms.Where(h => h.uniprot_id == root.uniprot_id && h.theoretical_mass == root.theoretical_mass).ToList());
-                Lollipop.proteoform_community.topdown_proteoform_groups.Add(new_pg);
-                remaining_td_proteoforms = tmp_remaining_td_proteoforms.Except(new_pg.topdown_proteoforms).ToArray();
-            }
-            Lollipop.proteoform_community.topdown_proteoform_groups = Lollipop.proteoform_community.topdown_proteoform_groups.Where(g => g != null).ToList();
+            Lollipop.proteoform_community.topdown_proteoforms = topdown_proteoforms.ToArray();
         }
 
         public static void make_td_relationships()
         {
             Lollipop.td_relations.Clear();
-            Lollipop.td_relations = Lollipop.proteoform_community.relate_td(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList(), Lollipop.proteoform_community.theoretical_proteoforms.ToList(), Lollipop.proteoform_community.topdown_proteoform_groups);
+            Lollipop.td_relations = Lollipop.proteoform_community.relate_td(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList(), Lollipop.proteoform_community.theoretical_proteoforms.ToList(), Lollipop.proteoform_community.topdown_proteoforms.ToList());
         }
 
 
@@ -781,7 +766,6 @@ namespace ProteoformSuiteInternal
         public static string family_build_folder_path = "";
         public static int deltaM_edge_display_rounding = 2;
         public static string[] node_positioning = new string[] { "Arbitrary Circle", "Mass X-Axis", "Circle by Mass" };
-        
         public static string[] edge_labels = new string[] { "Mass Difference" };
 
         //QUANTIFICATION

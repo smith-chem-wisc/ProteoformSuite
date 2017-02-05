@@ -55,7 +55,7 @@ namespace ProteoformSuite
         public void construct_families()
         {
             initialize_settings();
-            if (Lollipop.proteoform_community.families.Count <= 0 && (Lollipop.proteoform_community.has_e_proteoforms || Lollipop.proteoform_community.topdown_proteoform_groups.Count > 0)) run_the_gamut();
+            if (Lollipop.proteoform_community.families.Count <= 0 && (Lollipop.proteoform_community.has_e_proteoforms || Lollipop.proteoform_community.topdown_proteoforms.Length > 0)) run_the_gamut();
             initialize_every_time();
         }
 
@@ -294,7 +294,7 @@ namespace ProteoformSuite
                 {
                     int fam_id = 1;
                     writer.WriteLine("family_id\tproteoform_type\tp_id\tptm\tmass\tname");
-                    foreach (ProteoformFamily family in Lollipop.proteoform_community.families.Where(f => f.theoretical_count > 0 || f.topdown_count > 0))
+                    foreach (ProteoformFamily family in Lollipop.proteoform_community.families.Where(f => f.theoretical_count > 0 || f.topdown_count > 0).Distinct())
                     {
                         foreach (TheoreticalProteoform t in family.theoretical_proteoforms)
                         {

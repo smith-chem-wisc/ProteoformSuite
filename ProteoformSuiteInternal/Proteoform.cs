@@ -647,7 +647,9 @@ namespace ProteoformSuiteInternal
         public double reported_mass { get; set; } //reported, uncalibrated
         private TopDownHit root;
         public List<TopDownHit> topdown_hits;
-        public TopDownProteoformGroup topdown_group { get; set; }
+        public bool observed_theoretical_mass { get; set; } = false; //if tight abs mass or biomarker search, observed mass is close to theoretical. If only find unexpected mods search result, could be co-isolation
+        public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count; } }
+        public int ttd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count; } }
 
         public TopDownProteoform(string accession, TopDownHit root, List<TopDownHit> candidate_hits) : base(accession)
         {
@@ -660,71 +662,30 @@ namespace ProteoformSuiteInternal
             this.theoretical_mass = root.theoretical_mass;
             this.stop_index = root.stop_index;
             this.topdown_hits = new List<TopDownHit>() { root };
-            this.topdown_hits.AddRange(candidate_hits.Where(p => this.includes(p)));
+            this.topdown_hits.AddRange(candidate_hits);
             this.calculate_properties();
         }
 
 
         private void calculate_properties()
         {
+            if (this.topdown_hits.Where(h => h.result_set == Result_Set.tight_absolute_mass || h.result_set == Result_Set.biomarker).Count() > 0) this.observed_theoretical_mass = true;
             this.agg_rt = topdown_hits.Select(h => h.retention_time).Average(); //need to use average (no intensity info)
-            this.monoisotopic_mass = topdown_hits.Select(h => (h.corrected_mass - Math.Round(h.corrected_mass - root.corrected_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
+            if (observed_theoretical_mass) this.monoisotopic_mass = topdown_hits.Where(h => h.result_set == Result_Set.tight_absolute_mass || h.result_set == Result_Set.biomarker).Select(h => (h.corrected_mass - Math.Round(h.corrected_mass - root.corrected_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
+            else this.monoisotopic_mass = root.theoretical_mass; //if only found w/ unexpected mod search, use theoretical mass
             this.modified_mass = this.monoisotopic_mass;
-            this.reported_mass = topdown_hits.Select(h => (h.reported_mass - Math.Round(h.reported_mass - root.reported_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
-            this.accession = accession + "_" + Math.Round(this.modified_mass, 2);
-        }
-
-        public bool includes(TopDownHit candidate)
-        {
-            bool does_include = tolerable_rt(candidate) && tolerable_mass(candidate);
-            return does_include;
-        }
-
-        private bool tolerable_rt(TopDownHit candidate)
-        {
-            return candidate.retention_time >= this.root.retention_time - Convert.ToDouble(Lollipop.retention_time_tolerance) &&
-                candidate.retention_time <= this.root.retention_time + Convert.ToDouble(Lollipop.retention_time_tolerance);
-        }
-
-        private bool tolerable_mass(TopDownHit candidate)
-        {
-            //still look for missed mono's
-            int max_missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
-            List<int> missed_monoisotopics = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
-            foreach (int m in missed_monoisotopics)
-            {
-                double shift = m * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                double mass_tolerance = (this.root.corrected_mass + shift) / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance);
-                double low = this.root.corrected_mass + shift - mass_tolerance;
-                double high = this.root.corrected_mass + shift + mass_tolerance;
-                bool tolerable_mass = candidate.corrected_mass >= low && candidate.corrected_mass <= high;
-                if (tolerable_mass) return true;
-            }
-            return false;
+            if (observed_theoretical_mass) this.reported_mass = topdown_hits.Where(h => h.result_set == Result_Set.biomarker || h.result_set == Result_Set.tight_absolute_mass).Select(h => (h.reported_mass - Math.Round(h.reported_mass - root.reported_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
+            else this.reported_mass = topdown_hits.Select(h => (h.reported_mass - Math.Round(h.reported_mass - root.reported_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
+            this.accession = accession + "_" + Math.Round(this.theoretical_mass, 2);
         }
 
         public string ptm_list_string()
         {
+            if (ptm_list.Count == 0)
+                return "unmodified";
             string _modifications_string = "";
             foreach (Ptm ptm in ((TopDownProteoform)this).ptm_list) _modifications_string += (ptm.modification.description + "@" + ptm.position + "; ");
             return _modifications_string;
-        }
-    }
-
-    public class TopDownProteoformGroup
-    {
-        public List<TopDownProteoform> topdown_proteoforms;
-        public TopDownProteoform root { get; set; }
-        public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count; } }
-        public int ttd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count; } }
-        public List<ProteoformRelation> relationships { get; set; }  = new List<ProteoformRelation>();
-
-        public TopDownProteoformGroup(TopDownProteoform root, List<TopDownProteoform> candidate_proteoforms)
-        {
-            this.root = root;
-            this.topdown_proteoforms = new List<TopDownProteoform>() { root };
-            this.topdown_proteoforms.AddRange(candidate_proteoforms);
-            foreach (TopDownProteoform p in topdown_proteoforms) p.topdown_group = this;
         }
     }
 }
