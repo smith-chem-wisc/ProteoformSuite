@@ -56,6 +56,20 @@ namespace ProteoformSuiteInternal
             this.filename = filename;
         }
 
+        public bool same_ptm_hits(TopDownHit root)
+        {
+            if (this.ptm_list.Count == root.ptm_list.Count)
+            {
+                foreach (Ptm mod in this.ptm_list)
+                {
+                    if (root.ptm_list.Where(p => p.modification == mod.modification && p.position == mod.position).Count() == 1) continue;
+                    else return false;
+                }
+                return true;
+            }
+            else return false;
+        }
+
         public double get_mass_error(double theoretical, double observed)
         {
             return (observed - theoretical_mass) - Math.Round(observed - theoretical, 0);

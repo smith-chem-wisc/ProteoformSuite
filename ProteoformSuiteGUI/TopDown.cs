@@ -24,7 +24,7 @@ namespace ProteoformSuite
 
         public void load_dgv()
         {
-            DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.topdown_proteoform_groups.Select(g => g.root));
+            DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.topdown_proteoforms);
             load_colors();
             load_ptm_colors();
         }
@@ -42,13 +42,13 @@ namespace ProteoformSuite
 
         private void bt_load_td_Click(object sender, EventArgs e)
         {
-            Lollipop.proteoform_community.topdown_proteoform_groups.Clear();
+            Lollipop.proteoform_community.topdown_proteoforms = new TopDownProteoform[0];
             Lollipop.proteoform_community.targeted_topdown_proteoforms.Clear();
             clear_lists();
             Lollipop.aggregate_td_hits(Lollipop.top_down_hits, false);
             Lollipop.aggregate_td_hits(Lollipop.top_down_hits_targeted_results, true);
             if (Lollipop.proteoform_community.targeted_topdown_proteoforms.Count > 0) bt_targeted_td_relations.Enabled = true;
-            tb_tdProteoforms.Text = Lollipop.proteoform_community.topdown_proteoform_groups.Count.ToString();
+            tb_tdProteoforms.Text = Lollipop.proteoform_community.topdown_proteoforms.Length.ToString();
             load_dgv();
         }
 
@@ -64,7 +64,7 @@ namespace ProteoformSuite
 
         private void bt_td_relations_Click(object sender, EventArgs e)
         {
-            if (Lollipop.proteoform_community.experimental_proteoforms.Length > 0 && Lollipop.proteoform_community.topdown_proteoform_groups.Count > 0)
+            if (Lollipop.proteoform_community.experimental_proteoforms.Length > 0 && Lollipop.proteoform_community.topdown_proteoforms.Length > 0)
             {
                 clear_lists();
                 Lollipop.make_td_relationships();
@@ -74,7 +74,7 @@ namespace ProteoformSuite
             else
             {
                 if (Lollipop.proteoform_community.experimental_proteoforms.Length > 0) MessageBox.Show("Go back and load in topdown results.");
-                else if (Lollipop.proteoform_community.topdown_proteoform_groups.Count > 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
+                else if (Lollipop.proteoform_community.topdown_proteoforms.Length > 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
             }
         }
 
@@ -93,7 +93,7 @@ namespace ProteoformSuite
                     TopDownProteoform p = (TopDownProteoform)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem;
                     if (p.relationships != null)
                     {
-                        DisplayUtility.FillDataGridView(dgv_TD_family, p.topdown_group.relationships);  //show T-TD and E-TD relationsj
+                        DisplayUtility.FillDataGridView(dgv_TD_family, p.relationships);  //show T-TD and E-TD relationsj
                     }
                     get_proteoform_sequence(p);
                 }
@@ -178,7 +178,7 @@ namespace ProteoformSuite
         private static void load_ptm_colors()
         {
             List<Ptm> ptm = new List<Ptm>();
-            foreach (TopDownProteoform p in Lollipop.proteoform_community.topdown_proteoform_groups.Select(t => t.root))
+            foreach (TopDownProteoform p in Lollipop.proteoform_community.topdown_proteoforms)
             {
                 ptm.AddRange(p.ptm_list);
             }
@@ -195,7 +195,7 @@ namespace ProteoformSuite
         {
             if(cmbx_td_or_e_proteoforms.SelectedItem.ToString() == "TopDown Proteoforms")
             {
-                DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.topdown_proteoform_groups.Select(g => g.root));
+                DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.topdown_proteoforms);
 
             }
             else
