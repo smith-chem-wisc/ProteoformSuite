@@ -488,7 +488,6 @@ namespace ProteoformSuiteInternal
             Lollipop.proteoform_community.decoy_proteoforms = new Dictionary<string, TheoreticalProteoform[]>();
             Lollipop.psm_list.Clear();
 
-            uniprotModificationTable.Clear();
             ProteomeDatabaseReader.oldPtmlistFilePath = ptmlist_filepath;
             uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
             aaIsotopeMassList = new AminoAcidMasses(methionine_oxidation, carbamidomethylation).AA_Masses;
@@ -677,6 +676,10 @@ namespace ProteoformSuiteInternal
         public static List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
         public static List<ProteoformRelation> td_relations = new List<ProteoformRelation>(); //td data
         public static List<ProteoformRelation> targerted_td_relations = new List<ProteoformRelation>();
+        public static bool notch_search_et = false;
+        public static bool notch_search_ee = false;
+        public static List<double> notch_masses_et = new List<double>();
+        public static List<double> notch_masses_ee = new List<double>();
 
         public static void make_et_relationships()
         {

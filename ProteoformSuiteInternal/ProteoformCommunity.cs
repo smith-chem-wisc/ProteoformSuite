@@ -36,21 +36,45 @@ namespace ProteoformSuiteInternal
         {
             ConcurrentBag<ProteoformRelation> relations = new ConcurrentBag<ProteoformRelation>();
 
-            Parallel.ForEach(pfs1, pf1 =>
+            if (!Lollipop.notch_search_et)
             {
-                List<Proteoform> candidate_pfs2 = pfs2.
-                    Where(pf2 => (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
-                        && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
-                        && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference).ToList();
-
-                foreach (string accession in new HashSet<string>(candidate_pfs2.Select(p => p.accession)))
+                Parallel.ForEach(pfs1, pf1 =>
                 {
-                    List<Proteoform> candidate_pfs2_with_accession = candidate_pfs2.Where(x => x.accession == accession).ToList();
-                    candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
-                    Proteoform best_pf2 = candidate_pfs2_with_accession.First();
-                    lock (relations) relations.Add(new ProteoformRelation(pf1, best_pf2, relation_type, pf1.modified_mass - best_pf2.modified_mass));
-                }
-            });
+                    List<Proteoform> candidate_pfs2 = pfs2.
+                        Where(pf2 => (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
+                            && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
+                            && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference).ToList();
+
+                    foreach (string accession in new HashSet<string>(candidate_pfs2.Select(p => p.accession)))
+                    {
+                        List<Proteoform> candidate_pfs2_with_accession = candidate_pfs2.Where(x => x.accession == accession).ToList();
+                        candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
+                        Proteoform best_pf2 = candidate_pfs2_with_accession.First();
+                        lock (relations) relations.Add(new ProteoformRelation(pf1, best_pf2, relation_type, pf1.modified_mass - best_pf2.modified_mass));
+                    }
+                });
+            }
+            else
+            {
+                Parallel.ForEach(pfs1, pf1 =>
+                {
+                    foreach (double mass in Lollipop.notch_masses_et)
+                    {
+                        List<Proteoform> candidate_pfs2 = pfs2.
+                            Where(pf2 => (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
+                                && (pf1.modified_mass - pf2.modified_mass) >= mass - Lollipop.peak_width_base_et
+                                && (pf1.modified_mass - pf2.modified_mass) <= mass + Lollipop.peak_width_base_et).ToList();
+
+                        foreach (string accession in new HashSet<string>(candidate_pfs2.Select(p => p.accession)))
+                        {
+                            List<Proteoform> candidate_pfs2_with_accession = candidate_pfs2.Where(x => x.accession == accession).ToList();
+                            candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
+                            Proteoform best_pf2 = candidate_pfs2_with_accession.First();
+                            lock (relations) relations.Add(new ProteoformRelation(pf1, best_pf2, relation_type, pf1.modified_mass - best_pf2.modified_mass));
+                        }
+                    }
+                });
+            }
 
             count_nearby_relations(relations.ToList());
             return relations.ToList();
@@ -72,11 +96,30 @@ namespace ProteoformSuiteInternal
 
         public bool allowed_ee_relation(ExperimentalProteoform pf1, ExperimentalProteoform pf2)
         {
-            return pf1.modified_mass >= pf2.modified_mass
-                && pf1 != pf2
-                && (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
-                && pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference
-                && Math.Abs(pf1.agg_rt - pf2.agg_rt) <= Lollipop.ee_max_RetentionTime_difference;
+            if (!Lollipop.notch_search_ee)
+            {
+                return pf1.modified_mass >= pf2.modified_mass
+                    && pf1 != pf2
+                    && (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
+                    && pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference
+                    && Math.Abs(pf1.agg_rt - pf2.agg_rt) <= Lollipop.ee_max_RetentionTime_difference;
+            }
+            else
+            {
+                foreach (double mass in Lollipop.notch_masses_ee)
+                {
+                    if (
+                    pf1.modified_mass >= pf2.modified_mass
+                    && pf1 != pf2
+                    && (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
+                    && pf1.modified_mass - pf2.modified_mass <= mass + Lollipop.peak_width_base_ee
+                    && pf1.modified_mass - pf2.modified_mass >= mass - Lollipop.peak_width_base_ee
+                    && Math.Abs(pf1.agg_rt - pf2.agg_rt) <= Lollipop.ee_max_RetentionTime_difference)
+                        return true;
+                else continue;
+                }
+                return false;
+            }
             //where ProteoformRelation.mass_difference_is_outside_no_mans_land(pf1.modified_mass - pf2.modified_mass)
             //putative counts include no-mans land, currently
         }
