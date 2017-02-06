@@ -45,9 +45,13 @@
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.dgv_ET_Peak_List = new System.Windows.Forms.DataGridView();
             this.ct_ET_peakList = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.tb_notch_masses = new System.Windows.Forms.TextBox();
+            this.cb_notch_search = new System.Windows.Forms.CheckBox();
             this.cb_TDBUpsm = new System.Windows.Forms.CheckBox();
             this.bt_compare_ET = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.tb_max_accepted_fdr = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.nUD_PeakWidthBase = new System.Windows.Forms.NumericUpDown();
@@ -72,8 +76,6 @@
             this.dgv_ET_Pairs = new System.Windows.Forms.DataGridView();
             this.dgv_psmList = new System.Windows.Forms.DataGridView();
             this.ct_ET_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.label9 = new System.Windows.Forms.Label();
-            this.tb_max_accepted_fdr = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -152,6 +154,8 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.Controls.Add(this.tb_notch_masses);
+            this.splitContainer3.Panel2.Controls.Add(this.cb_notch_search);
             this.splitContainer3.Panel2.Controls.Add(this.cb_TDBUpsm);
             this.splitContainer3.Panel2.Controls.Add(this.bt_compare_ET);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox4);
@@ -284,14 +288,34 @@
             this.ct_ET_peakList.Series.Add(series1);
             this.ct_ET_peakList.Series.Add(series2);
             this.ct_ET_peakList.Series.Add(series3);
-            this.ct_ET_peakList.Size = new System.Drawing.Size(264, 369);
+            this.ct_ET_peakList.Size = new System.Drawing.Size(264, 348);
             this.ct_ET_peakList.TabIndex = 1;
             this.ct_ET_peakList.Text = "chart1";
+            // 
+            // tb_notch_masses
+            // 
+            this.tb_notch_masses.Enabled = false;
+            this.tb_notch_masses.Location = new System.Drawing.Point(100, 28);
+            this.tb_notch_masses.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_notch_masses.Name = "tb_notch_masses";
+            this.tb_notch_masses.Size = new System.Drawing.Size(314, 20);
+            this.tb_notch_masses.TabIndex = 35;
+            // 
+            // cb_notch_search
+            // 
+            this.cb_notch_search.AutoSize = true;
+            this.cb_notch_search.Location = new System.Drawing.Point(3, 30);
+            this.cb_notch_search.Name = "cb_notch_search";
+            this.cb_notch_search.Size = new System.Drawing.Size(92, 17);
+            this.cb_notch_search.TabIndex = 34;
+            this.cb_notch_search.Text = "Notch Search";
+            this.cb_notch_search.UseVisualStyleBackColor = true;
+            this.cb_notch_search.CheckedChanged += new System.EventHandler(this.cb_notch_search_CheckedChanged);
             // 
             // cb_TDBUpsm
             // 
             this.cb_TDBUpsm.AutoSize = true;
-            this.cb_TDBUpsm.Location = new System.Drawing.Point(3, 29);
+            this.cb_TDBUpsm.Location = new System.Drawing.Point(0, 7);
             this.cb_TDBUpsm.Name = "cb_TDBUpsm";
             this.cb_TDBUpsm.Size = new System.Drawing.Size(217, 17);
             this.cb_TDBUpsm.TabIndex = 33;
@@ -320,7 +344,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(31, 64);
+            this.groupBox4.Location = new System.Drawing.Point(31, 68);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -328,6 +352,26 @@
             this.groupBox4.TabIndex = 15;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "ET Peak List Parameters";
+            // 
+            // tb_max_accepted_fdr
+            // 
+            this.tb_max_accepted_fdr.Location = new System.Drawing.Point(133, 71);
+            this.tb_max_accepted_fdr.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_max_accepted_fdr.Name = "tb_max_accepted_fdr";
+            this.tb_max_accepted_fdr.ReadOnly = true;
+            this.tb_max_accepted_fdr.Size = new System.Drawing.Size(86, 20);
+            this.tb_max_accepted_fdr.TabIndex = 15;
+            // 
+            // label9
+            // 
+            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(0, 74);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(129, 13);
+            this.label9.TabIndex = 14;
+            this.label9.Text = "Max Accepted Peak FDR";
             // 
             // label4
             // 
@@ -394,7 +438,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(263, 82);
+            this.groupBox3.Location = new System.Drawing.Point(263, 86);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -467,7 +511,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(263, 169);
+            this.groupBox2.Location = new System.Drawing.Point(263, 173);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -555,7 +599,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(31, 169);
+            this.groupBox1.Location = new System.Drawing.Point(31, 173);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -723,26 +767,6 @@
             this.ct_ET_Histogram.TabIndex = 0;
             this.ct_ET_Histogram.Text = "chart1";
             // 
-            // label9
-            // 
-            this.label9.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(0, 74);
-            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(129, 13);
-            this.label9.TabIndex = 14;
-            this.label9.Text = "Max Accepted Peak FDR";
-            // 
-            // tb_max_accepted_fdr
-            // 
-            this.tb_max_accepted_fdr.Location = new System.Drawing.Point(133, 71);
-            this.tb_max_accepted_fdr.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_max_accepted_fdr.Name = "tb_max_accepted_fdr";
-            this.tb_max_accepted_fdr.ReadOnly = true;
-            this.tb_max_accepted_fdr.Size = new System.Drawing.Size(86, 20);
-            this.tb_max_accepted_fdr.TabIndex = 15;
-            // 
             // ExperimentTheoreticalComparison
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -847,5 +871,7 @@
         private System.Windows.Forms.CheckBox cb_TDBUpsm;
         private System.Windows.Forms.TextBox tb_max_accepted_fdr;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.CheckBox cb_notch_search;
+        private System.Windows.Forms.TextBox tb_notch_masses;
     }
 }

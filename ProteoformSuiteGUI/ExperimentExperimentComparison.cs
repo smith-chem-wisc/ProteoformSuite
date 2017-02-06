@@ -40,6 +40,11 @@ namespace ProteoformSuite
             {
                 this.Cursor = Cursors.WaitCursor;
                 ClearListsAndTables();
+                if (Lollipop.notch_search_ee)
+                {
+                    bool notch_masses = get_notch_masses();
+                    if (!notch_masses) return;
+                }
                 Lollipop.make_ee_relationships();
                 this.FillTablesAndCharts();
                 this.Cursor = Cursors.Default;
@@ -56,6 +61,30 @@ namespace ProteoformSuite
         public DataGridView GetEEPeaksDGV()
         {
             return dgv_EE_Peaks;
+        }
+
+
+        public bool get_notch_masses()
+        {
+            try
+            {
+                string[] notch_masses = tb_notch_masses.Text.Split(';');
+                if (notch_masses.Length == 0)
+                {
+                    MessageBox.Show("No notch masses entered.");
+                    return false;
+                }
+                foreach (string mass in notch_masses)
+                {
+                    Lollipop.notch_masses_ee.Add(Convert.ToDouble(mass));
+                }
+                return true;
+            }
+            catch
+            {
+                MessageBox.Show("Masses in incorrect format.");
+                return false;
+            }
         }
 
         private void ClearListsAndTables()
@@ -285,6 +314,13 @@ namespace ProteoformSuite
             }
             string results_rows = String.Join(Environment.NewLine, rows.Select(r => r.ToString()));
             return tsv_header + "\n" + results_rows;
-        }     
-   }
+        }
+
+        private void cb_notch_search_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.notch_search_ee = cb_notch_search.Checked;
+            tb_notch_masses.Enabled = cb_notch_search.Checked;
+            if (cb_notch_search.Checked) tb_notch_masses.Text = "Enter notches to search, separated by semi-colon.";
+        }
+    }
 }
