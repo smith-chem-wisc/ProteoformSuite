@@ -35,17 +35,21 @@ namespace ProteoformSuite
 
         public void compare_et()
         {
-            if (Lollipop.proteoform_community.has_e_and_t_proteoforms)
+            if (Lollipop.et_relations.Count == 0 && Lollipop.proteoform_community.has_e_and_t_proteoforms)
             {
-                this.Cursor = Cursors.WaitCursor;
-                ClearListsAndTables();
-                Lollipop.make_et_relationships();
-                this.FillTablesAndCharts();
-                this.Cursor = Cursors.Default;
-                compared_et = true;
+                run_the_gamut();
             }
-            else if (Lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
-            else MessageBox.Show("Go back and aggregate experimental proteoforms.");
+            else if (Lollipop.et_relations.Count == 0 && Lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
+            else if (Lollipop.et_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
+        }
+
+        private void run_the_gamut()
+        {
+            this.Cursor = Cursors.WaitCursor;
+            Lollipop.make_et_relationships();
+            this.FillTablesAndCharts();
+            this.Cursor = Cursors.Default;
+            compared_et = true;
         }
 
         public void FillTablesAndCharts()
@@ -79,6 +83,7 @@ namespace ProteoformSuite
             Lollipop.proteoform_community.families.Clear();
             foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.ed);
             foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.ed);
+            foreach (Proteoform p in Lollipop.proteoform_community.decoy_proteoforms.Values.SelectMany(d => d)) p.relationships.Clear();
             Lollipop.proteoform_community.relations_in_peaks.RemoveAll(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.ed);
             Lollipop.proteoform_community.delta_mass_peaks.RemoveAll(k => k.relation_type == ProteoformComparison.et || k.relation_type == ProteoformComparison.ed);
 
@@ -176,7 +181,8 @@ namespace ProteoformSuite
         private void bt_compare_et_Click(object sender, EventArgs e)
         {
             shift_masses();
-            compare_et();
+            ClearListsAndTables();
+            run_the_gamut();
             xMaxET.Value = (decimal)Lollipop.et_high_mass_difference;
             xMinET.Value = (decimal)Lollipop.et_low_mass_difference;
         }

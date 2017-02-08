@@ -357,7 +357,7 @@ namespace ProteoformSuiteInternal
                 {
                     if (e.lt_verification_components.Count > 0 || Lollipop.neucode_labeled && e.lt_verification_components.Count > 0 && e.hv_verification_components.Count > 0)
                     {
-                        e.accepted = true;
+                       // e.accepted = true; this is set based on the e properties
                         Lollipop.vetted_proteoforms.Add(e);
                     }
                     Lollipop.remaining_verification_components = Lollipop.remaining_verification_components.Except(e.lt_verification_components.Concat(e.hv_verification_components)).ToList();
