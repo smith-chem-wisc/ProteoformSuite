@@ -111,10 +111,11 @@ namespace ProteoformSuiteInternal
     {
         Identification,
         Quantification,
-        Calibration,
         BottomUp,
         TopDown,
-        RawFile
+        RawFile,
+        CalibrationIdentification,
+        CalibrationTopDown
     }
 
     public enum Labeling

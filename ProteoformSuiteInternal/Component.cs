@@ -151,9 +151,9 @@ namespace ProteoformSuiteInternal
 
 
         // METHODS
-        public void add_charge_state(List<string> charge_row, double correction)
+        public void add_charge_state(List<string> charge_row)
         {
-            this.charge_states.Add(new ChargeState(charge_row, correction));
+            this.charge_states.Add(new ChargeState(charge_row));
         }
 
         public void calculate_properties()
@@ -250,11 +250,11 @@ namespace ProteoformSuiteInternal
         public double calculated_mass { get; set; }  // the value reported by decon 4.0 is incorrect, so we calculate it from m/z and charge (including correction when necessary)
         public double signal_to_noise { get; set; }  //intensity of average isotope peak / noise at that peak
 
-        public ChargeState(List<string> charge_row, double mz_correction) //the correction used is determined from measurement of lock-mass compound. It is read in at the same time the data is read in. We do not keep track of the correction because it adds confusion when charge states are combined.
+        public ChargeState(List<string> charge_row) //the correction used is determined from measurement of lock-mass compound. It is read in at the same time the data is read in. We do not keep track of the correction because it adds confusion when charge states are combined.
         {
             this.charge_count = Convert.ToInt32(charge_row[0]);
             this.intensity = Convert.ToDouble(charge_row[1]);
-            this.mz_centroid = correct_calculated_mz(Convert.ToDouble(charge_row[2]), mz_correction); 
+            this.mz_centroid = Convert.ToDouble(charge_row[2]); 
             this.calculated_mass = correct_calculated_mass(mz_centroid);
             this.calculated_mass_reported = correct_calculated_mass(Convert.ToDouble(charge_row[2])); //uncalibrated
         }

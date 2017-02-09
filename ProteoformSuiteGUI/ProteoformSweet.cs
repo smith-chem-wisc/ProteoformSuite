@@ -27,6 +27,7 @@ namespace ProteoformSuite
         TopDown topDown = new TopDown();
         Quantification quantification = new Quantification();
         ResultsSummary resultsSummary = new ResultsSummary();
+        CalibrateResults calibrateResults = new CalibrateResults();
         List<Form> forms;
         //  Initialize Forms END
 
@@ -54,7 +55,7 @@ namespace ProteoformSuite
             forms = new List<Form>(new Form[] {
                 loadResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
                 theoreticalDatabase, experimentalTheoreticalComparison, experimentExperimentComparison,
-                proteoformFamilies, quantification
+                proteoformFamilies, quantification, calibrateResults
             });
         }
 
@@ -121,7 +122,10 @@ namespace ProteoformSuite
             resultsSummary.displayResultsSummary();
             showForm(resultsSummary);
         }
-
+        private void calibrateResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(calibrateResults);
+        }
 
         // FILE TOOL STRIP
         private void openAllToolStripMenuItem_Click(object sender, EventArgs e)
@@ -534,5 +538,7 @@ namespace ProteoformSuite
             }
             else return; 
         }
+
+
     }
 }

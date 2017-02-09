@@ -31,9 +31,11 @@ namespace ProteoformSuiteInternal
         public double mz { get; set; }
         public double intensity { get; set; } //precursor ion intensity
         public bool targeted { get; set; }
+        public InputFile file { get; set; }
 
-        public TopDownHit(string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double score, Result_Set result_set)
+        public TopDownHit(InputFile file, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double score, Result_Set result_set, bool targeted)
         {
+            this.file = file;
             this.accession = accession;
             this.uniprot_id = uniprot_id;
             this.name = name;
@@ -49,12 +51,7 @@ namespace ProteoformSuiteInternal
             this.filename = filename;
             this.score = score;
             this.result_set = result_set;
-        }
-
-        public TopDownHit(int scan, string filename)
-        {
-            this.scan = scan;
-            this.filename = filename;
+            this.targeted = targeted;
         }
 
         public bool same_ptm_hits(TopDownHit root)

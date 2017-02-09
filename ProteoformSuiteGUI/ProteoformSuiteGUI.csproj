@@ -115,6 +115,12 @@
     <Compile Include="AggregatedProteoforms.Designer.cs">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </Compile>
+    <Compile Include="CalibrateResults.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CalibrateResults.Designer.cs">
+      <DependentUpon>CalibrateResults.cs</DependentUpon>
+    </Compile>
     <Compile Include="DGVExcelWriter.cs" />
     <Compile Include="DisplayUtility.cs" />
     <Compile Include="ExperimentExperimentComparison.cs">
@@ -188,6 +194,9 @@
     </Compile>
     <EmbeddedResource Include="AggregatedProteoforms.resx">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CalibrateResults.resx">
+      <DependentUpon>CalibrateResults.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ExperimentExperimentComparison.resx">
       <DependentUpon>ExperimentExperimentComparison.cs</DependentUpon>
