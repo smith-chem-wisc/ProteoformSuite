@@ -14,7 +14,6 @@ namespace ProteoformSuiteInternal
         //Please do not list {get;set} for new fields, so they are properly recorded in save all AC161103
         public ExperimentalProteoform[] experimental_proteoforms = new ExperimentalProteoform[0];
         public TheoreticalProteoform[] theoretical_proteoforms = new TheoreticalProteoform[0];
-        public List<TopDownProteoform> targeted_topdown_proteoforms = new List<TopDownProteoform>();
         public TopDownProteoform[] topdown_proteoforms = new TopDownProteoform[0];
 
         public bool has_e_proteoforms

@@ -17,6 +17,8 @@ namespace ProteoformSuiteInternal
         public double[] noises { get; set; }
         public double[] peak_x { get; set; }
         public double[] peak_y { get; set; }
+        public double lock_mass_shift { get; set; }
+
         public MsScan(int ms_order, int scan_number, string filename, double retention_time, double injection_time, double TIC, double[] peak_x, double[] peak_y, double[] noises)
         {
             this.ms_order = ms_order;

@@ -143,7 +143,7 @@
     <Compile Include="Results.cs" />
     <Compile Include="SaveState.cs" />
     <Compile Include="TdBuReader.cs" />
-    <Compile Include="TdMzCal.cs" />
+    <Compile Include="Calibration.cs" />
     <Compile Include="TopDownHit.cs" />
   </ItemGroup>
   <ItemGroup>

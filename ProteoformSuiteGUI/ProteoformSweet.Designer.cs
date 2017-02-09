@@ -48,14 +48,15 @@
             this.theoreticalProteoformDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.experimentTheoreticalComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.experimentExperimentComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.proteoformFamilyAssignmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.topdownResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.proteoformFamilyAssignmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quantificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resultsSummaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runMethodToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.calibrateResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -155,6 +156,7 @@
             // resultsToolStripMenuItem
             // 
             this.resultsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.calibrateResultsToolStripMenuItem,
             this.loadResultsToolStripMenuItem,
             this.rawExperimentalProteoformsToolStripMenuItem,
             this.neuCodeProteoformPairsToolStripMenuItem,
@@ -219,19 +221,19 @@
             this.experimentExperimentComparisonToolStripMenuItem.Text = "Experiment - Experiment Comparison";
             this.experimentExperimentComparisonToolStripMenuItem.Click += new System.EventHandler(this.experimentExperimentComparisonToolStripMenuItem_Click);
             // 
-            // proteoformFamilyAssignmentToolStripMenuItem
-            // 
-            this.proteoformFamilyAssignmentToolStripMenuItem.Name = "proteoformFamilyAssignmentToolStripMenuItem";
-            this.proteoformFamilyAssignmentToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.proteoformFamilyAssignmentToolStripMenuItem.Text = "Proteoform Family Assignment";
-            this.proteoformFamilyAssignmentToolStripMenuItem.Click += new System.EventHandler(this.proteoformFamilyAssignmentToolStripMenuItem_Click);
-            // 
             // topdownResultsToolStripMenuItem
             // 
             this.topdownResultsToolStripMenuItem.Name = "topdownResultsToolStripMenuItem";
             this.topdownResultsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.topdownResultsToolStripMenuItem.Text = "Top-down Results";
             this.topdownResultsToolStripMenuItem.Click += new System.EventHandler(this.topdownResultsToolStripMenuItem_Click);
+            // 
+            // proteoformFamilyAssignmentToolStripMenuItem
+            // 
+            this.proteoformFamilyAssignmentToolStripMenuItem.Name = "proteoformFamilyAssignmentToolStripMenuItem";
+            this.proteoformFamilyAssignmentToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.proteoformFamilyAssignmentToolStripMenuItem.Text = "Proteoform Family Assignment";
+            this.proteoformFamilyAssignmentToolStripMenuItem.Click += new System.EventHandler(this.proteoformFamilyAssignmentToolStripMenuItem_Click);
             // 
             // quantificationToolStripMenuItem
             // 
@@ -277,6 +279,13 @@
             this.loadRunToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.loadRunToolStripMenuItem.Text = "Load && Run";
             this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
+            // 
+            // calibrateResultsToolStripMenuItem
+            // 
+            this.calibrateResultsToolStripMenuItem.Name = "calibrateResultsToolStripMenuItem";
+            this.calibrateResultsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.calibrateResultsToolStripMenuItem.Text = "Calibrate Results";
+            this.calibrateResultsToolStripMenuItem.Click += new System.EventHandler(this.calibrateResultsToolStripMenuItem_Click);
             // 
             // ProteoformSweet
             // 
@@ -328,6 +337,7 @@
         private System.Windows.Forms.ToolStripMenuItem exportTablesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadSettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem topdownResultsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem calibrateResultsToolStripMenuItem;
     }
 }
 

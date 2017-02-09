@@ -20,12 +20,10 @@ namespace ProteoformSuiteInternal
         public HashSet<string> scan_ranges = new HashSet<string>();
 
 
-        public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction>correctionFactors, List<int> MS1_scans)
+        public List<Component> read_components_from_xlsx(InputFile file)
         {
             Func<double[], double> bestCf = null;
             if (Lollipop.calibrate_td_results) bestCf = Lollipop.td_calibration_functions[file.filename];
-            this.MS1_scans.Clear();
-            this.MS1_scans = MS1_scans;
             this.raw_components_in_file.Clear();
             string absolute_path = file.path + "\\" + file.filename + file.extension;
             try
@@ -72,10 +70,7 @@ namespace ProteoformSuiteInternal
                             }
                             else
                             {
-                                double correction = 0;
-                                if (Lollipop.calibrate_td_results) correction = -1 * bestCf(new double[] { Convert.ToDouble(cellStrings[2]), Convert.ToDouble(rt_range.Split('-')[0]) });
-                                else correction = GetCorrectionFactor(file.filename, scan_range, correctionFactors);
-                                new_component.add_charge_state(cellStrings, correction);
+                                new_component.add_charge_state(cellStrings);
                             }
                         }
                     }
@@ -93,11 +88,8 @@ namespace ProteoformSuiteInternal
 
         private void add_component(Component c)
         {
-            if (!Lollipop.td_results || acceptable_td_component(c))
-            {          
-                c.calculate_properties();
-                this.raw_components_in_file.Add(c);
-            }
+           c.calculate_properties();
+           this.raw_components_in_file.Add(c);
         }
 
         public List<Component> removeThese = new List<Component>();
@@ -244,14 +236,6 @@ namespace ProteoformSuiteInternal
                             }
                         }
                     }
-                }
-            }
-
-            if (Lollipop.td_results)
-            {
-                foreach (Component c in raw_components.Except(removeThese))
-                {
-                    TdMzCal.get_signal_to_noise(c);
                 }
             }
             return raw_components.Except(removeThese).ToList();
