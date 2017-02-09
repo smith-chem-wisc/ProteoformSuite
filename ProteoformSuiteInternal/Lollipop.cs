@@ -30,7 +30,7 @@ namespace ProteoformSuiteInternal
 
         //RAW EXPERIMENTAL COMPONENTS
         public static List<InputFile> input_files = new List<InputFile>();
-        public static List<Correction> correctionFactors = null;
+        public static List<Correction> correctionFactors = new List<Correction>();
         public static List<Component> raw_experimental_components = new List<Component>();
         public static List<Component> raw_quantification_components = new List<Component>();
         public static bool neucode_labeled = true;
@@ -115,9 +115,6 @@ namespace ProteoformSuiteInternal
 
         public static void process_raw_components()
         {
-
-            //if (input_files.Any(f => f.purpose == Purpose.Calibration))
-            //    correctionFactors = calibration_files().SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
             object sync = new object();
             Parallel.ForEach(input_files.Where(f => f.purpose == Purpose.Identification), file =>
            {
@@ -648,7 +645,6 @@ namespace ProteoformSuiteInternal
         public static List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
         public static List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
         public static List<ProteoformRelation> td_relations = new List<ProteoformRelation>(); //td data
-        public static List<ProteoformRelation> targeted_td_relations = new List<ProteoformRelation>();
         public static bool notch_search_et = false;
         public static bool notch_search_ee = false;
         public static List<double> notch_masses_et = new List<double>();
@@ -712,12 +708,12 @@ namespace ProteoformSuiteInternal
 
         public static void make_targeted_td_relationships()
         {
-             targeted_td_relations = Lollipop.proteoform_community.relate_targeted_td(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted && p.etd_match_count == 0).ToList(), Lollipop.proteoform_community.topdown_proteoforms.Where(p => p.targeted).ToList());
+             td_relations.AddRange(Lollipop.proteoform_community.relate_targeted_td(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted && p.etd_match_count == 0).ToList(), Lollipop.proteoform_community.topdown_proteoforms.Where(p => p.targeted).ToList()));
         }
 
         //CALIBRATION
         public static bool calibrate_lock_mass = false;
-        public static bool calibrate_td_results = false;
+        public static bool calibrate_td_results = true;
         public static List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
         public static List<Component> uncalibrated_components = new List<Component>();
 
@@ -739,14 +735,15 @@ namespace ProteoformSuiteInternal
                 {
                     InputFile raw_file = raw_files.First();
                     Calibration.get_ms_scans(filename, raw_file.path + "\\" + raw_file.filename + raw_file.extension);
+
                     if (Lollipop.calibrate_lock_mass)
                     {
                         Calibration.raw_lock_mass(filename, raw_file.path + "\\" + raw_file.filename + raw_file.extension);
                         correctionFactors.AddRange(Correction.CorrectionFactorInterpolation(Ms_scans.Where(s => s.filename == filename).Select(s => (new Correction(s.filename, s.scan_number, s.lock_mass_shift)))));
                     }
+
                     if (Lollipop.calibrate_td_results)
                     {
-                        //  first step opens raw file and gets MS1 scan numbers... if calibrating, goes on to calibrate. 
                         Func<double[], double> bestCf = Calibration.Run_TdMzCal(filename, raw_file.path + "\\" + raw_file.filename + raw_file.extension, td_hits_calibration.Where(h => h.filename == filename).ToList());
                         if (bestCf != null)
                         {
@@ -774,7 +771,7 @@ namespace ProteoformSuiteInternal
                 {
                     foreach(TopDownHit hit in td_hits_calibration.Where(h => h.filename == filename).ToList())
                     {
-                        double correction = 0D;
+                        double correction = 0;
                         try { correction = correctionFactors.Where(c => c.file_name == filename && c.scan_number == hit.scan).First().correction; }
                         catch {  }
                         hit.corrected_mass = (hit.mz - correction).ToMass(hit.charge);

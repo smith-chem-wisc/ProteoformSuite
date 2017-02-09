@@ -22,8 +22,6 @@ namespace ProteoformSuiteInternal
 
         public List<Component> read_components_from_xlsx(InputFile file)
         {
-            Func<double[], double> bestCf = null;
-            if (Lollipop.calibrate_td_results) bestCf = Lollipop.td_calibration_functions[file.filename];
             this.raw_components_in_file.Clear();
             string absolute_path = file.path + "\\" + file.filename + file.extension;
             try
@@ -341,33 +339,6 @@ namespace ProteoformSuiteInternal
             else
                 return value;
         }
-
-
-        public double GetCorrectionFactor(string filename, string scan_range, IEnumerable<Correction> correctionFactors)
-        {
-            if(correctionFactors == null) return 0D;
-
-            int[] scans = new int[2] { 0, 0 };
-            try
-            {
-                scans = Array.ConvertAll<string, int>(scan_range.Split('-').ToArray(), int.Parse);
-            }
-            catch
-            { }
-
-            if (scans[0] <= 0 || scans[1] <= 0) return 0D;
-
-            IEnumerable<double> allCorrectionFactors = 
-                (from s in correctionFactors
-                 where s.file_name == filename
-                 where s.scan_number >= scans[0]
-                where s.scan_number <= scans[1]
-                select s.correction).ToList();
-
-            if (allCorrectionFactors.Count() <= 0) return 0D;
-
-            return allCorrectionFactors.Average();                
-        }     
 
         private bool acceptable_td_component(Component c)
         {

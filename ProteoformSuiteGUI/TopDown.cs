@@ -53,7 +53,6 @@ namespace ProteoformSuite
         private void clear_lists()
         {
             Lollipop.td_relations.Clear();
-            Lollipop.targeted_td_relations.Clear();
             foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.etd);
             foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ttd);
             foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ettd);
@@ -82,7 +81,7 @@ namespace ProteoformSuite
 
         private void bt_targeted_td_relations_Click(object sender, EventArgs e)
         {
-            Lollipop.targeted_td_relations.Clear();
+            Lollipop.td_relations.Where(r => ((TopDownProteoform)r.connected_proteoforms[0]).targeted).ToList().Clear();
             foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ettd);
             foreach (Proteoform p in Lollipop.proteoform_community.topdown_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ettd);
             Lollipop.make_targeted_td_relationships();
