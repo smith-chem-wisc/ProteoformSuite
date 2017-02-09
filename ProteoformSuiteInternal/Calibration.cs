@@ -33,13 +33,29 @@ namespace ProteoformSuiteInternal
                 MsScan scan = new ProteoformSuiteInternal.MsScan(spectrum.MsnOrder, spectrum.OneBasedScanNumber, filename, spectrum.RetentionTime, spectrum.InjectionTime, spectrum.TotalIonCurrent, spectrum.MassSpectrum.xArray, spectrum.MassSpectrum.yArray, spectrum.MassSpectrum.GetNoises());
                 Lollipop.Ms_scans.Add(scan);
             }
+
+            //set charge, mz, intensity, find MS1 numbers
+            foreach (TopDownHit hit in Lollipop.td_hits_calibration.Where(f => f.filename == filename).ToList())
+            {
+                hit.ms_scan = Lollipop.Ms_scans.Where(s => s.filename == hit.filename && s.scan_number == hit.scan).ToList().First();
+                //add intensity and charge info for precursor
+                double intensity;
+                // myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessChargeStateGuess(out protein_charge); didn't work 
+                myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessMonoisotopicIntensity(out intensity);
+                double mz;
+                myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessMonoisotopicMZ(out mz);
+                hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / mz, 0)); //m / (m/z)  round to get charge 
+                hit.mz = hit.reported_mass.ToMassToChargeRatio(hit.charge);
+                hit.intensity = intensity;
+            }
+            myMsDataFile.Close();
         }
 
         //RAW LOCK MASS 
         public static void raw_lock_mass(string filename, string raw_file_path)
         {
             UsefulProteomicsDatabases.Loaders.LoadElements("elements.dat");
-            var tol = 0.004;
+            var tol = .01;
 
             var Compound1 = new Peptide("NNNNN");
 
@@ -56,29 +72,29 @@ namespace ProteoformSuiteInternal
             List<List<double>> allDistributions = new List<List<double>>() { regularMZ, withAmmoniaLossMZ, deamidatedMZ };
             var myMsDataFile = new ThermoRawFile(raw_file_path);
             myMsDataFile.Open();
-
-            foreach(var scan in myMsDataFile)
-            {
-                if(scan.MsnOrder == 1)
+                foreach (var scan in myMsDataFile)
                 {
-                    double bestIntensity = 0;
-                    double monoError = double.NaN;
-                    foreach (var dist in allDistributions)
+                    if (scan.MsnOrder == 1)
                     {
-                        ThermoMzPeak monoisotopicPeak = null;
-                        try { monoisotopicPeak = scan.MassSpectrum.newSpectrumExtract(dist[0] - tol, dist[0] + tol).PeakWithHighestY; }
-                        catch { }
-                        if (monoisotopicPeak != null && bestIntensity < monoisotopicPeak.Intensity)
+                        double bestIntensity = 0;
+                        double monoError = double.NaN;
+                        foreach (var dist in allDistributions)
                         {
-                            bestIntensity = monoisotopicPeak.Intensity;
-                            monoError =  monoisotopicPeak.MZ - dist[0];
+                            ThermoMzPeak monoisotopicPeak = null;
+                            try { monoisotopicPeak = scan.MassSpectrum.newSpectrumExtract(dist[0] - tol, dist[0] + tol).PeakWithHighestY; }
+                            catch { }
+                            if (monoisotopicPeak != null && bestIntensity < monoisotopicPeak.Intensity)
+                            {
+                                bestIntensity = monoisotopicPeak.Intensity;
+                                monoError = monoisotopicPeak.MZ - dist[0];
+                            }
                         }
+                        MsScan get_scan = Lollipop.Ms_scans.Where(s => s.filename == filename && s.scan_number == scan.OneBasedScanNumber).ToList().First();
+                        get_scan.lock_mass_shift = monoError;
                     }
-                    MsScan get_scan = Lollipop.Ms_scans.Where(s => s.filename == filename && s.scan_number == scan.OneBasedScanNumber).ToList().First();
-                    get_scan.lock_mass_shift = monoError;
-                }
             }
         }
+
 
 
         //CALIBRATION WITH TD HITS
@@ -87,23 +103,8 @@ namespace ProteoformSuiteInternal
             var myMsDataFile = new ThermoRawFile(raw_file_path);
             myMsDataFile.Open();
 
-            //set charge, mz, intensity, find MS1 numbers
-            foreach (TopDownHit hit in identifications)
-            {
-                hit.ms_scan = Lollipop.Ms_scans.Where(s => s.filename == hit.filename && s.scan_number == hit.scan).ToList().First();
-                //add intensity and charge info for precursor
-                double intensity;
-                // myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessChargeStateGuess(out protein_charge); didn't work 
-                myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessMonoisotopicIntensity(out intensity);
-                double mz;
-                myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessMonoisotopicMZ(out mz);
-                hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / mz, 0)); //m / (m/z)  round to get charge 
-                hit.mz = hit.reported_mass.ToMassToChargeRatio(hit.charge);
-                hit.intensity = intensity;
-            }
-
             Func<double[], double> calibration_function = null;
-            if (Lollipop.calibrate_td_results && identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList().Count >= 5)
+            if (identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList().Count >= 5)
             {
                 List<TopDownHit> identifications_tight_mass = identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList();
                 //filter out 5% outliers
@@ -126,14 +127,15 @@ namespace ProteoformSuiteInternal
                 List<LabeledDataPoint> pointList = new List<LabeledDataPoint>();
                 pointList = GetDataPoints(myMsDataFile, identifications_to_use);
 
-                //if lock mass, add lock mass peptide to training points
+                ////if lock mass, add lock mass peptide to training points
                 if (Lollipop.calibrate_lock_mass)
                 {
-                    foreach(MsScan scan in Lollipop.Ms_scans.Where(s => s.filename == filename && s.lock_mass_shift > 0))
+                    foreach (MsScan scan in Lollipop.Ms_scans.Where(s => s.filename == filename && s.lock_mass_shift > 0 || s.lock_mass_shift < 0))
                     {
-                        pointList.Add(new LabeledDataPoint(new double[2] { 589, scan.retention_time }, scan.lock_mass_shift));
+                        pointList.Add(new LabeledDataPoint(new double[2] { 589.2, scan.retention_time }, scan.lock_mass_shift));
                     }
                 }
+
                 //linear fit, mz correction as a function of retention time and m/z value
                 double[][] variables = new double[pointList.Count()][];
                 int k = 0;
@@ -152,8 +154,8 @@ namespace ProteoformSuiteInternal
                     functions[j + 1] = a => a[j];
                 }
                 calibration_function = Fit.LinearMultiDimFunc(variables, mz_errors, functions);
-                myMsDataFile.Close();
             }
+            myMsDataFile.Close();
             return calibration_function;
         }
 
@@ -169,8 +171,10 @@ namespace ProteoformSuiteInternal
                 var a = new LabeledDataPoint(inputs, (hit.reported_mass - hit.theoretical_mass - Math.Round(hit.reported_mass - hit.theoretical_mass, 0)) / hit.charge);
                 trainingPointsToReturn.Add(a);
             }
+
             return trainingPointsToReturn;
         }
+
 
         //READ AND WRITE NEW CALIBRATED TD HITS FILE 
         public static void calibrate_td_hits_file(InputFile file)
@@ -204,8 +208,8 @@ namespace ProteoformSuiteInternal
                     {
                         cellStrings.Add(TdBuReader.GetCellValue(spreadsheetDocument, cell));
                     }
-                   if (Lollipop.td_calibration_functions.ContainsKey(cellStrings[14].Split('.')[0]))
-                   {
+                    if (Lollipop.td_calibration_functions.ContainsKey(cellStrings[14].Split('.')[0]))
+                    {
                         TopDownHit hit = Lollipop.td_hits_calibration.Where(h => h.file == file && h.reported_mass == Convert.ToDouble(cellStrings[16])).ToList().First();
                         cells.ElementAt(16).CellValue = new CellValue(hit.corrected_mass.ToString());
                         cells.ElementAt(16).DataType = new EnumValue<CellValues>(CellValues.Number);
@@ -218,7 +222,7 @@ namespace ProteoformSuiteInternal
                         rowindex++;
                     }
                     //if not calibrated, remove from list
-                     else
+                    else
                     {
                         row.Remove();
                     }
@@ -232,6 +236,7 @@ namespace ProteoformSuiteInternal
         {
             Func<double[], double> bestCf = null;
             if (Lollipop.calibrate_td_results && Lollipop.td_calibration_functions.ContainsKey(file.filename)) bestCf = Lollipop.td_calibration_functions[file.filename];
+            else if (Lollipop.calibrate_td_results) return; //if no calibration function, don't calibrate components file
 
             //Copy file to new worksheet
             string old_absolute_path = file.path + "\\" + file.filename + file.extension;
@@ -261,7 +266,6 @@ namespace ProteoformSuiteInternal
                 {
                     List<string> cellStrings = new List<string>();
                     if (i == 0) continue; //skip component header
-
                     for (int k = 0; k < rowcollection[i].Descendants<Cell>().Count(); k++)
                     {
                         cellStrings.Add(GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
@@ -283,12 +287,13 @@ namespace ProteoformSuiteInternal
                         }
                         else
                         {
-                            double correction = 0D;
+                            double correction = 0;
                             //if calibrate td results only, use td results' function
                             //if calibrate td results & lock mass, lock mass peptide was used to make td results' function
                             //if lock mass only, use lock mass correction factors
                             if (Lollipop.calibrate_td_results) correction = -1 * bestCf(new double[] { Convert.ToDouble(cellStrings[2]), Convert.ToDouble(rt_range.Split('-')[0]) });
-                            else if (Lollipop.calibrate_lock_mass && !Lollipop.calibrate_td_results) correction = get_correction_factor(file.filename, scan_range);                            worksheet_1.Worksheet.Descendants<Row>().ToList()[i].Descendants<Cell>().ElementAt(2).CellValue = new CellValue((Convert.ToDouble(cellStrings[2]) + correction).ToString());
+                            if (Lollipop.calibrate_lock_mass && !Lollipop.calibrate_td_results) correction = -1 * get_correction_factor(file.filename, scan_range);
+                            worksheet_1.Worksheet.Descendants<Row>().ToList()[i].Descendants<Cell>().ElementAt(2).CellValue = new CellValue((Convert.ToDouble(cellStrings[2]) + correction).ToString());
                             worksheet_1.Worksheet.Descendants<Row>().ToList()[i].Descendants<Cell>().ElementAt(2).DataType = new EnumValue<CellValues>(CellValues.Number);
                         }
                     }
@@ -318,7 +323,6 @@ namespace ProteoformSuiteInternal
                  select s.correction).ToList();
 
             if (allCorrectionFactors.Count() <= 0) return 0D;
-
             return allCorrectionFactors.Average();
         }
 

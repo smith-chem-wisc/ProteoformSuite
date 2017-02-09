@@ -252,6 +252,7 @@ namespace ProteoformSuite
             Lollipop.get_calibration_points();
             Lollipop.calibrate_td_hits();
             Lollipop.calibrate_components();
+            MessageBox.Show("Successfully calibrated results.");
         }
     }
 }

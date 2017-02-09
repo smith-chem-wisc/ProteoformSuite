@@ -246,7 +246,6 @@ namespace ProteoformSuiteInternal
         public int charge_count { get; set; } //value from deconv 4.0
         public double intensity { get; set; } //value from deconv 4.0
         public double mz_centroid { get; set; } 
-        public double calculated_mass_reported { get; set; } //uncalibrated mass 
         public double calculated_mass { get; set; }  // the value reported by decon 4.0 is incorrect, so we calculate it from m/z and charge (including correction when necessary)
         public double signal_to_noise { get; set; }  //intensity of average isotope peak / noise at that peak
 
@@ -254,9 +253,8 @@ namespace ProteoformSuiteInternal
         {
             this.charge_count = Convert.ToInt32(charge_row[0]);
             this.intensity = Convert.ToDouble(charge_row[1]);
-            this.mz_centroid = Convert.ToDouble(charge_row[2]); 
-            this.calculated_mass = correct_calculated_mass(mz_centroid);
-            this.calculated_mass_reported = correct_calculated_mass(Convert.ToDouble(charge_row[2])); //uncalibrated
+            this.mz_centroid = Convert.ToDouble(charge_row[2]); //no point to keeping the uncorrected mz if there is a correction.
+            this.calculated_mass = correct_calculated_mass();
         }
 
         public ChargeState(ChargeState cs)
@@ -284,11 +282,6 @@ namespace ProteoformSuiteInternal
         public double correct_calculated_mass() // the correction is a linear shift to m/z
         {
             return (this.charge_count * this.mz_centroid - this.charge_count * 1.00727645D);//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
-        }
-
-        public double correct_calculated_mass(double mz) // the correction is a linear shift to m/z
-        {
-            return (this.charge_count * mz - this.charge_count * 1.00727645D);//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
         }
 
 
