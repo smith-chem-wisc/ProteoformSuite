@@ -27,7 +27,6 @@ namespace ProteoformSuiteInternal
         {
             var myMsDataFile = new ThermoRawFile(raw_file_path);
             myMsDataFile.Open();
-
             foreach (IMsDataScan<ThermoSpectrum> spectrum in myMsDataFile)
             {
                 MsScan scan = new ProteoformSuiteInternal.MsScan(spectrum.MsnOrder, spectrum.OneBasedScanNumber, filename, spectrum.RetentionTime, spectrum.InjectionTime, spectrum.TotalIonCurrent, spectrum.MassSpectrum.xArray, spectrum.MassSpectrum.yArray, spectrum.MassSpectrum.GetNoises());
@@ -93,6 +92,7 @@ namespace ProteoformSuiteInternal
                         get_scan.lock_mass_shift = monoError;
                     }
             }
+            myMsDataFile.Close();
         }
 
 
@@ -228,6 +228,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
                 worksheet_1.Worksheet.Save();
+                spreadsheetDocument.Close();
             }
         }
 
@@ -299,6 +300,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
                 worksheet_1.Worksheet.Save();
+                spreadsheetDocument.Close();
             }
         }
 
