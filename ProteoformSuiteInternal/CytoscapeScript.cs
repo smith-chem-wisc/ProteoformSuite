@@ -122,7 +122,7 @@ namespace ProteoformSuiteInternal
             }
             else if ( p is TopDownProteoform)
             {
-                result = ((TopDownProteoform)p).accession + "_RT" + ((TopDownProteoform)p).agg_rt + "_" + ((TopDownProteoform)p).ptm_list_string();
+                result = ((TopDownProteoform)p).accession + "_RT" + Math.Round( ((TopDownProteoform)p).agg_rt, 0) + "_" + ((TopDownProteoform)p).ptm_list_string();
             }
             else result = p.accession;
             return result;
