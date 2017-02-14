@@ -122,7 +122,7 @@ namespace ProteoformSuiteInternal
             }
             else if ( p is TopDownProteoform)
             {
-                result = ((TopDownProteoform)p).accession + "_" + ((TopDownProteoform)p).ptm_list_string();
+                result = ((TopDownProteoform)p).accession + "_RT" + ((TopDownProteoform)p).agg_rt + "_" + ((TopDownProteoform)p).ptm_list_string();
             }
             else result = p.accession;
             return result;

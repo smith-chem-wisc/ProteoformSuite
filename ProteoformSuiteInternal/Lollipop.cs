@@ -650,6 +650,7 @@ namespace ProteoformSuiteInternal
         public static List<double> notch_masses_et = new List<double>();
         public static List<double> notch_masses_ee = new List<double>();
 
+
         public static void make_et_relationships()
         {
             if (!limit_TD_BU_theoreticals) Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms, ProteoformComparison.et);
@@ -662,7 +663,7 @@ namespace ProteoformSuiteInternal
         public static void make_ee_relationships()
         {
             Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ee);
-            Lollipop.ef_relations = Lollipop.proteoform_community.relate_unequal_ee_lysine_counts();
+            Lollipop.ef_relations = Lollipop.proteoform_community.relate_ef();
             Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
@@ -692,7 +693,7 @@ namespace ProteoformSuiteInternal
                 TopDownHit root = remaining_td_hits[0];
                 List<TopDownHit> tmp_remaining_td_hits = remaining_td_hits.ToList();
                 //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within mass tolerance used for agg
-                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, tmp_remaining_td_hits.Where(h => h.accession == root.accession && h.same_ptm_hits(root)).ToList());
+                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, tmp_remaining_td_hits.Where(h => h.accession == root.accession && h.same_ptm_hits(root) && Math.Abs(h.retention_time - root.retention_time) <= Convert.ToDouble(Lollipop.retention_time_tolerance)).ToList());
                 topdown_proteoforms.Add(new_pf);
                 remaining_td_hits = tmp_remaining_td_hits.Except(new_pf.topdown_hits).ToArray();
             }
@@ -717,7 +718,6 @@ namespace ProteoformSuiteInternal
         public static List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
         public static List<Component> uncalibrated_components = new List<Component>();
 
-
         public static void read_in_calibration_td_hits()
         {
             foreach (InputFile file in Lollipop.calibration_topdown_files())
@@ -725,58 +725,14 @@ namespace ProteoformSuiteInternal
                 td_hits_calibration.AddRange(TdBuReader.ReadTDFile(file));
             }
         }
-        
-        public static void get_calibration_points()
-        { 
-            foreach (string filename in calibration_identification_files().Select(h => h.filename).Distinct())
-            {
-                List<InputFile> raw_files = Lollipop.raw_files().Where(f => f.filename == filename).ToList();
-                if (raw_files.Count > 0)
-                {
-                    InputFile raw_file = raw_files.First();
-                    Calibration.get_ms_scans(filename, raw_file.path + "\\" + raw_file.filename + raw_file.extension);
 
-                    if (Lollipop.calibrate_lock_mass)
-                    {
-                        Calibration.raw_lock_mass(filename, raw_file.path + "\\" + raw_file.filename + raw_file.extension);
-                        correctionFactors.AddRange(Correction.CorrectionFactorInterpolation(Ms_scans.Where(s => s.filename == filename).Select(s => (new Correction(s.filename, s.scan_number, s.lock_mass_shift)))));
-                    }
-
-                    if (Lollipop.calibrate_td_results)
-                    {
-                        Func<double[], double> bestCf = Calibration.Run_TdMzCal(filename, raw_file.path + "\\" + raw_file.filename + raw_file.extension, td_hits_calibration.Where(h => h.filename == filename).ToList());
-                        if (bestCf != null)
-                        {
-                            td_calibration_functions.Add(filename, bestCf);
-                        }
-                    }
-                }
-            }
-        }
-
-        public static void calibrate_td_hits()
+        public static void calibrate_files()
         {
-            foreach (string filename in td_hits_calibration.Select(h => h.filename).Distinct())
+            foreach (InputFile file in calibration_identification_files())
             {
-                if (Lollipop.calibrate_td_results && Lollipop.td_calibration_functions.ContainsKey(filename))
-                {
-                    Func<double[], double> bestCf = Lollipop.td_calibration_functions[filename];
-                    //need to calibrate all the others
-                    foreach (TopDownHit hit in td_hits_calibration.Where(h => h.filename == filename).ToList())
-                    {
-                       hit.corrected_mass = (hit.mz - bestCf(new double[] { hit.mz, hit.retention_time })).ToMass(hit.charge);
-                    }
-                }
-                else if (!Lollipop.calibrate_td_results && Lollipop.calibrate_lock_mass)
-                {
-                    foreach(TopDownHit hit in td_hits_calibration.Where(h => h.filename == filename).ToList())
-                    {
-                        double correction = 0;
-                        try { correction = correctionFactors.Where(c => c.file_name == filename && c.scan_number == hit.scan).First().correction; }
-                        catch {  }
-                        hit.corrected_mass = (hit.mz - correction).ToMass(hit.charge);
-                    }
-                }
+                get_calibration_points(file.filename);
+                calibrate_td_hits(file.filename);
+                Calibration.calibrate_components_in_xlsx(file);
             }
 
             foreach (InputFile file in calibration_topdown_files())
@@ -785,14 +741,54 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public static void calibrate_components()
+       
+        public static void get_calibration_points(string filename)
         {
-            foreach (InputFile file in calibration_identification_files())
+            List<InputFile> raw_files = Lollipop.raw_files().Where(f => f.filename == filename).ToList();
+            if (raw_files.Count > 0)
             {
-                Calibration.calibrate_components_in_xlsx(file);
+                InputFile raw_file = raw_files.First();
+                Calibration.get_ms_scans(filename, raw_file.path + "\\" + raw_file.filename + raw_file.extension);
+
+                if (Lollipop.calibrate_lock_mass)
+                {
+                    Calibration.raw_lock_mass(filename, raw_file.path + "\\" + raw_file.filename + raw_file.extension);
+                    correctionFactors.AddRange(Correction.CorrectionFactorInterpolation(Ms_scans.Where(s => s.filename == filename).Select(s => (new Correction(s.filename, s.scan_number, s.lock_mass_shift)))));
+                }
+
+                if (Lollipop.calibrate_td_results)
+                {
+                    Func<double[], double> bestCf = Calibration.Run_TdMzCal(filename, raw_file.path + "\\" + raw_file.filename + raw_file.extension, td_hits_calibration.Where(h => h.filename == filename).ToList());
+                    if (bestCf != null)
+                    {
+                        td_calibration_functions.Add(filename, bestCf);
+                    }
+                }
             }
         }
 
+        public static void calibrate_td_hits(string filename)
+        {
+            if (Lollipop.calibrate_td_results && Lollipop.td_calibration_functions.ContainsKey(filename))
+            {
+                Func<double[], double> bestCf = Lollipop.td_calibration_functions[filename];
+                //need to calibrate all the others
+                foreach (TopDownHit hit in td_hits_calibration.Where(h => h.filename == filename).ToList())
+                {
+                    hit.corrected_mass = (hit.mz - bestCf(new double[] { hit.mz, hit.retention_time })).ToMass(hit.charge);
+                }
+            }
+            else if (!Lollipop.calibrate_td_results && Lollipop.calibrate_lock_mass)
+            {
+                foreach (TopDownHit hit in td_hits_calibration.Where(h => h.filename == filename).ToList())
+                {
+                    double correction = 0;
+                    try { correction = correctionFactors.Where(c => c.file_name == filename && c.scan_number == hit.scan).First().correction; }
+                    catch { }
+                    hit.corrected_mass = (hit.mz - correction).ToMass(hit.charge);
+                }
+            }
+        }
         //PROTEOFORM FAMILIES -- see ProteoformCommunity
         public static string family_build_folder_path = "";
         public static int deltaM_edge_display_rounding = 2;
