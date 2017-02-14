@@ -249,9 +249,7 @@ namespace ProteoformSuite
         private void bt_calibrate_Click(object sender, EventArgs e)
         {
             Lollipop.read_in_calibration_td_hits();
-            Lollipop.get_calibration_points();
-            Lollipop.calibrate_td_hits();
-            Lollipop.calibrate_components();
+            Lollipop.calibrate_files();
             MessageBox.Show("Successfully calibrated results.");
         }
     }

@@ -139,22 +139,37 @@ namespace ProteoformSuiteInternal
             });
             return ed_relations;
         }
-        public List<ProteoformRelation> relate_unequal_ee_lysine_counts()
+
+        public List<ProteoformRelation> relate_ef()
         {
             List<ProteoformRelation> ef_relations = new List<ProteoformRelation>();
-            ExperimentalProteoform[] pfs1 = new List<ExperimentalProteoform>(this.experimental_proteoforms).ToArray();
-            ExperimentalProteoform[] pfs2 = new List<ExperimentalProteoform>(this.experimental_proteoforms).ToArray();
+            ExperimentalProteoform[] pfs1 = new List<ExperimentalProteoform>(this.experimental_proteoforms.Where(p => p.accepted)).ToArray();
+            ExperimentalProteoform[] pfs2 = new List<ExperimentalProteoform>(this.experimental_proteoforms.Where(p => p.accepted)).ToArray();
             foreach (ExperimentalProteoform pf1 in pfs1)
             {
-                int num_equal_lysines = pfs2.Where(pf2 => allowed_ee_relation(pf1, pf2)).Count(); //number that would be chosen with equal lysine counts from a randomized set
-                new Random().Shuffle(pfs2);
-                List<ProteoformRelation> ef_relation_addition = pfs2
-                        .Where(p => p.lysine_count != pf1.lysine_count && Math.Abs(pf1.modified_mass - p.modified_mass) <= Lollipop.ee_max_mass_difference)
-                        .Take(num_equal_lysines)
+                if (Lollipop.neucode_labeled)
+                {
+                    int num_equal_lysines = pfs2.Where(pf2 => allowed_ee_relation(pf1, pf2)).Count(); //number that would be chosen with equal lysine counts from a randomized set
+                    new Random().Shuffle(pfs2);
+                    List<ProteoformRelation> ef_relation_addition = pfs2
+                            .Where(p => pf1.modified_mass > p.modified_mass && p.lysine_count != pf1.lysine_count && Math.Abs(pf1.modified_mass - p.modified_mass) <= Lollipop.ee_max_mass_difference)
+                            .Take(num_equal_lysines)
+                            .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass)).ToList();
+                    count_nearby_relations(ef_relation_addition);
+                    ef_relations.AddRange(ef_relation_addition);
+                }
+                else
+                {
+                    int num_in_RT = pfs2.Where(pf2 => allowed_ee_relation(pf1, pf2)).Count(); //number that would be chosen within the RT from a randomized set
+                    new Random().Shuffle(pfs2);
+                    List<ProteoformRelation> ef_relation_addition = pfs2.Where(p => pf1.modified_mass > p.modified_mass && Math.Abs(pf1.agg_rt - p.agg_rt) > 2 * Lollipop.ee_max_RetentionTime_difference && Math.Abs(pf1.modified_mass - p.modified_mass) <= Lollipop.ee_max_mass_difference)
+                        .Take(num_in_RT)
                         .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass)).ToList();
-                count_nearby_relations(ef_relation_addition);
-                ef_relations.AddRange(ef_relation_addition);
+                    ef_relations.AddRange(ef_relation_addition);
+                }
             }
+            count_nearby_relations(ef_relations);
+            
             return ef_relations;
         }
 
@@ -261,7 +276,8 @@ namespace ProteoformSuiteInternal
                     throw new Exception("Only EE and ET peaks can be accepted");
 
                 DeltaMassPeak new_peak = new DeltaMassPeak(top_relation, remaining_relations_outside_no_mans);
-                if (Lollipop.decoy_databases > 0) new_peak.calculate_fdr(decoy_relations);
+                if (Lollipop.decoy_databases > 0 && top_relation.connected_proteoforms[1] is TheoreticalProteoform) new_peak.calculate_fdr(decoy_relations);
+                else if (Lollipop.ef_relations.Count > 0 && top_relation.connected_proteoforms[1] is ExperimentalProteoform) new_peak.calculate_fdr(new Dictionary<string, List<ProteoformRelation>>() { { "ef_relations", Lollipop.ef_relations }});
                 peaks.Add(new_peak);
 
                 List<ProteoformRelation> mass_differences_in_peak = new_peak.grouped_relations;

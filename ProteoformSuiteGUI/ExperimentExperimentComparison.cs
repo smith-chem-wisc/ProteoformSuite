@@ -133,7 +133,7 @@ namespace ProteoformSuite
         }
         private void GraphEERelations()
         {
-            DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ee_relations, "relations");
+            DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ef_relations, "relations");
         }
         private void GraphEEPeaks()
         {
@@ -321,6 +321,19 @@ namespace ProteoformSuite
             Lollipop.notch_search_ee = cb_notch_search.Checked;
             tb_notch_masses.Enabled = cb_notch_search.Checked;
             if (cb_notch_search.Checked) tb_notch_masses.Text = "Enter notches to search, separated by semi-colon.";
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked){
+                DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ee_relations, "relations");
+
+            }
+            else
+            {
+                DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ef_relations, "relations");
+
+            }
         }
     }
 }

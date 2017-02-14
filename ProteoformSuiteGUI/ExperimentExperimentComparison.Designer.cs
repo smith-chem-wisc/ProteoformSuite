@@ -65,6 +65,9 @@
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.tb_notch_masses = new System.Windows.Forms.TextBox();
+            this.cb_notch_search = new System.Windows.Forms.CheckBox();
             this.bt_compare_EE = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -75,8 +78,6 @@
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.tb_notch_masses = new System.Windows.Forms.TextBox();
-            this.cb_notch_search = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
@@ -467,6 +468,7 @@
             // 
             // splitContainer5.Panel2
             // 
+            this.splitContainer5.Panel2.Controls.Add(this.checkBox1);
             this.splitContainer5.Panel2.Controls.Add(this.tb_notch_masses);
             this.splitContainer5.Panel2.Controls.Add(this.cb_notch_search);
             this.splitContainer5.Panel2.Controls.Add(this.bt_compare_EE);
@@ -497,6 +499,37 @@
             this.splitContainer4.Size = new System.Drawing.Size(455, 225);
             this.splitContainer4.SplitterDistance = 212;
             this.splitContainer4.TabIndex = 18;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(8, 20);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(65, 17);
+            this.checkBox1.TabIndex = 38;
+            this.checkBox1.Text = "View EF";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // tb_notch_masses
+            // 
+            this.tb_notch_masses.Enabled = false;
+            this.tb_notch_masses.Location = new System.Drawing.Point(109, 41);
+            this.tb_notch_masses.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_notch_masses.Name = "tb_notch_masses";
+            this.tb_notch_masses.Size = new System.Drawing.Size(314, 20);
+            this.tb_notch_masses.TabIndex = 37;
+            // 
+            // cb_notch_search
+            // 
+            this.cb_notch_search.AutoSize = true;
+            this.cb_notch_search.Location = new System.Drawing.Point(12, 43);
+            this.cb_notch_search.Name = "cb_notch_search";
+            this.cb_notch_search.Size = new System.Drawing.Size(92, 17);
+            this.cb_notch_search.TabIndex = 36;
+            this.cb_notch_search.Text = "Notch Search";
+            this.cb_notch_search.UseVisualStyleBackColor = true;
+            this.cb_notch_search.CheckedChanged += new System.EventHandler(this.cb_notch_search_CheckedChanged);
             // 
             // bt_compare_EE
             // 
@@ -639,26 +672,6 @@
             this.splitContainer3.SplitterDistance = 409;
             this.splitContainer3.TabIndex = 17;
             // 
-            // tb_notch_masses
-            // 
-            this.tb_notch_masses.Enabled = false;
-            this.tb_notch_masses.Location = new System.Drawing.Point(109, 41);
-            this.tb_notch_masses.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_notch_masses.Name = "tb_notch_masses";
-            this.tb_notch_masses.Size = new System.Drawing.Size(314, 20);
-            this.tb_notch_masses.TabIndex = 37;
-            // 
-            // cb_notch_search
-            // 
-            this.cb_notch_search.AutoSize = true;
-            this.cb_notch_search.Location = new System.Drawing.Point(12, 43);
-            this.cb_notch_search.Name = "cb_notch_search";
-            this.cb_notch_search.Size = new System.Drawing.Size(92, 17);
-            this.cb_notch_search.TabIndex = 36;
-            this.cb_notch_search.Text = "Notch Search";
-            this.cb_notch_search.UseVisualStyleBackColor = true;
-            this.cb_notch_search.CheckedChanged += new System.EventHandler(this.cb_notch_search_CheckedChanged);
-            // 
             // ExperimentExperimentComparison
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -763,6 +776,7 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox tb_notch_masses;
         private System.Windows.Forms.CheckBox cb_notch_search;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 
