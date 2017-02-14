@@ -95,7 +95,7 @@ namespace ProteoformSuiteInternal
             foreach (ProteoformRelation r in families.SelectMany(f => f.relations).Distinct())
             {
                 double mass_label = r.peak_center_deltaM;
-                if (r.relation_type == ProteoformComparison.etd) mass_label = r.delta_mass;
+                if (r.relation_type == ProteoformComparison.etd || r.relation_type == ProteoformComparison.ttd) mass_label = r.delta_mass;
                 edge_rows += String.Join("\t", new List<string>
                 {
                     get_proteoform_shared_name(r.connected_proteoforms[0]), r.lysine_count.ToString(), get_proteoform_shared_name(r.connected_proteoforms[1]), Math.Round(mass_label, 2).ToString()
