@@ -65,7 +65,7 @@
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.cb_view_ef = new System.Windows.Forms.CheckBox();
             this.tb_notch_masses = new System.Windows.Forms.TextBox();
             this.cb_notch_search = new System.Windows.Forms.CheckBox();
             this.bt_compare_EE = new System.Windows.Forms.Button();
@@ -468,7 +468,7 @@
             // 
             // splitContainer5.Panel2
             // 
-            this.splitContainer5.Panel2.Controls.Add(this.checkBox1);
+            this.splitContainer5.Panel2.Controls.Add(this.cb_view_ef);
             this.splitContainer5.Panel2.Controls.Add(this.tb_notch_masses);
             this.splitContainer5.Panel2.Controls.Add(this.cb_notch_search);
             this.splitContainer5.Panel2.Controls.Add(this.bt_compare_EE);
@@ -500,16 +500,16 @@
             this.splitContainer4.SplitterDistance = 212;
             this.splitContainer4.TabIndex = 18;
             // 
-            // checkBox1
+            // cb_view_ef
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(8, 20);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(65, 17);
-            this.checkBox1.TabIndex = 38;
-            this.checkBox1.Text = "View EF";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.cb_view_ef.AutoSize = true;
+            this.cb_view_ef.Location = new System.Drawing.Point(12, 20);
+            this.cb_view_ef.Name = "cb_view_ef";
+            this.cb_view_ef.Size = new System.Drawing.Size(230, 17);
+            this.cb_view_ef.TabIndex = 38;
+            this.cb_view_ef.Text = "View Experimental-False relations histogram";
+            this.cb_view_ef.UseVisualStyleBackColor = true;
+            this.cb_view_ef.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // tb_notch_masses
             // 
@@ -776,7 +776,7 @@
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox tb_notch_masses;
         private System.Windows.Forms.CheckBox cb_notch_search;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox cb_view_ef;
     }
 }
 

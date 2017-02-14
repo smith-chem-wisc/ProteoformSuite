@@ -647,7 +647,6 @@ namespace ProteoformSuiteInternal
         {
             get { return ptm_list_string(); }
         }
-        public double reported_mass { get; set; } //reported, uncalibrated
         private TopDownHit root;
         public List<TopDownHit> topdown_hits;
         public bool observed_theoretical_mass { get; set; } = false; //if tight abs mass or biomarker search, observed mass is close to theoretical. If only find unexpected mods search result, could be co-isolation
@@ -679,8 +678,6 @@ namespace ProteoformSuiteInternal
             if (observed_theoretical_mass) this.monoisotopic_mass = topdown_hits.Where(h => h.result_set == Result_Set.tight_absolute_mass || h.result_set == Result_Set.biomarker).Select(h => (h.corrected_mass - Math.Round(h.corrected_mass - root.corrected_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             else this.monoisotopic_mass = root.theoretical_mass; //if only found w/ unexpected mod search, use theoretical mass
             this.modified_mass = this.monoisotopic_mass;
-            if (observed_theoretical_mass) this.reported_mass = topdown_hits.Where(h => h.result_set == Result_Set.biomarker || h.result_set == Result_Set.tight_absolute_mass).Select(h => (h.reported_mass - Math.Round(h.reported_mass - root.reported_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
-            else this.reported_mass = topdown_hits.Select(h => (h.reported_mass - Math.Round(h.reported_mass - root.reported_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.accession = accession + "_" + Math.Round(this.theoretical_mass, 2);
         }
 

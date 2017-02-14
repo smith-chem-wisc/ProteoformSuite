@@ -38,13 +38,13 @@ namespace ProteoformSuite
         {
             if (Lollipop.proteoform_community.has_e_and_t_proteoforms)
             {
-                this.Cursor = Cursors.WaitCursor;
                 ClearListsAndTables();
                 if (Lollipop.notch_search_et)
                 {
                     bool notch_masses = get_notch_masses();
                     if (!notch_masses) return;
                 }
+                this.Cursor = Cursors.WaitCursor;
                 Lollipop.make_et_relationships();
                 this.FillTablesAndCharts();
                 this.Cursor = Cursors.Default;

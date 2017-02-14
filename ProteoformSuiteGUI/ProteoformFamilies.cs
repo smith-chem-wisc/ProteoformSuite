@@ -423,9 +423,17 @@ namespace ProteoformSuite
                 }
             }
         }
+
         private void btn_merge_Click(object sender, EventArgs e)
         {
             
+        }
+
+        private void bt_export_identified_families_Click(object sender, EventArgs e)
+        {
+            bool built = build_families(Lollipop.proteoform_community.families.Where(f => f.topdown_count > 0 || f.theoretical_count > 0).ToList());
+            if (!built) return;
+            MessageBox.Show("Finished building identified families.\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
         }
     }
 }
