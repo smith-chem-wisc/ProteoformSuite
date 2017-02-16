@@ -32,14 +32,18 @@ namespace ProteoformSuite
         {
             if (ready_to_aggregate())
             {
-                this.Cursor = Cursors.WaitCursor;
-                ClearListsAndTables();
-                Lollipop.aggregate_proteoforms();
-                FillAggregatesTable();
-                updateFiguresOfMerit();
-                this.Cursor = Cursors.Default;
+                run_the_gamut();
             }
             else if (Lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
+        }
+
+        private void run_the_gamut()
+        {
+            this.Cursor = Cursors.WaitCursor;
+            Lollipop.aggregate_proteoforms();
+            FillAggregatesTable();
+            updateFiguresOfMerit();
+            this.Cursor = Cursors.Default;
         }
 
         public DataGridView GetDGV()
@@ -159,6 +163,10 @@ namespace ProteoformSuite
         private void ClearListsAndTables()
         {
             Lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
+            Lollipop.vetted_proteoforms.Clear();
+            Lollipop.ordered_components = new ProteoformSuiteInternal.Component[0];
+            Lollipop.remaining_components.Clear();
+            Lollipop.remaining_verification_components.Clear();
             dgv_AcceptNeuCdLtProteoforms.DataSource = null;
             dgv_AcceptNeuCdLtProteoforms.Rows.Clear();
         }
@@ -182,7 +190,8 @@ namespace ProteoformSuite
 
         private void bt_aggregate_Click(object sender, EventArgs e)
         {
-            aggregate_proteoforms();
+            ClearListsAndTables();
+            run_the_gamut();
         }
 
         private void nUD_rel_abundance_ValueChanged(object sender, EventArgs e)

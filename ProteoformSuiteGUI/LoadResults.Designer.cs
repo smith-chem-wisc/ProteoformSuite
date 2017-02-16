@@ -378,7 +378,6 @@
             this.tb_quantFilter.Name = "tb_quantFilter";
             this.tb_quantFilter.Size = new System.Drawing.Size(100, 20);
             this.tb_quantFilter.TabIndex = 30;
-            this.tb_quantFilter.Visible = false;
             this.tb_quantFilter.TextChanged += new System.EventHandler(this.tb_quantFilter_TextChanged);
             // 
             // tb_identificationFilter
@@ -387,16 +386,16 @@
             this.tb_identificationFilter.Name = "tb_identificationFilter";
             this.tb_identificationFilter.Size = new System.Drawing.Size(100, 20);
             this.tb_identificationFilter.TabIndex = 29;
-            this.tb_identificationFilter.TextChanged += new System.EventHandler(this.tb_identificationFilter_TextChanged_1);
+            this.tb_identificationFilter.TextChanged += new System.EventHandler(this.tb_identificationFilter_TextChanged);
             // 
             // cb_advanced_user
             // 
             this.cb_advanced_user.AutoSize = true;
             this.cb_advanced_user.Location = new System.Drawing.Point(179, 587);
             this.cb_advanced_user.Name = "cb_advanced_user";
-            this.cb_advanced_user.Size = new System.Drawing.Size(100, 17);
+            this.cb_advanced_user.Size = new System.Drawing.Size(114, 17);
             this.cb_advanced_user.TabIndex = 30;
-            this.cb_advanced_user.Text = "Advanced User";
+            this.cb_advanced_user.Text = "Advanced Options";
             this.cb_advanced_user.UseVisualStyleBackColor = true;
             this.cb_advanced_user.CheckedChanged += new System.EventHandler(this.cb_advanced_user_CheckedChanged);
             // 
@@ -427,7 +426,6 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox1);
             this.Name = "LoadResults";
-            this.Load += new System.EventHandler(this.LoadResults_Load_1);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_identificationFiles)).EndInit();

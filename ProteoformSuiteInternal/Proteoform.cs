@@ -16,6 +16,7 @@ namespace ProteoformSuiteInternal
         public int lysine_count { get; set; } = -1;
         public bool is_target { get; set; } = true;
         public bool is_decoy { get; set; } = false;
+        public List<Proteoform> candidate_relatives { get; set; }
         public List<ProteoformRelation> relationships { get; set; } = new List<ProteoformRelation>();
         public ProteoformFamily family { get; set; }
 
@@ -167,12 +168,6 @@ namespace ProteoformSuiteInternal
                 if (Lollipop.neucode_labeled && this.includes(c, this, false))
                     hv_verification_components.Add(c);
             }
-        }
-
-        public void aggregate_and_verify()
-        {
-            aggregate();
-            verify();
         }
 
         public void assign_quantitative_components()
