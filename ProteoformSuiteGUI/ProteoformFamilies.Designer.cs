@@ -49,6 +49,10 @@
             this.pictureBox_familyDisplay = new System.Windows.Forms.PictureBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
+            this.cb_inclusion_list_unidentified_fam = new System.Windows.Forms.CheckBox();
+            this.cb_inclusion_list_1T = new System.Windows.Forms.CheckBox();
+            this.cb_inclusion_list_identified_family = new System.Windows.Forms.CheckBox();
+            this.cb_inclusion_list_family = new System.Windows.Forms.CheckBox();
             this.cb_inclusion_list_charge_state = new System.Windows.Forms.CheckBox();
             this.bt_export_inclusion_list = new System.Windows.Forms.Button();
             this.bt_export_families = new System.Windows.Forms.Button();
@@ -69,10 +73,7 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.Families_update = new System.Windows.Forms.Button();
-            this.cb_inclusion_list_family = new System.Windows.Forms.CheckBox();
-            this.cb_inclusion_list_identified_family = new System.Windows.Forms.CheckBox();
-            this.cb_inclusion_list_1T = new System.Windows.Forms.CheckBox();
-            this.cb_inclusion_list_unidentified_fam = new System.Windows.Forms.CheckBox();
+            this.bt_export_identified_families = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -319,6 +320,7 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.Controls.Add(this.bt_export_identified_families);
             this.splitContainer3.Panel2.Controls.Add(this.cb_inclusion_list_unidentified_fam);
             this.splitContainer3.Panel2.Controls.Add(this.cb_inclusion_list_1T);
             this.splitContainer3.Panel2.Controls.Add(this.cb_inclusion_list_identified_family);
@@ -359,10 +361,53 @@
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(675, 443);
             this.dgv_proteoform_family_members.TabIndex = 3;
             // 
+            // cb_inclusion_list_unidentified_fam
+            // 
+            this.cb_inclusion_list_unidentified_fam.AutoSize = true;
+            this.cb_inclusion_list_unidentified_fam.Location = new System.Drawing.Point(327, 307);
+            this.cb_inclusion_list_unidentified_fam.Name = "cb_inclusion_list_unidentified_fam";
+            this.cb_inclusion_list_unidentified_fam.Size = new System.Drawing.Size(126, 17);
+            this.cb_inclusion_list_unidentified_fam.TabIndex = 51;
+            this.cb_inclusion_list_unidentified_fam.Text = "In Unidentified Family";
+            this.cb_inclusion_list_unidentified_fam.UseVisualStyleBackColor = true;
+            this.cb_inclusion_list_unidentified_fam.CheckedChanged += new System.EventHandler(this.cb_inclusion_list_unidentified_fam_CheckedChanged);
+            // 
+            // cb_inclusion_list_1T
+            // 
+            this.cb_inclusion_list_1T.AutoSize = true;
+            this.cb_inclusion_list_1T.Location = new System.Drawing.Point(375, 226);
+            this.cb_inclusion_list_1T.Name = "cb_inclusion_list_1T";
+            this.cb_inclusion_list_1T.Size = new System.Drawing.Size(105, 17);
+            this.cb_inclusion_list_1T.TabIndex = 50;
+            this.cb_inclusion_list_1T.Text = "In family with 1 T";
+            this.cb_inclusion_list_1T.UseVisualStyleBackColor = true;
+            // 
+            // cb_inclusion_list_identified_family
+            // 
+            this.cb_inclusion_list_identified_family.AutoSize = true;
+            this.cb_inclusion_list_identified_family.Location = new System.Drawing.Point(327, 284);
+            this.cb_inclusion_list_identified_family.Name = "cb_inclusion_list_identified_family";
+            this.cb_inclusion_list_identified_family.Size = new System.Drawing.Size(113, 17);
+            this.cb_inclusion_list_identified_family.TabIndex = 49;
+            this.cb_inclusion_list_identified_family.Text = "In Identified Family";
+            this.cb_inclusion_list_identified_family.UseVisualStyleBackColor = true;
+            this.cb_inclusion_list_identified_family.CheckedChanged += new System.EventHandler(this.cb_inclusion_list_identified_family_CheckedChanged);
+            // 
+            // cb_inclusion_list_family
+            // 
+            this.cb_inclusion_list_family.AutoSize = true;
+            this.cb_inclusion_list_family.Location = new System.Drawing.Point(327, 261);
+            this.cb_inclusion_list_family.Name = "cb_inclusion_list_family";
+            this.cb_inclusion_list_family.Size = new System.Drawing.Size(67, 17);
+            this.cb_inclusion_list_family.TabIndex = 48;
+            this.cb_inclusion_list_family.Text = "In Family";
+            this.cb_inclusion_list_family.UseVisualStyleBackColor = true;
+            this.cb_inclusion_list_family.CheckedChanged += new System.EventHandler(this.cb_inclusion_list_family_CheckedChanged);
+            // 
             // cb_inclusion_list_charge_state
             // 
             this.cb_inclusion_list_charge_state.AutoSize = true;
-            this.cb_inclusion_list_charge_state.Location = new System.Drawing.Point(265, 197);
+            this.cb_inclusion_list_charge_state.Location = new System.Drawing.Point(327, 238);
             this.cb_inclusion_list_charge_state.Name = "cb_inclusion_list_charge_state";
             this.cb_inclusion_list_charge_state.Size = new System.Drawing.Size(171, 17);
             this.cb_inclusion_list_charge_state.TabIndex = 47;
@@ -371,7 +416,7 @@
             // 
             // bt_export_inclusion_list
             // 
-            this.bt_export_inclusion_list.Location = new System.Drawing.Point(16, 197);
+            this.bt_export_inclusion_list.Location = new System.Drawing.Point(56, 255);
             this.bt_export_inclusion_list.Name = "bt_export_inclusion_list";
             this.bt_export_inclusion_list.Size = new System.Drawing.Size(243, 23);
             this.bt_export_inclusion_list.TabIndex = 46;
@@ -381,7 +426,7 @@
             // 
             // bt_export_families
             // 
-            this.bt_export_families.Location = new System.Drawing.Point(74, 168);
+            this.bt_export_families.Location = new System.Drawing.Point(72, 197);
             this.bt_export_families.Name = "bt_export_families";
             this.bt_export_families.Size = new System.Drawing.Size(243, 23);
             this.bt_export_families.TabIndex = 45;
@@ -392,7 +437,7 @@
             // btn_merge
             // 
             this.btn_merge.Enabled = false;
-            this.btn_merge.Location = new System.Drawing.Point(97, 201);
+            this.btn_merge.Location = new System.Drawing.Point(92, 226);
             this.btn_merge.Name = "btn_merge";
             this.btn_merge.Size = new System.Drawing.Size(195, 23);
             this.btn_merge.TabIndex = 45;
@@ -557,48 +602,15 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
-            // cb_inclusion_list_family
+            // bt_export_identified_families
             // 
-            this.cb_inclusion_list_family.AutoSize = true;
-            this.cb_inclusion_list_family.Location = new System.Drawing.Point(265, 220);
-            this.cb_inclusion_list_family.Name = "cb_inclusion_list_family";
-            this.cb_inclusion_list_family.Size = new System.Drawing.Size(67, 17);
-            this.cb_inclusion_list_family.TabIndex = 48;
-            this.cb_inclusion_list_family.Text = "In Family";
-            this.cb_inclusion_list_family.UseVisualStyleBackColor = true;
-            this.cb_inclusion_list_family.CheckedChanged += new System.EventHandler(this.cb_inclusion_list_family_CheckedChanged);
-            // 
-            // cb_inclusion_list_identified_family
-            // 
-            this.cb_inclusion_list_identified_family.AutoSize = true;
-            this.cb_inclusion_list_identified_family.Location = new System.Drawing.Point(265, 243);
-            this.cb_inclusion_list_identified_family.Name = "cb_inclusion_list_identified_family";
-            this.cb_inclusion_list_identified_family.Size = new System.Drawing.Size(113, 17);
-            this.cb_inclusion_list_identified_family.TabIndex = 49;
-            this.cb_inclusion_list_identified_family.Text = "In Identified Family";
-            this.cb_inclusion_list_identified_family.UseVisualStyleBackColor = true;
-            this.cb_inclusion_list_identified_family.CheckedChanged += new System.EventHandler(this.cb_inclusion_list_identified_family_CheckedChanged);
-            // 
-            // cb_inclusion_list_1T
-            // 
-            this.cb_inclusion_list_1T.AutoSize = true;
-            this.cb_inclusion_list_1T.Location = new System.Drawing.Point(256, 62);
-            this.cb_inclusion_list_1T.Name = "cb_inclusion_list_1T";
-            this.cb_inclusion_list_1T.Size = new System.Drawing.Size(105, 17);
-            this.cb_inclusion_list_1T.TabIndex = 50;
-            this.cb_inclusion_list_1T.Text = "In family with 1 T";
-            this.cb_inclusion_list_1T.UseVisualStyleBackColor = true;
-            // 
-            // cb_inclusion_list_unidentified_fam
-            // 
-            this.cb_inclusion_list_unidentified_fam.AutoSize = true;
-            this.cb_inclusion_list_unidentified_fam.Location = new System.Drawing.Point(265, 266);
-            this.cb_inclusion_list_unidentified_fam.Name = "cb_inclusion_list_unidentified_fam";
-            this.cb_inclusion_list_unidentified_fam.Size = new System.Drawing.Size(126, 17);
-            this.cb_inclusion_list_unidentified_fam.TabIndex = 51;
-            this.cb_inclusion_list_unidentified_fam.Text = "In Unidentified Family";
-            this.cb_inclusion_list_unidentified_fam.UseVisualStyleBackColor = true;
-            this.cb_inclusion_list_unidentified_fam.CheckedChanged += new System.EventHandler(this.cb_inclusion_list_unidentified_fam_CheckedChanged);
+            this.bt_export_identified_families.Location = new System.Drawing.Point(97, 168);
+            this.bt_export_identified_families.Name = "bt_export_identified_families";
+            this.bt_export_identified_families.Size = new System.Drawing.Size(188, 23);
+            this.bt_export_identified_families.TabIndex = 52;
+            this.bt_export_identified_families.Text = "Build Identified Families in Cytoscape";
+            this.bt_export_identified_families.UseVisualStyleBackColor = true;
+            this.bt_export_identified_families.Click += new System.EventHandler(this.bt_export_identified_families_Click);
             // 
             // ProteoformFamilies
             // 
@@ -679,5 +691,6 @@
         private System.Windows.Forms.ComboBox cmbx_colorScheme;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox cmbx_edgeLabel;
+        private System.Windows.Forms.Button bt_export_identified_families;
     }
 }
