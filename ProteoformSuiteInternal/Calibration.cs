@@ -29,7 +29,7 @@ namespace ProteoformSuiteInternal
             myMsDataFile.Open();
             foreach (IMsDataScan<ThermoSpectrum> spectrum in myMsDataFile)
             {
-                MsScan scan = new ProteoformSuiteInternal.MsScan(spectrum.MsnOrder, spectrum.OneBasedScanNumber, filename, spectrum.RetentionTime, spectrum.InjectionTime, spectrum.TotalIonCurrent, spectrum.MassSpectrum.xArray, spectrum.MassSpectrum.yArray, spectrum.MassSpectrum.GetNoises());
+                MsScan scan = new ProteoformSuiteInternal.MsScan(spectrum.MsnOrder, spectrum.OneBasedScanNumber, filename, spectrum.RetentionTime, spectrum.InjectionTime, spectrum.TotalIonCurrent, spectrum.MassSpectrum.XArray, spectrum.MassSpectrum.YArray, spectrum.MassSpectrum.GetNoises());
                 Lollipop.Ms_scans.Add(scan);
             }
 
@@ -38,13 +38,10 @@ namespace ProteoformSuiteInternal
             {
                 hit.ms_scan = Lollipop.Ms_scans.Where(s => s.filename == hit.filename && s.scan_number == hit.scan).ToList().First();
                 //add intensity and charge info for precursor
-                double intensity;
-                // myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessChargeStateGuess(out protein_charge); didn't work 
-                myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessMonoisotopicIntensity(out intensity);
-                double mz;
-                myMsDataFile.GetOneBasedScan(hit.scan).TryGetSelectedIonGuessMonoisotopicMZ(out mz);
+                double intensity = (myMsDataFile.GetOneBasedScan(hit.scan) as ThermoScanWithPrecursor).SelectedIonGuessMonoisotopicIntensity;
+                double mz = (myMsDataFile.GetOneBasedScan(hit.scan) as ThermoScanWithPrecursor).SelectedIonGuessMonoisotopicMZ;
                 hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / mz, 0)); //m / (m/z)  round to get charge 
-                hit.mz = hit.reported_mass.ToMassToChargeRatio(hit.charge);
+                hit.mz = hit.reported_mass.ToMz(hit.charge);
                 hit.intensity = intensity;
             }
             myMsDataFile.Close();
@@ -58,15 +55,14 @@ namespace ProteoformSuiteInternal
 
             var Compound1 = new Peptide("NNNNN");
 
-            var regularMZ = new IsotopicDistribution(Compound1.GetChemicalFormula(), 0.1, 0.001).Masses.Select(b => b.ToMassToChargeRatio(1)).ToList();
-
+            var regularMZ = IsotopicDistribution.GetDistribution(Compound1.GetChemicalFormula(), 0.1, 0.001).Masses.Select(b => b.ToMz(1)).ToList();
             var withAmmoniaLoss = Compound1.GetChemicalFormula();
-            withAmmoniaLoss.Add(new ChemicalFormula("N-1H-2"));
-            var withAmmoniaLossMZ = new IsotopicDistribution(withAmmoniaLoss, 0.1, 0.001).Masses.Select(b => b.ToMassToChargeRatio(1)).ToList();
+            withAmmoniaLoss.Add(ChemicalFormula.ParseFormula("N-1H-2"));
+            var withAmmoniaLossMZ = IsotopicDistribution.GetDistribution(withAmmoniaLoss, 0.1, 0.001).Masses.Select(b => b.ToMz(1)).ToList();
 
             var deamidated = Compound1.GetChemicalFormula();
-            deamidated.Add(new ChemicalFormula("H-1N-1O"));
-            var deamidatedMZ = new IsotopicDistribution(deamidated, 0.1, 0.001).Masses.Select(b => b.ToMassToChargeRatio(1)).ToList();
+            deamidated.Add(ChemicalFormula.ParseFormula("H-1N-1O"));
+            var deamidatedMZ = IsotopicDistribution.GetDistribution(deamidated, 0.1, 0.001).Masses.Select(b => b.ToMz(1)).ToList();
 
             List<List<double>> allDistributions = new List<List<double>>() { regularMZ, withAmmoniaLossMZ, deamidatedMZ };
             var myMsDataFile = new ThermoRawFile(raw_file_path);
@@ -80,12 +76,12 @@ namespace ProteoformSuiteInternal
                         foreach (var dist in allDistributions)
                         {
                             ThermoMzPeak monoisotopicPeak = null;
-                            try { monoisotopicPeak = scan.MassSpectrum.newSpectrumExtract(dist[0] - tol, dist[0] + tol).PeakWithHighestY; }
+                            try { monoisotopicPeak = scan.MassSpectrum.Extract(dist[0] - tol, dist[0] + tol).OrderByDescending(p => p.Y).First(); }
                             catch { }
                             if (monoisotopicPeak != null && bestIntensity < monoisotopicPeak.Intensity)
                             {
                                 bestIntensity = monoisotopicPeak.Intensity;
-                                monoError = monoisotopicPeak.MZ - dist[0];
+                                monoError = monoisotopicPeak.Mz - dist[0];
                             }
                         }
                         MsScan get_scan = Lollipop.Ms_scans.Where(s => s.filename == filename && s.scan_number == scan.OneBasedScanNumber).ToList().First();

@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MathNet.Numerics;
-using Chemistry;
 
 namespace ProteoformSuiteInternal
 {
@@ -117,20 +116,12 @@ namespace ProteoformSuiteInternal
         {
             object sync = new object();
             Parallel.ForEach(input_files.Where(f => f.purpose == Purpose.Identification), file =>
-           {
-                   lock (raw_experimental_components)
-                   {
-                       List<Component> someComponents = file.reader.read_components_from_xlsx(file);
-                       //don't add components if calibrating td results and no calibration function for that file 
-                       lock (sync)
-                       {
-                           raw_experimental_components.AddRange(someComponents);
-                       }
-                   }
-               
-           });
-            if (neucode_labeled)
-                process_neucode_components();
+            {
+                List<Component> someComponents = file.reader.read_components_from_xlsx(file);
+                lock (raw_experimental_components) raw_experimental_components.AddRange(someComponents);
+            });
+
+            if (neucode_labeled) process_neucode_components();
         }
 
 
@@ -140,7 +131,7 @@ namespace ProteoformSuiteInternal
             {
                 foreach (string scan_range in inputFile.reader.scan_ranges)
                 {
-                    find_neucode_pairs(inputFile.reader.final_components.Where(c => c.scan_range == scan_range));
+                    find_neucode_pairs(inputFile.reader.final_components.Where(c => c.scan_range == scan_range), Lollipop.raw_neucode_pairs);
                 }
 
             }
@@ -151,10 +142,7 @@ namespace ProteoformSuiteInternal
            Parallel.ForEach(quantification_files(), file => 
             {
                 List<Component> someComponents = file.reader.read_components_from_xlsx(file);
-                lock (raw_quantification_components)
-                {
-                    raw_quantification_components.AddRange(someComponents);
-                }
+                lock (raw_quantification_components) raw_quantification_components.AddRange(someComponents);
             });
         }
 
@@ -165,7 +153,7 @@ namespace ProteoformSuiteInternal
         public static decimal max_lysine_ct = 26.2m;
         public static decimal min_lysine_ct = 1.5m;
 
-        public static List<NeuCodePair> find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange)
+        public static List<NeuCodePair> find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange, List<NeuCodePair> destination)
         {
             List<NeuCodePair> pairsInScanRange = new List<NeuCodePair>();
             //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
@@ -175,49 +163,45 @@ namespace ProteoformSuiteInternal
                 List<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.weighted_monoisotopic_mass > lower_component.weighted_monoisotopic_mass).ToList();
                 foreach (Component higher_component in higher_mass_components)
                 {
-                    double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
-                    if (mass_difference < 6)
+                    lock (lower_component) lock (higher_component) // Turns out the LINQ queries in here, especially for overlapping_charge_states, aren't thread safe
                     {
-                        List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
-                        List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList<int>();
-                        List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
-                        double lower_intensity;
-                        double higher_intensity;
-                        if (opened_raw_comps)
+                        double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
+                        if (mass_difference < 6)
                         {
-                            lower_intensity = lower_component.intensity_sum_olcs;
-                            higher_intensity = higher_component.intensity_sum_olcs;
-                        }
-                        else
-                        {
-                            lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                            higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                        }
-                        bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
-                        if (lower_intensity > 0 && higher_intensity > 0)
-                        {
-                            NeuCodePair pair = lower_intensity > higher_intensity ?
-                                new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
-                                new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
+                            List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
+                            List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList<int>();
+                            List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
+                            double lower_intensity = opened_raw_comps ? lower_component.intensity_sum_olcs : lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                            double higher_intensity = opened_raw_comps ? higher_component.intensity_sum_olcs : higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                            bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
+                            if (lower_intensity > 0 && higher_intensity > 0)
+                            {
+                                NeuCodePair pair = lower_intensity > higher_intensity ?
+                                    new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
+                                    new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
 
-                            lock (pairsInScanRange) pairsInScanRange.Add(pair);
+                                lock (pairsInScanRange) pairsInScanRange.Add(pair);
+                            }
                         }
                     }
                 }
             });
 
-            foreach (NeuCodePair pair in pairsInScanRange.OrderBy(p =>
-                Math.Min(p.neuCodeLight.weighted_monoisotopic_mass, p.neuCodeHeavy.weighted_monoisotopic_mass)) //lower_component
+            foreach (NeuCodePair pair in pairsInScanRange
+                .OrderBy(p => Math.Min(p.neuCodeLight.weighted_monoisotopic_mass, p.neuCodeHeavy.weighted_monoisotopic_mass)) //lower_component
                 .ThenBy(p => Math.Max(p.neuCodeLight.weighted_monoisotopic_mass, p.neuCodeHeavy.weighted_monoisotopic_mass)).ToList()) //higher_component
             {
-                if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + Lollipop.MONOISOTOPIC_UNIT_MASS // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
-                    && !Lollipop.raw_neucode_pairs.Any(p => p.id_heavy == pair.id_light && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity, is probably correct, and that that component should not get reuused as a light.)
+                lock (destination)
                 {
-                    Lollipop.raw_neucode_pairs.Add(pair);
-                }
-                else
-                {
-                    pairsInScanRange.Remove(pair);
+                    if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + Lollipop.MONOISOTOPIC_UNIT_MASS // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
+                    && !destination.Any(p => p.id_heavy == pair.id_light && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity, is probably correct, and that that component should not get reuused as a light.)
+                    {
+                        destination.Add(pair);
+                    }
+                    else
+                    {
+                        lock (pairsInScanRange) pairsInScanRange.Remove(pair);
+                    }
                 }
             }
             return pairsInScanRange;
@@ -362,7 +346,6 @@ namespace ProteoformSuiteInternal
                 {
                     if (e.lt_verification_components.Count > 0 || Lollipop.neucode_labeled && e.lt_verification_components.Count > 0 && e.hv_verification_components.Count > 0)
                     {
-                       // e.accepted = true;
                         Lollipop.vetted_proteoforms.Add(e);
                     }
                     Lollipop.remaining_verification_components = Lollipop.remaining_verification_components.Except(e.lt_verification_components.Concat(e.hv_verification_components)).ToList();
@@ -775,7 +758,7 @@ namespace ProteoformSuiteInternal
                 //need to calibrate all the others
                 foreach (TopDownHit hit in td_hits_calibration.Where(h => h.filename == filename).ToList())
                 {
-                    hit.corrected_mass = (hit.mz - bestCf(new double[] { hit.mz, hit.retention_time })).ToMass(hit.charge);
+                    hit.corrected_mass = (hit.mz - bestCf(new double[] { hit.mz, hit.retention_time }))*hit.charge - hit.charge*PROTON_MASS;
                 }
             }
             else if (!Lollipop.calibrate_td_results && Lollipop.calibrate_lock_mass)
@@ -785,7 +768,7 @@ namespace ProteoformSuiteInternal
                     double correction = 0;
                     try { correction = correctionFactors.Where(c => c.file_name == filename && c.scan_number == hit.scan).First().correction; }
                     catch { }
-                    hit.corrected_mass = (hit.mz - correction).ToMass(hit.charge);
+                    hit.corrected_mass = (hit.mz - correction) * hit.charge  - hit.charge*PROTON_MASS;
                 }
             }
         }

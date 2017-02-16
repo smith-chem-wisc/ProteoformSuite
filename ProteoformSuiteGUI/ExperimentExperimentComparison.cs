@@ -36,21 +36,26 @@ namespace ProteoformSuite
 
         public void compare_ee()
         {
-            if (Lollipop.proteoform_community.has_e_proteoforms)
+            if (Lollipop.ee_relations.Count == 0 && Lollipop.proteoform_community.has_e_proteoforms)
             {
-                this.Cursor = Cursors.WaitCursor;
                 ClearListsAndTables();
-                if (Lollipop.notch_search_ee)
-                {
-                    bool notch_masses = get_notch_masses();
-                    if (!notch_masses) return;
-                }
-                Lollipop.make_ee_relationships();
-                this.FillTablesAndCharts();
-                this.Cursor = Cursors.Default;
-                compared_ee = true;
+                run_the_gamut();
             }
-            else MessageBox.Show("Go back and aggregate experimental proteoforms.");
+            else if (Lollipop.ee_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
+        }
+
+        private  void run_the_gamut()
+        {
+            if (Lollipop.notch_search_ee)
+            {
+                bool notch_masses = get_notch_masses();
+                if (!notch_masses) return;
+            }
+            this.Cursor = Cursors.WaitCursor;
+            Lollipop.make_ee_relationships();
+            this.FillTablesAndCharts();
+            this.Cursor = Cursors.Default;
+            compared_ee = true;
         }
 
         public DataGridView GetEERelationDGV()
@@ -120,7 +125,7 @@ namespace ProteoformSuite
             List<DeltaMassPeak> big_peaks = Lollipop.ee_peaks.Where(p => p.peak_accepted).ToList();
             tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.grouped_relations.Count).Sum().ToString();
             tb_TotalPeaks.Text = big_peaks.Count.ToString();
-            if (Lollipop.ef_relations.Count > 0) tb_max_accepted_fdr.Text = Math.Round(big_peaks.Max(p => p.peak_group_fdr), 3).ToString();
+            if (Lollipop.ef_relations.Count > 0 && big_peaks.Count > 0) tb_max_accepted_fdr.Text = Math.Round(big_peaks.Max(p => p.peak_group_fdr), 3).ToString();
         }
 
         private void FillEEPairsGridView()
@@ -257,7 +262,8 @@ namespace ProteoformSuite
 
         private void bt_compare_EE_Click(object sender, EventArgs e)
         {
-            compare_ee();
+            ClearListsAndTables();
+            run_the_gamut();
             xMaxEE.Value = Convert.ToDecimal(Lollipop.ee_max_mass_difference);
         }
 

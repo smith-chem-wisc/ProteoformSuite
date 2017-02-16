@@ -327,23 +327,17 @@ namespace ProteoformSuite
                 bt_tdResultsClear.Visible = false;
                 label4.Visible = false;
             }
-
         }
 
         // FILTERS
-        private void tb_identificationFilter_TextChanged_1(object sender, EventArgs e)
+        private void tb_identificationFilter_TextChanged(object sender, EventArgs e)
         {
             DisplayUtility.FillDataGridView(dgv_identificationFiles, ExtensionMethods.filter(Lollipop.identification_files(), tb_identificationFilter.Text));
         }
 
         private void tb_quantFilter_TextChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_quantitationFiles, ExtensionMethods.filter(Lollipop.identification_files(), tb_identificationFilter.Text));
-        }
-
-        private void LoadResults_Load_1(object sender, EventArgs e)
-        {
-
+            DisplayUtility.FillDataGridView(dgv_quantitationFiles, ExtensionMethods.filter(Lollipop.quantification_files(), tb_quantFilter.Text));
         }
     }
 }
