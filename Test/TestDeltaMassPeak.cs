@@ -3,6 +3,9 @@ using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Proteomics;
+using System.IO;
+using UsefulProteomicsDatabases;
 
 namespace Test
 {
@@ -19,10 +22,8 @@ namespace Test
         [Test]
         public void TestDeltaMassPeakConstructor()
         {
-            ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
-
-            ProteomeDatabaseReader.oldPtmlistFilePath = "UnitTestFiles\\ptmlist.txt";
-            Lollipop.uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
+            Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2]);
+            Lollipop.read_mods();
             Lollipop.et_high_mass_difference = 250;
             Lollipop.et_low_mass_difference = -250;
             Lollipop.peak_width_base_ee = 0.015;
@@ -92,7 +93,11 @@ namespace Test
         public void TestAcceptDeltaMassPeaks()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> {
+                { "unmodified", new List<Modification>() {
+                    new ModificationWithMass("unmodified", new Tuple<string, string>("", ""), null, ModificationSites.K, 0, new Dictionary<string, IList<string>>(), -1, new List<double>(), new List<double>(), "") }
+                }
+            };
             Lollipop.updated_theoretical = true;
 
             //Testing the acceptance of peaks. The FDR is tested above, so I'm not going to work with that here.
@@ -121,7 +126,7 @@ namespace Test
             DeltaMassPeak peak = test_community.delta_mass_peaks[0];
             Assert.AreEqual(3, peak.grouped_relations.Count);
             Assert.AreEqual("unmodified", peak.possiblePeakAssignments_string);
-            peak.possiblePeakAssignments.Add(new Modification());
+            peak.possiblePeakAssignments.Add(new Modification("unmodified"));
             Assert.AreEqual("unmodified; unmodified", peak.possiblePeakAssignments_string);
 
             //Test that the relations in the peak are added to each of the proteoforms referenced in the peak

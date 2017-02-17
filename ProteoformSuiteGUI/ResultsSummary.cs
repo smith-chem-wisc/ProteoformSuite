@@ -18,7 +18,7 @@ namespace ProteoformSuite
         int numRawExpComponents;
         int numNeucodePairs;
         int numExperimentalProteoforms;
-        string uniprotXmlFile;
+        string uniprotXmlFiles;
         int numETPairs;
         int numETPeaks;
         int numEEPairs;
@@ -46,7 +46,7 @@ namespace ProteoformSuite
             numRawExpComponents = Lollipop.raw_experimental_components.Count;
             numNeucodePairs = Lollipop.raw_neucode_pairs.Count;
             numExperimentalProteoforms = Lollipop.proteoform_community.experimental_proteoforms.Count();
-            uniprotXmlFile = Lollipop.uniprot_xml_filepath;
+            uniprotXmlFiles = String.Join(", ", Lollipop.get_files(Purpose.ProteinDatabase).Select(f => f.filename));
             numETPairs = Lollipop.et_relations.Count;
             numETPeaks = Lollipop.et_peaks.Count;
             numEEPairs = Lollipop.ee_relations.Count;
@@ -61,7 +61,7 @@ namespace ProteoformSuite
             tb_RawExperimentalComponents.Text = numRawExpComponents.ToString();
             tb_neucodePairs.Text = numNeucodePairs.ToString();
             tb_experimentalProteoforms.Text = numExperimentalProteoforms.ToString();
-            tb_uniprotXmlDatabase.Text = uniprotXmlFile;
+            tb_uniprotXmlDatabase.Text = uniprotXmlFiles;
             tb_ETPairs.Text = numETPairs.ToString();
             tb_ETPeaks.Text = numETPeaks.ToString();
             tb_EEPairs.Text = numEEPairs.ToString();

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
+using Proteomics;
 
 namespace ProteoformSuite
 {
@@ -36,7 +37,7 @@ namespace ProteoformSuite
 
         public void perform_calculations() //this is the first thing that gets run on form load
         {
-            if (Lollipop.quantification_files().Count() > 0 && Lollipop.proteoform_community.experimental_proteoforms.Length > 0 && Lollipop.qVals.Count <= 0)
+            if (Lollipop.get_files(Purpose.Quantification).Count() > 0 && Lollipop.proteoform_community.experimental_proteoforms.Length > 0 && Lollipop.qVals.Count <= 0)
             {
                 initialize();
                 Lollipop.quantify();
@@ -254,6 +255,7 @@ namespace ProteoformSuite
                 ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10((double)qValue.pValue));
             }
         }
+
 
         private void goTermBackgroundChanged(object s, EventArgs e)
         {

@@ -88,6 +88,7 @@ namespace ProteoformSuite
         }
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            theoreticalDatabase.reload_database_list();
             showForm(theoreticalDatabase);
         }
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
@@ -120,221 +121,6 @@ namespace ProteoformSuite
 
 
         // FILE TOOL STRIP
-        private void openAllToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string working_directory;
-            MessageBox.Show("Please choose a folder with saved results files.");
-            DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
-            if (results_folder == DialogResult.OK) working_directory = this.resultsFolderOpen.SelectedPath;
-            else if (results_folder == DialogResult.Cancel) return;
-            else return;
-
-            SaveState.open_method(File.ReadAllLines(working_directory + "\\_method.xml"));
-            
-            Lollipop.opening_results = true;
-            Lollipop.opened_results_originally = true;
-            ResultsSummary.loadDescription = working_directory;
-
-            var result = MessageBox.Show("Add to the existing results?", "Results Clear", MessageBoxButtons.YesNoCancel);
-            if (result == DialogResult.No) clear_lists();
-
-            //cannot parallelize bc results dependent on one another for certain objects
-            MessageBox.Show("Will load in results now.\n\nMay show as non-responsive.");
-            Results.read_input_files(File.ReadAllLines(working_directory + "\\input_files.tsv"));
-            Results.read_raw_components(File.ReadAllLines(working_directory + "\\raw_experimental_components.tsv"));
-            if (Lollipop.neucode_labeled) Results.read_raw_neucode_pairs(File.ReadAllLines(working_directory + "\\raw_neucode_pairs.tsv"));
-            Results.read_aggregated_proteoforms(File.ReadAllLines(working_directory + "\\aggregated_experimental_proteoforms.tsv"));
-            //need to read in ptm list
-            try
-            {
-                ProteomeDatabaseReader.oldPtmlistFilePath = working_directory + "\\ptmlist.txt";
-                Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist();
-            }
-            catch
-            {
-                try
-                {
-                    ProteomeDatabaseReader.oldPtmlistFilePath = working_directory + "\\ptmlist_new.txt";
-                    Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist();
-                }
-                catch
-                {
-                    get_ptm_list();
-                }
-            }
-            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\theoretical_proteoforms.tsv"), true);
-            Results.read_theoretical_proteoforms(File.ReadAllLines(working_directory + "\\decoy_proteoforms.tsv"), false);
-            Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_theoretical_relationships.tsv"), ProteoformComparison.et);
-            Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_decoy_relationships.tsv"), ProteoformComparison.ed);
-            Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_experimental_relationships.tsv"), ProteoformComparison.ee);
-            Results.read_relationships(File.ReadAllLines(working_directory + "\\experimental_false_relationships.tsv"), ProteoformComparison.ef);
-            Results.read_peaks(File.ReadAllLines(working_directory + "\\experimental_theoretical_peaks.tsv"), ProteoformComparison.et);
-            Results.read_peaks(File.ReadAllLines(working_directory + "\\experimental_experimental_peaks.tsv"), ProteoformComparison.ee);
-            Results.read_families(File.ReadAllLines(working_directory + "\\proteoform_families.tsv"));
-            MessageBox.Show("Files successfully read in.");
-
-            Lollipop.opening_results = false;
-        }
-
-        private void get_ptm_list()
-        {
-            MessageBox.Show("Please select a Uniprot ptm list.");
-            DialogResult dr = this.methodFileOpen.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                string ptm_list = methodFileOpen.FileName;
-                ProteomeDatabaseReader.oldPtmlistFilePath = ptm_list;
-                Lollipop.ptmlist_filepath = ptm_list;
-            }
-            else if (dr == DialogResult.Cancel) return;
-            else return;
-        }
-
-        OpenFileDialog openXmlDialog = new OpenFileDialog();
-     
-        private void get_uniprot_xml()
-        {
-            MessageBox.Show("Please select a Uniprot database.");
-            openXmlDialog.Filter = "UniProt XML (*.xml, *.xml.gz)|*.xml;*.xml.gz";
-            openXmlDialog.Multiselect = false;
-            openXmlDialog.Title = "UniProt XML Format Database";
-            DialogResult dr = this.openXmlDialog.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-                Lollipop.uniprot_xml_filepath = openXmlDialog.FileName;
-            else return;
-        }
-
-        private void openCurrentPageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (current_form == loadDeconvolutionResults)
-            {
-                MessageBox.Show("Please select a raw experimental components file to open.");
-                OpenFileDialog openFileDialog1 = new OpenFileDialog();
-                openFileDialog1.Title = "Raw Experimental Components";
-                openFileDialog1.Filter = "Raw Experimental Components (.tsv) | *.tsv";
-                DialogResult dr = openFileDialog1.ShowDialog();
-                if (dr == DialogResult.OK)
-                {
-                    Labeling label = Labeling.NeuCode;
-                    if (!Lollipop.neucode_labeled) label = Labeling.Unlabeled;
-                    InputFile inpfile = new InputFile(1, false, 1, 1, 1, "no_condition", "no_condition", openFileDialog1.FileName, label, Purpose.Identification);
-                    Lollipop.input_files.Add(inpfile);
-                    try
-                    {
-                        Results.read_raw_components(File.ReadAllLines(openFileDialog1.FileName));
-                        Lollipop.opened_raw_comps = true;
-                        Lollipop.min_num_CS = 0;
-                        if (Lollipop.neucode_labeled)
-                        {
-                            HashSet<string> scan_ranges = new HashSet<string>(Lollipop.raw_experimental_components.Select(c => c.scan_range));
-                            foreach (string scan_range in scan_ranges)
-                                Lollipop.find_neucode_pairs(Lollipop.raw_experimental_components.Where(c => c.scan_range == scan_range), Lollipop.raw_neucode_pairs);
-                        }
-                    }
-                    catch
-                    {
-                        MessageBox.Show("File format incorrect.");
-                        return;
-                    }
-                    MessageBox.Show("Successfully read in raw experimental components.");
-                }
-                else { return; }
-            }
-            else if (current_form == theoreticalDatabase)
-            {
-                MessageBox.Show("Please select a theoretical proteoforms file to open.");
-                OpenFileDialog openFileDialog1 = new OpenFileDialog();
-                openFileDialog1.Title = "Theoretical Proteoforms";
-                openFileDialog1.Filter = "Theoretical Proteoforms (.tsv) | *.tsv";
-                DialogResult dr = openFileDialog1.ShowDialog();
-                if (dr == DialogResult.OK)
-                {
-                    try
-                    {
-                        Results.read_theoretical_proteoforms(File.ReadAllLines(openFileDialog1.FileName), true);
-                    }
-                    catch
-                    {
-                        MessageBox.Show("File format incorrect.");
-                        return;
-                    }
-                    theoreticalDatabase.load_dgv();
-                    MessageBox.Show("Successfully read in theoretical proteoforms."); 
-                }
-                else return; 
-            }
-            else
-            {
-                MessageBox.Show("Current page cannot be opened. Try Open All.");
-            }
-        }
-
-        private void saveCurrentPageToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string working_directory;
-            if (current_form == loadDeconvolutionResults) { return; }
-            MessageBox.Show("Choose a results folder.");
-            DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
-            if (results_folder == DialogResult.OK) working_directory = this.resultsFolderOpen.SelectedPath;
-            else return;
-            save_tsv(working_directory, false);
-            MessageBox.Show("Successfully saved the currently displayed page.");
-        }
-
-        private void saveAllToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            string working_directory;
-            MessageBox.Show("Choose a folder for the method and results files.");
-            DialogResult results_folder = this.resultsFolderOpen.ShowDialog();
-            if (results_folder == DialogResult.OK) working_directory = this.resultsFolderOpen.SelectedPath;
-            else return;
-            saveMethod(working_directory + "\\_method.xml");
-            save_tsv(working_directory, true);
-            File.Copy(ProteomeDatabaseReader.oldPtmlistFilePath, working_directory + "\\ptmlist.txt", true);
-            MessageBox.Show("Successfully saved all pages.");
-        }
-
-        private void save_tsv(string working_directory, bool save_all)
-        {
-            if (current_form == loadDeconvolutionResults || save_all)
-            {
-                File.WriteAllText(working_directory + "\\input_files.tsv", Results.input_file_results());
-            }
-            if (current_form == rawExperimentalComponents || save_all)
-            {
-                File.WriteAllText(working_directory + "\\raw_experimental_components.tsv", Results.raw_component_results());
-            }
-            if (current_form == neuCodePairs || save_all)
-            {
-                File.WriteAllText(working_directory + "\\raw_neucode_pairs.tsv", Results.raw_neucode_pair_results());
-            }
-            if (current_form == aggregatedProteoforms || save_all)
-            {
-                File.WriteAllText(working_directory + "\\aggregated_experimental_proteoforms.tsv", Results.aggregated_experimental_proteoform_results());
-            }
-            if (current_form == theoreticalDatabase || save_all)
-            {
-                File.WriteAllText(working_directory + "\\theoretical_proteoforms.tsv", Results.theoretical_proteoforms_results(true));
-                File.WriteAllText(working_directory + "\\decoy_proteoforms.tsv", Results.theoretical_proteoforms_results(false));
-            }
-            if (current_form == experimentalTheoreticalComparison || save_all)
-            {
-                File.WriteAllText(working_directory + "\\experimental_theoretical_relationships.tsv", Results.relation_results(ProteoformComparison.et));
-                File.WriteAllText(working_directory + "\\experimental_decoy_relationships.tsv", Results.relation_results(ProteoformComparison.ed));
-                File.WriteAllText(working_directory + "\\experimental_theoretical_peaks.tsv", Results.peak_results(ProteoformComparison.et));
-            }
-            if (current_form == experimentExperimentComparison || save_all)
-            {
-                File.WriteAllText(working_directory + "\\experimental_experimental_relationships.tsv", Results.relation_results(ProteoformComparison.ee));
-                File.WriteAllText(working_directory + "\\experimental_false_relationships.tsv", Results.relation_results(ProteoformComparison.ef));
-                File.WriteAllText(working_directory + "\\experimental_experimental_peaks.tsv", Results.peak_results(ProteoformComparison.ee));
-            }
-            if (current_form == proteoformFamilies || save_all)
-            {
-                File.WriteAllText(working_directory + "\\proteoform_families.tsv", Results.family_results());
-            }
-        }
-
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("printToolStripMenuItem_Click");
@@ -398,10 +184,11 @@ namespace ProteoformSuite
         public bool full_run()
         {
             clear_lists();
-            if (!File.Exists(Lollipop.uniprot_xml_filepath)) get_uniprot_xml();
-            if (!File.Exists(Lollipop.uniprot_xml_filepath)) return false; //user hit cancel
-            if (!File.Exists(Lollipop.ptmlist_filepath)) get_ptm_list();
-            if (!File.Exists(Lollipop.ptmlist_filepath)) return false; //user hit cancel
+            if (Lollipop.get_files(Purpose.PtmList).Count() <= 0 && Lollipop.get_files(Purpose.ProteinDatabase).Count() <= 0)
+            {
+                MessageBox.Show("Please list at least one protein database and at least one PTM list.");
+                return false;
+            }
             this.Cursor = Cursors.WaitCursor;
             rawExperimentalComponents.load_raw_components();
             aggregatedProteoforms.aggregate_proteoforms();

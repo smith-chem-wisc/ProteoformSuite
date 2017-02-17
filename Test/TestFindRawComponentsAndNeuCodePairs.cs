@@ -3,6 +3,7 @@ using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace Test
 {
@@ -22,9 +23,10 @@ namespace Test
             Lollipop.correctionFactors = null;
             Lollipop.raw_experimental_components.Clear();
             Func<InputFile, IEnumerable<Component>> componentReader = c => new ComponentReader().read_components_from_xlsx(c, Lollipop.correctionFactors);
-            Lollipop.input_files.Add(new InputFile("UnitTestFiles\\noisy.xlsx", Labeling.NeuCode, Purpose.Identification));
+            InputFile noisy = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "noisy.xlsx"), Labeling.NeuCode, Purpose.Identification);
+            Lollipop.input_files.Add(noisy);
 
-            string inFileId = Lollipop.input_files[0].UniqueId.ToString();
+            string inFileId = noisy.UniqueId.ToString();
 
             Lollipop.neucode_labeled = true;
             Lollipop.process_raw_components();
@@ -51,15 +53,15 @@ namespace Test
             Assert.AreEqual(Math.Round(56.3809775, 7), Math.Round(c1.rt_apex, 7));
 
             //testing intensity ratio
-            List<NeuCodePair> neucode_pair = Lollipop.raw_neucode_pairs.Where(i => i.id_heavy == inFileId + "_5" && i.id_light == inFileId + "_1").ToList();
-            Assert.AreEqual(2.0595679693624596, neucode_pair[0].intensity_ratio);
+            NeuCodePair neucode_pair = Lollipop.raw_neucode_pairs.Where(i => i.id_heavy == inFileId + "_5" && i.id_light == inFileId + "_1").First();
+            Assert.AreEqual(2.0595679693624596, neucode_pair.intensity_ratio);
 
             //testing K-count
-            Assert.AreEqual(7, neucode_pair[0].lysine_count);
+            Assert.AreEqual(7, neucode_pair.lysine_count);
 
             //testing that only overlapping charge states go into intensity ratio
-            neucode_pair = Lollipop.raw_neucode_pairs.Where(i => i.id_heavy == inFileId + "_122" && i.id_light == inFileId + "_57").ToList();
-            Assert.AreEqual(1.7231604062234347, neucode_pair[0].intensity_ratio);
+            neucode_pair = Lollipop.raw_neucode_pairs.Where(i => i.id_heavy == inFileId + "_122" && i.id_light == inFileId + "_57").First();
+            Assert.AreEqual(1.7231604062234347, neucode_pair.intensity_ratio);
         }
 
     }

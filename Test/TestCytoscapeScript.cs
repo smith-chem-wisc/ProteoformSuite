@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using ProteoformSuiteInternal;
+using Proteomics;
 
 namespace Test
 {
