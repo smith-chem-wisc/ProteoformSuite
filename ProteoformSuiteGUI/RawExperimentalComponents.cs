@@ -180,7 +180,7 @@ namespace ProteoformSuite
             //dgv_RawExpComp_IndChgSts.Columns["calculated_mass"].HeaderText = "Calculated Mass";
             //dgv_RawExpComp_IndChgSts.Columns["charge_count"].HeaderText = "Charge Count";
 
-            //if (Lollipop.calibration_files().Count() == 0) dgv_RawExpComp_IndChgSts.Columns["mz_correction"].Visible = false;
+            //if (Lollipop.get_files(Purpose.Calibration).Count() == 0) dgv_RawExpComp_IndChgSts.Columns["mz_correction"].Visible = false;
             //dgv_RawExpComp_IndChgSts.AllowUserToAddRows = false;
         }
 
@@ -198,7 +198,7 @@ namespace ProteoformSuite
             //dgv_RawQuantComp_IndChgSts.Columns["calculated_mass"].HeaderText = "Calculated Mass";
             //dgv_RawQuantComp_IndChgSts.Columns["charge_count"].HeaderText = "Charge Count";
 
-            //if (Lollipop.calibration_files().Count() == 0) dgv_RawQuantComp_IndChgSts.Columns["mz_correction"].Visible = false;
+            //if (Lollipop.get_files(Purpose.Calibration).Count() == 0) dgv_RawQuantComp_IndChgSts.Columns["mz_correction"].Visible = false;
             //dgv_RawQuantComp_IndChgSts.AllowUserToAddRows = false;
         }
 

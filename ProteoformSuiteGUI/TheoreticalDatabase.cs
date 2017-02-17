@@ -2,26 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml;
-using System.Xml.Serialization;
 
 namespace ProteoformSuite
 {
     public partial class TheoreticalDatabase : Form
     {
-        OpenFileDialog openXmlDialog = new OpenFileDialog();
-        OpenFileDialog openPtmlistDialog = new OpenFileDialog();
         OpenFileDialog openAccessionListDialog = new OpenFileDialog();
-        public bool gotPTMlistFilePath = false;
-        public bool gotXMLFilePath = false;
         bool initial_load = true;
 
         public TheoreticalDatabase()
@@ -31,16 +21,9 @@ namespace ProteoformSuite
 
         public void TheoreticalDatabase_Load(object sender, EventArgs e)
         {
-            btn_Make_Databases.Enabled = false;
-            InitializeOpenXmlDialog();
-            InitializeOpenPtmlistDialog();
             InitializeAccessionListDialog();
             InitializeSettings();
-
-            if (Lollipop.opened_results_originally)
-            {
-                load_dgv();
-            }
+            if (Lollipop.opened_results_originally) load_dgv();
             initial_load = false;
         }
 
@@ -88,26 +71,6 @@ namespace ProteoformSuite
             ckbx_combineTheoreticalsByMass.Checked = Lollipop.combine_theoretical_proteoforms_byMass;
         }
 
-        private void InitializeOpenXmlDialog()
-        {
-            this.openXmlDialog.Filter = "UniProt XML (*.xml, *.xml.gz)|*.xml;*.xml.gz";
-            this.openXmlDialog.Multiselect = false;
-            this.openXmlDialog.Title = "UniProt XML Format Database";
-        }
-
-        private void InitializeOpenPtmlistDialog()
-        {
-            this.openPtmlistDialog.Filter = "UniProt PTM List (*.txt)|*.txt";
-            this.openPtmlistDialog.Multiselect = false;
-            this.openPtmlistDialog.Title = "UniProt PTM List";
-        }
-
-        private void InitializeAccessionListDialog()
-        {
-            this.openAccessionListDialog.Filter = "List of Proteins of Interest (*.txt)|*.txt";
-            this.openAccessionListDialog.Multiselect = false;
-            this.openAccessionListDialog.Title = "List of Proteins of Interest";
-        }
 
         public void FillDataBaseTable(string table)
         {
@@ -117,68 +80,12 @@ namespace ProteoformSuite
                 DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
         }
 
-        private void btn_GetUniProtXML_Click(object sender, EventArgs e)
+        // GENES OF INTEREST
+        private void InitializeAccessionListDialog()
         {
-            DialogResult dr = this.openXmlDialog.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                string uniprotXmlFile = openXmlDialog.FileName;
-                try
-                {
-                    tb_UniProtXML_Path.Text = uniprotXmlFile;
-                    Lollipop.uniprot_xml_filepath = uniprotXmlFile;
-                    if (File.Exists(uniprotXmlFile))
-                    {
-                        gotXMLFilePath = true;
-                        enable_Make_Database_Button();
-                    }
-                }
-                catch (SecurityException ex)
-                {
-                    // The user lacks appropriate permissions to read files, discover paths, etc.
-                    MessageBox.Show("Security error. Please contact your administrator for details.\n\nError message: " + ex.Message + "\n\n" +
-                        "Details (send to Support):\n\n" + ex.StackTrace);
-                    tb_UniProtXML_Path.Text = "";
-                }
-                catch (Exception ex)
-                {
-                    // Could not load the result file - probably related to Windows file system permissions.
-                    MessageBox.Show("Cannot display the file: " + uniprotXmlFile.Substring(uniprotXmlFile.LastIndexOf('\\'))
-                        + ". You may not have permission to read the file, or it may be corrupt.\n\nReported error: " + ex.Message);
-                    tb_UniProtXML_Path.Text = "";
-                }
-            }
-        }
-
-        private void btn_UniPtPtmList_Click(object sender, EventArgs e)
-        {
-            DialogResult dr = this.openPtmlistDialog.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                string ptmlist_filename = openPtmlistDialog.FileName;
-                try
-                {
-                    tb_UniProtPtmList_Path.Text = ptmlist_filename;
-                    Lollipop.ptmlist_filepath = ptmlist_filename;
-                    if (File.Exists(ptmlist_filename))
-                    {
-                        gotPTMlistFilePath = true;
-                        enable_Make_Database_Button();
-                    } 
-                }
-                catch (SecurityException ex)
-                {
-                    // The user lacks appropriate permissions to read files, discover paths, etc.
-                    MessageBox.Show("Security error. Please contact your administrator for details.\n\nError message: " + ex.Message + "\n\n" +
-                        "Details (send to Support):\n\n" + ex.StackTrace);
-                }
-                catch (Exception ex)
-                {
-                    // Could not load the result file - probably related to Windows file system permissions.
-                    MessageBox.Show("Cannot display the file: " + ptmlist_filename.Substring(ptmlist_filename.LastIndexOf('\\'))
-                        + ". You may not have permission to read the file, or it may be corrupt.\n\nReported error: " + ex.Message);
-                }
-            }
+            this.openAccessionListDialog.Filter = "List of Proteins of Interest (*.txt)|*.txt";
+            this.openAccessionListDialog.Multiselect = false;
+            this.openAccessionListDialog.Title = "List of Proteins of Interest";
         }
 
         private void bt_genes_of_interest_Click(object sender, EventArgs e)
@@ -209,9 +116,9 @@ namespace ProteoformSuite
             }
         }
 
-        private void enable_Make_Database_Button()
+        private void set_Make_Database_Button()
         {
-            if (gotPTMlistFilePath && gotXMLFilePath) btn_Make_Databases.Enabled = true;
+            btn_Make_Databases.Enabled = Lollipop.get_files(Purpose.PtmList).Count() > 0 && Lollipop.get_files(Purpose.ProteinDatabase).Count() > 0;
         }
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)
@@ -248,50 +155,87 @@ namespace ProteoformSuite
             }
         }
 
+
+        // ADD AND CLEAR
+        private void btn_addFiles_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = cmb_loadTable.SelectedItem.ToString();
+            openFileDialog.Filter = Lollipop.file_filters[cmb_loadTable.SelectedIndex];
+            openFileDialog.Multiselect = true;
+
+            DialogResult dr = openFileDialog.ShowDialog();
+            if (dr == DialogResult.OK)
+                Lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb_loadTable.SelectedIndex], Lollipop.file_types[cmb_loadTable.SelectedIndex]);
+
+            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.file_types[cmb_loadTable.SelectedIndex]));
+            set_Make_Database_Button();
+        }
+
+        private void btn_clearFiles_Click(object sender, EventArgs e)
+        {
+            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.get_files(Lollipop.file_types[cmb_loadTable.SelectedIndex])).ToList();
+            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.file_types[cmb_loadTable.SelectedIndex]));
+            set_Make_Database_Button();
+        }
+
+
+        // CHECKBOXES
         private void ckbx_combineIdenticalSequences_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.combine_identical_sequences = ckbx_combineIdenticalSequences.Checked;
         }
+
         private void ckbx_combineTheoreticalsByMass_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.combine_theoretical_proteoforms_byMass = ckbx_combineTheoreticalsByMass.Checked;
         }
+
         private void ckbx_OxidMeth_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.methionine_oxidation = ckbx_OxidMeth.Checked;
         }
+
         private void ckbx_Carbam_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.carbamidomethylation = ckbx_Carbam.Checked;
         }
+
         private void ckbx_Meth_Cleaved_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.methionine_cleavage = ckbx_Meth_Cleaved.Checked;
         }
+
         private void btn_NaturalIsotopes_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.natural_lysine_isotope_abundance = btn_NaturalIsotopes.Checked;
         }
+
         private void btn_NeuCode_Lt_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.neucode_light_lysine = btn_NeuCode_Lt.Checked;
         }
+
         private void btn_NeuCode_Hv_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.neucode_heavy_lysine = btn_NeuCode_Hv.Checked;
         }
+
         private void nUD_MaxPTMs_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.max_ptms = Convert.ToInt32(nUD_MaxPTMs.Value);
         }
+
         private void nUD_NumDecoyDBs_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.decoy_databases = Convert.ToInt32(nUD_NumDecoyDBs.Value);
         }
+
         private void nUD_MinPeptideLength_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.min_peptide_length = Convert.ToInt32(nUD_MinPeptideLength.Value);
         }
+
         private void tb_interest_label_TextChanged(object sender, EventArgs e)
         {
             if (!initial_load)
@@ -323,6 +267,35 @@ namespace ProteoformSuite
                 //    Lollipop.input_files.Add(file);
                 //}
             }
+        }
+
+
+        // LOAD DATABASES GRID VIEW
+        private void cmb_loadTable_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmb_loadTable.SelectedIndex != 2) MessageBox.Show("Use the Load Deconvolution Results page to load data.");
+            cmb_loadTable.SelectedIndex = 2;
+        }
+
+        private void dgv_loadFiles_DragDrop(object sender, DragEventArgs e)
+        {
+            drag_drop(e, cmb_loadTable, dgv_loadFiles);
+        }
+
+        private void drag_drop(DragEventArgs e, ComboBox cmb, DataGridView dgv)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            Lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex]);
+            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.file_types[cmb.SelectedIndex]));
+        }
+
+        public void reload_database_list()
+        {
+            cmb_loadTable.Items.Clear();
+            cmb_loadTable.Items.AddRange(Lollipop.file_lists);
+            cmb_loadTable.SelectedIndex = 2;
+            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.file_types[cmb_loadTable.SelectedIndex]));
+            set_Make_Database_Button();
         }
     }
 }

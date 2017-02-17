@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -79,6 +80,7 @@ namespace ProteoformSuiteInternal
             get { return hv_quant_components.Count; }
         }
 
+
         // CONTRUCTORS
         public ExperimentalProteoform(ExperimentalProteoform eP)
         {
@@ -146,6 +148,7 @@ namespace ProteoformSuiteInternal
             this.hv_quant_components = new List<Component>(e.hv_quant_components);
             this.hv_verification_components = new List<Component>(e.hv_verification_components);
         }
+
 
         // AGGREGATION METHODS
         public void aggregate()
@@ -493,6 +496,7 @@ namespace ProteoformSuiteInternal
             this.aggregated_components = new List<Component>() { root };
             this.accession = accession;
         }
+
         public ExperimentalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession)
         {
             this.aggregated_components = new List<Component>() { root };
@@ -505,6 +509,7 @@ namespace ProteoformSuiteInternal
                 this.is_decoy = true;
             }
         }
+
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession)
         {
             this.root = root;
@@ -539,10 +544,29 @@ namespace ProteoformSuiteInternal
         }
         public List<Psm> psm_list { get; set; } = new List<Psm>();
         private int _psm_count_BU;
+        public int psm_count_BU
+        {
+            get
+            {
+                if (!Lollipop.opened_results_originally)
+                    return psm_list.Where(p => p.psm_type == PsmType.BottomUp).ToList().Count;
+                else return _psm_count_BU;
+            }
+            set { _psm_count_BU = value; }
+        }
         private int _psm_count_TD;
-        public int psm_count_BU { set { _psm_count_BU = value; } get { if (!Lollipop.opened_results_originally) return psm_list.Where(p => p.psm_type == PsmType.BottomUp).ToList().Count; else return _psm_count_BU; } } 
-        public int psm_count_TD { set { _psm_count_TD = value; } get { if (!Lollipop.opened_results_originally) return psm_list.Where(p => p.psm_type == PsmType.TopDown).ToList().Count; else return _psm_count_TD; } } 
+        public int psm_count_TD
+        {
+            get
+            {
+                if (!Lollipop.opened_results_originally)
+                    return psm_list.Where(p => p.psm_type == PsmType.TopDown).ToList().Count;
+                else return _psm_count_TD;
+            }
+            set { _psm_count_TD = value; }
+        }
         public string of_interest { get; set; } = "";
+        public bool contaminant { get; set; } // not implemented, yet
 
         public TheoreticalProteoform(string accession, string description, Protein protein, bool is_metCleaved, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target) : 
             base(accession, modified_mass, lysine_count, is_target)
@@ -550,10 +574,10 @@ namespace ProteoformSuiteInternal
             this.proteinList.Add(protein);
             this.accession = accession;
             this.description = description;
-            this.name = protein.name;
-            this.fragment = protein.fragment;
-            this.begin = protein.begin + Convert.ToInt32(is_metCleaved);
-            this.end = protein.end;
+            this.name = protein.Name;
+            this.fragment = protein.BigPeptideTypes.FirstOrDefault();
+            this.begin = (int)protein.OneBasedBeginPositions.FirstOrDefault() + Convert.ToInt32(is_metCleaved);
+            this.end = (int)protein.OneBasedEndPositions.FirstOrDefault();
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
         }
@@ -576,6 +600,7 @@ namespace ProteoformSuiteInternal
         {
             this.accession = accession;
         }
+
         //for Tests
         public TheoreticalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base (accession,  modified_mass,  lysine_count,  is_target)
         {
@@ -606,7 +631,7 @@ namespace ProteoformSuiteInternal
             if (ptm_list.Count == 0)
                 return "unmodified";
             else
-                return string.Join("; ", ptm_list.Select(ptm => ptm.modification.description));
+                return string.Join("; ", ptm_list.Select(ptm => ptm.modification.id));
         }
     }
 
@@ -659,5 +684,5 @@ namespace ProteoformSuiteInternal
             this.condition = condition;
             this.intensity = intensity;
         }
-    }   
+    } 
 }

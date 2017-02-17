@@ -2,6 +2,7 @@
 using ProteoformSuiteInternal;
 using System;
 using System.Linq;
+using System.IO;
 
 namespace Test
 {
@@ -29,11 +30,11 @@ namespace Test
             Lollipop.min_peptide_length = 7;
             Lollipop.ptmset_mass_tolerance = 0.00001;
             Lollipop.combine_identical_sequences = true;
-            Lollipop.uniprot_xml_filepath = "UnitTestFiles\\uniprot_yeast_test_12entries.xml";
-            Lollipop.ptmlist_filepath = "UnitTestFiles\\ptmlist.txt";
+            Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2]);
+            Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2]);
 
             Lollipop.get_theoretical_proteoforms();
-            Assert.AreEqual(29, Lollipop.proteoform_community.theoretical_proteoforms.Count());
+            Assert.AreEqual(29, Lollipop.proteoform_community.theoretical_proteoforms.Length);
 
             int peptide = 0;
             int chain = 0;
@@ -86,11 +87,11 @@ namespace Test
             Lollipop.min_peptide_length = 7;
             Lollipop.ptmset_mass_tolerance = 0.00001;
             Lollipop.combine_identical_sequences = true;
-            Lollipop.uniprot_xml_filepath = "UnitTestFiles\\uniprot_yeast_test_12entries.xml";
-            Lollipop.ptmlist_filepath = "UnitTestFiles\\ptmlist.txt";
+            Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2]);
+            Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2]);
 
             Lollipop.get_theoretical_proteoforms();
-            Assert.AreEqual(26, Lollipop.proteoform_community.theoretical_proteoforms.Count());
+            Assert.AreEqual(26, Lollipop.proteoform_community.theoretical_proteoforms.Length);
 
             int peptide = 0;
             int chain = 0;

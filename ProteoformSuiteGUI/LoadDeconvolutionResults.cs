@@ -1,18 +1,11 @@
 ﻿using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.OleDb;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Excel = Microsoft.Office.Interop.Excel; //Right click Solution/Explorer/References. Then Add  "Reference". Assemblies/Extension/Microsoft.Office.Interop.Excel
 
 
 namespace ProteoformSuite
@@ -23,6 +16,7 @@ namespace ProteoformSuite
         public LoadDeconvolutionResults()
         {
             InitializeComponent();
+            populate_file_lists();
         }
 
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
@@ -54,102 +48,111 @@ namespace ProteoformSuite
             match_files();
         }
 
+        private void match_files()
+        {
+            string message = Lollipop.match_calibration_files();
+            refresh_dgvs();
+            if (message != "")
+                MessageBox.Show(message);
+        }
+
+
+        // CHANGED GENERAL OPTIONS FOR TABLES
+        private void rb_standardOptions_CheckedChanged(object sender, EventArgs e)
+        {
+            populate_file_lists();
+        }
+
+        private void rb_chemicalCalibration_CheckedChanged(object sender, EventArgs e)
+        {
+            populate_file_lists();
+        }
+
+        private void rb_advanced_user_CheckedChanged(object sender, EventArgs e)
+        {
+            populate_file_lists();
+        }
+
+        private void populate_file_lists()
+        {
+            cmb_loadTable1.Items.Clear();
+            cmb_loadTable2.Items.Clear();
+            cmb_loadTable3.Items.Clear();
+            for (int i = 0; i < 3; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 3; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 3; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
+            cmb_loadTable1.SelectedIndex = 0;
+            cmb_loadTable2.SelectedIndex = 1;
+            cmb_loadTable3.SelectedIndex = 2;
+
+            if (rb_chemicalCalibration.Checked)
+            {
+                cmb_loadTable1.Items.Add(Lollipop.file_lists[3]);
+                cmb_loadTable2.Items.Add(Lollipop.file_lists[3]);
+                cmb_loadTable3.Items.Add(Lollipop.file_lists[3]);
+                cmb_loadTable1.SelectedIndex = 0;
+                cmb_loadTable2.SelectedIndex = 1;
+                cmb_loadTable3.SelectedIndex = cmb_loadTable3.Items.Count - 1;
+            }
+
+            else if (rb_advanced_user.Checked)
+            {
+                for (int i = 3; i < Lollipop.file_lists.Length; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 3; i < Lollipop.file_lists.Length; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 3; i < Lollipop.file_lists.Length; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
+                cmb_loadTable1.SelectedIndex = 0;
+                cmb_loadTable2.SelectedIndex = cmb_loadTable2.Items.Count - 2;
+                cmb_loadTable3.SelectedIndex = cmb_loadTable2.Items.Count - 1;
+            }
+
+            lb_filter1.Text = Lollipop.file_lists[cmb_loadTable1.SelectedIndex];
+            lb_filter2.Text = Lollipop.file_lists[cmb_loadTable2.SelectedIndex];
+            lb_filter3.Text = Lollipop.file_lists[cmb_loadTable3.SelectedIndex];
+        }
+
 
         // DGV DRAG AND DROP EVENTS
         private void dgv_deconResults_DragDrop(object sender, DragEventArgs e)
         {
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            enter_input_files(files, new List<string> { ".xlsx" }, Purpose.Identification);
-            match_files();
-
-            DisplayUtility.FillDataGridView(dgv_identificationFiles, Lollipop.identification_files());
+            drag_drop(e, cmb_loadTable1, dgv_loadFiles1);
         }
+
         private void dgv_quantResults_DragDrop(object sender, DragEventArgs e)
         {
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            enter_input_files(files, new List<string> { ".xlsx" }, Purpose.Quantification);
-            match_files();
-
-            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantification_files());
+            drag_drop(e, cmb_loadTable2, dgv_loadFiles2);
         }
+
         private void dgv_calibrationResults_DragDrop(object sender, DragEventArgs e)
         {
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            enter_input_files(files, new List<string> { ".txt", ".tsv" }, Purpose.Calibration);
-            match_files();
-
-            DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
+            drag_drop(e, cmb_loadTable3, dgv_loadFiles3);
         }
+        
         private void dgv_deconResults_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.All;
         }
+
         private void dgv_calibrationResults_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.All;
         }
+
         private void dgv_quantResults_DragEnter(object sender, DragEventArgs e)
         {
             e.Effect = DragDropEffects.All;
         }
 
-        private void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, Purpose purpose)
+        private void drag_drop(DragEventArgs e, ComboBox cmb, DataGridView dgv)
         {
-            foreach (string enteredFile in files)
-            {
-                string path = Path.GetDirectoryName(enteredFile);
-                string filename = Path.GetFileNameWithoutExtension(enteredFile);
-                string extension = Path.GetExtension(enteredFile);
-                Labeling label = Labeling.Unlabeled;
-                if (btn_neucode.Checked) label = Labeling.NeuCode;
-
-                if (acceptable_extensions.Contains(extension) && !Lollipop.input_files.Where(f => f.purpose == purpose).Any(f => f.filename == filename))
-                {
-                    
-                    // this next section is commented out for testing. allows same files to be used for identification and quantification.
-                    
-                    //// Handle the conflict of loading the same deconvolution results into identification and quantitation
-                    //if ((purpose == Purpose.Identification || purpose == Purpose.Quantification) &&
-                    //    (Lollipop.identification_files().Any(g => g.filename == filename) || Lollipop.quantification_files().Any(g => g.filename == filename)))
-                    //{
-                    //    var results = MessageBox.Show("Use " + filename + extension + " for " + purpose.ToString() + "?", "Identification/Quantitation Result Conflict", MessageBoxButtons.YesNoCancel);
-                    //    if (results == DialogResult.No) continue;
-                    //    if (results == DialogResult.Cancel) return;
-                    //    else Lollipop.input_files = Lollipop.input_files.Where(h => h.purpose == Purpose.Calibration || h.filename != filename).ToList();
-                    //}
-
-                    reload_dgvs();
-
-                    InputFile file = new InputFile(path, filename, extension, label, purpose);
-                    Lollipop.input_files.Add(file);
-                    }
-              }
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            Lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex]);
+            match_files();
+            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.file_types[cmb.SelectedIndex]));
         }
-
-        private void match_files() //for dgv
-        {
-            // Look for results files with the same filename as a calibration file, and show that they're matched
-            foreach (InputFile file in Lollipop.calibration_files())
-            {
-                if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration).Select(f => f.filename).Contains(file.filename))
-                {
-                    IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.filename == file.filename);
-                    InputFile matching_file = matching_files.First();
-                    if (matching_files.Count() != 1) MessageBox.Show("Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + ".");
-                    file.matchingCalibrationFile = true;
-                    matching_file.matchingCalibrationFile = true;
-                }
-            }
-            refresh_dgvs();
-
-            if (Lollipop.calibration_files().Count() > 0 && !Lollipop.calibration_files().Any(f => f.matchingCalibrationFile))
-                MessageBox.Show("To use calibration files, please give them the same filenames as the deconvolution results to which they correspond.", "Orphaned Calibration Files", MessageBoxButtons.OK);
-        }
-
 
         private void refresh_dgvs()
         {
-            foreach (DataGridView dgv in new List<DataGridView> { dgv_identificationFiles, dgv_quantitationFiles, dgv_calibrationFiles })
+            foreach (DataGridView dgv in new List<DataGridView> { dgv_loadFiles1, dgv_loadFiles2, dgv_loadFiles3 })
             {
                 dgv.Refresh();
             }
@@ -157,32 +160,29 @@ namespace ProteoformSuite
 
         private void reload_dgvs()
         {
-            DisplayUtility.FillDataGridView(dgv_identificationFiles, Lollipop.identification_files());
-            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantification_files());
-            DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
-            DisplayUtility.FillDataGridView(dgv_buFiles, Lollipop.bottomup_files());
-            DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, Lollipop.get_files(Lollipop.file_types[cmb_loadTable1.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv_loadFiles2, Lollipop.get_files(Lollipop.file_types[cmb_loadTable2.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv_loadFiles3, Lollipop.get_files(Lollipop.file_types[cmb_loadTable3.SelectedIndex]));
         }
 
 
         // CELL FORMATTING EVENTS
-        private void dgv_deconResults_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        private void dgv_loadFiles1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            //MessageBox.Show("cell formatting" + dgv_deconResults.Columns[e.ColumnIndex].DataPropertyName.ToString());
-            if ((dgv_identificationFiles.Rows[e.RowIndex].DataBoundItem != null) && (dgv_identificationFiles.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
-                e.Value = BindProperty(dgv_identificationFiles.Rows[e.RowIndex].DataBoundItem, dgv_identificationFiles.Columns[e.ColumnIndex].DataPropertyName);
+            if ((dgv_loadFiles1.Rows[e.RowIndex].DataBoundItem != null) && (dgv_loadFiles1.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+                e.Value = BindProperty(dgv_loadFiles1.Rows[e.RowIndex].DataBoundItem, dgv_loadFiles1.Columns[e.ColumnIndex].DataPropertyName);
         }
-        private void dgv_quantResults_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+
+        private void dgv_loadFiles2_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            //MessageBox.Show("cell formatting" + dgv_deconResults.Columns[e.ColumnIndex].DataPropertyName.ToString());
-            if ((dgv_quantitationFiles.Rows[e.RowIndex].DataBoundItem != null) && (dgv_quantitationFiles.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
-                e.Value = BindProperty(dgv_quantitationFiles.Rows[e.RowIndex].DataBoundItem, dgv_quantitationFiles.Columns[e.ColumnIndex].DataPropertyName);
+            if ((dgv_loadFiles2.Rows[e.RowIndex].DataBoundItem != null) && (dgv_loadFiles2.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+                e.Value = BindProperty(dgv_loadFiles2.Rows[e.RowIndex].DataBoundItem, dgv_loadFiles2.Columns[e.ColumnIndex].DataPropertyName);
         }
-        private void dgv_calibrationResults_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+
+        private void dgv_loadFiles3_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            //MessageBox.Show("cell formatting" + dgv_deconResults.Columns[e.ColumnIndex].DataPropertyName.ToString());
-            if ((dgv_calibrationFiles.Rows[e.RowIndex].DataBoundItem != null) && (dgv_calibrationFiles.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
-                e.Value = BindProperty(dgv_calibrationFiles.Rows[e.RowIndex].DataBoundItem, dgv_calibrationFiles.Columns[e.ColumnIndex].DataPropertyName);
+            if ((dgv_loadFiles3.Rows[e.RowIndex].DataBoundItem != null) && (dgv_loadFiles3.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+                e.Value = BindProperty(dgv_loadFiles3.Rows[e.RowIndex].DataBoundItem, dgv_loadFiles3.Columns[e.ColumnIndex].DataPropertyName);
         }
 
         private string BindProperty(object property, string propertyName)
@@ -202,106 +202,61 @@ namespace ProteoformSuite
             }
         }
 
+
         // ADD BUTTONS
-        private void btn_protIdResultsAdd_Click(object sender, EventArgs e)
+        private void btn_addFiles1_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Title = "My Deconvolution 4.0 Results Files";
-            openFileDialog1.Filter = "Excel Files(.xlsx) | *.xlsx";
-            openFileDialog1.Multiselect = true;
-
-            DialogResult dr = openFileDialog1.ShowDialog();
-            if (dr == DialogResult.OK)
-                enter_input_files(openFileDialog1.FileNames, new List<string> { ".xlsx" }, Purpose.Identification);
-
-            DisplayUtility.FillDataGridView(dgv_identificationFiles, Lollipop.identification_files());
-            match_files();
+            add_files(cmb_loadTable1, dgv_loadFiles1);
         }
-        private void btn_protQuantResultsAdd_Click(object sender, EventArgs e)
+
+        private void btn_addFiles2_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Title = "My Deconvolution 4.0 Results Files";
-            openFileDialog1.Filter = "Excel Files(.xlsx) | *.xlsx";
-            openFileDialog1.Multiselect = true;
-
-            DialogResult dr = openFileDialog1.ShowDialog();
-            if (dr == DialogResult.OK)
-                enter_input_files(openFileDialog1.FileNames, new List<string> { ".xlsx" }, Purpose.Quantification);
-
-            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantification_files());
-            match_files();
+            add_files(cmb_loadTable2, dgv_loadFiles2);
         }
-        private void btn_protCalibResultsAdd_Click(object sender, EventArgs e)
+
+        private void btn_addFiles3_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Title = "My Calibration Results Files";
-            openFileDialog1.Filter = "Text Files (*.txt, *.tsv) | *.txt; *.tsv";
-            openFileDialog1.Multiselect = true;
-
-            DialogResult dr = openFileDialog1.ShowDialog();
-            if (dr == DialogResult.OK)
-                enter_input_files(openFileDialog1.FileNames, new List<string> { ".tsv", ".txt" }, Purpose.Calibration);
-
-            DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
-            match_files();
+            add_files(cmb_loadTable3, dgv_loadFiles3);
         }
-        private void bt_morpheusBUResultsAdd_Click(object sender, EventArgs e)
+
+        private void add_files(ComboBox cmb, DataGridView dgv)
         {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Title = "Morpheus Bottom-Up Results Files";
-            openFileDialog1.Filter = "Text Files (*.tsv) | *.tsv";
-            openFileDialog1.Multiselect = true;
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = cmb.SelectedItem.ToString();
+            openFileDialog.Filter = Lollipop.file_filters[cmb.SelectedIndex];
+            openFileDialog.Multiselect = true;
 
-            DialogResult dr = openFileDialog1.ShowDialog();
+            DialogResult dr = openFileDialog.ShowDialog();
             if (dr == DialogResult.OK)
-                enter_input_files(openFileDialog1.FileNames, new List<string> { ".tsv" }, Purpose.BottomUp);
+            {
+                Lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex]);
+                match_files();
+            }
 
-            DisplayUtility.FillDataGridView(dgv_buFiles, Lollipop.bottomup_files());
+            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.file_types[cmb.SelectedIndex]));
         }
-        private void bt_tdResultsAdd_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Title = "ProSight Top-Down Results Files";
-            openFileDialog1.Filter = "Excel Files(.xlsx) | *.xlsx";
-            openFileDialog1.Multiselect = true;
 
-            DialogResult dr = openFileDialog1.ShowDialog();
-            if (dr == DialogResult.OK)
-                enter_input_files(openFileDialog1.FileNames, new List<string> { ".xlsx" }, Purpose.TopDown);
-            int i = Lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).ToList().Count;
-            if (i == 1) DisplayUtility.EditInputFileDGVs(dgv_tdFiles, Purpose.TopDown);  //adds drop-down column for dataresults first time td file added
-            DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
-        }
 
         // CLEAR BUTTONS
-        private void btn_protIdResultsClear_Click(object sender, EventArgs e)
+        private void btn_clearFiles1_Click(object sender, EventArgs e)
         {
-            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.identification_files()).ToList();
-            DisplayUtility.FillDataGridView(dgv_identificationFiles, Lollipop.identification_files());
-            match_files();
+            clear_files(cmb_loadTable1, dgv_loadFiles1);
         }
-        private void btn_protQuantResultsClear_Click(object sender, EventArgs e)
+
+        private void btn_clearFiles2_Click(object sender, EventArgs e)
         {
-            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.quantification_files()).ToList();
-            DisplayUtility.FillDataGridView(dgv_quantitationFiles, Lollipop.quantification_files());
-            match_files();
+            clear_files(cmb_loadTable2, dgv_loadFiles2);
         }
-        private void btn_protCalibResultsClear_Click(object sender, EventArgs e)
+
+        private void btn_clearFiles3_Click(object sender, EventArgs e)
         {
-            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.calibration_files()).ToList();
-            DisplayUtility.FillDataGridView(dgv_calibrationFiles, Lollipop.calibration_files());
-            match_files();
+            clear_files(cmb_loadTable3, dgv_loadFiles3);
         }
-        private void bt_morpheusBUResultsClear_Click(object sender, EventArgs e)
+
+        private void clear_files(ComboBox cmb, DataGridView dgv)
         {
-            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.bottomup_files()).ToList();
-            DisplayUtility.FillDataGridView(dgv_buFiles, Lollipop.bottomup_files());
-            match_files();
-        }
-        private void bt_tdResultsClear_Click(object sender, EventArgs e)
-        {
-            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.topdown_files()).ToList();
-            DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
+            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.get_files(Lollipop.file_types[cmb.SelectedIndex])).ToList();
+            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.file_types[cmb.SelectedIndex]));
             match_files();
         }
 
@@ -358,32 +313,42 @@ namespace ProteoformSuite
             ProteoformSweet.run_when_form_loads = cb_run_when_load.Checked;
         }
 
-        private void cb_advanced_user_CheckedChanged(object sender, EventArgs e)
-        {
-            dgv_calibrationFiles.Visible = cb_advanced_user.Checked;
-            btn_protCalibResultsAdd.Visible = cb_advanced_user.Checked;
-            btn_protCalibResultsClear.Visible = cb_advanced_user.Checked;
-            dgv_buFiles.Visible = cb_advanced_user.Checked;
-            bt_morpheusBUResultsAdd.Visible = cb_advanced_user.Checked;
-            bt_morpheusBUResultsClear.Visible = cb_advanced_user.Checked;
-            label3.Visible = cb_advanced_user.Checked;
-            label5.Visible = cb_advanced_user.Checked;
-            //cb_td_file.Visible = cb_advanced_user.Checked;  not functioning keep invisible for now
-            //dgv_tdFiles.Visible = cb_advanced_user.Checked;
-            //bt_tdResultsAdd.Visible = cb_advanced_user.Checked;
-            //bt_tdResultsClear.Visible = cb_advanced_user.Checked;
-            //label4.Visible = cb_advanced_user.Checked;
-        }
 
         // FILTERS
-        private void tb_identificationFilter_TextChanged(object sender, EventArgs e)
+        private void tb_filter1_TextChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_identificationFiles, ExtensionMethods.filter(Lollipop.identification_files(), tb_identificationFilter.Text));
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, ExtensionMethods.filter(Lollipop.get_files(Lollipop.file_types[cmb_loadTable1.SelectedIndex]), tb_filter1.Text));
         }
 
-        private void tb_quantFilter_TextChanged(object sender, EventArgs e)
+        private void tb_filter2_TextChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_quantitationFiles, ExtensionMethods.filter(Lollipop.quantification_files(), tb_quantFilter.Text));
+            DisplayUtility.FillDataGridView(dgv_loadFiles2, ExtensionMethods.filter(Lollipop.get_files(Lollipop.file_types[cmb_loadTable2.SelectedIndex]), tb_filter2.Text));
+        }
+
+        private void tb_filter3_TextChanged(object sender, EventArgs e)
+        {
+            DisplayUtility.FillDataGridView(dgv_loadFiles3, ExtensionMethods.filter(Lollipop.get_files(Lollipop.file_types[cmb_loadTable3.SelectedIndex]), tb_filter3.Text));
+
+        }
+
+
+        // CHANGED TABLE SELECTION
+        private void cmb_loadTable1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, Lollipop.get_files(Lollipop.file_types[cmb_loadTable1.SelectedIndex]));
+            lb_filter1.Text = cmb_loadTable1.SelectedItem.ToString();
+        }
+
+        private void cmb_loadTable2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DisplayUtility.FillDataGridView(dgv_loadFiles2, Lollipop.get_files(Lollipop.file_types[cmb_loadTable2.SelectedIndex]));
+            lb_filter2.Text = cmb_loadTable1.SelectedItem.ToString();
+        }
+
+        private void cmb_LoadTable3_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DisplayUtility.FillDataGridView(dgv_loadFiles3, Lollipop.get_files(Lollipop.file_types[cmb_loadTable3.SelectedIndex]));
+            lb_filter3.Text = cmb_loadTable1.SelectedItem.ToString();
         }
     }
 }
