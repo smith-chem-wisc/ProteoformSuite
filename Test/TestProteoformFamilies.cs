@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using ProteoformSuiteInternal;
+using Proteomics;
 
 namespace Test
 {
@@ -15,7 +16,7 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
 
             //One accepted ET relation; should give one ProteoformFamily
             Lollipop.min_peak_count_et = 1;
@@ -42,7 +43,7 @@ namespace Test
         {
             //Four experimental proteoforms, three relations (linear), all accepted; should give 1 bundled family
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
 
             Lollipop.min_peak_count_ee = 2;
             ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
@@ -81,7 +82,7 @@ namespace Test
         {
             //Five experimental proteoforms, four relations (linear), second on not accepted into a peak, one peak; should give 2 families
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
 
             Lollipop.ee_max_mass_difference = 20;
             Lollipop.peak_width_base_ee = 0.015;

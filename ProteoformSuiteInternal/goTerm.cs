@@ -4,41 +4,14 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Text;
+using Proteomics;
 using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
-    public class GoTerm
-    {
-        public string id { get; set; }
-        public string description { get; set; }
-        public Aspect aspect { get; set; }
-
-        public GoTerm()
-        {
-
-        }
-
-        public GoTerm(string _id, string _description, Aspect _aspect)
-        {
-            this.id = _id;
-            this.description = _description;
-            this.aspect = _aspect;
-        }
-    }
-
-    public enum Aspect
-    {
-        molecularFunction,
-        cellularComponent,
-        biologicalProcess
-    }
-
     public class GoTermNumber
     {
         public GoTerm goTerm { get; set; }
-
         public string id { get; set; }
         public string description { get; set; }
         public Aspect aspect { get; set; }
@@ -53,9 +26,7 @@ namespace ProteoformSuiteInternal
         public decimal by { get; set; } = 1;//benjamini yekutieli calculated after all p-values are calculated
 
         public GoTermNumber() //for testing
-        {
-
-        }
+        { }
 
         public GoTermNumber(GoTerm g)
         {
@@ -63,10 +34,10 @@ namespace ProteoformSuiteInternal
             this.id = g.id;
             this.description = g.description;
             this.aspect = g.aspect;
-            this.q = Lollipop.inducedOrRepressedProteins.SelectMany(p=>p.goTerms.Where(t=>t.id==g.id)).ToList().Count();
+            this.q = Lollipop.inducedOrRepressedProteins.SelectMany(p=>p.GoTerms.Where(t=>t.id==g.id)).ToList().Count();
             //this.q = Lollipop.inducedOrRepressedProteins.Count(p => p.goTerms.Contains(g));
             this.k = Lollipop.inducedOrRepressedProteins.Count();
-            this.m = Lollipop.GO_ProteinBackgroundSet.SelectMany(p => p.goTerms.Where(t => t.id == g.id)).ToList().Count();
+            this.m = Lollipop.GO_ProteinBackgroundSet.SelectMany(p => p.GoTerms.Where(t => t.id == g.id)).ToList().Count();
             //this.m = Lollipop.goMasterSet[g];
             this.t = Lollipop.GO_ProteinBackgroundSet.Count();
             if(q != 0 && k != 0 && m != 0 && t != 0)
@@ -140,6 +111,5 @@ namespace ProteoformSuiteInternal
 
             this.by =(decimal)Math.Min(this.p_value * (double)nbp*sum/rank,1d); // range of FDRs if from 0 to 1
         }
-
     }
 }
