@@ -56,6 +56,7 @@
             this.tb_UniProtXML_Path = new System.Windows.Forms.TextBox();
             this.btn_GetUniProtXML = new System.Windows.Forms.Button();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
+            this.dgv_ptmLists = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -65,6 +66,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MaxPTMs)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Database)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_ptmLists)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -77,6 +79,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.dgv_ptmLists);
             this.splitContainer1.Panel1.Controls.Add(this.ckbx_combineTheoreticalsByMass);
             this.splitContainer1.Panel1.Controls.Add(this.tb_interest_label);
             this.splitContainer1.Panel1.Controls.Add(this.label5);
@@ -404,6 +407,15 @@
             this.dgv_Database.Size = new System.Drawing.Size(903, 737);
             this.dgv_Database.TabIndex = 0;
             // 
+            // dgv_ptmLists
+            // 
+            this.dgv_ptmLists.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_ptmLists.Location = new System.Drawing.Point(11, 545);
+            this.dgv_ptmLists.Name = "dgv_ptmLists";
+            this.dgv_ptmLists.Size = new System.Drawing.Size(434, 93);
+            this.dgv_ptmLists.TabIndex = 23;
+            this.dgv_ptmLists.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_ptmLists_DragDrop);
+            // 
             // TheoreticalDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -426,6 +438,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Database)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_ptmLists)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -460,5 +473,6 @@
         private System.Windows.Forms.Button bt_proteins_of_interest;
         private System.Windows.Forms.TextBox tb_interest_label;
         private System.Windows.Forms.CheckBox ckbx_combineTheoreticalsByMass;
+        private System.Windows.Forms.DataGridView dgv_ptmLists;
     }
 }
