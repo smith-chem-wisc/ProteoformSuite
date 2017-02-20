@@ -43,6 +43,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -52,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestComponent.cs" />
+    <Compile Include="TestGoTermNumber.cs" />
     <Compile Include="TestQuantification.cs" />
     <Compile Include="TestSaveState.cs" />
     <Compile Include="TestExperimentalProteoform.cs" />

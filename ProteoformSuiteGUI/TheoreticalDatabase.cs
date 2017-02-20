@@ -297,5 +297,32 @@ namespace ProteoformSuite
             if (!initial_load)
                 Lollipop.interest_type = tb_interest_label.Text;
         }
+
+        private void dgv_ptmLists_DragDrop(object sender, DragEventArgs e)
+        {
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+            enter_input_files(files, new List<string> { ".txt" }, Purpose.Identification);
+
+            //DisplayUtility.FillDataGridView(dgv_identificationFiles, Lollipop.identification_files());
+        }
+        private void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, Purpose purpose)
+        {
+            foreach (string enteredFile in files)
+            {
+                //string path = Path.GetDirectoryName(enteredFile);
+                //string filename = Path.GetFileNameWithoutExtension(enteredFile);
+                //string extension = Path.GetExtension(enteredFile);
+                //Labeling label = Labeling.Unlabeled;
+                //if (btn_neucode.Checked) label = Labeling.NeuCode;
+
+                //if (acceptable_extensions.Contains(extension) && !Lollipop.input_files.Where(f => f.purpose == purpose).Any(f => f.filename == filename))
+                //{
+                //    reload_dgvs();
+
+                //    InputFile file = new InputFile(path, filename, extension, label, purpose);
+                //    Lollipop.input_files.Add(file);
+                //}
+            }
+        }
     }
 }
