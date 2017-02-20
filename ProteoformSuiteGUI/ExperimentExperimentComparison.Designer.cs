@@ -503,13 +503,14 @@
             // cb_view_ef
             // 
             this.cb_view_ef.AutoSize = true;
+            this.cb_view_ef.Enabled = false;
             this.cb_view_ef.Location = new System.Drawing.Point(12, 20);
             this.cb_view_ef.Name = "cb_view_ef";
             this.cb_view_ef.Size = new System.Drawing.Size(230, 17);
             this.cb_view_ef.TabIndex = 38;
             this.cb_view_ef.Text = "View Experimental-False relations histogram";
             this.cb_view_ef.UseVisualStyleBackColor = true;
-            this.cb_view_ef.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.cb_view_ef.CheckedChanged += new System.EventHandler(this.cb_view_ef_CheckedChanged);
             // 
             // tb_notch_masses
             // 

@@ -66,6 +66,7 @@ namespace ProteoformSuiteInternal
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
         public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once. 
+        public bool fragmented { get; set; } = false; //can check in TD if experimental was fragmented but unidentified
         public int observation_count
         {
             get { return aggregated_components.Count; }

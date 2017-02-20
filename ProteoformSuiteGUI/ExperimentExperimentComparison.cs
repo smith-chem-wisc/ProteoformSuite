@@ -54,6 +54,7 @@ namespace ProteoformSuite
             this.Cursor = Cursors.WaitCursor;
             Lollipop.make_ee_relationships();
             this.FillTablesAndCharts();
+            if (Lollipop.ef_relations.Count > 0) cb_view_ef.Enabled = true;
             this.Cursor = Cursors.Default;
             compared_ee = true;
         }
@@ -329,7 +330,7 @@ namespace ProteoformSuite
             if (cb_notch_search.Checked) tb_notch_masses.Text = "Enter notches to search, separated by semi-colon.";
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void cb_view_ef_CheckedChanged(object sender, EventArgs e)
         {
             if (cb_view_ef.Checked){
                 DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ef_relations, "relations");
@@ -338,7 +339,6 @@ namespace ProteoformSuite
             else
             {
                 DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ee_relations, "relations");
-
             }
         }
     }

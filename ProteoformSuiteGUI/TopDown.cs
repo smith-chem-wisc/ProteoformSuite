@@ -71,6 +71,7 @@ namespace ProteoformSuite
                 Lollipop.make_td_relationships();
                 tb_td_relations.Text = Lollipop.td_relations.Where(r => r.relation_type == ProteoformComparison.etd).Count().ToString();
                 load_dgv();
+                bt_check_fragmented_e.Enabled = true;
             }
             else
             {
@@ -200,15 +201,48 @@ namespace ProteoformSuite
             }
             else
             {
-                if (Lollipop.proteoform_community.families.Count > 0)
-                {
-                    if (Lollipop.proteoform_community.experimental_proteoforms.Where(exp => exp.family.relations.Where(r => r.relation_type == ProteoformComparison.etd || (r.relation_type == ProteoformComparison.et && r.accepted)).Count() > 0).Count() > 0)
+                if (Lollipop.proteoform_community.experimental_proteoforms.Length > 0)
                     {
-                        DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.experimental_proteoforms.Where(exp => exp.family.relations.Where(r => (r.relation_type == ProteoformComparison.et && r.accepted) || r.relation_type == ProteoformComparison.etd).ToList().Count > 0).ToList());
+                        DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.experimental_proteoforms.Where(exp => exp.etd_match_count == 0).ToList());
                     }
-                }
-                else MessageBox.Show("Go back and construct proteoform families.");
             }
+        }
+
+        private void bt_check_fragmented_e_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Please select corresponding raw files.");
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Title = "My Thermo Raw Files";
+            openFileDialog1.Filter = "Raw Files (*.raw) | *.raw";
+            openFileDialog1.Multiselect = true;
+
+            DialogResult dr = openFileDialog1.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                RawFileReader.check_fragmented_experimentals(enter_input_files(openFileDialog1.FileNames, new List<string> { ".raw" }, Purpose.RawFile));
+                dgv_TD_proteoforms.Refresh();
+            }
+            else return;
+        }
+
+
+        private List<InputFile> enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, Purpose purpose)
+        {
+            List<InputFile> files_added = new List<InputFile>();
+            foreach (string enteredFile in files)
+            {
+                string path = Path.GetDirectoryName(enteredFile);
+                string filename = Path.GetFileNameWithoutExtension(enteredFile);
+                string extension = Path.GetExtension(enteredFile);
+                Labeling label = Labeling.Unlabeled;
+                if (acceptable_extensions.Contains(extension) && !Lollipop.input_files.Where(f => f.purpose == purpose).Any(f => f.filename == filename))
+                {
+                    InputFile file = new InputFile(path, filename, extension, label, purpose);
+                    Lollipop.input_files.Add(file);
+                    files_added.Add(file);
+                }
+            }
+            return files_added;
         }
     }
 }
