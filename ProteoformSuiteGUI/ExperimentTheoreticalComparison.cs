@@ -55,6 +55,7 @@ namespace ProteoformSuite
             this.Cursor = Cursors.WaitCursor;
             Lollipop.make_et_relationships();
             this.FillTablesAndCharts();
+            if (Lollipop.ed_relations.Count > 0) cb_view_ed.Enabled = true;
             this.Cursor = Cursors.Default;
             compared_et = true;
         }
@@ -444,6 +445,19 @@ namespace ProteoformSuite
             Lollipop.notch_search_et = cb_notch_search.Checked;
             tb_notch_masses.Enabled = cb_notch_search.Checked;
             if (cb_notch_search.Checked) tb_notch_masses.Text = "Enter notches to search, separated by semi-colon.";
+        }
+
+        private void cb_view_ed_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cb_view_ed.Checked)
+            {
+                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Lollipop.ed_relations["DecoyDatabase_1"], "relations");
+            }
+            else
+            {
+                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Lollipop.et_relations, "relations");
+
+            }
         }
     }
 

@@ -22,30 +22,6 @@ namespace ProteoformSuiteInternal
         //parameters
         public static double fineResolution = 0.1;
 
-        //GET MS SCANS
-        public static void get_ms_scans(string filename, string raw_file_path)
-        {
-            var myMsDataFile = new ThermoRawFile(raw_file_path);
-            myMsDataFile.Open();
-            foreach (IMsDataScan<ThermoSpectrum> spectrum in myMsDataFile)
-            {
-                MsScan scan = new ProteoformSuiteInternal.MsScan(spectrum.MsnOrder, spectrum.OneBasedScanNumber, filename, spectrum.RetentionTime, spectrum.InjectionTime, spectrum.TotalIonCurrent, spectrum.MassSpectrum.XArray, spectrum.MassSpectrum.YArray, spectrum.MassSpectrum.GetNoises());
-                Lollipop.Ms_scans.Add(scan);
-            }
-
-            //set charge, mz, intensity, find MS1 numbers
-            foreach (TopDownHit hit in Lollipop.td_hits_calibration.Where(f => f.filename == filename).ToList())
-            {
-                hit.ms_scan = Lollipop.Ms_scans.Where(s => s.filename == hit.filename && s.scan_number == hit.scan).ToList().First();
-                //add intensity and charge info for precursor
-                double intensity = (myMsDataFile.GetOneBasedScan(hit.scan) as ThermoScanWithPrecursor).SelectedIonGuessMonoisotopicIntensity;
-                double mz = (myMsDataFile.GetOneBasedScan(hit.scan) as ThermoScanWithPrecursor).SelectedIonGuessMonoisotopicMZ;
-                hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / mz, 0)); //m / (m/z)  round to get charge 
-                hit.mz = hit.reported_mass.ToMz(hit.charge);
-                hit.intensity = intensity;
-            }
-            myMsDataFile.Close();
-        }
 
         //RAW LOCK MASS 
         public static void raw_lock_mass(string filename, string raw_file_path)

@@ -652,8 +652,6 @@ namespace ProteoformSuiteInternal
 
         //TOPDOWN DATA
         public static List<TopDownHit> top_down_hits = new List<TopDownHit>();
-        public static List<MsScan> Ms_scans = new List<MsScan>();
-        public static Dictionary<string, Func<double[], double>> td_calibration_functions = new Dictionary<string, Func<double[], double>> ();
 
         public static void read_in_td_hits()
         {
@@ -700,6 +698,8 @@ namespace ProteoformSuiteInternal
         public static bool calibrate_td_results = true;
         public static List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
         public static List<Component> uncalibrated_components = new List<Component>();
+        public static List<MsScan> Ms_scans = new List<MsScan>();
+        public static Dictionary<string, Func<double[], double>> td_calibration_functions = new Dictionary<string, Func<double[], double>>();
 
         public static void read_in_calibration_td_hits()
         {
@@ -731,7 +731,7 @@ namespace ProteoformSuiteInternal
             if (raw_files.Count > 0)
             {
                 InputFile raw_file = raw_files.First();
-                Calibration.get_ms_scans(filename, raw_file.path + "\\" + raw_file.filename + raw_file.extension);
+                RawFileReader.get_ms_scans(filename, raw_file.path + "\\" + raw_file.filename + raw_file.extension);
 
                 if (Lollipop.calibrate_lock_mass)
                 {
@@ -772,6 +772,7 @@ namespace ProteoformSuiteInternal
                 }
             }
         }
+
         //PROTEOFORM FAMILIES -- see ProteoformCommunity
         public static string family_build_folder_path = "";
         public static int deltaM_edge_display_rounding = 2;

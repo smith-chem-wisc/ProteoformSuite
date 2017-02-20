@@ -108,7 +108,7 @@ namespace ProteoformSuiteInternal
         private string get_proteoform_shared_name(Proteoform p)
         {
             string result;
-            if (p is ExperimentalProteoform) result = p.accession + "_" + Math.Round(((ExperimentalProteoform)p).agg_mass, Lollipop.deltaM_edge_display_rounding);
+            if (p is ExperimentalProteoform) result = p.accession + "_" + Math.Round(((ExperimentalProteoform)p).agg_mass, Lollipop.deltaM_edge_display_rounding) + "_RT" + Math.Round(((ExperimentalProteoform)p).agg_rt, 0);
             else if (p is TheoreticalProteoform)
             {
                 if (!Lollipop.use_gene_ID)

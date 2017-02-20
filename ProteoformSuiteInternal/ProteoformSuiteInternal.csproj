@@ -145,6 +145,7 @@
     <Compile Include="ProteomeDatabaseReader.cs" />
     <Compile Include="Psm.cs" />
     <Compile Include="RandomExtensions.cs" />
+    <Compile Include="RawFileReader.cs" />
     <Compile Include="Results.cs" />
     <Compile Include="SaveState.cs" />
     <Compile Include="TdBuReader.cs" />
