@@ -22,7 +22,6 @@ namespace ProteoformSuiteInternal
         //parameters
         public static double fineResolution = 0.1;
 
-
         //RAW LOCK MASS 
         public static void raw_lock_mass(string filename, string raw_file_path)
         {
@@ -41,8 +40,8 @@ namespace ProteoformSuiteInternal
             var deamidatedMZ = IsotopicDistribution.GetDistribution(deamidated, 0.1, 0.001).Masses.Select(b => b.ToMz(1)).ToList();
 
             List<List<double>> allDistributions = new List<List<double>>() { regularMZ, withAmmoniaLossMZ, deamidatedMZ };
-            var myMsDataFile = new ThermoRawFile(raw_file_path);
-            myMsDataFile.Open();
+            using (ThermoDynamicData myMsDataFile = ThermoDynamicData.InitiateDynamicConnection(raw_file_path))
+            {
                 foreach (var scan in myMsDataFile)
                 {
                     if (scan.MsnOrder == 1)
@@ -63,8 +62,8 @@ namespace ProteoformSuiteInternal
                         MsScan get_scan = Lollipop.Ms_scans.Where(s => s.filename == filename && s.scan_number == scan.OneBasedScanNumber).ToList().First();
                         get_scan.lock_mass_shift = monoError;
                     }
+                }
             }
-            myMsDataFile.Close();
         }
 
 
@@ -72,79 +71,70 @@ namespace ProteoformSuiteInternal
         //CALIBRATION WITH TD HITS
         public static Func<double[], double> Run_TdMzCal(string filename, string raw_file_path, List<TopDownHit> identifications)
         {
-            var myMsDataFile = new ThermoRawFile(raw_file_path);
-            myMsDataFile.Open();
-
             Func<double[], double> calibration_function = null;
-            if (identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList().Count >= 5)
+            using (ThermoDynamicData myMsDataFile = ThermoDynamicData.InitiateDynamicConnection(raw_file_path))
             {
-                List<TopDownHit> identifications_tight_mass = identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList();
-                //filter out 5% outliers
-                List<double> mass_errors = identifications_tight_mass.Select(h => (h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0)).ToList().OrderBy(m => m).ToList();
-                double percent_in_window = 1;
-                int start = 0; //start index
-                int count = identifications_tight_mass.Count; //end index
-                while (percent_in_window > .95)  //decrease window until ~95% of points in it
+                if (identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList().Count >= 5)
                 {
-                    List<double> mass_errors_start = mass_errors.GetRange(start + 1, count - 1);
-                    double start_range = mass_errors_start.Max() - mass_errors_start.Min();
-                    List<double> mass_errors_end = mass_errors.GetRange(start, count - 1);
-                    double end_range = mass_errors_end.Max() - mass_errors_end.Min();
-                    if (start_range < end_range) start++; //if window smaller from removing first delta m, keep this window
-                    count--; //either way count fewer
-                    percent_in_window = (double)mass_errors.GetRange(start, count).ToList().Count / mass_errors.Count;
-                }
-                List<TopDownHit> identifications_to_use = identifications_tight_mass.OrderBy(h => ((h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0))).ToList().GetRange(start, count).ToList();
-
-                List<LabeledDataPoint> pointList = new List<LabeledDataPoint>();
-                pointList = GetDataPoints(myMsDataFile, identifications_to_use);
-
-                ////if lock mass, add lock mass peptide to training points
-                if (Lollipop.calibrate_lock_mass)
-                {
-                    foreach (MsScan scan in Lollipop.Ms_scans.Where(s => s.filename == filename && s.lock_mass_shift > 0 || s.lock_mass_shift < 0))
+                    List<TopDownHit> identifications_tight_mass = identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList();
+                    //filter out 5% outliers
+                    List<double> mass_errors = identifications_tight_mass.Select(h => (h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0)).ToList().OrderBy(m => m).ToList();
+                    double percent_in_window = 1;
+                    int start = 0; //start index
+                    int count = identifications_tight_mass.Count; //end index
+                    while (percent_in_window > .95)  //decrease window until ~95% of points in it
                     {
-                        pointList.Add(new LabeledDataPoint(new double[2] { 589.2, scan.retention_time }, scan.lock_mass_shift));
+                        List<double> mass_errors_start = mass_errors.GetRange(start + 1, count - 1);
+                        double start_range = mass_errors_start.Max() - mass_errors_start.Min();
+                        List<double> mass_errors_end = mass_errors.GetRange(start, count - 1);
+                        double end_range = mass_errors_end.Max() - mass_errors_end.Min();
+                        if (start_range < end_range) start++; //if window smaller from removing first delta m, keep this window
+                        count--; //either way count fewer
+                        percent_in_window = (double)mass_errors.GetRange(start, count).ToList().Count / mass_errors.Count;
                     }
-                }
+                    List<TopDownHit> identifications_to_use = identifications_tight_mass.OrderBy(h => ((h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0))).ToList().GetRange(start, count).ToList();
 
-                //linear fit, mz correction as a function of retention time and m/z value
-                double[][] variables = new double[pointList.Count()][];
-                int k = 0;
-                foreach (LabeledDataPoint p in pointList)
-                {
-                    variables[k] = p.inputs;
-                    k++;
-                }
+                    List<LabeledDataPoint> pointList = new List<LabeledDataPoint>();
 
-                var mz_errors = pointList.Select(p => p.output).ToArray();
-                var functions = new Func<double[], double>[3];
-                functions[0] = a => 1;
-                for (int i = 0; i < 2; i++)
-                {
-                    int j = i;
-                    functions[j + 1] = a => a[j];
+                    //get data points
+                    UsefulProteomicsDatabases.Loaders.LoadElements("elements.dat");
+                    foreach (TopDownHit hit in identifications_to_use)
+                    {
+                        double[] inputs = new double[2] { hit.mz, hit.retention_time };
+                        var a = new LabeledDataPoint(inputs, (hit.reported_mass - hit.theoretical_mass - Math.Round(hit.reported_mass - hit.theoretical_mass, 0)) / hit.charge);
+                        pointList.Add(a);
+                    }
+
+                    ////if lock mass, add lock mass peptide to training points
+                    if (Lollipop.calibrate_lock_mass)
+                    {
+                        foreach (MsScan scan in Lollipop.Ms_scans.Where(s => s.filename == filename && s.lock_mass_shift > 0 || s.lock_mass_shift < 0))
+                        {
+                            pointList.Add(new LabeledDataPoint(new double[2] { 589.2, scan.retention_time }, scan.lock_mass_shift));
+                        }
+                    }
+
+                    //linear fit, mz correction as a function of retention time and m/z value
+                    double[][] variables = new double[pointList.Count()][];
+                    int k = 0;
+                    foreach (LabeledDataPoint p in pointList)
+                    {
+                        variables[k] = p.inputs;
+                        k++;
+                    }
+
+                    var mz_errors = pointList.Select(p => p.output).ToArray();
+                    var functions = new Func<double[], double>[3];
+                    functions[0] = a => 1;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        int j = i;
+                        functions[j + 1] = a => a[j];
+                    }
+                    calibration_function = Fit.LinearMultiDimFunc(variables, mz_errors, functions);
                 }
-                calibration_function = Fit.LinearMultiDimFunc(variables, mz_errors, functions);
             }
-            myMsDataFile.Close();
             return calibration_function;
-        }
-
-        //Training points extractor
-        public static List<LabeledDataPoint> GetDataPoints(ThermoRawFile myMsDataFile, List<TopDownHit> identifications)
-        {
-            List<LabeledDataPoint> trainingPointsToReturn = new List<LabeledDataPoint>();
-            UsefulProteomicsDatabases.Loaders.LoadElements("elements.dat");
-
-            foreach (TopDownHit hit in identifications)
-            {
-                double[] inputs = new double[2] { hit.mz, hit.retention_time };
-                var a = new LabeledDataPoint(inputs, (hit.reported_mass - hit.theoretical_mass - Math.Round(hit.reported_mass - hit.theoretical_mass, 0)) / hit.charge);
-                trainingPointsToReturn.Add(a);
-            }
-
-            return trainingPointsToReturn;
         }
 
 
