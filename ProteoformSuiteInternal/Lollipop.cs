@@ -55,7 +55,7 @@ namespace ProteoformSuiteInternal
         {
             new List<string> { ".xlsx" },
             new List<string> { ".xlsx" },
-            new List<string> { ".xml", ".fasta", ".txt" },
+            new List<string> { ".xml", ".gz", ".fasta", ".txt" },
             new List<string> { ".txt", ".tsv" },
             new List<string> { ".xlsx" },
             new List<string> { ".tsv" }
@@ -65,7 +65,7 @@ namespace ProteoformSuiteInternal
         {
             "Excel Files (*.xlsx) | *.xlsx",
             "Excel Files (*.xlsx) | *.xlsx",
-            "Protein Databases and PTM Text Files (*.xml, *.fasta, *.txt) | *.xml;*.fasta;*.txt",
+            "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
             "Text Files (*.txt, *.tsv) | *.tsv, *.txt",
             "Excel Files (*.xlsx) | *.xlsx",
             "Text Files (*.tsv) | *.tsv"
