@@ -21,10 +21,10 @@ namespace Test
         [Test]
         public void test_contaminant_check()
         {
-            InputFile f = new InputFile();
+            InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
             f.ContaminantDB = true;
-            InputFile g = new InputFile();
-            InputFile h = new InputFile();
+            InputFile g = new InputFile("fake.txt", Purpose.ProteinDatabase);
+            InputFile h = new InputFile("fake.txt", Purpose.ProteinDatabase);
             Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), null, null, new string[0], "T2", "T3", true, false, new List<GoTerm>());
             Protein p2 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), null, null, new string[0], "T2", "T3", true, false, new List<GoTerm>());
             Protein p3 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), null, null, new string[0], "T2", "T3", true, false, new List<GoTerm>());
