@@ -47,11 +47,8 @@ namespace ProteoformSuiteInternal
             set
             {
                 _proteoforms = value;
-
                 HashSet<int> lysine_counts = new HashSet<int>(value.Select(p => p.lysine_count));
                 if (lysine_counts.Count == 1) this.lysine_count = lysine_counts.FirstOrDefault();
-                else this.lysine_count = -1;
-
                 this.experimental_proteoforms = value.Where(p => p is ExperimentalProteoform).Select(p => (ExperimentalProteoform)p).ToList();
                 this.theoretical_proteoforms = value.Where(p => p is TheoreticalProteoform).Select(p => (TheoreticalProteoform)p).ToList();
                 this.relations = new HashSet<ProteoformRelation>(value.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted)), new RelationComparer());

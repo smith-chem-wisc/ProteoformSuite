@@ -94,6 +94,11 @@ namespace ProteoformSuiteInternal
         //}
 
         // FOR DATAGRIDVIEW DISPLAY
+        public static string et_string = "Experiment-Theoretical";
+        public static string ee_string = "Experiment-Experimental";
+        public static string ed_string = "Experiment-Decoy";
+        public static string ef_string = "Experiment-Unequal Lysine Count";
+
         public int peak_center_count
         {
             get { if (this.peak != null) return this.peak.peak_relation_group_count; else return -1000000; }
@@ -106,10 +111,10 @@ namespace ProteoformSuiteInternal
         {
             get
             {
-                if (this.relation_type == ProteoformComparison.et) return "Experimental-Theoretical";
-                else if (this.relation_type == ProteoformComparison.ee) return "Experimental-Experimental";
-                else if (this.relation_type == ProteoformComparison.ed) return "Experimental-Decoy";
-                else if (this.relation_type == ProteoformComparison.ef) return "Experimental-Unequal Lysine Count";
+                if (this.relation_type == ProteoformComparison.et) return et_string;
+                else if (this.relation_type == ProteoformComparison.ee) return ee_string;
+                else if (this.relation_type == ProteoformComparison.ed) return ed_string;
+                else if (this.relation_type == ProteoformComparison.ef) return ef_string;
                 else return "";
 
             }

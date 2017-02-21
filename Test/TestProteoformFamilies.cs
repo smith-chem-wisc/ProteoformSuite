@@ -22,6 +22,7 @@ namespace Test
             Lollipop.min_peak_count_et = 1;
             ExperimentalProteoform pf1 = new ExperimentalProteoform("E1");
             TheoreticalProteoform pf2 = new TheoreticalProteoform("T1");
+            pf2.name = "T1";
             ProteoformComparison comparison = ProteoformComparison.et;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
@@ -31,7 +32,9 @@ namespace Test
             test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
             test_community.theoretical_proteoforms = new TheoreticalProteoform[] { pf2 };
             test_community.construct_families();
+            Assert.AreEqual("T1", test_community.families.First().name_list);
             Assert.AreEqual("T1", test_community.families.First().accession_list);
+            Assert.AreEqual("E1", test_community.families.First().experimentals_list);
             Assert.AreEqual(1, test_community.families.Count);
             Assert.AreEqual(2, test_community.families[0].proteoforms.Count);
             Assert.AreEqual(1, test_community.families.First().experimental_count);

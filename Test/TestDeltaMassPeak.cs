@@ -115,6 +115,19 @@ namespace Test
             ProteoformRelation pr3 = new ProteoformRelation(pf4, pf5, comparison45, 0);
             ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0);
 
+            //Test display strings
+            Assert.AreEqual("E1", pr2.accession_1);
+            Assert.AreEqual("E2", pr2.accession_2);
+            pr2.relation_type = ProteoformComparison.ee;
+            Assert.AreEqual(ProteoformRelation.ee_string, pr2.relation_type_string);
+            pr2.relation_type = ProteoformComparison.et;
+            Assert.AreEqual(ProteoformRelation.et_string, pr2.relation_type_string);
+            pr2.relation_type = ProteoformComparison.ed;
+            Assert.AreEqual(ProteoformRelation.ed_string, pr2.relation_type_string);
+            pr2.relation_type = ProteoformComparison.ef;
+            Assert.AreEqual(ProteoformRelation.ef_string, pr2.relation_type_string);
+            pr2.relation_type = comparison34;
+
             List<ProteoformRelation> prs2 = new List<ProteoformRelation> { pr2, pr3, pr4 };
             foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2);
             Assert.AreEqual(3, pr2.nearby_relations_count);
@@ -125,6 +138,8 @@ namespace Test
             Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
             DeltaMassPeak peak = test_community.delta_mass_peaks[0];
             Assert.AreEqual(3, peak.grouped_relations.Count);
+            Assert.AreEqual(3, pr2.peak_center_count);
+            Assert.AreEqual(0, pr2.peak_center_deltaM);
             Assert.AreEqual("unmodified", peak.possiblePeakAssignments_string);
             peak.possiblePeakAssignments.Add(new Modification("unmodified"));
             Assert.AreEqual("unmodified; unmodified", peak.possiblePeakAssignments_string);
@@ -133,6 +148,35 @@ namespace Test
             Assert.True(pf3.relationships.Contains(pr2));
             Assert.True(pf4.relationships.Contains(pr2) && pf4.relationships.Contains(pr3));
             Assert.True(pf5.relationships.Contains(pr3) && pf5.relationships.Contains(pr4));
+        }
+
+        [Test]
+        public void wrong_relation_shifting()
+        {
+            ProteoformCommunity test_community = new ProteoformCommunity();
+            ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
+            ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
+            ProteoformComparison wrong_comparison = ProteoformComparison.ee;
+            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, wrong_comparison, 0);
+            ProteoformRelation pr3 = new ProteoformRelation(pf3, pf4, wrong_comparison, 0);
+            List<ProteoformRelation> prs = new List<ProteoformRelation> { pr2, pr3 };
+            foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs);
+            test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
+            Assert.False(test_community.delta_mass_peaks[0].shift_experimental_masses(1));
+        }
+
+        [Test]
+        public void artificial_deltaMPeak()
+        {
+            Lollipop.opening_results = true;
+            ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
+            ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
+            ProteoformComparison comparison = ProteoformComparison.ee;
+            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison, 0);
+            ProteoformRelation pr3 = new ProteoformRelation(pf3, pf4, comparison, 0);
+            List<ProteoformRelation> prs = new List<ProteoformRelation> { pr2, pr3 };
+            Assert.AreEqual(prs, new DeltaMassPeak(pr2, prs).grouped_relations);
+            Lollipop.opening_results = false;
         }
 
         [Test]
