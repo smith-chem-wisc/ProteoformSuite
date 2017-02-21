@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using ProteoformSuiteInternal;
+using System.Reflection;
 
 namespace Test
 {
@@ -264,6 +265,49 @@ namespace Test
             Assert.False(new ProteoformComparer().Equals(a, b));
             b.accession = a.accession;
             Assert.True(new ProteoformComparer().Equals(a, b));
+        }
+
+        [Test]
+        public void test_aggregate_copy()
+        {
+            double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+            double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+            Lollipop.neucode_labeled = true;
+            List<Component> components = generate_neucode_components(starter_mass);
+
+            // in bounds lowest monoisotopic error
+            components[1].charge_states.Clear(); // must clear charge states because you can't set the weighted monoisotopic mass if there are charge states.
+            components[1].weighted_monoisotopic_mass = min_monoisotopic_mass - min_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance);
+            ExperimentalProteoform e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
+            Assert.AreEqual(2, e.aggregated_components.Count);
+            // in bounds highest monoisotopic error
+            components[1].weighted_monoisotopic_mass = max_monoisotopic_mass + max_monoisotopic_mass / 1000000 * Convert.ToDouble(Lollipop.mass_tolerance);
+            e = new ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
+            ExperimentalProteoform f = new ExperimentalProteoform(e);
+            Assert.AreEqual(e.root, f.root);
+            Assert.AreEqual(e.agg_intensity, f.agg_intensity);
+            Assert.AreEqual(e.agg_mass, f.agg_mass);
+            Assert.AreEqual(e.modified_mass, f.modified_mass);
+            Assert.AreEqual(e.agg_rt, f.agg_rt);
+            Assert.AreEqual(e.lysine_count, f.lysine_count);
+            Assert.AreEqual(e.accepted, f.accepted);
+            Assert.AreEqual(e.quant, f.quant);
+            Assert.AreEqual(e.mass_shifted, f.mass_shifted);
+            Assert.AreEqual(e.is_target, f.is_target);
+            Assert.AreEqual(e.is_decoy, f.is_decoy);
+            Assert.AreEqual(e.family, f.family);
+            Assert.AreNotEqual(e.aggregated_components.GetHashCode(), f.aggregated_components.GetHashCode());
+            Assert.AreEqual(e.aggregated_components.Count, f.aggregated_components.Count);
+            Assert.AreNotEqual(e.lt_quant_components.GetHashCode(), f.lt_quant_components.GetHashCode());
+            Assert.AreEqual(e.lt_quant_components.Count, f.lt_quant_components.Count);
+            Assert.AreNotEqual(e.lt_verification_components.GetHashCode(), f.lt_verification_components.GetHashCode());
+            Assert.AreEqual(e.lt_verification_components.Count, f.lt_verification_components.Count);
+            Assert.AreNotEqual(e.hv_quant_components.GetHashCode(), f.hv_quant_components.GetHashCode());
+            Assert.AreEqual(e.hv_quant_components.Count, f.hv_quant_components.Count);
+            Assert.AreNotEqual(e.hv_verification_components.GetHashCode(), f.hv_verification_components.GetHashCode());
+            Assert.AreEqual(e.hv_verification_components.Count, f.hv_verification_components.Count);
+            Assert.AreNotEqual(e.biorepIntensityList.GetHashCode(), f.biorepIntensityList.GetHashCode());
+            Assert.AreEqual(e.biorepIntensityList.Count, f.biorepIntensityList.Count);
         }
     }
 }
