@@ -145,9 +145,9 @@ namespace ProteoformSuite
         private void drag_drop(DragEventArgs e, ComboBox cmb, DataGridView dgv)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            Lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex]);
+            Lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Lollipop.input_files);
             match_files();
-            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.file_types[cmb.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]));
         }
 
         private void refresh_dgvs()
@@ -160,9 +160,9 @@ namespace ProteoformSuite
 
         private void reload_dgvs()
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles1, Lollipop.get_files(Lollipop.file_types[cmb_loadTable1.SelectedIndex]));
-            DisplayUtility.FillDataGridView(dgv_loadFiles2, Lollipop.get_files(Lollipop.file_types[cmb_loadTable2.SelectedIndex]));
-            DisplayUtility.FillDataGridView(dgv_loadFiles3, Lollipop.get_files(Lollipop.file_types[cmb_loadTable3.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable1.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv_loadFiles2, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable2.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv_loadFiles3, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable3.SelectedIndex]));
         }
 
 
@@ -229,11 +229,11 @@ namespace ProteoformSuite
             DialogResult dr = openFileDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                Lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex]);
+                Lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Lollipop.input_files);
                 match_files();
             }
 
-            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.file_types[cmb.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]));
         }
 
 
@@ -255,8 +255,8 @@ namespace ProteoformSuite
 
         private void clear_files(ComboBox cmb, DataGridView dgv)
         {
-            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.get_files(Lollipop.file_types[cmb.SelectedIndex])).ToList();
-            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.file_types[cmb.SelectedIndex]));
+            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex])).ToList();
+            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]));
             match_files();
         }
 
@@ -317,17 +317,17 @@ namespace ProteoformSuite
         // FILTERS
         private void tb_filter1_TextChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles1, ExtensionMethods.filter(Lollipop.get_files(Lollipop.file_types[cmb_loadTable1.SelectedIndex]), tb_filter1.Text));
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, ExtensionMethods.filter(Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable1.SelectedIndex]), tb_filter1.Text));
         }
 
         private void tb_filter2_TextChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles2, ExtensionMethods.filter(Lollipop.get_files(Lollipop.file_types[cmb_loadTable2.SelectedIndex]), tb_filter2.Text));
+            DisplayUtility.FillDataGridView(dgv_loadFiles2, ExtensionMethods.filter(Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable2.SelectedIndex]), tb_filter2.Text));
         }
 
         private void tb_filter3_TextChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles3, ExtensionMethods.filter(Lollipop.get_files(Lollipop.file_types[cmb_loadTable3.SelectedIndex]), tb_filter3.Text));
+            DisplayUtility.FillDataGridView(dgv_loadFiles3, ExtensionMethods.filter(Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable3.SelectedIndex]), tb_filter3.Text));
 
         }
 
@@ -335,19 +335,19 @@ namespace ProteoformSuite
         // CHANGED TABLE SELECTION
         private void cmb_loadTable1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles1, Lollipop.get_files(Lollipop.file_types[cmb_loadTable1.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv_loadFiles1, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable1.SelectedIndex]));
             lb_filter1.Text = cmb_loadTable1.SelectedItem.ToString();
         }
 
         private void cmb_loadTable2_SelectedIndexChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles2, Lollipop.get_files(Lollipop.file_types[cmb_loadTable2.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv_loadFiles2, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable2.SelectedIndex]));
             lb_filter2.Text = cmb_loadTable1.SelectedItem.ToString();
         }
 
         private void cmb_LoadTable3_SelectedIndexChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_loadFiles3, Lollipop.get_files(Lollipop.file_types[cmb_loadTable3.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv_loadFiles3, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable3.SelectedIndex]));
             lb_filter3.Text = cmb_loadTable1.SelectedItem.ToString();
         }
     }

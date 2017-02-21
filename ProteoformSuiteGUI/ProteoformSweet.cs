@@ -184,7 +184,7 @@ namespace ProteoformSuite
         public bool full_run()
         {
             clear_lists();
-            if (Lollipop.get_files(Purpose.PtmList).Count() <= 0 && Lollipop.get_files(Purpose.ProteinDatabase).Count() <= 0)
+            if (Lollipop.get_files(Lollipop.input_files, Purpose.PtmList).Count() <= 0 && Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
             {
                 MessageBox.Show("Please list at least one protein database and at least one PTM list.");
                 return false;

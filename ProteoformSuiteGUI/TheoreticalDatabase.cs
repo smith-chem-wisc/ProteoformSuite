@@ -118,7 +118,7 @@ namespace ProteoformSuite
 
         private void set_Make_Database_Button()
         {
-            btn_Make_Databases.Enabled = Lollipop.get_files(Purpose.PtmList).Count() > 0 && Lollipop.get_files(Purpose.ProteinDatabase).Count() > 0;
+            btn_Make_Databases.Enabled = Lollipop.get_files(Lollipop.input_files, Purpose.PtmList).Count() > 0 && Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() > 0;
         }
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)
@@ -166,16 +166,16 @@ namespace ProteoformSuite
 
             DialogResult dr = openFileDialog.ShowDialog();
             if (dr == DialogResult.OK)
-                Lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb_loadTable.SelectedIndex], Lollipop.file_types[cmb_loadTable.SelectedIndex]);
+                Lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb_loadTable.SelectedIndex], Lollipop.file_types[cmb_loadTable.SelectedIndex], Lollipop.input_files);
 
-            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.file_types[cmb_loadTable.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]));
             set_Make_Database_Button();
         }
 
         private void btn_clearFiles_Click(object sender, EventArgs e)
         {
-            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.get_files(Lollipop.file_types[cmb_loadTable.SelectedIndex])).ToList();
-            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.file_types[cmb_loadTable.SelectedIndex]));
+            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex])).ToList();
+            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]));
             set_Make_Database_Button();
         }
 
@@ -285,8 +285,8 @@ namespace ProteoformSuite
         private void drag_drop(DragEventArgs e, ComboBox cmb, DataGridView dgv)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            Lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex]);
-            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.file_types[cmb.SelectedIndex]));
+            Lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Lollipop.input_files);
+            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]));
         }
 
         public void reload_database_list()
@@ -294,7 +294,7 @@ namespace ProteoformSuite
             cmb_loadTable.Items.Clear();
             cmb_loadTable.Items.AddRange(Lollipop.file_lists);
             cmb_loadTable.SelectedIndex = 2;
-            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.file_types[cmb_loadTable.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]));
             set_Make_Database_Button();
         }
     }

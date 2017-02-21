@@ -37,7 +37,7 @@ namespace ProteoformSuite
 
         public void perform_calculations() //this is the first thing that gets run on form load
         {
-            if (Lollipop.get_files(Purpose.Quantification).Count() > 0 && Lollipop.proteoform_community.experimental_proteoforms.Length > 0 && Lollipop.qVals.Count <= 0)
+            if (Lollipop.get_files(Lollipop.input_files, Purpose.Quantification).Count() > 0 && Lollipop.proteoform_community.experimental_proteoforms.Length > 0 && Lollipop.qVals.Count <= 0)
             {
                 initialize();
                 Lollipop.quantify();

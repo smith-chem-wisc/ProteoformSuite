@@ -31,14 +31,14 @@ namespace ProteoformSuiteInternal
 
         public static List<InputFile> input_files = new List<InputFile>();
 
-        public static IEnumerable<InputFile> get_files(Purpose purpose)
+        public static IEnumerable<InputFile> get_files(List<InputFile> files, Purpose purpose)
         {
-            return input_files.Where(f => f.purpose == purpose);
+            return files.Where(f => f.purpose == purpose);
         }
 
-        public static IEnumerable<InputFile> get_files(List<Purpose> purposes)
+        public static IEnumerable<InputFile> get_files(List<InputFile> files, List<Purpose> purposes)
         {
-            return input_files.Where(f => purposes.Contains(f.purpose));
+            return files.Where(f => purposes.Contains(f.purpose));
         }
 
         public static string[] file_lists = new string[] 
@@ -81,15 +81,15 @@ namespace ProteoformSuiteInternal
             new List<Purpose> { Purpose.BottomUp }
         };
 
-        public static void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, List<Purpose> purposes)
+        public static void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, List<Purpose> purposes, List<InputFile> destination)
         {
             foreach (string complete_path in files)
             {
                 FileAttributes a = File.GetAttributes(complete_path);
                 if ((a & FileAttributes.Directory) == FileAttributes.Directory)
                 {
-                    enter_input_files(Directory.GetFiles(complete_path), acceptable_extensions, purposes);
-                    enter_input_files(Directory.GetDirectories(complete_path), acceptable_extensions, purposes);
+                    enter_input_files(Directory.GetFiles(complete_path), acceptable_extensions, purposes, destination);
+                    enter_input_files(Directory.GetDirectories(complete_path), acceptable_extensions, purposes, destination);
                     continue;
                 }
 
@@ -97,7 +97,7 @@ namespace ProteoformSuiteInternal
                 string extension = Path.GetExtension(complete_path);
                 Labeling label = neucode_labeled ? Labeling.NeuCode : Labeling.Unlabeled;
 
-                if (acceptable_extensions.Contains(extension) && !Lollipop.input_files.Where(f => purposes.Contains(f.purpose)).Any(f => f.filename == filename))
+                if (acceptable_extensions.Contains(extension) && !destination.Where(f => purposes.Contains(f.purpose)).Any(f => f.filename == filename))
                 {
                     InputFile file;
                     if (!purposes.Contains(Purpose.ProteinDatabase))
@@ -106,7 +106,7 @@ namespace ProteoformSuiteInternal
                         file = new InputFile(complete_path, Purpose.PtmList);
                     else
                         file = new InputFile(complete_path, Purpose.ProteinDatabase);
-                    Lollipop.input_files.Add(file);
+                    destination.Add(file);
                 }
             }
         }
@@ -116,7 +116,7 @@ namespace ProteoformSuiteInternal
             string return_message = "";
 
             // Look for results files with the same filename as a calibration file, and show that they're matched
-            foreach (InputFile file in Lollipop.get_files(Purpose.Calibration))
+            foreach (InputFile file in Lollipop.get_files(Lollipop.input_files, Purpose.Calibration))
             {
                 if (Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration).Select(f => f.filename).Contains(file.filename))
                 {
@@ -129,7 +129,7 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            if (Lollipop.get_files(Purpose.Calibration).Count() > 0 && !Lollipop.get_files(Purpose.Calibration).Any(f => f.matchingCalibrationFile))
+            if (Lollipop.get_files(Lollipop.input_files, Purpose.Calibration).Count() > 0 && !Lollipop.get_files(Lollipop.input_files, Purpose.Calibration).Any(f => f.matchingCalibrationFile))
                 return_message += "To use calibration files, please give them the same filenames as the deconvolution results to which they correspond.";
 
             return return_message;
@@ -171,7 +171,7 @@ namespace ProteoformSuiteInternal
             ltConditionsBioReps.Clear();
             hvConditionsBioReps.Clear();
 
-            foreach (InputFile inFile in Lollipop.get_files(Purpose.Quantification).ToList())
+            foreach (InputFile inFile in Lollipop.get_files(Lollipop.input_files, Purpose.Quantification).ToList())
             {
                 ltConditions.Add(inFile.lt_condition);
                 if (Lollipop.neucode_labeled)
@@ -185,7 +185,7 @@ namespace ProteoformSuiteInternal
             foreach (string condition in ltConditions)
             {
                 //ltConditionsBioReps.Add(condition, Lollipop.get_files(Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).ToList().Distinct().Count()); // this gives the count of bioreps in the specified condition
-                List<int> bioreps = Lollipop.get_files(Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).ToList();
+                List<int> bioreps = Lollipop.get_files(Lollipop.input_files, Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).ToList();
                 bioreps = bioreps.Distinct().ToList();
                 ltConditionsBioReps.Add(condition, bioreps);
 
@@ -194,7 +194,7 @@ namespace ProteoformSuiteInternal
             foreach (string condition in hvConditions)
             {
                 //hvConditionsBioReps.Add(condition, Lollipop.get_files(Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).ToList().Distinct().Count()); // this gives the count of bioreps in the specified condition
-                List<int> bioreps = Lollipop.get_files(Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).ToList();
+                List<int> bioreps = Lollipop.get_files(Lollipop.input_files, Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).ToList();
                 bioreps = bioreps.Distinct().ToList();
                 hvConditionsBioReps.Add(condition, bioreps);
                 
@@ -213,8 +213,8 @@ namespace ProteoformSuiteInternal
 
         public static void process_raw_components()
         {
-            if (get_files(Purpose.Calibration).Count() > 0)
-                correctionFactors = get_files(Purpose.Calibration).SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
+            if (get_files(Lollipop.input_files, Purpose.Calibration).Count() > 0)
+                correctionFactors = get_files(Lollipop.input_files, Purpose.Calibration).SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
             Parallel.ForEach(input_files.Where(f => f.purpose == Purpose.Identification).ToList(), file =>
             {
                 List<Component> someComponents = file.reader.read_components_from_xlsx(file, correctionFactors);
@@ -226,7 +226,7 @@ namespace ProteoformSuiteInternal
 
         private static void process_neucode_components()
         {
-            foreach (InputFile inputFile in get_files(Purpose.Identification).ToList())
+            foreach (InputFile inputFile in get_files(Lollipop.input_files, Purpose.Identification).ToList())
             {
                 foreach (string scan_range in inputFile.reader.scan_ranges)
                 {
@@ -238,8 +238,8 @@ namespace ProteoformSuiteInternal
         public static void process_raw_quantification_components()
         {
             if (input_files.Any(f => f.purpose == Purpose.Quantification))
-                correctionFactors = get_files(Purpose.Calibration).SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
-            Parallel.ForEach(get_files(Purpose.Quantification).ToList(), file => 
+                correctionFactors = get_files(Lollipop.input_files, Purpose.Calibration).SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
+            Parallel.ForEach(get_files(Lollipop.input_files, Purpose.Quantification).ToList(), file => 
             {
                 List<Component> someComponents = file.reader.read_components_from_xlsx(file, correctionFactors);
                 lock (raw_quantification_components) raw_quantification_components.AddRange(someComponents);
@@ -345,7 +345,7 @@ namespace ProteoformSuiteInternal
             List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms();
             vetExperimentalProteoforms(candidateExperimentalProteoforms);
             proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
-            if (Lollipop.neucode_labeled && get_files(Purpose.Quantification).Count() > 0) assignQuantificationComponents();
+            if (Lollipop.neucode_labeled && get_files(Lollipop.input_files, Purpose.Quantification).Count() > 0) assignQuantificationComponents();
         }
 
         //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
@@ -541,16 +541,16 @@ namespace ProteoformSuiteInternal
 
             //Read the UniProt-XML and ptmlist
             Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
-            List<ModificationWithLocation> all_modifications = get_files(Purpose.PtmList).SelectMany(file => PtmListLoader.ReadMods(file.complete_path)).ToList();
+            List<ModificationWithLocation> all_modifications = get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadMods(file.complete_path)).ToList();
             read_mods(all_modifications);
             Dictionary<string, Modification> um;
-            Dictionary<InputFile, Protein[]> theoretical_proteins = get_files(Purpose.ProteinDatabase).ToDictionary(file => file, file => ProteinDbLoader.LoadProteinDb(file.complete_path, false, all_modifications, file.ContaminantDB, out um).ToArray());
+            Dictionary<InputFile, Protein[]> theoretical_proteins = get_files(Lollipop.input_files, Purpose.ProteinDatabase).ToDictionary(file => file, file => ProteinDbLoader.LoadProteinDb(file.complete_path, false, all_modifications, file.ContaminantDB, out um).ToArray());
             proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
             aaIsotopeMassList = new AminoAcidMasses(methionine_oxidation, carbamidomethylation).AA_Masses;
             if (combine_identical_sequences) proteins = group_proteins_by_sequence(proteins);
 
             //Read the Morpheus BU data into PSM list
-            foreach (InputFile file in Lollipop.get_files(Purpose.BottomUp))
+            foreach (InputFile file in Lollipop.get_files(Lollipop.input_files, Purpose.BottomUp))
             {
                 List<Psm> psm_from_file = Lollipop.ReadBUFile(file.directory + "\\" + file.filename + file.extension);
                 psm_list.AddRange(psm_from_file);
@@ -590,7 +590,7 @@ namespace ProteoformSuiteInternal
         public static void read_mods()
         {
             Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
-            List<ModificationWithLocation> all_modifications = get_files(Purpose.PtmList).SelectMany(file => PtmListLoader.ReadMods(file.complete_path)).ToList();
+            List<ModificationWithLocation> all_modifications = get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadMods(file.complete_path)).ToList();
             read_mods(all_modifications);
         }
 
