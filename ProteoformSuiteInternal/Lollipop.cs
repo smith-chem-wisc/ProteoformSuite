@@ -92,21 +92,20 @@ namespace ProteoformSuiteInternal
                     enter_input_files(Directory.GetDirectories(complete_path), acceptable_extensions, purposes);
                     continue;
                 }
-                string directory = Path.GetDirectoryName(complete_path);
+
                 string filename = Path.GetFileNameWithoutExtension(complete_path);
                 string extension = Path.GetExtension(complete_path);
-                Labeling label = Labeling.Unlabeled;
-                if (neucode_labeled) label = Labeling.NeuCode;
+                Labeling label = neucode_labeled ? Labeling.NeuCode : Labeling.Unlabeled;
 
                 if (acceptable_extensions.Contains(extension) && !Lollipop.input_files.Where(f => purposes.Contains(f.purpose)).Any(f => f.filename == filename))
                 {
                     InputFile file;
                     if (!purposes.Contains(Purpose.ProteinDatabase))
-                        file = new InputFile(complete_path, directory, filename, extension, label, purposes.FirstOrDefault());
+                        file = new InputFile(complete_path, label, purposes.FirstOrDefault());
                     else if (extension == ".txt")
-                        file = new InputFile(complete_path, directory, filename, extension, Purpose.PtmList);
+                        file = new InputFile(complete_path, Purpose.PtmList);
                     else
-                        file = new InputFile(complete_path, directory, filename, extension, Purpose.ProteinDatabase);
+                        file = new InputFile(complete_path, Purpose.ProteinDatabase);
                     Lollipop.input_files.Add(file);
                 }
             }
@@ -123,7 +122,8 @@ namespace ProteoformSuiteInternal
                 {
                     IEnumerable<InputFile> matching_files = Lollipop.input_files.Where(f => f.purpose != Purpose.Calibration && f.filename == file.filename);
                     InputFile matching_file = matching_files.First();
-                    if (matching_files.Count() != 1) return_message += "Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + "." + Environment.NewLine;
+                    if (matching_files.Count() != 1)
+                        return_message += "Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + "." + Environment.NewLine;
                     file.matchingCalibrationFile = true;
                     matching_file.matchingCalibrationFile = true;
                 }
@@ -330,15 +330,6 @@ namespace ProteoformSuiteInternal
             //            .ToList();
         }
 
-        public static Tuple<Component, Component> find_next_pair(List<Component> ordered, List<Tuple<Component,Component>> running)
-        {
-            Component first = ordered.FirstOrDefault(c => running.All(d => c.id != d.Item1.id && c.id != d.Item2.id));
-            if (first == null) return null;
-            IEnumerable<Component> higher_mass_components = ordered.Where(higher_component => higher_component != first && higher_component.weighted_monoisotopic_mass > first.weighted_monoisotopic_mass);
-            Component second = higher_mass_components.FirstOrDefault(c => c.id != first.id && running.All(d => c.id != d.Item1.id && c.id != d.Item2.id));
-            if (second == null) return null;
-            return new Tuple<Component, Component>( first, second );
-        }
 
         //AGGREGATED PROTEOFORMS
         public static ProteoformCommunity proteoform_community = new ProteoformCommunity();
@@ -1233,3 +1224,13 @@ namespace ProteoformSuiteInternal
         }
     }
 }
+
+//public static Tuple<Component, Component> find_next_pair(List<Component> ordered, List<Tuple<Component,Component>> running)
+//{
+//    Component first = ordered.FirstOrDefault(c => running.All(d => c.id != d.Item1.id && c.id != d.Item2.id));
+//    if (first == null) return null;
+//    IEnumerable<Component> higher_mass_components = ordered.Where(higher_component => higher_component != first && higher_component.weighted_monoisotopic_mass > first.weighted_monoisotopic_mass);
+//    Component second = higher_mass_components.FirstOrDefault(c => c.id != first.id && running.All(d => c.id != d.Item1.id && c.id != d.Item2.id));
+//    if (second == null) return null;
+//    return new Tuple<Component, Component>( first, second );
+//}
