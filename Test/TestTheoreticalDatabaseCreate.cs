@@ -2,7 +2,9 @@
 using ProteoformSuiteInternal;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.IO;
+using Proteomics;
 
 namespace Test
 {
@@ -15,6 +17,36 @@ namespace Test
         {
             Environment.CurrentDirectory = TestContext.CurrentContext.TestDirectory;
         }
+
+        [Test]
+        public void test_contaminant_check()
+        {
+            InputFile f = new InputFile();
+            f.ContaminantDB = true;
+            InputFile g = new InputFile();
+            InputFile h = new InputFile();
+            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), null, null, new string[0], "T2", "T3", true, false, new List<GoTerm>());
+            Protein p2 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), null, null, new string[0], "T2", "T3", true, false, new List<GoTerm>());
+            Protein p3 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), null, null, new string[0], "T2", "T3", true, false, new List<GoTerm>());
+            Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
+                { f, new Protein[] { p1 } },
+                { g, new Protein[] { p2 } },
+                { h, new Protein[] { p3 } },
+            };
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf");
+            TheoreticalProteoform u = new TheoreticalProteoform("T2_asdf_asdf");
+            TheoreticalProteoform v = new TheoreticalProteoform("T3_asdf_Asdf_Asdf");
+            t.check_contaminant_status(dict);
+            u.check_contaminant_status(dict);
+            v.check_contaminant_status(dict);
+            Assert.True(t.contaminant);
+            Assert.False(u.contaminant);
+            Assert.False(v.contaminant);
+            TheoreticalProteoform w = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { v, u, t });
+            w.check_contaminant_status(dict); // the override is used
+            Assert.True(w.contaminant);
+        }
+
 
         [Test]
         public void testTheoreticalDatabaseCreateWithPTMs()
@@ -129,6 +161,5 @@ namespace Test
             Assert.AreEqual(3, propeptide);
             Assert.AreEqual(3, signalPeptide);
         }
-
     }
 }

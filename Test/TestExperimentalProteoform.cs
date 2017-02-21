@@ -255,5 +255,15 @@ namespace Test
             Assert.AreEqual(1, e.aggregated_components.Count);
             Assert.AreEqual(components[0], e.aggregated_components.First());
         }
+
+        [Test]
+        public void proteoform_equals()
+        {
+            Proteoform a = new Proteoform("a");
+            Proteoform b = new Proteoform("b");
+            Assert.False(new ProteoformComparer().Equals(a, b));
+            b.accession = a.accession;
+            Assert.True(new ProteoformComparer().Equals(a, b));
+        }
     }
 }
