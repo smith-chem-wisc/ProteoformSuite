@@ -99,6 +99,7 @@
     <Compile Include="TestComponent.cs" />
     <Compile Include="TestExtensions.cs" />
     <Compile Include="TestGoTermNumber.cs" />
+    <Compile Include="TestInputFile.cs" />
     <Compile Include="TestQuantification.cs" />
     <Compile Include="TestSaveState.cs" />
     <Compile Include="TestExperimentalProteoform.cs" />

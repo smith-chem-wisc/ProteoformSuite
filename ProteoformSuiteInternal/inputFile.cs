@@ -44,23 +44,12 @@ namespace ProteoformSuiteInternal
         //For top-down files
         public TDProgram td_program { get; set; } = TDProgram.NRTDP;
 
-        public InputFile(string complete_path, string directory, string filename, string extension, Labeling label, Purpose purpose)
+        public InputFile(string complete_path, Purpose purpose)
         {
             this.complete_path = complete_path;
-            this.directory = directory;
-            this.filename = filename;
-            this.extension = extension;
-            this.label = label;
-            this.purpose = purpose;
-            this.instanceId = ++instanceCounter;
-        }
-
-        public InputFile(string complete_path, string directory, string filename, string extension, Purpose purpose)
-        {
-            this.complete_path = complete_path;
-            this.directory = directory;
-            this.filename = filename;
-            this.extension = extension;
+            this.directory = Path.GetDirectoryName(complete_path);
+            this.filename = Path.GetFileNameWithoutExtension(complete_path);
+            this.extension = Path.GetExtension(complete_path);
             this.purpose = purpose;
             this.instanceId = ++instanceCounter;
         }
@@ -75,49 +64,6 @@ namespace ProteoformSuiteInternal
             this.purpose = purpose;
             this.instanceId = ++instanceCounter;
         }
-
-        public InputFile(string completePath, Labeling label, Purpose purpose, int biorep)
-        {
-            this.complete_path = completePath;
-            this.directory = Path.GetDirectoryName(completePath);
-            this.filename = Path.GetFileNameWithoutExtension(completePath);
-            this.extension = Path.GetExtension(completePath);
-            this.label = label;
-            this.purpose = purpose;
-            this.biological_replicate = biorep;
-            this.instanceId = ++instanceCounter;
-        }
-
-        public InputFile(int uniqueID, string completePath, Labeling label, Purpose purpose)
-        {
-            this.complete_path = completePath;
-            this.instanceId = uniqueID;
-            this.directory = Path.GetDirectoryName(completePath);
-            this.filename = Path.GetFileNameWithoutExtension(completePath);
-            this.extension = Path.GetExtension(completePath);
-            this.label = label;
-            this.purpose = purpose;           
-        }
-
-        public InputFile(int uniqueID, bool matchingFile, int bioRep, int fraction, int techRep, string ltCond, string hvCond, string completePath, Labeling label, Purpose purpose)
-        {
-            this.complete_path = completePath;
-            this.instanceId = uniqueID;
-            this.matchingCalibrationFile = matchingFile;
-            this.biological_replicate = bioRep;
-            this.fraction = fraction;
-            this.technical_replicate = techRep;
-            this.lt_condition = ltCond;
-            this.hv_condition = hvCond;
-            this.directory = Path.GetDirectoryName(completePath);
-            this.filename = Path.GetFileNameWithoutExtension(completePath);
-            this.extension = Path.GetExtension(completePath);
-            this.label = label;
-            this.purpose = purpose;
-        }
-
-        public InputFile()
-        { }
     }
 
     //for TD 
