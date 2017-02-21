@@ -46,7 +46,7 @@ namespace ProteoformSuite
             numRawExpComponents = Lollipop.raw_experimental_components.Count;
             numNeucodePairs = Lollipop.raw_neucode_pairs.Count;
             numExperimentalProteoforms = Lollipop.proteoform_community.experimental_proteoforms.Count();
-            uniprotXmlFiles = String.Join(", ", Lollipop.get_files(Purpose.ProteinDatabase).Select(f => f.filename));
+            uniprotXmlFiles = String.Join(", ", Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Select(f => f.filename));
             numETPairs = Lollipop.et_relations.Count;
             numETPeaks = Lollipop.et_peaks.Count;
             numEEPairs = Lollipop.ee_relations.Count;

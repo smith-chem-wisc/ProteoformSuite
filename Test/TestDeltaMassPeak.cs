@@ -22,7 +22,7 @@ namespace Test
         [Test]
         public void TestDeltaMassPeakConstructor()
         {
-            Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2]);
+            Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Lollipop.input_files);
             Lollipop.read_mods();
             Lollipop.et_high_mass_difference = 250;
             Lollipop.et_low_mass_difference = -250;
