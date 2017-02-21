@@ -10,6 +10,22 @@ namespace ProteoformSuiteInternal
 {
     public static class ExtensionMethods
     {
+        //Function to get random number
+        private static readonly Random random = new Random();
+        private static readonly object syncLock = new object();
+        public static double RandomNumber()
+        {
+            lock (syncLock)
+            { // synchronize
+                return random.NextDouble();
+            }
+        }
+
+
+
+
+
+
         public static IEnumerable<IEnumerable<T>> Combinations<T>(this IEnumerable<T> elements, int k)//given an array of elements, it returns all combination sub arrays of length k
         {
             return k == 0 ? new[] { new T[0] } :

@@ -324,12 +324,7 @@ namespace ProteoformSuiteInternal
             }
             return pairsInScanRange;
 
-            //return pairsInScanRange.Where(pair =>
-            //    pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + Lollipop.MONOISOTOPIC_UNIT_MASS // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
-            //        && !Lollipop.raw_neucode_pairs.Concat(pairsInScanRange).Any(p => p.id_heavy == pair.id_light && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity, is probably correct, and that that component should not get reuused as a light.)
-            //            .ToList();
         }
-
 
         //AGGREGATED PROTEOFORMS
         public static ProteoformCommunity proteoform_community = new ProteoformCommunity();
@@ -892,7 +887,7 @@ namespace ProteoformSuiteInternal
             {
                 Parallel.ForEach(Lollipop.proteoform_community.experimental_proteoforms, eP =>
                 {
-                    eP.make_biorepIntensityList();
+                eP.biorepIntensityList = ExperimentalProteoform.make_biorepIntensityList(eP.lt_quant_components, eP.hv_quant_components, Lollipop.ltConditionsBioReps.Keys.ToList(), Lollipop.hvConditionsBioReps.Keys.ToList());
                 });
             }
         }
@@ -1099,11 +1094,19 @@ namespace ProteoformSuiteInternal
 
         public static void computeIndividualExperimentalProteoformFDR()
         {
+            List<List<decimal>> permutedTestStatistics = new List<List<decimal>>();
+
+            foreach (ExperimentalProteoform eP in Lollipop.satisfactoryProteoforms)
+            {
+                permutedTestStatistics.Add(eP.quant.permutedTestStatistics);
+            }
+
             foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
             {
-                eP.quant.computeExperimentalProteoformFDR();
+                eP.quant.FDR = ExperimentalProteoform.quantitativeValues.computeExperimentalProteoformFDR(eP.quant.testStatistic, permutedTestStatistics, Lollipop.satisfactoryProteoforms.Count(),Lollipop.sortedProteoformTestStatistics);
             }
         }
+
 
         public static void fill_qValsList()
         {
