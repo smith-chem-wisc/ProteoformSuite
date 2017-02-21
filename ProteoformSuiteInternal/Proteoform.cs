@@ -633,21 +633,27 @@ namespace ProteoformSuiteInternal
             else
                 return string.Join("; ", ptm_list.Select(ptm => ptm.modification.id));
         }
+
+        public virtual void check_contaminant_status(Dictionary<InputFile, Protein[]> theoretical_proteins)
+        {
+            this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
+        }
     }
 
     public class TheoreticalProteoformGroup : TheoreticalProteoform
     {
-
         public List<string> accessionList { get; set; } // this is the list of accession numbers for all proteoforms that share the same modified mass. the list gets alphabetical order
 
-        public TheoreticalProteoformGroup(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target)
-            : base(accession, description, name, fragment, begin, end, unmodified_mass, lysine_count, goTerms, ptm_set, modified_mass, is_target)
-        { }
         public TheoreticalProteoformGroup(List<TheoreticalProteoform> theoreticals)
             : base(theoreticals[0].accession + "_T" + theoreticals.Count(), String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.fragment)), theoreticals[0].begin, theoreticals[0].end, theoreticals[0].unmodified_mass, theoreticals[0].lysine_count, theoreticals[0].goTerms, theoreticals[0].ptm_set, theoreticals[0].modified_mass, theoreticals[0].is_target)
         {
             this.accessionList = theoreticals.Select(p => p.accession).ToList();
             this.proteinList = theoreticals.SelectMany(p => p.proteinList).ToList();
+        }
+
+        public override void check_contaminant_status(Dictionary<InputFile, Protein[]> theoretical_proteins)
+        {
+            this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => this.accessionList.Select(acc => acc.Split(new char[] { '_' })[0]).Contains(p.Accession));
         }
     }
 

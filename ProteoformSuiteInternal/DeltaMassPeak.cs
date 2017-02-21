@@ -123,18 +123,19 @@ namespace ProteoformSuiteInternal
             return all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
         }
 
-        public void shift_experimental_masses(int shift)
+        public bool shift_experimental_masses(int shift)
         {
             if (this.relation_type != ProteoformComparison.et)
-            {
-                return; //Not currently intended for ee relations
-            }
+                return false; //Not currently intended for ee relations
+
             foreach (ProteoformRelation r in this._grouped_relations)
             {
                 Proteoform p = r.connected_proteoforms[0];
                 if (p is ExperimentalProteoform && ((ExperimentalProteoform)p).mass_shifted == false && Lollipop.proteoform_community.experimental_proteoforms.Contains(p))
                     ((ExperimentalProteoform)p).shift_masses(shift);
             }
+
+            return true;
         }
     }
 }

@@ -558,8 +558,8 @@ namespace ProteoformSuiteInternal
             List<ModificationWithLocation> all_modifications = get_files(Purpose.PtmList).SelectMany(file => PtmListLoader.ReadMods(file.complete_path)).ToList();
             read_mods(all_modifications);
             Dictionary<string, Modification> um;
-            Protein[] theoretical_proteins = get_files(Purpose.ProteinDatabase).SelectMany(file => ProteinDbLoader.LoadProteinDb(file.complete_path, false, all_modifications, false, out um)).ToArray();
-            proteins = expand_protein_entries(theoretical_proteins);
+            Dictionary<InputFile, Protein[]> theoretical_proteins = get_files(Purpose.ProteinDatabase).ToDictionary(file => file, file => ProteinDbLoader.LoadProteinDb(file.complete_path, false, all_modifications, file.ContaminantDB, out um).ToArray());
+            proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
             aaIsotopeMassList = new AminoAcidMasses(methionine_oxidation, carbamidomethylation).AA_Masses;
             if (combine_identical_sequences) proteins = group_proteins_by_sequence(proteins);
 
@@ -579,6 +579,9 @@ namespace ProteoformSuiteInternal
                 Lollipop.proteoform_community.theoretical_proteoforms = group_proteoforms_byMass(Lollipop.proteoform_community.theoretical_proteoforms);
                 Lollipop.proteoform_community.decoy_proteoforms = Lollipop.proteoform_community.decoy_proteoforms.ToDictionary(kv => kv.Key, kv => (TheoreticalProteoform[])group_proteoforms_byMass(kv.Value));
             }
+
+            if (theoretical_proteins.Keys.Any(file => file.ContaminantDB))
+                Parallel.ForEach<TheoreticalProteoform>(Lollipop.proteoform_community.theoretical_proteoforms, tp => tp.check_contaminant_status(theoretical_proteins));
 
             if (psm_list.Count > 0)
                 match_psms_and_theoreticals();   //if BU data loaded in, match PSMs to theoretical accessions
