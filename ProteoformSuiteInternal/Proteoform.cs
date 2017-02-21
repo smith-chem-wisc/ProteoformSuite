@@ -84,7 +84,7 @@ namespace ProteoformSuiteInternal
         // CONTRUCTORS
         public ExperimentalProteoform(ExperimentalProteoform eP)
         {
-            copy(eP);
+            copy_aggregate(eP);
         }
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession)
         {
@@ -128,7 +128,8 @@ namespace ProteoformSuiteInternal
                 this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
         }
-        private void copy(ExperimentalProteoform e)
+
+        private void copy_aggregate(ExperimentalProteoform e)
         {
             this.root = e.root;
             this.agg_intensity = e.agg_intensity;
@@ -147,6 +148,7 @@ namespace ProteoformSuiteInternal
             this.lt_verification_components = new List<Component>(e.lt_verification_components);
             this.hv_quant_components = new List<Component>(e.hv_quant_components);
             this.hv_verification_components = new List<Component>(e.hv_verification_components);
+            this.biorepIntensityList = new List<biorepIntensity>(e.biorepIntensityList);
         }
 
 
@@ -155,7 +157,7 @@ namespace ProteoformSuiteInternal
         {
             ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", this.root, Lollipop.remaining_components.ToList(), true); //first pass returns temporary proteoform
             ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, Lollipop.remaining_components.ToList(), true); //second pass uses temporary protoeform from first pass.
-            copy(new_pf);
+            copy_aggregate(new_pf);
             this.root = temp_pf.root; //maintain the original component root
         }
 
