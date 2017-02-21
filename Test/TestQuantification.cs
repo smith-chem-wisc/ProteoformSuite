@@ -172,7 +172,6 @@ namespace Test
             InputFile i3 = new InputFile("fake.txt", Purpose.Quantification);
             i3.biological_replicate = 1;
             i3.lt_condition = "A";
-            i3.purpose = Purpose.Quantification;
             Lollipop.input_files.Add(i3);
             Lollipop.getObservationParameters();
             Assert.AreEqual(1, Lollipop.countOfBioRepsInOneCondition);
@@ -180,7 +179,6 @@ namespace Test
             InputFile i4 = new InputFile("fake.txt", Purpose.Quantification);
             i4.biological_replicate = 1;
             i4.lt_condition = "B";
-            i4.purpose = Purpose.Quantification;
             Lollipop.input_files.Add(i4);
             Lollipop.getObservationParameters();
             Assert.AreEqual(1, Lollipop.countOfBioRepsInOneCondition);
@@ -188,7 +186,6 @@ namespace Test
             InputFile i5 = new InputFile("fake.txt", Purpose.Quantification);
             i5.biological_replicate = 1;
             i5.lt_condition = "C";
-            i5.purpose = Purpose.Quantification;
             Lollipop.input_files.Add(i5);
             Lollipop.getObservationParameters();
             Assert.AreEqual(1, Lollipop.countOfBioRepsInOneCondition);
@@ -196,7 +193,6 @@ namespace Test
             InputFile i6 = new InputFile("fake.txt", Purpose.Quantification);
             i6.biological_replicate = 2;
             i6.lt_condition = "A";
-            i6.purpose = Purpose.Quantification;
             Lollipop.input_files.Add(i6);
             Lollipop.getObservationParameters();
             Assert.AreEqual(1, Lollipop.countOfBioRepsInOneCondition);
@@ -204,7 +200,6 @@ namespace Test
             InputFile i7 = new InputFile("fake.txt", Purpose.Quantification);
             i7.biological_replicate = 2;
             i7.lt_condition = "B";
-            i7.purpose = Purpose.Quantification;
             Lollipop.input_files.Add(i7);
             Lollipop.getObservationParameters();
             Assert.AreEqual(1, Lollipop.countOfBioRepsInOneCondition);
@@ -212,7 +207,6 @@ namespace Test
             InputFile i8 = new InputFile("fake.txt", Purpose.Quantification);
             i8.biological_replicate = 2;
             i8.lt_condition = "C";
-            i8.purpose = Purpose.Quantification;
             Lollipop.input_files.Add(i8);
             Lollipop.getObservationParameters();
             Assert.AreEqual(2, Lollipop.countOfBioRepsInOneCondition);
