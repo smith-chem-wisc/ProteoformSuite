@@ -24,27 +24,21 @@ namespace ProteoformSuite
             {
                 Lollipop.getBiorepsFractionsList(); // list of bioreps with a list of fractions for each biorep
                 Lollipop.getObservationParameters(); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
-            }
-                
-            Parallel.Invoke(
-                () => rEC(),
-                () => rQC()                
+
+                Parallel.Invoke(
+                    () => {
+                        if (Lollipop.raw_experimental_components.Count == 0)
+                            Lollipop.process_raw_components(); //Includes reading correction factors if present,
+                    }, 
+                    () => {
+                        if (Lollipop.raw_quantification_components.Count == 0)
+                            Lollipop.process_raw_quantification_components();
+                    }
                 );
-            this.FillRawExpComponentsTable();
-            this.FillRawQuantificationComponentsTable();
-        }
 
-        public static void rEC()
-        {
-            if (Lollipop.raw_experimental_components.Count == 0)
-                Lollipop.process_raw_components(); //Includes reading correction factors if present
-        }
-
-        public static void rQC()
-        {           
-            if (Lollipop.raw_quantification_components.Count == 0)
-                Lollipop.process_raw_quantification_components();
-           
+                this.FillRawExpComponentsTable();
+                this.FillRawQuantificationComponentsTable();
+            }
         }
 
         public DataGridView GetDGV()

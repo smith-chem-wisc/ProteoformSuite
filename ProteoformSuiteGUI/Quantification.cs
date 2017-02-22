@@ -155,11 +155,6 @@ namespace ProteoformSuite
             rb_allSampleGOTerms.CheckedChanged += new EventHandler(goTermBackgroundChanged);
         }
 
-
-        // CALCULATING DISTRIBUTION OF OBSERVED AND IMPUTED PROTEOFORM INTENSITIES
-        SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>();
-        SortedDictionary<decimal, int> logSelectIntensityHistogram = new SortedDictionary<decimal, int>();
-
         private void plotObservedVsExpectedRelativeDifference()
         {
             ct_relativeDifference.Series.Clear();
@@ -403,14 +398,14 @@ namespace ProteoformSuite
         private void nud_bkgdShift_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.backgroundShift = nud_bkgdShift.Value;
-            Lollipop.defineAllObservedIntensityDistribution();
+            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
             Lollipop.defineSelectBackgroundIntensityDistribution();
         }
 
         private void nud_bkgdWidth_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.backgroundWidth = nud_bkgdWidth.Value;
-            Lollipop.defineAllObservedIntensityDistribution();
+            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
             Lollipop.defineSelectBackgroundIntensityDistribution();
         }
 
@@ -427,10 +422,10 @@ namespace ProteoformSuite
         private void nud_sKnot_minFoldChange_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.sKnot_minFoldChange = nud_sKnot_minFoldChange.Value;
-            Lollipop.computeProteoformTestStatistics();
+            Lollipop.computeProteoformTestStatistics(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.satisfactoryProteoforms, Lollipop.bkgdAverageIntensity, Lollipop.bkgdSelectStDev, Lollipop.numerator_condition, Lollipop.denominator_condition, Lollipop.sKnot_minFoldChange);
             Lollipop.computeSortedTestStatistics();
             Lollipop.computeFoldChangeFDR();
-            Lollipop.computeIndividualExperimentalProteoformFDR();
+            Lollipop.computeIndividualExperimentalProteoformFDRs();
             plotObservedVsExpectedOffsets();
         }
 
