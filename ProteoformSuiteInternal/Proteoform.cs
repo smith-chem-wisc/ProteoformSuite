@@ -325,7 +325,7 @@ namespace ProteoformSuiteInternal
                 //numerator and denominator not used yet b/c of the programming that would require.
                 eP.quant = this;
                 accession = eP.accession;
-                if (eP.lt_quant_components.Count > 0 || eP.hv_quant_components.Count > 0)
+                if (Lollipop.satisfactoryProteoforms.Contains(eP) && (eP.lt_quant_components.Count > 0 || eP.hv_quant_components.Count > 0))
                 {
                     lightBiorepIntensities = eP.biorepIntensityList.Where(b => b.light).ToList();
                     lightImputedIntensities = imputedIntensities(true, lightBiorepIntensities, bkgdAverageIntensity, bkgdStDev, Lollipop.ltConditionsBioReps);
