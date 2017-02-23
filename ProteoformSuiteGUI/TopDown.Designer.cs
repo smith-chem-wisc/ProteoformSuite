@@ -34,15 +34,15 @@
             this.rtb_sequence = new System.Windows.Forms.RichTextBox();
             this.dgv_TD_family = new System.Windows.Forms.DataGridView();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.bt_check_fragmented_e = new System.Windows.Forms.Button();
             this.bt_targeted_td_relations = new System.Windows.Forms.Button();
             this.cmbx_td_or_e_proteoforms = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.tb_td_relations = new System.Windows.Forms.TextBox();
+            this.tb_exp_proteoforms = new System.Windows.Forms.TextBox();
             this.bt_load_td = new System.Windows.Forms.Button();
             this.bt_td_relations = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.tb_tdProteoforms = new System.Windows.Forms.TextBox();
-            this.bt_check_fragmented_e = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -136,7 +136,7 @@
             this.splitContainer3.Panel1.Controls.Add(this.bt_targeted_td_relations);
             this.splitContainer3.Panel1.Controls.Add(this.cmbx_td_or_e_proteoforms);
             this.splitContainer3.Panel1.Controls.Add(this.label2);
-            this.splitContainer3.Panel1.Controls.Add(this.tb_td_relations);
+            this.splitContainer3.Panel1.Controls.Add(this.tb_exp_proteoforms);
             this.splitContainer3.Panel1.Controls.Add(this.bt_load_td);
             this.splitContainer3.Panel1.Controls.Add(this.bt_td_relations);
             this.splitContainer3.Panel1.Controls.Add(this.label1);
@@ -148,6 +148,17 @@
             this.splitContainer3.Size = new System.Drawing.Size(976, 622);
             this.splitContainer3.SplitterDistance = 73;
             this.splitContainer3.TabIndex = 2;
+            // 
+            // bt_check_fragmented_e
+            // 
+            this.bt_check_fragmented_e.Enabled = false;
+            this.bt_check_fragmented_e.Location = new System.Drawing.Point(498, 1);
+            this.bt_check_fragmented_e.Name = "bt_check_fragmented_e";
+            this.bt_check_fragmented_e.Size = new System.Drawing.Size(208, 23);
+            this.bt_check_fragmented_e.TabIndex = 8;
+            this.bt_check_fragmented_e.Text = "Check if Experimental Fragmented";
+            this.bt_check_fragmented_e.UseVisualStyleBackColor = true;
+            this.bt_check_fragmented_e.Click += new System.EventHandler(this.bt_check_fragmented_e_Click);
             // 
             // bt_targeted_td_relations
             // 
@@ -172,18 +183,18 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(118, 32);
+            this.label2.Location = new System.Drawing.Point(119, 29);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(101, 13);
+            this.label2.Size = new System.Drawing.Size(126, 13);
             this.label2.TabIndex = 5;
-            this.label2.Text = "TopDown Relations";
+            this.label2.Text = "Experimental Proteoforms";
             // 
-            // tb_td_relations
+            // tb_exp_proteoforms
             // 
-            this.tb_td_relations.Location = new System.Drawing.Point(12, 29);
-            this.tb_td_relations.Name = "tb_td_relations";
-            this.tb_td_relations.Size = new System.Drawing.Size(100, 20);
-            this.tb_td_relations.TabIndex = 4;
+            this.tb_exp_proteoforms.Location = new System.Drawing.Point(13, 26);
+            this.tb_exp_proteoforms.Name = "tb_exp_proteoforms";
+            this.tb_exp_proteoforms.Size = new System.Drawing.Size(100, 20);
+            this.tb_exp_proteoforms.TabIndex = 4;
             // 
             // bt_load_td
             // 
@@ -220,17 +231,6 @@
             this.tb_tdProteoforms.Name = "tb_tdProteoforms";
             this.tb_tdProteoforms.Size = new System.Drawing.Size(100, 20);
             this.tb_tdProteoforms.TabIndex = 0;
-            // 
-            // bt_check_fragmented_e
-            // 
-            this.bt_check_fragmented_e.Enabled = false;
-            this.bt_check_fragmented_e.Location = new System.Drawing.Point(498, 1);
-            this.bt_check_fragmented_e.Name = "bt_check_fragmented_e";
-            this.bt_check_fragmented_e.Size = new System.Drawing.Size(208, 23);
-            this.bt_check_fragmented_e.TabIndex = 8;
-            this.bt_check_fragmented_e.Text = "Check if Experimental Fragmented";
-            this.bt_check_fragmented_e.UseVisualStyleBackColor = true;
-            this.bt_check_fragmented_e.Click += new System.EventHandler(this.bt_check_fragmented_e_Click);
             // 
             // TopDown
             // 
@@ -273,7 +273,7 @@
         private System.Windows.Forms.Button bt_td_relations;
         private System.Windows.Forms.Button bt_load_td;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TextBox tb_td_relations;
+        private System.Windows.Forms.TextBox tb_exp_proteoforms;
         private System.Windows.Forms.ComboBox cmbx_td_or_e_proteoforms;
         private System.Windows.Forms.Button bt_targeted_td_relations;
         private System.Windows.Forms.Button bt_check_fragmented_e;

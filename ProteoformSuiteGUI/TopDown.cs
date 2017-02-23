@@ -35,7 +35,7 @@ namespace ProteoformSuite
             {
                 Lollipop.read_in_td_hits();
             }
-            cmbx_td_or_e_proteoforms.DataSource = new BindingList<string>() { "TopDown Proteoforms", "Identified Experimental Proteoforms" };
+            cmbx_td_or_e_proteoforms.DataSource = new BindingList<string>() { "TopDown Proteoforms", "Experimental Proteoforms" };
             cmbx_td_or_e_proteoforms.SelectedIndex = 0;
         }
 
@@ -69,7 +69,7 @@ namespace ProteoformSuite
             {
                 clear_lists();
                 Lollipop.make_td_relationships();
-                tb_td_relations.Text = Lollipop.td_relations.Where(r => r.relation_type == ProteoformComparison.etd).Count().ToString();
+                tb_exp_proteoforms.Text = Lollipop.proteoform_community.experimental_proteoforms.Where(exp => exp.etd_match_count == 0 & exp.accepted).ToList().Count.ToString();
                 load_dgv();
                 bt_check_fragmented_e.Enabled = true;
             }
@@ -192,20 +192,13 @@ namespace ProteoformSuite
 
         }
 
+
         private void cmbx_td_or_e_proteoforms_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if(cmbx_td_or_e_proteoforms.SelectedItem.ToString() == "TopDown Proteoforms")
-            {
-                DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.topdown_proteoforms);
-
-            }
-            else
-            {
-                if (Lollipop.proteoform_community.experimental_proteoforms.Length > 0)
-                    {
-                        DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.experimental_proteoforms.Where(exp => exp.etd_match_count == 0).ToList());
-                    }
-            }
+            if(cmbx_td_or_e_proteoforms.SelectedItem.ToString() == "TopDown Proteoforms" && Lollipop.proteoform_community.topdown_proteoforms.Where(p => !p.targeted).ToList().Count > 0)
+                DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.topdown_proteoforms.Where(p => !p.targeted).ToList());
+            else if (cmbx_td_or_e_proteoforms.SelectedItem.ToString() == "Experimental Proteoforms" && Lollipop.proteoform_community.experimental_proteoforms.Length > 0)
+                 DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.experimental_proteoforms.Where(exp => exp.accepted &&  exp.etd_match_count == 0).ToList());
         }
 
         private void bt_check_fragmented_e_Click(object sender, EventArgs e)
@@ -221,6 +214,7 @@ namespace ProteoformSuite
             {
                 RawFileReader.check_fragmented_experimentals(enter_input_files(openFileDialog1.FileNames, new List<string> { ".raw" }, Purpose.RawFile));
                 dgv_TD_proteoforms.Refresh();
+                MessageBox.Show("Successfully checked if experimentals were fragmented."); 
             }
             else return;
         }

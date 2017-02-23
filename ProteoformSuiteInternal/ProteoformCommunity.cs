@@ -101,10 +101,9 @@ namespace ProteoformSuiteInternal
                     foreach (double mass in Lollipop.notch_masses_et)
                     {
                         if (pf1_mass - pf2_mass <= mass + Lollipop.peak_width_base_et
-                        && pf1_mass - pf2_mass >= mass - Lollipop.peak_width_base_et) continue;
-                        else return false;
+                        && pf1_mass - pf2_mass >= mass - Lollipop.peak_width_base_et) return true;
                     }
-                    return true;
+                    return false;
                 }
                 else
                     return (pf1_mass - pf2_mass <= Lollipop.et_high_mass_difference && pf1_mass - pf2_mass >= Lollipop.et_low_mass_difference);
@@ -116,10 +115,9 @@ namespace ProteoformSuiteInternal
                     foreach (double mass in Lollipop.notch_masses_ee)
                     {
                         if (pf1_mass - pf2_mass <= mass + Lollipop.peak_width_base_ee
-                        && pf1_mass - pf2_mass >= mass - Lollipop.peak_width_base_ee) continue;
-                        else return false;
+                        && pf1_mass - pf2_mass >= mass - Lollipop.peak_width_base_ee) return true;
                     }
-                    return true;
+                    return false;
                 }
                 else
                     return (pf1_mass - pf2_mass <= Lollipop.ee_max_mass_difference);
@@ -305,7 +303,6 @@ namespace ProteoformSuiteInternal
             List<Proteoform> inducted = new List<Proteoform>();
             List<Proteoform> remaining = new List<Proteoform>(this.experimental_proteoforms.Where(e => e.accepted).ToList());
             remaining.AddRange(Lollipop.proteoform_community.topdown_proteoforms.ToList());
-            // foreach (TopDownProteoformGroup g in topdown_proteoform_groups) remaining.AddRange(g.topdown_proteoforms.Where(p => p.relationships.Count > 0).ToList());
             int family_id = 1;
             while (remaining.Count > 0)
             {

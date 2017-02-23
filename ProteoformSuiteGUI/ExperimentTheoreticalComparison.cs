@@ -45,6 +45,7 @@ namespace ProteoformSuite
             else if (Lollipop.et_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
+
         private void run_the_gamut()
         {
             if (Lollipop.notch_search_et)
@@ -240,7 +241,7 @@ namespace ProteoformSuite
                 }
                 Lollipop.regroup_components();
             }
-            if (Lollipop.ed_relations.Count > 0) tb_max_accepted_fdr.Text = Lollipop.et_peaks.Where(p => p.peak_accepted).Max(p => p.peak_group_fdr).ToString();
+            if (Lollipop.ed_relations.Count > 0 && Lollipop.et_peaks.Count > 0) tb_max_accepted_fdr.Text = Lollipop.et_peaks.Where(p => p.peak_accepted).Max(p => p.peak_group_fdr).ToString();
         }
 
         //will leave option to change one at a time by right clicking
