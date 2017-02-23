@@ -9,12 +9,12 @@ using Chemistry;
 using MathNet.Numerics.Statistics;
 using Proteomics;
 using MassSpectrometry;
+using System.IO;
 
 namespace ProteoformSuiteInternal
 {
     public class RawFileReader
     {
-        //GET MS SCANS
         //GET MS SCANS
         public static void get_ms_scans(string filename, string raw_file_path)
         {
@@ -35,37 +35,38 @@ namespace ProteoformSuiteInternal
             }
         }
 
+        //Maybe change to check which fragmented in targeted? 
         public static void check_fragmented_experimentals(List<InputFile> files)
         {
-            foreach(InputFile file in files)
-            {
-                List<ExperimentalProteoform> experimentals = Lollipop.proteoform_community.experimental_proteoforms.Where(e => e.etd_match_count == 0 && e.aggregated_components.Where(c => c.input_file.filename.Replace("_calibrated","") == file.filename).Count() > 0).ToList();
-                if (experimentals.Count > 0)
+                foreach (InputFile file in files)
                 {
                     using (ThermoDynamicData myMsDataFile = ThermoDynamicData.InitiateDynamicConnection(file.path + "\\" + file.filename + file.extension))
                     {
-                        foreach (ExperimentalProteoform e in experimentals)
+                        foreach (ExperimentalProteoform e in Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted && p.aggregated_components.Where(c => c.input_file.filename.Replace("_calibrated", "") == file.filename).Count() > 0).ToList())
                         {
-                            foreach (Component c in e.aggregated_components.Where(c => c.input_file.filename.Replace("_calibrated", "") == file.filename).ToList())
+                        foreach (Component c in e.aggregated_components.Where(c => c.input_file.filename.Replace("_calibrated", "") == file.filename).ToList())
+                        {
+                            int min_MS1 = Convert.ToInt16(c.scan_range.Split('-')[0]);
+                            int max_MS1 = Convert.ToInt16(c.scan_range.Split('-')[1]);
+                            int scan_number = min_MS1;
+                            IThermoScan scan = myMsDataFile.GetOneBasedScan(scan_number);
+                            while (e.fragmented == false && (scan.OneBasedScanNumber <= max_MS1 || scan.MsnOrder == 2))
                             {
-                                int min_MS1 = Convert.ToInt16(c.scan_range.Split('-')[0]);
-                                int max_MS1 = Convert.ToInt16(c.scan_range.Split('-')[1]);
-                                int scan_number = min_MS1;
-                                IThermoScan scan = myMsDataFile.GetOneBasedScan(scan_number);
-                                while (e.fragmented == false && (scan.OneBasedScanNumber <= max_MS1 || scan.MsnOrder == 2))
+                                scan = myMsDataFile.GetOneBasedScan(scan_number);
+                                if (scan.MsnOrder < 2) { scan_number++; continue; }
+                                foreach (ChargeState cs in c.charge_states)
                                 {
-                                    scan = myMsDataFile.GetOneBasedScan(scan_number);
-                                    if (scan.MsnOrder < 2) { scan_number++; continue; }
-                                    foreach (ChargeState cs in c.charge_states)
+                                    if (Math.Abs(cs.mz_centroid - (scan as ThermoScanWithPrecursor).IsolationMz) <= 1.5)
                                     {
-                                        if (Math.Abs(cs.mz_centroid - (scan as ThermoScanWithPrecursor).IsolationMz) <= 5) //checking around 5 m/z... might change to tolerance used? 
+                                        e.fragmented = true;
+                                        if (e.fragmented && e.etd_match_count == 0)
                                         {
-                                            e.fragmented = true;
-                                            continue;
+                                            bool td = (Lollipop.top_down_hits.Where(h => h.filename == file.filename && h.scan == scan_number).Count() > 0);
                                         }
+                                        continue;
                                     }
-                                    scan_number++;
                                 }
+                                scan_number++;
                             }
                         }
                     }

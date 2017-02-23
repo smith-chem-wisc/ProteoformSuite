@@ -212,11 +212,15 @@ namespace ProteoformSuite
 
             DialogResult dr = openFileDialog1.ShowDialog();
             if (dr == DialogResult.OK)
+            {
                 enter_input_files(openFileDialog1.FileNames, new List<string> { ".xlsx" }, Purpose.TopDown);
-            DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
-            if (Lollipop.ptmlist_filepath.Length == 0) get_ptm_list();
-            ProteomeDatabaseReader.oldPtmlistFilePath = Lollipop.ptmlist_filepath;
-            Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist(); //need for reading in TD hit PTMs
+                DisplayUtility.FillDataGridView(dgv_tdFiles, Lollipop.topdown_files());
+                if (Lollipop.ptmlist_filepath.Length == 0) get_ptm_list();
+                
+                ProteomeDatabaseReader.oldPtmlistFilePath = Lollipop.ptmlist_filepath;
+                Lollipop.uniprotModificationTable = Lollipop.proteomeDatabaseReader.ReadUniprotPtmlist(); //need for reading in TD hit PTMs
+            }
+            else return;
         }
 
         // CLEAR BUTTONS
@@ -288,7 +292,7 @@ namespace ProteoformSuite
             ProteoformSweet.run_when_form_loads = cb_run_when_load.Checked;
         }
 
-        private void get_ptm_list()
+        private bool get_ptm_list()
         {
             OpenFileDialog ofd = new OpenFileDialog();
             MessageBox.Show("Please select a Uniprot ptm list.");
@@ -297,9 +301,10 @@ namespace ProteoformSuite
             {
                 string ptm_list = ofd.FileName;
                 Lollipop.ptmlist_filepath = ptm_list;
+                return true;
             }
-            else if (dr == DialogResult.Cancel) return;
-            else return;
+            else if (dr == DialogResult.Cancel) return false;
+            else return false;
         }
 
         private void cb_advanced_user_CheckedChanged(object sender, EventArgs e)

@@ -661,7 +661,7 @@ namespace ProteoformSuiteInternal
             this.theoretical_mass = root.theoretical_mass;
             this.stop_index = root.stop_index;
             this.topdown_hits = new List<TopDownHit>() { root };
-            this.topdown_hits.AddRange(candidate_hits);
+            topdown_hits.AddRange(candidate_hits.Where(h => this.tolerable_rt(h, root.retention_time)));//&& this.tolerable_mass(h, root.corrected_mass)));
             this.calculate_properties();
             this.targeted = root.targeted;
         }
@@ -684,6 +684,23 @@ namespace ProteoformSuiteInternal
             string _modifications_string = "";
             foreach (Ptm ptm in ((TopDownProteoform)this).ptm_list) _modifications_string += (ptm.modification.description + "@" + ptm.position + "; ");
             return _modifications_string;
+        }
+
+
+        private bool tolerable_rt(TopDownHit candidate, double rt)
+        {
+            return candidate.retention_time >= rt - Convert.ToDouble(Lollipop.retention_time_tolerance) &&
+                candidate.retention_time <= rt + Convert.ToDouble(Lollipop.retention_time_tolerance);
+        }
+
+        private bool tolerable_mass(TopDownHit candidate, double corrected_mass)
+        {
+            double mass_tolerance = corrected_mass / 1000000 * (double)Lollipop.mass_tolerance;
+            double low = corrected_mass - mass_tolerance;
+            double high = corrected_mass + mass_tolerance;
+            bool tolerable_mass = candidate.corrected_mass >= low && candidate.corrected_mass <= high;
+            if (tolerable_mass) return true; //Return a true result immediately; acts as an OR between these conditions
+            return false;
         }
     }
 }

@@ -663,20 +663,20 @@ namespace ProteoformSuiteInternal
 
         public static void aggregate_td_hits(bool targeted)
         {
-            foreach(TopDownHit hit in top_down_hits) if (hit.result_set == Result_Set.find_unexpected_mods) hit.corrected_mass = hit.theoretical_mass;
+            foreach(TopDownHit hit in top_down_hits) if (hit.result_set == Result_Set.find_unexpected_mods) hit.corrected_mass = hit.theoretical_mass; //observed mass isn't mass of proteoform if find unexpected mods search (used fragments)
             //group hits into topdown proteoforms by accession/theoretical AND observed mass
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
-            TopDownHit[] remaining_td_hits = new TopDownHit[0];
+            //TopDownHit[] remaining_td_hits = new TopDownHit[0];
+            List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
             //aggregate to td hit w/ highest C score
-            remaining_td_hits = top_down_hits.Where(h => h.targeted == targeted).OrderByDescending(t => t.score).ToArray();
-            while (remaining_td_hits.Length > 0)
+            remaining_td_hits = top_down_hits.Where(h => h.targeted == targeted).OrderBy(t => Math.Abs(t.corrected_mass - t.theoretical_mass)).ToList();
+            while (remaining_td_hits.Count > 0)
             {
                 TopDownHit root = remaining_td_hits[0];
-                List<TopDownHit> tmp_remaining_td_hits = remaining_td_hits.ToList();
-                //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within mass tolerance used for agg
-                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, tmp_remaining_td_hits.Where(h => h.accession == root.accession && h.same_ptm_hits(root) && Math.Abs(h.retention_time - root.retention_time) <= Convert.ToDouble(Lollipop.retention_time_tolerance)).ToList());
+                //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
+                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, remaining_td_hits.Where(h => h != root && h.accession == root.accession && h.theoretical_mass == root.theoretical_mass && h.same_ptm_hits(root)).ToList());
                 topdown_proteoforms.Add(new_pf);
-                remaining_td_hits = tmp_remaining_td_hits.Except(new_pf.topdown_hits).ToArray();
+                foreach (TopDownHit hit in new_pf.topdown_hits) remaining_td_hits.Remove(hit);
             }
             topdown_proteoforms = topdown_proteoforms.Where(p => p != null).ToList();
             Lollipop.proteoform_community.topdown_proteoforms = topdown_proteoforms.ToArray();
@@ -686,6 +686,7 @@ namespace ProteoformSuiteInternal
         {
             Lollipop.td_relations.Clear();
             Lollipop.td_relations = Lollipop.proteoform_community.relate_td(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList(), Lollipop.proteoform_community.theoretical_proteoforms.ToList(), Lollipop.proteoform_community.topdown_proteoforms.ToList());
+
         }
 
         public static void make_targeted_td_relationships()
