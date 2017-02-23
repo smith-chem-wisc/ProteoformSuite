@@ -122,12 +122,13 @@ namespace ProteoformSuite
             nud_minObservations.Minimum = 1;
             nud_minObservations.Maximum = Lollipop.countOfBioRepsInOneCondition;
             nud_minObservations.Value = Lollipop.countOfBioRepsInOneCondition;
-            Lollipop.minBiorepsWithObservations = (int)nud_minObservations.Value;
+            Lollipop.minObservationsRequired = (int)nud_minObservations.Value;
 
             cmbx_observationsTypeRequired.SelectedIndexChanged -= cmbx_observationsTypeRequired_SelectedIndexChanged;
-            cmbx_observationsTypeRequired.Items.AddRange(Lollipop.observation_requirement_possibilities);
+            cmbx_observationsTypeRequired.Items.Add("Minimum Total from A Single Condition");
+            cmbx_observationsTypeRequired.Items.Add("Minimum Total from Any Condition");
             cmbx_observationsTypeRequired.SelectedIndex = 0;
-            Lollipop.observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
+            Lollipop.observationsTypeRequired = cmbx_observationsTypeRequired.SelectedItem.ToString();
             cmbx_observationsTypeRequired.SelectedIndexChanged += cmbx_observationsTypeRequired_SelectedIndexChanged;
 
 
@@ -166,7 +167,7 @@ namespace ProteoformSuite
             ct_relativeDifference.ChartAreas[0].AxisX.Title = "expected relative difference dE(i)";
             ct_relativeDifference.ChartAreas[0].AxisY.Title = "observed relative difference d(i)";
 
-            ct_relativeDifference.Series["obsVSexp"].Points.DataBindXY(Lollipop.sortedAvgPermutationTestStatistics.ToList(),Lollipop.sortedProteoformTestStatistics.ToList());
+            ct_relativeDifference.Series["obsVSexp"].Points.DataBindXY(Lollipop.sortedGroupTestStatistics.ToList(),Lollipop.sortedProteoformTestStatistics.ToList());
 
             plotObservedVsExpectedOffsets();
         }
@@ -185,7 +186,7 @@ namespace ProteoformSuite
         {
             ct_relativeDifference.Series["positiveOffset"].Points.Clear();
             ct_relativeDifference.Series["negativeOffset"].Points.Clear();
-            foreach (decimal xValue in Lollipop.sortedAvgPermutationTestStatistics)
+            foreach (decimal xValue in Lollipop.sortedGroupTestStatistics)
             {
                 ct_relativeDifference.Series["positiveOffset"].Points.AddXY(xValue, positiveOffsetFunction(xValue));
                 ct_relativeDifference.Series["negativeOffset"].Points.AddXY(xValue, negativeOffsetFunction(xValue));
@@ -230,6 +231,9 @@ namespace ProteoformSuite
                 ct_proteoformIntensities.Series["Background Projected"].Points.AddXY(entry.Key, bkgd_gaussIntensity);
                 ct_proteoformIntensities.Series["Fit + Projected"].Points.AddXY(entry.Key, sumIntensity);
             }
+
+            
+
         }
 
         private void volcanoPlot()
@@ -394,41 +398,41 @@ namespace ProteoformSuite
         private void nud_bkgdShift_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.backgroundShift = nud_bkgdShift.Value;
-            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram, Lollipop.backgroundShift, Lollipop.backgroundWidth);
+            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
             Lollipop.defineSelectBackgroundIntensityDistribution();
         }
 
         private void nud_bkgdWidth_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.backgroundWidth = nud_bkgdWidth.Value;
-            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram, Lollipop.backgroundShift, Lollipop.backgroundWidth);
+            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
             Lollipop.defineSelectBackgroundIntensityDistribution();
         }
 
         private void cmbx_observationsTypeRequired_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Lollipop.observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
+            Lollipop.observationsTypeRequired = cmbx_observationsTypeRequired.SelectedItem.ToString();
         }
 
         private void nud_minObservations_ValueChanged(object sender, EventArgs e)
         {
-            Lollipop.minBiorepsWithObservations = (int)nud_minObservations.Value;
+            Lollipop.minObservationsRequired = (int)nud_minObservations.Value;
         }
 
         private void nud_sKnot_minFoldChange_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.sKnot_minFoldChange = nud_sKnot_minFoldChange.Value;
             Lollipop.computeProteoformTestStatistics(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.satisfactoryProteoforms, Lollipop.bkgdAverageIntensity, Lollipop.bkgdSelectStDev, Lollipop.numerator_condition, Lollipop.denominator_condition, Lollipop.sKnot_minFoldChange);
-            Lollipop.computeSortedTestStatistics(Lollipop.satisfactoryProteoforms, Lollipop.sortedProteoformTestStatistics, Lollipop.sortedAvgPermutationTestStatistics);
-            Lollipop.computeFoldChangeFDR(Lollipop.sortedAvgPermutationTestStatistics, Lollipop.sortedProteoformTestStatistics);
-            Lollipop.computeIndividualExperimentalProteoformFDRs(Lollipop.satisfactoryProteoforms, Lollipop.sortedProteoformTestStatistics);
+            Lollipop.computeSortedTestStatistics();
+            Lollipop.computeFoldChangeFDR();
+            Lollipop.computeIndividualExperimentalProteoformFDRs();
             plotObservedVsExpectedOffsets();
         }
 
         private void nud_Offset_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.offsetTestStatistics = nud_Offset.Value;
-            Lollipop.computeFoldChangeFDR(Lollipop.sortedAvgPermutationTestStatistics, Lollipop.sortedProteoformTestStatistics);
+            Lollipop.computeFoldChangeFDR();
             plotObservedVsExpectedOffsets();
         }
 
