@@ -144,16 +144,6 @@ namespace ProteoformSuiteInternal
             return peaks;
         }
 
-        public static ProteoformRelation find_next_root(List<ProteoformRelation> ordered, List<ProteoformRelation> running)
-        {
-            return ordered.FirstOrDefault(r =>
-                running.All(s =>
-                    r.delta_mass < s.delta_mass - 4 || r.delta_mass > s.delta_mass + 4));
-
-            //if (top_relation.relation_type != ProteoformComparison.ee && top_relation.relation_type != ProteoformComparison.et)
-            //    throw new Exception("Only EE and ET peaks can be accepted");
-        }
-
         public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, List<ProteoformRelation> false_relations)
         {
             return accept_deltaMass_peaks(relations, new Dictionary<string, List<ProteoformRelation>> { { "", false_relations } });
@@ -235,4 +225,14 @@ namespace ProteoformSuiteInternal
 //    }
 //    this.delta_mass_peaks.AddRange(peaks);
 //    return peaks;
+//}
+
+//public static ProteoformRelation find_next_root(List<ProteoformRelation> ordered, List<ProteoformRelation> running)
+//{
+//    return ordered.FirstOrDefault(r =>
+//        running.All(s =>
+//            r.delta_mass < s.delta_mass - 4 || r.delta_mass > s.delta_mass + 4));
+
+//    //if (top_relation.relation_type != ProteoformComparison.ee && top_relation.relation_type != ProteoformComparison.et)
+//    //    throw new Exception("Only EE and ET peaks can be accepted");
 //}

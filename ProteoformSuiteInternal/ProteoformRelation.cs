@@ -101,22 +101,22 @@ namespace ProteoformSuiteInternal
 
         public int peak_center_count
         {
-            get { if (this.peak != null) return this.peak.peak_relation_group_count; else return -1000000; }
+            get { return this.peak != null ? this.peak.peak_relation_group_count : -1000000; }
         }
         public double peak_center_deltaM
         {
-            get { if (this.peak != null) return peak.peak_deltaM_average; else return Double.NaN; }
+            get { return this.peak != null ? peak.peak_deltaM_average : Double.NaN; }
         }
         public string relation_type_string
         {
             get
             {
-                if (this.relation_type == ProteoformComparison.et) return et_string;
-                else if (this.relation_type == ProteoformComparison.ee) return ee_string;
-                else if (this.relation_type == ProteoformComparison.ed) return ed_string;
-                else if (this.relation_type == ProteoformComparison.ef) return ef_string;
-                else return "";
-
+                string s = "";
+                if (this.relation_type == ProteoformComparison.et) s = et_string;
+                if (this.relation_type == ProteoformComparison.ee) s = ee_string;
+                if (this.relation_type == ProteoformComparison.ed) s = ed_string;
+                if (this.relation_type == ProteoformComparison.ef) s = ef_string;
+                return s;
             }
         }
 
