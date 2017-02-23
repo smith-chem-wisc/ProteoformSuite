@@ -36,7 +36,7 @@ namespace Test
             PtmCombos ptmCombos = new PtmCombos(ptm_data);
 
             Assert.AreEqual(4, ptmCombos.all_ptms.Count);
-            Assert.AreEqual(6, ptmCombos.all_ptms.Select(b => b.position).Sum());
+            Assert.AreEqual(6, ptmCombos.all_ptms.Sum(b => b.position));
 
             // With masses 1, 2, 3, 4
             Assert.AreEqual(1 + 4, ptmCombos.get_combinations(1).Count());
@@ -109,9 +109,9 @@ namespace Test
 
             PtmCombos ptmCombos = new PtmCombos(ptm_data);
 
-            Assert.AreEqual(1 + 2, ptmCombos.get_combinations(1).Count());
-            Assert.AreEqual(1 + 4, ptmCombos.get_combinations(2).Count());
-            Assert.AreEqual(1 + 6, ptmCombos.get_combinations(3).Count());
+            Assert.AreEqual(1 + 2, ptmCombos.get_combinations(1).Count);
+            Assert.AreEqual(1 + 4, ptmCombos.get_combinations(2).Count);
+            Assert.AreEqual(1 + 6, ptmCombos.get_combinations(3).Count);
 
         }
 

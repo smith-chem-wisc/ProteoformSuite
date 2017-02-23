@@ -42,7 +42,7 @@ namespace Test
             Assert.True(t.contaminant);
             Assert.False(u.contaminant);
             Assert.False(v.contaminant);
-            TheoreticalProteoform w = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { v, u, t });
+            TheoreticalProteoform w = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { v, u, t }, true, dict);
             w.check_contaminant_status(dict); // the override is used
             Assert.True(w.contaminant);
         }

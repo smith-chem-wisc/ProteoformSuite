@@ -527,7 +527,8 @@ namespace ProteoformSuiteInternal
         public static bool combine_theoretical_proteoforms_byMass = true;
         public static string accessions_of_interest_list_filepath = "";
         public static string interest_type = "Of interest"; //label for proteins of interest. can be changed 
-        public static Protein[] proteins;//these are all the proteins read from the xml
+        public static Dictionary<InputFile, Protein[]> theoretical_proteins;
+        public static Protein[] expanded_proteins;
         public static List<Psm> psm_list = new List<Psm>();
 
         public static Dictionary<string, IList<Modification>> uniprotModificationTable = new Dictionary<string, IList<Modification>>();
@@ -545,10 +546,10 @@ namespace ProteoformSuiteInternal
             List<ModificationWithLocation> all_modifications = get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadMods(file.complete_path)).ToList();
             read_mods(all_modifications);
             Dictionary<string, Modification> um;
-            Dictionary<InputFile, Protein[]> theoretical_proteins = get_files(Lollipop.input_files, Purpose.ProteinDatabase).ToDictionary(file => file, file => ProteinDbLoader.LoadProteinDb(file.complete_path, false, all_modifications, file.ContaminantDB, out um).ToArray());
-            proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
+            theoretical_proteins = get_files(Lollipop.input_files, Purpose.ProteinDatabase).ToDictionary(file => file, file => ProteinDbLoader.LoadProteinDb(file.complete_path, false, all_modifications, file.ContaminantDB, out um).ToArray());
+            expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
             aaIsotopeMassList = new AminoAcidMasses(methionine_oxidation, carbamidomethylation, Lollipop.natural_lysine_isotope_abundance, Lollipop.neucode_light_lysine, Lollipop.neucode_heavy_lysine).AA_Masses;
-            if (combine_identical_sequences) proteins = group_proteins_by_sequence(proteins);
+            if (combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
 
             //Read the Morpheus BU data into PSM list
             foreach (InputFile file in Lollipop.get_files(Lollipop.input_files, Purpose.BottomUp))
@@ -566,9 +567,6 @@ namespace ProteoformSuiteInternal
                 Lollipop.proteoform_community.theoretical_proteoforms = group_proteoforms_byMass(Lollipop.proteoform_community.theoretical_proteoforms);
                 Lollipop.proteoform_community.decoy_proteoforms = Lollipop.proteoform_community.decoy_proteoforms.ToDictionary(kv => kv.Key, kv => (TheoreticalProteoform[])group_proteoforms_byMass(kv.Value));
             }
-
-            if (theoretical_proteins.Keys.Any(file => file.ContaminantDB))
-                Parallel.ForEach<TheoreticalProteoform>(Lollipop.proteoform_community.theoretical_proteoforms, tp => tp.check_contaminant_status(theoretical_proteins));
 
             if (psm_list.Count > 0)
                 match_psms_and_theoreticals();   //if BU data loaded in, match PSMs to theoretical accessions
@@ -627,30 +625,37 @@ namespace ProteoformSuiteInternal
 
         private static ProteinSequenceGroup[] group_proteins_by_sequence(IEnumerable<Protein> proteins)
         {
-            List<ProteinSequenceGroup> protein_sequence_groups = new List<ProteinSequenceGroup>();
-            HashSet<string> unique_sequences = new HashSet<string>(proteins.Select(p => p.BaseSequence));
-            foreach (string sequence in unique_sequences) protein_sequence_groups.Add(new ProteinSequenceGroup(proteins.Where(p => p.BaseSequence == sequence).ToList()));
-            return protein_sequence_groups.ToArray();
+            Dictionary<string, List<Protein>> sequence_groupings = new Dictionary<string, List<Protein>>();
+            foreach (Protein p in proteins)
+            {
+                if (sequence_groupings.ContainsKey(p.BaseSequence)) sequence_groupings[p.BaseSequence].Add(p);
+                else sequence_groupings.Add(p.BaseSequence, new List<Protein> { p });
+            }
+            return sequence_groupings.Select(kv => new ProteinSequenceGroup(kv.Value)).ToArray();
         }
 
         private static TheoreticalProteoformGroup[] group_proteoforms_byMass(IEnumerable<TheoreticalProteoform> theoreticals)
         {
-            List<TheoreticalProteoformGroup> theoretical_proteoform_groups = new List<TheoreticalProteoformGroup>();
-            HashSet<double> unique_modified_masses = new HashSet<double>(theoreticals.Select(p => p.modified_mass));
-            foreach (double modified_mass in unique_modified_masses) theoretical_proteoform_groups.Add(new TheoreticalProteoformGroup(theoreticals.Where(p => p.modified_mass == modified_mass).ToList()));
-            return theoretical_proteoform_groups.ToArray();
+            bool contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
+            Dictionary<double, List<TheoreticalProteoform>> mass_groupings = new Dictionary<double, List<TheoreticalProteoform>>();
+            foreach (TheoreticalProteoform t in theoreticals)
+            {
+                if (mass_groupings.ContainsKey(t.modified_mass)) mass_groupings[t.modified_mass].Add(t);
+                else mass_groupings.Add(t.modified_mass, new List<TheoreticalProteoform> { t });
+            }
+            return mass_groupings.Select(kv => new TheoreticalProteoformGroup(kv.Value, contaminants, theoretical_proteins)).ToArray();
         }
 
         private static void process_entries()
         {
             List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
-            foreach (Protein p in proteins)
+            Parallel.ForEach<Protein>(expanded_proteins, p =>
             {
                 bool isMetCleaved = (methionine_cleavage && p.OneBasedBeginPositions.FirstOrDefault() == 1 && p.BaseSequence.FirstOrDefault() == 'M');
                 int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
                 string seq = p.BaseSequence.Substring(startPosAfterCleavage, (p.BaseSequence.Length - startPosAfterCleavage));
                 EnterTheoreticalProteformFamily(seq, p, p.Accession, isMetCleaved, theoretical_proteoforms, -100);
-            }
+            });
             Lollipop.proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
         }
 
@@ -659,14 +664,14 @@ namespace ProteoformSuiteInternal
             for (int decoyNumber = 0; decoyNumber < Lollipop.decoy_databases; decoyNumber++)
             {
                 List<TheoreticalProteoform> decoy_proteoforms = new List<TheoreticalProteoform>();
-                string giantProtein = GetOneGiantProtein(proteins, methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
+                string giantProtein = GetOneGiantProtein(expanded_proteins, methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
                 string decoy_database_name = decoy_database_name_prefix + decoyNumber;
-                Protein[] shuffled_proteins = new Protein[proteins.Length];
-                shuffled_proteins = proteins;
+                Protein[] shuffled_proteins = new Protein[expanded_proteins.Length];
+                shuffled_proteins = expanded_proteins;
                 new Random().Shuffle(shuffled_proteins); //randomize order of protein array
 
                 int prevLength = 0;
-                foreach (Protein p in shuffled_proteins)
+                Parallel.ForEach<Protein>(shuffled_proteins, p =>
                 {
                     bool isMetCleaved = (methionine_cleavage && p.OneBasedBeginPositions.FirstOrDefault() == 1 && p.BaseSequence.FirstOrDefault() == 'M'); // methionine cleavage of N-terminus specified
                     int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
@@ -677,7 +682,7 @@ namespace ProteoformSuiteInternal
                     prevLength += hunkLength;
 
                     EnterTheoreticalProteformFamily(hunk, p, p.Accession + "_DECOY_" + decoyNumber, isMetCleaved, decoy_proteoforms, decoyNumber);
-                }
+                });
                 Lollipop.proteoform_community.decoy_proteoforms.Add(decoy_database_name, decoy_proteoforms.ToArray());
             }
         }
@@ -687,8 +692,7 @@ namespace ProteoformSuiteInternal
             //Calculate the properties of this sequence
             double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
             int lysine_count = seq.Split('K').Length - 1;
-            List<PtmSet> unique_ptm_groups = new List<PtmSet>();
-            unique_ptm_groups.AddRange(new PtmCombos(prot.OneBasedPossibleLocalizedModifications).get_combinations(max_ptms));
+            List<PtmSet> unique_ptm_groups = new PtmCombos(prot.OneBasedPossibleLocalizedModifications).get_combinations(max_ptms);
 
             int listMemberNumber = 1;
 
@@ -696,13 +700,15 @@ namespace ProteoformSuiteInternal
             {
                 double proteoform_mass = unmodified_mass + ptm_set.mass;
                 string protein_description = prot.FullDescription + "_" + listMemberNumber.ToString();
-
-                if (decoy_number < 0 )
-                    theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description, prot, isMetCleaved, 
-                        unmodified_mass, lysine_count, prot.GoTerms, ptm_set, proteoform_mass, true));
-                else
-                    theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot, isMetCleaved, 
-                        unmodified_mass, lysine_count, prot.GoTerms , ptm_set, proteoform_mass, false));
+                lock (theoretical_proteoforms)
+                {
+                    if (decoy_number < 0)
+                        theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description, prot, isMetCleaved,
+                            unmodified_mass, lysine_count, prot.GoTerms, ptm_set, proteoform_mass, true));
+                    else
+                        theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot, isMetCleaved,
+                            unmodified_mass, lysine_count, prot.GoTerms, ptm_set, proteoform_mass, false));
+                }
                 listMemberNumber++;
             } 
         }
@@ -854,8 +860,6 @@ namespace ProteoformSuiteInternal
         public static List<decimal> sortedAvgPermutationTestStatistics = new List<decimal>();
         public static decimal offsetTestStatistics = 1m;
         //public static decimal negativeOffsetTestStatistics = -1m;
-        public static decimal minimumPositivePassingTestStatistic;
-        public static decimal minimumNegativePassingTestStatistic;
         public static decimal offsetFDR;
 
         public static List<Protein> observedProteins = new List<Protein>();//This is the complete list of proteins included in any accepted proteoform family
@@ -877,7 +881,7 @@ namespace ProteoformSuiteInternal
             defineSelectBackgroundIntensityDistribution();
             computeProteoformTestStatistics(proteoform_community.experimental_proteoforms, satisfactoryProteoforms, bkgdAverageIntensity, bkgdStDev, numerator_condition, denominator_condition, sKnot_minFoldChange);
             computeSortedTestStatistics(satisfactoryProteoforms, sortedAvgPermutationTestStatistics, sortedAvgPermutationTestStatistics);
-            computeFoldChangeFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics);
+            offsetFDR = computeFoldChangeFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics, satisfactoryProteoforms.SelectMany(eP => eP.quant.permutedTestStatistics));
             computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, sortedProteoformTestStatistics);
             getObservedProteins();
             getInducedOrRepressedProteins();
@@ -908,7 +912,7 @@ namespace ProteoformSuiteInternal
             observedGaussianArea = get_gaussian_area(logIntensityHistogram);
             observedGaussianHeight = observedGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
 
-            bkgdAverageIntensity = observedAverageIntensity + backgroundShift * observedStDev;
+            bkgdAverageIntensity = observedAverageIntensity + backgroundShift * observedStDev; //These are redundant of defineSelectBackgroundIntensityDistribution
             bkgdStDev = observedStDev * backgroundWidth;
         }
 
@@ -995,16 +999,16 @@ namespace ProteoformSuiteInternal
             sortedAvgPermutationTestStatistics.Sort();
         }
 
-        public static void computeFoldChangeFDR(List<decimal> sortedAvgPermutationTestStatistics, List<decimal> sortedProteoformTestStatistics)
+        public static decimal computeFoldChangeFDR(List<decimal> sortedAvgPermutationTestStatistics, List<decimal> sortedProteoformTestStatistics, IEnumerable<decimal> permutedTestStatistics)
         {
-            minimumPositivePassingTestStatistic = sortedProteoformTestStatistics[Enumerable.Range(0, sortedAvgPermutationTestStatistics.Count).FirstOrDefault(i => sortedProteoformTestStatistics[i] >= sortedAvgPermutationTestStatistics[i] + offsetTestStatistics)]; //first time the test statistic exceeds the cap so we're good.
-            minimumNegativePassingTestStatistic = sortedProteoformTestStatistics[Enumerable.Range(0, sortedAvgPermutationTestStatistics.Count).LastOrDefault(i => sortedProteoformTestStatistics[i] <= sortedAvgPermutationTestStatistics[i] - offsetTestStatistics)]; //last time the test statistic is below the minimum
+            decimal minimumPositivePassingTestStatistic = sortedProteoformTestStatistics[Enumerable.Range(0, sortedAvgPermutationTestStatistics.Count).FirstOrDefault(i => sortedProteoformTestStatistics[i] >= sortedAvgPermutationTestStatistics[i] + offsetTestStatistics)]; //first time the test statistic exceeds the cap so we're good.
+            decimal minimumNegativePassingTestStatistic = sortedProteoformTestStatistics[Enumerable.Range(0, sortedAvgPermutationTestStatistics.Count).LastOrDefault(i => sortedProteoformTestStatistics[i] <= sortedAvgPermutationTestStatistics[i] - offsetTestStatistics)]; //last time the test statistic is below the minimum
 
-            int totalFalsePermutedPositiveValues = satisfactoryProteoforms.Sum(eP => eP.quant.permutedTestStatistics.Count(p => p >= minimumPositivePassingTestStatistic));
-            int totalFalsePermutedNegativeValues = satisfactoryProteoforms.Sum(eP => eP.quant.permutedTestStatistics.Count(p => p <= minimumNegativePassingTestStatistic));
+            int totalFalsePermutedPositiveValues = permutedTestStatistics.Count(p => p >= minimumPositivePassingTestStatistic);
+            int totalFalsePermutedNegativeValues = permutedTestStatistics.Count(p => p <= minimumNegativePassingTestStatistic);
 
             decimal avergePermuted = (decimal)(totalFalsePermutedPositiveValues + totalFalsePermutedNegativeValues) / (decimal)satisfactoryProteoforms.Count;
-            offsetFDR = avergePermuted / ((decimal)(sortedProteoformTestStatistics.Count(s => s >= minimumPositivePassingTestStatistic) + sortedProteoformTestStatistics.Count(s => s <= minimumNegativePassingTestStatistic)));
+            return avergePermuted / ((decimal)(sortedProteoformTestStatistics.Count(s => s >= minimumPositivePassingTestStatistic) + sortedProteoformTestStatistics.Count(s => s <= minimumNegativePassingTestStatistic)));
         }
 
         public static void computeIndividualExperimentalProteoformFDRs(List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> sortedProteoformTestStatistics)
@@ -1017,7 +1021,7 @@ namespace ProteoformSuiteInternal
         {
             List<TheoreticalProteoform> tps = satisfactoryProteoforms.Select(p => p.family).SelectMany(pf => pf.theoretical_proteoforms).ToList(); 
             List<string> truncAccession = tps.Select(a => a.accession).Select(acc => acc.Replace("_T", "!").Split('!').FirstOrDefault()).Distinct().ToList();
-            observedProteins = truncAccession.SelectMany(acc => proteins.Where(p => p.Accession == acc)).DistinctBy(a => a.Accession).ToList();
+            observedProteins = truncAccession.SelectMany(acc => expanded_proteins.Where(p => p.Accession == acc)).DistinctBy(a => a.Accession).ToList();
         }
 
         public static void getInducedOrRepressedProteins()
@@ -1030,7 +1034,7 @@ namespace ProteoformSuiteInternal
 
             List<TheoreticalProteoform> tps = inducedOrRepressedProteoforms.Select(p => p.family).SelectMany(pf => pf.theoretical_proteoforms).ToList();
             List<string> truncAccession = tps.Select(a => a.accession).Select(acc => acc.Replace("_T", "!").Split('!').FirstOrDefault()).Distinct().ToList();
-            inducedOrRepressedProteins = truncAccession.SelectMany(acc => proteins.Where(p => p.Accession == acc)).DistinctBy(a => a.Accession).ToList();
+            inducedOrRepressedProteins = truncAccession.SelectMany(acc => expanded_proteins.Where(p => p.Accession == acc)).DistinctBy(a => a.Accession).ToList();
         }
 
         public static List<ProteoformFamily> getInterestingFamilies(List<ExperimentalProteoform.quantitativeValues> qvals)
@@ -1079,7 +1083,7 @@ namespace ProteoformSuiteInternal
         public static void establishBackgroundForGoTermAnalysis()
         {
             if (allTheoreticalProteins)
-                GO_ProteinBackgroundSet = proteins.ToList();//These are proteins in the theoretical database
+                GO_ProteinBackgroundSet = expanded_proteins.ToList();//These are proteins in the theoretical database
             else
             {
                 if (observedProteins.Count() <= 0) getObservedProteins();
