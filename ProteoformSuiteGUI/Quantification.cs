@@ -419,7 +419,7 @@ namespace ProteoformSuite
         {
             Lollipop.sKnot_minFoldChange = nud_sKnot_minFoldChange.Value;
             Lollipop.computeProteoformTestStatistics(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.satisfactoryProteoforms, Lollipop.bkgdAverageIntensity, Lollipop.bkgdSelectStDev, Lollipop.numerator_condition, Lollipop.denominator_condition, Lollipop.sKnot_minFoldChange);
-            Lollipop.computeSortedTestStatistics(Lollipop.satisfactoryProteoforms, Lollipop.sortedProteoformTestStatistics, Lollipop.sortedAvgPermutationTestStatistics);
+            Lollipop.computeSortedTestStatistics();
             Lollipop.computeFoldChangeFDR(Lollipop.sortedAvgPermutationTestStatistics, Lollipop.sortedProteoformTestStatistics, Lollipop.satisfactoryProteoforms.SelectMany(eP => eP.quant.permutedTestStatistics));
             Lollipop.computeIndividualExperimentalProteoformFDRs(Lollipop.satisfactoryProteoforms, Lollipop.sortedProteoformTestStatistics);
             plotObservedVsExpectedOffsets();

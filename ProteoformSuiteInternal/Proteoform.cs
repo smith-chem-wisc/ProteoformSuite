@@ -458,13 +458,18 @@ namespace ProteoformSuiteInternal
 
             private decimal getProteinLevelStdDev(List<biorepIntensity> allLights, List<biorepIntensity> allHeavys)
             {
-                decimal a = (1m / (decimal)allLights.Count + 1m / (decimal)allHeavys.Count) / ((decimal)allLights.Count + (decimal)allHeavys.Count - 2m); //divide by zero error here
-                decimal lightAvg = (decimal)allLights.Average(l => l.intensity) / (decimal)allLights.Count;
-                decimal heavyAvg = (decimal)allHeavys.Sum(l => l.intensity) / (decimal)allHeavys.Count;
-                decimal lightSumSquares = allLights.Sum(l => (decimal)Math.Pow((double)(Math.Log((double)lightAvg, 2) - Math.Log((double)l.intensity, 2)), 2d));
-                decimal heavySumSquares = allHeavys.Sum(h => (decimal)Math.Pow((double)(Math.Log((double)heavyAvg, 2) - Math.Log((double)h.intensity, 2)), 2d));
-                decimal stdev = (decimal)Math.Pow((double)(a * (lightSumSquares + heavySumSquares)), 0.5d);
-                return stdev;
+                if ((allLights.Count + allHeavys.Count) == 2)
+                    return 1000000m;
+                else
+                {
+                    decimal a = (1m / (decimal)allLights.Count + 1m / (decimal)allHeavys.Count) / ((decimal)allLights.Count + (decimal)allHeavys.Count - 2m); //divide by zero error here
+                    decimal lightAvg = (decimal)allLights.Average(l => l.intensity) / (decimal)allLights.Count;
+                    decimal heavyAvg = (decimal)allHeavys.Sum(l => l.intensity) / (decimal)allHeavys.Count;
+                    decimal lightSumSquares = allLights.Sum(l => (decimal)Math.Pow((double)(Math.Log((double)lightAvg, 2) - Math.Log((double)l.intensity, 2)), 2d));
+                    decimal heavySumSquares = allHeavys.Sum(h => (decimal)Math.Pow((double)(Math.Log((double)heavyAvg, 2) - Math.Log((double)h.intensity, 2)), 2d));
+                    decimal stdev = (decimal)Math.Pow((double)(a * (lightSumSquares + heavySumSquares)), 0.5d);
+                    return stdev;
+                }             
             }
 
             private decimal getSingleTestStatistic(List<biorepIntensity> allLights, List<biorepIntensity> allHeavys, decimal sKnot)
