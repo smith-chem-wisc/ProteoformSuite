@@ -25,26 +25,20 @@ namespace Test
             f.ContaminantDB = true;
             InputFile g = new InputFile("fake.txt", Purpose.ProteinDatabase);
             InputFile h = new InputFile("fake.txt", Purpose.ProteinDatabase);
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), null, null, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p2 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), null, null, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p3 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), null, null, new string[0], "T2", "T3", true, false, new List<GoTerm>());
+            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
+            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
+            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { f, new Protein[] { p1 } },
                 { g, new Protein[] { p2 } },
                 { h, new Protein[] { p3 } },
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf");
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_asdf_asdf");
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_asdf_Asdf_Asdf");
-            t.check_contaminant_status(dict);
-            u.check_contaminant_status(dict);
-            v.check_contaminant_status(dict);
-            Assert.True(t.contaminant);
-            Assert.False(u.contaminant);
-            Assert.False(v.contaminant);
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf", "", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform u = new TheoreticalProteoform("T2_asdf_asdf", "", p2, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform v = new TheoreticalProteoform("T3_asdf_Asdf_Asdf", "", p3, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
             TheoreticalProteoform w = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { v, u, t }, true, dict);
-            w.check_contaminant_status(dict); // the override is used
             Assert.True(w.contaminant);
+            Assert.True(w.accession.Contains(p1.Accession));
         }
 
 
