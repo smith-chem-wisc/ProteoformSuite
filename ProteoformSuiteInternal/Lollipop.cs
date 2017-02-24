@@ -638,18 +638,44 @@ namespace ProteoformSuiteInternal
         {
             if (!limit_TD_BU_theoreticals) Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms, ProteoformComparison.et);
             else Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.Where(t => t.psm_count_BU > 0 || t.relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count > 0).ToArray(), ProteoformComparison.et);
-
             Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
-            Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
+
+            foreach (double mass in notch_masses_et)
+            {
+                List<ProteoformRelation> relations_in_peak = et_relations.Where(r => r.delta_mass >= mass - Lollipop.peak_width_base_et && r.delta_mass <= mass + Lollipop.peak_width_base_et).ToList();
+                List<ProteoformRelation> decoy_relations = ed_relations["DecoyDatabase_0"].Where(r => r.delta_mass >= mass - Lollipop.peak_width_base_et && r.delta_mass <= mass + Lollipop.peak_width_base_et).ToList();
+                if (relations_in_peak.Count > 0)
+                {
+                    DeltaMassPeak peak = new DeltaMassPeak(true, relations_in_peak[0], relations_in_peak);
+                    peak.peak_group_fdr =  decoy_relations.Count / relations_in_peak.Count ;
+                    et_peaks.Add(peak);
+                    proteoform_community.delta_mass_peaks.Add(peak);
+                    proteoform_community.relations_in_peaks.AddRange(relations_in_peak);
+                }
+            }
+            //Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
         public static void make_ee_relationships()
         {
             Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ee);
             Lollipop.ef_relations = Lollipop.proteoform_community.relate_ef();
-            Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
+            foreach (double mass in notch_masses_ee)
+            {
+                List<ProteoformRelation> relations_in_peak = ee_relations.Where(r => r.delta_mass >= mass - Lollipop.peak_width_base_ee && r.delta_mass <= mass + Lollipop.peak_width_base_ee).ToList();
+                List<ProteoformRelation> decoy_relations = ef_relations.Where(r => r.delta_mass >= mass - Lollipop.peak_width_base_ee && r.delta_mass <= mass + Lollipop.peak_width_base_ee).ToList();
+                if (relations_in_peak.Count > 0)
+                {
+                    DeltaMassPeak peak = new DeltaMassPeak(true, relations_in_peak[0], relations_in_peak);
+                    peak.peak_group_fdr = decoy_relations.Count / relations_in_peak.Count;
+                    ee_peaks.Add(peak);
+                    proteoform_community.delta_mass_peaks.Add(peak);
+                    proteoform_community.relations_in_peaks.AddRange(relations_in_peak);
+                }
+            }
+            // Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
-
+           
         //TOPDOWN DATA
         public static List<TopDownHit> top_down_hits = new List<TopDownHit>();
 

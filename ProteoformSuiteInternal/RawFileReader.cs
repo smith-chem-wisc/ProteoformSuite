@@ -26,11 +26,13 @@ namespace ProteoformSuiteInternal
                     Lollipop.Ms_scans.Add(scan);
                 }
                 //set charge, mz, intensity, find MS1 numbers
-                foreach (TopDownHit hit in Lollipop.td_hits_calibration.Where(f => f.filename == filename).ToList())
+                foreach (TopDownHit hit in Lollipop.top_down_hits.Where(f => f.filename == filename).ToList())
                 {
                     double mz = (myMsDataFile.GetOneBasedScan(hit.scan) as ThermoScanWithPrecursor).IsolationMz;
                     hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)mz, 0)); //m / (m/z)  round to get charge 
-                    hit.mz = hit.reported_mass.ToMz(hit.charge);
+                                                                                                 
+                    // hit.mz = hit.reported_mass.ToMz(hit.charge);
+                    hit.mz = mz;
                 }
             }
         }

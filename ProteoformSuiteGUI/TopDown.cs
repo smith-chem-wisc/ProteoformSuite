@@ -238,5 +238,32 @@ namespace ProteoformSuite
             }
             return files_added;
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Please select corresponding raw files.");
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Title = "My Thermo Raw Files";
+            openFileDialog1.Filter = "Raw Files (*.raw) | *.raw";
+            openFileDialog1.Multiselect = true;
+            DialogResult dr = openFileDialog1.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                enter_input_files(openFileDialog1.FileNames, new List<string> { ".raw" }, Purpose.RawFile);
+                foreach (InputFile file in Lollipop.raw_files())             
+                {
+                    RawFileReader.get_ms_scans(file.filename, file.path + "\\" + file.filename + file.extension);
+                }
+                using (var writer = new StreamWriter("C:\\Users\\lschaffer2\\Desktop\\identified_p_inclusion_list.tsv"))
+                {
+                    foreach (TopDownHit hit in Lollipop.top_down_hits)
+                    {
+                        writer.WriteLine(hit.mz + "\t" + hit.charge + "\t" + hit.filename + "\t"  + hit.scan);
+                    }
+                }
+            }
+            else return;
+        }
+      
     }
 }
