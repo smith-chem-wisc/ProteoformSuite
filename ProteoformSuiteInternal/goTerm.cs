@@ -95,23 +95,23 @@ namespace ProteoformSuiteInternal
             return r;
         }
 
-        public void benjaminiYekutieli()//multiple testing correction similar to benjamini hochberg but for interdependant data
+        public static decimal benjaminiYekutieli(int nbp, List<double> pvals, double pValue)//multiple testing correction similar to benjamini hochberg but for interdependant data
         {
             // FDR = pValue * summation * totalNumberOfTests / (rank of the pValue is a sorted ascending list)
             // summation = sum from i=1 to i=totalNumberOfTests of 1/i 
             // for this work, the pValue is the hypergeometric probability
 
             double sum = 0;
-            int nbp = Lollipop.goTermNumbers.Count;//These are only for "interesting proteins", which is the set of proteins induced or repressed beyond a specified fold change, intensity and below FDR. There is a test for each different go term. The number of tests equals the number of different go terms
-            List<double> pvals = Lollipop.goTermNumbers.Select(g => g.p_value).ToList();
+            //int nbp = Lollipop.goTermNumbers.Count;//These are only for "interesting proteins", which is the set of proteins induced or repressed beyond a specified fold change, intensity and below FDR. There is a test for each different go term. The number of tests equals the number of different go terms
+            //List<double> pvals = Lollipop.goTermNumbers.Select(g => g.p_value).ToList();
             pvals.Sort();
-            double rank = (double)pvals.IndexOf(this.p_value) + 1d; // add one because index starts at zero. this gives us the rank of the pvalue in the sorted list.
+            double rank = (double)pvals.IndexOf(pValue) + 1d; // add one because index starts at zero. this gives us the rank of the pvalue in the sorted list.
             for (int i = 1; i <= nbp; i++)
             {
                 sum += 1d / (double)i;
             }
 
-            this.by = (decimal)Math.Min(this.p_value * (double)nbp * sum / rank, 1d); // range of FDRs if from 0 to 1
+            return (decimal)Math.Min(pValue * (double)nbp * sum / rank, 1d); // range of FDRs if from 0 to 1
         }
     }
 }
