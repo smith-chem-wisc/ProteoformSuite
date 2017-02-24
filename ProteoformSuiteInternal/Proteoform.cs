@@ -589,7 +589,7 @@ namespace ProteoformSuiteInternal
         public string of_interest { get; set; } = "";
         public bool contaminant { get; set; } // not implemented, yet
 
-        public TheoreticalProteoform(string accession, string description, Protein protein, bool is_metCleaved, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target) : 
+        public TheoreticalProteoform(string accession, string description, Protein protein, bool is_metCleaved, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) : 
             base(accession, modified_mass, lysine_count, is_target)
         {
             this.proteinList.Add(protein);
@@ -601,6 +601,7 @@ namespace ProteoformSuiteInternal
             this.end = (int)protein.OneBasedEndPositions.FirstOrDefault();
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
+            if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
         }
 
         public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target) :
@@ -651,11 +652,6 @@ namespace ProteoformSuiteInternal
             else
                 return string.Join("; ", ptm_list.Select(ptm => ptm.modification.id));
         }
-
-        public virtual void check_contaminant_status(Dictionary<InputFile, Protein[]> theoretical_proteins)
-        {
-            this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
-        }
     }
 
     public class TheoreticalProteoformGroup : TheoreticalProteoform
@@ -671,10 +667,11 @@ namespace ProteoformSuiteInternal
             {
                 List<Protein> matching_contaminants = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Where(p => this.accessionList.Select(acc => acc.Split(new char[] { '_' })[0]).Contains(p.Accession)).ToList();
                 this.contaminant = matching_contaminants.Count > 0;
+                if (!contaminant) return;
                 this.accession = matching_contaminants[0].Accession + "_T" + accessionList.Count();
                 this.description = String.Join(";", matching_contaminants.Select(t => t.FullDescription));
                 this.name = String.Join(";", matching_contaminants.Select(t => t.FullDescription));
-                TheoreticalProteoform first_contaminant = theoreticals.FirstOrDefault(t => t.accession.Contains(matching_contaminants[0].Accession));
+                TheoreticalProteoform first_contaminant = theoreticals.FirstOrDefault(t => t.contaminant);
                 this.begin = first_contaminant.begin;
                 this.end = first_contaminant.end;
                 this.unmodified_mass = first_contaminant.unmodified_mass;

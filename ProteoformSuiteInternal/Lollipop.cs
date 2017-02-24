@@ -646,6 +646,7 @@ namespace ProteoformSuiteInternal
         private static void process_entries()
         {
             List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
+            //foreach (Protein p in expanded_proteins)
             Parallel.ForEach<Protein>(expanded_proteins, p =>
             {
                 bool isMetCleaved = (methionine_cleavage && p.OneBasedBeginPositions.FirstOrDefault() == 1 && p.BaseSequence.FirstOrDefault() == 'M');
@@ -690,6 +691,7 @@ namespace ProteoformSuiteInternal
             double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
             int lysine_count = seq.Split('K').Length - 1;
             List<PtmSet> unique_ptm_groups = new PtmCombos(prot.OneBasedPossibleLocalizedModifications).get_combinations(max_ptms);
+            bool check_contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
 
             int listMemberNumber = 1;
 
@@ -701,10 +703,10 @@ namespace ProteoformSuiteInternal
                 {
                     if (decoy_number < 0)
                         theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description, prot, isMetCleaved,
-                            unmodified_mass, lysine_count, prot.GoTerms, ptm_set, proteoform_mass, true));
+                            unmodified_mass, lysine_count, prot.GoTerms, ptm_set, proteoform_mass, true, check_contaminants, theoretical_proteins));
                     else
                         theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot, isMetCleaved,
-                            unmodified_mass, lysine_count, prot.GoTerms, ptm_set, proteoform_mass, false));
+                            unmodified_mass, lysine_count, prot.GoTerms, ptm_set, proteoform_mass, false, false, theoretical_proteins));
                 }
                 listMemberNumber++;
             } 

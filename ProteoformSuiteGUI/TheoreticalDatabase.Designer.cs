@@ -56,6 +56,8 @@
             this.ckbx_Carbam = new System.Windows.Forms.CheckBox();
             this.ckbx_OxidMeth = new System.Windows.Forms.CheckBox();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tb_tableFilter = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -78,6 +80,8 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.label6);
+            this.splitContainer1.Panel1.Controls.Add(this.tb_tableFilter);
             this.splitContainer1.Panel1.Controls.Add(this.cmb_loadTable);
             this.splitContainer1.Panel1.Controls.Add(this.dgv_loadFiles);
             this.splitContainer1.Panel1.Controls.Add(this.btn_addFiles);
@@ -168,7 +172,7 @@
             this.tb_interest_label.Location = new System.Drawing.Point(239, 301);
             this.tb_interest_label.Margin = new System.Windows.Forms.Padding(2);
             this.tb_interest_label.Name = "tb_interest_label";
-            this.tb_interest_label.Size = new System.Drawing.Size(215, 20);
+            this.tb_interest_label.Size = new System.Drawing.Size(202, 20);
             this.tb_interest_label.TabIndex = 21;
             this.tb_interest_label.Visible = false;
             this.tb_interest_label.TextChanged += new System.EventHandler(this.tb_interest_label_TextChanged);
@@ -406,6 +410,24 @@
             this.dgv_Database.Size = new System.Drawing.Size(903, 737);
             this.dgv_Database.TabIndex = 0;
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(236, 600);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(59, 13);
+            this.label6.TabIndex = 48;
+            this.label6.Text = "Table Filter";
+            // 
+            // tb_tableFilter
+            // 
+            this.tb_tableFilter.Location = new System.Drawing.Point(239, 616);
+            this.tb_tableFilter.Name = "tb_tableFilter";
+            this.tb_tableFilter.Size = new System.Drawing.Size(202, 20);
+            this.tb_tableFilter.TabIndex = 47;
+            this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
+            // 
             // TheoreticalDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -463,5 +485,7 @@
         private System.Windows.Forms.Button btn_addFiles;
         private System.Windows.Forms.Button btn_clearFiles;
         private System.Windows.Forms.ComboBox cmb_loadTable;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox tb_tableFilter;
     }
 }
