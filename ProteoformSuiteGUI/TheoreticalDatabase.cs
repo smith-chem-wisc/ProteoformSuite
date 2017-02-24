@@ -69,6 +69,10 @@ namespace ProteoformSuite
 
             ckbx_combineIdenticalSequences.Checked = Lollipop.combine_identical_sequences;
             ckbx_combineTheoreticalsByMass.Checked = Lollipop.combine_theoretical_proteoforms_byMass;
+
+            tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
+            tb_tableFilter.Text = "";
+            tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
         }
 
 
@@ -296,6 +300,15 @@ namespace ProteoformSuite
             cmb_loadTable.SelectedIndex = 2;
             DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]));
             set_Make_Database_Button();
+        }
+
+        private void tb_tableFilter_TextChanged(object sender, EventArgs e)
+        {
+            IEnumerable<object> selected_theoreticals = tb_tableFilter.Text == "" ?
+                Lollipop.proteoform_community.theoretical_proteoforms :
+                ExtensionMethods.filter(Lollipop.proteoform_community.theoretical_proteoforms, tb_tableFilter.Text);
+            DisplayUtility.FillDataGridView(dgv_Database, selected_theoreticals);
+            if (selected_theoreticals.Count() > 0) DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
         }
     }
 }
