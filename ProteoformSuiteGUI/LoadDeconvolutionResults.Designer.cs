@@ -219,7 +219,7 @@
             // 
             // btn_fullRun
             // 
-            this.btn_fullRun.Location = new System.Drawing.Point(549, 626);
+            this.btn_fullRun.Location = new System.Drawing.Point(675, 626);
             this.btn_fullRun.Name = "btn_fullRun";
             this.btn_fullRun.Size = new System.Drawing.Size(156, 92);
             this.btn_fullRun.TabIndex = 17;
@@ -231,7 +231,7 @@
             // 
             this.groupBox2.Controls.Add(this.btn_fullRunWithPresets);
             this.groupBox2.Controls.Add(this.btn_nextPane);
-            this.groupBox2.Location = new System.Drawing.Point(873, 604);
+            this.groupBox2.Location = new System.Drawing.Point(999, 604);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(183, 114);
             this.groupBox2.TabIndex = 2;
@@ -260,7 +260,7 @@
             // 
             // bt_clearResults
             // 
-            this.bt_clearResults.Location = new System.Drawing.Point(711, 626);
+            this.bt_clearResults.Location = new System.Drawing.Point(837, 626);
             this.bt_clearResults.Name = "bt_clearResults";
             this.bt_clearResults.Size = new System.Drawing.Size(156, 92);
             this.bt_clearResults.TabIndex = 26;
@@ -291,7 +291,7 @@
             this.groupBox3.Controls.Add(this.tb_filter1);
             this.groupBox3.Location = new System.Drawing.Point(232, 618);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(311, 100);
+            this.groupBox3.Size = new System.Drawing.Size(442, 100);
             this.groupBox3.TabIndex = 29;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Text Filters";
@@ -349,31 +349,31 @@
             // 
             // cmb_loadTable1
             // 
-            this.cmb_loadTable1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmb_loadTable1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmb_loadTable1.FormattingEnabled = true;
             this.cmb_loadTable1.Location = new System.Drawing.Point(13, 15);
             this.cmb_loadTable1.Name = "cmb_loadTable1";
-            this.cmb_loadTable1.Size = new System.Drawing.Size(429, 28);
+            this.cmb_loadTable1.Size = new System.Drawing.Size(429, 26);
             this.cmb_loadTable1.TabIndex = 31;
             this.cmb_loadTable1.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable1_SelectedIndexChanged);
             // 
             // cmb_loadTable2
             // 
-            this.cmb_loadTable2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmb_loadTable2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmb_loadTable2.FormattingEnabled = true;
             this.cmb_loadTable2.Location = new System.Drawing.Point(460, 15);
             this.cmb_loadTable2.Name = "cmb_loadTable2";
-            this.cmb_loadTable2.Size = new System.Drawing.Size(429, 28);
+            this.cmb_loadTable2.Size = new System.Drawing.Size(429, 26);
             this.cmb_loadTable2.TabIndex = 32;
             this.cmb_loadTable2.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable2_SelectedIndexChanged);
             // 
             // cmb_loadTable3
             // 
-            this.cmb_loadTable3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmb_loadTable3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmb_loadTable3.FormattingEnabled = true;
             this.cmb_loadTable3.Location = new System.Drawing.Point(907, 15);
             this.cmb_loadTable3.Name = "cmb_loadTable3";
-            this.cmb_loadTable3.Size = new System.Drawing.Size(429, 28);
+            this.cmb_loadTable3.Size = new System.Drawing.Size(429, 26);
             this.cmb_loadTable3.TabIndex = 33;
             this.cmb_loadTable3.SelectedIndexChanged += new System.EventHandler(this.cmb_LoadTable3_SelectedIndexChanged);
             // 
@@ -384,7 +384,7 @@
             this.groupBox4.Controls.Add(this.rb_advanced_user);
             this.groupBox4.Location = new System.Drawing.Point(232, 569);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(419, 43);
+            this.groupBox4.Size = new System.Drawing.Size(442, 43);
             this.groupBox4.TabIndex = 35;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Load Options";
@@ -416,6 +416,7 @@
             // rb_advanced_user
             // 
             this.rb_advanced_user.AutoSize = true;
+            this.rb_advanced_user.Enabled = false;
             this.rb_advanced_user.Location = new System.Drawing.Point(216, 17);
             this.rb_advanced_user.Name = "rb_advanced_user";
             this.rb_advanced_user.Size = new System.Drawing.Size(179, 17);

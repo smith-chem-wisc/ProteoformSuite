@@ -169,6 +169,7 @@
             // 
             // tb_interest_label
             // 
+            this.tb_interest_label.Enabled = false;
             this.tb_interest_label.Location = new System.Drawing.Point(239, 301);
             this.tb_interest_label.Margin = new System.Windows.Forms.Padding(2);
             this.tb_interest_label.Name = "tb_interest_label";
@@ -189,6 +190,7 @@
             // 
             // tb_proteins_of_interest_path
             // 
+            this.tb_proteins_of_interest_path.Enabled = false;
             this.tb_proteins_of_interest_path.Location = new System.Drawing.Point(7, 301);
             this.tb_proteins_of_interest_path.Margin = new System.Windows.Forms.Padding(2);
             this.tb_proteins_of_interest_path.Name = "tb_proteins_of_interest_path";
@@ -197,6 +199,7 @@
             // 
             // bt_proteins_of_interest
             // 
+            this.bt_proteins_of_interest.Enabled = false;
             this.bt_proteins_of_interest.Location = new System.Drawing.Point(7, 277);
             this.bt_proteins_of_interest.Margin = new System.Windows.Forms.Padding(2);
             this.bt_proteins_of_interest.Name = "bt_proteins_of_interest";

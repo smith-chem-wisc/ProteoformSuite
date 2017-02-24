@@ -549,11 +549,11 @@ namespace ProteoformSuiteInternal
             if (combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
 
             //Read the Morpheus BU data into PSM list
-            foreach (InputFile file in Lollipop.get_files(Lollipop.input_files, Purpose.BottomUp))
-            {
-                List<Psm> psm_from_file = Lollipop.ReadBUFile(file.directory + "\\" + file.filename + file.extension);
-                psm_list.AddRange(psm_from_file);
-            }
+            //foreach (InputFile file in Lollipop.get_files(Lollipop.input_files, Purpose.BottomUp))
+            //{
+            //    List<Psm> psm_from_file = Lollipop.ReadBUFile(file.directory + "\\" + file.filename + file.extension);
+            //    psm_list.AddRange(psm_from_file);
+            //}
 
             //PARALLEL PROBLEM
             process_entries();
@@ -565,10 +565,10 @@ namespace ProteoformSuiteInternal
                 Lollipop.proteoform_community.decoy_proteoforms = Lollipop.proteoform_community.decoy_proteoforms.ToDictionary(kv => kv.Key, kv => (TheoreticalProteoform[])group_proteoforms_byMass(kv.Value));
             }
 
-            if (psm_list.Count > 0)
-                match_psms_and_theoreticals();   //if BU data loaded in, match PSMs to theoretical accessions
-            if (Lollipop.accessions_of_interest_list_filepath.Length > 0)
-                mark_accessions_of_interest();
+            //if (psm_list.Count > 0)
+            //    match_psms_and_theoreticals();   //if BU data loaded in, match PSMs to theoretical accessions
+            //if (Lollipop.accessions_of_interest_list_filepath.Length > 0)
+            //    mark_accessions_of_interest();
         }
 
         public static void read_mods(List<ModificationWithLocation> all_modifications)
@@ -739,53 +739,53 @@ namespace ProteoformSuiteInternal
 
 
         //READING IN BOTTOM-UP MORPHEUS FILE
-        public static List<Psm> ReadBUFile(string filename)
-        {
-            List<Psm> psm_list = new List<Psm>();
-            string[] lines = File.ReadAllLines(filename);
+        //public static List<Psm> ReadBUFile(string filename)
+        //{
+        //    List<Psm> psm_list = new List<Psm>();
+        //    string[] lines = File.ReadAllLines(filename);
 
-            int i = 1;
-            bool qLessThan1 = true;
-            //only add PSMs with q less than 1. this assumes the tsv is in increasing order of q-value! 
-            while (qLessThan1)
-            {
-                string[] parts = lines[i].Split('\t');
-                //only read in with Q-value < 1%
-                if (Convert.ToDouble(parts[30]) < 1)
-                {
-                    if (Convert.ToBoolean(parts[26]))
-                    {
-                        Psm new_psm = new Psm(parts[11].ToString(), parts[0].ToString(), Convert.ToInt32(parts[14]), Convert.ToInt32(parts[15]),
-                            Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]), Convert.ToInt32(parts[1]),
-                            parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]), PsmType.BottomUp);
-                        psm_list.Add(new_psm);
-                    }
-                    i++;
-                }
-                else qLessThan1 = false;
-            }
-            return psm_list;
-        }
+        //    int i = 1;
+        //    bool qLessThan1 = true;
+        //    //only add PSMs with q less than 1. this assumes the tsv is in increasing order of q-value! 
+        //    while (qLessThan1)
+        //    {
+        //        string[] parts = lines[i].Split('\t');
+        //        //only read in with Q-value < 1%
+        //        if (Convert.ToDouble(parts[30]) < 1)
+        //        {
+        //            if (Convert.ToBoolean(parts[26]))
+        //            {
+        //                Psm new_psm = new Psm(parts[11].ToString(), parts[0].ToString(), Convert.ToInt32(parts[14]), Convert.ToInt32(parts[15]),
+        //                    Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]), Convert.ToInt32(parts[1]),
+        //                    parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]), PsmType.BottomUp);
+        //                psm_list.Add(new_psm);
+        //            }
+        //            i++;
+        //        }
+        //        else qLessThan1 = false;
+        //    }
+        //    return psm_list;
+        //}
 
-        private static void match_psms_and_theoreticals()
-        {
-            Parallel.ForEach<TheoreticalProteoform>(Lollipop.proteoform_community.theoretical_proteoforms, tp =>
-            {
-                //PSMs in BU data with that protein accession
-                string[] accession_to_search = tp.accession.Split('_');
-                tp.psm_list = Lollipop.psm_list.Where(p => p.protein_description.Contains(accession_to_search[0])).ToList();
-            });
-        }
+        //private static void match_psms_and_theoreticals()
+        //{
+        //    Parallel.ForEach<TheoreticalProteoform>(Lollipop.proteoform_community.theoretical_proteoforms, tp =>
+        //    {
+        //        //PSMs in BU data with that protein accession
+        //        string[] accession_to_search = tp.accession.Split('_');
+        //        tp.psm_list = Lollipop.psm_list.Where(p => p.protein_description.Contains(accession_to_search[0])).ToList();
+        //    });
+        //}
 
-        private static void mark_accessions_of_interest()
-        {
-            string[] lines = File.ReadAllLines(Lollipop.accessions_of_interest_list_filepath);
-            Parallel.ForEach<string>(lines, accession =>
-            {
-                List<TheoreticalProteoform> theoreticals = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.accession.Contains(accession)).ToList();
-                foreach (TheoreticalProteoform theoretical in theoreticals) { theoretical.of_interest = Lollipop.interest_type; }
-            });
-        }
+        //private static void mark_accessions_of_interest()
+        //{
+        //    string[] lines = File.ReadAllLines(Lollipop.accessions_of_interest_list_filepath);
+        //    Parallel.ForEach<string>(lines, accession =>
+        //    {
+        //        List<TheoreticalProteoform> theoreticals = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.accession.Contains(accession)).ToList();
+        //        foreach (TheoreticalProteoform theoretical in theoreticals) { theoretical.of_interest = Lollipop.interest_type; }
+        //    });
+        //}
 
 
         //ET,ED,EE,EF COMPARISONS
