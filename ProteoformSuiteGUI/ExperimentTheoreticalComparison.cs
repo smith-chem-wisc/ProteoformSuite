@@ -207,7 +207,7 @@ namespace ProteoformSuite
                     }
                     peak.shift_experimental_masses(int_mass_shifter);
                 }
-                Lollipop.regroup_components();
+                Lollipop.regroup_components(Lollipop.neucode_labeled, Lollipop.input_files, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
             }
             tb_max_accepted_fdr.Text = Lollipop.et_peaks.Where(p => p.peak_accepted).Max(p => p.peak_group_fdr).ToString();
         }

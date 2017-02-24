@@ -40,7 +40,7 @@ namespace ProteoformSuite
         private void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
-            Lollipop.aggregate_proteoforms();
+            Lollipop.aggregate_proteoforms(Lollipop.neucode_labeled, Lollipop.input_files, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
             FillAggregatesTable();
             updateFiguresOfMerit();
             this.Cursor = Cursors.Default;
