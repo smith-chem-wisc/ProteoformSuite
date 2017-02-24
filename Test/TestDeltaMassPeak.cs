@@ -162,7 +162,7 @@ namespace Test
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr2, pr3 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs);
             test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
-            Assert.False(test_community.delta_mass_peaks[0].shift_experimental_masses(1));
+            Assert.False(test_community.delta_mass_peaks[0].shift_experimental_masses(1, true));
         }
 
         [Test]
@@ -220,7 +220,7 @@ namespace Test
 
             //Shift the peaks, which shifts all of the proteoforms
             DeltaMassPeak d2 = test_community.delta_mass_peaks[1];
-            d2.shift_experimental_masses(-1);
+            d2.shift_experimental_masses(-1, true);
 
             Assert.IsTrue(pf3.mass_shifted);
             Assert.IsTrue(pf4.mass_shifted);
@@ -284,7 +284,7 @@ namespace Test
 
             //Shift the peaks, which shifts all of the proteoforms
             DeltaMassPeak d2 = test_community.delta_mass_peaks[1];
-            d2.shift_experimental_masses(-1);
+            d2.shift_experimental_masses(-1, false);
 
             Assert.IsTrue(pf3.mass_shifted);
             Assert.IsTrue(pf4.mass_shifted);

@@ -40,7 +40,7 @@ namespace ProteoformSuite
         private void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
-            Lollipop.aggregate_proteoforms(Lollipop.neucode_labeled, Lollipop.input_files, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
+            Lollipop.aggregate_proteoforms(Lollipop.validate_proteoforms, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
             FillAggregatesTable();
             updateFiguresOfMerit();
             this.Cursor = Cursors.Default;
@@ -203,6 +203,11 @@ namespace ProteoformSuite
         private void nUD_min_num_CS_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.min_num_CS = Convert.ToInt16(nUD_min_num_CS.Value);
+        }
+
+        private void cb_validateProteoforms_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.validate_proteoforms = cb_validateProteoforms.Checked;
         }
     }
 }

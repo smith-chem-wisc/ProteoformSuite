@@ -49,6 +49,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.dgv_AcceptNeuCdLtProteoforms = new System.Windows.Forms.DataGridView();
+            this.cb_validateProteoforms = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AggregatedProteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -113,6 +114,7 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.cb_validateProteoforms);
             this.splitContainer2.Panel1.Controls.Add(this.nUD_min_num_CS);
             this.splitContainer2.Panel1.Controls.Add(this.label8);
             this.splitContainer2.Panel1.Controls.Add(this.nUD_min_agg_count);
@@ -211,7 +213,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(17, 230);
+            this.label5.Location = new System.Drawing.Point(25, 262);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(197, 13);
@@ -220,7 +222,7 @@
             // 
             // tb_totalAggregatedProteoforms
             // 
-            this.tb_totalAggregatedProteoforms.Location = new System.Drawing.Point(218, 227);
+            this.tb_totalAggregatedProteoforms.Location = new System.Drawing.Point(235, 255);
             this.tb_totalAggregatedProteoforms.Margin = new System.Windows.Forms.Padding(2);
             this.tb_totalAggregatedProteoforms.Name = "tb_totalAggregatedProteoforms";
             this.tb_totalAggregatedProteoforms.Size = new System.Drawing.Size(81, 20);
@@ -320,6 +322,20 @@
             this.dgv_AcceptNeuCdLtProteoforms.Size = new System.Drawing.Size(1012, 328);
             this.dgv_AcceptNeuCdLtProteoforms.TabIndex = 0;
             // 
+            // cb_validateProteoforms
+            // 
+            this.cb_validateProteoforms.AutoSize = true;
+            this.cb_validateProteoforms.Checked = true;
+            this.cb_validateProteoforms.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_validateProteoforms.Location = new System.Drawing.Point(90, 227);
+            this.cb_validateProteoforms.Name = "cb_validateProteoforms";
+            this.cb_validateProteoforms.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.cb_validateProteoforms.Size = new System.Drawing.Size(123, 17);
+            this.cb_validateProteoforms.TabIndex = 17;
+            this.cb_validateProteoforms.Text = "Validate Proteoforms";
+            this.cb_validateProteoforms.UseVisualStyleBackColor = true;
+            this.cb_validateProteoforms.CheckedChanged += new System.EventHandler(this.cb_validateProteoforms_CheckedChanged);
+            // 
             // AggregatedProteoforms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -376,5 +392,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.NumericUpDown nUD_min_num_CS;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.CheckBox cb_validateProteoforms;
     }
 }
