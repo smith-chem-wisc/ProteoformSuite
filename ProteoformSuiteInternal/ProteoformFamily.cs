@@ -55,7 +55,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public ProteoformFamily(List<Proteoform> proteoforms, int family_id)
+        public ProteoformFamily(IEnumerable<Proteoform> proteoforms, int family_id)
         {
             this.proteoforms = new HashSet<Proteoform>(proteoforms, new ProteoformComparer());
             this.family_id = family_id;

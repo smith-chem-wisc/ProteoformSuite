@@ -39,6 +39,13 @@ namespace Test
             TheoreticalProteoform w = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { v, u, t }, true, dict);
             Assert.True(w.contaminant);
             Assert.True(w.accession.Contains(p1.Accession));
+
+            //Not contaminant
+            TheoreticalProteoform x = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { v, u }, true, dict);
+            Assert.False(x.contaminant);
+
+            //PTM mass test
+            Assert.AreEqual(0, t.ptm_mass);
         }
 
 

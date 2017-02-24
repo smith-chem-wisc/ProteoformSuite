@@ -166,14 +166,14 @@ namespace ProteoformSuite
             ct_relativeDifference.ChartAreas[0].AxisX.Title = "expected relative difference dE(i)";
             ct_relativeDifference.ChartAreas[0].AxisY.Title = "observed relative difference d(i)";
 
-            ct_relativeDifference.Series["obsVSexp"].Points.DataBindXY(Lollipop.sortedAvgPermutationTestStatistics.ToList(),Lollipop.sortedProteoformTestStatistics.ToList());
+            ct_relativeDifference.Series["obsVSexp"].Points.DataBindXY(Lollipop.sortedAvgPermutationTestStatistics.ToList(), Lollipop.sortedProteoformTestStatistics.ToList());
 
             plotObservedVsExpectedOffsets();
         }
 
         decimal positiveOffsetFunction(decimal x)
         {
-            return (x+nud_Offset.Value);
+            return (x + nud_Offset.Value);
         }
 
         decimal negativeOffsetFunction(decimal x)
@@ -185,6 +185,7 @@ namespace ProteoformSuite
         {
             ct_relativeDifference.Series["positiveOffset"].Points.Clear();
             ct_relativeDifference.Series["negativeOffset"].Points.Clear();
+
             foreach (decimal xValue in Lollipop.sortedAvgPermutationTestStatistics)
             {
                 ct_relativeDifference.Series["positiveOffset"].Points.AddXY(xValue, positiveOffsetFunction(xValue));
@@ -224,7 +225,7 @@ namespace ProteoformSuite
                 ct_proteoformIntensities.Series["Observed Intensities"].Points.AddXY(entry.Key, entry.Value);
 
                 double gaussIntensity = ((double)Lollipop.selectGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)Lollipop.selectAverageIntensity), 2) / (2d * Math.Pow((double)Lollipop.selectStDev, 2)));
-                double bkgd_gaussIntensity = ((double)Lollipop.bkgdSelectGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)Lollipop.bkgdSelectAverageIntensity), 2) / (2d * Math.Pow((double)Lollipop.bkgdSelectStDev, 2)));
+                double bkgd_gaussIntensity = ((double)Lollipop.bkgdGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)Lollipop.bkgdAverageIntensity), 2) / (2d * Math.Pow((double)Lollipop.bkgdStDev, 2)));
                 double sumIntensity = gaussIntensity + bkgd_gaussIntensity;
                 ct_proteoformIntensities.Series["Observed Fit"].Points.AddXY(entry.Key, gaussIntensity);
                 ct_proteoformIntensities.Series["Background Projected"].Points.AddXY(entry.Key, bkgd_gaussIntensity);
@@ -264,7 +265,7 @@ namespace ProteoformSuite
             Lollipop.minProteoformFDR = nud_FDR.Value;
             Lollipop.minProteoformFoldChange = nud_ratio.Value;
             Lollipop.minProteoformIntensity = nud_intensity.Value;
-            Lollipop.getInducedOrRepressedProteins();
+            Lollipop.inducedOrRepressedProteins = Lollipop.getInducedOrRepressedProteins(Lollipop.satisfactoryProteoforms, Lollipop.expanded_proteins, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity);
             Lollipop.GO_analysis();
             fillGoTermsTable();
         }
@@ -274,7 +275,7 @@ namespace ProteoformSuite
             Lollipop.minProteoformFDR = nud_FDR.Value;
             Lollipop.minProteoformFoldChange = nud_ratio.Value;
             Lollipop.minProteoformIntensity = nud_intensity.Value;
-            Lollipop.getInducedOrRepressedProteins();
+            Lollipop.inducedOrRepressedProteins = Lollipop.getInducedOrRepressedProteins(Lollipop.satisfactoryProteoforms, Lollipop.expanded_proteins, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity);
             Lollipop.GO_analysis();
             fillGoTermsTable();
         }
@@ -320,7 +321,7 @@ namespace ProteoformSuite
 
         private void btn_buildAllQuantifiedFamilies_Click(object sender, EventArgs e)
         {
-            bool built = build_families(Lollipop.getInterestingFamilies(Lollipop.qVals).Distinct().ToList());
+            bool built = build_families(Lollipop.getInterestingFamilies(Lollipop.qVals, Lollipop.proteoform_community.families, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity).Distinct().ToList());
             if (!built) return;
             MessageBox.Show("Finished building all families.\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
         }
@@ -328,7 +329,7 @@ namespace ProteoformSuite
         private void btn_buildSelectedQuantFamilies_Click(object sender, EventArgs e)
         {
             List<ExperimentalProteoform.quantitativeValues> selected_qvals = (DisplayUtility.get_selected_objects(dgv_quantification_results).Select(o => (ExperimentalProteoform.quantitativeValues)o)).ToList();
-            List<ProteoformFamily> selected_families = Lollipop.getInterestingFamilies(selected_qvals).Distinct().ToList();
+            List<ProteoformFamily> selected_families = Lollipop.getInterestingFamilies(selected_qvals, Lollipop.proteoform_community.families, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity).Distinct().ToList();
             bool built = build_families(selected_families);
             if (!built) return;
 
@@ -343,7 +344,7 @@ namespace ProteoformSuite
         private void btn_buildFamiliesAllGO_Click(object sender, EventArgs e)
         {
             Aspect a = (Aspect)cmbx_goAspect.SelectedItem;
-            bool built = build_families(Lollipop.getInterestingFamilies(Lollipop.goTermNumbers.Where(n=>n.goTerm.aspect == a).Distinct().ToList()));
+            bool built = build_families(Lollipop.getInterestingFamilies(Lollipop.goTermNumbers.Where(n=>n.goTerm.aspect == a).Distinct().ToList(), Lollipop.proteoform_community.families));
             if (!built) return;
             MessageBox.Show("Finished building all families.\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
         }
@@ -351,7 +352,7 @@ namespace ProteoformSuite
         private void btn_buildFromSelectedGoTerms_Click(object sender, EventArgs e)
         {
             List<GoTermNumber> selected_gos = (DisplayUtility.get_selected_objects(dgv_goAnalysis).Select(o => (GoTermNumber)o)).ToList();
-            List<ProteoformFamily> selected_families = Lollipop.getInterestingFamilies(selected_gos).Distinct().ToList();
+            List<ProteoformFamily> selected_families = Lollipop.getInterestingFamilies(selected_gos, Lollipop.proteoform_community.families).Distinct().ToList();
             bool built = build_families(selected_families);
             if (!built) return;
 
@@ -394,15 +395,15 @@ namespace ProteoformSuite
         private void nud_bkgdShift_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.backgroundShift = nud_bkgdShift.Value;
-            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram, Lollipop.backgroundShift, Lollipop.backgroundWidth);
-            Lollipop.defineSelectBackgroundIntensityDistribution();
+            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
+            Lollipop.defineBackgroundIntensityDistribution(Lollipop.neucode_labeled, Lollipop.quantBioFracCombos, Lollipop.satisfactoryProteoforms, Lollipop.backgroundShift, Lollipop.backgroundWidth);
         }
 
         private void nud_bkgdWidth_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.backgroundWidth = nud_bkgdWidth.Value;
-            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram, Lollipop.backgroundShift, Lollipop.backgroundWidth);
-            Lollipop.defineSelectBackgroundIntensityDistribution();
+            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
+            Lollipop.defineBackgroundIntensityDistribution(Lollipop.neucode_labeled, Lollipop.quantBioFracCombos, Lollipop.satisfactoryProteoforms, Lollipop.backgroundShift, Lollipop.backgroundWidth);
         }
 
         private void cmbx_observationsTypeRequired_SelectedIndexChanged(object sender, EventArgs e)
@@ -418,17 +419,17 @@ namespace ProteoformSuite
         private void nud_sKnot_minFoldChange_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.sKnot_minFoldChange = nud_sKnot_minFoldChange.Value;
-            Lollipop.computeProteoformTestStatistics(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.satisfactoryProteoforms, Lollipop.bkgdAverageIntensity, Lollipop.bkgdSelectStDev, Lollipop.numerator_condition, Lollipop.denominator_condition, Lollipop.sKnot_minFoldChange);
-            Lollipop.computeSortedTestStatistics();
-            Lollipop.computeFoldChangeFDR(Lollipop.sortedAvgPermutationTestStatistics, Lollipop.sortedProteoformTestStatistics, Lollipop.satisfactoryProteoforms.SelectMany(eP => eP.quant.permutedTestStatistics));
-            Lollipop.computeIndividualExperimentalProteoformFDRs(Lollipop.satisfactoryProteoforms, Lollipop.sortedProteoformTestStatistics);
+            Lollipop.computeProteoformTestStatistics(Lollipop.neucode_labeled, Lollipop.satisfactoryProteoforms, Lollipop.bkgdAverageIntensity, Lollipop.bkgdStDev, Lollipop.numerator_condition, Lollipop.denominator_condition, Lollipop.sKnot_minFoldChange);
+            Lollipop.computeSortedTestStatistics(Lollipop.satisfactoryProteoforms);
+            Lollipop.computeFoldChangeFDR(Lollipop.sortedAvgPermutationTestStatistics, Lollipop.sortedProteoformTestStatistics, Lollipop.satisfactoryProteoforms, Lollipop.permutedTestStatistics, Lollipop.offsetTestStatistics);
+            Lollipop.computeIndividualExperimentalProteoformFDRs(Lollipop.satisfactoryProteoforms, Lollipop.sortedProteoformTestStatistics, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity);
             plotObservedVsExpectedOffsets();
         }
 
         private void nud_Offset_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.offsetTestStatistics = nud_Offset.Value;
-            Lollipop.computeFoldChangeFDR(Lollipop.sortedAvgPermutationTestStatistics, Lollipop.sortedProteoformTestStatistics, Lollipop.satisfactoryProteoforms.SelectMany(eP => eP.quant.permutedTestStatistics));
+            Lollipop.computeFoldChangeFDR(Lollipop.sortedAvgPermutationTestStatistics, Lollipop.sortedProteoformTestStatistics, Lollipop.satisfactoryProteoforms, Lollipop.permutedTestStatistics, Lollipop.offsetTestStatistics);
             plotObservedVsExpectedOffsets();
         }
 
