@@ -20,25 +20,17 @@ namespace ProteoformSuite
 
         public void load_raw_components()
         {
-            if (Lollipop.input_files.Any(f => f.purpose == Purpose.Quantification))
-            {
-                Lollipop.getBiorepsFractionsList(); // list of bioreps with a list of fractions for each biorep
-                Lollipop.getObservationParameters(); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+            Lollipop.getBiorepsFractionsList(Lollipop.input_files); // list of bioreps with a list of fractions for each biorep
+            Lollipop.getObservationParameters(Lollipop.neucode_labeled, Lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
 
-                Parallel.Invoke(
-                    () => {
-                        if (Lollipop.raw_experimental_components.Count == 0)
-                            Lollipop.process_raw_components(); //Includes reading correction factors if present,
-                    }, 
-                    () => {
-                        if (Lollipop.raw_quantification_components.Count == 0)
-                            Lollipop.process_raw_quantification_components();
-                    }
-                );
+            Parallel.Invoke
+            (
+                () => { if (Lollipop.raw_experimental_components.Count == 0) Lollipop.process_raw_components(); }, //Includes reading correction factors if present,
+                () => { if (Lollipop.raw_quantification_components.Count == 0) Lollipop.process_raw_quantification_components(); }
+            );
 
-                this.FillRawExpComponentsTable();
-                this.FillRawQuantificationComponentsTable();
-            }
+            this.FillRawExpComponentsTable();
+            this.FillRawQuantificationComponentsTable();
         }
 
         public DataGridView GetDGV()
@@ -48,13 +40,16 @@ namespace ProteoformSuite
 
         public void FillRawExpComponentsTable()
         {
-            DisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, Lollipop.raw_experimental_components);
-            this.FormatRawExpComponentsTable();
+            if (Lollipop.raw_experimental_components.Count > 0)
+            {
+                DisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, Lollipop.raw_experimental_components);
+                this.FormatRawExpComponentsTable();
+            }
         }
 
         public void FillRawQuantificationComponentsTable()
         {
-            if (Lollipop.raw_quantification_components.Count() > 0)
+            if (Lollipop.raw_quantification_components.Count > 0)
             {
                 DisplayUtility.FillDataGridView(dgv_RawQuantComp_MI_masses, Lollipop.raw_quantification_components);
                 this.FormatRawQuantificationComponentsTable();
