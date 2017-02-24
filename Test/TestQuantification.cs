@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using ProteoformSuiteInternal;
+using Proteomics;
 
 namespace Test
 {
@@ -314,12 +315,11 @@ namespace Test
                 permutedTestStatistics.Add(onepst);
             }
 
-            ExperimentalProteoform e = new ExperimentalProteoform();
-            decimal fdr = e.quant.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics,satisfactoryProteoformsCount,sortedProteoformTestStatistics);
+            decimal fdr = ExperimentalProteoform.quantitativeValues.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics,satisfactoryProteoformsCount,sortedProteoformTestStatistics);
             Assert.AreEqual(1.125, fdr);
 
             testStatistic = 0.8m;
-            fdr = e.quant.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics, satisfactoryProteoformsCount, sortedProteoformTestStatistics);
+            fdr = ExperimentalProteoform.quantitativeValues.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics, satisfactoryProteoformsCount, sortedProteoformTestStatistics);
             Assert.AreEqual(4.5, fdr);
         }
 
@@ -586,14 +586,70 @@ namespace Test
 
         }
 
-        //[Test]
-        //public void full_quantitation()
-        //{
-        //    ExperimentalProteoform e = new ExperimentalProteoform();
-        //    ExperimentalProteoform e1 = new ExperimentalProteoform("E1", components[0], components, quant_components_list, true);
-        //    ExperimentalProteoform e2 = new ExperimentalProteoform("E2", components[0], components, quant_components_list, true);
-        //    e1.biorepIntensityList = e.make_biorepIntensityList(e1.lt_quant_components, e1.hv_quant_components, Lollipop.ltConditionsBioReps.Keys.ToList(), Lollipop.hvConditionsBioReps.Keys.ToList());
+        [Test]
+        public void benjaminiYekutieli()
+        {
+            int nbp = 100;
+            List<double> pvals = new List<double>();
+            double pValue = 0.001;
 
-        //}
+            for (int i = 1; i <= nbp; i++)
+            {
+                pvals.Add(0.1 / (double)i);
+            }
+
+            Assert.AreEqual(Math.Round(GoTermNumber.benjaminiYekutieli(nbp, pvals, pValue), 4), 0.5187);
+            nbp++;
+        }
+
+        [Test]
+        public void test_calculateGoTermFDR() // this is not finished yet
+        {
+            int numberOfGoTermNumbers = 100;
+            List<GoTermNumber> gtns = new List<GoTermNumber>();
+            for (int i = 1; i <= numberOfGoTermNumbers; i++)
+            {
+                GoTerm g = new GoTerm();
+                g.aspect = Aspect.biologicalProcess;
+                g.description = "description";
+                g.id = "id";
+                GoTermNumber gtn = new GoTermNumber();
+                gtn.goTerm = g;
+                gtn.p_value = (0.1d / (double)i - 0.0005d);
+                gtns.Add(gtn);
+            }
+            Lollipop.calculateGoTermFDR(gtns);
+            foreach (GoTermNumber num in gtns)
+            {
+                Assert.IsNotNull(num.by);
+                Assert.LessOrEqual(num.by, 1m);
+            }
+
+        }
+
+        [Test]
+        public void test_computeExperimentalProteoformFDR()
+        {
+            decimal testStatistic = 0.001m;
+            List<List<decimal>> permutedTestStatistics = new List<List<decimal>>();
+            int satisfactoryProteoformsCount = 100;
+            List<decimal> sortedProteoformTestStatistics = new List<decimal>();
+
+            for (int i = 1; i <= satisfactoryProteoformsCount; i++)
+            {
+                sortedProteoformTestStatistics.Add(0.01m / (decimal)i);
+                List<decimal> pts = new List<decimal>();
+
+                for (int j = -2; j <= 2; j++)
+                {
+                    if (j != 0)
+                        pts.Add(0.1m / (decimal)j);
+                }
+                permutedTestStatistics.Add(pts);
+            }
+            Assert.AreEqual(0.4m, ExperimentalProteoform.quantitativeValues.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics, satisfactoryProteoformsCount, sortedProteoformTestStatistics));
+            satisfactoryProteoformsCount++;
+        }
+
     }
 }

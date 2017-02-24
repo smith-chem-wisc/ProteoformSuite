@@ -394,7 +394,7 @@ namespace ProteoformSuiteInternal
                 permutedTestStatistics = getPermutedTestStatistics(allLights, allHeavys, sKnot);
             }
 
-            public decimal computeExperimentalProteoformFDR(decimal testStatistic, List<List<decimal>> permutedTestStatistics, int satisfactoryProteoformsCount, List<decimal> sortedProteoformTestStatistics)
+            public static decimal computeExperimentalProteoformFDR(decimal testStatistic, List<List<decimal>> permutedTestStatistics, int satisfactoryProteoformsCount, List<decimal> sortedProteoformTestStatistics)
             {
 
                 decimal minimumPositivePassingTestStatistic = Math.Abs(testStatistic);
@@ -411,7 +411,6 @@ namespace ProteoformSuiteInternal
 
                 decimal avergePermuted = (decimal)(totalFalsePermutedPositiveValues + totalFalsePermutedNegativeValues) / (decimal)satisfactoryProteoformsCount;
                 decimal fdr = avergePermuted / ((decimal)(sortedProteoformTestStatistics.Count(s => s >= minimumPositivePassingTestStatistic) + sortedProteoformTestStatistics.Count(s => s <= minimumNegativePassingTestStatistic)));
-                this.FDR = fdr;
                 return fdr;
             }
 

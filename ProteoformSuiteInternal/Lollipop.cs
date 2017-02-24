@@ -1013,7 +1013,7 @@ namespace ProteoformSuiteInternal
         public static void computeIndividualExperimentalProteoformFDRs(List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> sortedProteoformTestStatistics)
         {
             List<List<decimal>> permutedTestStatistics = satisfactoryProteoforms.Select(eP => eP.quant.permutedTestStatistics).ToList();
-            Parallel.ForEach(satisfactoryProteoforms, eP => eP.quant.computeExperimentalProteoformFDR(eP.quant.testStatistic, permutedTestStatistics, satisfactoryProteoforms.Count, sortedProteoformTestStatistics));
+            Parallel.ForEach(satisfactoryProteoforms, eP => eP.quant.FDR = ExperimentalProteoform.quantitativeValues.computeExperimentalProteoformFDR(eP.quant.testStatistic, permutedTestStatistics, satisfactoryProteoforms.Count, sortedProteoformTestStatistics));
         }
 
         public static void getObservedProteins() // these are all observed proteins in any of the proteoform families.
@@ -1121,19 +1121,10 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public static void calculateGoTermFDR(List<GoTermNumber> goTermNumbers)
+        public static void calculateGoTermFDR(List<GoTermNumber> gtns)
         {
-            Parallel.ForEach<GoTermNumber>(goTermNumbers, g => g.benjaminiYekutieli()); 
+            List<double> pvals = gtns.Select(g => g.p_value).ToList();
+            Parallel.ForEach<GoTermNumber>(gtns, g => g.by = GoTermNumber.benjaminiYekutieli(gtns.Count, pvals, g.p_value)); 
         }
     }
 }
-
-//public static Tuple<Component, Component> find_next_pair(List<Component> ordered, List<Tuple<Component,Component>> running)
-//{
-//    Component first = ordered.FirstOrDefault(c => running.All(d => c.id != d.Item1.id && c.id != d.Item2.id));
-//    if (first == null) return null;
-//    IEnumerable<Component> higher_mass_components = ordered.Where(higher_component => higher_component != first && higher_component.weighted_monoisotopic_mass > first.weighted_monoisotopic_mass);
-//    Component second = higher_mass_components.FirstOrDefault(c => c.id != first.id && running.All(d => c.id != d.Item1.id && c.id != d.Item2.id));
-//    if (second == null) return null;
-//    return new Tuple<Component, Component>( first, second );
-//}
