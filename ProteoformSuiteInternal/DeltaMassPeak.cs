@@ -61,6 +61,21 @@ namespace ProteoformSuiteInternal
             if (!Lollipop.opening_results && Lollipop.updated_theoretical) this.possiblePeakAssignments = nearestPTMs(this.peak_deltaM_average);
         }
 
+        //notch mass test
+        public DeltaMassPeak(bool notch, ProteoformRelation base_relation, List<ProteoformRelation> relations) : base(base_relation)
+        {
+            this.base_relation = base_relation;
+            this.grouped_relations = relations;
+            foreach (ProteoformRelation mass_difference in this.grouped_relations)
+            {
+                mass_difference.peak = this;
+                mass_difference.accepted = this.peak_accepted;
+                foreach (Proteoform p in mass_difference.connected_proteoforms)
+                    p.relationships.Add(mass_difference);
+            }
+        }
+
+
         /*(this needs to be done at the actual time of forming peaks or else the average is wrong so the peak can be formed out
             of incorrect relations (average shouldn't include relations already grouped into peaks)*/
         public List<ProteoformRelation> find_nearby_relations(List<ProteoformRelation> ungrouped_relations)

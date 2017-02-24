@@ -452,7 +452,7 @@ namespace ProteoformSuite
         {
             if (cb_view_ed.Checked)
             {
-                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Lollipop.ed_relations["DecoyDatabase_1"], "relations");
+                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Lollipop.ed_relations["DecoyDatabase_0"], "relations");
             }
             else
             {

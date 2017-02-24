@@ -330,27 +330,17 @@ namespace ProteoformSuite
                 string folder_path = folderBrowser.SelectedPath;
 
                 List<ExperimentalProteoform> experimentals = new List<ExperimentalProteoform>();
-                if (cb_inclusion_list_family.Checked)
+                if (cb_inclusion_list_identified_family.Checked)
+                    //family not null, ET relation in family, e proteoform not in topdown relation
+                    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.etd).ToList().Count > 0 && p.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
+
+                if (cb_inclusion_list_unidentified_fam.Checked)
                 {
-                    if (cb_inclusion_list_identified_family.Checked)
-                        //family not null, ET relation in family, e proteoform not in topdown relation
-                        experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.etd).ToList().Count > 0 && p.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
-
-                    if (cb_inclusion_list_unidentified_fam.Checked)
-                    {
-                        experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
-                    }
-
-                    //FOR TEST WILL DELETE THIS
-                    if (cb_inclusion_list_1T.Checked)
-                    {
-                        experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et).ToList().Count == 1 && p.family.relations.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
-                    }
+                    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
                 }
-
-                else
+                if (cb_inclusion_list_orphans.Checked)
                 {
-                    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family == null));
+                    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family.relations.Count == 0));
                 }
                 foreach (ExperimentalProteoform exp in experimentals)
                 {
@@ -386,43 +376,6 @@ namespace ProteoformSuite
             else return;
                 MessageBox.Show("Successfully exported inclusion list(s).");
             }
-        
-
-        private void cb_inclusion_list_family_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!cb_inclusion_list_family.Checked)
-            {
-                cb_inclusion_list_identified_family.Checked = false;
-                cb_inclusion_list_unidentified_fam.Checked = false;
-            }
-            if (cb_inclusion_list_family.Checked)
-            {
-                cb_inclusion_list_identified_family.Checked = true;
-                cb_inclusion_list_unidentified_fam.Checked = true;
-            }
-        }
-
-        private void cb_inclusion_list_identified_family_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!cb_inclusion_list_identified_family.Checked)
-            {
-                if (!cb_inclusion_list_unidentified_fam.Checked && cb_inclusion_list_family.Checked && !cb_inclusion_list_1T.Checked)
-                {
-                    cb_inclusion_list_family.Checked = false;
-                }
-            }
-        }
-
-        private void cb_inclusion_list_unidentified_fam_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!cb_inclusion_list_unidentified_fam.Checked)
-            {
-                if (!cb_inclusion_list_identified_family.Checked && cb_inclusion_list_family.Checked && !cb_inclusion_list_1T.Checked)
-                {
-                    cb_inclusion_list_family.Checked = false;
-                }
-            }
-        }
 
         private void btn_merge_Click(object sender, EventArgs e)
         {
