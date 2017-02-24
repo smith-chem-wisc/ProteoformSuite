@@ -71,5 +71,91 @@ namespace Test
             Assert.True(Math.Abs(next.agg_mass - is_running.agg_mass) > 2 * (double)Lollipop.missed_monos);
             Assert.AreEqual(4, next.agg_intensity);
         }
+
+        [Test]
+        public void create_proteoforms_in_bounds_monoisotopic_tolerance()
+        {
+            double max_monoisotopic_mass = TestExperimentalProteoform.starter_mass + TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+            double min_monoisotopic_mass = TestExperimentalProteoform.starter_mass - TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+
+            List<Component> components = TestExperimentalProteoform.generate_neucode_components(TestExperimentalProteoform.starter_mass);
+            Lollipop.remaining_components = new List<Component>(components); //Must use Lollipop.remaining_components because ThreadStart only uses void methods
+
+            List<ExperimentalProteoform> pfs = Lollipop.createProteoforms(true, components.OfType<NeuCodePair>(), components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
+            Assert.AreEqual(1, pfs.Count);
+            Assert.AreEqual(2, pfs[0].aggregated_components.Count);
+            Assert.AreEqual(2, components.Count);
+            Assert.AreEqual(0, Lollipop.remaining_components.Count);
+        }
+
+        [Test]
+        public void vet_proteoforms_in_bounds_monoisotopic_tolerance()
+        {
+            double max_monoisotopic_mass = TestExperimentalProteoform.starter_mass + TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+            double min_monoisotopic_mass = TestExperimentalProteoform.starter_mass - TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+
+            IEnumerable<NeuCodePair> neucodes = TestExperimentalProteoform.generate_neucode_components(TestExperimentalProteoform.starter_mass).OfType<NeuCodePair>();
+            Lollipop.remaining_components = new List<Component>(neucodes);
+
+            List<Component> components = neucodes.Select(nc => nc.neuCodeLight).Concat(neucodes.Select(nc => nc.neuCodeHeavy)).ToList();
+            Lollipop.remaining_verification_components = new List<Component>(components); //Must use Lollipop.remaining_components because ThreadStart only uses void methods
+
+            // in bounds lowest monoisotopic error
+            List<ExperimentalProteoform> pfs = Lollipop.createProteoforms(true, neucodes, components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
+            List<ExperimentalProteoform> vetted = Lollipop.vetExperimentalProteoforms(true, pfs, components, new List<ExperimentalProteoform>());
+            Assert.AreEqual(1, vetted.Count);
+            Assert.AreEqual(2, vetted[0].aggregated_components.Count);
+            Assert.AreEqual(2, vetted[0].lt_verification_components.Count);
+            Assert.AreEqual(2, vetted[0].hv_verification_components.Count);
+            Assert.AreEqual(4, components.Count);
+            Assert.AreEqual(0, Lollipop.remaining_verification_components.Count);
+        }
+
+        [Test]
+        public void assign_quant_components_in_bounds_monoisotopic_tolerance()
+        {
+            double max_monoisotopic_mass = TestExperimentalProteoform.starter_mass + TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+            double min_monoisotopic_mass = TestExperimentalProteoform.starter_mass - TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+
+            IEnumerable<NeuCodePair> neucodes = TestExperimentalProteoform.generate_neucode_components(TestExperimentalProteoform.starter_mass).OfType<NeuCodePair>();
+            List<Component> quant_components = TestExperimentalProteoform.generate_neucode_quantitative_components();
+
+            Lollipop.remaining_components = new List<Component>(neucodes);
+            Lollipop.remaining_quantification_components = new List<Component>(quant_components); //Must use Lollipop.remaining_components because ThreadStart only uses void methods
+
+            // in bounds lowest monoisotopic error
+            List<ExperimentalProteoform> pfs = Lollipop.createProteoforms(true, neucodes, neucodes, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
+            List<ExperimentalProteoform> vetted_quant = Lollipop.assignQuantificationComponents(pfs, quant_components);
+            Assert.AreEqual(1, vetted_quant.Count);
+            Assert.AreEqual(2, vetted_quant[0].aggregated_components.Count);
+            Assert.AreEqual(1, vetted_quant[0].lt_quant_components.Count);
+            Assert.AreEqual(1, vetted_quant[0].hv_quant_components.Count);
+            Assert.AreEqual(2, quant_components.Count);
+            Assert.AreEqual(0, Lollipop.remaining_quantification_components.Count);
+        }
+
+        [Test]
+        public void full_agg()
+        {
+            double max_monoisotopic_mass = TestExperimentalProteoform.starter_mass + TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+            double min_monoisotopic_mass = TestExperimentalProteoform.starter_mass - TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+
+            IEnumerable<NeuCodePair> neucodes = TestExperimentalProteoform.generate_neucode_components(TestExperimentalProteoform.starter_mass).OfType<NeuCodePair>();
+            List<Component> components = neucodes.Select(nc => nc.neuCodeLight).Concat(neucodes.Select(nc => nc.neuCodeHeavy)).ToList();
+            List<Component> quant_components = TestExperimentalProteoform.generate_neucode_quantitative_components();
+
+            Lollipop.remaining_components = new List<Component>(neucodes);
+            Lollipop.remaining_verification_components = new List<Component>(components); //Must use Lollipop.remaining_components because ThreadStart only uses void methods
+            Lollipop.remaining_quantification_components = new List<Component>(quant_components); //Must use Lollipop.remaining_components because ThreadStart only uses void methods
+            List<ExperimentalProteoform> vetted_quant = Lollipop.aggregate_proteoforms(true, new List<InputFile> { new InputFile("fake.txt", Purpose.Quantification) }, neucodes, components, quant_components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
+            Assert.AreEqual(1, vetted_quant.Count);
+            Assert.AreEqual(2, vetted_quant[0].aggregated_components.Count);
+            Assert.AreEqual(2, vetted_quant[0].lt_verification_components.Count);
+            Assert.AreEqual(2, vetted_quant[0].hv_verification_components.Count);
+            Assert.AreEqual(1, vetted_quant[0].lt_quant_components.Count);
+            Assert.AreEqual(1, vetted_quant[0].hv_quant_components.Count);
+            Assert.AreEqual(2, quant_components.Count);
+            Assert.AreEqual(0, Lollipop.remaining_quantification_components.Count);
+        }
     }
 }

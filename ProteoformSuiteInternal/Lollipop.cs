@@ -31,7 +31,7 @@ namespace ProteoformSuiteInternal
 
         public static List<InputFile> input_files = new List<InputFile>();
 
-        public static IEnumerable<InputFile> get_files(List<InputFile> files, Purpose purpose)
+        public static IEnumerable<InputFile> get_files(IEnumerable<InputFile> files, Purpose purpose)
         {
             return files.Where(f => f.purpose == purpose);
         }
@@ -219,16 +219,16 @@ namespace ProteoformSuiteInternal
                 lock (raw_experimental_components) raw_experimental_components.AddRange(someComponents);
             });
 
-            if (neucode_labeled) process_neucode_components();
+            if (neucode_labeled) process_neucode_components(Lollipop.raw_neucode_pairs);
         }
 
-        private static void process_neucode_components()
+        private static void process_neucode_components(List<NeuCodePair> raw_neucode_pairs)
         {
             foreach (InputFile inputFile in get_files(Lollipop.input_files, Purpose.Identification).ToList())
             {
                 foreach (string scan_range in inputFile.reader.scan_ranges)
                 {
-                    find_neucode_pairs(inputFile.reader.final_components.Where(c => c.scan_range == scan_range), Lollipop.raw_neucode_pairs);
+                    find_neucode_pairs(inputFile.reader.final_components.Where(c => c.scan_range == scan_range), raw_neucode_pairs);
                 }
             }
         }
@@ -333,6 +333,7 @@ namespace ProteoformSuiteInternal
         public static Component[] ordered_components = new Component[0];
         public static List<Component> remaining_components = new List<Component>();
         public static List<Component> remaining_verification_components = new List<Component>();
+        public static List<Component> remaining_quantification_components = new List<Component>();
         public static decimal mass_tolerance = 3; //ppm
         public static decimal retention_time_tolerance = 3; //min
         public static decimal missed_monos = 3;
@@ -341,19 +342,20 @@ namespace ProteoformSuiteInternal
         public static int min_agg_count = 1;
         public static int min_num_CS = 1;
 
-        public static void aggregate_proteoforms()
+        public static List<ExperimentalProteoform> aggregate_proteoforms(bool neucode_labeled, IEnumerable<InputFile> input_files, IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, double min_rel_abundance, int min_num_CS)
         {
-            List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(neucode_labeled, raw_neucode_pairs, raw_experimental_components, remaining_components, min_rel_abundance, min_num_CS);
-            vetExperimentalProteoforms(neucode_labeled, candidateExperimentalProteoforms, raw_experimental_components, remaining_verification_components, vetted_proteoforms);
+            List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(neucode_labeled, raw_neucode_pairs, raw_experimental_components, min_rel_abundance, min_num_CS);
+            vetExperimentalProteoforms(neucode_labeled, candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms);
             proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
-            if (Lollipop.neucode_labeled && get_files(Lollipop.input_files, Purpose.Quantification).Count() > 0) assignQuantificationComponents(vetted_proteoforms, raw_quantification_components, remaining_components);
+            if (neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0) assignQuantificationComponents(vetted_proteoforms, raw_quantification_components);
+            return vetted_proteoforms;
         }
 
         //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
         //If no NeuCodePairs exist, e.g. for an experiment without labeling, the raw components are used instead.
         //Uses an ordered list, so that the proteoform with max intensity is always chosen first
         //Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
-        public static List<ExperimentalProteoform> createProteoforms(bool neucode_labeled, List<NeuCodePair> raw_neucode_pairs, List<Component> raw_experimental_components, List<Component> remaining_components, double min_rel_abundance, int min_num_CS)
+        public static List<ExperimentalProteoform> createProteoforms(bool neucode_labeled, IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, double min_rel_abundance, int min_num_CS)
         {
             List<ExperimentalProteoform> candidateExperimentalProteoforms = new List<ExperimentalProteoform>();
 
@@ -361,12 +363,12 @@ namespace ProteoformSuiteInternal
             ordered_components = neucode_labeled ?
                 raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true && p.relative_abundance >= min_rel_abundance && p.num_charge_states >= min_num_CS).ToArray() :
                 raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.relative_abundance >= min_rel_abundance && p.num_charge_states >= min_num_CS).ToArray();
-            remaining_components = ordered_components.ToList();
+            Lollipop.remaining_components = new List<Component>(ordered_components);
 
-            Component root = ordered_components[0];
+            Component root = ordered_components.FirstOrDefault();
             List<ExperimentalProteoform> running = new List<ExperimentalProteoform>();
             List<Thread> active = new List<Thread>();
-            while (remaining_components.Count > 0 || active.Count > 0)
+            while (Lollipop.remaining_components.Count > 0 || active.Count > 0)
             {
                 while (root != null && active.Count < Environment.ProcessorCount)
                 {
@@ -376,26 +378,19 @@ namespace ProteoformSuiteInternal
                     candidateExperimentalProteoforms.Add(new_pf);
                     running.Add(new_pf);
                     active.Add(t);
-                    root = find_next_root(remaining_components, running);
+                    root = find_next_root(Lollipop.remaining_components, running);
                 }
 
                 foreach (Thread t in active) t.Join();
-                foreach (ExperimentalProteoform e in running) remaining_components = remaining_components.Except(e.aggregated_components).ToList();
+                foreach (ExperimentalProteoform e in running) Lollipop.remaining_components = Lollipop.remaining_components.Except(e.aggregated_components).ToList();
 
                 running.Clear();
                 active.Clear();
-                root = find_next_root(remaining_components, running);
+                root = find_next_root(Lollipop.remaining_components, running);
             }
 
             for (int i = 0; i < candidateExperimentalProteoforms.Count; i++) candidateExperimentalProteoforms[i].accession = "E" + i;
             return candidateExperimentalProteoforms;
-        }
-
-        private static ExperimentalProteoform aggregate(Component c, List<Component> remaining)
-        {
-            ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", c, remaining, true); //first pass returns temporary proteoform
-            ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, remaining, true); //second pass uses temporary protoeform from first pass.
-            return new_pf;
         }
 
         public static Component find_next_root(List<Component> ordered, List<Component> running)
@@ -419,12 +414,12 @@ namespace ProteoformSuiteInternal
                     e.agg_mass < f.agg_mass - 20 || e.agg_mass > f.agg_mass + 20));
         }
 
-        public static void vetExperimentalProteoforms(bool neucode_labeled, List<ExperimentalProteoform> candidateExperimentalProteoforms, List<Component> raw_experimental_components, List<Component> remaining_verification_components, List<ExperimentalProteoform> vetted_proteoforms) // eliminating candidate proteoforms that were mistakenly created
+        public static List<ExperimentalProteoform> vetExperimentalProteoforms(bool neucode_labeled, IEnumerable<ExperimentalProteoform> candidateExperimentalProteoforms, IEnumerable<Component> raw_experimental_components, List<ExperimentalProteoform> vetted_proteoforms) // eliminating candidate proteoforms that were mistakenly created
         {
             List<ExperimentalProteoform> candidates = candidateExperimentalProteoforms.OrderByDescending(p => p.agg_intensity).ToList();
-            remaining_verification_components = new List<Component>(raw_experimental_components);
+            Lollipop.remaining_verification_components = new List<Component>(raw_experimental_components);
 
-            ExperimentalProteoform candidate = candidates[0];
+            ExperimentalProteoform candidate = candidates.FirstOrDefault();
             List<ExperimentalProteoform> running = new List<ExperimentalProteoform>();
             List<Thread> active = new List<Thread>();
             while (candidates.Count > 0 || active.Count > 0)
@@ -450,7 +445,7 @@ namespace ProteoformSuiteInternal
                        // e.accepted = true; this is set based on the e properties
                         vetted_proteoforms.Add(e);
                     }
-                    remaining_verification_components = remaining_verification_components.Except(e.lt_verification_components.Concat(e.hv_verification_components)).ToList();
+                    Lollipop.remaining_verification_components = Lollipop.remaining_verification_components.Except(e.lt_verification_components.Concat(e.hv_verification_components)).ToList();
                     candidates.Remove(e);
                 }
 
@@ -458,14 +453,15 @@ namespace ProteoformSuiteInternal
                 active.Clear();
                 candidate = find_next_root(candidates, running);
             }
+            return vetted_proteoforms;
         }
 
-        public static void assignQuantificationComponents(List<ExperimentalProteoform> vetted_proteoforms, List<Component> raw_quantification_components, List<Component> remaining_components)  // this is only need for neucode labeled data. quantitative components for unlabelled are assigned elsewhere "vetExperimentalProteoforms"
+        public static List<ExperimentalProteoform> assignQuantificationComponents(List<ExperimentalProteoform> vetted_proteoforms, IEnumerable<Component> raw_quantification_components)  // this is only need for neucode labeled data. quantitative components for unlabelled are assigned elsewhere "vetExperimentalProteoforms"
         {
             List<ExperimentalProteoform> proteoforms = vetted_proteoforms.OrderByDescending(x => x.agg_intensity).ToList();
-            remaining_components = new List<Component>(raw_quantification_components);
+            Lollipop.remaining_quantification_components = new List<Component>(raw_quantification_components);
 
-            ExperimentalProteoform p = proteoforms[0];
+            ExperimentalProteoform p = proteoforms.FirstOrDefault();
             List<ExperimentalProteoform> running = new List<ExperimentalProteoform>();
             List<Thread> active = new List<Thread>();
             while (proteoforms.Count > 0 || active.Count > 0)
@@ -486,7 +482,7 @@ namespace ProteoformSuiteInternal
 
                 foreach (ExperimentalProteoform e in running)
                 {
-                    remaining_components = remaining_components.Except(e.lt_quant_components.Concat(e.hv_quant_components)).ToList();
+                    Lollipop.remaining_quantification_components = Lollipop.remaining_quantification_components.Except(e.lt_quant_components.Concat(e.hv_quant_components)).ToList();
                     proteoforms.Remove(e);
                 }
 
@@ -494,20 +490,21 @@ namespace ProteoformSuiteInternal
                 active.Clear();
                 p = find_next_root(proteoforms, running);
             }
+            return vetted_proteoforms;
         }
 
         //Could be improved. Used for manual mass shifting.
         //Idea 1: Start with Components -- have them find the most intense nearby component. Then, go through and correct edge cases that aren't correct.
         //Idea 2: Use the assumption that proteoforms distant to the manual shift will not regroup.
         //Idea 2.1: Put the shifted proteoforms, plus some range from the min and max masses in there, and reaggregate the components with the aggregate_proteoforms algorithm.
-        public static void regroup_components()
+        public static List<ExperimentalProteoform> regroup_components(bool neucode_labeled, IEnumerable<InputFile> input_files, List<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, double min_rel_abundance, int min_num_CS)
         {
-            if (Lollipop.neucode_labeled)
+            if (neucode_labeled)
             {
-                Lollipop.raw_neucode_pairs.Clear();
-                process_neucode_components();
+                raw_neucode_pairs.Clear();
+                process_neucode_components(raw_neucode_pairs);
             }
-            Lollipop.aggregate_proteoforms();
+            return aggregate_proteoforms(neucode_labeled, input_files, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_rel_abundance, min_num_CS);
         }
 
 

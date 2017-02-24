@@ -166,7 +166,7 @@ namespace Test
 
 
         //Maximum number of missed
-        int missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
+        public static int missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
 
         [Test]
         public void aggregate_in_bounds_monoisotopic_tolerance()
@@ -290,7 +290,7 @@ namespace Test
             Assert.AreEqual(e.agg_rt, f.agg_rt);
             Assert.AreEqual(e.lysine_count, f.lysine_count);
             Assert.AreEqual(e.accepted, f.accepted);
-            Assert.AreEqual(e.quant, f.quant);
+            Assert.AreEqual("E1", f.quant.accession);
             Assert.AreEqual(e.mass_shifted, f.mass_shifted);
             Assert.AreEqual(e.is_target, f.is_target);
             Assert.AreEqual(e.is_decoy, f.is_decoy);
