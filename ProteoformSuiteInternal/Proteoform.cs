@@ -105,7 +105,6 @@ namespace ProteoformSuiteInternal
 
         public ExperimentalProteoform(string accession, ExperimentalProteoform temp, List<Component> candidate_observations, bool is_target) : base(accession) //this is for first mass of aggregate components. uses a temporary component
         {
-            quant = new quantitativeValues(this);
             Component root = new Component();
             NeuCodePair ncRoot = new NeuCodePair();
             if (Lollipop.neucode_labeled)
@@ -172,18 +171,20 @@ namespace ProteoformSuiteInternal
         public ExperimentalProteoform(ExperimentalProteoform eP)
         {
             copy_aggregate(eP);
+            quant = new quantitativeValues(this);
         }
 
         private void copy_aggregate(ExperimentalProteoform e)
         {
             this.root = e.root;
+            this.accession = e.accession;
+            //doesn't copy quant on purpose
             this.agg_intensity = e.agg_intensity;
             this.agg_mass = e.agg_mass;
             this.modified_mass = e.modified_mass;
             this.agg_rt = e.agg_rt;
             this.lysine_count = e.lysine_count;
             this.accepted = e.accepted;
-            this.quant = e.quant;
             this.mass_shifted = e.mass_shifted;
             this.is_target = e.is_target;
             this.is_decoy = e.is_decoy;
@@ -202,7 +203,7 @@ namespace ProteoformSuiteInternal
         {
             ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", this.root, Lollipop.remaining_components.ToList(), true); //first pass returns temporary proteoform
             ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, Lollipop.remaining_components.ToList(), true); //second pass uses temporary protoeform from first pass.
-            copy_aggregate(new_pf);
+            copy_aggregate(new_pf); //doesn't copy quant on purpose
             this.root = temp_pf.root; //maintain the original component root
         }
 
@@ -219,7 +220,7 @@ namespace ProteoformSuiteInternal
 
         public void assign_quantitative_components()
         {
-            foreach (Component c in Lollipop.remaining_components)
+            foreach (Component c in Lollipop.remaining_quantification_components)
             {
                 if (this.includes(c, this, true)) lt_quant_components.Add(c);
                 if (this.includes(c, this, false)) hv_quant_components.Add(c);
@@ -458,12 +459,12 @@ namespace ProteoformSuiteInternal
 
             private decimal getProteinLevelStdDev(List<biorepIntensity> allLights, List<biorepIntensity> allHeavys)
             {
-                decimal a = (1m / (decimal)allLights.Count + 1m / (decimal)allHeavys.Count) / ((decimal)allLights.Count + (decimal)allHeavys.Count - 2m);
-                decimal lightAvg = (decimal)allLights.Sum(l => l.intensity) / (decimal)allLights.Count;
+                decimal a = (1m / (decimal)allLights.Count + 1m / (decimal)allHeavys.Count) / ((decimal)allLights.Count + (decimal)allHeavys.Count - 2m); //divide by zero error here
+                decimal lightAvg = (decimal)allLights.Average(l => l.intensity) / (decimal)allLights.Count;
                 decimal heavyAvg = (decimal)allHeavys.Sum(l => l.intensity) / (decimal)allHeavys.Count;
                 decimal lightSumSquares = allLights.Sum(l => (decimal)Math.Pow((double)(Math.Log((double)lightAvg, 2) - Math.Log((double)l.intensity, 2)), 2d));
                 decimal heavySumSquares = allHeavys.Sum(h => (decimal)Math.Pow((double)(Math.Log((double)heavyAvg, 2) - Math.Log((double)h.intensity, 2)), 2d));
-                decimal stdev = (decimal)Math.Pow((double)(a*(lightSumSquares+heavySumSquares)), 0.5d);
+                decimal stdev = (decimal)Math.Pow((double)(a * (lightSumSquares + heavySumSquares)), 0.5d);
                 return stdev;
             }
 
