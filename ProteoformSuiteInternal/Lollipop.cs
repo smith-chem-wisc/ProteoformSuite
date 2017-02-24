@@ -879,7 +879,7 @@ namespace ProteoformSuiteInternal
             defineSelectObservedIntensityDistribution(satisfactoryProteoforms, logSelectIntensityHistogram);
             defineSelectBackgroundIntensityDistribution();
             computeProteoformTestStatistics(proteoform_community.experimental_proteoforms, satisfactoryProteoforms, bkgdAverageIntensity, bkgdStDev, numerator_condition, denominator_condition, sKnot_minFoldChange);
-            computeSortedTestStatistics(satisfactoryProteoforms, sortedAvgPermutationTestStatistics, sortedAvgPermutationTestStatistics);
+            computeSortedTestStatistics();
             offsetFDR = computeFoldChangeFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics, satisfactoryProteoforms.SelectMany(eP => eP.quant.permutedTestStatistics));
             computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, sortedProteoformTestStatistics);
             getObservedProteins();
@@ -990,7 +990,7 @@ namespace ProteoformSuiteInternal
             qVals = satisfactoryProteoforms.Where(eP => eP.accepted == true).Select(e => e.quant).ToList();
         }
 
-        public static void computeSortedTestStatistics(List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> sortedProteoformTestStatistics, List<decimal> sortedAvgPermutationTestStatistics)
+        public static void computeSortedTestStatistics()
         {
             sortedProteoformTestStatistics = satisfactoryProteoforms.Select(eP => eP.quant.testStatistic).ToList();
             sortedAvgPermutationTestStatistics = satisfactoryProteoforms.Select(eP => eP.quant.permutedTestStatistics.Average()).ToList();
@@ -1009,6 +1009,7 @@ namespace ProteoformSuiteInternal
             decimal avergePermuted = (decimal)(totalFalsePermutedPositiveValues + totalFalsePermutedNegativeValues) / (decimal)satisfactoryProteoforms.Count;
             return avergePermuted / ((decimal)(sortedProteoformTestStatistics.Count(s => s >= minimumPositivePassingTestStatistic) + sortedProteoformTestStatistics.Count(s => s <= minimumNegativePassingTestStatistic)));
         }
+
 
         public static void computeIndividualExperimentalProteoformFDRs(List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> sortedProteoformTestStatistics)
         {
