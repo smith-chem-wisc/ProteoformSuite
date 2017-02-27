@@ -111,14 +111,7 @@ namespace ProteoformSuiteInternal
             if (p is ExperimentalProteoform) result = p.accession + "_" + Math.Round(((ExperimentalProteoform)p).agg_mass, Lollipop.deltaM_edge_display_rounding) + "_RT" + Math.Round(((ExperimentalProteoform)p).agg_rt, 0);
             else if (p is TheoreticalProteoform)
             {
-                if (!Lollipop.use_gene_ID)
-                {
                     result = ((TheoreticalProteoform)p).accession + "_" + ((TheoreticalProteoform)p).ptm_list_string();
-                }
-                else
-                {
-                    result = ((TheoreticalProteoform)p).gene_id + "_" + ((TheoreticalProteoform)p).ptm_list_string();
-                }
             }
             else if ( p is TopDownProteoform)
             {

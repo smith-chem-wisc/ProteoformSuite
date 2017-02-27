@@ -142,8 +142,8 @@ namespace ProteoformSuiteInternal
         public static void calibrate_td_hits_file(InputFile file)
         {
             //Copy file to new worksheet
-            string old_absolute_path = file.path + "\\" + file.filename + file.extension;
-            string new_absolute_path = file.path + "\\" + file.filename + "_calibrated" + file.extension;
+            string old_absolute_path = file.complete_path;
+            string new_absolute_path = file.directory + "\\" + file.filename + "_calibrated" + file.extension;
 
             //create copy of excel file
             byte[] byteArray = File.ReadAllBytes(old_absolute_path);
@@ -202,8 +202,8 @@ namespace ProteoformSuiteInternal
             else if (Lollipop.calibrate_td_results) return; //if no calibration function, don't calibrate components file
 
             //Copy file to new worksheet
-            string old_absolute_path = file.path + "\\" + file.filename + file.extension;
-            string new_absolute_path = file.path + "\\" + file.filename + "_calibrated" + file.extension;
+            string old_absolute_path = file.complete_path;
+            string new_absolute_path = file.directory + "\\" + file.filename + "_calibrated" + file.extension;
 
             //create copy of excel file
             byte[] byteArray = File.ReadAllBytes(old_absolute_path);

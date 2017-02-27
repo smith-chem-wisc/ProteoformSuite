@@ -126,7 +126,8 @@ namespace ProteoformSuite
             List<DeltaMassPeak> big_peaks = Lollipop.ee_peaks.Where(p => p.peak_accepted).ToList();
             tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.grouped_relations.Count).Sum().ToString();
             tb_TotalPeaks.Text = big_peaks.Count.ToString();
-            if (Lollipop.ef_relations.Count > 0 && big_peaks.Count > 0) tb_max_accepted_fdr.Text = Math.Round(big_peaks.Max(p => p.peak_group_fdr), 3).ToString();
+            if (Lollipop.ef_relations.Count > 0 && big_peaks.Count > 0) tb_max_accepted_fdr.Text = Math.Round(big_peaks.Max(p => p.peak_group_fdr), 3).ToString(); // this errors when no peaks are accepted
+
         }
 
         private void FillEEPairsGridView()

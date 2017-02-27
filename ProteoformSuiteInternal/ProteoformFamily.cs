@@ -52,11 +52,8 @@ namespace ProteoformSuiteInternal
             set
             {
                 _proteoforms = value;
-
                 HashSet<int> lysine_counts = new HashSet<int>(value.Select(p => p.lysine_count));
                 if (lysine_counts.Count == 1) this.lysine_count = lysine_counts.FirstOrDefault();
-                else this.lysine_count = -1;
-
                 this.experimental_proteoforms = value.Where(p => p is ExperimentalProteoform).Select(p => (ExperimentalProteoform)p).ToList();
                 this.theoretical_proteoforms = value.Where(p => p is TheoreticalProteoform && !(p is TopDownProteoform)).Select(p => (TheoreticalProteoform)p).ToList();
                 this.topdown_proteoforms = value.Where(p => p is TopDownProteoform).Select(p => (TopDownProteoform)p).ToList();
@@ -64,7 +61,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public ProteoformFamily(List<Proteoform> proteoforms, int family_id)
+        public ProteoformFamily(IEnumerable<Proteoform> proteoforms, int family_id)
         {
             this.proteoforms = new HashSet<Proteoform>(proteoforms, new ProteoformComparer());
             this.family_id = family_id;

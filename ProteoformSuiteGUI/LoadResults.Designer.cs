@@ -31,41 +31,42 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btn_unlabeled = new System.Windows.Forms.RadioButton();
             this.btn_neucode = new System.Windows.Forms.RadioButton();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.btn_protIdResultsClear = new System.Windows.Forms.Button();
-            this.btn_protIdResultsAdd = new System.Windows.Forms.Button();
-            this.btn_protQuantResultsAdd = new System.Windows.Forms.Button();
-            this.btn_protQuantResultsClear = new System.Windows.Forms.Button();
-            this.dgv_identificationFiles = new System.Windows.Forms.DataGridView();
-            this.dgv_quantitationFiles = new System.Windows.Forms.DataGridView();
+            this.btn_clearFiles1 = new System.Windows.Forms.Button();
+            this.btn_AddFiles1 = new System.Windows.Forms.Button();
+            this.btn_addFiles2 = new System.Windows.Forms.Button();
+            this.btn_clearFiles2 = new System.Windows.Forms.Button();
+            this.btn_addFiles3 = new System.Windows.Forms.Button();
+            this.btn_clearFiles3 = new System.Windows.Forms.Button();
+            this.dgv_loadFiles1 = new System.Windows.Forms.DataGridView();
+            this.dgv_loadFiles2 = new System.Windows.Forms.DataGridView();
+            this.dgv_loadFiles3 = new System.Windows.Forms.DataGridView();
             this.btn_fullRun = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.btn_fullRunWithPresets = new System.Windows.Forms.Button();
             this.btn_nextPane = new System.Windows.Forms.Button();
-            this.dgv_buFiles = new System.Windows.Forms.DataGridView();
-            this.dgv_tdFiles = new System.Windows.Forms.DataGridView();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.bt_morpheusBUResultsAdd = new System.Windows.Forms.Button();
-            this.bt_morpheusBUResultsClear = new System.Windows.Forms.Button();
-            this.bt_tdResultsAdd = new System.Windows.Forms.Button();
-            this.bt_tdResultsClear = new System.Windows.Forms.Button();
             this.bt_clearResults = new System.Windows.Forms.Button();
             this.cb_run_when_load = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.tb_quantFilter = new System.Windows.Forms.TextBox();
-            this.tb_identificationFilter = new System.Windows.Forms.TextBox();
-            this.cb_advanced_user = new System.Windows.Forms.CheckBox();
+            this.lb_filter3 = new System.Windows.Forms.Label();
+            this.tb_filter3 = new System.Windows.Forms.TextBox();
+            this.lb_filter2 = new System.Windows.Forms.Label();
+            this.lb_filter1 = new System.Windows.Forms.Label();
+            this.tb_filter2 = new System.Windows.Forms.TextBox();
+            this.tb_filter1 = new System.Windows.Forms.TextBox();
+            this.cmb_loadTable1 = new System.Windows.Forms.ComboBox();
+            this.cmb_loadTable2 = new System.Windows.Forms.ComboBox();
+            this.cmb_loadTable3 = new System.Windows.Forms.ComboBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
+            this.rb_standardOptions = new System.Windows.Forms.RadioButton();
+            this.rb_advanced_user = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_identificationFiles)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_quantitationFiles)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles3)).BeginInit();
             this.groupBox2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_buFiles)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_tdFiles)).BeginInit();
             this.groupBox3.SuspendLayout();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -74,7 +75,7 @@
             this.groupBox1.Controls.Add(this.btn_neucode);
             this.groupBox1.Location = new System.Drawing.Point(13, 610);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(357, 114);
+            this.groupBox1.Size = new System.Drawing.Size(213, 114);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Proteoform Identification Results";
@@ -102,96 +103,109 @@
             this.btn_neucode.UseVisualStyleBackColor = true;
             this.btn_neucode.CheckedChanged += new System.EventHandler(this.btn_neucode_CheckedChanged);
             // 
-            // label1
+            // btn_clearFiles1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(12, 13);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(284, 20);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Proteoform Identification Results (.xlsx)";
+            this.btn_clearFiles1.Location = new System.Drawing.Point(218, 518);
+            this.btn_clearFiles1.Name = "btn_clearFiles1";
+            this.btn_clearFiles1.Size = new System.Drawing.Size(122, 36);
+            this.btn_clearFiles1.TabIndex = 7;
+            this.btn_clearFiles1.Text = "Clear";
+            this.btn_clearFiles1.UseVisualStyleBackColor = true;
+            this.btn_clearFiles1.Click += new System.EventHandler(this.btn_clearFiles1_Click);
             // 
-            // label2
+            // btn_AddFiles1
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label2.Location = new System.Drawing.Point(313, 13);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(291, 20);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Proteoform Quantification Results (.xlsx)";
+            this.btn_AddFiles1.Location = new System.Drawing.Point(90, 518);
+            this.btn_AddFiles1.Name = "btn_AddFiles1";
+            this.btn_AddFiles1.Size = new System.Drawing.Size(122, 36);
+            this.btn_AddFiles1.TabIndex = 8;
+            this.btn_AddFiles1.Text = "Add";
+            this.btn_AddFiles1.UseVisualStyleBackColor = true;
+            this.btn_AddFiles1.Click += new System.EventHandler(this.btn_addFiles1_Click);
             // 
-            // btn_protIdResultsClear
+            // btn_addFiles2
             // 
-            this.btn_protIdResultsClear.Location = new System.Drawing.Point(164, 518);
-            this.btn_protIdResultsClear.Name = "btn_protIdResultsClear";
-            this.btn_protIdResultsClear.Size = new System.Drawing.Size(122, 36);
-            this.btn_protIdResultsClear.TabIndex = 7;
-            this.btn_protIdResultsClear.Text = "Clear";
-            this.btn_protIdResultsClear.UseVisualStyleBackColor = true;
-            this.btn_protIdResultsClear.Click += new System.EventHandler(this.btn_protIdResultsClear_Click);
+            this.btn_addFiles2.Location = new System.Drawing.Point(552, 518);
+            this.btn_addFiles2.Name = "btn_addFiles2";
+            this.btn_addFiles2.Size = new System.Drawing.Size(122, 36);
+            this.btn_addFiles2.TabIndex = 10;
+            this.btn_addFiles2.Text = "Add";
+            this.btn_addFiles2.UseVisualStyleBackColor = true;
+            this.btn_addFiles2.Click += new System.EventHandler(this.btn_addFiles2_Click);
             // 
-            // btn_protIdResultsAdd
+            // btn_clearFiles2
             // 
-            this.btn_protIdResultsAdd.Location = new System.Drawing.Point(36, 518);
-            this.btn_protIdResultsAdd.Name = "btn_protIdResultsAdd";
-            this.btn_protIdResultsAdd.Size = new System.Drawing.Size(122, 36);
-            this.btn_protIdResultsAdd.TabIndex = 8;
-            this.btn_protIdResultsAdd.Text = "Add";
-            this.btn_protIdResultsAdd.UseVisualStyleBackColor = true;
-            this.btn_protIdResultsAdd.Click += new System.EventHandler(this.btn_protIdResultsAdd_Click);
+            this.btn_clearFiles2.Location = new System.Drawing.Point(675, 518);
+            this.btn_clearFiles2.Name = "btn_clearFiles2";
+            this.btn_clearFiles2.Size = new System.Drawing.Size(122, 36);
+            this.btn_clearFiles2.TabIndex = 9;
+            this.btn_clearFiles2.Text = "Clear";
+            this.btn_clearFiles2.UseVisualStyleBackColor = true;
+            this.btn_clearFiles2.Click += new System.EventHandler(this.btn_clearFiles2_Click);
             // 
-            // btn_protQuantResultsAdd
+            // btn_addFiles3
             // 
-            this.btn_protQuantResultsAdd.Location = new System.Drawing.Point(338, 518);
-            this.btn_protQuantResultsAdd.Name = "btn_protQuantResultsAdd";
-            this.btn_protQuantResultsAdd.Size = new System.Drawing.Size(122, 36);
-            this.btn_protQuantResultsAdd.TabIndex = 10;
-            this.btn_protQuantResultsAdd.Text = "Add";
-            this.btn_protQuantResultsAdd.UseVisualStyleBackColor = true;
-            this.btn_protQuantResultsAdd.Click += new System.EventHandler(this.btn_protQuantResultsAdd_Click);
+            this.btn_addFiles3.Location = new System.Drawing.Point(991, 518);
+            this.btn_addFiles3.Name = "btn_addFiles3";
+            this.btn_addFiles3.Size = new System.Drawing.Size(122, 36);
+            this.btn_addFiles3.TabIndex = 12;
+            this.btn_addFiles3.Text = "Add";
+            this.btn_addFiles3.UseVisualStyleBackColor = true;
+            this.btn_addFiles3.Click += new System.EventHandler(this.btn_addFiles3_Click);
             // 
-            // btn_protQuantResultsClear
+            // btn_clearFiles3
             // 
-            this.btn_protQuantResultsClear.Location = new System.Drawing.Point(461, 518);
-            this.btn_protQuantResultsClear.Name = "btn_protQuantResultsClear";
-            this.btn_protQuantResultsClear.Size = new System.Drawing.Size(122, 36);
-            this.btn_protQuantResultsClear.TabIndex = 9;
-            this.btn_protQuantResultsClear.Text = "Clear";
-            this.btn_protQuantResultsClear.UseVisualStyleBackColor = true;
-            this.btn_protQuantResultsClear.Click += new System.EventHandler(this.btn_protQuantResultsClear_Click);
+            this.btn_clearFiles3.Location = new System.Drawing.Point(1119, 518);
+            this.btn_clearFiles3.Name = "btn_clearFiles3";
+            this.btn_clearFiles3.Size = new System.Drawing.Size(122, 36);
+            this.btn_clearFiles3.TabIndex = 11;
+            this.btn_clearFiles3.Text = "Clear";
+            this.btn_clearFiles3.UseVisualStyleBackColor = true;
+            this.btn_clearFiles3.Click += new System.EventHandler(this.btn_clearFiles3_Click);
             // 
-            // dgv_identificationFiles
+            // dgv_loadFiles1
             // 
-            this.dgv_identificationFiles.AllowDrop = true;
-            this.dgv_identificationFiles.AllowUserToOrderColumns = true;
-            this.dgv_identificationFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_identificationFiles.Location = new System.Drawing.Point(12, 49);
-            this.dgv_identificationFiles.Name = "dgv_identificationFiles";
-            this.dgv_identificationFiles.RowTemplate.Height = 28;
-            this.dgv_identificationFiles.Size = new System.Drawing.Size(296, 463);
-            this.dgv_identificationFiles.TabIndex = 13;
-            this.dgv_identificationFiles.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_deconResults_CellFormatting);
-            this.dgv_identificationFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_deconResults_DragDrop);
-            this.dgv_identificationFiles.DragEnter += new System.Windows.Forms.DragEventHandler(this.dgv_deconResults_DragEnter);
+            this.dgv_loadFiles1.AllowDrop = true;
+            this.dgv_loadFiles1.AllowUserToOrderColumns = true;
+            this.dgv_loadFiles1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_loadFiles1.Location = new System.Drawing.Point(12, 49);
+            this.dgv_loadFiles1.Name = "dgv_loadFiles1";
+            this.dgv_loadFiles1.RowTemplate.Height = 28;
+            this.dgv_loadFiles1.Size = new System.Drawing.Size(430, 463);
+            this.dgv_loadFiles1.TabIndex = 13;
+            this.dgv_loadFiles1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_loadFiles1_CellFormatting);
+            this.dgv_loadFiles1.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_deconResults_DragDrop);
+            this.dgv_loadFiles1.DragEnter += new System.Windows.Forms.DragEventHandler(this.dgv_deconResults_DragEnter);
             // 
-            // dgv_quantitationFiles
+            // dgv_loadFiles2
             // 
-            this.dgv_quantitationFiles.AllowDrop = true;
-            this.dgv_quantitationFiles.AllowUserToOrderColumns = true;
-            this.dgv_quantitationFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_quantitationFiles.Location = new System.Drawing.Point(314, 49);
-            this.dgv_quantitationFiles.Name = "dgv_quantitationFiles";
-            this.dgv_quantitationFiles.Size = new System.Drawing.Size(290, 463);
-            this.dgv_quantitationFiles.TabIndex = 14;
-            this.dgv_quantitationFiles.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_quantResults_CellFormatting);
-            this.dgv_quantitationFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_quantResults_DragDrop);
-            this.dgv_quantitationFiles.DragEnter += new System.Windows.Forms.DragEventHandler(this.dgv_quantResults_DragEnter);
+            this.dgv_loadFiles2.AllowDrop = true;
+            this.dgv_loadFiles2.AllowUserToOrderColumns = true;
+            this.dgv_loadFiles2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_loadFiles2.Location = new System.Drawing.Point(460, 49);
+            this.dgv_loadFiles2.Name = "dgv_loadFiles2";
+            this.dgv_loadFiles2.Size = new System.Drawing.Size(430, 463);
+            this.dgv_loadFiles2.TabIndex = 14;
+            this.dgv_loadFiles2.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_loadFiles2_CellFormatting);
+            this.dgv_loadFiles2.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_quantResults_DragDrop);
+            this.dgv_loadFiles2.DragEnter += new System.Windows.Forms.DragEventHandler(this.dgv_quantResults_DragEnter);
+            // 
+            // dgv_loadFiles3
+            // 
+            this.dgv_loadFiles3.AllowDrop = true;
+            this.dgv_loadFiles3.AllowUserToOrderColumns = true;
+            this.dgv_loadFiles3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_loadFiles3.Location = new System.Drawing.Point(907, 49);
+            this.dgv_loadFiles3.Name = "dgv_loadFiles3";
+            this.dgv_loadFiles3.Size = new System.Drawing.Size(430, 463);
+            this.dgv_loadFiles3.TabIndex = 15;
+            this.dgv_loadFiles3.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgv_loadFiles3_CellFormatting);
+            this.dgv_loadFiles3.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_calibrationResults_DragDrop);
+            this.dgv_loadFiles3.DragEnter += new System.Windows.Forms.DragEventHandler(this.dgv_calibrationResults_DragEnter);
             // 
             // btn_fullRun
             // 
-            this.btn_fullRun.Location = new System.Drawing.Point(589, 619);
+            this.btn_fullRun.Location = new System.Drawing.Point(675, 626);
             this.btn_fullRun.Name = "btn_fullRun";
             this.btn_fullRun.Size = new System.Drawing.Size(156, 92);
             this.btn_fullRun.TabIndex = 17;
@@ -203,16 +217,16 @@
             // 
             this.groupBox2.Controls.Add(this.btn_fullRunWithPresets);
             this.groupBox2.Controls.Add(this.btn_nextPane);
-            this.groupBox2.Location = new System.Drawing.Point(396, 610);
+            this.groupBox2.Location = new System.Drawing.Point(999, 604);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(187, 114);
+            this.groupBox2.Size = new System.Drawing.Size(183, 114);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "First Time Users";
             // 
             // btn_fullRunWithPresets
             // 
-            this.btn_fullRunWithPresets.Location = new System.Drawing.Point(35, 58);
+            this.btn_fullRunWithPresets.Location = new System.Drawing.Point(35, 65);
             this.btn_fullRunWithPresets.Name = "btn_fullRunWithPresets";
             this.btn_fullRunWithPresets.Size = new System.Drawing.Size(122, 43);
             this.btn_fullRunWithPresets.TabIndex = 19;
@@ -230,97 +244,9 @@
             this.btn_nextPane.UseVisualStyleBackColor = true;
             this.btn_nextPane.Click += new System.EventHandler(this.btn_nextPane_Click);
             // 
-            // dgv_buFiles
-            // 
-            this.dgv_buFiles.AllowDrop = true;
-            this.dgv_buFiles.AllowUserToOrderColumns = true;
-            this.dgv_buFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_buFiles.Location = new System.Drawing.Point(891, 49);
-            this.dgv_buFiles.Name = "dgv_buFiles";
-            this.dgv_buFiles.Size = new System.Drawing.Size(287, 463);
-            this.dgv_buFiles.TabIndex = 18;
-            this.dgv_buFiles.Visible = false;
-            // 
-            // dgv_tdFiles
-            // 
-            this.dgv_tdFiles.AllowDrop = true;
-            this.dgv_tdFiles.AllowUserToOrderColumns = true;
-            this.dgv_tdFiles.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_tdFiles.Location = new System.Drawing.Point(610, 49);
-            this.dgv_tdFiles.Name = "dgv_tdFiles";
-            this.dgv_tdFiles.Size = new System.Drawing.Size(275, 463);
-            this.dgv_tdFiles.TabIndex = 19;
-            this.dgv_tdFiles.Visible = false;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label4.Location = new System.Drawing.Point(655, 13);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(183, 20);
-            this.label4.TabIndex = 20;
-            this.label4.Text = "Top-Down Results (.xlsx)";
-            this.label4.Visible = false;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(893, 13);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(258, 20);
-            this.label5.TabIndex = 21;
-            this.label5.Text = "Morpheus Bottom-Up Results (.tsv)";
-            this.label5.Visible = false;
-            // 
-            // bt_morpheusBUResultsAdd
-            // 
-            this.bt_morpheusBUResultsAdd.Location = new System.Drawing.Point(913, 518);
-            this.bt_morpheusBUResultsAdd.Name = "bt_morpheusBUResultsAdd";
-            this.bt_morpheusBUResultsAdd.Size = new System.Drawing.Size(122, 36);
-            this.bt_morpheusBUResultsAdd.TabIndex = 23;
-            this.bt_morpheusBUResultsAdd.Text = "Add";
-            this.bt_morpheusBUResultsAdd.UseVisualStyleBackColor = true;
-            this.bt_morpheusBUResultsAdd.Visible = false;
-            this.bt_morpheusBUResultsAdd.Click += new System.EventHandler(this.bt_morpheusBUResultsAdd_Click);
-            // 
-            // bt_morpheusBUResultsClear
-            // 
-            this.bt_morpheusBUResultsClear.Location = new System.Drawing.Point(1040, 518);
-            this.bt_morpheusBUResultsClear.Name = "bt_morpheusBUResultsClear";
-            this.bt_morpheusBUResultsClear.Size = new System.Drawing.Size(122, 36);
-            this.bt_morpheusBUResultsClear.TabIndex = 22;
-            this.bt_morpheusBUResultsClear.Text = "Clear";
-            this.bt_morpheusBUResultsClear.UseVisualStyleBackColor = true;
-            this.bt_morpheusBUResultsClear.Visible = false;
-            this.bt_morpheusBUResultsClear.Click += new System.EventHandler(this.bt_morpheusBUResultsClear_Click);
-            // 
-            // bt_tdResultsAdd
-            // 
-            this.bt_tdResultsAdd.Location = new System.Drawing.Point(623, 518);
-            this.bt_tdResultsAdd.Name = "bt_tdResultsAdd";
-            this.bt_tdResultsAdd.Size = new System.Drawing.Size(122, 36);
-            this.bt_tdResultsAdd.TabIndex = 25;
-            this.bt_tdResultsAdd.Text = "Add";
-            this.bt_tdResultsAdd.UseVisualStyleBackColor = true;
-            this.bt_tdResultsAdd.Visible = false;
-            this.bt_tdResultsAdd.Click += new System.EventHandler(this.bt_tdResultsAdd_Click);
-            // 
-            // bt_tdResultsClear
-            // 
-            this.bt_tdResultsClear.Location = new System.Drawing.Point(751, 518);
-            this.bt_tdResultsClear.Name = "bt_tdResultsClear";
-            this.bt_tdResultsClear.Size = new System.Drawing.Size(122, 36);
-            this.bt_tdResultsClear.TabIndex = 24;
-            this.bt_tdResultsClear.Text = "Clear";
-            this.bt_tdResultsClear.UseVisualStyleBackColor = true;
-            this.bt_tdResultsClear.Visible = false;
-            this.bt_tdResultsClear.Click += new System.EventHandler(this.bt_tdResultsClear_Click);
-            // 
             // bt_clearResults
             // 
-            this.bt_clearResults.Location = new System.Drawing.Point(751, 619);
+            this.bt_clearResults.Location = new System.Drawing.Point(837, 626);
             this.bt_clearResults.Name = "bt_clearResults";
             this.bt_clearResults.Size = new System.Drawing.Size(156, 92);
             this.bt_clearResults.TabIndex = 26;
@@ -343,98 +269,180 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Controls.Add(this.label7);
-            this.groupBox3.Controls.Add(this.label6);
-            this.groupBox3.Controls.Add(this.tb_quantFilter);
-            this.groupBox3.Controls.Add(this.tb_identificationFilter);
-            this.groupBox3.Location = new System.Drawing.Point(927, 610);
+            this.groupBox3.Controls.Add(this.lb_filter3);
+            this.groupBox3.Controls.Add(this.tb_filter3);
+            this.groupBox3.Controls.Add(this.lb_filter2);
+            this.groupBox3.Controls.Add(this.lb_filter1);
+            this.groupBox3.Controls.Add(this.tb_filter2);
+            this.groupBox3.Controls.Add(this.tb_filter1);
+            this.groupBox3.Location = new System.Drawing.Point(232, 618);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(254, 100);
+            this.groupBox3.Size = new System.Drawing.Size(442, 100);
             this.groupBox3.TabIndex = 29;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Text Filters";
             // 
-            // label7
+            // lb_filter3
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(114, 49);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(110, 13);
-            this.label7.TabIndex = 32;
-            this.label7.Text = "Quantification Results";
+            this.lb_filter3.AutoSize = true;
+            this.lb_filter3.Location = new System.Drawing.Point(114, 75);
+            this.lb_filter3.Name = "lb_filter3";
+            this.lb_filter3.Size = new System.Drawing.Size(32, 13);
+            this.lb_filter3.TabIndex = 34;
+            this.lb_filter3.Text = "filter3";
             // 
-            // label6
+            // tb_filter3
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(114, 22);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(105, 13);
-            this.label6.TabIndex = 31;
-            this.label6.Text = "Identification Results";
+            this.tb_filter3.Location = new System.Drawing.Point(8, 72);
+            this.tb_filter3.Name = "tb_filter3";
+            this.tb_filter3.Size = new System.Drawing.Size(100, 20);
+            this.tb_filter3.TabIndex = 33;
+            this.tb_filter3.TextChanged += new System.EventHandler(this.tb_filter3_TextChanged);
             // 
-            // tb_quantFilter
+            // lb_filter2
             // 
-            this.tb_quantFilter.Location = new System.Drawing.Point(8, 46);
-            this.tb_quantFilter.Name = "tb_quantFilter";
-            this.tb_quantFilter.Size = new System.Drawing.Size(100, 20);
-            this.tb_quantFilter.TabIndex = 30;
-            this.tb_quantFilter.TextChanged += new System.EventHandler(this.tb_quantFilter_TextChanged);
+            this.lb_filter2.AutoSize = true;
+            this.lb_filter2.Location = new System.Drawing.Point(114, 49);
+            this.lb_filter2.Name = "lb_filter2";
+            this.lb_filter2.Size = new System.Drawing.Size(32, 13);
+            this.lb_filter2.TabIndex = 32;
+            this.lb_filter2.Text = "filter2";
             // 
-            // tb_identificationFilter
+            // lb_filter1
             // 
-            this.tb_identificationFilter.Location = new System.Drawing.Point(8, 19);
-            this.tb_identificationFilter.Name = "tb_identificationFilter";
-            this.tb_identificationFilter.Size = new System.Drawing.Size(100, 20);
-            this.tb_identificationFilter.TabIndex = 29;
-            this.tb_identificationFilter.TextChanged += new System.EventHandler(this.tb_identificationFilter_TextChanged);
+            this.lb_filter1.AutoSize = true;
+            this.lb_filter1.Location = new System.Drawing.Point(114, 22);
+            this.lb_filter1.Name = "lb_filter1";
+            this.lb_filter1.Size = new System.Drawing.Size(32, 13);
+            this.lb_filter1.TabIndex = 31;
+            this.lb_filter1.Text = "filter1";
             // 
-            // cb_advanced_user
+            // tb_filter2
             // 
-            this.cb_advanced_user.AutoSize = true;
-            this.cb_advanced_user.Location = new System.Drawing.Point(179, 587);
-            this.cb_advanced_user.Name = "cb_advanced_user";
-            this.cb_advanced_user.Size = new System.Drawing.Size(114, 17);
-            this.cb_advanced_user.TabIndex = 30;
-            this.cb_advanced_user.Text = "Advanced Options";
-            this.cb_advanced_user.UseVisualStyleBackColor = true;
-            this.cb_advanced_user.CheckedChanged += new System.EventHandler(this.cb_advanced_user_CheckedChanged);
+            this.tb_filter2.Location = new System.Drawing.Point(8, 46);
+            this.tb_filter2.Name = "tb_filter2";
+            this.tb_filter2.Size = new System.Drawing.Size(100, 20);
+            this.tb_filter2.TabIndex = 30;
+            this.tb_filter2.TextChanged += new System.EventHandler(this.tb_filter2_TextChanged);
+            // 
+            // tb_filter1
+            // 
+            this.tb_filter1.Location = new System.Drawing.Point(8, 19);
+            this.tb_filter1.Name = "tb_filter1";
+            this.tb_filter1.Size = new System.Drawing.Size(100, 20);
+            this.tb_filter1.TabIndex = 29;
+            this.tb_filter1.TextChanged += new System.EventHandler(this.tb_filter1_TextChanged);
+            // 
+            // cmb_loadTable1
+            // 
+            this.cmb_loadTable1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmb_loadTable1.FormattingEnabled = true;
+            this.cmb_loadTable1.Location = new System.Drawing.Point(13, 15);
+            this.cmb_loadTable1.Name = "cmb_loadTable1";
+            this.cmb_loadTable1.Size = new System.Drawing.Size(429, 26);
+            this.cmb_loadTable1.TabIndex = 31;
+            this.cmb_loadTable1.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable1_SelectedIndexChanged);
+            // 
+            // cmb_loadTable2
+            // 
+            this.cmb_loadTable2.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmb_loadTable2.FormattingEnabled = true;
+            this.cmb_loadTable2.Location = new System.Drawing.Point(460, 15);
+            this.cmb_loadTable2.Name = "cmb_loadTable2";
+            this.cmb_loadTable2.Size = new System.Drawing.Size(429, 26);
+            this.cmb_loadTable2.TabIndex = 32;
+            this.cmb_loadTable2.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable2_SelectedIndexChanged);
+            // 
+            // cmb_loadTable3
+            // 
+            this.cmb_loadTable3.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cmb_loadTable3.FormattingEnabled = true;
+            this.cmb_loadTable3.Location = new System.Drawing.Point(907, 15);
+            this.cmb_loadTable3.Name = "cmb_loadTable3";
+            this.cmb_loadTable3.Size = new System.Drawing.Size(429, 26);
+            this.cmb_loadTable3.TabIndex = 33;
+            this.cmb_loadTable3.SelectedIndexChanged += new System.EventHandler(this.cmb_LoadTable3_SelectedIndexChanged);
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.rb_chemicalCalibration);
+            this.groupBox4.Controls.Add(this.rb_standardOptions);
+            this.groupBox4.Controls.Add(this.rb_advanced_user);
+            this.groupBox4.Location = new System.Drawing.Point(232, 569);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(442, 43);
+            this.groupBox4.TabIndex = 35;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Load Options";
+            // 
+            // rb_chemicalCalibration
+            // 
+            this.rb_chemicalCalibration.AutoSize = true;
+            this.rb_chemicalCalibration.Location = new System.Drawing.Point(90, 17);
+            this.rb_chemicalCalibration.Name = "rb_chemicalCalibration";
+            this.rb_chemicalCalibration.Size = new System.Drawing.Size(120, 17);
+            this.rb_chemicalCalibration.TabIndex = 37;
+            this.rb_chemicalCalibration.Text = "Chemical Calibration";
+            this.rb_chemicalCalibration.UseVisualStyleBackColor = true;
+            this.rb_chemicalCalibration.CheckedChanged += new System.EventHandler(this.rb_chemicalCalibration_CheckedChanged);
+            // 
+            // rb_standardOptions
+            // 
+            this.rb_standardOptions.AutoSize = true;
+            this.rb_standardOptions.Checked = true;
+            this.rb_standardOptions.Location = new System.Drawing.Point(8, 17);
+            this.rb_standardOptions.Name = "rb_standardOptions";
+            this.rb_standardOptions.Size = new System.Drawing.Size(68, 17);
+            this.rb_standardOptions.TabIndex = 36;
+            this.rb_standardOptions.TabStop = true;
+            this.rb_standardOptions.Text = "Standard";
+            this.rb_standardOptions.UseVisualStyleBackColor = true;
+            this.rb_standardOptions.CheckedChanged += new System.EventHandler(this.rb_standardOptions_CheckedChanged);
+            // 
+            // rb_advanced_user
+            // 
+            this.rb_advanced_user.AutoSize = true;
+            this.rb_advanced_user.Location = new System.Drawing.Point(216, 17);
+            this.rb_advanced_user.Name = "rb_advanced_user";
+            this.rb_advanced_user.Size = new System.Drawing.Size(179, 17);
+            this.rb_advanced_user.TabIndex = 35;
+            this.rb_advanced_user.Text = "Top Down (Under Development)";
+            this.rb_advanced_user.UseVisualStyleBackColor = true;
+            this.rb_advanced_user.CheckedChanged += new System.EventHandler(this.rb_advanced_user_CheckedChanged);
             // 
             // LoadResults
             // 
             this.ClientSize = new System.Drawing.Size(1362, 736);
-            this.Controls.Add(this.cb_advanced_user);
+            this.Controls.Add(this.groupBox4);
+            this.Controls.Add(this.cmb_loadTable3);
+            this.Controls.Add(this.cmb_loadTable2);
+            this.Controls.Add(this.cmb_loadTable1);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.cb_run_when_load);
             this.Controls.Add(this.bt_clearResults);
-            this.Controls.Add(this.bt_tdResultsAdd);
-            this.Controls.Add(this.bt_tdResultsClear);
-            this.Controls.Add(this.bt_morpheusBUResultsAdd);
-            this.Controls.Add(this.bt_morpheusBUResultsClear);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.dgv_tdFiles);
-            this.Controls.Add(this.dgv_buFiles);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btn_fullRun);
-            this.Controls.Add(this.dgv_quantitationFiles);
-            this.Controls.Add(this.dgv_identificationFiles);
-            this.Controls.Add(this.btn_protQuantResultsAdd);
-            this.Controls.Add(this.btn_protQuantResultsClear);
-            this.Controls.Add(this.btn_protIdResultsAdd);
-            this.Controls.Add(this.btn_protIdResultsClear);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.dgv_loadFiles3);
+            this.Controls.Add(this.dgv_loadFiles2);
+            this.Controls.Add(this.dgv_loadFiles1);
+            this.Controls.Add(this.btn_addFiles3);
+            this.Controls.Add(this.btn_clearFiles3);
+            this.Controls.Add(this.btn_addFiles2);
+            this.Controls.Add(this.btn_clearFiles2);
+            this.Controls.Add(this.btn_AddFiles1);
+            this.Controls.Add(this.btn_clearFiles1);
             this.Controls.Add(this.groupBox1);
             this.Name = "LoadResults";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_identificationFiles)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_quantitationFiles)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles3)).EndInit();
             this.groupBox2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_buFiles)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_tdFiles)).EndInit();
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -445,26 +453,19 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RadioButton btn_unlabeled;
         private System.Windows.Forms.RadioButton btn_neucode;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button btn_protIdResultsClear;
-        private System.Windows.Forms.Button btn_protIdResultsAdd;
-        private System.Windows.Forms.Button btn_protQuantResultsAdd;
-        private System.Windows.Forms.Button btn_protQuantResultsClear;
-        private System.Windows.Forms.DataGridView dgv_identificationFiles;
-        private System.Windows.Forms.DataGridView dgv_quantitationFiles;
+        private System.Windows.Forms.Button btn_clearFiles1;
+        private System.Windows.Forms.Button btn_AddFiles1;
+        private System.Windows.Forms.Button btn_addFiles2;
+        private System.Windows.Forms.Button btn_clearFiles2;
+        private System.Windows.Forms.Button btn_addFiles3;
+        private System.Windows.Forms.Button btn_clearFiles3;
+        private System.Windows.Forms.DataGridView dgv_loadFiles1;
+        private System.Windows.Forms.DataGridView dgv_loadFiles2;
+        private System.Windows.Forms.DataGridView dgv_loadFiles3;
         private System.Windows.Forms.Button btn_fullRun;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button btn_fullRunWithPresets;
         private System.Windows.Forms.Button btn_nextPane;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Button bt_morpheusBUResultsAdd;
-        private System.Windows.Forms.Button bt_morpheusBUResultsClear;
-        private System.Windows.Forms.Button bt_tdResultsAdd;
-        private System.Windows.Forms.Button bt_tdResultsClear;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.DataGridView dgv_tdFiles;
-        private System.Windows.Forms.DataGridView dgv_buFiles;
         private System.Windows.Forms.Button bt_clearResults;
         private System.Windows.Forms.CheckBox cb_run_when_load;
         private System.Windows.Forms.GroupBox groupBox3;
@@ -473,5 +474,19 @@
         private System.Windows.Forms.TextBox tb_quantFilter;
         private System.Windows.Forms.TextBox tb_identificationFilter;
         private System.Windows.Forms.CheckBox cb_advanced_user;
+        private System.Windows.Forms.Label lb_filter2;
+        private System.Windows.Forms.Label lb_filter1;
+        private System.Windows.Forms.TextBox tb_filter2;
+        private System.Windows.Forms.TextBox tb_filter1;
+        private System.Windows.Forms.CheckBox cb_td_file;
+        private System.Windows.Forms.ComboBox cmb_loadTable1;
+        private System.Windows.Forms.ComboBox cmb_loadTable2;
+        private System.Windows.Forms.ComboBox cmb_loadTable3;
+        private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.RadioButton rb_chemicalCalibration;
+        private System.Windows.Forms.RadioButton rb_standardOptions;
+        private System.Windows.Forms.RadioButton rb_advanced_user;
+        private System.Windows.Forms.Label lb_filter3;
+        private System.Windows.Forms.TextBox tb_filter3;
     }
 }

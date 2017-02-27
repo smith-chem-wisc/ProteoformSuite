@@ -20,30 +20,16 @@ namespace ProteoformSuite
 
         public void load_raw_components()
         {
-            if (Lollipop.input_files.Any(f => f.purpose == Purpose.Quantification))
-            {
-                Lollipop.getBiorepsFractionsList(); // list of bioreps with a list of fractions for each biorep
-                Lollipop.getObservationParameters(); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
-            }
-            Parallel.Invoke(
-                () => rEC(),
-                () => rQC()                
-                );
+            Lollipop.getBiorepsFractionsList(Lollipop.input_files); // list of bioreps with a list of fractions for each biorep
+            Lollipop.getObservationParameters(Lollipop.neucode_labeled, Lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+            Parallel.Invoke
+            (
+                () => { if (Lollipop.raw_experimental_components.Count == 0) Lollipop.process_raw_components(); }, //Includes reading correction factors if present,
+                () => { if (Lollipop.raw_quantification_components.Count == 0) Lollipop.process_raw_quantification_components(); }
+            );
+
             this.FillRawExpComponentsTable();
             this.FillRawQuantificationComponentsTable();
-        }
-
-        public static void rEC()
-        {
-            if (Lollipop.raw_experimental_components.Count == 0)
-                Lollipop.process_raw_components(); //Includes reading correction factors if present
-        }
-
-        public static void rQC()
-        {           
-            if (Lollipop.raw_quantification_components.Count == 0)
-                Lollipop.process_raw_quantification_components();
-           
         }
 
         public DataGridView GetDGV()
@@ -53,13 +39,16 @@ namespace ProteoformSuite
 
         public void FillRawExpComponentsTable()
         {
-            DisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, Lollipop.raw_experimental_components);
-            this.FormatRawExpComponentsTable();
+            if (Lollipop.raw_experimental_components.Count > 0)
+            {
+                DisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, Lollipop.raw_experimental_components);
+                this.FormatRawExpComponentsTable();
+            }
         }
 
         public void FillRawQuantificationComponentsTable()
         {
-            if (Lollipop.raw_quantification_components.Count() > 0)
+            if (Lollipop.raw_quantification_components.Count > 0)
             {
                 DisplayUtility.FillDataGridView(dgv_RawQuantComp_MI_masses, Lollipop.raw_quantification_components);
                 this.FormatRawQuantificationComponentsTable();
@@ -179,7 +168,7 @@ namespace ProteoformSuite
             //dgv_RawExpComp_IndChgSts.Columns["calculated_mass"].HeaderText = "Calculated Mass";
             //dgv_RawExpComp_IndChgSts.Columns["charge_count"].HeaderText = "Charge Count";
 
-            //if (Lollipop.calibration_files().Count() == 0) dgv_RawExpComp_IndChgSts.Columns["mz_correction"].Visible = false;
+            //if (Lollipop.get_files(Purpose.Calibration).Count() == 0) dgv_RawExpComp_IndChgSts.Columns["mz_correction"].Visible = false;
             //dgv_RawExpComp_IndChgSts.AllowUserToAddRows = false;
         }
 
@@ -197,7 +186,7 @@ namespace ProteoformSuite
             //dgv_RawQuantComp_IndChgSts.Columns["calculated_mass"].HeaderText = "Calculated Mass";
             //dgv_RawQuantComp_IndChgSts.Columns["charge_count"].HeaderText = "Charge Count";
 
-            //if (Lollipop.calibration_files().Count() == 0) dgv_RawQuantComp_IndChgSts.Columns["mz_correction"].Visible = false;
+            //if (Lollipop.get_files(Purpose.Calibration).Count() == 0) dgv_RawQuantComp_IndChgSts.Columns["mz_correction"].Visible = false;
             //dgv_RawQuantComp_IndChgSts.AllowUserToAddRows = false;
         }
 

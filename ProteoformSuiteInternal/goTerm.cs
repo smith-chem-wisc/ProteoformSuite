@@ -1,189 +1,117 @@
-﻿using System;
+﻿using Accord.Math;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Numerics;
+using Proteomics;
 using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
-    public class GoTerm
-    {
-        public string id { get; set; }
-        public string description { get; set; }
-        public Aspect aspect { get; set; }
-    }
-
-    public enum Aspect
-    {
-        molecularFunction,
-        cellularComponent,
-        biologicalProcess
-    }
-
     public class GoTermNumber
     {
         public GoTerm goTerm { get; set; }
-        public string id {get; set;}
+        public string id { get; set; }
         public string description { get; set; }
-        public string aspect { get; set; }        
-        public int k { get; set; } // number in set of enriched/depleted proteins
-        public int f { get; set; } // number in database
-        public double pValue { get; set; }
-        public double logfold { get; set; } // log base2 fold change
-        public string proteinInCategoryFromSample { get; set; }
+        public Aspect aspect { get; set; }
 
-        public GoTermNumber(GoTerm _goTerm, List<Protein> proteinsInSample, Dictionary<GoTerm, int> goMasterSet)
+
+        public int q { get; set; }//count of proteins in selected subset with the particular Go term
+        public int k { get; set; }//count of proteins in selected subset
+        public int m { get; set; }//count of proteins in background with the particular Go term
+        public int t { get; set; }//count of proteins in background
+        public decimal log_odds_ratio { get; set; } = 0; // fold change
+        public double p_value { get; set; } = 1;//p-value calculated using hypergeometric test.
+        public decimal by { get; set; } = 1;//benjamini yekutieli calculated after all p-values are calculated
+
+        public GoTermNumber() //for testing
+        { }
+
+        public GoTermNumber(GoTerm g)
         {
-            goTerm = _goTerm;
-            id = _goTerm.id;
-            description = _goTerm.description;
-            aspect = _goTerm.aspect.ToString();
-            
-            proteinInCategoryFromSample = String.Join("; ", (from p in proteinsInSample from t in p.goTerms where t.id == _goTerm.id select p).ToList().Select(o=>o.accession).ToList());
-            k = sampleGoTermCount(_goTerm, proteinsInSample);            
-            f = goMasterSet[goMasterSet.Keys.Where(k => k.id == _goTerm.id).First()];
-            logfold = getGoTermLogFold(k, f, proteinsInSample, goMasterSet); 
-            pValue = goTerm_pValue(_goTerm, proteinsInSample, goMasterSet, k, f);
+            this.goTerm = g;
+            this.id = g.id;
+            this.description = g.description;
+            this.aspect = g.aspect;
+            this.q = Lollipop.inducedOrRepressedProteins.SelectMany(p=>p.GoTerms.Where(t=>t.id==g.id)).ToList().Count();
+            //this.q = Lollipop.inducedOrRepressedProteins.Count(p => p.goTerms.Contains(g));
+            this.k = Lollipop.inducedOrRepressedProteins.Count();
+            this.m = Lollipop.GO_ProteinBackgroundSet.SelectMany(p => p.GoTerms.Where(t => t.id == g.id)).ToList().Count();
+            //this.m = Lollipop.goMasterSet[g];
+            this.t = Lollipop.GO_ProteinBackgroundSet.Count();
+            if(q != 0 && k != 0 && m != 0 && t != 0)
+                this.log_odds_ratio = (decimal)(Math.Log((double)q/(double)k, 2)- Math.Log((double)m / (double)t, 2));
+            this.p_value = GoTerm_pValue(q, k, m, t);
         }
 
-        private double getGoTermLogFold(int k, int f, List<Protein> proteinsInSample, Dictionary<GoTerm, int> goMasterSet)
+        public GoTermNumber(GoTerm g, int q, int k, int m, int t)
         {
-            int allSampleGoTerms = (from p in proteinsInSample
-                                    from g in p.goTerms
-                                    select g).ToList().Count();
-               
-            double numerator = (double)k / allSampleGoTerms;
-
-            int allDataBaseGoTerms = 0;
-            foreach (KeyValuePair<GoTerm,int> pair in goMasterSet)
-            {
-                allDataBaseGoTerms = allDataBaseGoTerms + pair.Value;
-            }
-            double denominator = (double)f / allDataBaseGoTerms;
-            if (denominator > 0)
-                return Math.Log(numerator / denominator, 2);
-            else
-                return 0d;
+            this.goTerm = g;
+            this.id = g.id;
+            this.description = g.description;
+            this.aspect = g.aspect;
+            this.q = q;
+            //this.q = Lollipop.inducedOrRepressedProteins.Count(p => p.goTerms.Contains(g));
+            this.k = k;
+            this.m = m;
+            this.t = t;
+            if (q != 0 && k != 0 && m != 0 && t != 0)
+                this.log_odds_ratio = (decimal)(Math.Log((double)q / (double)k, 2) - Math.Log((double)m / (double)t, 2));
+            this.p_value = GoTerm_pValue(q, k, m, t);
         }
 
-        private double goTerm_pValue(GoTerm _goTerm, List<Protein> proteinsInSample, Dictionary<GoTerm, int> goMasterSet, int k, int f)
+
+        public double GoTerm_pValue(int q, int k, int m, int t) //this is the hypergeometric probability as used by GOEAST algorithm
         {
-            int allSampleGoTerms = 0;
-
-            foreach (Protein p in proteinsInSample)
+            double p = 0;
+            for (int i = q; i <= m; i++)
             {
-                allSampleGoTerms = allSampleGoTerms + p.goTerms.Count();
+                BigInteger top = binomialCoefficient(m, i) * binomialCoefficient(t - m, k - i);
+                BigInteger bottom = binomialCoefficient(t, k);
+                p += (double)top /(double)bottom;
             }
-
-            int maxPermutations = 500;
-            List<GoTerm> completeDatabaseGoTerms = new List<GoTerm>();
-            List<int> countOfGoTermInSubset = new List<int>();
-
-            foreach (KeyValuePair<GoTerm, int> pair in goMasterSet)
-            {
-                for (int i = 0; i < pair.Value; i++)
-                {
-                    completeDatabaseGoTerms.Add(pair.Key);
-                }
-            }
-
-            List<List<int>> indices = new List<List<int>>();
-
-            for (int i = 0; i < maxPermutations; i++)
-            {
-                indices.Add(GenerateRandom(allSampleGoTerms, 0, completeDatabaseGoTerms.Count()));
-            }
-
-            object sync = new object();
-
-            GoTerm[] cDGT = completeDatabaseGoTerms.ToArray();
-
-            Parallel.ForEach(indices, set => 
-            {
-                List<GoTerm> subset = new List<GoTerm>();
-                foreach (int index in set)
-                {
-                    lock (sync)
-                    {
-                        subset.Add(cDGT[index]);
-                    };              
-                }
-
-                int termCount = 0;
-                termCount = (from t in subset
-                             where t.id == _goTerm.id
-                             select t).ToList().Count();
-                lock (sync)
-                {
-                    countOfGoTermInSubset.Add(termCount);
-                };
-            });
-            int someCount = completeDatabaseGoTerms.Count();
-
-            return (double)(countOfGoTermInSubset.Count(i => i >= k)) /(countOfGoTermInSubset.Count());
+            return Math.Min(p,1d);
         }
 
-        static Random random = new Random();
-
-        public static List<int> GenerateRandom(int count, int min, int max)
+        public BigInteger binomialCoefficient(int n, int k)
         {
-            if (max <= min || count < 0 ||
-                    // max - min > 0 required to avoid overflow
-                    (count > max - min && max - min > 0))
+
+            // This function gets the total number of unique combinations based upon N and K.
+            // N is the total number of items.
+            // K is the size of the group.
+            // Total number of unique combinations = N! / ( K! (N - K)! ).
+            // This function is less efficient, but is more likely to not overflow when N and K are large.
+            // Taken from:  http://blog.plover.com/math/choose.html
+            //
+            BigInteger r = 1;
+            long d;
+            if (k > n) return 0;
+            for (d = 1; d <= k; d++)
             {
-                // need to use 64-bit to support big ranges (negative min, positive max)
-                throw new ArgumentOutOfRangeException("Range " + min + " to " + max +
-                        " (" + ((Int64)max - (Int64)min) + " values), or count " + count + " is illegal");
+                r *= n--;
+                r /= d;
             }
-
-            // generate count random values.
-            HashSet<int> candidates = new HashSet<int>();
-
-            // start count values before max, and end at max
-            for (int top = max - count; top < max; top++)
-            {
-                // May strike a duplicate.
-                // Need to add +1 to make inclusive generator
-                // +1 is safe even for MaxVal max value because top < max
-                if (!candidates.Add(random.Next(min, top + 1)))
-                {
-                    // collision, add inclusive max.
-                    // which could not possibly have been added before.
-                    candidates.Add(top);
-                }
-            }
-
-            // load them in to a list, to sort
-            List<int> result = candidates.ToList();
-
-            // shuffle the results because HashSet has messed
-            // with the order, and the algorithm does not produce
-            // random-ordered results (e.g. max-1 will never be the first value)
-            for (int i = result.Count - 1; i > 0; i--)
-            {
-                int k = random.Next(i + 1);
-                int tmp = result[k];
-                result[k] = result[i];
-                result[i] = tmp;
-            }
-            return result;
+            return r;
         }
 
-        public static List<int> GenerateRandom(int count)
+        public static decimal benjaminiYekutieli(int nbp, List<double> pvals, double pValue)//multiple testing correction similar to benjamini hochberg but for interdependant data
         {
-            return GenerateRandom(count, 0, Int32.MaxValue);
-        }
+            // FDR = pValue * summation * totalNumberOfTests / (rank of the pValue is a sorted ascending list)
+            // summation = sum from i=1 to i=totalNumberOfTests of 1/i 
+            // for this work, the pValue is the hypergeometric probability
 
-        private int sampleGoTermCount(GoTerm _goTerm, List<Protein> proteinsInSample)
-        {
-            int termCount = 0;
-            termCount = (from p in proteinsInSample
-                         from t in p.goTerms
-                         where t.id == _goTerm.id
-                         select p).ToList().Count();
+            double sum = 0;
+            //int nbp = Lollipop.goTermNumbers.Count;//These are only for "interesting proteins", which is the set of proteins induced or repressed beyond a specified fold change, intensity and below FDR. There is a test for each different go term. The number of tests equals the number of different go terms
+            //List<double> pvals = Lollipop.goTermNumbers.Select(g => g.p_value).ToList();
+            pvals.Sort();
+            double rank = (double)pvals.IndexOf(pValue) + 1d; // add one because index starts at zero. this gives us the rank of the pvalue in the sorted list.
+            for (int i = 1; i <= nbp; i++)
+            {
+                sum += 1d / (double)i;
+            }
 
-            return termCount;
+            return (decimal)Math.Min(pValue * (double)nbp * sum / rank, 1d); // range of FDRs if from 0 to 1
         }
     }
 }

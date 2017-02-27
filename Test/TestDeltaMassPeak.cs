@@ -3,6 +3,9 @@ using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Proteomics;
+using System.IO;
+using UsefulProteomicsDatabases;
 
 namespace Test
 {
@@ -19,10 +22,8 @@ namespace Test
         [Test]
         public void TestDeltaMassPeakConstructor()
         {
-            ProteomeDatabaseReader proteomeDatabaseReader = new ProteomeDatabaseReader();
-
-            ProteomeDatabaseReader.oldPtmlistFilePath = "UnitTestFiles\\ptmlist.txt";
-            Lollipop.uniprotModificationTable = proteomeDatabaseReader.ReadUniprotPtmlist();
+            Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Lollipop.input_files);
+            Lollipop.read_mods();
             Lollipop.et_high_mass_difference = 250;
             Lollipop.et_low_mass_difference = -250;
             Lollipop.peak_width_base_ee = 0.015;
@@ -92,7 +93,11 @@ namespace Test
         public void TestAcceptDeltaMassPeaks()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> {
+                { "unmodified", new List<Modification>() {
+                    new ModificationWithMass("unmodified", new Tuple<string, string>("", ""), null, ModificationSites.K, 0, new Dictionary<string, IList<string>>(), -1, new List<double>(), new List<double>(), "") }
+                }
+            };
             Lollipop.updated_theoretical = true;
 
             //Testing the acceptance of peaks. The FDR is tested above, so I'm not going to work with that here.
@@ -110,6 +115,19 @@ namespace Test
             ProteoformRelation pr3 = new ProteoformRelation(pf4, pf5, comparison45, 0);
             ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0);
 
+            //Test display strings
+            Assert.AreEqual("E1", pr2.accession_1);
+            Assert.AreEqual("E2", pr2.accession_2);
+            pr2.relation_type = ProteoformComparison.ee;
+            Assert.AreEqual(ProteoformRelation.ee_string, pr2.relation_type_string);
+            pr2.relation_type = ProteoformComparison.et;
+            Assert.AreEqual(ProteoformRelation.et_string, pr2.relation_type_string);
+            pr2.relation_type = ProteoformComparison.ed;
+            Assert.AreEqual(ProteoformRelation.ed_string, pr2.relation_type_string);
+            pr2.relation_type = ProteoformComparison.ef;
+            Assert.AreEqual(ProteoformRelation.ef_string, pr2.relation_type_string);
+            pr2.relation_type = comparison34;
+
             List<ProteoformRelation> prs2 = new List<ProteoformRelation> { pr2, pr3, pr4 };
             foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2);
             Assert.AreEqual(3, pr2.nearby_relations_count);
@@ -120,14 +138,45 @@ namespace Test
             Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
             DeltaMassPeak peak = test_community.delta_mass_peaks[0];
             Assert.AreEqual(3, peak.grouped_relations.Count);
+            Assert.AreEqual(3, pr2.peak_center_count);
+            Assert.AreEqual(0, pr2.peak_center_deltaM);
             Assert.AreEqual("unmodified", peak.possiblePeakAssignments_string);
-            peak.possiblePeakAssignments.Add(new Modification());
+            peak.possiblePeakAssignments.Add(new Modification("unmodified"));
             Assert.AreEqual("unmodified; unmodified", peak.possiblePeakAssignments_string);
 
             //Test that the relations in the peak are added to each of the proteoforms referenced in the peak
             Assert.True(pf3.relationships.Contains(pr2));
             Assert.True(pf4.relationships.Contains(pr2) && pf4.relationships.Contains(pr3));
             Assert.True(pf5.relationships.Contains(pr3) && pf5.relationships.Contains(pr4));
+        }
+
+        [Test]
+        public void wrong_relation_shifting()
+        {
+            ProteoformCommunity test_community = new ProteoformCommunity();
+            ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
+            ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
+            ProteoformComparison wrong_comparison = ProteoformComparison.ee;
+            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, wrong_comparison, 0);
+            ProteoformRelation pr3 = new ProteoformRelation(pf3, pf4, wrong_comparison, 0);
+            List<ProteoformRelation> prs = new List<ProteoformRelation> { pr2, pr3 };
+            foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs);
+            test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
+            Assert.False(test_community.delta_mass_peaks[0].shift_experimental_masses(1, true));
+        }
+
+        [Test]
+        public void artificial_deltaMPeak()
+        {
+            Lollipop.opening_results = true;
+            ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
+            ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
+            ProteoformComparison comparison = ProteoformComparison.ee;
+            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison, 0);
+            ProteoformRelation pr3 = new ProteoformRelation(pf3, pf4, comparison, 0);
+            List<ProteoformRelation> prs = new List<ProteoformRelation> { pr2, pr3 };
+            Assert.AreEqual(prs, new DeltaMassPeak(pr2, prs).grouped_relations);
+            Lollipop.opening_results = false;
         }
 
         [Test]
@@ -171,7 +220,7 @@ namespace Test
 
             //Shift the peaks, which shifts all of the proteoforms
             DeltaMassPeak d2 = test_community.delta_mass_peaks[1];
-            d2.shift_experimental_masses(-1);
+            d2.shift_experimental_masses(-1, true);
 
             Assert.IsTrue(pf3.mass_shifted);
             Assert.IsTrue(pf4.mass_shifted);
@@ -235,7 +284,7 @@ namespace Test
 
             //Shift the peaks, which shifts all of the proteoforms
             DeltaMassPeak d2 = test_community.delta_mass_peaks[1];
-            d2.shift_experimental_masses(-1);
+            d2.shift_experimental_masses(-1, false);
 
             Assert.IsTrue(pf3.mass_shifted);
             Assert.IsTrue(pf4.mass_shifted);

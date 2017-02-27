@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
-    public class Component
+    public class Component: IBiorepable
     {
         // PROPERTIES
         public InputFile input_file { get; set; }

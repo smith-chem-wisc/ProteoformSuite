@@ -7,7 +7,8 @@ using System.IO;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Text.RegularExpressions;
-
+using UsefulProteomicsDatabases;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -33,7 +34,7 @@ namespace ProteoformSuiteInternal
                     {
                         Psm new_psm = new Psm(parts[11].ToString(), parts[0].ToString(), Convert.ToInt32(parts[14]), Convert.ToInt32(parts[15]),
                             Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]), Convert.ToInt32(parts[1]),
-                            parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]));
+                            parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]), PsmType.BottomUp);
                         psm_list.Add(new_psm);
                     }
                     i++;
@@ -47,7 +48,7 @@ namespace ProteoformSuiteInternal
         public static List<TopDownHit> ReadTDFile(InputFile file)
         {
             List<TopDownHit> td_hits = new List<TopDownHit>();
-            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(file.path + "\\" + file.filename + file.extension, false))
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(file.complete_path, false))
             {
                     // Get Data in Sheet1 of Excel file
                     IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
@@ -63,9 +64,6 @@ namespace ProteoformSuiteInternal
                         {
                             cellStrings.Add(GetCellValue(spreadsheetDocument, cell));
                         }
-
-                    if (file.td_software == TDSoftware.NRTDP)
-                    {
                         //get ptms on proteoform
                         List<Ptm> ptm_list = new List<Ptm>();
                         //N-term modifications
@@ -74,15 +72,15 @@ namespace ProteoformSuiteInternal
                             int position = 0;
                             if (cellStrings[10].Split(':')[1] == "1458")
                             {
-                                try
+                                ModificationWithMass mod = Lollipop.uniprotModificationTable.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id.Contains("acetyl") && m.motif.Motif == cellStrings[4][0].ToString()).FirstOrDefault();
+                                if (mod != null)
                                 {
-                                    Modification mod = Lollipop.uniprotModificationTable.Values.Where(m => m.ptm_category == "Acetylation" && m.target_aas.Contains(cellStrings[4][0])).ToList().First();
                                     ptm_list.Add(new Ptm(position, mod));
                                 }
                                 //found one case where PTM not in ptmlist.txt (acetylasparagine)
-                                catch
+                                else
                                 {
-                                    ptm_list.Add(new Ptm(position, new Modification("N-acetylation")));
+                                    ptm_list.Add(new Ptm(position, new ModificationWithMass("N-acetylation", null, null, ModificationSites.NTerminus, 0, null, -1, null, null, null)));
                                 }
                             }
                         }
@@ -97,8 +95,8 @@ namespace ProteoformSuiteInternal
                                 while (resid.Length < 4) resid = "0" + resid;
                                 resid = "AA" + resid;
                                 int position = Convert.ToInt16(new_ptm.Split(':')[1].Split('@')[1]);
-                                Modification mod = Lollipop.uniprotModificationTable.Values.Where(m => m.resid == resid).First();
-                                ptm_list.Add(new Ptm(position, mod));
+                                ModificationWithMass mod = Lollipop.uniprotModificationTable.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("RESID")).Where(m => m.linksToOtherDbs["RESID"].Contains(resid)).FirstOrDefault();
+                                if (mod != null) ptm_list.Add(new Ptm(position, mod));
                             }
                         }
 
@@ -115,8 +113,9 @@ namespace ProteoformSuiteInternal
                         Convert.ToInt16(cellStrings[17]), Convert.ToDouble(cellStrings[18]), full_filename[0], Convert.ToDouble(cellStrings[23]), result_set, file.targeted_td_result);
                         td_hits.Add(td_hit);
                     }
-                    }
                 }
+            
+            return td_hits;
 
             //        else if (td_software == TDSoftware.ProSight)
             //        {
@@ -165,8 +164,6 @@ namespace ProteoformSuiteInternal
             //        }
             //    }
             //}
-
-            return td_hits;
         }
 
         //TD files have blank spaces in middle of rows/columns -- need this to account for those. 
