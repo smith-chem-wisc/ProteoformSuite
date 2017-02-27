@@ -40,7 +40,7 @@ namespace ProteoformSuite
         private void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
-            Lollipop.aggregate_proteoforms();
+            Lollipop.aggregate_proteoforms(Lollipop.validate_proteoforms, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
             FillAggregatesTable();
             updateFiguresOfMerit();
             this.Cursor = Cursors.Default;
@@ -80,10 +80,6 @@ namespace ProteoformSuite
             nUD_min_num_CS.Minimum = 0;
             nUD_min_num_CS.Maximum = 20;
             nUD_min_num_CS.Value = Lollipop.min_num_CS;
-            
-            nUD_min_num_bioreps.Minimum = 1;
-            nUD_min_num_bioreps.Maximum = 20;
-            nUD_min_num_bioreps.Value = Convert.ToDecimal(Lollipop.min_num_bioreps);
         }
 
         public void FillAggregatesTable()
@@ -209,14 +205,9 @@ namespace ProteoformSuite
             Lollipop.min_num_CS = Convert.ToInt16(nUD_min_num_CS.Value);
         }
 
-        private void nUD_min_num_bioreps_ValueChanged(object sender, EventArgs e)
+        private void cb_validateProteoforms_CheckedChanged(object sender, EventArgs e)
         {
-            Lollipop.min_num_bioreps = Convert.ToInt16(nUD_min_num_bioreps.Value);
-        }
-
-        private void nUD_min_S_to_N_ValueChanged(object sender, EventArgs e)
-        {
-            Lollipop.min_signal_to_noise = Convert.ToDouble(nUD_min_S_to_N.Value);
+            Lollipop.validate_proteoforms = cb_validateProteoforms.Checked;
         }
     }
 }

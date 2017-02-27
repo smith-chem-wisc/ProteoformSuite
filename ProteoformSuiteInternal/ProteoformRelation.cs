@@ -97,25 +97,34 @@ namespace ProteoformSuiteInternal
         //}
 
         // FOR DATAGRIDVIEW DISPLAY
+        public static string et_string = "Experiment-Theoretical";
+        public static string ee_string = "Experiment-Experimental";
+        public static string ed_string = "Experiment-Decoy";
+        public static string ef_string = "Experiment-Unequal Lysine Count";
+        public static string etd_string = "Experiment-Topdown";
+        public static string ttd_string = "Theoretical-Topdown";
+           
+
         public int peak_center_count
         {
-            get { if (this.peak != null) return this.peak.peak_relation_group_count; else return -1000000; }
+            get { return this.peak != null ? this.peak.peak_relation_group_count : -1000000; }
         }
         public double peak_center_deltaM
         {
-            get { if (this.peak != null) return peak.peak_deltaM_average; else return Double.NaN; }
+            get { return this.peak != null ? peak.peak_deltaM_average : Double.NaN; }
         }
         public string relation_type_string
         {
             get
             {
-                if (this.relation_type == ProteoformComparison.et) return "Experimental-Theoretical";
-                else if (this.relation_type == ProteoformComparison.ee) return "Experimental-Experimental";
-                else if (this.relation_type == ProteoformComparison.ed) return "Experimental-Decoy";
-                else if (this.relation_type == ProteoformComparison.ef) return "Experimental-Unequal Lysine Count";
-                else if (this.relation_type == ProteoformComparison.etd) return "Experimental-TopDown";
-                else if (this.relation_type == ProteoformComparison.ttd) return "Theoretical-TopDown";
-                else return "";
+                string s = "";
+                if (this.relation_type == ProteoformComparison.et) s = et_string;
+                if (this.relation_type == ProteoformComparison.ee) s = ee_string;
+                if (this.relation_type == ProteoformComparison.ed) s = ed_string;
+                if (this.relation_type == ProteoformComparison.ef) s = ef_string;
+                if (this.relation_type == ProteoformComparison.etd) s = etd_string;
+                if (this.relation_type == ProteoformComparison.ttd) s = ttd_string;
+                return s;
             }
         }
 
@@ -203,10 +212,6 @@ namespace ProteoformSuiteInternal
         public string of_interest
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).of_interest; } catch { return null; } }
-        }
-        public string gene_id
-        {
-            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).gene_id.ToString(); } catch { return null; } }
         }
     }
 }

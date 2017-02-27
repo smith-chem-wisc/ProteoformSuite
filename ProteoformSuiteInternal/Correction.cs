@@ -12,8 +12,6 @@ namespace ProteoformSuiteInternal
         public int scan_number { get; set; }
         public double correction { get; set; }
 
-        public Correction()
-        { }
         public Correction(string file_name, int scan_number, double correction)
         {
             this.file_name = file_name;

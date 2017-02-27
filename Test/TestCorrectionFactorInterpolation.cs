@@ -41,7 +41,7 @@ namespace Test
             string filename = "filename.txt";
             string scan_range = "1-3";
             Component c = new Component();
-            c.input_file = new InputFile();
+            c.input_file = new InputFile("fake.txt", Purpose.Identification);
             c.scan_range = scan_range;
             Correction correction1 = new Correction(filename, 1, Double.NaN);
             Correction correction2 = new Correction(filename, 2, Double.NaN);

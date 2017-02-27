@@ -1,56 +1,26 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
-    public class Protein
-    {
-        public string accession { get; set; }
-        public string description { get; set; }
-        public string name { get; set; }
-        public string fragment { get; set; }
-        public int begin { get; set; }
-        public int end { get; set; }
-        public string sequence { get; set; }
-        public List<GoTerm> goTerms { get; set; }
-        public Dictionary<int, List<Modification>> ptms_by_position { get; set; }
-        public string gene_id { get; set; }
-
-        public Protein(string accession, string name, string fragment, int begin, int end, string sequence, List<GoTerm> goTerms, Dictionary<int, List<Modification>> positionsAndPtms,  string gene_id)
-        {
-            this.accession = accession;          
-            this.name = name;
-            this.fragment = fragment.Replace(' ', '-');
-            this.description = accession + "_" + fragment;
-            this.begin = begin;
-            this.end = end;
-            this.sequence = sequence;
-            this.goTerms = goTerms;
-            this.ptms_by_position = positionsAndPtms;
-            this.gene_id = gene_id;
-        }
-
-        //public override string ToString()
-        //{
-        //    return this.accession + "_" + this.name + "_" + this.fragment;
-        //}
-    }
-
     public class ProteinSequenceGroup : Protein
     {
         public List<string> accessionList { get; set; } // this is the list of accession numbers for all proteins that share the same sequence. the list gets alphabetical order
-
-        public ProteinSequenceGroup(string accession, string name, string fragment, int begin, int end, string sequence, List<GoTerm> goTerms, Dictionary<int, List<Modification>> positionsAndPtms, string gene_id)
-            : base(accession, name, fragment, begin, end, sequence, goTerms, positionsAndPtms, gene_id)
-        { }
         public ProteinSequenceGroup(List<Protein> proteins)
-            : base(proteins[0].accession + "_G" + proteins.Count(), proteins[0].name, proteins[0].fragment, proteins[0].begin, proteins[0].end, proteins[0].sequence, proteins[0].goTerms, proteins[0].ptms_by_position, proteins[0].gene_id  + "_G" + proteins.Count())
+            : base(proteins[0].BaseSequence, 
+                proteins[0].Accession + "_G" + proteins.Count(),
+                proteins.SelectMany(p => p.OneBasedPossibleLocalizedModifications.Keys).Distinct().ToDictionary(i => i, i => proteins.Where(p => p.OneBasedPossibleLocalizedModifications.ContainsKey(i)).SelectMany(p => p.OneBasedPossibleLocalizedModifications[i]).ToList()), 
+                proteins[0].OneBasedBeginPositions, 
+                proteins[0].OneBasedEndPositions, 
+                proteins[0].BigPeptideTypes, 
+                proteins[0].Name, 
+                proteins[0].FullName, 
+                false, 
+                proteins[0].IsContaminant, 
+                proteins[0].GoTerms)
         {
-            this.accessionList = proteins.Select(p => p.accession).ToList();
-            HashSet<int> all_positions = new HashSet<int>(proteins.SelectMany(p => p.ptms_by_position.Keys).ToList());
-            Dictionary<int, List<Modification>> ptms_by_position = new Dictionary<int, List<Modification>>();
-            foreach (int position in all_positions)
-                ptms_by_position.Add(position, proteins.Where(p => p.ptms_by_position.ContainsKey(position)).SelectMany(p => p.ptms_by_position[position]).ToList());
+            this.accessionList = proteins.Select(p => p.Accession).ToList();
         }
     }
 }

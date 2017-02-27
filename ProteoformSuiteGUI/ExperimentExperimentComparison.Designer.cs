@@ -142,7 +142,7 @@
             this.dgv_EE_Peaks.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_EE_Peaks.Location = new System.Drawing.Point(0, 0);
             this.dgv_EE_Peaks.Name = "dgv_EE_Peaks";
-            this.dgv_EE_Peaks.Size = new System.Drawing.Size(208, 221);
+            this.dgv_EE_Peaks.Size = new System.Drawing.Size(372, 303);
             this.dgv_EE_Peaks.TabIndex = 1;
             // 
             // nUD_EE_Upper_Bound
@@ -367,7 +367,7 @@
             series1.Legend = "Legend1";
             series1.Name = "relations";
             this.ct_EE_Histogram.Series.Add(series1);
-            this.ct_EE_Histogram.Size = new System.Drawing.Size(466, 243);
+            this.ct_EE_Histogram.Size = new System.Drawing.Size(832, 263);
             this.ct_EE_Histogram.TabIndex = 16;
             this.ct_EE_Histogram.TabStop = false;
             this.ct_EE_Histogram.Text = "eeHistogram";
@@ -378,7 +378,7 @@
             this.dgv_EE_Relations.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_EE_Relations.Location = new System.Drawing.Point(0, 0);
             this.dgv_EE_Relations.Name = "dgv_EE_Relations";
-            this.dgv_EE_Relations.Size = new System.Drawing.Size(466, 405);
+            this.dgv_EE_Relations.Size = new System.Drawing.Size(832, 436);
             this.dgv_EE_Relations.TabIndex = 2;
             this.dgv_EE_Relations.TabStop = false;
             // 
@@ -410,7 +410,7 @@
             this.ct_EE_peakList.Series.Add(series2);
             this.ct_EE_peakList.Series.Add(series3);
             this.ct_EE_peakList.Series.Add(series4);
-            this.ct_EE_peakList.Size = new System.Drawing.Size(235, 221);
+            this.ct_EE_peakList.Size = new System.Drawing.Size(424, 303);
             this.ct_EE_peakList.TabIndex = 2;
             this.ct_EE_peakList.TabStop = false;
             this.ct_EE_peakList.Text = "eePeakList";
@@ -429,8 +429,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer2.Size = new System.Drawing.Size(933, 660);
-            this.splitContainer2.SplitterDistance = 459;
+            this.splitContainer2.Size = new System.Drawing.Size(1652, 711);
+            this.splitContainer2.SplitterDistance = 812;
             this.splitContainer2.TabIndex = 28;
             // 
             // splitContainer6
@@ -450,8 +450,8 @@
             // splitContainer6.Panel2
             // 
             this.splitContainer6.Panel2.Controls.Add(this.splitContainer5);
-            this.splitContainer6.Size = new System.Drawing.Size(455, 656);
-            this.splitContainer6.SplitterDistance = 29;
+            this.splitContainer6.Size = new System.Drawing.Size(808, 707);
+            this.splitContainer6.SplitterDistance = 31;
             this.splitContainer6.TabIndex = 21;
             // 
             // splitContainer5
@@ -477,8 +477,8 @@
             this.splitContainer5.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox1);
             this.splitContainer5.Panel2MinSize = 100;
-            this.splitContainer5.Size = new System.Drawing.Size(455, 623);
-            this.splitContainer5.SplitterDistance = 225;
+            this.splitContainer5.Size = new System.Drawing.Size(808, 672);
+            this.splitContainer5.SplitterDistance = 307;
             this.splitContainer5.TabIndex = 2;
             // 
             // splitContainer4
@@ -496,8 +496,8 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.ct_EE_peakList);
-            this.splitContainer4.Size = new System.Drawing.Size(455, 225);
-            this.splitContainer4.SplitterDistance = 212;
+            this.splitContainer4.Size = new System.Drawing.Size(808, 307);
+            this.splitContainer4.SplitterDistance = 376;
             this.splitContainer4.TabIndex = 18;
             // 
             // cb_view_ef
@@ -535,9 +535,9 @@
             // bt_compare_EE
             // 
             this.bt_compare_EE.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bt_compare_EE.Location = new System.Drawing.Point(0, 367);
+            this.bt_compare_EE.Location = new System.Drawing.Point(0, 334);
             this.bt_compare_EE.Name = "bt_compare_EE";
-            this.bt_compare_EE.Size = new System.Drawing.Size(451, 23);
+            this.bt_compare_EE.Size = new System.Drawing.Size(804, 23);
             this.bt_compare_EE.TabIndex = 31;
             this.bt_compare_EE.Text = "Compare Experiment-Experiment Proteoforms";
             this.bt_compare_EE.UseMnemonic = false;
@@ -549,7 +549,7 @@
             this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox4.Controls.Add(this.nUD_EE_Upper_Bound);
             this.groupBox4.Controls.Add(this.label10);
-            this.groupBox4.Location = new System.Drawing.Point(218, 152);
+            this.groupBox4.Location = new System.Drawing.Point(218, 119);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(160, 83);
             this.groupBox4.TabIndex = 30;
@@ -563,7 +563,7 @@
             this.groupBox3.Controls.Add(this.xMinEE);
             this.groupBox3.Controls.Add(this.xMaxEE);
             this.groupBox3.Controls.Add(this.yMinEE);
-            this.groupBox3.Location = new System.Drawing.Point(198, 252);
+            this.groupBox3.Location = new System.Drawing.Point(198, 219);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(245, 106);
             this.groupBox3.TabIndex = 29;
@@ -577,7 +577,7 @@
             this.groupBox2.Controls.Add(this.label7);
             this.groupBox2.Controls.Add(this.nUD_NoManLower);
             this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Location = new System.Drawing.Point(12, 252);
+            this.groupBox2.Location = new System.Drawing.Point(12, 219);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(180, 106);
             this.groupBox2.TabIndex = 0;
@@ -596,7 +596,7 @@
             this.groupBox1.Controls.Add(this.cb_Graph_lowerThreshold);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.nUD_PeakWidthBase);
-            this.groupBox1.Location = new System.Drawing.Point(12, 75);
+            this.groupBox1.Location = new System.Drawing.Point(12, 42);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(200, 171);
             this.groupBox1.TabIndex = 28;
@@ -669,15 +669,15 @@
             // 
             this.splitContainer3.Panel2.Controls.Add(this.ct_EE_Histogram);
             this.splitContainer3.Panel2MinSize = 100;
-            this.splitContainer3.Size = new System.Drawing.Size(470, 660);
-            this.splitContainer3.SplitterDistance = 409;
+            this.splitContainer3.Size = new System.Drawing.Size(836, 711);
+            this.splitContainer3.SplitterDistance = 440;
             this.splitContainer3.TabIndex = 17;
             // 
             // ExperimentExperimentComparison
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(933, 660);
+            this.ClientSize = new System.Drawing.Size(1652, 711);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer2);
             this.Name = "ExperimentExperimentComparison";

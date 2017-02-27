@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -83,13 +84,16 @@ namespace ProteoformSuiteInternal
         public int et_accepted_relations { get { return relationships.Where(r => r.relation_type == ProteoformComparison.et && r.accepted).ToList().Count; } }
         public int targeted_etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ettd).ToList().Count; } }
 
+
         // CONTRUCTORS
-        public ExperimentalProteoform(ExperimentalProteoform eP)
+        public ExperimentalProteoform()
         {
-            copy(eP);
-        }
+            quant = new quantitativeValues(this);
+        }        
+
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession)
         {
+            quant = new quantitativeValues(this);
             this.root = root;
             this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
             this.calculate_properties();
@@ -98,15 +102,16 @@ namespace ProteoformSuiteInternal
 
         public ExperimentalProteoform(string accession, Component root, bool is_target) : base(accession)
         {
+            quant = new quantitativeValues(this);
             this.root = root;
             this.is_target = is_target;
         }
 
-        public ExperimentalProteoform(string accession, ExperimentalProteoform temp, List<Component> candidate_observations, bool is_target) : base(accession) //this is for first mass of aggregate components. uses a temporary component
+        public ExperimentalProteoform(string accession, ExperimentalProteoform temp, List<Component> candidate_observations, bool is_target, bool neucode_labeled) : base(accession) //this is for first mass of aggregate components. uses a temporary component
         {
             Component root = new Component();
             NeuCodePair ncRoot = new NeuCodePair();
-            if (Lollipop.neucode_labeled)
+            if (neucode_labeled)
             {
                 ((Component)ncRoot).weighted_monoisotopic_mass = temp.agg_mass;
                 ((Component)ncRoot).intensity_sum = temp.agg_intensity;
@@ -130,16 +135,60 @@ namespace ProteoformSuiteInternal
                 this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
         }
-        private void copy(ExperimentalProteoform e)
+
+
+        // TESTING CONSTRUCTORS
+        public ExperimentalProteoform(string accession) : base(accession)
+        {
+            quant = new quantitativeValues(this);
+            this.aggregated_components = new List<Component>() { root };
+            this.accession = accession;
+        }
+
+        public ExperimentalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession)
+        {
+            quant = new quantitativeValues(this);
+            this.aggregated_components = new List<Component>() { root };
+            this.accession = accession;
+            this.modified_mass = modified_mass;
+            this.lysine_count = lysine_count;
+            this.is_target = is_target;
+            this.is_decoy = !is_target;
+        }
+
+        public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession)
+        {
+            quant = new quantitativeValues(this);
+            this.root = root;
+            this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
+            this.calculate_properties();
+            if (quantitative_observations.Count > 0)
+            {
+                this.lt_quant_components.AddRange(quantitative_observations.Where(r => this.includes_neucode_component(r, this, true)));
+                if (Lollipop.neucode_labeled) this.hv_quant_components.AddRange(quantitative_observations.Where(r => this.includes_neucode_component(r, this, false)));
+            }
+            this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
+        }
+
+
+        // COPYING CONSTRUCTOR
+        public ExperimentalProteoform(ExperimentalProteoform eP)
+        {
+            copy_aggregate(eP);
+            quant = new quantitativeValues(this);
+        }
+
+        private void copy_aggregate(ExperimentalProteoform e)
         {
             this.root = e.root;
+            this.accession = e.accession;
+            //doesn't copy quant on purpose
             this.agg_intensity = e.agg_intensity;
             this.agg_mass = e.agg_mass;
             this.modified_mass = e.modified_mass;
             this.agg_rt = e.agg_rt;
             this.lysine_count = e.lysine_count;
             this.accepted = e.accepted;
-            this.quant = e.quant;
             this.mass_shifted = e.mass_shifted;
             this.is_target = e.is_target;
             this.is_decoy = e.is_decoy;
@@ -149,14 +198,16 @@ namespace ProteoformSuiteInternal
             this.lt_verification_components = new List<Component>(e.lt_verification_components);
             this.hv_quant_components = new List<Component>(e.hv_quant_components);
             this.hv_verification_components = new List<Component>(e.hv_verification_components);
+            this.biorepIntensityList = new List<biorepIntensity>(e.biorepIntensityList);
         }
+
 
         // AGGREGATION METHODS
         public void aggregate()
         {
-            ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", this.root, Lollipop.remaining_components.ToList(), true); //first pass returns temporary proteoform
-            ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, Lollipop.remaining_components.ToList(), true); //second pass uses temporary protoeform from first pass.
-            copy(new_pf);
+            ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", this.root, new List<Component>(Lollipop.remaining_components), true); //first pass returns temporary proteoform
+            ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, new List<Component>(Lollipop.remaining_components), true, Lollipop.neucode_labeled); //second pass uses temporary protoeform from first pass.
+            copy_aggregate(new_pf); //doesn't copy quant on purpose
             this.root = temp_pf.root; //maintain the original component root
         }
 
@@ -164,19 +215,19 @@ namespace ProteoformSuiteInternal
         {
             foreach (Component c in Lollipop.remaining_verification_components)
             {
-                if (this.includes(c, this, true))
+                if (this.includes_neucode_component(c, this, true))
                     lt_verification_components.Add(c);
-                if (Lollipop.neucode_labeled && this.includes(c, this, false))
+                if (Lollipop.neucode_labeled && this.includes_neucode_component(c, this, false))
                     hv_verification_components.Add(c);
             }
         }
 
         public void assign_quantitative_components()
         {
-            foreach (Component c in Lollipop.remaining_components)
+            foreach (Component c in Lollipop.remaining_quantification_components)
             {
-                if (this.includes(c, this, true)) lt_quant_components.Add(c);
-                if (this.includes(c, this, false)) hv_quant_components.Add(c);
+                if (this.includes_neucode_component(c, this, true)) lt_quant_components.Add(c);
+                if (this.includes_neucode_component(c, this, false)) hv_quant_components.Add(c);
             }
             //lt_quant_components.AddRange(Lollipop.remaining_components.Where(r => this.includes(r, this, true)));
             ////ep.getBiorepAndFractionIntensities(false); //split lt components by biorep and fraction
@@ -220,21 +271,11 @@ namespace ProteoformSuiteInternal
             return does_include;
         }
 
-        public bool includes(Component candidate)
+        public bool includes_neucode_component(Component candidate, ExperimentalProteoform root, bool light)
         {
-            bool does_include = tolerable_rt(candidate, this.agg_rt) && tolerable_mass(candidate, this.agg_mass);
-            if (candidate is NeuCodePair) does_include = does_include && tolerable_lysCt((NeuCodePair)candidate, this.lysine_count);
-            return does_include;
-        }
-
-        public bool includes(Component candidate, ExperimentalProteoform root, bool light)
-        {
-            double corrected_mass = root.agg_mass;
-            if (!light)
-                corrected_mass = corrected_mass + root.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
-
+            double corrected_mass = light ? root.agg_mass :
+                root.agg_mass + root.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
             bool does_include = tolerable_rt(candidate, root.agg_rt) && tolerable_mass(candidate, corrected_mass);
-            if (candidate is NeuCodePair) does_include = does_include && tolerable_lysCt((NeuCodePair)candidate, root.lysine_count);
             return does_include;
         }
 
@@ -270,31 +311,36 @@ namespace ProteoformSuiteInternal
 
 
         // QUANTITATION CLASS AND METHODS
-        public void make_biorepIntensityList()
+        public List<biorepIntensity> make_biorepIntensityList<T>(List<T> lt_quant_components, List<T> hv_quant_components, IEnumerable<string> ltConditionStrings, IEnumerable<string> hvConditionStrings)
+            where T:IBiorepable
         {
-            this.biorepIntensityList.Clear();
-            foreach (string condition in Lollipop.ltConditionsBioReps.Keys)
+            List <biorepIntensity> biorepIntensityList = new List<biorepIntensity>();
+            //foreach (string condition in Lollipop.ltConditionsBioReps.Keys)
+            foreach (string condition in ltConditionStrings)
             {
-                foreach (int b in this.lt_quant_components.Where(c => c.input_file.lt_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())
+                foreach (int b in lt_quant_components.Where(c => c.input_file.lt_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())
                 {
-                    this.biorepIntensityList.Add(new biorepIntensity(true, false, b, condition, this.lt_quant_components.Where(c => c.input_file.biological_replicate == b).Select(i => i.intensity_sum).ToList().Sum()));
+                    biorepIntensityList.Add(new biorepIntensity(true, false, b, condition, lt_quant_components.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum)));
                 }
             }
             if (Lollipop.neucode_labeled)
             {
-                foreach (string condition in Lollipop.hvConditionsBioReps.Keys)
+                //foreach (string condition in Lollipop.hvConditionsBioReps.Keys)
+                foreach (string condition in hvConditionStrings)
                 {
-                    foreach (int b in this.hv_quant_components.Where(c => c.input_file.hv_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())
+                    foreach (int b in hv_quant_components.Where(c => c.input_file.hv_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())
                     {
-                        this.biorepIntensityList.Add(new biorepIntensity(false, false, b, condition, this.hv_quant_components.Where(c => c.input_file.biological_replicate == b).Select(i => i.intensity_sum).ToList().Sum()));
+                        biorepIntensityList.Add(new biorepIntensity(false, false, b, condition, hv_quant_components.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum)));
                     }
                 }
             }
+            this.biorepIntensityList = biorepIntensityList;
+            return biorepIntensityList;
         }
 
         public class quantitativeValues
         {
-            public string accession { get; set; }
+            public string accession { get { return proteoform.accession; } }
             public List<biorepIntensity> lightBiorepIntensities { get; set; }
             public List<biorepIntensity> heavyBiorepIntensities { get; set; }
             public List<biorepIntensity> lightImputedIntensities { get; set; }
@@ -306,98 +352,196 @@ namespace ProteoformSuiteInternal
             public decimal variance { get; set; } = 0;
             public decimal pValue { get; set; } = 0;
             public bool significant { get; set; } = false;
+            public decimal testStatistic { get; set; }
+            public List<decimal> permutedTestStatistics { get; set; }
+            public decimal FDR { get; set; } = 0;
+            public ExperimentalProteoform proteoform { get; set; }
 
             //Selecting numerator and denominator is not implemented
-            public quantitativeValues(ExperimentalProteoform eP, decimal bkgdAverageIntensity, decimal bkgdStDev, string numerator, string denominator)
+            public quantitativeValues(ExperimentalProteoform eP)
             {
-                //numerator and denominator not used yet b/c of the programming that would require.
                 eP.quant = this;
-                accession = eP.accession;
-                lightBiorepIntensities = eP.biorepIntensityList.Where(b => b.light).ToList();
-                lightImputedIntensities = imputedIntensities(true, lightBiorepIntensities, bkgdAverageIntensity, bkgdStDev);
-                lightIntensitySum = (decimal)lightBiorepIntensities.Select(i => i.intensity).Sum() + (decimal)lightImputedIntensities.Select(i => i.intensity).Sum();
+                proteoform = eP;
+            }
+
+            public void determine_biorep_intensities_and_test_statistics(bool neucode_labeled, List<biorepIntensity> biorepIntensityList, decimal bkgdAverageIntensity, decimal bkgdStDev, string numerator, string denominator, decimal sKnot)
+            {
+                //bkgdAverageIntensity is log base 2
+                //bkgdStDev is log base 2
+
+                //numerator and denominator not used yet b/c of the programming that would require.
+                significant = false;
+                lightBiorepIntensities = biorepIntensityList.Where(b => b.light).ToList();
+                lightImputedIntensities = imputedIntensities(true, lightBiorepIntensities, bkgdAverageIntensity, bkgdStDev, Lollipop.ltConditionsBioReps);
+                lightIntensitySum = (decimal)lightBiorepIntensities.Sum(i => i.intensity) + (decimal)lightImputedIntensities.Sum(i => i.intensity);
                 List<biorepIntensity> allLights = lightBiorepIntensities.Concat(lightImputedIntensities).ToList();
 
                 List<biorepIntensity> allHeavys = new List<biorepIntensity>();
-                if (Lollipop.neucode_labeled)
+                if (neucode_labeled)
                 {
-                    heavyBiorepIntensities = eP.biorepIntensityList.Where(b => !b.light).ToList();
-                    heavyImputedIntensities = imputedIntensities(false, heavyBiorepIntensities, bkgdAverageIntensity, bkgdStDev);
-                    heavyIntensitySum = (decimal)heavyBiorepIntensities.Select(i => i.intensity).Sum() + (decimal)heavyImputedIntensities.Select(i => i.intensity).Sum();
+                    heavyBiorepIntensities = biorepIntensityList.Where(b => !b.light).ToList();
+                    heavyImputedIntensities = imputedIntensities(false, heavyBiorepIntensities, bkgdAverageIntensity, bkgdStDev, Lollipop.hvConditionsBioReps);
+                    heavyIntensitySum = (decimal)heavyBiorepIntensities.Sum(i => i.intensity) + (decimal)heavyImputedIntensities.Sum(i => i.intensity);
                     allHeavys = heavyBiorepIntensities.Concat(heavyImputedIntensities).ToList();
                 }
+
                 intensitySum = lightIntensitySum + heavyIntensitySum;
                 logFoldChange = (decimal)Math.Log((double)lightIntensitySum / (double)heavyIntensitySum, 2); // Will get divide by zero error if not neuCode labeled, right? -AC
                 variance = Variance(logFoldChange, allLights, allHeavys);
                 pValue = PValue(logFoldChange, allLights, allHeavys);
+                decimal proteinLevelStdDev = getProteinLevelStdDev(allLights, allHeavys); //this is log2 bases
+                testStatistic = getSingleTestStatistic(allLights, allHeavys, proteinLevelStdDev, sKnot);
+                permutedTestStatistics = getPermutedTestStatistics(allLights, allHeavys, proteinLevelStdDev, sKnot);
             }
 
-            private List<biorepIntensity> imputedIntensities(bool light, List<biorepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev)
+            public static decimal computeExperimentalProteoformFDR(decimal testStatistic, List<List<decimal>> permutedTestStatistics, int satisfactoryProteoformsCount, List<decimal> sortedProteoformTestStatistics)
             {
+                decimal minimumPositivePassingTestStatistic = Math.Abs(testStatistic);
+                decimal minimumNegativePassingTestStatistic = -minimumPositivePassingTestStatistic;
+
+                int totalFalsePermutedPositiveValues = 0;
+                int totalFalsePermutedNegativeValues = 0;
+
+                foreach (List<decimal> pts in permutedTestStatistics)
+                {
+                    totalFalsePermutedPositiveValues += pts.Count(p => p >= minimumPositivePassingTestStatistic);
+                    totalFalsePermutedNegativeValues += pts.Count(p => p <= minimumNegativePassingTestStatistic);
+                }
+
+                decimal avergePermuted = (decimal)(totalFalsePermutedPositiveValues + totalFalsePermutedNegativeValues) / (decimal)satisfactoryProteoformsCount;
+                return avergePermuted / ((decimal)(sortedProteoformTestStatistics.Count(s => s >= minimumPositivePassingTestStatistic) + sortedProteoformTestStatistics.Count(s => s <= minimumNegativePassingTestStatistic)));
+            }
+
+            public static List<biorepIntensity> imputedIntensities(bool light, List<biorepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev, Dictionary<string,List<int>> observedConditionsBioreps)
+            {
+                //bkgdAverageIntensity is log base 2
+                //bkgdStDev is log base 2
+
                 List<biorepIntensity> imputedBioreps = new List<biorepIntensity>();
-                foreach (KeyValuePair<string, List<int>> entry in light ? Lollipop.ltConditionsBioReps : Lollipop.hvConditionsBioReps)//keys are conditions and values are bioreps.
+                foreach (KeyValuePair<string, List<int>> entry in observedConditionsBioreps)//keys are conditions and values are bioreps.
                 {
                     foreach (int biorep in entry.Value)
                     {
                         if (!observedBioreps.Where(l => l.light == light).Select(k => k.condition).Contains(entry.Key)) // no bioreps observed from this conditon at all
-                            add_biorep_intensity(imputedBioreps, bkgdAverageIntensity, bkgdStDev, biorep, entry.Key, light);
+                            imputedBioreps.Add(add_biorep_intensity(bkgdAverageIntensity, bkgdStDev, biorep, entry.Key, light));
                         else if (!observedBioreps.Where(l => l.condition == entry.Key && l.light == light).Select(b => b.biorep).Contains(biorep)) //this condtion was observed but this biorep was not
-                            add_biorep_intensity(imputedBioreps, bkgdAverageIntensity, bkgdStDev, biorep, entry.Key, light);
+                            imputedBioreps.Add(add_biorep_intensity(bkgdAverageIntensity, bkgdStDev, biorep, entry.Key, light));
                     }
                 }
                 return imputedBioreps;
             }
 
-            private void add_biorep_intensity(List<biorepIntensity> b, decimal bkgdAverageIntensity, decimal bkgdStDev, int biorep, string key, bool light)
+            public static biorepIntensity add_biorep_intensity(decimal bkgdAverageIntensity, decimal bkgdStDev, int biorep, string key, bool light)
             {
-                Random rand = new Random(); //reuse this if you are generating many
-                double u1 = rand.NextDouble(); //these are uniform(0,1) random doubles
-                double u2 = rand.NextDouble();
+                //bkgdAverageIntensity is coming in as a log 2 number
+                //bkgdStDev is coming in as a log 2 number
+
+                double u1 = ExtensionMethods.RandomNumber(); //these are uniform(0,1) random doubles
+                double u2 = ExtensionMethods.RandomNumber();
                 double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-                double logIntensity = (double)bkgdAverageIntensity + (double)bkgdStDev * randStdNormal;
-                double intensity = Math.Pow(2, logIntensity);
-                b.Add(new biorepIntensity(light, true, biorep, key, intensity));//random normal(mean,stdDev^2)
+                double intensity = Math.Pow(2,(double)bkgdAverageIntensity) + (Math.Pow(2,(double)bkgdStDev) * randStdNormal);
+                return(new biorepIntensity(light, true, biorep, key, intensity));//random normal(mean,stdDev^2)
             }
 
-            private decimal Variance(decimal logFoldChange, List<biorepIntensity> lights, List<biorepIntensity> heavys)
+            public decimal Variance(decimal logFoldChange, List<biorepIntensity> allLights, List<biorepIntensity> allHeavies)
             {
                 decimal squaredVariance = 0;
-                foreach (int biorep in lights.Select(b => b.biorep).ToList())
+                foreach (int biorep in allLights.Select(b => b.biorep).ToList())
                 {
-                    decimal logRepRatio = (decimal)Math.Log((double)(((decimal)lights.Where(b => b.biorep == biorep).Select(i => i.intensity).ToList().Sum()) / ((decimal)heavys.Where(b => b.biorep == biorep).Select(i => i.intensity).ToList().Sum())), 2);
+                    List<biorepIntensity> lights_in_biorep = allLights.Where(b => b.biorep == biorep).ToList();
+                    List<biorepIntensity> heavies_in_biorep = allHeavies.Where(b => b.biorep == biorep).ToList();
+
+                    if (lights_in_biorep.Count != heavies_in_biorep.Count)
+                        throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for NeuCode light and heavy at this point.");
+
+                    decimal logRepRatio = (decimal)Math.Log(
+                            (double)(((decimal)lights_in_biorep.Sum(i => i.intensity)) / 
+                            ((decimal)heavies_in_biorep.Sum(i => i.intensity)))
+                            , 2);
                     squaredVariance = squaredVariance + (decimal)Math.Pow(((double)logRepRatio - (double)logFoldChange), 2);
                 }
                 return (decimal)Math.Pow((double)squaredVariance, 0.5);
             }
 
-            private decimal PValue(decimal logFoldChange, List<biorepIntensity> lights, List<biorepIntensity> heavys)
+            public decimal getProteinLevelStdDev(List<biorepIntensity> allLights, List<biorepIntensity> allHeavys)
             {
-                decimal pValue = 0;
+                if ((allLights.Count + allHeavys.Count) == 2)
+                    return 1000000m;
+
+                decimal a = (decimal)((1d / (double)allLights.Count + 1d / (double)allHeavys.Count) / ((double)allLights.Count + (double)allHeavys.Count - 2d));
+                double log2LightAvg = Math.Log(allLights.Average(l => l.intensity), 2);
+                double log2HeavyAvg = Math.Log(allHeavys.Average(l => l.intensity), 2);
+                decimal lightSumSquares = allLights.Sum(l => (decimal)Math.Pow(Math.Log(l.intensity, 2) - log2LightAvg, 2d));
+                decimal heavySumSquares = allHeavys.Sum(h => (decimal)Math.Pow(Math.Log(h.intensity, 2) - log2HeavyAvg, 2d));
+                decimal stdev = (decimal)Math.Sqrt((double)((lightSumSquares + heavySumSquares) * a ));
+                return stdev;
+            }
+
+            public decimal getSingleTestStatistic(List<biorepIntensity> allLights, List<biorepIntensity> allHeavys, decimal proteinLevelStdDev, decimal sKnot)
+            {
+                double t =  (Math.Log(allLights.Average(l => l.intensity), 2) - Math.Log(allHeavys.Average(h => h.intensity), 2)) / ((double)(proteinLevelStdDev + sKnot));
+                return (decimal)t;
+            }
+
+            public List<decimal> getPermutedTestStatistics(List<biorepIntensity> allLights, List<biorepIntensity> allHeavys, decimal protproteinLevelStdDevein, decimal sKnot)
+            {
+                List<decimal> pst = new List<decimal>();
+                int ltCount = allLights.Count;
+                int hvCount = allHeavys.Count;
+                List<int> arr = Enumerable.Range(0, ltCount + hvCount).ToList();
+                var result = ExtensionMethods.Combinations(arr, ltCount);
+
+                List<biorepIntensity> allBiorepIntensities = new List<biorepIntensity>(allLights.Concat(allHeavys));
+
+                int last = ltCount;
+                if (ltCount != hvCount) // This shouldn't happen because imputation forces these lists to be the same length
+                {
+                    last += hvCount;
+                    throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for NeuCode light and heavy at this point.");
+                }
+
+                for (int i = 0; i < last; i++)
+                {
+                    List<biorepIntensity> lightlist = new List<biorepIntensity>();
+                    List<biorepIntensity> heavylist = new List<biorepIntensity>();
+                    foreach (int index in result.ElementAt(i))
+                        lightlist.Add(allBiorepIntensities[index]);
+                    heavylist = allBiorepIntensities.Except(lightlist).ToList();
+                    pst.Add(getSingleTestStatistic(lightlist, heavylist, protproteinLevelStdDevein, sKnot)); //adding the test statistic for each combo
+                }
+                return pst;
+            }
+
+            public decimal PValue(decimal logFoldChange, List<biorepIntensity> allLights, List<biorepIntensity> allHeavies)
+            {
+                if (allLights.Count != allHeavies.Count)
+                    throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for NeuCode light and heavy at this point.");
+
                 int maxPermutations = 10000;
                 ConcurrentBag<decimal> permutedRatios = new ConcurrentBag<decimal>();
 
                 Parallel.For(0, maxPermutations, i =>
                 {
-                    List<double> combined = lights.Select(j => j.intensity).Concat(heavys.Select(j => j.intensity)).ToList();
+                    List<double> combined = allLights.Select(j => j.intensity).Concat(allHeavies.Select(j => j.intensity)).ToList();
                     combined.Shuffle();
-                    double numerator = combined.Take(lights.Count).Sum();
-                    double denominator = combined.Skip(lights.Count).Take(heavys.Count).Sum();
+                    double numerator = combined.Take(allLights.Count).Sum();
+                    double denominator = combined.Skip(allLights.Count).Take(allHeavies.Count).Sum();
                     decimal someRatio = (decimal)Math.Log(numerator / denominator, 2);
                     permutedRatios.Add(someRatio);
                 });
 
-                if (logFoldChange > 0)
-                    pValue = (decimal)(1M / maxPermutations) + (decimal)permutedRatios.Count(x => x > logFoldChange) / (decimal)permutedRatios.Count(); //adding a slight positive shift so that later logarithms don't produce fault
-                else
-                    pValue = (decimal)(1M / maxPermutations) + (decimal)permutedRatios.Count(x => x < logFoldChange) / (decimal)permutedRatios.Count(); //adding a slight positive shift so that later logarithms don't produce fault
+                decimal pValue = logFoldChange > 0 ? 
+                    (decimal)(1M / maxPermutations) + (decimal)permutedRatios.Count(x => x > logFoldChange) / (decimal)permutedRatios.Count : //adding a slight positive shift so that later logarithms don't produce fault
+                    (decimal)(1M / maxPermutations) + (decimal)permutedRatios.Count(x => x < logFoldChange) / (decimal)permutedRatios.Count; //adding a slight positive shift so that later logarithms don't produce fault
+
                 return pValue;
             }
         }
 
         // OTHER METHODS
-        public void shift_masses(int shift)
+        public void shift_masses(int shift, bool neucode_labeled)
         {
-            if (Lollipop.neucode_labeled)
+            if (neucode_labeled)
             {
                 foreach (Component c in this.aggregated_components)
                 {
@@ -415,46 +559,6 @@ namespace ProteoformSuiteInternal
             }
             this.mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
         }
-        
-
-        // TESTING METHODS
-        public ExperimentalProteoform(string accession) : base(accession)
-        {
-            this.aggregated_components = new List<Component>() { root };
-            this.accession = accession;
-        }
-        public ExperimentalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession)
-        {
-            this.aggregated_components = new List<Component>() { root };
-            this.accession = accession;
-            this.modified_mass = modified_mass;
-            this.lysine_count = lysine_count;
-            if (!is_target)
-            {
-                this.is_target = false;
-                this.is_decoy = true;
-            }
-        }
-        public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession)
-        {
-            this.root = root;
-            this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
-            this.calculate_properties();
-            if (quantitative_observations.Count > 0)
-            {
-                this.lt_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, true)));
-                if (Lollipop.neucode_labeled) this.hv_quant_components.AddRange(quantitative_observations.Where(r => this.includes(r, this, false)));
-            }
-            this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
-        }
-
-        
-        
-
-        
-
-        
-
     }
 
     public class TheoreticalProteoform : Proteoform
@@ -465,9 +569,7 @@ namespace ProteoformSuiteInternal
         public string fragment { get; set; }
         public int begin { get; set; }
         public int end { get; set; }
-        public string gene_id { get; set; }
         public double unmodified_mass { get; set; }
-        private string sequence { get; set; }
         public List<GoTerm> goTerms { get; set; } = null;
         public PtmSet ptm_set { get; set; } = new PtmSet(new List<Ptm>());
         public List<Ptm> ptm_list { get { return ptm_set.ptm_combination.ToList(); } }
@@ -486,26 +588,26 @@ namespace ProteoformSuiteInternal
             }
         }
         public List<Psm> psm_list { get; set; } = new List<Psm>();
-        private int _psm_count_BU;
-        public int psm_count_BU { set { _psm_count_BU = value; } get { if (!Lollipop.opened_results_originally) return psm_list.Count; else return _psm_count_BU; } }
+        public int psm_count_BU { get { return psm_list.Count; } }
         public string of_interest { get; set; } = "";
+        public bool contaminant { get; set; }
 
-        public TheoreticalProteoform(string accession, string description, Protein protein, bool is_metCleaved, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, string gene_id, bool is_target) : 
+        public TheoreticalProteoform(string accession, string description, Protein protein, bool is_metCleaved, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) : 
             base(accession, modified_mass, lysine_count, is_target)
         {
             this.proteinList.Add(protein);
             this.accession = accession;
             this.description = description;
-            this.name = protein.name;
-            this.fragment = protein.fragment;
-            this.begin = protein.begin + Convert.ToInt32(is_metCleaved);
-            this.end = protein.end;
+            this.name = protein.Name;
+            this.fragment = protein.BigPeptideTypes.FirstOrDefault();
+            this.begin = (int)protein.OneBasedBeginPositions.FirstOrDefault() + Convert.ToInt32(is_metCleaved);
+            this.end = (int)protein.OneBasedEndPositions.FirstOrDefault();
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
-            this.gene_id = gene_id;
+            if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
         }
 
-        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, string gene_id, bool is_target) :
+        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target) :
             base(accession, modified_mass, lysine_count, is_target)
         {
             this.accession = accession;
@@ -516,18 +618,7 @@ namespace ProteoformSuiteInternal
             this.end = end;
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
-            this.gene_id = gene_id;
         }
-
-        //for reading in neucode pairs
-        public TheoreticalProteoform(string accession, double modified_mass, int lysine_count, string ptm_descriptions) : base(accession)
-        {
-            this.accession = accession;
-            this.modified_mass = modified_mass;
-            this.lysine_count = lysine_count;
-            this.ptm_descriptions_readin = ptm_descriptions;
-        }
-
 
         //for Tests
         public TheoreticalProteoform(string accession) : base(accession)
@@ -536,16 +627,13 @@ namespace ProteoformSuiteInternal
         }
 
         //for Tests
-        public TheoreticalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession, modified_mass, lysine_count, is_target)
+        public TheoreticalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession,  modified_mass,  lysine_count,  is_target)
         {
             this.accession = accession;
             this.modified_mass = modified_mass;
             this.lysine_count = lysine_count;
-            if (!is_target)
-            {
-                this.is_target = false;
-                this.is_decoy = true;
-            }
+            this.is_target = is_target;
+            this.is_decoy = !is_target;
         }
 
         public static double CalculateProteoformMass(string pForm, Dictionary<char, double> aaIsotopeMassList)
@@ -565,50 +653,56 @@ namespace ProteoformSuiteInternal
             if (ptm_list.Count == 0)
                 return "unmodified";
             else
-                return string.Join("; ", ptm_list.Select(ptm => ptm.modification.description));
+                return string.Join("; ", ptm_list.Select(ptm => ptm.modification.id));
         }
     }
 
     public class TheoreticalProteoformGroup : TheoreticalProteoform
     {
-
         public List<string> accessionList { get; set; } // this is the list of accession numbers for all proteoforms that share the same modified mass. the list gets alphabetical order
-
-        public TheoreticalProteoformGroup(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, string gene_id, bool is_target)
-            : base(accession, description, name, fragment, begin, end, unmodified_mass, lysine_count, goTerms, ptm_set, modified_mass, gene_id, is_target)
-        { }
-        public TheoreticalProteoformGroup(List<TheoreticalProteoform> theoreticals)
-            : base(theoreticals[0].accession + "_T" + theoreticals.Count(), String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.name)), String.Join(";", theoreticals.Select(t => t.fragment)), theoreticals[0].begin, theoreticals[0].end, theoreticals[0].unmodified_mass, theoreticals[0].lysine_count, theoreticals[0].goTerms, theoreticals[0].ptm_set, theoreticals[0].modified_mass, theoreticals[0].gene_id, theoreticals[0].is_target)
+        public TheoreticalProteoformGroup(List<TheoreticalProteoform> theoreticals, bool contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins)
+            : base(theoreticals[0].accession + "_T" + theoreticals.Count(), String.Join(";", theoreticals.Select(t => t.description)),  String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.fragment)), theoreticals[0].begin, theoreticals[0].end, theoreticals[0].unmodified_mass, theoreticals[0].lysine_count, theoreticals[0].goTerms, theoreticals[0].ptm_set, theoreticals[0].modified_mass, theoreticals[0].is_target)
         {
             this.accessionList = theoreticals.Select(p => p.accession).ToList();
             this.proteinList = theoreticals.SelectMany(p => p.proteinList).ToList();
+            if (contaminants)
+            {
+                List<Protein> matching_contaminants = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Where(p => this.accessionList.Select(acc => acc.Split(new char[] { '_' })[0]).Contains(p.Accession)).ToList();
+                this.contaminant = matching_contaminants.Count > 0;
+                if (!contaminant) return;
+                this.accession = matching_contaminants[0].Accession + "_T" + accessionList.Count();
+                this.description = String.Join(";", matching_contaminants.Select(t => t.FullDescription));
+                this.name = String.Join(";", matching_contaminants.Select(t => t.FullDescription));
+                TheoreticalProteoform first_contaminant = theoreticals.FirstOrDefault(t => t.contaminant);
+                this.begin = first_contaminant.begin;
+                this.end = first_contaminant.end;
+                this.unmodified_mass = first_contaminant.unmodified_mass;
+                this.modified_mass = first_contaminant.modified_mass;
+                this.lysine_count = first_contaminant.lysine_count;
+                this.goTerms = first_contaminant.goTerms;
+                this.ptm_set = first_contaminant.ptm_set;
+                this.is_target = first_contaminant.is_target;
+                this.is_decoy = first_contaminant.is_decoy;
+            }
         }
     }
 
-    //public class weightedRatioIntensityVariance
-    //{
-    //    public double ratio { get; set; } = 0;
-    //    public double intensity { get; set; } = 0;
-    //    public double variance { get; set; } = 0;
-    //    public double pValue { get; set; } = 0;
+    //public class bftIntensity
+    //{        
+    //    public bool light { get; set; } = true; // true if unlabelled or neucode light; false if neucode heavy
+    //    public int biorep { get; set; }
+    //    public int fraction { get; set; }
+    //    public int techrep { get; set; }
+    //    public double intensity { get; set; }
+    //    public bftIntensity(bool light, int biorep, int fraction, int techrep, double intensity)
+    //    {
+    //        this.light = light;
+    //        this.biorep = biorep;
+    //        this.fraction = fraction;
+    //        this.techrep = techrep;
+    //        this.intensity = intensity;
+    //    }
     //}
-
-    public class bftIntensity
-    {        
-        public bool light { get; set; } = true; // true if unlabelled or neucode light; false if neucode heavy
-        public int biorep { get; set; }
-        public int fraction { get; set; }
-        public int techrep { get; set; }
-        public double intensity { get; set; }
-        public bftIntensity(bool light, int biorep, int fraction, int techrep, double intensity)
-        {
-            this.light = light;
-            this.biorep = biorep;
-            this.fraction = fraction;
-            this.techrep = techrep;
-            this.intensity = intensity;
-        }
-    }
 
     public class biorepIntensity
     {
@@ -616,7 +710,7 @@ namespace ProteoformSuiteInternal
         public bool imputed { get; set; } = false;
         public int biorep { get; set; }
         public string condition { get; set; }
-        public double intensity { get; set; }
+        public double intensity { get; set; }// this should be linear intensity not log intensity
 
         public biorepIntensity(bool light, bool imputed, int biorep, string condition, double intensity)
         {
@@ -624,7 +718,7 @@ namespace ProteoformSuiteInternal
             this.imputed = imputed;
             this.biorep = biorep;
             this.condition = condition;
-            this.intensity = intensity;
+            this.intensity = intensity;// this should be linear intensity not log intensity
         }
     }
 
@@ -682,7 +776,7 @@ namespace ProteoformSuiteInternal
             if (ptm_list.Count == 0)
                 return "unmodified";
             string _modifications_string = "";
-            foreach (Ptm ptm in ((TopDownProteoform)this).ptm_list) _modifications_string += (ptm.modification.description + "@" + ptm.position + "; ");
+            foreach (Ptm ptm in ((TopDownProteoform)this).ptm_list) _modifications_string += (ptm.modification.id + "@" + ptm.position + "; ");
             return _modifications_string;
         }
 

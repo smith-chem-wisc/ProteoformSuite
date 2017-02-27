@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using ProteoformSuiteInternal;
+using Proteomics;
 
 namespace Test
 {
@@ -15,12 +16,13 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
 
             //One accepted ET relation; should give one ProteoformFamily
             Lollipop.min_peak_count_et = 1;
             ExperimentalProteoform pf1 = new ExperimentalProteoform("E1");
             TheoreticalProteoform pf2 = new TheoreticalProteoform("T1");
+            pf2.name = "T1";
             ProteoformComparison comparison = ProteoformComparison.et;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
@@ -30,7 +32,9 @@ namespace Test
             test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
             test_community.theoretical_proteoforms = new TheoreticalProteoform[] { pf2 };
             test_community.construct_families();
+            Assert.AreEqual("T1", test_community.families.First().name_list);
             Assert.AreEqual("T1", test_community.families.First().accession_list);
+            Assert.AreEqual("E1", test_community.families.First().experimentals_list);
             Assert.AreEqual(1, test_community.families.Count);
             Assert.AreEqual(2, test_community.families[0].proteoforms.Count);
             Assert.AreEqual(1, test_community.families.First().experimental_count);
@@ -42,7 +46,7 @@ namespace Test
         {
             //Four experimental proteoforms, three relations (linear), all accepted; should give 1 bundled family
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
 
             Lollipop.min_peak_count_ee = 2;
             ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
@@ -81,7 +85,7 @@ namespace Test
         {
             //Five experimental proteoforms, four relations (linear), second on not accepted into a peak, one peak; should give 2 families
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, Modification> { { "unmodified", new Modification() } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
 
             Lollipop.ee_max_mass_difference = 20;
             Lollipop.peak_width_base_ee = 0.015;

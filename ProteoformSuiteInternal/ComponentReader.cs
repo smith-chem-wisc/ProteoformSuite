@@ -23,7 +23,7 @@ namespace ProteoformSuiteInternal
         public List<Component> read_components_from_xlsx(InputFile file)
         {
             this.raw_components_in_file.Clear();
-            string absolute_path = file.path + "\\" + file.filename + file.extension;
+            string absolute_path = file.directory + "\\" + file.filename + file.extension;
             try
             {
                 using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(absolute_path, false))

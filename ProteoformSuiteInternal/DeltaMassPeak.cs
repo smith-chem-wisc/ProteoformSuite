@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -41,7 +42,7 @@ namespace ProteoformSuiteInternal
         public List<Modification> possiblePeakAssignments { get; set; }
         public string possiblePeakAssignments_string
         {
-            get { return String.Join("; ", possiblePeakAssignments.Select(m => m.description).ToArray()); }
+            get { return String.Join("; ", possiblePeakAssignments.Select(m => m.id).ToArray()); }
         }
         public ProteoformRelation base_relation { get; set; }
 
@@ -107,13 +108,8 @@ namespace ProteoformSuiteInternal
 
         private List<Modification> nearestPTMs(double dMass)
         {
-            List<Modification> possiblePTMs = new List<Modification>();
-            foreach (KeyValuePair<string, Modification> knownMod in Lollipop.uniprotModificationTable)
-            {
-                double modMass = knownMod.Value.monoisotopic_mass_shift;
-                if (Math.Abs(dMass - modMass) <= Lollipop.peak_width_base_et / 2)
-                    possiblePTMs.Add(knownMod.Value);
-            }
+            List<ModificationWithMass> all_modifications = Lollipop.uniprotModificationTable.SelectMany(i => i.Value).OfType<ModificationWithMass>().ToList();
+            List<Modification> possiblePTMs = all_modifications.Where(m => Math.Abs(dMass - m.monoisotopicMass) <= Lollipop.peak_width_base_et / 2).ToList<Modification>();
             return possiblePTMs;
         }
 
@@ -146,18 +142,19 @@ namespace ProteoformSuiteInternal
             return all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
         }
 
-        public void shift_experimental_masses(int shift)
+        public bool shift_experimental_masses(int shift, bool neucode_labeled)
         {
             if (this.relation_type != ProteoformComparison.et)
-            {
-                return; //Not currently intended for ee relations
-            }
+                return false; //Not currently intended for ee relations
+
             foreach (ProteoformRelation r in this._grouped_relations)
             {
                 Proteoform p = r.connected_proteoforms[0];
                 if (p is ExperimentalProteoform && ((ExperimentalProteoform)p).mass_shifted == false && Lollipop.proteoform_community.experimental_proteoforms.Contains(p))
-                    ((ExperimentalProteoform)p).shift_masses(shift);
+                    ((ExperimentalProteoform)p).shift_masses(shift, neucode_labeled);
             }
+
+            return true;
         }
     }
 }

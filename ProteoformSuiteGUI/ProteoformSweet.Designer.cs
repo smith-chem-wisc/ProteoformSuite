@@ -56,7 +56,6 @@
             this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.calibrateResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -91,23 +90,24 @@
             this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openCurrentPageToolStripMenuItem,
             this.openAllToolStripMenuItem});
+            this.openToolStripMenuItem.Enabled = false;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
             this.openToolStripMenuItem.Text = "Open";
             // 
             // openCurrentPageToolStripMenuItem
             // 
+            this.openCurrentPageToolStripMenuItem.Enabled = false;
             this.openCurrentPageToolStripMenuItem.Name = "openCurrentPageToolStripMenuItem";
             this.openCurrentPageToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.openCurrentPageToolStripMenuItem.Text = "Open Current Page";
-            this.openCurrentPageToolStripMenuItem.Click += new System.EventHandler(this.openCurrentPageToolStripMenuItem_Click);
             // 
             // openAllToolStripMenuItem
             // 
+            this.openAllToolStripMenuItem.Enabled = false;
             this.openAllToolStripMenuItem.Name = "openAllToolStripMenuItem";
             this.openAllToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.openAllToolStripMenuItem.Text = "Open All";
-            this.openAllToolStripMenuItem.Click += new System.EventHandler(this.openAllToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
@@ -120,17 +120,17 @@
             // 
             // saveCurrentPageToolStripMenuItem
             // 
+            this.saveCurrentPageToolStripMenuItem.Enabled = false;
             this.saveCurrentPageToolStripMenuItem.Name = "saveCurrentPageToolStripMenuItem";
             this.saveCurrentPageToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
             this.saveCurrentPageToolStripMenuItem.Text = "Save Current Page";
-            this.saveCurrentPageToolStripMenuItem.Click += new System.EventHandler(this.saveCurrentPageToolStripMenuItem_Click);
             // 
             // saveAllToolStripMenuItem1
             // 
+            this.saveAllToolStripMenuItem1.Enabled = false;
             this.saveAllToolStripMenuItem1.Name = "saveAllToolStripMenuItem1";
             this.saveAllToolStripMenuItem1.Size = new System.Drawing.Size(170, 22);
             this.saveAllToolStripMenuItem1.Text = "Save All";
-            this.saveAllToolStripMenuItem1.Click += new System.EventHandler(this.saveAllToolStripMenuItem_Click);
             // 
             // exportTablesToolStripMenuItem
             // 
@@ -156,7 +156,6 @@
             // resultsToolStripMenuItem
             // 
             this.resultsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.calibrateResultsToolStripMenuItem,
             this.loadResultsToolStripMenuItem,
             this.rawExperimentalProteoformsToolStripMenuItem,
             this.neuCodeProteoformPairsToolStripMenuItem,
@@ -262,30 +261,23 @@
             // saveMethodToolStripMenuItem1
             // 
             this.saveMethodToolStripMenuItem1.Name = "saveMethodToolStripMenuItem1";
-            this.saveMethodToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.saveMethodToolStripMenuItem1.Size = new System.Drawing.Size(145, 22);
             this.saveMethodToolStripMenuItem1.Text = "Save Method";
             this.saveMethodToolStripMenuItem1.Click += new System.EventHandler(this.saveMethodToolStripMenuItem1_Click);
             // 
             // loadSettingsToolStripMenuItem
             // 
             this.loadSettingsToolStripMenuItem.Name = "loadSettingsToolStripMenuItem";
-            this.loadSettingsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadSettingsToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.loadSettingsToolStripMenuItem.Text = "Load Settings";
             this.loadSettingsToolStripMenuItem.Click += new System.EventHandler(this.loadSettingsToolStripMenuItem_Click);
             // 
             // loadRunToolStripMenuItem
             // 
             this.loadRunToolStripMenuItem.Name = "loadRunToolStripMenuItem";
-            this.loadRunToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.loadRunToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.loadRunToolStripMenuItem.Text = "Load && Run";
             this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
-            // 
-            // calibrateResultsToolStripMenuItem
-            // 
-            this.calibrateResultsToolStripMenuItem.Name = "calibrateResultsToolStripMenuItem";
-            this.calibrateResultsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.calibrateResultsToolStripMenuItem.Text = "Calibrate Results";
-            this.calibrateResultsToolStripMenuItem.Click += new System.EventHandler(this.calibrateResultsToolStripMenuItem_Click);
             // 
             // ProteoformSweet
             // 
@@ -337,7 +329,6 @@
         private System.Windows.Forms.ToolStripMenuItem exportTablesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadSettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem topdownResultsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem calibrateResultsToolStripMenuItem;
     }
 }
 

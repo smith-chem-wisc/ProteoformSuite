@@ -42,7 +42,7 @@ namespace ProteoformSuiteInternal
         {
                 foreach (InputFile file in files)
                 {
-                    using (ThermoDynamicData myMsDataFile = ThermoDynamicData.InitiateDynamicConnection(file.path + "\\" + file.filename + file.extension))
+                    using (ThermoDynamicData myMsDataFile = ThermoDynamicData.InitiateDynamicConnection(file.complete_path))
                     {
                         foreach (ExperimentalProteoform e in Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted && p.aggregated_components.Where(c => c.input_file.filename.Replace("_calibrated", "") == file.filename).Count() > 0).ToList())
                         {

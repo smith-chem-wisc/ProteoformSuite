@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
+using Proteomics;
 
 namespace ProteoformSuite
 {
@@ -21,7 +22,7 @@ namespace ProteoformSuite
         {
             InitializeComponent();
         }
-        private void Quantification_Load(object sender, EventArgs e)
+        private void Quantification_Load(object sender, EventArgs e) //I would rather that load event code be here than somewhere else. it makes it very hard to know what is being called on form load.....
         { }
 
         public DataGridView Get_quant_results_DGV()
@@ -34,36 +35,30 @@ namespace ProteoformSuite
             return dgv_goAnalysis;
         }
 
-        private void quantify()
+        public void perform_calculations() //this is the first thing that gets run on form load
         {
-            this.Cursor = Cursors.WaitCursor;
-            computeBiorepIntensities();
-            defineAllObservedIntensityDistribution();
-            determineProteoformsMeetingCriteria();
-            defineSelectObservedIntensityDistribution();
-            defineSelectBackgroundIntensityDistribution();
-            plotBiorepIntensities();
-            proteoformQuantification();
-            DisplayUtility.FillDataGridView(dgv_quantification_results, qVals);
-            volcanoPlot();
-            interestingProteins = getInterestingProteins(qVals);
-            goTermNumbers = getGoTermNumbers(interestingProteins);
-            fillGoTermsTable();
-            this.Cursor = Cursors.Default;
-        }
-
-        public void perform_calculations()
-        {
-            if (Lollipop.quantification_files().Count() > 0 && Lollipop.proteoform_community.experimental_proteoforms.Length > 0 && qVals.Count <= 0)
+            if (Lollipop.get_files(Lollipop.input_files, Purpose.Quantification).Count() > 0 && Lollipop.proteoform_community.experimental_proteoforms.Length > 0 && Lollipop.qVals.Count <= 0)
             {
                 initialize();
-                quantify();
+                Lollipop.quantify();
+                Lollipop.GO_analysis();
+                fillGuiTablesAndGraphs();
             }
+        }
+
+        public void fillGuiTablesAndGraphs()
+        {
+            plotObservedVsExpectedRelativeDifference();
+            DisplayUtility.FillDataGridView(dgv_quantification_results, Lollipop.qVals);
+            volcanoPlot();
+            plotBiorepIntensities();
+            updateGoTermsTable();           
         }
 
         private void btn_refreshCalculation_Click(object sender, EventArgs e)
         {
-            quantify();
+            Lollipop.quantify();
+            fillGuiTablesAndGraphs();
         }
 
         public void initialize_every_time()
@@ -98,17 +93,28 @@ namespace ProteoformSuite
             cmbx_nodeLabelPositioning.SelectedIndex = 0;
 
             //Set parameters
+            nud_bkgdShift.ValueChanged -= nud_bkgdShift_ValueChanged;
             nud_bkgdShift.Value = (decimal)-2.0;
+            Lollipop.backgroundShift = nud_bkgdShift.Value;
+            nud_bkgdShift.ValueChanged += nud_bkgdShift_ValueChanged;
+
+            nud_bkgdWidth.ValueChanged -= nud_bkgdWidth_ValueChanged;
             nud_bkgdWidth.Value = (decimal)0.5;
+            Lollipop.backgroundWidth = nud_bkgdWidth.Value;
+            nud_bkgdWidth.ValueChanged += nud_bkgdWidth_ValueChanged;
 
             nud_bkgdShift.ValueChanged += new EventHandler(plotBiorepIntensitiesEvent);
             nud_bkgdWidth.ValueChanged += new EventHandler(plotBiorepIntensitiesEvent);
 
-            nud_pValue.Value = 0.01m;
-            nud_ratio.Value = 3.0m;
-            nud_intensity.Value = 500000;
+            nud_FDR.ValueChanged -= new EventHandler(updateGoTermsTable);
+            nud_ratio.ValueChanged -= new EventHandler(updateGoTermsTable);
+            nud_intensity.ValueChanged -= new EventHandler(updateGoTermsTable);
 
-            nud_pValue.ValueChanged += new EventHandler(updateGoTermsTable);
+            nud_FDR.Value = Lollipop.minProteoformFDR;
+            nud_ratio.Value = Lollipop.minProteoformFoldChange;
+            nud_intensity.Value = Lollipop.minProteoformIntensity;
+
+            nud_FDR.ValueChanged += new EventHandler(updateGoTermsTable);
             nud_ratio.ValueChanged += new EventHandler(updateGoTermsTable);
             nud_intensity.ValueChanged += new EventHandler(updateGoTermsTable);
 
@@ -116,10 +122,22 @@ namespace ProteoformSuite
             nud_minObservations.Minimum = 1;
             nud_minObservations.Maximum = Lollipop.countOfBioRepsInOneCondition;
             nud_minObservations.Value = Lollipop.countOfBioRepsInOneCondition;
+            Lollipop.minBiorepsWithObservations = (int)nud_minObservations.Value;
 
-            cmbx_observationsTypeRequired.Items.Add("Minimum Total from A Single Condition");
-            cmbx_observationsTypeRequired.Items.Add("Minimum Total from Any Condition");
+            cmbx_observationsTypeRequired.SelectedIndexChanged -= cmbx_observationsTypeRequired_SelectedIndexChanged;
+            cmbx_observationsTypeRequired.Items.AddRange(Lollipop.observation_requirement_possibilities);
             cmbx_observationsTypeRequired.SelectedIndex = 0;
+            Lollipop.observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
+            cmbx_observationsTypeRequired.SelectedIndexChanged += cmbx_observationsTypeRequired_SelectedIndexChanged;
+
+
+            nud_sKnot_minFoldChange.ValueChanged -= nud_sKnot_minFoldChange_ValueChanged;
+            nud_sKnot_minFoldChange.Value = Lollipop.sKnot_minFoldChange;
+            nud_sKnot_minFoldChange.ValueChanged += nud_sKnot_minFoldChange_ValueChanged;
+
+            nud_Offset.ValueChanged -= nud_Offset_ValueChanged;
+            nud_Offset.Value = Lollipop.offsetTestStatistics;
+            nud_Offset.ValueChanged += nud_Offset_ValueChanged;
 
             cmbx_goAspect.Items.Add(Aspect.biologicalProcess);
             cmbx_goAspect.Items.Add(Aspect.cellularComponent);
@@ -130,210 +148,60 @@ namespace ProteoformSuite
             cmbx_goAspect.SelectedIndexChanged += cmbx_goAspect_SelectedIndexChanged;
 
             rb_allSampleGOTerms.Enabled = false;
-            rb_allSampleGOTerms.Checked = true;
+            rb_allSampleGOTerms.Checked = !Lollipop.allTheoreticalProteins; //initiallizes the background for GO analysis to the set of observed proteins. not the set of theoretical proteins.
             rb_allSampleGOTerms.Enabled = true;
 
             rb_allSampleGOTerms.CheckedChanged += new EventHandler(goTermBackgroundChanged);
-            //rb_allTheoreticalGOTerms.CheckedChanged += new EventHandler(goTermBackgroundChanged); // this is disabled to prevent two method calls.
-
-            goMasterSet = getDatabaseGoNumbers();
         }
 
-
-        // CALCULATING DISTRIBUTION OF OBSERVED AND IMPUTED PROTEOFORM INTENSITIES
-        decimal observedAverageIntensity; //log base 2
-        decimal selectAverageIntensity; //log base 2
-        decimal observedStDev;
-        decimal selectStDev;
-        decimal observedGaussianArea;
-        decimal selectGaussianArea;
-        decimal observedGaussianHeight;
-        decimal selectGaussianHeight;
-        int numSelectMissingIntensities;
-        int numSelectProteoformIntensities;
-        SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>();
-        SortedDictionary<decimal, int> logSelectIntensityHistogram = new SortedDictionary<decimal, int>();
-
-        int satisfactoryProteoformsCount;
-        List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>(); // these are proteoforms meeting the required number of observations.
-
-        decimal bkgdAverageIntensity; //log base 2
-        decimal bkgdSelectAverageIntensity; //log base 2
-        decimal bkgdStDev;
-        decimal bkgdSelectStDev;
-        //decimal bkgdGaussianArea;
-        decimal bkgdSelectGaussianArea;
-        //decimal bkgdGaussianHeight;
-        decimal bkgdSelectGaussianHeight;
-        int numMeasuredProteoformIntensities;
-        //End -- Variables Describing the Distribution of Observed and Imputed Proteoform Intensities
-
-        private void computeBiorepIntensities()
+        private void plotObservedVsExpectedRelativeDifference()
         {
-            if (Lollipop.proteoform_community.experimental_proteoforms.Count() > 0)
-            {
-                Parallel.ForEach(Lollipop.proteoform_community.experimental_proteoforms, eP =>
-                {
-                    eP.make_biorepIntensityList();
-                });
-            }
+            ct_relativeDifference.Series.Clear();
+            ct_relativeDifference.Series.Add("obsVSexp");
+            ct_relativeDifference.Series["obsVSexp"].ChartType = SeriesChartType.Point;
+            ct_relativeDifference.Series.Add("positiveOffset");
+            ct_relativeDifference.Series["positiveOffset"].ChartType = SeriesChartType.Line;
+            ct_relativeDifference.Series.Add("negativeOffset");
+            ct_relativeDifference.Series["negativeOffset"].ChartType = SeriesChartType.Line;
+            ct_relativeDifference.ChartAreas[0].AxisX.Title = "expected relative difference dE(i)";
+            ct_relativeDifference.ChartAreas[0].AxisY.Title = "observed relative difference d(i)";
+
+            ct_relativeDifference.Series["obsVSexp"].Points.DataBindXY(Lollipop.sortedAvgPermutationTestStatistics.ToList(), Lollipop.sortedProteoformTestStatistics.ToList());
+
+            plotObservedVsExpectedOffsets();
         }
 
-        private void defineAllObservedIntensityDistribution() // the distribution of all observed experimental proteoform biorep intensities
-        {          
-            List<decimal> allIntensities = new List<decimal>();
-            numMeasuredProteoformIntensities = 0;
-            foreach (List<biorepIntensity> biorepIntensityList in Lollipop.proteoform_community.experimental_proteoforms.Select(b => b.biorepIntensityList))
-            {
-                foreach (double intensity in biorepIntensityList.Select(i => i.intensity))
-                {
-                    numMeasuredProteoformIntensities++;
-                    decimal roundedIntensity = Math.Round((decimal)Math.Log(intensity, 2), 1);
-                    allIntensities.Add(roundedIntensity);
-                    if (logIntensityHistogram.ContainsKey(roundedIntensity))
-                        logIntensityHistogram[roundedIntensity]++;
-                    else
-                        logIntensityHistogram.Add(roundedIntensity, 1);
-                }
-            }
-
-            observedAverageIntensity = allIntensities.Where(i => i > 1).ToList().Average(); //these are log2 values
-            observedStDev = (decimal)Math.Sqrt(allIntensities.Average(v => Math.Pow((double)v - (double)(observedAverageIntensity), 2)));
-            observedGaussianArea = 0;
-            bool first = true;
-            decimal x1 = 0;
-            decimal y1 = 0;
-            foreach (KeyValuePair<decimal, int> entry in logIntensityHistogram)
-            {
-                if (first)
-                {
-                    x1 = entry.Key;
-                    y1 = (decimal)entry.Value;
-                    first = false;
-                }
-                else
-                {
-                    observedGaussianArea += (entry.Key - x1) * (y1 + ((decimal)entry.Value - y1) / 2);
-                    x1 = entry.Key;
-                    y1 = (decimal)entry.Value;
-                }
-            }
-            observedGaussianHeight = observedGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
-
-            bkgdAverageIntensity = observedAverageIntensity + nud_bkgdShift.Value * observedStDev;
-            bkgdStDev = observedStDev * nud_bkgdWidth.Value;
-        }
-
-        private void defineSelectObservedIntensityDistribution()
+        decimal positiveOffsetFunction(decimal x)
         {
-            List<decimal> allIntensities = new List<decimal>();
-            numSelectProteoformIntensities = 0;
-            foreach (List<biorepIntensity> biorepIntensityList in satisfactoryProteoforms.Select(b => b.biorepIntensityList))
-            {
-                foreach (double intensity in biorepIntensityList.Select(i => i.intensity))
-                {
-                    numSelectProteoformIntensities++;
-                    decimal roundedIntensity = Math.Round((decimal)Math.Log(intensity, 2), 1);
-                    allIntensities.Add(roundedIntensity);
-                    if (logSelectIntensityHistogram.ContainsKey(roundedIntensity))
-                        logSelectIntensityHistogram[roundedIntensity]++;
-                    else
-                        logSelectIntensityHistogram.Add(roundedIntensity, 1);
-                }
-            }
-
-            selectAverageIntensity = allIntensities.Where(i => i > 1).ToList().Average(); //these are log2 values
-            selectStDev = (decimal)Math.Sqrt(allIntensities.Average(v => Math.Pow((double)v - (double)(selectAverageIntensity), 2)));
-            selectGaussianArea = 0;
-            bool first = true;
-            decimal x1 = 0;
-            decimal y1 = 0;
-            foreach (KeyValuePair<decimal, int> entry in logSelectIntensityHistogram)
-            {
-                if (first)
-                {
-                    x1 = entry.Key;
-                    y1 = (decimal)entry.Value;
-                    first = false;
-                }
-                else
-                {
-                    selectGaussianArea += (entry.Key - x1) * (y1 + ((decimal)entry.Value - y1) / 2);
-                    x1 = entry.Key;
-                    y1 = (decimal)entry.Value;
-                }
-            }
-            selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
+            return (x + nud_Offset.Value);
         }
 
-        private void determineProteoformsMeetingCriteria()
+        decimal negativeOffsetFunction(decimal x)
         {
-            List<string> conditions = Lollipop.ltConditionsBioReps.Keys.ToList();
-            satisfactoryProteoformsCount = 0;
-            satisfactoryProteoforms.Clear();
-            ConcurrentBag<ExperimentalProteoform> sP = new ConcurrentBag<ExperimentalProteoform>();
-            conditions.AddRange(Lollipop.hvConditionsBioReps.Keys.ToList());
-            conditions = conditions.Distinct().ToList();
-
-            object sync = new object();
-
-            if (cmbx_observationsTypeRequired.SelectedIndex == 0)//single condition
-            {
-                Parallel.ForEach(Lollipop.proteoform_community.experimental_proteoforms, eP =>
-                {
-                    foreach (string c in conditions)
-                    {
-                        if (eP.biorepIntensityList.Where(bc => bc.condition == c).Select(b => b.biorep).ToList().Count() == nud_minObservations.Value)
-                        {
-                            lock (sync)
-                            {
-                                satisfactoryProteoformsCount++;
-                                sP.Add(eP);
-                            }
-                            break;
-                        }
-                    }
-                });
-            }
-
-            else //any condition
-            {
-                Parallel.ForEach(Lollipop.proteoform_community.experimental_proteoforms, eP =>
-                {
-                    if (eP.biorepIntensityList.Select(c => c.condition).Distinct().ToList().Count() == nud_minObservations.Value)
-                    {
-                        lock (sync)
-                        {
-                            satisfactoryProteoformsCount++;
-                            sP.Add(eP);
-                        }
-                    }
-                });
-            }
-
-            satisfactoryProteoforms = sP.ToList();
+            return (x - nud_Offset.Value);
         }
 
-        private void defineSelectBackgroundIntensityDistribution()
+        private void plotObservedVsExpectedOffsets()
         {
-            bkgdSelectAverageIntensity = observedAverageIntensity + nud_bkgdShift.Value * observedStDev;
-            bkgdSelectStDev = observedStDev * nud_bkgdWidth.Value;
-            int numSelectMeasurableIntensities = Lollipop.quantBioFracCombos.Keys.Count() * satisfactoryProteoforms.Count();
-            if (Lollipop.neucode_labeled) numSelectMeasurableIntensities = numSelectMeasurableIntensities * 2;
-            int numSelectMeasuredIntensities = 0;
-            foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
+            ct_relativeDifference.Series["positiveOffset"].Points.Clear();
+            ct_relativeDifference.Series["negativeOffset"].Points.Clear();
+
+            foreach (decimal xValue in Lollipop.sortedAvgPermutationTestStatistics)
             {
-                numSelectMeasuredIntensities += eP.biorepIntensityList.Select(s => s.biorep).ToList().Count();
+                ct_relativeDifference.Series["positiveOffset"].Points.AddXY(xValue, positiveOffsetFunction(xValue));
+                ct_relativeDifference.Series["negativeOffset"].Points.AddXY(xValue, negativeOffsetFunction(xValue));
             }
-            numSelectMissingIntensities = numSelectMeasurableIntensities - numSelectMeasuredIntensities;
-            bkgdSelectGaussianArea = selectGaussianArea / numSelectMeasuredIntensities * numSelectMissingIntensities;
-            bkgdSelectGaussianHeight = bkgdSelectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)bkgdSelectStDev, 2));
+
+            ct_relativeDifference.ChartAreas[0].AxisX.Minimum = -10;
+            ct_relativeDifference.ChartAreas[0].AxisX.Maximum = 10;
+            ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -10;
+            ct_relativeDifference.ChartAreas[0].AxisY.Maximum = 10;
+
+            tb_FDR.Text = Lollipop.offsetFDR.ToString();
         }
 
         private void plotBiorepIntensitiesEvent(object s, EventArgs e)
         {
-            //defineAllBackgroundIntensityDistribution();
-            defineSelectBackgroundIntensityDistribution();
             plotBiorepIntensities();
         }
 
@@ -351,25 +219,18 @@ namespace ProteoformSuite
             ct_proteoformIntensities.ChartAreas[0].AxisX.Title = "log Intensity (base 2)";
             ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "count";
 
-            foreach (KeyValuePair<decimal, int> entry in logSelectIntensityHistogram)
+           
+            foreach (KeyValuePair<decimal, int> entry in Lollipop.logSelectIntensityHistogram)
             {
                 ct_proteoformIntensities.Series["Observed Intensities"].Points.AddXY(entry.Key, entry.Value);
 
-                double gaussIntensity = ((double)selectGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)selectAverageIntensity), 2) / (2d * Math.Pow((double)selectStDev, 2)));
-                double bkgd_gaussIntensity = ((double)bkgdSelectGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)bkgdSelectAverageIntensity), 2) / (2d * Math.Pow((double)bkgdSelectStDev, 2)));
+                double gaussIntensity = ((double)Lollipop.selectGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)Lollipop.selectAverageIntensity), 2) / (2d * Math.Pow((double)Lollipop.selectStDev, 2)));
+                double bkgd_gaussIntensity = ((double)Lollipop.bkgdGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)Lollipop.bkgdAverageIntensity), 2) / (2d * Math.Pow((double)Lollipop.bkgdStDev, 2)));
                 double sumIntensity = gaussIntensity + bkgd_gaussIntensity;
                 ct_proteoformIntensities.Series["Observed Fit"].Points.AddXY(entry.Key, gaussIntensity);
                 ct_proteoformIntensities.Series["Background Projected"].Points.AddXY(entry.Key, bkgd_gaussIntensity);
                 ct_proteoformIntensities.Series["Fit + Projected"].Points.AddXY(entry.Key, sumIntensity);
             }
-        }
-        
-        private void proteoformQuantification()
-        {
-            string numerator = cmbx_ratioNumerator.SelectedItem.ToString();
-            string denominator = cmbx_ratioDenominator.SelectedItem.ToString();
-            Parallel.ForEach(Lollipop.proteoform_community.experimental_proteoforms, eP => new ExperimentalProteoform.quantitativeValues(eP, bkgdAverageIntensity, bkgdStDev, numerator, denominator));
-            qVals = satisfactoryProteoforms.Where(eP => eP.accepted == true).Select(e => e.quant).ToList();
         }
 
         private void volcanoPlot()
@@ -381,102 +242,41 @@ namespace ProteoformSuite
             ct_proteoformIntensities.ChartAreas[0].AxisX.Title = "log (base 2) fold change (light/heavy)";
             ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "log (base 10) pValue";
 
-            foreach (ExperimentalProteoform.quantitativeValues qValue in qVals)
+            foreach (ExperimentalProteoform.quantitativeValues qValue in Lollipop.qVals)
             {
                 ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10((double)qValue.pValue));
             }
         }
 
 
-        // GO TERM SIGNIFICANCE
-        Dictionary<GoTerm, int> goMasterSet = new Dictionary<GoTerm, int>();
-        List<GoTermNumber> goTermNumbers = new List<GoTermNumber>();
-        List<GoTermNumber> interesting_go_terms = new List<GoTermNumber>();
-
-        private Dictionary<GoTerm, int> getDatabaseGoNumbers()
-        {
-            Dictionary<GoTerm, int> numbers = new Dictionary<GoTerm, int>();
-            List<Protein> proteinList = new List<Protein>();
-            List<string> experimentalProteoformAcessionList = new List<string>();
-            List<GoTerm> completeGoTermList = new List<GoTerm>();
-            List<GoTerm> uniqueGoTermList = new List<GoTerm>();
-
-            if (rb_allTheoreticalGOTerms.Checked == true)
-                proteinList = Lollipop.proteins.ToList();
-            else
-            {
-                List<TheoreticalProteoform> theoreticalProteoformList = new List<TheoreticalProteoform>();
-                theoreticalProteoformList = Lollipop.proteoform_community.families.SelectMany(t => t.theoretical_proteoforms).ToList();
-
-                List<string> theoreticalAccessionList = new List<string>();
-                theoreticalAccessionList = theoreticalProteoformList.Select(a => a.accession).ToList();
-
-                foreach (string acc in theoreticalAccessionList)
-                {
-                    string someJunk = acc.Replace("_T", "!").Split('!').FirstOrDefault();
-                    Protein p = Lollipop.proteins.FirstOrDefault(protein => protein.accession == someJunk);
-                    if (p != null && !proteinList.Any(theoreticalProtein => theoreticalProtein.accession == p.accession))
-                        proteinList.Add(p);
-                }
-            }
-
-            foreach (Protein p in proteinList)
-            {
-                completeGoTermList.AddRange(p.goTerms);
-            }
-
-            foreach (GoTerm t in completeGoTermList)
-            {
-                if (!uniqueGoTermList.Any(item => item.id == t.id))
-                    uniqueGoTermList.Add(t);
-            }
-
-            foreach (GoTerm term in uniqueGoTermList)
-            {
-                numbers.Add(term, completeGoTermList.Where(t => t.id == term.id).Count());
-            }
-
-            return numbers;
-        }
-
-        private List<GoTermNumber> getGoTermNumbers(List<Protein> interestingProteins)
-        {
-            List<GoTermNumber> numbers = new List<GoTermNumber>();
-            List<GoTerm> terms = new List<GoTerm>();
-            foreach (Protein p in interestingProteins)
-            {
-                foreach (GoTerm g in p.goTerms)
-                {
-                    if (!terms.Any(item => item.id == g.id))
-                        terms.Add(g);
-                }
-            }
-            foreach (GoTerm g in terms)
-            {
-                GoTermNumber gTN = new GoTermNumber(g, interestingProteins, goMasterSet);
-                numbers.Add(gTN);
-            }
-            return numbers;
-        }
-
         private void goTermBackgroundChanged(object s, EventArgs e)
         {
-            goMasterSet = getDatabaseGoNumbers();
-            if(interestingProteins.Count() <= 0) interestingProteins = getInterestingProteins(qVals);
-            goTermNumbers = getGoTermNumbers(interestingProteins);
-            fillGoTermsTable();
+            Lollipop.allTheoreticalProteins = !Lollipop.allTheoreticalProteins;
+            Lollipop.GO_analysis();
         }
 
         private void fillGoTermsTable()
         {
-            this.interesting_go_terms = goTermNumbers.Where(x => x.goTerm.aspect.ToString() == cmbx_goAspect.SelectedItem.ToString()).ToList();
-            DisplayUtility.FillDataGridView(dgv_goAnalysis, goTermNumbers.Where(x => x.goTerm.aspect.ToString() == cmbx_goAspect.SelectedItem.ToString()));
+            DisplayUtility.FillDataGridView(dgv_goAnalysis, Lollipop.goTermNumbers.Where(x => x.goTerm.aspect.ToString() == cmbx_goAspect.SelectedItem.ToString()));
         }
 
         private void updateGoTermsTable(object s, EventArgs e)
         {
-            interestingProteins = getInterestingProteins(qVals);
-            goTermNumbers = getGoTermNumbers(interestingProteins);
+            Lollipop.minProteoformFDR = nud_FDR.Value;
+            Lollipop.minProteoformFoldChange = nud_ratio.Value;
+            Lollipop.minProteoformIntensity = nud_intensity.Value;
+            Lollipop.inducedOrRepressedProteins = Lollipop.getInducedOrRepressedProteins(Lollipop.satisfactoryProteoforms, Lollipop.expanded_proteins, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity);
+            Lollipop.GO_analysis();
+            fillGoTermsTable();
+        }
+
+        private void updateGoTermsTable()
+        {
+            Lollipop.minProteoformFDR = nud_FDR.Value;
+            Lollipop.minProteoformFoldChange = nud_ratio.Value;
+            Lollipop.minProteoformIntensity = nud_intensity.Value;
+            Lollipop.inducedOrRepressedProteins = Lollipop.getInducedOrRepressedProteins(Lollipop.satisfactoryProteoforms, Lollipop.expanded_proteins, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity);
+            Lollipop.GO_analysis();
             fillGoTermsTable();
         }
 
@@ -484,53 +284,6 @@ namespace ProteoformSuite
         {
             fillGoTermsTable();
         }
-
-
-        // GETTING SIGNIFICANT PROTS
-        List<Protein> interestingProteins = new List<Protein>();
-        List<ExperimentalProteoform.quantitativeValues> qVals = new List<ExperimentalProteoform.quantitativeValues>();
-
-        private List<ExperimentalProteoform> getInterestingProteoforms(List<ExperimentalProteoform.quantitativeValues> qvals)
-        {
-            List<ExperimentalProteoform.quantitativeValues> interestingQuantValues = qvals.Where(q => q.intensitySum > nud_intensity.Value && Math.Abs(q.logFoldChange) > nud_ratio.Value && q.pValue < nud_pValue.Value).ToList();
-            List<string> distinctAccessions = interestingQuantValues.Select(a => a.accession).ToList();
-            List<ExperimentalProteoform> interestingProteoforms = Lollipop.proteoform_community.experimental_proteoforms.Where(p => distinctAccessions.Contains(p.accession)).ToList();
-            interestingProteoforms.ForEach(e => e.quant.significant = true);
-            return interestingProteoforms;
-        }
-
-        private List<ProteoformFamily> getInterestingFamilies(List<ExperimentalProteoform.quantitativeValues> qvals)
-        {
-            IEnumerable<ProteoformFamily> interesting_families =
-                from exp in this.getInterestingProteoforms(qvals)
-                from fam in Lollipop.proteoform_community.families
-                where fam.experimental_proteoforms.Contains(exp)
-                select fam;
-            return interesting_families.ToList();
-        }
-
-        private List<ProteoformFamily> getInterestingFamilies(List<GoTermNumber> go_terms_numbers)
-        {
-            IEnumerable<ProteoformFamily> interesting_families =
-                from fam in Lollipop.proteoform_community.families
-                where fam.theoretical_proteoforms.Any(t => t.proteinList.Any(p => p.goTerms.Any(g => go_terms_numbers.Select(n => n.goTerm).Contains(g))))
-                select fam;
-            return interesting_families.ToList();
-        }
-
-        private List<Protein> getInterestingProteins(List<ExperimentalProteoform.quantitativeValues> qvals)
-        {
-            IEnumerable<string> interesting_theo_accessions = getInterestingFamilies(qvals).SelectMany(f => f.theoretical_proteoforms).Select(theo => theo.accession);
-            foreach (string accession in interesting_theo_accessions)
-            {
-                string someJunk = accession.Replace("_T", "!").Split('!').FirstOrDefault();
-                Protein p = Lollipop.proteins.FirstOrDefault(protein => protein.accession == someJunk);
-                if (p != null && !interestingProteins.Any(theoreticalProtein => theoreticalProtein.accession == p.accession))
-                    interestingProteins.Add(p);
-            }
-            return interestingProteins;
-        }
-
 
         // CYTOSCAPE VISUALIZATION
         OpenFileDialog fileOpener = new OpenFileDialog();
@@ -568,7 +321,7 @@ namespace ProteoformSuite
 
         private void btn_buildAllQuantifiedFamilies_Click(object sender, EventArgs e)
         {
-            bool built = build_families(getInterestingFamilies(qVals).Distinct().ToList());
+            bool built = build_families(Lollipop.getInterestingFamilies(Lollipop.qVals, Lollipop.proteoform_community.families, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity).Distinct().ToList());
             if (!built) return;
             MessageBox.Show("Finished building all families.\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
         }
@@ -576,7 +329,7 @@ namespace ProteoformSuite
         private void btn_buildSelectedQuantFamilies_Click(object sender, EventArgs e)
         {
             List<ExperimentalProteoform.quantitativeValues> selected_qvals = (DisplayUtility.get_selected_objects(dgv_quantification_results).Select(o => (ExperimentalProteoform.quantitativeValues)o)).ToList();
-            List<ProteoformFamily> selected_families = getInterestingFamilies(selected_qvals).Distinct().ToList();
+            List<ProteoformFamily> selected_families = Lollipop.getInterestingFamilies(selected_qvals, Lollipop.proteoform_community.families, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity).Distinct().ToList();
             bool built = build_families(selected_families);
             if (!built) return;
 
@@ -590,7 +343,8 @@ namespace ProteoformSuite
 
         private void btn_buildFamiliesAllGO_Click(object sender, EventArgs e)
         {
-            bool built = build_families(getInterestingFamilies(interesting_go_terms).Distinct().ToList());
+            Aspect a = (Aspect)cmbx_goAspect.SelectedItem;
+            bool built = build_families(Lollipop.getInterestingFamilies(Lollipop.goTermNumbers.Where(n=>n.goTerm.aspect == a).Distinct().ToList(), Lollipop.proteoform_community.families));
             if (!built) return;
             MessageBox.Show("Finished building all families.\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
         }
@@ -598,7 +352,7 @@ namespace ProteoformSuite
         private void btn_buildFromSelectedGoTerms_Click(object sender, EventArgs e)
         {
             List<GoTermNumber> selected_gos = (DisplayUtility.get_selected_objects(dgv_goAnalysis).Select(o => (GoTermNumber)o)).ToList();
-            List<ProteoformFamily> selected_families = getInterestingFamilies(selected_gos).Distinct().ToList();
+            List<ProteoformFamily> selected_families = Lollipop.getInterestingFamilies(selected_gos, Lollipop.proteoform_community.families).Distinct().ToList();
             bool built = build_families(selected_families);
             if (!built) return;
 
@@ -637,101 +391,52 @@ namespace ProteoformSuite
         {
             Lollipop.denominator_condition = cmbx_ratioDenominator.SelectedItem.ToString();
         }
+
+        private void nud_bkgdShift_ValueChanged(object sender, EventArgs e)
+        {
+            Lollipop.backgroundShift = nud_bkgdShift.Value;
+            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
+            Lollipop.defineBackgroundIntensityDistribution(Lollipop.neucode_labeled, Lollipop.quantBioFracCombos, Lollipop.satisfactoryProteoforms, Lollipop.backgroundShift, Lollipop.backgroundWidth);
+        }
+
+        private void nud_bkgdWidth_ValueChanged(object sender, EventArgs e)
+        {
+            Lollipop.backgroundWidth = nud_bkgdWidth.Value;
+            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
+            Lollipop.defineBackgroundIntensityDistribution(Lollipop.neucode_labeled, Lollipop.quantBioFracCombos, Lollipop.satisfactoryProteoforms, Lollipop.backgroundShift, Lollipop.backgroundWidth);
+        }
+
+        private void cmbx_observationsTypeRequired_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Lollipop.observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
+        }
+
+        private void nud_minObservations_ValueChanged(object sender, EventArgs e)
+        {
+            Lollipop.minBiorepsWithObservations = (int)nud_minObservations.Value;
+        }
+
+        private void nud_sKnot_minFoldChange_ValueChanged(object sender, EventArgs e)
+        {
+            Lollipop.sKnot_minFoldChange = nud_sKnot_minFoldChange.Value;
+            Lollipop.computeProteoformTestStatistics(Lollipop.neucode_labeled, Lollipop.satisfactoryProteoforms, Lollipop.bkgdAverageIntensity, Lollipop.bkgdStDev, Lollipop.numerator_condition, Lollipop.denominator_condition, Lollipop.sKnot_minFoldChange);
+            Lollipop.computeSortedTestStatistics(Lollipop.satisfactoryProteoforms);
+            Lollipop.computeFoldChangeFDR(Lollipop.sortedAvgPermutationTestStatistics, Lollipop.sortedProteoformTestStatistics, Lollipop.satisfactoryProteoforms, Lollipop.permutedTestStatistics, Lollipop.offsetTestStatistics);
+            Lollipop.computeIndividualExperimentalProteoformFDRs(Lollipop.satisfactoryProteoforms, Lollipop.sortedProteoformTestStatistics, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity);
+            plotObservedVsExpectedOffsets();
+        }
+
+        private void nud_Offset_ValueChanged(object sender, EventArgs e)
+        {
+            Lollipop.offsetTestStatistics = nud_Offset.Value;
+            Lollipop.computeFoldChangeFDR(Lollipop.sortedAvgPermutationTestStatistics, Lollipop.sortedProteoformTestStatistics, Lollipop.satisfactoryProteoforms, Lollipop.permutedTestStatistics, Lollipop.offsetTestStatistics);
+            plotObservedVsExpectedOffsets();
+        }
+
+        private void rb_allTheoreticalProteins_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.GO_analysis();
+            fillGoTermsTable();
+        }
     }
 }
-
-
-
-// METHODS NOT IN USE
-
-//DataSet quantTables = new DataSet();
-
-//private Color HeatMapColor(double value, double min, double max)//(double value, double min, double max)
-//{
-//    double val;
-//    int r = 0;
-//    int g = 0;
-//    int b = 0;
-//    double middleValue = (max - min) / 2 + min;
-
-//    if (value > (min + (max - min) / 2)) // positive - green
-//    {
-//        val = (Math.Min(value, max) - middleValue) / (max - middleValue);
-//        g = Convert.ToByte(255 * val);
-//    }
-//    else // negative red
-//    {
-//        val = (middleValue - Math.Max(value, min)) / (middleValue - min);
-//        r = Convert.ToByte(255 * val);
-//    }
-//    return Color.FromArgb(255, r, g, b);
-//}
-
-//private void dgv_quantification_results_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
-//{
-//    foreach (DataGridViewRow dataRow in dgv_quantification_results.Rows)
-//    {
-//        foreach (DataGridViewCell oneCell in dataRow.Cells)
-//        {
-//            double d = 0;
-//            if (oneCell.Value != null)
-//            {
-//                Double.TryParse(oneCell.Value.ToString(), out d);
-//            }
-//            if (d == 0)
-//            {
-//                dgv_quantification_results.Rows[oneCell.RowIndex].Cells[oneCell.ColumnIndex].Style.BackColor = Color.White;
-//            }
-//            else
-//            {
-//                dgv_quantification_results.Rows[oneCell.RowIndex].Cells[oneCell.ColumnIndex].Style.BackColor = HeatMapColor(d, -1, 1);
-//            }
-//        }
-//    }
-//}
-
-//private void defineAllBackgroundIntensityDistribution()
-//{
-//    bkgdAverageIntensity = observedAverageIntensity + nud_bkgdShift.Value * observedStDev;
-//    bkgdStDev = observedStDev * nud_bkgdWidth.Value;
-//    int numMeasurableIntensities = Lollipop.quantBioFracCombos.Keys.Count() * Lollipop.proteoform_community.experimental_proteoforms.Count();
-//    if (Lollipop.neucode_labeled)
-//        numMeasurableIntensities = numMeasurableIntensities * 2;
-//    numMissingIntensities = numMeasurableIntensities - numMeasuredProteoformIntensities;
-//    bkgdGaussianArea = observedGaussianArea / numMeasuredProteoformIntensities * numMissingIntensities;
-//    bkgdGaussianHeight = bkgdGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)bkgdStDev, 2));
-//}
-
-//private List<Protein> getInterestingProteins()
-//{
-//    List<ExperimentalProteoform.quantitativeValues> interestingQuantValues = qVals.Where(q => q.intensitySum > nud_intensity.Value && Math.Abs(q.logFoldChange) > nud_ratio.Value && q.pValue < nud_pValue.Value).ToList();
-//    List<string> distinctAccessions = interestingQuantValues.Select(a => a.accession).ToList();
-
-//    foreach (string acc in distinctAccessions) // here we're getting the accession numbers of the proteins linked to interesting experimental proteoforms
-//    {
-//        ExperimentalProteoform interestingProteoform = Lollipop.proteoform_community.experimental_proteoforms.Where(iP => iP.accession == acc).FirstOrDefault();
-//        List<ProteoformFamily> famlist = new List<ProteoformFamily>();
-//        if (interestingProteoform != null)
-//            famlist = Lollipop.proteoform_community.families.Where(fam => fam.experimental_proteoforms.Contains(interestingProteoform)).ToList(); // proteoform families containing the selected experimental proteoform
-//        List<TheoreticalProteoform> tpList = new List<TheoreticalProteoform>();
-//        if (famlist.Count() > 0)
-//        {
-//            foreach (ProteoformFamily pf in famlist)
-//            {
-//                if (pf.theoretical_proteoforms.Count() > 0)
-//                    tpList.AddRange(famlist.SelectMany(t => t.theoretical_proteoforms));
-//            }
-//        }
-
-//        List<string> tlist = tlist = tpList.Select(tacc => tacc.accession).ToList();
-//        foreach (string accession in tlist)
-//        {
-//            string someJunk = accession.Replace("_T", "!").Split('!').FirstOrDefault();
-//            Protein p = Lollipop.proteins.FirstOrDefault(protein => protein.accession == someJunk);
-//            if (p != null && !interestingProteins.Any(theoreticalProtein => theoreticalProtein.accession == p.accession))
-//                interestingProteins.Add(p);
-//        }
-
-//    }
-//    return interestingProteins;
-//}

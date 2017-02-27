@@ -127,7 +127,7 @@ namespace ProteoformSuite
             foreach (Ptm ptm in p.ptm_list)
             {
                 int i;
-                try { i = mods.IndexOf(ptm.modification.description); }
+                try { i = mods.IndexOf(ptm.modification.id); }
                 catch { i = 0; } //just make color blue if > 20 unique PTMs
                 Color color = colors[i];
 
@@ -136,7 +136,7 @@ namespace ProteoformSuite
                 rtb_sequence.SelectionColor = color;
             }
 
-            foreach (string description in p.ptm_list.Select(ptm => ptm.modification.description).Distinct())
+            foreach (string description in p.ptm_list.Select(ptm => ptm.modification.id).Distinct())
             {
                 int i;
                 try { i = mods.IndexOf(description); }
@@ -183,7 +183,7 @@ namespace ProteoformSuite
             {
                 ptm.AddRange(p.ptm_list);
             }
-            IEnumerable<string> unique_ptm = ptm.Select(p => p.modification.description).Distinct();
+            IEnumerable<string> unique_ptm = ptm.Select(p => p.modification.id).Distinct();
             mods = unique_ptm.ToList();
         }
 
@@ -225,13 +225,9 @@ namespace ProteoformSuite
             List<InputFile> files_added = new List<InputFile>();
             foreach (string enteredFile in files)
             {
-                string path = Path.GetDirectoryName(enteredFile);
-                string filename = Path.GetFileNameWithoutExtension(enteredFile);
-                string extension = Path.GetExtension(enteredFile);
-                Labeling label = Labeling.Unlabeled;
-                if (acceptable_extensions.Contains(extension) && !Lollipop.input_files.Where(f => f.purpose == purpose).Any(f => f.filename == filename))
+                if (!Lollipop.input_files.Where(f => f.purpose == purpose).Any(f => f.complete_path == enteredFile))
                 {
-                    InputFile file = new InputFile(path, filename, extension, label, purpose);
+                    InputFile file = new InputFile(enteredFile, purpose);
                     Lollipop.input_files.Add(file);
                     files_added.Add(file);
                 }
@@ -250,9 +246,9 @@ namespace ProteoformSuite
             if (dr == DialogResult.OK)
             {
                 enter_input_files(openFileDialog1.FileNames, new List<string> { ".raw" }, Purpose.RawFile);
-                foreach (InputFile file in Lollipop.raw_files())             
+                foreach (InputFile file in Lollipop.input_files.Where(f => f.purpose == Purpose.RawFile))             
                 {
-                    RawFileReader.get_ms_scans(file.filename, file.path + "\\" + file.filename + file.extension);
+                    RawFileReader.get_ms_scans(file.filename, file.complete_path);
                 }
                 using (var writer = new StreamWriter("C:\\Users\\lschaffer2\\Desktop\\identified_p_inclusion_list.tsv"))
                 {
