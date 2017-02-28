@@ -28,16 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series11 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series12 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.dgv_quantification_results = new System.Windows.Forms.DataGridView();
             this.gb_quantDataDisplaySelection = new System.Windows.Forms.GroupBox();
             this.btn_refreshCalculation = new System.Windows.Forms.Button();
@@ -99,6 +99,7 @@
             this.nud_Offset = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.nud_sKnot_minFoldChange = new System.Windows.Forms.NumericUpDown();
+            this.btn_buildFamiliesWithSignificantChange = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantification_results)).BeginInit();
             this.gb_quantDataDisplaySelection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).BeginInit();
@@ -231,15 +232,15 @@
             // 
             // ct_volcano_logFold_logP
             // 
-            chartArea4.Name = "ChartArea1";
-            this.ct_volcano_logFold_logP.ChartAreas.Add(chartArea4);
+            chartArea1.Name = "ChartArea1";
+            this.ct_volcano_logFold_logP.ChartAreas.Add(chartArea1);
             this.ct_volcano_logFold_logP.Location = new System.Drawing.Point(523, 32);
             this.ct_volcano_logFold_logP.Margin = new System.Windows.Forms.Padding(2);
             this.ct_volcano_logFold_logP.Name = "ct_volcano_logFold_logP";
-            series7.ChartArea = "ChartArea1";
-            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series7.Name = "Series1";
-            this.ct_volcano_logFold_logP.Series.Add(series7);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series1.Name = "Series1";
+            this.ct_volcano_logFold_logP.Series.Add(series1);
             this.ct_volcano_logFold_logP.Size = new System.Drawing.Size(476, 298);
             this.ct_volcano_logFold_logP.TabIndex = 6;
             this.ct_volcano_logFold_logP.Text = "Volcano";
@@ -382,22 +383,22 @@
             // 
             // ct_proteoformIntensities
             // 
-            chartArea5.Name = "ChartArea1";
-            this.ct_proteoformIntensities.ChartAreas.Add(chartArea5);
-            legend2.Name = "Legend1";
-            this.ct_proteoformIntensities.Legends.Add(legend2);
+            chartArea2.Name = "ChartArea1";
+            this.ct_proteoformIntensities.ChartAreas.Add(chartArea2);
+            legend1.Name = "Legend1";
+            this.ct_proteoformIntensities.Legends.Add(legend1);
             this.ct_proteoformIntensities.Location = new System.Drawing.Point(55, 518);
             this.ct_proteoformIntensities.Name = "ct_proteoformIntensities";
-            series8.ChartArea = "ChartArea1";
-            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series8.Legend = "Legend1";
-            series8.Name = "Series1";
-            series9.ChartArea = "ChartArea1";
-            series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series9.Legend = "Legend1";
-            series9.Name = "Series2";
-            this.ct_proteoformIntensities.Series.Add(series8);
-            this.ct_proteoformIntensities.Series.Add(series9);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Legend = "Legend1";
+            series3.Name = "Series2";
+            this.ct_proteoformIntensities.Series.Add(series2);
+            this.ct_proteoformIntensities.Series.Add(series3);
             this.ct_proteoformIntensities.Size = new System.Drawing.Size(452, 357);
             this.ct_proteoformIntensities.TabIndex = 11;
             this.ct_proteoformIntensities.Text = "log2_intensity";
@@ -517,6 +518,7 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.btn_buildFamiliesWithSignificantChange);
             this.groupBox4.Controls.Add(this.btn_buildFamiliesAllGO);
             this.groupBox4.Controls.Add(this.label11);
             this.groupBox4.Controls.Add(this.btn_buildFromSelectedGoTerms);
@@ -546,7 +548,7 @@
             // 
             // btn_buildFamiliesAllGO
             // 
-            this.btn_buildFamiliesAllGO.Location = new System.Drawing.Point(6, 257);
+            this.btn_buildFamiliesAllGO.Location = new System.Drawing.Point(6, 282);
             this.btn_buildFamiliesAllGO.Name = "btn_buildFamiliesAllGO";
             this.btn_buildFamiliesAllGO.Size = new System.Drawing.Size(255, 23);
             this.btn_buildFamiliesAllGO.TabIndex = 61;
@@ -567,7 +569,7 @@
             // 
             // btn_buildFromSelectedGoTerms
             // 
-            this.btn_buildFromSelectedGoTerms.Location = new System.Drawing.Point(6, 286);
+            this.btn_buildFromSelectedGoTerms.Location = new System.Drawing.Point(6, 311);
             this.btn_buildFromSelectedGoTerms.Name = "btn_buildFromSelectedGoTerms";
             this.btn_buildFromSelectedGoTerms.Size = new System.Drawing.Size(255, 23);
             this.btn_buildFromSelectedGoTerms.TabIndex = 57;
@@ -725,7 +727,7 @@
             // 
             // btn_buildSelectedQuantFamilies
             // 
-            this.btn_buildSelectedQuantFamilies.Location = new System.Drawing.Point(6, 218);
+            this.btn_buildSelectedQuantFamilies.Location = new System.Drawing.Point(6, 243);
             this.btn_buildSelectedQuantFamilies.Name = "btn_buildSelectedQuantFamilies";
             this.btn_buildSelectedQuantFamilies.Size = new System.Drawing.Size(255, 23);
             this.btn_buildSelectedQuantFamilies.TabIndex = 44;
@@ -772,22 +774,22 @@
             // 
             // ct_relativeDifference
             // 
-            chartArea6.Name = "ChartArea1";
-            this.ct_relativeDifference.ChartAreas.Add(chartArea6);
+            chartArea3.Name = "ChartArea1";
+            this.ct_relativeDifference.ChartAreas.Add(chartArea3);
             this.ct_relativeDifference.Location = new System.Drawing.Point(523, 518);
             this.ct_relativeDifference.Name = "ct_relativeDifference";
-            series10.ChartArea = "ChartArea1";
-            series10.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series10.Name = "obsVSexp";
-            series11.ChartArea = "ChartArea1";
-            series11.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series11.Name = "positiveOffset";
-            series12.ChartArea = "ChartArea1";
-            series12.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series12.Name = "negativeOffset";
-            this.ct_relativeDifference.Series.Add(series10);
-            this.ct_relativeDifference.Series.Add(series11);
-            this.ct_relativeDifference.Series.Add(series12);
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series4.Name = "obsVSexp";
+            series5.ChartArea = "ChartArea1";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series5.Name = "positiveOffset";
+            series6.ChartArea = "ChartArea1";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series6.Name = "negativeOffset";
+            this.ct_relativeDifference.Series.Add(series4);
+            this.ct_relativeDifference.Series.Add(series5);
+            this.ct_relativeDifference.Series.Add(series6);
             this.ct_relativeDifference.Size = new System.Drawing.Size(476, 357);
             this.ct_relativeDifference.TabIndex = 15;
             this.ct_relativeDifference.Text = "Observed vs. Expected Relative Difference";
@@ -879,6 +881,16 @@
             this.nud_sKnot_minFoldChange.Size = new System.Drawing.Size(66, 20);
             this.nud_sKnot_minFoldChange.TabIndex = 0;
             this.nud_sKnot_minFoldChange.ValueChanged += new System.EventHandler(this.nud_sKnot_minFoldChange_ValueChanged);
+            // 
+            // btn_buildFamiliesWithSignificantChange
+            // 
+            this.btn_buildFamiliesWithSignificantChange.Location = new System.Drawing.Point(6, 215);
+            this.btn_buildFamiliesWithSignificantChange.Name = "btn_buildFamiliesWithSignificantChange";
+            this.btn_buildFamiliesWithSignificantChange.Size = new System.Drawing.Size(255, 23);
+            this.btn_buildFamiliesWithSignificantChange.TabIndex = 62;
+            this.btn_buildFamiliesWithSignificantChange.Text = "Build All Quantified Families w/ Significant Change";
+            this.btn_buildFamiliesWithSignificantChange.UseVisualStyleBackColor = true;
+            this.btn_buildFamiliesWithSignificantChange.Click += new System.EventHandler(this.btn_buildFamiliesWithSignificantChange_Click);
             // 
             // Quantification
             // 
@@ -999,5 +1011,6 @@
         private System.Windows.Forms.NumericUpDown nud_Offset;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.NumericUpDown nud_sKnot_minFoldChange;
+        private System.Windows.Forms.Button btn_buildFamiliesWithSignificantChange;
     }
 }
