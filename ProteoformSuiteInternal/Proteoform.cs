@@ -655,7 +655,7 @@ namespace ProteoformSuiteInternal
         public string ptm_list_string()
         {
             if (ptm_list.Count == 0)
-                return "unmodified";
+                return "Unmodified";
             else
                 return string.Join("; ", ptm_list.Select(ptm => ptm.modification.id));
         }

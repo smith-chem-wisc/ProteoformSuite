@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using ProteoformSuiteInternal;
 using System.Collections.Generic;
+using System;
 
 namespace Test
 {
@@ -413,7 +414,7 @@ namespace Test
             Assert.IsNull(rel.peak);
             Assert.AreEqual(0, rel.proteoform_mass_1);
             Assert.AreEqual(0, rel.proteoform_mass_2);
-            Assert.AreEqual("unmodified", rel.ptm_list);
+            Assert.True(string.Equals("unmodified", rel.ptm_list, StringComparison.CurrentCultureIgnoreCase));
             Assert.AreEqual(1, rel.nearby_relations_count);
         }
 
