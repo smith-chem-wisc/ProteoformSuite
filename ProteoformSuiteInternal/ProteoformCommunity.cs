@@ -37,7 +37,8 @@ namespace ProteoformSuiteInternal
                 pf1.candidate_relatives = pfs2
                     .Where(pf2 => (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
                         && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
-                        && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference).ToList();
+                        && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference)
+                    .ToList();
             }
 
             Parallel.ForEach(pfs1, pf1 => 
