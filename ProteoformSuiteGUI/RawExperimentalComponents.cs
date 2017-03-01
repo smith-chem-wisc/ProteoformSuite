@@ -10,6 +10,9 @@ namespace ProteoformSuite
 {
     public partial class RawExperimentalComponents : Form
     {
+        public bool preloaded = false;
+        public ProteoformSweet parent;
+
         public RawExperimentalComponents()
         {
             InitializeComponent();
@@ -20,17 +23,27 @@ namespace ProteoformSuite
 
         public void load_raw_components()
         {
-            Lollipop.getBiorepsFractionsList(Lollipop.input_files); // list of bioreps with a list of fractions for each biorep
-            Lollipop.getObservationParameters(Lollipop.neucode_labeled, Lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+            if (!preloaded)
+            {
+                Lollipop.getBiorepsFractionsList(Lollipop.input_files); // list of bioreps with a list of fractions for each biorep
+                Lollipop.getObservationParameters(Lollipop.neucode_labeled, Lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
 
-            Parallel.Invoke
-            (
-                () => { if (Lollipop.raw_experimental_components.Count == 0) Lollipop.process_raw_components(); }, //Includes reading correction factors if present,
-                () => { if (Lollipop.raw_quantification_components.Count == 0) Lollipop.process_raw_quantification_components(); }
-            );
+                Parallel.Invoke
+                (
+                    () => { if (Lollipop.raw_experimental_components.Count == 0) Lollipop.process_raw_components(); }, //Includes reading correction factors if present,
+                    () => { if (Lollipop.raw_quantification_components.Count == 0) Lollipop.process_raw_quantification_components(); },
+                    () => { if (Lollipop.get_files(Lollipop.input_files, Purpose.PtmList).Count() > 0 && Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() > 0) Lollipop.get_theoretical_proteoforms(); }
+                );
 
-            this.FillRawExpComponentsTable();
-            this.FillRawQuantificationComponentsTable();
+                Parallel.Invoke
+                (
+                    () => this.FillRawExpComponentsTable(),
+                    () => this.FillRawQuantificationComponentsTable(),
+                    () => { if (Lollipop.neucode_labeled) ((ProteoformSweet)this.MdiParent).neuCodePairs.display_neucode_pairs(); },
+                    () => ((ProteoformSweet)this.MdiParent).theoreticalDatabase.FillDataBaseTable("Target")
+                );
+            }
+            preloaded = false;
         }
 
         public DataGridView GetDGV()

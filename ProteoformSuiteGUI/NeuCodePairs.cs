@@ -15,7 +15,8 @@ namespace ProteoformSuite
 {
     public partial class NeuCodePairs : Form
     {
-        bool initial_load = true; 
+        bool initial_load = true;
+        public bool preloaded = false; 
 
         public NeuCodePairs()
         {
@@ -30,12 +31,13 @@ namespace ProteoformSuite
 
         public void display_neucode_pairs()
         {
-            if (Lollipop.raw_neucode_pairs.Count > 0)
+            if (Lollipop.raw_neucode_pairs.Count > 0 && !preloaded)
             {
                 GraphNeuCodePairs();
                 FillNeuCodePairsDGV();
-                initial_load = false;
             }
+            preloaded = false;
+            initial_load = false;
         }
 
         public void FillNeuCodePairsDGV()

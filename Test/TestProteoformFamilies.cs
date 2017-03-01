@@ -130,5 +130,83 @@ namespace Test
             Assert.AreEqual(3, test_community.families[1].experimental_count);
             Assert.AreEqual(0, test_community.families[1].theoretical_count);
         }
+
+        [Test]
+        public void test_construct_one_proteform_family_from_ET_with_theoretical_pf_group()
+        {
+            ProteoformCommunity test_community = new ProteoformCommunity();
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
+
+            InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
+            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "name", "full_name", true, false, new List<GoTerm>());
+            Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
+                { f, new Protein[] { p1 } }
+            };
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf", "", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
+
+            //One accepted ET relation; should give one ProteoformFamily
+            Lollipop.min_peak_count_et = 1;
+            ExperimentalProteoform pf1 = new ExperimentalProteoform("E1");
+            TheoreticalProteoformGroup pf2 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t }, false, new Dictionary<InputFile, Protein[]> { { f, new Protein[] { p1 } } });
+            ProteoformComparison comparison = ProteoformComparison.et;
+            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
+            List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
+            foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs);
+            DeltaMassPeak peak = new DeltaMassPeak(prs[0], prs);
+            test_community.delta_mass_peaks = new List<DeltaMassPeak> { peak };
+            test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
+            test_community.theoretical_proteoforms = new TheoreticalProteoform[] { pf2 };
+            test_community.construct_families();
+            Assert.AreEqual(1, test_community.families.Count);
+            Assert.AreEqual(2, test_community.families[0].proteoforms.Count);
+            Assert.AreEqual(1, test_community.families.First().experimental_count);
+            Assert.AreEqual(1, test_community.families.First().theoretical_count);
+            Assert.AreEqual("E1", test_community.families.First().experimentals_list);
+            Assert.AreEqual(p1.Name, test_community.families.First().name_list);
+            Assert.AreEqual(pf2.accession, test_community.families.First().accession_list);
+        }
+
+        [Test]
+        public void test_construct_one_proteform_family_from_ET_with_two_theoretical_pf_groups_with_same_accession()
+        {
+            ProteoformCommunity test_community = new ProteoformCommunity();
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
+
+            InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
+            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "name", "full_name", true, false, new List<GoTerm>());
+            Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
+                { f, new Protein[] { p1 } }
+            };
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf", "T1_asdf", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
+
+            ModificationMotif motif;
+            ModificationMotif.TryGetMotif("K", out motif);
+            string mod_title = "oxidation";
+            ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("", mod_title), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), -1, new List<double>(), new List<double>(), "");
+            TheoreticalProteoform u = new TheoreticalProteoform("T1_asdf", "T1_asdf_1", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm> { new Ptm(0, m) }), 0, true, true, dict);
+
+            //One accepted ET relation; should give one ProteoformFamily
+            Lollipop.min_peak_count_et = 1;
+            ExperimentalProteoform pf1 = new ExperimentalProteoform("E1");
+            TheoreticalProteoformGroup pf2 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t }, false, new Dictionary<InputFile, Protein[]> { { f, new Protein[] { p1 } } });
+            ProteoformComparison comparison = ProteoformComparison.et;
+            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
+            ProteoformRelation pr2 = new ProteoformRelation(pf1, u, comparison, 0);
+            List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1, pr2 };
+            foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs);
+            DeltaMassPeak peak = new DeltaMassPeak(prs[0], prs);
+            DeltaMassPeak peak2 = new DeltaMassPeak(prs[1], prs);
+            test_community.delta_mass_peaks = new List<DeltaMassPeak> { peak, peak2 };
+            test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
+            test_community.theoretical_proteoforms = new TheoreticalProteoform[] { pf2, u };
+            test_community.construct_families();
+            Assert.AreEqual(1, test_community.families.Count);
+            Assert.AreEqual(3, test_community.families[0].proteoforms.Count);
+            Assert.AreEqual(1, test_community.families.First().experimental_count);
+            Assert.AreEqual(2, test_community.families.First().theoretical_count);
+            Assert.AreEqual("E1", test_community.families.First().experimentals_list);
+            Assert.True(test_community.families.First().name_list.Contains(p1.Name));
+            Assert.True(test_community.families.First().accession_list.Contains(pf2.accession));
+        }
     }
 }

@@ -257,16 +257,6 @@ namespace Test
         }
 
         [Test]
-        public void proteoform_equals()
-        {
-            Proteoform a = new Proteoform("a");
-            Proteoform b = new Proteoform("b");
-            Assert.False(new ProteoformComparer().Equals(a, b));
-            b.accession = a.accession;
-            Assert.True(new ProteoformComparer().Equals(a, b));
-        }
-
-        [Test]
         public void test_aggregate_copy()
         {
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;

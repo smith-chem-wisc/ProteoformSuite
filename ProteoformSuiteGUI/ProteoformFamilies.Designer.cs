@@ -66,6 +66,11 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.Families_update = new System.Windows.Forms.Button();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.cb_moreOpacity = new System.Windows.Forms.CheckBox();
+            this.cb_boldLabel = new System.Windows.Forms.CheckBox();
+            this.cb_redBorder = new System.Windows.Forms.CheckBox();
+            this.cb_buildAsQuantitative = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -83,6 +88,7 @@
             this.splitContainer3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_proteoform_family_members)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_decimalRoundingLabels)).BeginInit();
+            this.groupBox5.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -312,6 +318,8 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.Controls.Add(this.cb_buildAsQuantitative);
+            this.splitContainer3.Panel2.Controls.Add(this.groupBox5);
             this.splitContainer3.Panel2.Controls.Add(this.btn_merge);
             this.splitContainer3.Panel2.Controls.Add(this.tb_singleton_count);
             this.splitContainer3.Panel2.Controls.Add(this.lb_singletons);
@@ -348,7 +356,7 @@
             // btn_merge
             // 
             this.btn_merge.Enabled = false;
-            this.btn_merge.Location = new System.Drawing.Point(97, 201);
+            this.btn_merge.Location = new System.Drawing.Point(73, 188);
             this.btn_merge.Name = "btn_merge";
             this.btn_merge.Size = new System.Drawing.Size(195, 23);
             this.btn_merge.TabIndex = 45;
@@ -413,7 +421,7 @@
             // 
             // btn_buildSelectedFamilies
             // 
-            this.btn_buildSelectedFamilies.Location = new System.Drawing.Point(97, 139);
+            this.btn_buildSelectedFamilies.Location = new System.Drawing.Point(73, 139);
             this.btn_buildSelectedFamilies.Name = "btn_buildSelectedFamilies";
             this.btn_buildSelectedFamilies.Size = new System.Drawing.Size(195, 23);
             this.btn_buildSelectedFamilies.TabIndex = 7;
@@ -423,7 +431,7 @@
             // 
             // btn_buildAllFamilies
             // 
-            this.btn_buildAllFamilies.Location = new System.Drawing.Point(112, 110);
+            this.btn_buildAllFamilies.Location = new System.Drawing.Point(99, 110);
             this.btn_buildAllFamilies.Name = "btn_buildAllFamilies";
             this.btn_buildAllFamilies.Size = new System.Drawing.Size(169, 23);
             this.btn_buildAllFamilies.TabIndex = 6;
@@ -513,6 +521,66 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.cb_moreOpacity);
+            this.groupBox5.Controls.Add(this.cb_boldLabel);
+            this.groupBox5.Controls.Add(this.cb_redBorder);
+            this.groupBox5.Location = new System.Drawing.Point(280, 139);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(200, 120);
+            this.groupBox5.TabIndex = 57;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Highlights for Significant Differences";
+            // 
+            // cb_moreOpacity
+            // 
+            this.cb_moreOpacity.AutoSize = true;
+            this.cb_moreOpacity.Enabled = false;
+            this.cb_moreOpacity.Location = new System.Drawing.Point(21, 76);
+            this.cb_moreOpacity.Name = "cb_moreOpacity";
+            this.cb_moreOpacity.Size = new System.Drawing.Size(96, 17);
+            this.cb_moreOpacity.TabIndex = 58;
+            this.cb_moreOpacity.Text = "Higher Opacity";
+            this.cb_moreOpacity.UseVisualStyleBackColor = true;
+            // 
+            // cb_boldLabel
+            // 
+            this.cb_boldLabel.AutoSize = true;
+            this.cb_boldLabel.Checked = true;
+            this.cb_boldLabel.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_boldLabel.Enabled = false;
+            this.cb_boldLabel.Location = new System.Drawing.Point(21, 53);
+            this.cb_boldLabel.Name = "cb_boldLabel";
+            this.cb_boldLabel.Size = new System.Drawing.Size(76, 17);
+            this.cb_boldLabel.TabIndex = 57;
+            this.cb_boldLabel.Text = "Bold Label";
+            this.cb_boldLabel.UseVisualStyleBackColor = true;
+            // 
+            // cb_redBorder
+            // 
+            this.cb_redBorder.AutoSize = true;
+            this.cb_redBorder.Checked = true;
+            this.cb_redBorder.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_redBorder.Enabled = false;
+            this.cb_redBorder.Location = new System.Drawing.Point(21, 30);
+            this.cb_redBorder.Name = "cb_redBorder";
+            this.cb_redBorder.Size = new System.Drawing.Size(109, 17);
+            this.cb_redBorder.TabIndex = 56;
+            this.cb_redBorder.Text = "Red Node Border";
+            this.cb_redBorder.UseVisualStyleBackColor = true;
+            // 
+            // cb_buildAsQuantitative
+            // 
+            this.cb_buildAsQuantitative.AutoSize = true;
+            this.cb_buildAsQuantitative.Location = new System.Drawing.Point(301, 110);
+            this.cb_buildAsQuantitative.Name = "cb_buildAsQuantitative";
+            this.cb_buildAsQuantitative.Size = new System.Drawing.Size(163, 17);
+            this.cb_buildAsQuantitative.TabIndex = 58;
+            this.cb_buildAsQuantitative.Text = "Build as Quantitative Families";
+            this.cb_buildAsQuantitative.UseVisualStyleBackColor = true;
+            this.cb_buildAsQuantitative.CheckedChanged += new System.EventHandler(this.cb_buildAsQuantitative_CheckedChanged);
+            // 
             // ProteoformFamilies
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -541,6 +609,8 @@
             this.splitContainer3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_proteoform_family_members)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_decimalRoundingLabels)).EndInit();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -585,5 +655,10 @@
         private System.Windows.Forms.ComboBox cmbx_colorScheme;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox cmbx_edgeLabel;
+        private System.Windows.Forms.CheckBox cb_buildAsQuantitative;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.CheckBox cb_moreOpacity;
+        private System.Windows.Forms.CheckBox cb_boldLabel;
+        private System.Windows.Forms.CheckBox cb_redBorder;
     }
 }

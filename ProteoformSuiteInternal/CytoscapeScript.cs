@@ -144,23 +144,11 @@ namespace ProteoformSuiteInternal
                     get_proteoform_shared_name(r.connected_proteoforms[0], double_rounding),
                     r.lysine_count.ToString(),
                     get_proteoform_shared_name(r.connected_proteoforms[1], double_rounding),
-                    Math.Round(r.peak_center_deltaM, double_rounding).ToString()
+                    Math.Round(r.peak_center_deltaM, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")))
                 });
                 edge_rows += Environment.NewLine;
             }
             return tsv_header + Environment.NewLine + edge_rows;
-        }
-
-        private static string get_proteoform_shared_name(Proteoform p, int double_rounding)
-        {
-            string result;
-            if (typeof(ExperimentalProteoform).IsAssignableFrom(p.GetType()))
-                result = Math.Round(((ExperimentalProteoform)p).agg_mass, double_rounding) + "_Da_" + p.accession;
-            else if (typeof(TheoreticalProteoform).IsAssignableFrom(p.GetType()))
-                result = ((TheoreticalProteoform)p).name.Split(new char[] { '_' }).FirstOrDefault() + " " + ((TheoreticalProteoform)p).ptm_list_string();
-            else
-                result = p.accession;
-            return result;
         }
 
         public static string get_cytoscape_nodes_tsv(List<ProteoformFamily> families, bool quantitative, string color_scheme, int double_rounding)
@@ -186,6 +174,24 @@ namespace ProteoformSuiteInternal
             }
 
             return tsv_header + Environment.NewLine + node_rows;
+        }
+
+        public static string get_proteoform_shared_name(Proteoform p, int double_rounding)
+        {
+            if (typeof(ExperimentalProteoform).IsAssignableFrom(p.GetType()))
+            {
+                return Math.Round(((ExperimentalProteoform)p).agg_mass, double_rounding) + "_Da_" + p.accession;
+            }
+
+            else if (typeof(TheoreticalProteoform).IsAssignableFrom(p.GetType()))
+            {
+                return p.accession.Split(new char[] { '_' }).FirstOrDefault() + " " + ((TheoreticalProteoform)p).ptm_list_string();
+            }
+
+            else
+            {
+                return p.accession;
+            }
         }
 
         private static string get_piechart_string(string color_scheme)
