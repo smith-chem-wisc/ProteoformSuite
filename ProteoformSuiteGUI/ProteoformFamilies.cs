@@ -157,6 +157,7 @@ namespace ProteoformSuite
         private void display_family_members(int row_index, int column_index)
         {
             ProteoformFamily selected_family = (ProteoformFamily)this.dgv_main.Rows[row_index].DataBoundItem;
+            if (column_index < 0) return;
             if (new List<string> { "theoretical_count", "accession_list","name_list" }.Contains(dgv_main.Columns[column_index].Name))
             {
                 if (selected_family.theoretical_count > 0) 

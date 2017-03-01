@@ -268,6 +268,7 @@ namespace Test
             Assert.True(String.Join("", community.families.Select(f => f.experimentals_list)).Contains("E1"));
             Assert.True(String.Join("", community.families.Select(f => f.name_list)).Contains(p1_name));
             Assert.True(String.Join("", community.families.Select(f => f.accession_list)).Contains(pf1_accession));
+            Assert.True(String.Join("", community.families.Select(f => f.agg_mass_list)).Contains(1234.56.ToString()));
 
             //Check that the list of proteoforms is the same in the relations as in the proteoform lists
             HashSet<Proteoform> relation_proteoforms = new HashSet<Proteoform>(community.families.SelectMany(f => f.relations).SelectMany(r => r.connected_proteoforms));

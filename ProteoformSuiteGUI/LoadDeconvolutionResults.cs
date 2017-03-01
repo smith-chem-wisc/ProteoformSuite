@@ -169,19 +169,19 @@ namespace ProteoformSuite
         // CELL FORMATTING EVENTS
         private void dgv_loadFiles1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if ((dgv_loadFiles1.Rows[e.RowIndex].DataBoundItem != null) && (dgv_loadFiles1.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+            if ((dgv_loadFiles1.Rows[e.RowIndex].DataBoundItem != null) && e.ColumnIndex >= 0 && (dgv_loadFiles1.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
                 e.Value = BindProperty(dgv_loadFiles1.Rows[e.RowIndex].DataBoundItem, dgv_loadFiles1.Columns[e.ColumnIndex].DataPropertyName);
         }
 
         private void dgv_loadFiles2_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if ((dgv_loadFiles2.Rows[e.RowIndex].DataBoundItem != null) && (dgv_loadFiles2.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+            if ((dgv_loadFiles2.Rows[e.RowIndex].DataBoundItem != null) && e.ColumnIndex >= 0 && (dgv_loadFiles2.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
                 e.Value = BindProperty(dgv_loadFiles2.Rows[e.RowIndex].DataBoundItem, dgv_loadFiles2.Columns[e.ColumnIndex].DataPropertyName);
         }
 
         private void dgv_loadFiles3_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if ((dgv_loadFiles3.Rows[e.RowIndex].DataBoundItem != null) && (dgv_loadFiles3.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+            if ((dgv_loadFiles3.Rows[e.RowIndex].DataBoundItem != null) && e.ColumnIndex >= 0 && (dgv_loadFiles3.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
                 e.Value = BindProperty(dgv_loadFiles3.Rows[e.RowIndex].DataBoundItem, dgv_loadFiles3.Columns[e.ColumnIndex].DataPropertyName);
         }
 

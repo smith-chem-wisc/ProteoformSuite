@@ -68,6 +68,7 @@ namespace ProteoformSuite
 
         private void FormatNeuCodePairsDGV()
         {
+            if (dgv_RawExpNeuCodePairs.Columns.Count <= 0) return;
             //round table values
             dgv_RawExpNeuCodePairs.Columns["reported_monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
             dgv_RawExpNeuCodePairs.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";

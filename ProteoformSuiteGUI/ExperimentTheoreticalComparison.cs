@@ -377,6 +377,7 @@ namespace ProteoformSuite
                 int columnIndex = dgv_ET_Peak_List.CurrentCell.ColumnIndex;
                 int rowIndex = dgv_ET_Peak_List.CurrentCell.RowIndex;
 
+                if (columnIndex < 0) return;
                 string columnName = dgv_ET_Peak_List.Columns[columnIndex].Name;
 
                 if (columnName == "peak_accepted")
