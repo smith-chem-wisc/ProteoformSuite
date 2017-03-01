@@ -18,32 +18,19 @@ namespace ProteoformSuiteInternal
                 _grouped_relations = value;
                 this.peak_relation_group_count = value.Count;
                 this.peak_deltaM_average = value.Select(r => r.delta_mass).Average();
-                if (grouped_relations[0].connected_proteoforms[1] is TheoreticalProteoform)               
-                    this.peak_accepted = this.peak_relation_group_count >= Lollipop.min_peak_count_et;               
-                else               
-                    this.peak_accepted = this.peak_relation_group_count >= Lollipop.min_peak_count_ee;               
+                this.peak_accepted = typeof(TheoreticalProteoform).IsAssignableFrom(grouped_relations[0].connected_proteoforms[1].GetType()) ?       
+                     this.peak_relation_group_count >= Lollipop.min_peak_count_et : 
+                     this.peak_relation_group_count >= Lollipop.min_peak_count_ee;               
             }
         }
         public double peak_deltaM_average { get; set; }
         public int peak_relation_group_count { get; set; }
         public double decoy_relation_count { get; set; }
-        public double peak_group_fdr { get; set; }  
-        public bool _peak_accepted;
-        public bool peak_accepted
-        {
-            get { return _peak_accepted;  }
-            set
-            {
-                _peak_accepted = value;
-                Parallel.ForEach(this.grouped_relations, r => r.accepted = value);
-            }
-        }
+        public double peak_group_fdr { get; set; }
+        public bool peak_accepted { get; set; } = false;
         public string mass_shifter { get; set; } = "0";
         public List<Modification> possiblePeakAssignments { get; set; }
-        public string possiblePeakAssignments_string
-        {
-            get { return String.Join("; ", possiblePeakAssignments.Select(m => m.id).ToArray()); }
-        }
+        public string possiblePeakAssignments_string { get { return String.Join("; ", possiblePeakAssignments.Select(m => m.id).ToArray()); } }
         public ProteoformRelation base_relation { get; set; }
 
         public DeltaMassPeak(ProteoformRelation base_relation, List<ProteoformRelation> relations_to_group) : base(base_relation)
@@ -51,13 +38,13 @@ namespace ProteoformSuiteInternal
             this.base_relation = base_relation;
 
             if (!Lollipop.opening_results) this.find_nearby_relations(relations_to_group);
-            else this.grouped_relations = relations_to_group; 
+            else this.grouped_relations = relations_to_group;
 
-            foreach (ProteoformRelation relation in this.grouped_relations)
+            Parallel.ForEach<ProteoformRelation>(this.grouped_relations, relation =>
             {
                 relation.peak = this;
                 relation.accepted = this.peak_accepted;
-            }
+            });
 
             if (!Lollipop.opening_results && Lollipop.updated_theoretical) this.possiblePeakAssignments = nearestPTMs(this.peak_deltaM_average);
         }
@@ -70,7 +57,7 @@ namespace ProteoformSuiteInternal
             {
                 double center_deltaM;
                 double peak_width_base;
-                if (ungrouped_relations[0].connected_proteoforms[1] is TheoreticalProteoform) peak_width_base = Lollipop.peak_width_base_et;
+                if (typeof(TheoreticalProteoform).IsAssignableFrom(ungrouped_relations[0].connected_proteoforms[1].GetType())) peak_width_base = Lollipop.peak_width_base_et;
                 else peak_width_base = Lollipop.peak_width_base_ee;
                 if (i > 0)
                 

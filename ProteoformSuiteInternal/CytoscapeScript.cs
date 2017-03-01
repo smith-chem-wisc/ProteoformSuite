@@ -17,15 +17,18 @@ namespace ProteoformSuiteInternal
             return write_script(families, all_families, folder_path, time_stamp, quantitative, quantitative_redBorder, quantitative_boldFace, quantitative_moreOpacity, color_scheme, node_label_position, double_rounding);
         }
 
-        public static string write_cytoscape_script(object[] stuff, Type type, List<ProteoformFamily> all_families, string folder_path, string time_stamp, bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace, bool quantitative_moreOpacity,
+        public static string write_cytoscape_script(object[] stuff, List<ProteoformFamily> all_families, string folder_path, string time_stamp, bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace, bool quantitative_moreOpacity,
             string color_scheme, string node_label_position, int double_rounding)
         {
             List<ProteoformFamily> families = stuff.OfType<ProteoformFamily>().ToList();
 
             if (stuff.Length <= 0) return "No objects were selected";
-            if (families.Count <= 0 && type.IsAssignableFrom(stuff[0].GetType())) families = get_families(stuff.OfType<TheoreticalProteoform>(), all_families).ToList();
-            if (families.Count <= 0 && type == typeof(GoTerm)) families = get_families(stuff.OfType<GoTerm>(), all_families).ToList();
-            if (families.Count <= 0 && type == typeof(ExperimentalProteoform.quantitativeValues)) families = get_families(stuff.OfType<ExperimentalProteoform.quantitativeValues>(), all_families).ToList();
+            if (families.Count <= 0 && typeof(TheoreticalProteoform).IsAssignableFrom(stuff[0].GetType()))
+                families = get_families(stuff.OfType<TheoreticalProteoform>(), all_families).ToList();
+            if (families.Count <= 0 && typeof(GoTerm).IsAssignableFrom(stuff[0].GetType()))
+                families = get_families(stuff.OfType<GoTerm>(), all_families).ToList();
+            if (families.Count <= 0 && typeof(ExperimentalProteoform.quantitativeValues).IsAssignableFrom(stuff[0].GetType()))
+                families = get_families(stuff.OfType<ExperimentalProteoform.quantitativeValues>(), all_families).ToList();
             if (families.Count <= 0) return "Selected objects were not recognized.";
 
             return write_script(families, all_families, folder_path, time_stamp, quantitative, quantitative_redBorder, quantitative_boldFace, quantitative_moreOpacity, color_scheme, node_label_position, double_rounding);
@@ -90,10 +93,8 @@ namespace ProteoformSuiteInternal
             write_styles(all_families, styles_path, style_name, time_stamp, node_label_position, color_scheme, quantitative, quantitative_redBorder, quantitative_moreOpacity, quantitative_boldFace);
 
             string selected_family_string = "Finished building selected famil";
-            if (families.Count == 1) selected_family_string += "y :";
-            else selected_family_string += "ies :#";
-            if (families.Count > 3) selected_family_string = String.Join(", #", families.Select(f => f.family_id).ToList().Take(3)) + ", etc.";
-            else selected_family_string = String.Join(", ", families.Select(f => f.family_id));
+            selected_family_string += families.Count == 1 ? "y :" : "ies :#";
+            selected_family_string += (families.Count <= 3) ? String.Join(", #", families.Select(f => f.family_id)) : String.Join(", #", families.Select(f => f.family_id).ToList().Take(3)) + ", etc.";
             return selected_family_string + ".\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.";
         }
 
