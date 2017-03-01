@@ -16,16 +16,16 @@ namespace ProteoformSuite
     public partial class ProteoformSweet : Form
     {
         //  Initialize Forms START
-        LoadDeconvolutionResults loadDeconvolutionResults = new LoadDeconvolutionResults();
-        RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
-        NeuCodePairs neuCodePairs = new NeuCodePairs();
-        AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms();
-        TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase();
-        ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
-        ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
-        ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
-        Quantification quantification = new Quantification();
-        ResultsSummary resultsSummary = new ResultsSummary();
+        private LoadDeconvolutionResults loadDeconvolutionResults = new LoadDeconvolutionResults();
+        private RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
+        public NeuCodePairs neuCodePairs = new NeuCodePairs();
+        private AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms();
+        public TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase();
+        private ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
+        private ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
+        private ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
+        private Quantification quantification = new Quantification();
+        private ResultsSummary resultsSummary = new ResultsSummary();
         List<Form> forms;
         //  Initialize Forms END
 
@@ -45,7 +45,9 @@ namespace ProteoformSuite
             this.WindowState = FormWindowState.Maximized;
             this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             showForm(loadDeconvolutionResults);
-            methodFileOpen.Filter = "Method TXT File (*.txt)| *.txt";
+            methodFileOpen.Filter = "Method XML File (*.xml)| *.xml";
+            methodFileSave.DefaultExt = ".xml";
+            methodFileSave.Filter = "Method XML File (*.xml)| *.xml";
         }
 
         public void InitializeForms()
@@ -184,36 +186,24 @@ namespace ProteoformSuite
         public bool full_run()
         {
             clear_lists();
-            if (Lollipop.get_files(Lollipop.input_files, Purpose.PtmList).Count() <= 0 && Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
+            if (Lollipop.get_files(Lollipop.input_files, Purpose.PtmList).Count() <= 0 || Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
             {
                 MessageBox.Show("Please list at least one protein database and at least one PTM list.");
                 return false;
             }
+
             this.Cursor = Cursors.WaitCursor;
-            rawExperimentalComponents.load_raw_components();
+            rawExperimentalComponents.MdiParent = this;
+            rawExperimentalComponents.load_raw_components(); //also loads the theoretical database, now
+            rawExperimentalComponents.preloaded = true;
             aggregatedProteoforms.aggregate_proteoforms();
-            theoreticalDatabase.make_databases();
-            Lollipop.make_et_relationships();
-            Lollipop.make_ee_relationships();
+            experimentalTheoreticalComparison.compare_et();
+            experimentExperimentComparison.compare_ee();
             if (Lollipop.neucode_labeled) proteoformFamilies.construct_families();
             quantification.perform_calculations();
-            prepare_figures_and_tables();
             this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
             this.Cursor = Cursors.Default;
             return true;
-        }
-
-        private void prepare_figures_and_tables()
-        {
-            Parallel.Invoke
-            (
-                () => rawExperimentalComponents.FillRawExpComponentsTable(),
-                () => aggregatedProteoforms.FillAggregatesTable(),
-                () => theoreticalDatabase.FillDataBaseTable("Target"),
-                () => experimentalTheoreticalComparison.FillTablesAndCharts(),
-                () => experimentExperimentComparison.FillTablesAndCharts()
-            );
-            if (Lollipop.neucode_labeled) neuCodePairs.GraphNeuCodePairs();
         }
     
 

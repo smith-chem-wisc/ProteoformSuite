@@ -105,7 +105,10 @@ namespace ProteoformSuiteInternal
                     else if (extension == ".txt")
                         file = new InputFile(complete_path, Purpose.PtmList);
                     else
+                    {
                         file = new InputFile(complete_path, Purpose.ProteinDatabase);
+                        file.ContaminantDB = file.filename.Contains("cRAP");
+                    }
                     destination.Add(file);
                 }
             }
@@ -561,8 +564,8 @@ namespace ProteoformSuiteInternal
             //}
 
             //PARALLEL PROBLEM
-            process_entries();
-            process_decoys();
+            process_entries(expanded_proteins);
+            process_decoys(expanded_proteins);
 
             if (combine_theoretical_proteoforms_byMass)
             {
@@ -625,7 +628,7 @@ namespace ProteoformSuiteInternal
             return expanded_prots.ToArray();
         }
 
-        private static ProteinSequenceGroup[] group_proteins_by_sequence(IEnumerable<Protein> proteins)
+        private static ProteinSequenceGroup[] group_proteins_by_sequence(Protein[] proteins)
         {
             Dictionary<string, List<Protein>> sequence_groupings = new Dictionary<string, List<Protein>>();
             foreach (Protein p in proteins)
@@ -648,7 +651,7 @@ namespace ProteoformSuiteInternal
             return mass_groupings.Select(kv => new TheoreticalProteoformGroup(kv.Value, contaminants, theoretical_proteins)).ToArray();
         }
 
-        private static void process_entries()
+        private static void process_entries(IEnumerable<Protein> expanded_proteins)
         {
             List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
             //foreach (Protein p in expanded_proteins)
@@ -662,7 +665,7 @@ namespace ProteoformSuiteInternal
             Lollipop.proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
         }
 
-        private static void process_decoys()
+        private static void process_decoys(Protein[] expanded_proteins)
         {
             for (int decoyNumber = 0; decoyNumber < Lollipop.decoy_databases; decoyNumber++)
             {

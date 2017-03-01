@@ -666,7 +666,7 @@ namespace ProteoformSuiteInternal
         public List<string> accessionList { get; set; } // this is the list of accession numbers for all proteoforms that share the same modified mass. the list gets alphabetical order
 
         public TheoreticalProteoformGroup(List<TheoreticalProteoform> theoreticals, bool contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins)
-            : base(theoreticals[0].accession + "_T" + theoreticals.Count(), String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.fragment)), theoreticals[0].begin, theoreticals[0].end, theoreticals[0].unmodified_mass, theoreticals[0].lysine_count, theoreticals[0].goTerms, theoreticals[0].ptm_set, theoreticals[0].modified_mass, theoreticals[0].is_target)
+            : base(theoreticals[0].accession + "_T" + theoreticals.Count(), String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.name)), String.Join(";", theoreticals.Select(t => t.fragment)), theoreticals[0].begin, theoreticals[0].end, theoreticals[0].unmodified_mass, theoreticals[0].lysine_count, theoreticals[0].goTerms, theoreticals[0].ptm_set, theoreticals[0].modified_mass, theoreticals[0].is_target)
         {
             this.accessionList = theoreticals.Select(p => p.accession).ToList();
             this.proteinList = theoreticals.SelectMany(p => p.proteinList).ToList();
@@ -677,7 +677,7 @@ namespace ProteoformSuiteInternal
                 if (!contaminant) return;
                 this.accession = matching_contaminants[0].Accession + "_T" + accessionList.Count();
                 this.description = String.Join(";", matching_contaminants.Select(t => t.FullDescription));
-                this.name = String.Join(";", matching_contaminants.Select(t => t.FullDescription));
+                this.name = String.Join(";", matching_contaminants.Select(t => t.Name));
                 TheoreticalProteoform first_contaminant = theoreticals.FirstOrDefault(t => t.contaminant);
                 this.begin = first_contaminant.begin;
                 this.end = first_contaminant.end;

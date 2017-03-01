@@ -266,13 +266,12 @@ namespace ProteoformSuite
         {
             if (Lollipop.input_files.Count == 0)
             {
-                MessageBox.Show("Please load in deconvolution result files in order to use load and run.");
+                MessageBox.Show("Please load in deconvolution result files in order to use load and run.", "Full Run");
                 return;
             }
-            MessageBox.Show("Will start the run now.\n\nWill show as non-responsive.");
             bool successful_run = ((ProteoformSweet)MdiParent).full_run();
-            if (successful_run) MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
-            else { MessageBox.Show("Method did not successfully run."); }
+            if (successful_run) MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.", "Full Run");
+            else MessageBox.Show("Method did not successfully run.", "Full Run"); 
         }
 
 
