@@ -196,6 +196,7 @@ namespace ProteoformSuite
             rawExperimentalComponents.MdiParent = this;
             rawExperimentalComponents.load_raw_components(); //also loads the theoretical database, now
             rawExperimentalComponents.preloaded = true;
+            neuCodePairs.preloaded = true;
             aggregatedProteoforms.aggregate_proteoforms();
             experimentalTheoreticalComparison.compare_et();
             experimentExperimentComparison.compare_ee();

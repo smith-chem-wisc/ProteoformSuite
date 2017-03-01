@@ -146,75 +146,6 @@ namespace ProteoformSuiteInternal
         public static bool neucode_labeled = true;
         public static bool td_results = false;
 
-        //quantification
-        public static int countOfBioRepsInOneCondition; //need this in quantification to select which proteoforms to perform calculations on.
-        public static Dictionary<string, List<int>> ltConditionsBioReps = new Dictionary<string, List<int>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
-        public static Dictionary<string, List<int>> hvConditionsBioReps = new Dictionary<string, List<int>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
-        public static Dictionary<int, List<int>> quantBioFracCombos; //this dictionary has an integer list of bioreps with an integer list of observed fractions. this way we can be missing reps and fractions.
-        public static List<Tuple<int, int, double>> normalizationFactors;
-
-        public static void getBiorepsFractionsList(List<InputFile> input_files)  //this should be moved to the appropriate location. somewhere at the start of raw component/end of load component.
-        {
-            if (!input_files.Any(f => f.purpose == Purpose.Quantification)) return;
-            quantBioFracCombos = new Dictionary<int, List<int>>();
-            List<int> bioreps = input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
-            List<int> fractions = new List<int>();
-            foreach (int b in bioreps)
-            {
-                fractions = input_files.Where(q => q.purpose == Purpose.Quantification).Where(rep => rep.biological_replicate == b).Select(f => f.fraction).ToList();
-                if (fractions != null)
-                    fractions = fractions.Distinct().ToList();
-                quantBioFracCombos.Add(b, fractions);
-            }           
-        }
-
-        public static void getObservationParameters(bool neucode_labeled, List<InputFile> input_files) //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
-        {
-            if (!input_files.Any(f => f.purpose == Purpose.Quantification)) return;
-            List<string> ltConditions = new List<string>();
-            List<string> hvConditions = new List<string>();
-            ltConditionsBioReps.Clear();
-            hvConditionsBioReps.Clear();
-
-            foreach (InputFile inFile in get_files(input_files, Purpose.Quantification).ToList())
-            {
-                ltConditions.Add(inFile.lt_condition);
-                if (neucode_labeled)
-                    hvConditions.Add(inFile.hv_condition);
-            }
-
-            ltConditions = ltConditions.Distinct().ToList();
-            if (hvConditions.Count > 0)
-                hvConditions = hvConditions.Distinct().ToList();
-
-            foreach (string condition in ltConditions)
-            {
-                //ltConditionsBioReps.Add(condition, Lollipop.get_files(Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).ToList().Distinct().Count()); // this gives the count of bioreps in the specified condition
-                List<int> bioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).ToList();
-                bioreps = bioreps.Distinct().ToList();
-                ltConditionsBioReps.Add(condition, bioreps);
-            }
-
-            foreach (string condition in hvConditions)
-            {
-                //hvConditionsBioReps.Add(condition, Lollipop.get_files(Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).ToList().Distinct().Count()); // this gives the count of bioreps in the specified condition
-                List<int> bioreps = get_files(input_files, Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).ToList();
-                bioreps = bioreps.Distinct().ToList();
-                hvConditionsBioReps.Add(condition, bioreps);
-            }
-
-            int minLt = ltConditionsBioReps.Values.Min(v => v.Count);
-            int minHv = 0;
-            if (hvConditionsBioReps.Values.Count() > 0)
-            {
-                minHv = hvConditionsBioReps.Values.Min(v => v.Count);
-                countOfBioRepsInOneCondition = Math.Min(minLt, minHv);
-            }
-            else
-                countOfBioRepsInOneCondition = minLt;
-            minBiorepsWithObservations = countOfBioRepsInOneCondition > 0 ? countOfBioRepsInOneCondition : 1; 
-        }
-
         public static void process_raw_components()
         {
             if (get_files(Lollipop.input_files, Purpose.Calibration).Count() > 0)
@@ -835,6 +766,71 @@ namespace ProteoformSuiteInternal
         public static string[] node_positioning = new string[] { "Arbitrary Circle", "Mass X-Axis", "Circle by Mass" };
         public static string[] edge_labels = new string[] { "Mass Difference" };
 
+
+        //QUANTIFICATION SETUP
+        public static int countOfBioRepsInOneCondition; //need this in quantification to select which proteoforms to perform calculations on.
+        public static int condition_count;
+        public static Dictionary<string, List<int>> ltConditionsBioReps = new Dictionary<string, List<int>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
+        public static Dictionary<string, List<int>> hvConditionsBioReps = new Dictionary<string, List<int>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
+        public static Dictionary<int, List<int>> quantBioFracCombos; //this dictionary has an integer list of bioreps with an integer list of observed fractions. this way we can be missing reps and fractions.
+        public static List<Tuple<int, int, double>> normalizationFactors;
+
+        public static void getBiorepsFractionsList(List<InputFile> input_files)  //this should be moved to the appropriate location. somewhere at the start of raw component/end of load component.
+        {
+            if (!input_files.Any(f => f.purpose == Purpose.Quantification)) return;
+            quantBioFracCombos = new Dictionary<int, List<int>>();
+            List<int> bioreps = input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
+            List<int> fractions = new List<int>();
+            foreach (int b in bioreps)
+            {
+                fractions = input_files.Where(q => q.purpose == Purpose.Quantification).Where(rep => rep.biological_replicate == b).Select(f => f.fraction).ToList();
+                if (fractions != null)
+                    fractions = fractions.Distinct().ToList();
+                quantBioFracCombos.Add(b, fractions);
+            }
+        }
+
+        public static void getObservationParameters(bool neucode_labeled, List<InputFile> input_files) //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+        {
+            if (!input_files.Any(f => f.purpose == Purpose.Quantification)) return;
+            List<string> ltConditions = get_files(input_files, Purpose.Quantification).Select(f => f.lt_condition).Distinct().ToList();
+            List<string> hvConditions = neucode_labeled ? 
+                get_files(input_files, Purpose.Quantification).Select(f => f.hv_condition).Distinct().ToList() : 
+                new List<string>();
+            ltConditionsBioReps.Clear();
+            hvConditionsBioReps.Clear();
+
+            foreach (string condition in ltConditions)
+            {
+                //ltConditionsBioReps.Add(condition, Lollipop.get_files(Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).ToList().Distinct().Count()); // this gives the count of bioreps in the specified condition
+                List<int> bioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).ToList();
+                bioreps = bioreps.Distinct().ToList();
+                ltConditionsBioReps.Add(condition, bioreps);
+            }
+
+            foreach (string condition in hvConditions)
+            {
+                //hvConditionsBioReps.Add(condition, Lollipop.get_files(Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).ToList().Distinct().Count()); // this gives the count of bioreps in the specified condition
+                List<int> bioreps = get_files(input_files, Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).ToList();
+                bioreps = bioreps.Distinct().ToList();
+                hvConditionsBioReps.Add(condition, bioreps);
+            }
+
+            condition_count = ltConditions.Count + hvConditions.Count;
+
+            int minLt = ltConditionsBioReps.Values.Min(v => v.Count);
+            int minHv = 0;
+            if (hvConditionsBioReps.Values.Count() > 0)
+            {
+                minHv = hvConditionsBioReps.Values.Min(v => v.Count);
+                countOfBioRepsInOneCondition = Math.Min(minLt, minHv);
+            }
+            else
+                countOfBioRepsInOneCondition = minLt;
+            minBiorepsWithObservations = countOfBioRepsInOneCondition > 0 ? countOfBioRepsInOneCondition : 1;
+        }
+
+
         //QUANTIFICATION
         public static string numerator_condition = "";
         public static string denominator_condition = "";
@@ -973,13 +969,11 @@ namespace ProteoformSuiteInternal
 
         public static void defineBackgroundIntensityDistribution(bool neucode_labeled, Dictionary<int, List<int>> quantBioFracCombos, List<ExperimentalProteoform> satisfactoryProteoforms, decimal backgroundShift, decimal backgroundWidth)
         {
-            bkgdAverageIntensity = observedAverageIntensity + backgroundShift * observedStDev;
-            bkgdStDev = observedStDev * backgroundWidth;
+            bkgdAverageIntensity = selectAverageIntensity + backgroundShift * selectStDev;
+            bkgdStDev = selectStDev * backgroundWidth;
 
-            int numMeasurableIntensities = quantBioFracCombos.Keys.Count * satisfactoryProteoforms.Count;
-            if (neucode_labeled)
-                numMeasurableIntensities *= 2;
-            int numMeasuredIntensities = satisfactoryProteoforms.Sum(eP => eP.biorepIntensityList.Count);
+            int numMeasurableIntensities = quantBioFracCombos.Keys.Count * condition_count * satisfactoryProteoforms.Count; // all bioreps, all light conditions + all heavy conditions, all satisfactory proteoforms
+            int numMeasuredIntensities = satisfactoryProteoforms.Sum(eP => eP.biorepIntensityList.Count); //biorep intensities are created to be unique to the light/heavy + condition + biorep
             int numMissingIntensities = numMeasurableIntensities - numMeasuredIntensities; //this could be negative if there were tons more quantitative intensities
 
             decimal bkgdGaussianArea = selectGaussianArea / (decimal)numMeasuredIntensities * (decimal)numMissingIntensities;
