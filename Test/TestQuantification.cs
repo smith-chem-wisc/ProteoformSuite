@@ -504,7 +504,12 @@ namespace Test
         {
             SortedDictionary<decimal, int> histogram = new SortedDictionary<decimal, int>();
             ExperimentalProteoform e = new ExperimentalProteoform();
-            e.biorepIntensityList = (from i in Enumerable.Range(0, 10) select new biorepIntensity(false, false, 1, "", 0)).ToList();
+            
+            //Each biorepIntensity has a unique combination of light/heavy + condition + biorep, since that's how they're made in the program
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(true, false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(true, false, i, "second", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(false, false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(false, false, i, "second", 0));
 
             double log2_intensity = 0.06; //rounds up
             foreach(biorepIntensity b in e.biorepIntensityList)
@@ -516,16 +521,16 @@ namespace Test
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { e };
             List<decimal> rounded_intensities = Lollipop.define_intensity_distribution(exps, histogram);
 
-            //10 intensity values, bundled in twos; therefore 5 rounded values
-            Assert.AreEqual(10, rounded_intensities.Count);
-            Assert.AreEqual(5, histogram.Keys.Count);
+            //12 intensity values, bundled in twos; therefore 6 rounded values
+            Assert.AreEqual(12, rounded_intensities.Count);
+            Assert.AreEqual(6, histogram.Keys.Count);
 
-            //4 bins of width 0.1 and height 2; the first one gets swallowed up in smoothing
-            Assert.AreEqual(0.8, Lollipop.get_gaussian_area(histogram));
+            //5 bins of width 0.1 and height 2; the first one gets swallowed up in smoothing
+            Assert.AreEqual(1, Lollipop.get_gaussian_area(histogram));
             histogram.Add(Math.Round((decimal)log2_intensity, 1), 1);
 
             //Added 1 bin of width 0.1 and height 1.5, since we're smoothing by taking width and the mean of the two adjacent bars
-            Assert.AreEqual(0.95, Lollipop.get_gaussian_area(histogram));            
+            Assert.AreEqual(1.15, Lollipop.get_gaussian_area(histogram));            
         }
 
         [Test]
@@ -533,7 +538,12 @@ namespace Test
         {
             SortedDictionary<decimal, int> histogram = new SortedDictionary<decimal, int>();
             ExperimentalProteoform e = new ExperimentalProteoform();
-            e.biorepIntensityList = (from i in Enumerable.Range(0, 10) select new biorepIntensity(false, false, 1, "", 0)).ToList();
+
+            //Each biorepIntensity has a unique combination of light/heavy + condition + biorep, since that's how they're made in the program
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(true, false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(true, false, i, "second", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(false, false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(false, false, i, "second", 0));
 
             double log2_intensity = 1.06; //rounds up
             foreach (biorepIntensity b in e.biorepIntensityList)
@@ -549,29 +559,37 @@ namespace Test
             //ALL INTENSITIES
             //Test the standard deviation and other calculations
             Lollipop.defineAllObservedIntensityDistribution(exps, histogram); // creates the histogram again, checking that it's cleared, too
-            Assert.AreEqual(0.8m, Lollipop.observedGaussianArea);
-            Assert.AreEqual(1.3m, Lollipop.observedAverageIntensity);
-            Assert.AreEqual(0.141m, Math.Round(Lollipop.observedStDev, 3));
-            Assert.AreEqual(2.26m, Math.Round(Lollipop.observedGaussianHeight, 2));
+            Assert.AreEqual(1m, Lollipop.observedGaussianArea);
+            Assert.AreEqual(1.35m, Lollipop.observedAverageIntensity);
+            Assert.AreEqual(0.171m, Math.Round(Lollipop.observedStDev, 3));
+            Assert.AreEqual(2.34m, Math.Round(Lollipop.observedGaussianHeight, 2));
+
+            //The rest of the calculations should be based off of selected, so setting those to zero
+            Lollipop.observedGaussianArea = 0;
+            Lollipop.observedAverageIntensity = 0;
+            Lollipop.observedStDev = 0;
+            Lollipop.observedGaussianHeight = 0;
 
             //SELECTED INTENSITIES
             Lollipop.defineSelectObservedIntensityDistribution(exps, histogram);
-            Assert.AreEqual(0.8m, Lollipop.selectGaussianArea);
-            Assert.AreEqual(1.3m, Lollipop.selectAverageIntensity);
-            Assert.AreEqual(0.141m, Math.Round(Lollipop.selectStDev, 3));
-            Assert.AreEqual(2.26m, Math.Round(Lollipop.selectGaussianHeight, 2)); //shouldn't this be calculated with the selectStDev? changed from //selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
+            Assert.AreEqual(1m, Lollipop.selectGaussianArea);
+            Assert.AreEqual(1.35m, Lollipop.selectAverageIntensity);
+            Assert.AreEqual(0.171m, Math.Round(Lollipop.selectStDev, 3));
+            Assert.AreEqual(2.34m, Math.Round(Lollipop.selectGaussianHeight, 2)); //shouldn't this be calculated with the selectStDev? changed from //selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
 
             //SELECTED BACKGROUND
-            Dictionary<int, List<int>> qBioFractions = new Dictionary<int, List<int>> { { 1, new List<int> { 1, 2, 3 } } };
-            Lollipop.defineBackgroundIntensityDistribution(false, qBioFractions, exps, 1, 2);
-            Assert.AreEqual(1.44m, Math.Round(Lollipop.bkgdAverageIntensity, 2));
-            Assert.AreEqual(0.283m, Math.Round(Lollipop.bkgdStDev, 3));
-            Assert.AreEqual(-1.02m, Math.Round(Lollipop.bkgdGaussianHeight, 2));
+            Lollipop.condition_count = e.biorepIntensityList.Select(b => b.condition + b.light.ToString()).Distinct().Count();
+            Dictionary<int, List<int>> qBioFractions = e.biorepIntensityList.Select(b => b.biorep).Distinct().ToDictionary(b => b, b => new List<int>());
+            Lollipop.defineBackgroundIntensityDistribution(false, qBioFractions, exps, -2, 0.5m);
+            Assert.AreEqual(1.01m, Math.Round(Lollipop.bkgdAverageIntensity, 2));
+            Assert.AreEqual(0.085m, Math.Round(Lollipop.bkgdStDev, 3));
+            Assert.AreEqual(0, Math.Round(Lollipop.bkgdGaussianHeight, 2));
 
-            Lollipop.defineBackgroundIntensityDistribution(true, qBioFractions, exps, 1, 2);
-            Assert.AreEqual(1.44m, Math.Round(Lollipop.bkgdAverageIntensity, 2));
-            Assert.AreEqual(0.283m, Math.Round(Lollipop.bkgdStDev, 3));
-            Assert.AreEqual(-0.90m, Math.Round(Lollipop.bkgdGaussianHeight, 2));
+            //unlabeled works similarly
+            Lollipop.defineBackgroundIntensityDistribution(true, qBioFractions, exps, -2, 0.5m);
+            Assert.AreEqual(1.01m, Math.Round(Lollipop.bkgdAverageIntensity, 2));
+            Assert.AreEqual(0.085m, Math.Round(Lollipop.bkgdStDev, 3));
+            Assert.AreEqual(0, Math.Round(Lollipop.bkgdGaussianHeight, 2));
         }
 
         [Test]

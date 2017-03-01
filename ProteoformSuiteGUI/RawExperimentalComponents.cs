@@ -35,13 +35,10 @@ namespace ProteoformSuite
                     () => { if (Lollipop.get_files(Lollipop.input_files, Purpose.PtmList).Count() > 0 && Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() > 0) Lollipop.get_theoretical_proteoforms(); }
                 );
 
-                Parallel.Invoke
-                (
-                    () => this.FillRawExpComponentsTable(),
-                    () => this.FillRawQuantificationComponentsTable(),
-                    () => { if (Lollipop.neucode_labeled) ((ProteoformSweet)this.MdiParent).neuCodePairs.display_neucode_pairs(); },
-                    () => ((ProteoformSweet)this.MdiParent).theoreticalDatabase.FillDataBaseTable("Target")
-                );
+                this.FillRawExpComponentsTable();
+                this.FillRawQuantificationComponentsTable();
+                if (Lollipop.neucode_labeled) ((ProteoformSweet)this.MdiParent).neuCodePairs.display_neucode_pairs();
+                ((ProteoformSweet)this.MdiParent).theoreticalDatabase.FillDataBaseTable("Target");
             }
             preloaded = false;
         }
@@ -71,6 +68,8 @@ namespace ProteoformSuite
 
         private void FormatRawExpComponentsTable()
         {
+            if (dgv_RawExpComp_MI_masses.Columns.Count <= 0) return;
+
             //round table values
             dgv_RawExpComp_MI_masses.Columns["reported_monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
             dgv_RawExpComp_MI_masses.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";

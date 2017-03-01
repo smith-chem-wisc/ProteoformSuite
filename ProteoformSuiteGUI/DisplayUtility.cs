@@ -135,6 +135,8 @@ namespace ProteoformSuite
 
         public static void FormatAggregatesTable(DataGridView dgv)
         {
+            if (dgv.Columns.Count <= 0) return;
+
             //round table values
             dgv.Columns["agg_mass"].DefaultCellStyle.Format = "0.####";
             dgv.Columns["agg_intensity"].DefaultCellStyle.Format = "0.####";
@@ -159,6 +161,8 @@ namespace ProteoformSuite
 
         public static void FormatTheoreticalProteoformTable(DataGridView dgv)
         {
+            if (dgv.Columns.Count <= 0) return;
+
             //round table values
             dgv.Columns["unmodified_mass"].DefaultCellStyle.Format = "0.####";
             dgv.Columns["ptm_mass"].DefaultCellStyle.Format = "0.####";
@@ -189,6 +193,8 @@ namespace ProteoformSuite
         public static void FormatRelationsGridView(DataGridView dgv, bool mask_experimental, bool mask_theoretical)
 
         {
+            if (dgv.Columns.Count <= 0) return;
+
             //round table values
             dgv.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
             dgv.Columns["peak_center_deltaM"].DefaultCellStyle.Format = "0.####";
@@ -257,6 +263,8 @@ namespace ProteoformSuite
 
         public static void FormatPeakListGridView(DataGridView dgv, bool mask_mass_shifter)
         {
+            if (dgv.Columns.Count <= 0) return;
+
             //making all columns invisible first - faster
             foreach (DataGridViewColumn column in dgv.Columns) { column.Visible = false; }
             if (!mask_mass_shifter)
@@ -334,6 +342,8 @@ namespace ProteoformSuite
 
         public static void format_families_dgv(DataGridView dgv)
         {
+            if (dgv.Columns.Count <= 0) return;
+
             //set column header
             //dgv_proteoform_families.Columns["family_id"].HeaderText = "Light Monoisotopic Mass";
             dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
