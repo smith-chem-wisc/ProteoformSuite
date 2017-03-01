@@ -28,6 +28,8 @@ namespace ProteoformSuite
         {
             this.tb_familyBuildFolder.Text = Lollipop.family_build_folder_path;
             this.nud_decimalRoundingLabels.Value = Convert.ToDecimal(Lollipop.deltaM_edge_display_rounding);
+            this.cb_buildAsQuantitative.Enabled = Lollipop.qVals.Count > 0;
+            this.cb_buildAsQuantitative.Checked = false;
         }
 
         private void initialize_settings()
@@ -223,7 +225,7 @@ namespace ProteoformSuite
         {
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
-            string message = CytoscapeScript.write_cytoscape_script(Lollipop.proteoform_community.families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, false, false, false, false, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            string message = CytoscapeScript.write_cytoscape_script(Lollipop.proteoform_community.families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, cb_buildAsQuantitative.Checked, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -232,7 +234,7 @@ namespace ProteoformSuite
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
             object[] selected = DisplayUtility.get_selected_objects(dgv_main);
-            string message = CytoscapeScript.write_cytoscape_script(selected, table_types[cmbx_tableSelector.SelectedIndex], Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, false, false, false, false, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            string message = CytoscapeScript.write_cytoscape_script(selected, table_types[cmbx_tableSelector.SelectedIndex], Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, cb_buildAsQuantitative.Checked, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -250,6 +252,13 @@ namespace ProteoformSuite
         private void btn_merge_Click(object sender, EventArgs e)
         {
             
+        }
+
+        private void cb_buildAsQuantitative_CheckedChanged(object sender, EventArgs e)
+        {
+            cb_redBorder.Enabled = cb_buildAsQuantitative.Checked;
+            cb_boldLabel.Enabled = cb_buildAsQuantitative.Checked;
+            cb_moreOpacity.Enabled = false; //not fully implemented
         }
     }
 }
