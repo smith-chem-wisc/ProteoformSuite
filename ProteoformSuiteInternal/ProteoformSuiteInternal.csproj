@@ -134,7 +134,6 @@
     <Compile Include="ProteoformRelation.cs" />
     <Compile Include="ProteomeDatabaseReader.cs" />
     <Compile Include="Psm.cs" />
-    <Compile Include="RandomExtensions.cs" />
     <Compile Include="SaveState.cs" />
   </ItemGroup>
   <ItemGroup>

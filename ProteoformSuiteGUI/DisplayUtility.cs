@@ -89,7 +89,7 @@ namespace ProteoformSuite
             ct.Series[relations_series].Points.Clear();
 
             double peak_threshold;
-            if (relations[0].connected_proteoforms[1] is TheoreticalProteoform) peak_threshold = Lollipop.min_peak_count_et;
+            if (typeof(TheoreticalProteoform).IsAssignableFrom(relations[0].connected_proteoforms[1].GetType())) peak_threshold = Lollipop.min_peak_count_et;
             else peak_threshold = Lollipop.min_peak_count_ee;
             List<DeltaMassPeak> peaks_ordered = peaks.OrderBy(r => r.peak_deltaM_average).ToList();
             foreach (DeltaMassPeak peak in peaks_ordered)
@@ -111,7 +111,7 @@ namespace ProteoformSuite
         {
             ct.ChartAreas[0].AxisY.StripLines.Clear();
             double peak_width_base;
-            if (relations[0].connected_proteoforms[1] is TheoreticalProteoform) peak_width_base = Lollipop.peak_width_base_et;
+            if (typeof(TheoreticalProteoform).IsAssignableFrom(relations[0].connected_proteoforms[1].GetType())) peak_width_base = Lollipop.peak_width_base_et;
             else peak_width_base = Lollipop.peak_width_base_ee;
             ct.ChartAreas[0].AxisX.Minimum = peak.peak_deltaM_average - peak_width_base;
             ct.ChartAreas[0].AxisX.Maximum = peak.peak_deltaM_average + peak_width_base;
