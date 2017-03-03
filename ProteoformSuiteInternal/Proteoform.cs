@@ -562,7 +562,8 @@ namespace ProteoformSuiteInternal
         public int begin { get; set; }
         public int end { get; set; }
         public double unmodified_mass { get; set; }
-        public List<GoTerm> goTerms { get; set; } = null;
+        public List<GoTerm> goTerms { get; set; } = new List<GoTerm>();
+        public string goTerm_IDs { get { return String.Join("; ", goTerms.Select(g => g.Id)); } }
         public PtmSet ptm_set { get; set; } = new PtmSet(new List<Ptm>());
         public List<Ptm> ptm_list { get { return ptm_set.ptm_combination.ToList(); } }
         public double ptm_mass { get { return ptm_set.mass; } }
@@ -596,22 +597,23 @@ namespace ProteoformSuiteInternal
         public string of_interest { get; set; } = "";
         public bool contaminant { get; set; }
 
-        public TheoreticalProteoform(string accession, string description, Protein protein, bool is_metCleaved, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) : 
+        public TheoreticalProteoform(string accession, string description, Protein protein, bool is_metCleaved, double unmodified_mass, int lysine_count, PtmSet ptm_set, double modified_mass, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) : 
             base(accession, modified_mass, lysine_count, is_target)
         {
             this.proteinList.Add(protein);
             this.accession = accession;
             this.description = description;
             this.name = protein.Name;
-            this.fragment = protein.BigPeptideTypes.FirstOrDefault();
-            this.begin = (int)protein.OneBasedBeginPositions.FirstOrDefault() + Convert.ToInt32(is_metCleaved);
-            this.end = (int)protein.OneBasedEndPositions.FirstOrDefault();
+            this.fragment = protein.ProteolysisProducts.FirstOrDefault().Type;
+            this.begin = (int)protein.ProteolysisProducts.FirstOrDefault().OneBasedBeginPosition + Convert.ToInt32(is_metCleaved);
+            this.end = (int)protein.ProteolysisProducts.FirstOrDefault().OneBasedEndPosition;
+            this.goTerms = protein.GoTerms.ToList();
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
             if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
         }
 
-        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, List<GoTerm> goTerms, PtmSet ptm_set, double modified_mass, bool is_target) :
+        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, PtmSet ptm_set, double modified_mass, bool is_target) :
             base(accession, modified_mass, lysine_count, is_target)
         {
             this.accession = accession;
@@ -666,10 +668,11 @@ namespace ProteoformSuiteInternal
         public List<string> accessionList { get; set; } // this is the list of accession numbers for all proteoforms that share the same modified mass. the list gets alphabetical order
 
         public TheoreticalProteoformGroup(List<TheoreticalProteoform> theoreticals, bool contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins)
-            : base(theoreticals[0].accession + "_T" + theoreticals.Count(), String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.name)), String.Join(";", theoreticals.Select(t => t.fragment)), theoreticals[0].begin, theoreticals[0].end, theoreticals[0].unmodified_mass, theoreticals[0].lysine_count, theoreticals[0].goTerms, theoreticals[0].ptm_set, theoreticals[0].modified_mass, theoreticals[0].is_target)
+            : base(theoreticals[0].accession + "_T" + theoreticals.Count, String.Join(";", theoreticals.Select(t => t.description)), String.Join(";", theoreticals.Select(t => t.name)), String.Join(";", theoreticals.Select(t => t.fragment)), theoreticals[0].begin, theoreticals[0].end, theoreticals[0].unmodified_mass, theoreticals[0].lysine_count, theoreticals[0].ptm_set, theoreticals[0].modified_mass, theoreticals[0].is_target)
         {
             this.accessionList = theoreticals.Select(p => p.accession).ToList();
             this.proteinList = theoreticals.SelectMany(p => p.proteinList).ToList();
+            this.goTerms = this.proteinList.SelectMany(p => p.GoTerms).ToList();
             if (contaminants)
             {
                 List<Protein> matching_contaminants = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Where(p => this.accessionList.Select(acc => acc.Split(new char[] { '_' })[0]).Contains(p.Accession)).ToList();

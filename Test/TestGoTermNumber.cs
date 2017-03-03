@@ -16,10 +16,7 @@ namespace Test
             int m = 2;//number of proteins in the background with the term
             int t = 4;//number of proteins in the background
 
-            GoTerm g = new GoTerm();
-            g.id = "1";
-            g.description = "one";
-            g.aspect = Aspect.biologicalProcess;
+            GoTerm g = new GoTerm("1", "one", Aspect.biologicalProcess);
             GoTermNumber gtn = new GoTermNumber(g, q, k, m, t);
             Assert.AreEqual(gtn.log_odds_ratio, 0);
             Assert.AreEqual(Math.Round((decimal)gtn.p_value,6), 0.833333);

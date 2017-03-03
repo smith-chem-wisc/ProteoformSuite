@@ -723,10 +723,7 @@ namespace Test
             List<GoTermNumber> gtns = new List<GoTermNumber>();
             for (int i = 1; i <= numberOfGoTermNumbers; i++)
             {
-                GoTerm g = new GoTerm();
-                g.aspect = Aspect.biologicalProcess;
-                g.description = "description";
-                g.id = "id";
+                GoTerm g = new GoTerm("id", "description", Aspect.biologicalProcess);
                 GoTermNumber gtn = new GoTermNumber();
                 gtn.goTerm = g;
                 gtn.p_value = (0.1d / (double)i - 0.0005d);
@@ -767,17 +764,17 @@ namespace Test
         [Test]
         public void test_get_observed_proteins()
         {
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
+            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
+            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
+            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
             ExperimentalProteoform e = new ExperimentalProteoform("E1");
             ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { e, t, u }, 0);
             e.family = f;
@@ -793,17 +790,17 @@ namespace Test
         [Test]
         public void test_get_repressed_or_induced_proteins()
         {
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
+            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
+            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
+            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
             ExperimentalProteoform ex = new ExperimentalProteoform("E1");
             ExperimentalProteoform fx = new ExperimentalProteoform("E1");
             ExperimentalProteoform gx = new ExperimentalProteoform("E1");
@@ -880,17 +877,17 @@ namespace Test
         [Test]
         public void get_interesting_families()
         {
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
+            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
+            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
+            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
             ExperimentalProteoform ex = new ExperimentalProteoform("E1");
             ExperimentalProteoform fx = new ExperimentalProteoform("E2");
             ExperimentalProteoform gx = new ExperimentalProteoform("E3");
@@ -925,27 +922,21 @@ namespace Test
         [Test]
         public void get_interesting_goterm_families()
         {
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            GoTerm g1 = new GoTerm();
-            GoTerm g2 = new GoTerm();
-            GoTerm g3 = new GoTerm();
-            p1.GoTerms.Add(g1);
-            p2.GoTerms.Add(g2);
-            p3.GoTerms.Add(g3);
+            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm> { new GoTerm("", "", Aspect.biologicalProcess) });
+            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm> { new GoTerm("", "", Aspect.biologicalProcess) });
+            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm> { new GoTerm("", "", Aspect.biologicalProcess) });
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
             t.proteinList = new List<Protein> { p1 };
             u.proteinList = new List<Protein> { p2 };
             v.proteinList = new List<Protein> { p3 };
-            List<GoTermNumber> gtn = new List<GoTermNumber> { new GoTermNumber(g2), new GoTermNumber(g3) };
+            List<GoTermNumber> gtn = new List<GoTermNumber> { new GoTermNumber(p2.GoTerms.FirstOrDefault()), new GoTermNumber(p3.GoTerms.FirstOrDefault()) };
             ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { t }, 0);
             ProteoformFamily h = new ProteoformFamily(new List<Proteoform> { u }, 0);
             List<ProteoformFamily> families = new List<ProteoformFamily> { f, h };

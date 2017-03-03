@@ -12,14 +12,14 @@ namespace ProteoformSuiteInternal
             : base(proteins[0].BaseSequence, 
                 proteins[0].Accession + "_G" + proteins.Count(),
                 proteins.SelectMany(p => p.OneBasedPossibleLocalizedModifications.Keys).Distinct().ToDictionary(i => i, i => proteins.Where(p => p.OneBasedPossibleLocalizedModifications.ContainsKey(i)).SelectMany(p => p.OneBasedPossibleLocalizedModifications[i]).ToList()), 
-                proteins[0].OneBasedBeginPositions, 
-                proteins[0].OneBasedEndPositions, 
-                proteins[0].BigPeptideTypes, 
+                proteins[0].ProteolysisProducts.Select(p => p.OneBasedBeginPosition).ToArray(), 
+                proteins[0].ProteolysisProducts.Select(p => p.OneBasedEndPosition).ToArray(), 
+                proteins[0].ProteolysisProducts.Select(p => p.Type).ToArray(), 
                 proteins[0].Name, 
                 proteins[0].FullName, 
                 false, 
                 proteins[0].IsContaminant, 
-                proteins[0].GoTerms)
+                proteins[0].GoTerms.ToList())
         {
             this.accessionList = proteins.Select(p => p.Accession).ToList();
         }
