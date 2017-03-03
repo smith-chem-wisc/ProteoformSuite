@@ -74,13 +74,13 @@ namespace Test
             List<TheoreticalProteoform> propeps = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "propeptide").ToList();
             List<TheoreticalProteoform> signalpeps = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "signal-peptide").ToList();
 
-            Assert.AreEqual(9, chains.Count);
+            Assert.AreEqual(8, chains.Count);
             Assert.AreEqual(12, fulls.Count);
             Assert.AreEqual(2, peptides.Count);
             Assert.AreEqual(3, propeps.Count);
             Assert.AreEqual(3, signalpeps.Count);
 
-            Assert.AreEqual(29, Lollipop.proteoform_community.theoretical_proteoforms.Length);
+            Assert.AreEqual(28, Lollipop.proteoform_community.theoretical_proteoforms.Length);
         }
 
         [Test]
@@ -108,13 +108,13 @@ namespace Test
             List<TheoreticalProteoform> propeps = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "propeptide").ToList();
             List<TheoreticalProteoform> signalpeps = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "signal-peptide").ToList();
 
-            Assert.AreEqual(9, chains.Count);
-            Assert.AreEqual(12, fulls.Count);
+            Assert.AreEqual(8, chains.Count);
+            Assert.AreEqual(9, fulls.Count);
             Assert.AreEqual(2, peptides.Count);
             Assert.AreEqual(3, propeps.Count);
             Assert.AreEqual(3, signalpeps.Count);
 
-            Assert.AreEqual(26, Lollipop.proteoform_community.theoretical_proteoforms.Length);
+            Assert.AreEqual(25, Lollipop.proteoform_community.theoretical_proteoforms.Length);
         }
     }
 }
