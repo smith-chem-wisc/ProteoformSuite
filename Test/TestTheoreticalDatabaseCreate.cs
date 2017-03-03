@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
 using ProteoformSuiteInternal;
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using Proteomics;
+using System.Linq;
 
 namespace Test
 {
@@ -25,17 +25,17 @@ namespace Test
             f.ContaminantDB = true;
             InputFile g = new InputFile("fake.txt", Purpose.ProteinDatabase);
             InputFile h = new InputFile("fake.txt", Purpose.ProteinDatabase);
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
+            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
+            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
+            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { f, new Protein[] { p1 } },
                 { g, new Protein[] { p2 } },
                 { h, new Protein[] { p3 } },
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf", "", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_asdf_asdf", "", p2, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_asdf_Asdf_Asdf", "", p3, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform u = new TheoreticalProteoform("T2_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform v = new TheoreticalProteoform("T3_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
             TheoreticalProteoform w = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { v, u, t }, true, dict);
             Assert.True(w.contaminant);
             Assert.True(w.accession.Contains(p1.Accession));
@@ -67,43 +67,20 @@ namespace Test
             Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Lollipop.input_files);
 
             Lollipop.get_theoretical_proteoforms();
+
+            List<TheoreticalProteoform> peptides = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "peptide").ToList();
+            List<TheoreticalProteoform> chains = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "chain").ToList();
+            List<TheoreticalProteoform> fulls = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "full-met-cleaved").ToList();
+            List<TheoreticalProteoform> propeps = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "propeptide").ToList();
+            List<TheoreticalProteoform> signalpeps = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "signal-peptide").ToList();
+
+            Assert.AreEqual(9, chains.Count);
+            Assert.AreEqual(12, fulls.Count);
+            Assert.AreEqual(2, peptides.Count);
+            Assert.AreEqual(3, propeps.Count);
+            Assert.AreEqual(3, signalpeps.Count);
+
             Assert.AreEqual(29, Lollipop.proteoform_community.theoretical_proteoforms.Length);
-
-            int peptide = 0;
-            int chain = 0;
-            int Full_MetCleaved = 0;
-            int propeptide = 0;
-            int signalPeptide = 0;
-
-            foreach (TheoreticalProteoform p in Lollipop.proteoform_community.theoretical_proteoforms)
-            {
-                switch (p.fragment)
-                {
-                    case "peptide":
-                        peptide++;
-                        break;
-                    case "chain":
-                        chain++;
-                        break;
-                    case "full-met-cleaved":
-                        Full_MetCleaved++;
-                        break;
-                    case "propeptide":
-                        propeptide++;
-                        break;
-                    case "signal-peptide":
-                        signalPeptide++;
-                        break;
-                    default:
-                        break;
-                }
-
-            }
-            Assert.AreEqual(9, chain);
-            Assert.AreEqual(12, Full_MetCleaved);
-            Assert.AreEqual(2, peptide);
-            Assert.AreEqual(3, propeptide);
-            Assert.AreEqual(3, signalPeptide);
         }
 
         [Test]
@@ -124,43 +101,20 @@ namespace Test
             Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Lollipop.input_files);
 
             Lollipop.get_theoretical_proteoforms();
+
+            List<TheoreticalProteoform> peptides = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "peptide").ToList();
+            List<TheoreticalProteoform> chains = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "chain").ToList();
+            List<TheoreticalProteoform> fulls = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "full-met-cleaved").ToList();
+            List<TheoreticalProteoform> propeps = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "propeptide").ToList();
+            List<TheoreticalProteoform> signalpeps = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "signal-peptide").ToList();
+
+            Assert.AreEqual(9, chains.Count);
+            Assert.AreEqual(12, fulls.Count);
+            Assert.AreEqual(2, peptides.Count);
+            Assert.AreEqual(3, propeps.Count);
+            Assert.AreEqual(3, signalpeps.Count);
+
             Assert.AreEqual(26, Lollipop.proteoform_community.theoretical_proteoforms.Length);
-
-            int peptide = 0;
-            int chain = 0;
-            int Full_MetCleaved = 0;
-            int propeptide = 0;
-            int signalPeptide = 0;
-
-            foreach (TheoreticalProteoform p in Lollipop.proteoform_community.theoretical_proteoforms)
-            {
-                switch (p.fragment)
-                {
-                    case "peptide":
-                        peptide++;
-                        break;
-                    case "chain":
-                        chain++;
-                        break;
-                    case "full-met-cleaved":
-                        Full_MetCleaved++;
-                        break;
-                    case "propeptide":
-                        propeptide++;
-                        break;
-                    case "signal-peptide":
-                        signalPeptide++;
-                        break;
-                    default:
-                        break;
-                }
-
-            }
-            Assert.AreEqual(9, chain);
-            Assert.AreEqual(9, Full_MetCleaved);
-            Assert.AreEqual(2, peptide);
-            Assert.AreEqual(3, propeptide);
-            Assert.AreEqual(3, signalPeptide);
         }
     }
 }
