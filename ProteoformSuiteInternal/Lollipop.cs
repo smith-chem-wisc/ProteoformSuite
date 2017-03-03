@@ -537,22 +537,23 @@ namespace ProteoformSuiteInternal
                 List<Protein> new_prots = new List<Protein>();
                 int begin = 1;
                 int end = p.BaseSequence.Length;
-                new_prots.Add(new Protein(p.BaseSequence, p.Accession, p.OneBasedPossibleLocalizedModifications, new int?[] { begin }, new int?[] { end }, new string[] { methionine_cleavage ? "full-met-cleaved" : "full" }, p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.GoTerms));
-                for (int i = 0; i < p.BigPeptideTypes.Length; i++)
+                new_prots.Add(new Protein(p.BaseSequence, p.Accession, p.OneBasedPossibleLocalizedModifications, new int?[] { begin }, new int?[] { end }, new string[] { methionine_cleavage ? "full-met-cleaved" : "full" }, p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.GoTerms.ToList()));
+                List<ProteolysisProduct> products = p.ProteolysisProducts.ToList();
+                foreach (ProteolysisProduct product in p.ProteolysisProducts)
                 {
-                    string feature_type = p.BigPeptideTypes[i].Replace(' ', '-');
+                    string feature_type = product.Type.Replace(' ', '-');
                     if (!(feature_type == "peptide" || feature_type == "propeptide" || feature_type == "chain" || feature_type == "signal-peptide") ||
-                            !p.OneBasedBeginPositions[i].HasValue || !p.OneBasedEndPositions[i].HasValue)
+                            !product.OneBasedBeginPosition.HasValue || !product.OneBasedEndPosition.HasValue)
                         continue;
-                    int feature_begin = (int)p.OneBasedBeginPositions[i];
-                    int feature_end = (int)p.OneBasedEndPositions[i];
+                    int feature_begin = (int)product.OneBasedBeginPosition;
+                    int feature_end = (int)product.OneBasedEndPosition;
                     if (feature_begin < 1 || feature_end < 1)
                         continue;
                     bool just_met_cleavage = methionine_cleavage && feature_begin == begin + 1 && feature_end == end;
                     string subsequence = p.BaseSequence.Substring(feature_begin - 1, feature_end - feature_begin + 1);
                     Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= feature_begin && kv.Key <= feature_end).ToDictionary(kv => kv.Key, kv => kv.Value);
                     if (!just_met_cleavage && subsequence.Length != p.BaseSequence.Length && subsequence.Length >= Lollipop.min_peptide_length)
-                        new_prots.Add(new Protein(subsequence, p.Accession, segmented_ptms, new int?[] { feature_begin }, new int?[] { feature_end }, new string[] { feature_type }, p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.GoTerms));
+                        new_prots.Add(new Protein(subsequence, p.Accession, segmented_ptms, new int?[] { feature_begin }, new int?[] { feature_end }, new string[] { feature_type }, p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.GoTerms.ToList()));
                 }
                 expanded_prots.AddRange(new_prots);
             }
@@ -588,7 +589,7 @@ namespace ProteoformSuiteInternal
             //foreach (Protein p in expanded_proteins)
             Parallel.ForEach<Protein>(expanded_proteins, p =>
             {
-                bool isMetCleaved = (methionine_cleavage && p.OneBasedBeginPositions.FirstOrDefault() == 1 && p.BaseSequence.FirstOrDefault() == 'M');
+                bool isMetCleaved = (methionine_cleavage && p.ProteolysisProducts.Select(prod => prod.OneBasedBeginPosition).FirstOrDefault() == 1 && p.BaseSequence.FirstOrDefault() == 'M');
                 int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
                 string seq = p.BaseSequence.Substring(startPosAfterCleavage, (p.BaseSequence.Length - startPosAfterCleavage));
                 EnterTheoreticalProteformFamily(seq, p, p.Accession, isMetCleaved, theoretical_proteoforms, -100);
@@ -610,7 +611,7 @@ namespace ProteoformSuiteInternal
                 int prevLength = 0;
                 Parallel.ForEach<Protein>(shuffled_proteins, p =>
                 {
-                    bool isMetCleaved = (methionine_cleavage && p.OneBasedBeginPositions.FirstOrDefault() == 1 && p.BaseSequence.FirstOrDefault() == 'M'); // methionine cleavage of N-terminus specified
+                    bool isMetCleaved = (methionine_cleavage && p.ProteolysisProducts.Select(prod => prod.OneBasedBeginPosition).FirstOrDefault() == 1 && p.BaseSequence.FirstOrDefault() == 'M'); // methionine cleavage of N-terminus specified
                     int startPosAfterCleavage = Convert.ToInt32(isMetCleaved);
 
                     //From the concatenated proteome, cut a decoy sequence of a randomly selected length
@@ -642,10 +643,10 @@ namespace ProteoformSuiteInternal
                 {
                     if (decoy_number < 0)
                         theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description, prot, isMetCleaved,
-                            unmodified_mass, lysine_count, prot.GoTerms, ptm_set, proteoform_mass, true, check_contaminants, theoretical_proteins));
+                            unmodified_mass, lysine_count, ptm_set, proteoform_mass, true, check_contaminants, theoretical_proteins));
                     else
                         theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot, isMetCleaved,
-                            unmodified_mass, lysine_count, prot.GoTerms, ptm_set, proteoform_mass, false, false, theoretical_proteins));
+                            unmodified_mass, lysine_count, ptm_set, proteoform_mass, false, false, theoretical_proteins));
                 }
                 listMemberNumber++;
             } 
@@ -659,7 +660,7 @@ namespace ProteoformSuiteInternal
                 string sequence = protein.BaseSequence;
                 bool isMetCleaved = methionine_cleavage && (sequence.Substring(0, 1) == "M");
                 int startPosAfterMetCleavage = Convert.ToInt32(isMetCleaved);
-                switch (protein.BigPeptideTypes.FirstOrDefault())
+                switch (protein.ProteolysisProducts.Select(p => p.Type).FirstOrDefault())
                 {
                     case "chain":
                     case "signal peptide":
@@ -1114,7 +1115,7 @@ namespace ProteoformSuiteInternal
             {
                 foreach (GoTerm g in p.GoTerms)
                 {
-                    if (!goTermNumbers.Select(t => t.goTerm.id).Contains(g.id))
+                    if (!goTermNumbers.Select(t => t.goTerm.Id).Contains(g.Id))
                         goTermNumbers.Add(new GoTermNumber(g));
                 }
             }

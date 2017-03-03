@@ -138,11 +138,11 @@ namespace Test
             Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
 
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "name", "full_name", true, false, new List<GoTerm>());
+            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "name", "full_name", true, false, new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { f, new Protein[] { p1 } }
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf", "", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
 
             //One accepted ET relation; should give one ProteoformFamily
             Lollipop.min_peak_count_et = 1;
@@ -169,7 +169,7 @@ namespace Test
         public static string p1_accession = "T1";
         public static string p1_name = "name";
         public static string p1_fullName = "full_name";
-        public static GoTerm p1_goterm = new GoTerm();
+        public static GoTerm p1_goterm = new GoTerm("", "", Aspect.biologicalProcess);
         public static string pf1_accession = "T1_asdf";
         public static ProteoformCommunity construct_two_families_with_potentially_colliding_theoreticals()
         {
@@ -184,9 +184,9 @@ namespace Test
 
             //TheoreticalProteoformGroup
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
-            Protein p1 = new Protein("", p1_accession, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], p1_name, p1_fullName, true, false, new List<GoTerm> { p1_goterm });
+            Protein p1 = new Protein("", p1_accession, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, p1_name, p1_fullName, true, false, new List<GoTerm> { p1_goterm });
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> { { f, new Protein[] { p1 } } };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf", "T1_asdf", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 1234.56, true, true, dict);
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf", "T1_asdf", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 1234.56, true, true, dict);
             TheoreticalProteoformGroup pf1 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t }, false, new Dictionary<InputFile, Protein[]> { { f, new Protein[] { p1 } } });
 
             //TheoreticalProteoform with an oxidation, but the same accession as the former
@@ -194,7 +194,7 @@ namespace Test
             ModificationMotif.TryGetMotif("K", out motif);
             string mod_title = "oxidation"; //fake; I'm giving it 0 mass difference, but it still differentiates the two
             ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("", mod_title), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), -1, new List<double>(), new List<double>(), "");
-            TheoreticalProteoform pf2 = new TheoreticalProteoform("T1_asdf", "T1_asdf_1", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm> { new Ptm(0, m) }), 1234.56, true, true, dict);
+            TheoreticalProteoform pf2 = new TheoreticalProteoform("T1_asdf", "T1_asdf_1", p1, true, 0, 0, new PtmSet(new List<Ptm> { new Ptm(0, m) }), 1234.56, true, true, dict);
 
             community.theoretical_proteoforms = new TheoreticalProteoform[] { pf1, pf2 };
 

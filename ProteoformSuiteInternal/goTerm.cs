@@ -31,13 +31,13 @@ namespace ProteoformSuiteInternal
         public GoTermNumber(GoTerm g)
         {
             this.goTerm = g;
-            this.id = g.id;
-            this.description = g.description;
-            this.aspect = g.aspect;
-            this.q = Lollipop.inducedOrRepressedProteins.SelectMany(p=>p.GoTerms.Where(t=>t.id==g.id)).ToList().Count();
+            this.id = g.Id;
+            this.description = g.Description;
+            this.aspect = g.Aspect;
+            this.q = Lollipop.inducedOrRepressedProteins.SelectMany(p=>p.GoTerms.Where(t=>t.Id==g.Id)).ToList().Count();
             //this.q = Lollipop.inducedOrRepressedProteins.Count(p => p.goTerms.Contains(g));
             this.k = Lollipop.inducedOrRepressedProteins.Count();
-            this.m = Lollipop.GO_ProteinBackgroundSet.SelectMany(p => p.GoTerms.Where(t => t.id == g.id)).ToList().Count();
+            this.m = Lollipop.GO_ProteinBackgroundSet.SelectMany(p => p.GoTerms.Where(t => t.Id == g.Id)).ToList().Count();
             //this.m = Lollipop.goMasterSet[g];
             this.t = Lollipop.GO_ProteinBackgroundSet.Count();
             if(q != 0 && k != 0 && m != 0 && t != 0)
@@ -48,9 +48,9 @@ namespace ProteoformSuiteInternal
         public GoTermNumber(GoTerm g, int q, int k, int m, int t)
         {
             this.goTerm = g;
-            this.id = g.id;
-            this.description = g.description;
-            this.aspect = g.aspect;
+            this.id = g.Id;
+            this.description = g.Description;
+            this.aspect = g.Aspect;
             this.q = q;
             //this.q = Lollipop.inducedOrRepressedProteins.Count(p => p.goTerms.Contains(g));
             this.k = k;

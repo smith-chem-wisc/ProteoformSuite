@@ -259,7 +259,7 @@ namespace ProteoformSuite
 
         private void fillGoTermsTable()
         {
-            DisplayUtility.FillDataGridView(dgv_goAnalysis, Lollipop.goTermNumbers.Where(x => x.goTerm.aspect.ToString() == cmbx_goAspect.SelectedItem.ToString()));
+            DisplayUtility.FillDataGridView(dgv_goAnalysis, Lollipop.goTermNumbers.Where(x => x.goTerm.Aspect.ToString() == cmbx_goAspect.SelectedItem.ToString()));
         }
 
         private void updateGoTermsTable(object s, EventArgs e)
@@ -352,7 +352,7 @@ namespace ProteoformSuite
         private void btn_buildFamiliesAllGO_Click(object sender, EventArgs e)
         {
             Aspect a = (Aspect)cmbx_goAspect.SelectedItem;
-            List<ProteoformFamily> go_families = Lollipop.getInterestingFamilies(Lollipop.goTermNumbers.Where(n=>n.goTerm.aspect == a).Distinct().ToList(), Lollipop.proteoform_community.families);
+            List<ProteoformFamily> go_families = Lollipop.getInterestingFamilies(Lollipop.goTermNumbers.Where(n => n.goTerm.Aspect == a).Distinct().ToList(), Lollipop.proteoform_community.families);
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
             string message = CytoscapeScript.write_cytoscape_script(go_families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
