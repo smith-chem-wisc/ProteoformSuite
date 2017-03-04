@@ -138,7 +138,7 @@ namespace Test
             Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
 
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "name", "full_name", true, false, new List<GoTerm>());
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "name", "full_name", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { f, new Protein[] { p1 } }
             };
@@ -169,7 +169,8 @@ namespace Test
         public static string p1_accession = "T1";
         public static string p1_name = "name";
         public static string p1_fullName = "full_name";
-        public static GoTerm p1_goterm = new GoTerm("", "", Aspect.biologicalProcess);
+        public static DatabaseReference p1_dbRef = new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") });
+        public static GoTerm p1_goterm = new GoTerm(p1_dbRef);
         public static string pf1_accession = "T1_asdf";
         public static ProteoformCommunity construct_two_families_with_potentially_colliding_theoreticals()
         {
@@ -184,7 +185,7 @@ namespace Test
 
             //TheoreticalProteoformGroup
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
-            Protein p1 = new Protein("", p1_accession, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, p1_name, p1_fullName, true, false, new List<GoTerm> { p1_goterm });
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", p1_accession, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, p1_name, p1_fullName, true, false, new List<DatabaseReference> { p1_dbRef }, new List<GoTerm> { p1_goterm });
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> { { f, new Protein[] { p1 } } };
             TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf", "T1_asdf", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 1234.56, true, true, dict);
             TheoreticalProteoformGroup pf1 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t }, false, new Dictionary<InputFile, Protein[]> { { f, new Protein[] { p1 } } });
