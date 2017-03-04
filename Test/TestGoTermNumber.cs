@@ -2,6 +2,7 @@
 using System;
 using Proteomics;
 using ProteoformSuiteInternal;
+using System.Collections.Generic;
 
 namespace Test
 {
@@ -16,7 +17,8 @@ namespace Test
             int m = 2;//number of proteins in the background with the term
             int t = 4;//number of proteins in the background
 
-            GoTerm g = new GoTerm("1", "one", Aspect.biologicalProcess);
+            DatabaseReference d = new DatabaseReference("GO", ":1", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:one") });
+            GoTerm g = new GoTerm(d);
             GoTermNumber gtn = new GoTermNumber(g, q, k, m, t);
             Assert.AreEqual(gtn.log_odds_ratio, 0);
             Assert.AreEqual(Math.Round((decimal)gtn.p_value,6), 0.833333);

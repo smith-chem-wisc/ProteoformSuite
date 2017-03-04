@@ -723,7 +723,8 @@ namespace Test
             List<GoTermNumber> gtns = new List<GoTermNumber>();
             for (int i = 1; i <= numberOfGoTermNumbers; i++)
             {
-                GoTerm g = new GoTerm("id", "description", Aspect.biologicalProcess);
+                DatabaseReference d = new DatabaseReference("GO", ":id", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:description") });
+                GoTerm g = new GoTerm(d);
                 GoTermNumber gtn = new GoTermNumber();
                 gtn.goTerm = g;
                 gtn.p_value = (0.1d / (double)i - 0.0005d);
@@ -764,9 +765,9 @@ namespace Test
         [Test]
         public void test_get_observed_proteins()
         {
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
-            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
-            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
@@ -780,7 +781,7 @@ namespace Test
             e.family = f;
             t.family = f;
             u.family = f;
-            List<Protein> prots = Lollipop.getObservedProteins(new List<ExperimentalProteoform> { e }, dict.SelectMany(kv => kv.Value).ToArray());
+            List<ProteinWithGoTerms> prots = Lollipop.getObservedProteins(new List<ExperimentalProteoform> { e }, dict.SelectMany(kv => kv.Value).OfType<ProteinWithGoTerms>().ToArray());
             Assert.AreEqual(2, prots.Count);
             Assert.True(prots.Select(p => p.Accession).Contains("T1"));
             Assert.True(prots.Select(p => p.Accession).Contains("T2"));
@@ -790,9 +791,9 @@ namespace Test
         [Test]
         public void test_get_repressed_or_induced_proteins()
         {
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
-            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
-            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
@@ -826,7 +827,7 @@ namespace Test
             hx.quant.logFoldChange = 8;
             hx.quant.FDR = 1;
             hx.quant.intensitySum = 2;
-            List<Protein> prots = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex,fx,gx }, dict.SelectMany(kv => kv.Value).ToArray(), 10, 0.5m, 1);
+            List<ProteinWithGoTerms> prots = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex,fx,gx }, dict.SelectMany(kv => kv.Value).OfType<ProteinWithGoTerms>().ToArray(), 10, 0.5m, 1);
             Assert.AreEqual(0, prots.Count);
 
             //Nothing passing, but two things passing for each
@@ -842,14 +843,14 @@ namespace Test
             hx.quant.logFoldChange = 12;
             hx.quant.FDR = 1;
             hx.quant.intensitySum = 2;
-            prots = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, dict.SelectMany(kv => kv.Value).ToArray(), 10, 0.5m, 1);
+            prots = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, dict.SelectMany(kv => kv.Value).OfType<ProteinWithGoTerms>().ToArray(), 10, 0.5m, 1);
             Assert.AreEqual(0, prots.Count);
 
             //Passing
             ex.quant.logFoldChange = 12;
             ex.quant.FDR = 0.4m;
             ex.quant.intensitySum = 2;
-            prots = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, dict.SelectMany(kv => kv.Value).ToArray(), 10, 0.5m, 1);
+            prots = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, dict.SelectMany(kv => kv.Value).OfType<ProteinWithGoTerms>().ToArray(), 10, 0.5m, 1);
             Assert.AreEqual(2, prots.Count);
             Assert.True(prots.Select(p => p.Accession).Contains("T1"));
             Assert.True(prots.Select(p => p.Accession).Contains("T2"));
@@ -877,9 +878,9 @@ namespace Test
         [Test]
         public void get_interesting_families()
         {
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
-            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
-            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm>());
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
@@ -922,9 +923,15 @@ namespace Test
         [Test]
         public void get_interesting_goterm_families()
         {
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm> { new GoTerm("", "", Aspect.biologicalProcess) });
-            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm> { new GoTerm("", "", Aspect.biologicalProcess) });
-            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<GoTerm> { new GoTerm("", "", Aspect.biologicalProcess) });
+            DatabaseReference d1 = new DatabaseReference("GO", ":", new List<Tuple<string, string>>{ new Tuple<string, string>("term", "P:") });
+            DatabaseReference d2 = new DatabaseReference("GO", ":", new List<Tuple<string, string>>{ new Tuple<string, string>("term", "P:") });
+            DatabaseReference d3 = new DatabaseReference("GO", ":", new List<Tuple<string, string>>{ new Tuple<string, string>("term", "P:") });
+            GoTerm g1 = new GoTerm(d1);
+            GoTerm g2 = new GoTerm(d1);
+            GoTerm g3 = new GoTerm(d1);
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference> { d1 }, new List<GoTerm> { g1 });
+            ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference> { d2 }, new List<GoTerm> { g2 });
+            ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference> { d3 }, new List<GoTerm> { g3 });
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
@@ -933,9 +940,9 @@ namespace Test
             TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
             TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
             TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            t.proteinList = new List<Protein> { p1 };
-            u.proteinList = new List<Protein> { p2 };
-            v.proteinList = new List<Protein> { p3 };
+            t.proteinList = new List<ProteinWithGoTerms> { p1 };
+            u.proteinList = new List<ProteinWithGoTerms> { p2 };
+            v.proteinList = new List<ProteinWithGoTerms> { p3 };
             List<GoTermNumber> gtn = new List<GoTermNumber> { new GoTermNumber(p2.GoTerms.FirstOrDefault()), new GoTermNumber(p3.GoTerms.FirstOrDefault()) };
             ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { t }, 0);
             ProteoformFamily h = new ProteoformFamily(new List<Proteoform> { u }, 0);
