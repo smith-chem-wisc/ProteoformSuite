@@ -555,7 +555,7 @@ namespace ProteoformSuiteInternal
 
     public class TheoreticalProteoform : Proteoform
     {
-        public List<Protein> proteinList { get; set; } = new List<Protein>();
+        public List<ProteinWithGoTerms> proteinList { get; set; } = new List<ProteinWithGoTerms>();
         public string name { get; set; }
         public string description { get; set; }
         public string fragment { get; set; }
@@ -597,7 +597,7 @@ namespace ProteoformSuiteInternal
         public string of_interest { get; set; } = "";
         public bool contaminant { get; set; }
 
-        public TheoreticalProteoform(string accession, string description, Protein protein, bool is_metCleaved, double unmodified_mass, int lysine_count, PtmSet ptm_set, double modified_mass, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) : 
+        public TheoreticalProteoform(string accession, string description, ProteinWithGoTerms protein, bool is_metCleaved, double unmodified_mass, int lysine_count, PtmSet ptm_set, double modified_mass, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) : 
             base(accession, modified_mass, lysine_count, is_target)
         {
             this.proteinList.Add(protein);
