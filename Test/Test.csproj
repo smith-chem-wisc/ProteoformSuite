@@ -114,6 +114,7 @@
     <Compile Include="TestProteoformCommunityRelate.cs" />
     <Compile Include="TestCytoscapeScript.cs" />
     <Compile Include="TestProteoformFamilies.cs" />
+    <Compile Include="TestTheoreticalCreation.cs" />
     <Compile Include="TestTheoreticalDatabaseCreate.cs" />
   </ItemGroup>
   <ItemGroup>
