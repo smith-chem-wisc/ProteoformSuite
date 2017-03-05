@@ -6,7 +6,8 @@ namespace ProteoformSuiteInternal
 {
     public class ProteinSequenceGroup : ProteinWithGoTerms
     {
-        public List<string> accessionList { get; set; } // this is the list of accession numbers for all proteins that share the same sequence. the list gets alphabetical order
+        public List<ProteinWithGoTerms> proteinList { get; private set; }
+        public List<string> accessionList { get; private set; }
 
         public ProteinSequenceGroup(List<ProteinWithGoTerms> proteins)
             : base(proteins[0].BaseSequence, 
@@ -22,7 +23,9 @@ namespace ProteoformSuiteInternal
                 proteins.SelectMany(p => p.DatabaseReferences),
                 proteins.SelectMany(p => p.GoTerms))
         {
+            this.proteinList = proteins;
             this.accessionList = proteins.Select(p => p.Accession).ToList();
+            this.accessionList.Sort();
         }
     }
 }

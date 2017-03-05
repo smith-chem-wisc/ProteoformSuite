@@ -38,7 +38,7 @@ namespace Test
             Assert.AreEqual(4, next.intensity_sum_olcs);
 
             //Based on experimental proteoforms
-            ExperimentalProteoform exp = new ExperimentalProteoform();
+            ExperimentalProteoform exp = new ExperimentalProteoform("E");
             exp.root = is_running;
             List<ExperimentalProteoform> active2 = new List<ExperimentalProteoform> { exp };
             Component next2 = Lollipop.find_next_root(ordered, active2);
@@ -49,10 +49,10 @@ namespace Test
         [Test]
         public void choose_next_exp_proteoform()
         {
-            ExperimentalProteoform c = new ExperimentalProteoform();
-            ExperimentalProteoform d = new ExperimentalProteoform();
-            ExperimentalProteoform e = new ExperimentalProteoform();
-            ExperimentalProteoform f = new ExperimentalProteoform();
+            ExperimentalProteoform c = new ExperimentalProteoform("E");
+            ExperimentalProteoform d = new ExperimentalProteoform("E");
+            ExperimentalProteoform e = new ExperimentalProteoform("E");
+            ExperimentalProteoform f = new ExperimentalProteoform("E");
             c.agg_mass = 100;
             d.agg_mass = 119;
             e.agg_mass = 121;
@@ -62,7 +62,7 @@ namespace Test
             e.agg_intensity = 3;
             f.agg_intensity = 4;
             List<ExperimentalProteoform> ordered = new List<ExperimentalProteoform> { c, d, e, f }.OrderByDescending(cc => cc.agg_intensity).ToList();
-            ExperimentalProteoform is_running = new ExperimentalProteoform();
+            ExperimentalProteoform is_running = new ExperimentalProteoform("E");
             is_running.agg_mass = 100;
             is_running.agg_intensity = 100;
 
@@ -192,7 +192,7 @@ namespace Test
             Lollipop.neucode_labeled = false;
             Lollipop.remaining_components = new List<Component>(components);
             Lollipop.remaining_verification_components = new List<Component>(components);
-            ExperimentalProteoform e = new ExperimentalProteoform();
+            ExperimentalProteoform e = new ExperimentalProteoform("E");
             e.root = components[0];
             e.aggregate();
             e.verify();

@@ -114,11 +114,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AminoAcidMasses.cs" />
+    <Compile Include="biorepIntensity.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Correction.cs" />
     <Compile Include="CytoscapeScript.cs" />
     <Compile Include="DeltaMassPeak.cs" />
     <Compile Include="ComponentReader.cs" />
+    <Compile Include="ExperimentalProteoform.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="GoTerm.cs" />
     <Compile Include="IBiorepable.cs" />
@@ -136,6 +138,8 @@
     <Compile Include="ProteomeDatabaseReader.cs" />
     <Compile Include="Psm.cs" />
     <Compile Include="SaveState.cs" />
+    <Compile Include="TheoreticalProteoform.cs" />
+    <Compile Include="TheoreticalProteoformGroup.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
