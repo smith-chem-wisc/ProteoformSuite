@@ -89,9 +89,9 @@ namespace ProteoformSuite
         {
             "Proteoform Families",
             "Theoretical Proteoforms in Families",
-            "GO Terms of Families -- " + Aspect.biologicalProcess,
-            "GO Terms of Families -- " + Aspect.cellularComponent,
-            "GO Terms of Families -- " + Aspect.molecularFunction,
+            "GO Terms of Families -- " + Aspect.BiologicalProcess,
+            "GO Terms of Families -- " + Aspect.CellularComponent,
+            "GO Terms of Families -- " + Aspect.MolecularFunction,
         };
 
         private static Type[] table_types = new Type[5]
@@ -107,18 +107,18 @@ namespace ProteoformSuite
         {
             if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 1) fill_theoreticals(tb_tableFilter.Text);
-            else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.biologicalProcess, tb_tableFilter.Text);
-            else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.cellularComponent, tb_tableFilter.Text);
-            else if (cmbx_tableSelector.SelectedIndex == 4) fill_go(Aspect.molecularFunction, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.BiologicalProcess, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.CellularComponent, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 4) fill_go(Aspect.MolecularFunction, tb_tableFilter.Text);
         }
 
         private void tb_tableFilter_TextChanged(object sender, EventArgs e)
         {
             if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 1) fill_theoreticals(tb_tableFilter.Text);
-            else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.biologicalProcess, tb_tableFilter.Text);
-            else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.cellularComponent, tb_tableFilter.Text);
-            else if (cmbx_tableSelector.SelectedIndex == 4) fill_go(Aspect.molecularFunction, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.BiologicalProcess, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.CellularComponent, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 4) fill_go(Aspect.MolecularFunction, tb_tableFilter.Text);
         }
 
         private void fill_proteoform_families(string filter)

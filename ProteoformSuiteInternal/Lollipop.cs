@@ -885,8 +885,8 @@ namespace ProteoformSuiteInternal
             computeSortedTestStatistics(satisfactoryProteoforms);
             offsetFDR = computeFoldChangeFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics, satisfactoryProteoforms, permutedTestStatistics, offsetTestStatistics);
             computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, sortedProteoformTestStatistics, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity);
-            observedProteins = getObservedProteins(satisfactoryProteoforms, expanded_proteins);
-            inducedOrRepressedProteins = getInducedOrRepressedProteins(satisfactoryProteoforms, expanded_proteins, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity);
+            observedProteins = getObservedProteins(satisfactoryProteoforms);
+            inducedOrRepressedProteins = getInducedOrRepressedProteins(satisfactoryProteoforms, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity);
         }
 
         public static void computeBiorepIntensities(IEnumerable<ExperimentalProteoform> experimental_proteoforms, IEnumerable<string> ltconditions, IEnumerable<string> hvconditions)
@@ -1023,103 +1023,76 @@ namespace ProteoformSuiteInternal
             });
         }
 
-        public static List<ProteinWithGoTerms> getObservedProteins(List<ExperimentalProteoform> satisfactoryProteoforms, ProteinWithGoTerms[] expanded_proteins) // these are all observed proteins in any of the proteoform families.
+        public static List<ProteinWithGoTerms> getObservedProteins(List<ExperimentalProteoform> satisfactoryProteoforms) // these are all observed proteins in any of the proteoform families.
         {
-            List<TheoreticalProteoform> tps = satisfactoryProteoforms.Select(p => p.family).SelectMany(pf => pf.theoretical_proteoforms).ToList(); 
-            List<string> truncAccession = tps.Select(a => a.accession).Select(acc => acc.Replace("_T", "!").Split('!').FirstOrDefault()).Distinct().ToList();
-            return truncAccession.SelectMany(acc => expanded_proteins.Where(p => p.Accession == acc)).DistinctBy(a => a.Accession).ToList();
+            return satisfactoryProteoforms.Select(p => p.family).SelectMany(pf => pf.theoretical_proteoforms).SelectMany(t => t.proteinList).ToList();
         }
 
-        public static List<ProteinWithGoTerms> getInducedOrRepressedProteins(List<ExperimentalProteoform> satisfactoryProteoforms, ProteinWithGoTerms[] expanded_proteins, decimal minProteoformFoldChange, decimal minProteoformFDR, decimal minProteoformIntensity)
+        public static List<ProteinWithGoTerms> getInducedOrRepressedProteins(List<ExperimentalProteoform> satisfactoryProteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
         {
-            List<ExperimentalProteoform> inducedOrRepressedProteoforms = satisfactoryProteoforms.Where(
-                p => Math.Abs(p.quant.logFoldChange) > minProteoformFoldChange
-                && p.quant.FDR < minProteoformFDR 
-                && p.quant.intensitySum > minProteoformIntensity).ToList();
-
-            List<TheoreticalProteoform> tps = inducedOrRepressedProteoforms.Select(p => p.family).SelectMany(pf => pf.theoretical_proteoforms).ToList();
-            List<string> truncAccession = tps.Select(a => a.accession).Select(acc => acc.Replace("_T", "!").Split('!').FirstOrDefault()).Distinct().ToList();
-            return truncAccession.SelectMany(acc => expanded_proteins.Where(p => p.Accession == acc)).DistinctBy(a => a.Accession).ToList();
+            return getInterestingProteoforms(satisfactoryProteoforms, minProteoformAbsLogFoldChange, maxProteoformFDR, minProteoformIntensity).Select(p => p.family).SelectMany(pf => pf.theoretical_proteoforms).SelectMany(t => t.proteinList).ToList();
         }
 
-        public static List<ProteoformFamily> getInterestingFamilies(IEnumerable<ExperimentalProteoform.quantitativeValues> qvals, List<ProteoformFamily> families, decimal minProteoformFoldChange, decimal minProteoformFDR, decimal minProteoformIntensity)
+        public static List<ProteoformFamily> getInterestingFamilies(IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformFoldChange, decimal minProteoformFDR, decimal minProteoformIntensity)
         {
-            return
-                (from exp in getInterestingProteoforms(qvals, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity)
-                from fam in families
-                where fam.experimental_proteoforms.Contains(exp)
-                select fam)
-                .ToList();
+            return getInterestingProteoforms(proteoforms, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity).Select(e => e.family).ToList();
         }
 
         public static List<ProteoformFamily> getInterestingFamilies(List<GoTermNumber> go_terms_numbers, List<ProteoformFamily> families)
         {
-            return families.Where(fam => fam.theoretical_proteoforms.Any(t => t.proteinList.Any(p => p.GoTerms
-                .Any(g => go_terms_numbers.Select(n => n.goTerm).Contains(g))))).ToList();
+            return
+                (from fam in families
+                 from theo in fam.theoretical_proteoforms
+                 from p in theo.proteinList
+                 from g in p.GoTerms
+                 where go_terms_numbers.Select(gtn => gtn.Id).Contains(g.Id)
+                 select fam)
+                 .Distinct()
+                 .ToList();
         }
 
-        public static List<ExperimentalProteoform> getInterestingProteoforms(IEnumerable<ExperimentalProteoform.quantitativeValues> qvals, decimal minProteoformFoldChange, decimal minProteoformFDR, decimal minProteoformIntensity)
+        public static IEnumerable<ExperimentalProteoform> getInterestingProteoforms(IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
         {
-            IEnumerable<ExperimentalProteoform.quantitativeValues> interestingQuantValues = 
-                qvals.Where(q => q.intensitySum > minProteoformIntensity && Math.Abs(q.logFoldChange) > minProteoformFoldChange && q.FDR < minProteoformFDR);
-            return interestingQuantValues.Select(q => q.proteoform).ToList();
+            return proteoforms.Where(
+                p => Math.Abs(p.quant.logFoldChange) > minProteoformAbsLogFoldChange
+                && p.quant.FDR < maxProteoformFDR
+                && p.quant.intensitySum > minProteoformIntensity);
         }
 
 
         // GO TERMS AND GO TERM SIGNIFICANCE
-        public static List<ProteinWithGoTerms> GO_ProteinBackgroundSet = new List<ProteinWithGoTerms>();//Created originally with list of all theoretical proteins but usually changed to the set of observed proteins.
-        public static Dictionary<GoTerm, int> goMasterSet = new Dictionary<GoTerm, int>(); //dictionary of goterms with count of proteins in background
         public static List<GoTermNumber> goTermNumbers = new List<GoTermNumber>();//these are the count and enrichment values
         public static bool allTheoreticalProteins = false; // this sets the group used for background. True if all Proteins in the theoretical database are used. False if only proteins observed in the study are used.
 
         public static void GO_analysis()
         {
-            establishBackgroundForGoTermAnalysis();
-            fillGO_MasterSet();
-            getGoTermNumbers();
+            List<ProteinWithGoTerms> backgroundProteinsForGoAnalysis = allTheoreticalProteins ? expanded_proteins.ToList() : observedProteins;
+            goTermNumbers = getGoTermNumbers(inducedOrRepressedProteins, backgroundProteinsForGoAnalysis);
             calculateGoTermFDR(goTermNumbers);
         }
 
-        public static void establishBackgroundForGoTermAnalysis()
+        public static List<GoTermNumber> getGoTermNumbers(List<ProteinWithGoTerms> inducedOrRepressedProteins, List<ProteinWithGoTerms> backgroundProteinSet) //These are only for "interesting proteins", which is the set of proteins induced or repressed beyond a specified fold change, intensity and below FDR.
         {
-            if (allTheoreticalProteins)
-                GO_ProteinBackgroundSet = expanded_proteins.ToList();//These are proteins in the theoretical database
-            else
-            {
-                if (observedProteins.Count() <= 0) getObservedProteins(satisfactoryProteoforms, expanded_proteins);
-                else
-                    GO_ProteinBackgroundSet = observedProteins;
-            }
+            Dictionary<string, int> goSignificantCounts = fillGoDictionary(inducedOrRepressedProteins);
+            Dictionary<string, int> goBackgroundCounts = fillGoDictionary(backgroundProteinSet);
+            return inducedOrRepressedProteins.SelectMany(p => p.GoTerms).DistinctBy(g => g.Id).Select(g => 
+                new GoTermNumber(g, goSignificantCounts[g.Id], inducedOrRepressedProteins.Count, goBackgroundCounts[g.Id], backgroundProteinSet.Count)).ToList();
         }
 
-        public static void fillGO_MasterSet()
+        private static Dictionary<string, int> fillGoDictionary(List<ProteinWithGoTerms> proteinSet)
         {
-            goMasterSet.Clear();
-
-            foreach (ProteinWithGoTerms p in GO_ProteinBackgroundSet)
+            Dictionary<string, int> goCounts = new Dictionary<string, int>();
+            foreach (ProteinWithGoTerms p in proteinSet)
             {
                 foreach (GoTerm g in p.GoTerms)
                 {
-                    if (goMasterSet.ContainsKey(g))
-                        goMasterSet[g]++;
+                    if (goCounts.ContainsKey(g.Id))
+                        goCounts[g.Id]++;
                     else
-                        goMasterSet.Add(g, 1);
+                        goCounts.Add(g.Id, 1);
                 }
             }
-        }
-
-        public static void getGoTermNumbers() //These are only for "interesting proteins", which is the set of proteins induced or repressed beyond a specified fold change, intensity and below FDR.
-        {
-            goTermNumbers.Clear();
-
-            foreach (ProteinWithGoTerms p in inducedOrRepressedProteins)
-            {
-                foreach (GoTerm g in p.GoTerms)
-                {
-                    if (!goTermNumbers.Select(t => t.goTerm.Id).Contains(g.Id))
-                        goTermNumbers.Add(new GoTermNumber(g));
-                }
-            }
+            return goCounts;
         }
 
         public static void calculateGoTermFDR(List<GoTermNumber> gtns)

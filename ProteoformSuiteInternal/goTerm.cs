@@ -11,9 +11,9 @@ namespace ProteoformSuiteInternal
 {
     public enum Aspect
     {
-        molecularFunction,
-        cellularComponent,
-        biologicalProcess
+        MolecularFunction,
+        CellularComponent,
+        BiologicalProcess
     }
 
     public class GoTerm
@@ -29,15 +29,22 @@ namespace ProteoformSuiteInternal
             switch (full_description.Split(':')[0].ToString())
             {
                 case "C":
-                    this.Aspect = Aspect.cellularComponent;
+                    this.Aspect = Aspect.CellularComponent;
                     break;
                 case "F":
-                    this.Aspect = Aspect.molecularFunction;
+                    this.Aspect = Aspect.MolecularFunction;
                     break;
                 case "P":
-                    this.Aspect = Aspect.biologicalProcess;
+                    this.Aspect = Aspect.BiologicalProcess;
                     break;
             }
+        }
+
+        public GoTerm(string id, string descritpion, Aspect aspect)
+        {
+            this.Id = id;
+            this.Description = descritpion;
+            this.Aspect = aspect;
         }
 
         #endregion Public Constructors
@@ -50,62 +57,49 @@ namespace ProteoformSuiteInternal
 
         #endregion Public Properties
 
+        public override string ToString()
+        {
+            return "GO: " + Id + "; " + Aspect.ToString() + ": " + Description;
+        }
     }
 
-    public class GoTermNumber
+    public class GoTermNumber : GoTerm
     {
         public GoTerm goTerm { get; set; }
-        public string id { get; set; }
-        public string description { get; set; }
-        public Aspect aspect { get; set; }
 
-
-        public int q { get; set; }//count of proteins in selected subset with the particular Go term
-        public int k { get; set; }//count of proteins in selected subset
-        public int m { get; set; }//count of proteins in background with the particular Go term
-        public int t { get; set; }//count of proteins in background
+        public int q_significantProteinsWithThisGoTerm { get; private set; }
+        public int k_significantProteins { get; private set; }
+        public int m_backgroundProteinsWithThisGoTerm { get; private set; }
+        public int t_backgroundProteins { get; private set; }
         public decimal log_odds_ratio { get; set; } = 0; // fold change
-        public double p_value { get; set; } = 1;//p-value calculated using hypergeometric test.
-        public decimal by { get; set; } = 1;//benjamini yekutieli calculated after all p-values are calculated
+        public double p_value { get; set; } = 1; //p-value calculated using hypergeometric test.
+        public decimal by { get; set; } = 1; //benjamini yekutieli calculated after all p-values are calculated
 
-        public GoTermNumber() //for testing
-        { }
-
-        public GoTermNumber(GoTerm g)
+        /// <summary>
+        /// q is the count of proteins in selected subset with the particular Go term; 
+        /// k is the count of proteins in selected subset;
+        /// m is the count of proteins in background with the particular Go term;
+        /// t is the count of proteins in background
+        /// </summary>
+        /// <param name="g"></param>
+        /// <param name="q_significantProteinsWithThisGoTerm"></param>
+        /// <param name="k_significantProteins"></param>
+        /// <param name="m_backgroundProteinsWithThisGoTerm"></param>
+        /// <param name="t_backgroundProteins"></param>
+        public GoTermNumber(GoTerm g, int q_significantProteinsWithThisGoTerm, int k_significantProteins, int m_backgroundProteinsWithThisGoTerm, int t_backgroundProteins) 
+            : base(g.Id, g.Description, g.Aspect)
         {
-            this.goTerm = g;
-            this.id = g.Id;
-            this.description = g.Description;
-            this.aspect = g.Aspect;
-            this.q = Lollipop.inducedOrRepressedProteins.SelectMany(p=>p.GoTerms.Where(t=>t.Id==g.Id)).ToList().Count();
-            //this.q = Lollipop.inducedOrRepressedProteins.Count(p => p.goTerms.Contains(g));
-            this.k = Lollipop.inducedOrRepressedProteins.Count();
-            this.m = Lollipop.GO_ProteinBackgroundSet.SelectMany(p => p.GoTerms.Where(t => t.Id == g.Id)).ToList().Count();
-            //this.m = Lollipop.goMasterSet[g];
-            this.t = Lollipop.GO_ProteinBackgroundSet.Count();
-            if(q != 0 && k != 0 && m != 0 && t != 0)
-                this.log_odds_ratio = (decimal)(Math.Log((double)q/(double)k, 2)- Math.Log((double)m / (double)t, 2));
-            this.p_value = GoTerm_pValue(q, k, m, t);
+            this.q_significantProteinsWithThisGoTerm = q_significantProteinsWithThisGoTerm;
+            this.k_significantProteins = k_significantProteins;
+            this.m_backgroundProteinsWithThisGoTerm = m_backgroundProteinsWithThisGoTerm;
+            this.t_backgroundProteins = t_backgroundProteins;
+
+            if (q_significantProteinsWithThisGoTerm != 0 && k_significantProteins != 0 && m_backgroundProteinsWithThisGoTerm != 0 && t_backgroundProteins != 0)
+                this.log_odds_ratio = (decimal)(Math.Log((double)q_significantProteinsWithThisGoTerm / (double)k_significantProteins, 2) - Math.Log((double)m_backgroundProteinsWithThisGoTerm / (double)t_backgroundProteins, 2));
+            this.p_value = GoTerm_pValue(q_significantProteinsWithThisGoTerm, k_significantProteins, m_backgroundProteinsWithThisGoTerm, t_backgroundProteins);
         }
 
-        public GoTermNumber(GoTerm g, int q, int k, int m, int t)
-        {
-            this.goTerm = g;
-            this.id = g.Id;
-            this.description = g.Description;
-            this.aspect = g.Aspect;
-            this.q = q;
-            //this.q = Lollipop.inducedOrRepressedProteins.Count(p => p.goTerms.Contains(g));
-            this.k = k;
-            this.m = m;
-            this.t = t;
-            if (q != 0 && k != 0 && m != 0 && t != 0)
-                this.log_odds_ratio = (decimal)(Math.Log((double)q / (double)k, 2) - Math.Log((double)m / (double)t, 2));
-            this.p_value = GoTerm_pValue(q, k, m, t);
-        }
-
-
-        public double GoTerm_pValue(int q, int k, int m, int t) //this is the hypergeometric probability as used by GOEAST algorithm
+        public static double GoTerm_pValue(int q, int k, int m, int t) //this is the hypergeometric probability as used by GOEAST algorithm
         {
             double p = 0;
             for (int i = q; i <= m; i++)
@@ -114,10 +108,10 @@ namespace ProteoformSuiteInternal
                 BigInteger bottom = binomialCoefficient(t, k);
                 p += (double)top /(double)bottom;
             }
-            return Math.Min(p,1d);
+            return Math.Min(p, 1d);
         }
 
-        public BigInteger binomialCoefficient(int n, int k)
+        public static BigInteger binomialCoefficient(int n, int k)
         {
 
             // This function gets the total number of unique combinations based upon N and K.
