@@ -271,8 +271,6 @@
             // cb_run_when_load
             // 
             this.cb_run_when_load.AutoSize = true;
-            this.cb_run_when_load.Checked = true;
-            this.cb_run_when_load.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_run_when_load.Location = new System.Drawing.Point(16, 587);
             this.cb_run_when_load.Name = "cb_run_when_load";
             this.cb_run_when_load.Size = new System.Drawing.Size(157, 17);
