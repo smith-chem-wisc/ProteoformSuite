@@ -43,7 +43,7 @@ namespace ProteoformSuite
             else if (Lollipop.et_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
-        private void run_the_gamut()
+        public void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
             Lollipop.make_et_relationships();
@@ -75,7 +75,7 @@ namespace ProteoformSuite
             return dgv_ET_Peak_List;
         }
 
-        private void ClearListsAndTables()
+        public void ClearListsAndTables()
         {
             Lollipop.et_relations.Clear();
             Lollipop.et_peaks.Clear();
