@@ -16,16 +16,16 @@ namespace ProteoformSuite
     public partial class ProteoformSweet : Form
     {
         //  Initialize Forms START
-        private LoadDeconvolutionResults loadDeconvolutionResults = new LoadDeconvolutionResults();
-        private RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
+        public LoadDeconvolutionResults loadDeconvolutionResults = new LoadDeconvolutionResults();
+        public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
         public NeuCodePairs neuCodePairs = new NeuCodePairs();
-        private AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms();
+        public AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms();
         public TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase();
-        private ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
-        private ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
-        private ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
-        private Quantification quantification = new Quantification();
-        private ResultsSummary resultsSummary = new ResultsSummary();
+        public ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
+        public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
+        public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
+        public Quantification quantification = new Quantification();
+        public ResultsSummary resultsSummary = new ResultsSummary();
         List<Form> forms;
         //  Initialize Forms END
 
@@ -57,11 +57,14 @@ namespace ProteoformSuite
                 theoreticalDatabase, experimentalTheoreticalComparison, experimentExperimentComparison,
                 proteoformFamilies, quantification
             });
+            foreach (Form form in forms)
+            {
+                form.MdiParent = this;
+            }
         }
 
         private void showForm(Form form)
         {
-            form.MdiParent = this;
             form.Show();
             form.WindowState = FormWindowState.Maximized;
             current_form = form;
@@ -193,15 +196,10 @@ namespace ProteoformSuite
             }
 
             this.Cursor = Cursors.WaitCursor;
-            rawExperimentalComponents.MdiParent = this;
             rawExperimentalComponents.load_raw_components(); //also loads the theoretical database, now
             rawExperimentalComponents.preloaded = true;
             neuCodePairs.preloaded = true;
             aggregatedProteoforms.aggregate_proteoforms();
-            experimentalTheoreticalComparison.compare_et();
-            experimentExperimentComparison.compare_ee();
-            if (Lollipop.neucode_labeled) proteoformFamilies.construct_families();
-            quantification.perform_calculations();
             this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
             this.Cursor = Cursors.Default;
             return true;

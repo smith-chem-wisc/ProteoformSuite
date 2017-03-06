@@ -66,7 +66,7 @@ namespace ProteoformSuite
             return dgv_main;
         }
 
-        private void run_the_gamut()
+        public void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
             initialize_settings();
@@ -74,6 +74,11 @@ namespace ProteoformSuite
             fill_proteoform_families("");
             update_figures_of_merit();
             this.Cursor = Cursors.Default;
+        }
+
+        public void ClearListsAndTables()
+        {
+            Lollipop.proteoform_community.families.Clear();
         }
 
         private void update_figures_of_merit()

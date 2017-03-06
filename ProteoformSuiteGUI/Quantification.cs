@@ -46,6 +46,17 @@ namespace ProteoformSuite
             }
         }
 
+        public void ClearListsAndTables()
+        {
+            Lollipop.logIntensityHistogram.Clear();
+            Lollipop.logSelectIntensityHistogram.Clear();
+            Lollipop.satisfactoryProteoforms.Clear();
+            Lollipop.qVals.Clear();
+            Lollipop.observedProteins.Clear();
+            Lollipop.inducedOrRepressedProteins.Clear();
+            Lollipop.goTermNumbers.Clear();
+        }
+
         public void fillGuiTablesAndGraphs()
         {
             plotObservedVsExpectedRelativeDifference();
