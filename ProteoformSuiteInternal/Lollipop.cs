@@ -1084,12 +1084,12 @@ namespace ProteoformSuiteInternal
             Dictionary<string, int> goCounts = new Dictionary<string, int>();
             foreach (ProteinWithGoTerms p in proteinSet)
             {
-                foreach (GoTerm g in p.GoTerms)
+                foreach (string goId in p.GoTerms.Select(g => g.Id).Distinct())
                 {
-                    if (goCounts.ContainsKey(g.Id))
-                        goCounts[g.Id]++;
+                    if (goCounts.ContainsKey(goId))
+                        goCounts[goId]++;
                     else
-                        goCounts.Add(g.Id, 1);
+                        goCounts.Add(goId, 1);
                 }
             }
             return goCounts;
