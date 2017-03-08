@@ -53,6 +53,8 @@ namespace ProteoformSuiteInternal
     //"ExperimentalProteoform" and "TheoreticalProteoform" objects
     public class ExperimentalProteoform : Proteoform
     {
+        public bool validated = false;
+
         // PROPERTIES
         public Component root;
         public List<Component> aggregated_components { get; set; } = new List<Component>();

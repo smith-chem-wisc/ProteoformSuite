@@ -46,6 +46,9 @@ namespace ProteoformSuiteInternal
             "Proteoform Identification Results (.xlsx)",
             "Proteoform Quantification Results (.xlsx)",
             "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
+            "Uncalibrated Proteoform Identification Results (.xlsx)",
+            "Raw Files (.raw)",
+             "Uncalibrated ProSight Top-Down Results (.xlsx)",
             "ProSight Top-Down Results (.xlsx)",
             "Morpheus Bottom-Up Results (.tsv)"
         };
@@ -56,6 +59,9 @@ namespace ProteoformSuiteInternal
             new List<string> { ".xlsx" },
             new List<string> { ".xml", ".gz", ".fasta", ".txt" },
             new List<string> { ".xlsx" },
+            new List<string> {".raw"},
+            new List<string> { ".xlsx" },
+            new List<string> { ".xlsx" },
             new List<string> { ".tsv" }
         };
 
@@ -65,6 +71,9 @@ namespace ProteoformSuiteInternal
             "Excel Files (*.xlsx) | *.xlsx",
             "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
             "Excel Files (*.xlsx) | *.xlsx",
+            "Raw Files (*.raw) | *.raw",
+            "Excel Files (*.xlsx) | *.xlsx",
+            "Excel Files (*.xlsx) | *.xlsx",
             "Text Files (*.tsv) | *.tsv"
         };
 
@@ -73,6 +82,9 @@ namespace ProteoformSuiteInternal
             new List<Purpose> { Purpose.Identification },
             new List<Purpose> { Purpose.Quantification },
             new List<Purpose> { Purpose.ProteinDatabase, Purpose.PtmList },
+            new List<Purpose> { Purpose.CalibrationIdentification },
+            new List<Purpose> {Purpose.RawFile },
+            new List<Purpose> { Purpose.CalibrationTopDown },
             new List<Purpose> { Purpose.TopDown },
             new List<Purpose> { Purpose.BottomUp }
         };
@@ -226,7 +238,6 @@ namespace ProteoformSuiteInternal
                 {
                     find_neucode_pairs(inputFile.reader.final_components.Where(c => c.scan_range == scan_range), raw_neucode_pairs);
                 }
-
             }
         }
 
@@ -328,6 +339,7 @@ namespace ProteoformSuiteInternal
             proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
             if (Lollipop.neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0) assignQuantificationComponents(vetted_proteoforms, raw_quantification_components);
             return vetted_proteoforms;
+
         }
 
         //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
@@ -516,6 +528,7 @@ namespace ProteoformSuiteInternal
             //Clear out data from potential previous runs
             Lollipop.proteoform_community.decoy_proteoforms = new Dictionary<string, TheoreticalProteoform[]>();
             Lollipop.psm_list.Clear();
+            Lollipop.uniprotModificationTable.Clear();
 
             //Read the UniProt-XML and ptmlist
             Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
@@ -776,41 +789,14 @@ namespace ProteoformSuiteInternal
             if (!limit_TD_BU_theoreticals) Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms, ProteoformComparison.et);
             else Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().ToArray(), Lollipop.proteoform_community.theoretical_proteoforms.Where(t => t.psm_count_BU > 0 || t.relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count > 0).ToArray(), ProteoformComparison.et);
             Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
-
-            foreach (double mass in notch_masses_et)
-            {
-                List<ProteoformRelation> relations_in_peak = et_relations.Where(r => r.delta_mass >= mass - Lollipop.peak_width_base_et && r.delta_mass <= mass + Lollipop.peak_width_base_et).ToList();
-                List<ProteoformRelation> decoy_relations = ed_relations["DecoyDatabase_0"].Where(r => r.delta_mass >= mass - Lollipop.peak_width_base_et && r.delta_mass <= mass + Lollipop.peak_width_base_et).ToList();
-                if (relations_in_peak.Count > 0)
-                {
-                    DeltaMassPeak peak = new DeltaMassPeak(true, relations_in_peak[0], relations_in_peak);
-                    peak.peak_group_fdr =  decoy_relations.Count / relations_in_peak.Count ;
-                    et_peaks.Add(peak);
-                    proteoform_community.delta_mass_peaks.Add(peak);
-                    proteoform_community.relations_in_peaks.AddRange(relations_in_peak);
-                }
-            }
-            //Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
+            Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
         public static void make_ee_relationships()
         {
             Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ee);
             Lollipop.ef_relations = Lollipop.proteoform_community.relate_ef();
-            foreach (double mass in notch_masses_ee)
-            {
-                List<ProteoformRelation> relations_in_peak = ee_relations.Where(r => r.delta_mass >= mass - Lollipop.peak_width_base_ee && r.delta_mass <= mass + Lollipop.peak_width_base_ee).ToList();
-                List<ProteoformRelation> decoy_relations = ef_relations.Where(r => r.delta_mass >= mass - Lollipop.peak_width_base_ee && r.delta_mass <= mass + Lollipop.peak_width_base_ee).ToList();
-                if (relations_in_peak.Count > 0)
-                {
-                    DeltaMassPeak peak = new DeltaMassPeak(true, relations_in_peak[0], relations_in_peak);
-                    peak.peak_group_fdr = decoy_relations.Count / relations_in_peak.Count;
-                    ee_peaks.Add(peak);
-                    proteoform_community.delta_mass_peaks.Add(peak);
-                    proteoform_community.relations_in_peaks.AddRange(relations_in_peak);
-                }
-            }
-            // Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
+            Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
            
         //TOPDOWN DATA
@@ -818,13 +804,16 @@ namespace ProteoformSuiteInternal
 
         public static void read_in_td_hits()
         {
+            Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
+            List<ModificationWithLocation> all_modifications = get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadMods(file.complete_path)).ToList();
+            read_mods(all_modifications);
             foreach (InputFile file in Lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
             {
                 top_down_hits.AddRange(TdBuReader.ReadTDFile(file));
             }
         }
 
-        public static void aggregate_td_hits(bool targeted)
+        public static void aggregate_td_hits()
         {
             foreach(TopDownHit hit in top_down_hits) if (hit.result_set == Result_Set.find_unexpected_mods) hit.corrected_mass = hit.theoretical_mass; //observed mass isn't mass of proteoform if find unexpected mods search (used fragments)
             //group hits into topdown proteoforms by accession/theoretical AND observed mass
@@ -832,12 +821,12 @@ namespace ProteoformSuiteInternal
             //TopDownHit[] remaining_td_hits = new TopDownHit[0];
             List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
             //aggregate to td hit w/ highest C score
-            remaining_td_hits = top_down_hits.Where(h => h.targeted == targeted).OrderBy(t => Math.Abs(t.corrected_mass - t.theoretical_mass)).ToList();
+            remaining_td_hits = top_down_hits.OrderBy(t => Math.Abs(t.corrected_mass - t.theoretical_mass - Math.Round(t.corrected_mass - t.theoretical_mass, 0))).ToList();
             while (remaining_td_hits.Count > 0)
             {
                 TopDownHit root = remaining_td_hits[0];
                 //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
-                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, remaining_td_hits.Where(h => h != root && h.accession == root.accession && h.theoretical_mass == root.theoretical_mass && h.same_ptm_hits(root)).ToList());
+                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, remaining_td_hits.Where(h => h != root && h.targeted == root.targeted && h.accession == root.accession && h.theoretical_mass == root.theoretical_mass && h.same_ptm_hits(root)).ToList());
                 topdown_proteoforms.Add(new_pf);
                 foreach (TopDownHit hit in new_pf.topdown_hits) remaining_td_hits.Remove(hit);
             }
@@ -848,13 +837,12 @@ namespace ProteoformSuiteInternal
         public static void make_td_relationships()
         {
             Lollipop.td_relations.Clear();
-            Lollipop.td_relations = Lollipop.proteoform_community.relate_td(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList(), Lollipop.proteoform_community.theoretical_proteoforms.ToList(), Lollipop.proteoform_community.topdown_proteoforms.ToList());
-
+            Lollipop.td_relations = Lollipop.proteoform_community.relate_td(Lollipop.proteoform_community.experimental_proteoforms.ToList(), Lollipop.proteoform_community.theoretical_proteoforms.ToList(), Lollipop.proteoform_community.topdown_proteoforms.Where(p => !p.targeted).ToList());
         }
 
         public static void make_targeted_td_relationships()
         {
-             td_relations.AddRange(Lollipop.proteoform_community.relate_targeted_td(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted && p.etd_match_count == 0).ToList(), Lollipop.proteoform_community.topdown_proteoforms.Where(p => p.targeted).ToList()));
+             td_relations.AddRange(Lollipop.proteoform_community.relate_targeted_td(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList(), Lollipop.proteoform_community.topdown_proteoforms.Where(p => p.targeted).ToList()));
         }
 
         //CALIBRATION
@@ -866,7 +854,7 @@ namespace ProteoformSuiteInternal
         public static Dictionary<string, Func<double[], double>> td_calibration_functions = new Dictionary<string, Func<double[], double>>();
         public static List<Correction> correctionFactors = new List<Correction>();
 
-public static void read_in_calibration_td_hits()
+        public static void read_in_calibration_td_hits()
         {
             foreach (InputFile file in Lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
             {
@@ -876,11 +864,12 @@ public static void read_in_calibration_td_hits()
 
         public static void calibrate_files()
         {
-            foreach (InputFile file in Lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification))
+            foreach (string filename in Lollipop.td_hits_calibration.Select(h => h.filename).Distinct())
             {
-                get_calibration_points(file.filename);
-                calibrate_td_hits(file.filename);
-                Calibration.calibrate_components_in_xlsx(file);
+                get_calibration_points(filename);
+                calibrate_td_hits(filename);
+                InputFile file = Lollipop.input_files.Where(f => f.purpose == Purpose.Identification && f.filename == filename).FirstOrDefault();
+                if (file != null) Calibration.calibrate_components_in_xlsx(file);
             }
 
             foreach (InputFile file in Lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))

@@ -107,7 +107,7 @@ namespace ProteoformSuite
         private void topdownResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(topDown);
-            topDown.load_topdown();
+            if (run_when_form_loads) topDown.load_topdown();
         }
 
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e)

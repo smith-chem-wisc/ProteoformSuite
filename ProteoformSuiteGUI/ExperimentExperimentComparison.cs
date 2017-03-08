@@ -264,9 +264,13 @@ namespace ProteoformSuite
 
         private void bt_compare_EE_Click(object sender, EventArgs e)
         {
-            ClearListsAndTables();
-            run_the_gamut();
-            xMaxEE.Value = Convert.ToDecimal(Lollipop.ee_max_mass_difference);
+            if (Lollipop.proteoform_community.has_e_proteoforms)
+            {
+                ClearListsAndTables();
+                run_the_gamut();
+                xMaxEE.Value = Convert.ToDecimal(Lollipop.ee_max_mass_difference);
+            }
+            else if (Lollipop.ee_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void nUD_EE_Upper_Bound_ValueChanged(object sender, EventArgs e)

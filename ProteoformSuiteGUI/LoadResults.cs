@@ -12,7 +12,6 @@ namespace ProteoformSuite
 {
     public partial class LoadResults : Form
     {
-
         public LoadResults()
         {
             InitializeComponent();
@@ -77,31 +76,31 @@ namespace ProteoformSuite
             cmb_loadTable1.Items.Clear();
             cmb_loadTable2.Items.Clear();
             cmb_loadTable3.Items.Clear();
-            for (int i = 0; i < 3; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-            for (int i = 0; i < 3; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
-            for (int i = 0; i < 3; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 8; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 8; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 8; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
             cmb_loadTable1.SelectedIndex = 0;
             cmb_loadTable2.SelectedIndex = 1;
             cmb_loadTable3.SelectedIndex = 2;
+            bt_calibrate.Visible = false;
+            cb_lockmass.Visible = false;
+            cb_tdhits.Visible = false;
 
             if (rb_chemicalCalibration.Checked)
             {
-                cmb_loadTable1.Items.Add(Lollipop.file_lists[3]);
-                cmb_loadTable2.Items.Add(Lollipop.file_lists[3]);
-                cmb_loadTable3.Items.Add(Lollipop.file_lists[3]);
-                cmb_loadTable1.SelectedIndex = 0;
-                cmb_loadTable2.SelectedIndex = 1;
-                cmb_loadTable3.SelectedIndex = cmb_loadTable3.Items.Count - 1;
+                bt_calibrate.Visible = true;
+                cb_lockmass.Visible = true;
+                cb_tdhits.Visible = true;
+                cmb_loadTable1.SelectedIndex = 3;
+                cmb_loadTable2.SelectedIndex = 4;
+                cmb_loadTable3.SelectedIndex = 5;
             }
 
             else if (rb_advanced_user.Checked)
             {
-                for (int i = 3; i < Lollipop.file_lists.Length; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-                for (int i = 3; i < Lollipop.file_lists.Length; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
-                for (int i = 3; i < Lollipop.file_lists.Length; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
                 cmb_loadTable1.SelectedIndex = 0;
-                cmb_loadTable2.SelectedIndex = cmb_loadTable2.Items.Count - 2;
-                cmb_loadTable3.SelectedIndex = cmb_loadTable2.Items.Count - 1;
+                cmb_loadTable2.SelectedIndex = 6;
+                cmb_loadTable3.SelectedIndex = 2;
             }
 
             lb_filter1.Text = Lollipop.file_lists[cmb_loadTable1.SelectedIndex];
@@ -340,6 +339,28 @@ namespace ProteoformSuite
         {
             DisplayUtility.FillDataGridView(dgv_loadFiles3, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable3.SelectedIndex]));
             lb_filter3.Text = cmb_loadTable1.SelectedItem.ToString();
+        }
+
+        private void bt_calibrate_Click(object sender, EventArgs e)
+        {
+            if (Lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationTopDown).Count() > 0) Lollipop.read_in_calibration_td_hits();
+            else { MessageBox.Show("Please enter top-down results files to calibrate."); return; }
+            if (Lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() > 0)
+            {
+              Lollipop.calibrate_files();
+              MessageBox.Show("Successfully calibrated files.");
+            }
+            else { MessageBox.Show("Please enter raw files to calibrate."); return; }
+        }
+
+        private void cb_tdhits_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.calibrate_td_results = cb_tdhits.Checked;
+        }
+
+        private void cb_lockmass_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.calibrate_lock_mass = cb_lockmass.Checked;
         }
     }
 }

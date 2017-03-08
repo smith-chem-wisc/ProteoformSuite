@@ -329,48 +329,55 @@ namespace ProteoformSuite
                 string folder_path = folderBrowser.SelectedPath;
 
                 List<ExperimentalProteoform> experimentals = new List<ExperimentalProteoform>();
-                if (cb_inclusion_list_identified_family.Checked)
-                    //family not null, ET relation in family, e proteoform not in topdown relation
-                    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.etd).ToList().Count > 0 && p.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
+                //if (cb_inclusion_list_identified_family.Checked)
+                //    //family not null, ET relation in family, e proteoform not in topdown relation
+                //    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.etd).ToList().Count > 0 && p.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
 
-                if (cb_inclusion_list_unidentified_fam.Checked)
-                {
-                    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
-                }
-                if (cb_inclusion_list_orphans.Checked)
-                {
-                    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family.relations.Count == 0));
-                }
-                foreach (ExperimentalProteoform exp in experimentals)
-                {
-                    using (var writer = new StreamWriter(folder_path + "\\inclusion_list.txt"))
+                //if (cb_inclusion_list_unidentified_fam.Checked)
+                //{
+                //    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
+                //}
+                //if (cb_inclusion_list_orphans.Checked)
+                //{
+                //    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family.relations.Count == 0));
+                //}
+
+                experimentals = Lollipop.proteoform_community.experimental_proteoforms.Where(exp => exp.etd_match_count == 0).ToList();
+                using (var writer = new StreamWriter(folder_path + "\\inclusion_list.txt"))
+                { 
+                    foreach (ExperimentalProteoform exp in experimentals)
                     {
-                        //max intensity charge state of the max intensity component
-                        //ChargeState best_charge_state = (experimentals[experimental_num].aggregated_components.OrderBy(c => c.intensity_sum).First().charge_states.OrderBy(c => c.intensity).First());
-                        if (!cb_inclusion_list_charge_state.Checked)
-                        {
-                            foreach (ChargeState cs in exp.aggregated_components.OrderBy(c => c.intensity_sum).ToList().First().charge_states)
+                            //max intensity charge state of the max intensity component
+                            //ChargeState best_charge_state = (experimentals[experimental_num].aggregated_components.OrderBy(c => c.intensity_sum).First().charge_states.OrderBy(c => c.intensity).First());
+                            if (!cb_inclusion_list_charge_state.Checked)
                             {
-                                if (cs.charge_count <= 25)
+                                foreach (ChargeState cs in exp.aggregated_components.OrderBy(c => c.intensity_sum).ToList().First().charge_states)
+                                {
+                                    if (cs.charge_count <= 25)
+                                    {
+                                        //want calibrated mass m/z
+                                        double mz = cs.calculated_mass / cs.charge_count + cs.charge_count * 1.007276466879;
+                                        writer.WriteLine(mz + "\t" + cs.charge_count + "\t" + "mass: " + exp.agg_mass + " RT: " + exp.agg_rt + " obs count: " + exp.observation_count);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                ChargeState cs = exp.aggregated_components.OrderBy(c => c.intensity_sum).ToList().First().charge_states.Where(c => c.charge_count <= 25).ToList().OrderBy(c => c.intensity).ToList().FirstOrDefault();
+                                if (cs != null)
                                 {
                                     //want calibrated mass m/z
                                     double mz = cs.calculated_mass / cs.charge_count + cs.charge_count * 1.007276466879;
-                                    writer.WriteLine(mz + "\t" + cs.charge_count);
+                                    writer.WriteLine(mz + "\t" + cs.charge_count + "\t" + "mass: " + exp.agg_mass + " RT: " + exp.agg_rt + " obs count: " + exp.observation_count);
+                                }
+                                else //if no charge count <= 25, calculate what m/z would be at z = 25
+                                {
+                                    double mz = exp.agg_mass / 25 + 25 * 1.007276466879;
+                                    writer.WriteLine(mz + "\t" + 25 + "\t" + "mass: " + exp.agg_mass + " RT: " + exp.agg_rt + " obs count: " + exp.observation_count);
                                 }
                             }
                         }
-                        else
-                        {
-                            ChargeState cs = exp.aggregated_components.OrderBy(c => c.intensity_sum).ToList().First().charge_states.Where(c => c.charge_count <= 25).ToList().OrderBy(c => c.intensity).ToList().First();
-                            if (cs.charge_count <= 25)
-                            {
-                                //want calibrated mass m/z
-                                double mz = cs.calculated_mass / cs.charge_count + cs.charge_count * 1.007276466879;
-                                writer.WriteLine(mz + "\t" + cs.charge_count);
-                            }
-                        }
                     }
-                }
             }
             else return;
                 MessageBox.Show("Successfully exported inclusion list(s).");

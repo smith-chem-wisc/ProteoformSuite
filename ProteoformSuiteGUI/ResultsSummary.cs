@@ -44,8 +44,8 @@ namespace ProteoformSuite
         {
             identificationFileNames = new BindingList<string>((from s in Lollipop.input_files.Where(f => f.purpose == Purpose.Identification) select s.filename).ToList());
             numRawExpComponents = Lollipop.raw_experimental_components.Count;
-            numNeucodePairs = Lollipop.raw_neucode_pairs.Count;
-            numExperimentalProteoforms = Lollipop.proteoform_community.experimental_proteoforms.Count();
+            numNeucodePairs = Lollipop.raw_neucode_pairs.Where(c => c.accepted).Count();
+            numExperimentalProteoforms = Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).Count();
             uniprotXmlFiles = String.Join(", ", Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Select(f => f.filename));
             numETPairs = Lollipop.et_relations.Count;
             numETPeaks = Lollipop.et_peaks.Count;

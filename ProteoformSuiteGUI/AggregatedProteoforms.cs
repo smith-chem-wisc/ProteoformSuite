@@ -34,7 +34,7 @@ namespace ProteoformSuite
             {
                 run_the_gamut();
             }
-            else if (Lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
+            else MessageBox.Show("Go back and load in deconvolution results.");
         }
 
         private void run_the_gamut()
@@ -186,8 +186,12 @@ namespace ProteoformSuite
 
         private void bt_aggregate_Click(object sender, EventArgs e)
         {
-            ClearListsAndTables();
-            run_the_gamut();
+            if (ready_to_aggregate())
+            {
+                ClearListsAndTables();
+                run_the_gamut();
+            }
+            else MessageBox.Show("Go back and load in deconvolution results.");
         }
 
         private void nUD_rel_abundance_ValueChanged(object sender, EventArgs e)

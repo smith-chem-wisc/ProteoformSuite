@@ -43,7 +43,6 @@
             this.bt_td_relations = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.tb_tdProteoforms = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -133,7 +132,6 @@
             // 
             // splitContainer3.Panel1
             // 
-            this.splitContainer3.Panel1.Controls.Add(this.button1);
             this.splitContainer3.Panel1.Controls.Add(this.bt_check_fragmented_e);
             this.splitContainer3.Panel1.Controls.Add(this.bt_targeted_td_relations);
             this.splitContainer3.Panel1.Controls.Add(this.cmbx_td_or_e_proteoforms);
@@ -210,6 +208,7 @@
             // 
             // bt_td_relations
             // 
+            this.bt_td_relations.Enabled = false;
             this.bt_td_relations.Location = new System.Drawing.Point(275, 32);
             this.bt_td_relations.Name = "bt_td_relations";
             this.bt_td_relations.Size = new System.Drawing.Size(190, 23);
@@ -233,16 +232,6 @@
             this.tb_tdProteoforms.Name = "tb_tdProteoforms";
             this.tb_tdProteoforms.Size = new System.Drawing.Size(100, 20);
             this.tb_tdProteoforms.TabIndex = 0;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(746, 23);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(208, 23);
-            this.button1.TabIndex = 9;
-            this.button1.Text = "Check if Experimental Fragmented";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // TopDown
             // 
@@ -289,6 +278,5 @@
         private System.Windows.Forms.ComboBox cmbx_td_or_e_proteoforms;
         private System.Windows.Forms.Button bt_targeted_td_relations;
         private System.Windows.Forms.Button bt_check_fragmented_e;
-        private System.Windows.Forms.Button button1;
     }
 }

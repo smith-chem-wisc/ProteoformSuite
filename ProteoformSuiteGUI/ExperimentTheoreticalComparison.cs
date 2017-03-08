@@ -53,6 +53,7 @@ namespace ProteoformSuite
                 bool notch_masses = get_notch_masses();
                 if (!notch_masses) return;
             }
+            ClearListsAndTables();
             this.Cursor = Cursors.WaitCursor;
             Lollipop.make_et_relationships();
             this.FillTablesAndCharts();
@@ -212,11 +213,16 @@ namespace ProteoformSuite
 
         private void bt_compare_et_Click(object sender, EventArgs e)
         {
-            shift_masses();
-            ClearListsAndTables();
-            run_the_gamut();
-            xMaxET.Value = (decimal)Lollipop.et_high_mass_difference;
-            xMinET.Value = (decimal)Lollipop.et_low_mass_difference;
+            if (Lollipop.proteoform_community.has_e_and_t_proteoforms)
+            {
+                shift_masses();
+                ClearListsAndTables();
+                run_the_gamut();
+                xMaxET.Value = (decimal)Lollipop.et_high_mass_difference;
+                xMinET.Value = (decimal)Lollipop.et_low_mass_difference;
+            }
+            else if (Lollipop.et_relations.Count == 0 && Lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
+            else if (Lollipop.et_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         //shifts any mass shifts that have been changed from 0 in dgv
