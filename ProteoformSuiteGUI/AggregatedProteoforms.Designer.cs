@@ -31,6 +31,7 @@
             this.dgv_AggregatedProteoforms = new System.Windows.Forms.DataGridView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.cb_validateProteoforms = new System.Windows.Forms.CheckBox();
             this.nUD_min_num_CS = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
             this.nUD_min_agg_count = new System.Windows.Forms.NumericUpDown();
@@ -49,7 +50,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.dgv_AcceptNeuCdLtProteoforms = new System.Windows.Forms.DataGridView();
-            this.cb_validateProteoforms = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AggregatedProteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -141,6 +141,20 @@
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 0;
             // 
+            // cb_validateProteoforms
+            // 
+            this.cb_validateProteoforms.AutoSize = true;
+            this.cb_validateProteoforms.Checked = true;
+            this.cb_validateProteoforms.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_validateProteoforms.Location = new System.Drawing.Point(28, 242);
+            this.cb_validateProteoforms.Name = "cb_validateProteoforms";
+            this.cb_validateProteoforms.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.cb_validateProteoforms.Size = new System.Drawing.Size(123, 17);
+            this.cb_validateProteoforms.TabIndex = 17;
+            this.cb_validateProteoforms.Text = "Validate Proteoforms";
+            this.cb_validateProteoforms.UseVisualStyleBackColor = true;
+            this.cb_validateProteoforms.CheckedChanged += new System.EventHandler(this.cb_validateProteoforms_CheckedChanged);
+            // 
             // nUD_min_num_CS
             // 
             this.nUD_min_num_CS.Location = new System.Drawing.Point(170, 168);
@@ -162,7 +176,7 @@
             // 
             // nUD_min_agg_count
             // 
-            this.nUD_min_agg_count.Location = new System.Drawing.Point(170, 212);
+            this.nUD_min_agg_count.Location = new System.Drawing.Point(170, 190);
             this.nUD_min_agg_count.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_min_agg_count.Name = "nUD_min_agg_count";
             this.nUD_min_agg_count.Size = new System.Drawing.Size(80, 20);
@@ -172,7 +186,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(39, 214);
+            this.label7.Location = new System.Drawing.Point(39, 192);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(116, 13);
@@ -321,20 +335,6 @@
             this.dgv_AcceptNeuCdLtProteoforms.RowTemplate.Height = 28;
             this.dgv_AcceptNeuCdLtProteoforms.Size = new System.Drawing.Size(1012, 328);
             this.dgv_AcceptNeuCdLtProteoforms.TabIndex = 0;
-            // 
-            // cb_validateProteoforms
-            // 
-            this.cb_validateProteoforms.AutoSize = true;
-            this.cb_validateProteoforms.Checked = true;
-            this.cb_validateProteoforms.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_validateProteoforms.Location = new System.Drawing.Point(90, 227);
-            this.cb_validateProteoforms.Name = "cb_validateProteoforms";
-            this.cb_validateProteoforms.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.cb_validateProteoforms.Size = new System.Drawing.Size(123, 17);
-            this.cb_validateProteoforms.TabIndex = 17;
-            this.cb_validateProteoforms.Text = "Validate Proteoforms";
-            this.cb_validateProteoforms.UseVisualStyleBackColor = true;
-            this.cb_validateProteoforms.CheckedChanged += new System.EventHandler(this.cb_validateProteoforms_CheckedChanged);
             // 
             // AggregatedProteoforms
             // 

@@ -103,6 +103,7 @@ namespace ProteoformSuiteInternal
         public static string ef_string = "Experiment-Unequal Lysine Count";
         public static string etd_string = "Experiment-Topdown";
         public static string ttd_string = "Theoretical-Topdown";
+        public static string ettd_string = "Targeted-Topdown";
            
 
         public int peak_center_count
@@ -124,6 +125,7 @@ namespace ProteoformSuiteInternal
                 if (this.relation_type == ProteoformComparison.ef) s = ef_string;
                 if (this.relation_type == ProteoformComparison.etd) s = etd_string;
                 if (this.relation_type == ProteoformComparison.ttd) s = ttd_string;
+                if (this.relation_type == ProteoformComparison.ettd) s = ettd_string;
                 return s;
             }
         }

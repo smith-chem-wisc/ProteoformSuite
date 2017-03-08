@@ -26,50 +26,40 @@ namespace ProteoformSuiteInternal
                     Lollipop.Ms_scans.Add(scan);
                 }
                 //set charge, mz, intensity, find MS1 numbers
-                foreach (TopDownHit hit in Lollipop.top_down_hits.Where(f => f.filename == filename).ToList())
+                foreach (TopDownHit hit in Lollipop.td_hits_calibration.Where(f => f.filename == filename).ToList())
                 {
                     double mz = (myMsDataFile.GetOneBasedScan(hit.scan) as ThermoScanWithPrecursor).IsolationMz;
                     hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)mz, 0)); //m / (m/z)  round to get charge 
-                                                                                                 
-                    // hit.mz = hit.reported_mass.ToMz(hit.charge);
-                    hit.mz = mz;
+                    hit.mz = hit.reported_mass.ToMz(hit.charge);
                 }
             }
         }
 
-        //Maybe change to check which fragmented in targeted? 
         public static void check_fragmented_experimentals(List<InputFile> files)
         {
-                foreach (InputFile file in files)
+            foreach (InputFile file in files)
+            {
+                using (ThermoDynamicData myMsDataFile = ThermoDynamicData.InitiateDynamicConnection(file.complete_path))
                 {
-                    using (ThermoDynamicData myMsDataFile = ThermoDynamicData.InitiateDynamicConnection(file.complete_path))
+                    foreach (ExperimentalProteoform e in Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted && !p.fragmented).ToList())
                     {
-                        foreach (ExperimentalProteoform e in Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted && p.aggregated_components.Where(c => c.input_file.filename.Replace("_calibrated", "") == file.filename).Count() > 0).ToList())
+
+                        //check for most intense component
+                        Component c = e.aggregated_components.OrderByDescending(agg => agg.intensity_sum).First();
+                        ChargeState cs = c.charge_states.OrderByDescending(a => a.intensity).First();
+                        int scan_number = 1;
+                        IThermoScan scan = myMsDataFile.GetOneBasedScan(scan_number);
+                        while (e.fragmented == false && scan_number < myMsDataFile.Count())
                         {
-                        foreach (Component c in e.aggregated_components.Where(c => c.input_file.filename.Replace("_calibrated", "") == file.filename).ToList())
-                        {
-                            int min_MS1 = Convert.ToInt16(c.scan_range.Split('-')[0]);
-                            int max_MS1 = Convert.ToInt16(c.scan_range.Split('-')[1]);
-                            int scan_number = min_MS1;
-                            IThermoScan scan = myMsDataFile.GetOneBasedScan(scan_number);
-                            while (e.fragmented == false && (scan.OneBasedScanNumber <= max_MS1 || scan.MsnOrder == 2))
+                            scan = myMsDataFile.GetOneBasedScan(scan_number);
+                            if (scan.MsnOrder < 2) { scan_number++; continue; }
+
+                            //check for most intense charge state (on inclusion list)
+                            if (Math.Abs(cs.mz_centroid - (scan as ThermoScanWithPrecursor).IsolationMz) <= 1.5)
                             {
-                                scan = myMsDataFile.GetOneBasedScan(scan_number);
-                                if (scan.MsnOrder < 2) { scan_number++; continue; }
-                                foreach (ChargeState cs in c.charge_states)
-                                {
-                                    if (Math.Abs(cs.mz_centroid - (scan as ThermoScanWithPrecursor).IsolationMz) <= 1.5)
-                                    {
-                                        e.fragmented = true;
-                                        if (e.fragmented && e.etd_match_count == 0)
-                                        {
-                                            bool td = (Lollipop.top_down_hits.Where(h => h.filename == file.filename && h.scan == scan_number).Count() > 0);
-                                        }
-                                        continue;
-                                    }
-                                }
-                                scan_number++;
+                                e.fragmented = true;
                             }
+                            scan_number++;
                         }
                     }
                 }
@@ -77,3 +67,5 @@ namespace ProteoformSuiteInternal
         }
     }
 }
+            
+ 

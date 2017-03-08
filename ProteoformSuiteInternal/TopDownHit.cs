@@ -12,7 +12,6 @@ namespace ProteoformSuiteInternal
         public int scan { get; set; }
         public double retention_time { get; set; }
         public string filename { get; set; }
-        public double score { get; set; }
         public string uniprot_id { get; set; }
         public string sequence { get; set; }
         public int start_index { get; set; }
@@ -33,7 +32,7 @@ namespace ProteoformSuiteInternal
         public bool targeted { get; set; }
         public InputFile file { get; set; }
 
-        public TopDownHit(InputFile file, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double score, Result_Set result_set, bool targeted)
+        public TopDownHit(InputFile file, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, Result_Set result_set, bool targeted)
         {
             this.file = file;
             this.accession = accession;
@@ -49,7 +48,6 @@ namespace ProteoformSuiteInternal
             this.scan = scan;
             this.retention_time = retention_time;
             this.filename = filename;
-            this.score = score;
             this.result_set = result_set;
             this.targeted = targeted;
         }

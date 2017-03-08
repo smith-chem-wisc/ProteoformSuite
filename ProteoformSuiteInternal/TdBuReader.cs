@@ -46,10 +46,10 @@ namespace ProteoformSuiteInternal
 
         //Reading in Top-down excel
         public static List<TopDownHit> ReadTDFile(InputFile file)
-        {
-            List<TopDownHit> td_hits = new List<TopDownHit>();
-            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(file.complete_path, false))
-            {
+        { 
+                List<TopDownHit> td_hits = new List<TopDownHit>();
+                using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(file.complete_path, false))
+                {
                     // Get Data in Sheet1 of Excel file
                     IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
                     WorksheetPart worksheet_1 = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
@@ -106,64 +106,64 @@ namespace ProteoformSuiteInternal
                         if (cellStrings[15] == "Tight Absolute Mass") result_set = Result_Set.tight_absolute_mass;
                         else if (cellStrings[15] == "Find Unexpected Modifications") result_set = Result_Set.find_unexpected_mods;
                         else if (cellStrings[15] == "BioMarker") result_set = Result_Set.biomarker;
-
-                        //convert into new td hit
-                        TopDownHit td_hit = new TopDownHit(file, cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
-                        Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]), ptm_list, Convert.ToDouble(cellStrings[16]), Convert.ToDouble(cellStrings[12]),
-                        Convert.ToInt16(cellStrings[17]), Convert.ToDouble(cellStrings[18]), full_filename[0], Convert.ToDouble(cellStrings[23]), result_set, file.targeted_td_result);
-                        td_hits.Add(td_hit);
+                            //convert into new td hit
+                            TopDownHit td_hit = new TopDownHit(file, cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
+                            Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]), ptm_list, Convert.ToDouble(cellStrings[16]), Convert.ToDouble(cellStrings[12]),
+                            Convert.ToInt16(cellStrings[17]), Convert.ToDouble(cellStrings[18]), full_filename[0], result_set, file.targeted_td_result);
+                            td_hits.Add(td_hit);
                     }
                 }
-            
-            return td_hits;
 
-            //        else if (td_software == TDSoftware.ProSight)
-            //        {
-            //            string[] description = cellStrings[13].Split(';');
-            //            string[] accession = description[0].Split(',');
 
-            //            string file_sequence = cellStrings[6];
-            //            file_sequence = file_sequence.Replace(")", "(");
-            //            string[] split_sequence = file_sequence.Split('(');
-            //            List<int> positions = new List<int>();
-            //            string sequence = "";
-            //            for (int j = 0; j < split_sequence.Length; j++)
-            //            {
-            //                try
-            //                {
-            //                    //if number, add position of PTM to list
-            //                    int mod_id = Convert.ToInt16(split_sequence[j]);
-            //                    positions.Add(sequence.Length);
-            //                }
-            //                catch { sequence += split_sequence[j]; }
-            //            }
+                return td_hits;
 
-            //            List<Ptm> ptm_list = new List<Ptm>();
-            //            string modification_description = cellStrings[8];
-            //            modification_description = modification_description.Replace(", ", "; ");
-            //            string[] modifications = modification_description.Split(';');
-            //            if (modifications.Length > 1)
-            //            {
-            //                for (int j = 0; j < modifications.Length; j++)
-            //                {
-            //                    string[] new_modification = modifications[j].Split('(');
-            //                    int position = positions[j];
-            //                    Ptm ptm = new Ptm(position, new Modification(new_modification[0]));
-            //                    ptm_list.Add(ptm);
-            //                }
-            //            }
-            //            string[] full_filename = cellStrings[14].Split('.');
+                //        else if (td_software == TDSoftware.ProSight)
+                //        {
+                //            string[] description = cellStrings[13].Split(';');
+                //            string[] accession = description[0].Split(',');
 
-            //            Result_Set result_set = new Result_Set();
-            //            if (cellStrings[3] == "absolute_mass") result_set = Result_Set.tight_absolute_mass;
-            //            else if (cellStrings[3] == "biomarker") result_set = Result_Set.biomarker;
+                //            string file_sequence = cellStrings[6];
+                //            file_sequence = file_sequence.Replace(")", "(");
+                //            string[] split_sequence = file_sequence.Split('(');
+                //            List<int> positions = new List<int>();
+                //            string sequence = "";
+                //            for (int j = 0; j < split_sequence.Length; j++)
+                //            {
+                //                try
+                //                {
+                //                    //if number, add position of PTM to list
+                //                    int mod_id = Convert.ToInt16(split_sequence[j]);
+                //                    positions.Add(sequence.Length);
+                //                }
+                //                catch { sequence += split_sequence[j]; }
+                //            }
 
-            //            TopDownHit td_proteoform = new TopDownHit(cellStrings[4], accession[0], description[1], sequence,
-            //               0, 0, ptm_list, Convert.ToDouble(cellStrings[10]), Convert.ToDouble(cellStrings[9]), 0, 0, full_filename[0], Convert.ToDouble(cellStrings[20]), result_set);
-            //            td_proteoforms.Add(td_proteoform);
-            //        }
-            //    }
-            //}
+                //            List<Ptm> ptm_list = new List<Ptm>();
+                //            string modification_description = cellStrings[8];
+                //            modification_description = modification_description.Replace(", ", "; ");
+                //            string[] modifications = modification_description.Split(';');
+                //            if (modifications.Length > 1)
+                //            {
+                //                for (int j = 0; j < modifications.Length; j++)
+                //                {
+                //                    string[] new_modification = modifications[j].Split('(');
+                //                    int position = positions[j];
+                //                    Ptm ptm = new Ptm(position, new Modification(new_modification[0]));
+                //                    ptm_list.Add(ptm);
+                //                }
+                //            }
+                //            string[] full_filename = cellStrings[14].Split('.');
+
+                //            Result_Set result_set = new Result_Set();
+                //            if (cellStrings[3] == "absolute_mass") result_set = Result_Set.tight_absolute_mass;
+                //            else if (cellStrings[3] == "biomarker") result_set = Result_Set.biomarker;
+
+                //            TopDownHit td_proteoform = new TopDownHit(cellStrings[4], accession[0], description[1], sequence,
+                //               0, 0, ptm_list, Convert.ToDouble(cellStrings[10]), Convert.ToDouble(cellStrings[9]), 0, 0, full_filename[0], Convert.ToDouble(cellStrings[20]), result_set);
+                //            td_proteoforms.Add(td_proteoform);
+                //        }
+                //    }
+                //}
         }
 
         //TD files have blank spaces in middle of rows/columns -- need this to account for those. 
