@@ -12,6 +12,7 @@ namespace ProteoformSuiteInternal
         public ProteinSequenceGroup(List<ProteinWithGoTerms> proteins)
             : base(proteins[0].BaseSequence, 
                 proteins[0].Accession + "_G" + proteins.Count(),
+                proteins.SelectMany(p => p.GeneNames),
                 proteins.SelectMany(p => p.OneBasedPossibleLocalizedModifications.Keys).Distinct().ToDictionary(i => i, i => proteins.Where(p => p.OneBasedPossibleLocalizedModifications.ContainsKey(i)).SelectMany(p => p.OneBasedPossibleLocalizedModifications[i]).ToList()), 
                 proteins[0].ProteolysisProducts.Select(p => p.OneBasedBeginPosition).ToArray(), 
                 proteins[0].ProteolysisProducts.Select(p => p.OneBasedEndPosition).ToArray(), 
