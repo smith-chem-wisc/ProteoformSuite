@@ -164,7 +164,13 @@ namespace ProteoformSuite
             rb_allSampleGOTerms.Checked = !Lollipop.allTheoreticalProteins; //initiallizes the background for GO analysis to the set of observed proteins. not the set of theoretical proteins.
             rb_allSampleGOTerms.Enabled = true;
 
+            rb_allTheoreticalProteins.Enabled = false;
+            rb_allTheoreticalProteins.Checked = Lollipop.allTheoreticalProteins; //initiallizes the background for GO analysis to the set of observed proteins. not the set of theoretical proteins.
+            rb_allTheoreticalProteins.Enabled = true;
+
             rb_allSampleGOTerms.CheckedChanged += new EventHandler(goTermBackgroundChanged);
+            rb_allTheoreticalProteins.CheckedChanged += new EventHandler(goTermBackgroundChanged);
+            rb_customBackgroundSet.CheckedChanged += new EventHandler(goTermBackgroundChanged);
         }
 
         private void plotObservedVsExpectedRelativeDifference()
@@ -259,13 +265,6 @@ namespace ProteoformSuite
             {
                 ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10((double)qValue.pValue));
             }
-        }
-
-
-        private void goTermBackgroundChanged(object s, EventArgs e)
-        {
-            Lollipop.allTheoreticalProteins = !Lollipop.allTheoreticalProteins;
-            Lollipop.GO_analysis();
         }
 
         private void fillGoTermsTable()
@@ -431,10 +430,58 @@ namespace ProteoformSuite
             plotObservedVsExpectedOffsets();
         }
 
+        bool backgroundUpdated = true;
+        private void goTermBackgroundChanged(object s, EventArgs e)
+        {
+            if (!backgroundUpdated)
+            {
+                Lollipop.GO_analysis();
+                fillGoTermsTable();
+            }
+            backgroundUpdated = true;
+        }
+
+        private void rb_allSampleGOTerms_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_customBackgroundSet.Checked)
+            {
+                Lollipop.backgroundProteinsList = "";
+                backgroundUpdated = false;
+            }
+        }
+
         private void rb_allTheoreticalProteins_CheckedChanged(object sender, EventArgs e)
         {
-            Lollipop.GO_analysis();
-            fillGoTermsTable();
+            Lollipop.allTheoreticalProteins = rb_allTheoreticalProteins.Checked;
+            if (rb_allTheoreticalProteins.Checked)
+            {
+                Lollipop.backgroundProteinsList = "";
+                backgroundUpdated = false;
+            }
+        }
+
+        private void rb_customBackgroundSet_CheckedChanged(object sender, EventArgs e)
+        {
+            tb_goTermCustomBackground.Enabled = rb_customBackgroundSet.Checked;
+            if (rb_customBackgroundSet.Checked) backgroundUpdated = false;
+        }
+
+        OpenFileDialog fileOpen = new OpenFileDialog();
+        private void btn_customBackgroundBrowse_Click(object sender, EventArgs e)
+        {
+            fileOpen.Filter = "Protein accession list (*.txt)|*.txt";
+            fileOpen.FileName = "";
+            DialogResult dr = this.fileOpen.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK && File.Exists(fileOpen.FileName))
+            {
+                Lollipop.backgroundProteinsList = fileOpen.FileName;
+                tb_goTermCustomBackground.Text = fileOpen.FileName;
+                if (rb_customBackgroundSet.Checked)
+                {
+                    backgroundUpdated = false;
+                    goTermBackgroundChanged(new object(), new EventArgs());
+                }
+            }
         }
     }
 }

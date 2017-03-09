@@ -9,8 +9,8 @@ namespace ProteoformSuiteInternal
 {
     public class ProteinWithGoTerms : Protein
     {
-        public ProteinWithGoTerms(string sequence, string accession, IDictionary<int, List<Modification>> oneBasedModifications, int?[] oneBasedBeginPositionsForProteolysisProducts, int?[] oneBasedEndPositionsForProteolysisProducts, string[] oneBasedProteolysisProductsTypes, string name, string full_name, bool isDecoy, bool isContaminant, IEnumerable<DatabaseReference> databaseReferences, IEnumerable<GoTerm> goTerms)
-            : base(sequence, accession, oneBasedModifications, oneBasedBeginPositionsForProteolysisProducts, oneBasedEndPositionsForProteolysisProducts, oneBasedProteolysisProductsTypes, name, full_name, isDecoy, isContaminant, databaseReferences)
+        public ProteinWithGoTerms(string sequence, string accession, IEnumerable<Tuple<string, string>> gene_names, IDictionary<int, List<Modification>> oneBasedModifications, int?[] oneBasedBeginPositionsForProteolysisProducts, int?[] oneBasedEndPositionsForProteolysisProducts, string[] oneBasedProteolysisProductsTypes, string name, string full_name, bool isDecoy, bool isContaminant, IEnumerable<DatabaseReference> databaseReferences, IEnumerable<GoTerm> goTerms)
+            : base(sequence, accession, gene_names, oneBasedModifications, oneBasedBeginPositionsForProteolysisProducts, oneBasedEndPositionsForProteolysisProducts, oneBasedProteolysisProductsTypes, name, full_name, isDecoy, isContaminant, databaseReferences)
         {
             this.GoTerms = goTerms;
         }
