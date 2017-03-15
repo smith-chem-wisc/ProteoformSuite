@@ -44,7 +44,13 @@ namespace ProteoformSuiteInternal {
 
     [Serializable]
     [ComVisible(false)]
-    public struct BigRational : IComparable, IComparable<BigRational>, IDeserializationCallback, IEquatable<BigRational>, ISerializable {
+    public struct BigRational : 
+        IComparable, 
+        IComparable<BigRational>, 
+        //IDeserializationCallback, 
+        IEquatable<BigRational> 
+        //ISerializable
+    {
 
         // ---- SECTION:  members supporting exposed properties -------------*
         private BigInteger m_numerator;
@@ -506,33 +512,34 @@ namespace ProteoformSuiteInternal {
         //    return (UInt64)(BigInteger.Divide(value.m_numerator, value.m_denominator));
         //}
 
-        public static explicit operator Byte(BigRational value) {
-            return (Byte)(BigInteger.Divide(value.m_numerator, value.m_denominator));
-        }
+        //public static explicit operator Byte(BigRational value) {
+        //    return (Byte)(BigInteger.Divide(value.m_numerator, value.m_denominator));
+        //}
 
-        public static explicit operator Int16(BigRational value) {
-            return (Int16)(BigInteger.Divide(value.m_numerator, value.m_denominator));
-        }
+        //public static explicit operator Int16(BigRational value) {
+        //    return (Int16)(BigInteger.Divide(value.m_numerator, value.m_denominator));
+        //}
 
-        public static explicit operator Int32(BigRational value) {
-            return (Int32)(BigInteger.Divide(value.m_numerator, value.m_denominator));
-        }
+        //public static explicit operator Int32(BigRational value) {
+        //    return (Int32)(BigInteger.Divide(value.m_numerator, value.m_denominator));
+        //}
 
-        public static explicit operator Int64(BigRational value) {
-            return (Int64)(BigInteger.Divide(value.m_numerator, value.m_denominator));
-        }
+        //public static explicit operator Int64(BigRational value) {
+        //    return (Int64)(BigInteger.Divide(value.m_numerator, value.m_denominator));
+        //}
 
-        public static explicit operator BigInteger(BigRational value) {
-            return BigInteger.Divide(value.m_numerator, value.m_denominator);
-        }
+        //public static explicit operator BigInteger(BigRational value) {
+        //    return BigInteger.Divide(value.m_numerator, value.m_denominator);
+        //}
 
-        public static explicit operator Single(BigRational value) {   
-            // The Single value type represents a single-precision 32-bit number with
-            // values ranging from negative 3.402823e38 to positive 3.402823e38      
-            // values that do not fit into this range are returned as Infinity
-            return (Single)((Double)value);
-        }
+        //public static explicit operator Single(BigRational value) {   
+        //    // The Single value type represents a single-precision 32-bit number with
+        //    // values ranging from negative 3.402823e38 to positive 3.402823e38      
+        //    // values that do not fit into this range are returned as Infinity
+        //    return (Single)((Double)value);
+        //}
 
+        //Doesn't test out great...
         public static explicit operator Double(BigRational value) {           
             // The Double value type represents a double-precision 64-bit number with
             // values ranging from -1.79769313486232e308 to +1.79769313486232e308
@@ -570,32 +577,32 @@ namespace ProteoformSuiteInternal {
                 return result;
         }
 
-        public static explicit operator Decimal(BigRational value) {
-            // The Decimal value type represents decimal numbers ranging
-            // from +79,228,162,514,264,337,593,543,950,335 to -79,228,162,514,264,337,593,543,950,335
-            // the binary representation of a Decimal value is of the form, ((-2^96 to 2^96) / 10^(0 to 28))
-            if (SafeCastToDecimal(value.m_numerator) && SafeCastToDecimal(value.m_denominator)) {
-                return (Decimal) value.m_numerator / (Decimal) value.m_denominator;
-            }
+        //public static explicit operator Decimal(BigRational value) {
+        //    // The Decimal value type represents decimal numbers ranging
+        //    // from +79,228,162,514,264,337,593,543,950,335 to -79,228,162,514,264,337,593,543,950,335
+        //    // the binary representation of a Decimal value is of the form, ((-2^96 to 2^96) / 10^(0 to 28))
+        //    if (SafeCastToDecimal(value.m_numerator) && SafeCastToDecimal(value.m_denominator)) {
+        //        return (Decimal) value.m_numerator / (Decimal) value.m_denominator;
+        //    }
 
-            // scale the numerator to preseve the fraction part through the integer division
-            BigInteger denormalized = (value.m_numerator * s_bnDecimalPrecision) / value.m_denominator;
-            if (denormalized.IsZero) {
-                return Decimal.Zero; // underflow - fraction is too small to fit in a decimal
-            }
-            for (int scale = DecimalMaxScale; scale >= 0; scale--) {
-                if (!SafeCastToDecimal(denormalized)) {
-                    denormalized = denormalized / 10;
-                }
-                else {
-                    DecimalUInt32 dec = new DecimalUInt32();
-                    dec.dec = (Decimal) denormalized;
-                    dec.flags = (dec.flags & ~DecimalScaleMask) | (scale << 16);
-                    return dec.dec;
-                }
-            }
-            throw new OverflowException("Value was either too large or too small for a Decimal.");
-        }
+        //    // scale the numerator to preseve the fraction part through the integer division
+        //    BigInteger denormalized = (value.m_numerator * s_bnDecimalPrecision) / value.m_denominator;
+        //    if (denormalized.IsZero) {
+        //        return Decimal.Zero; // underflow - fraction is too small to fit in a decimal
+        //    }
+        //    for (int scale = DecimalMaxScale; scale >= 0; scale--) {
+        //        if (!SafeCastToDecimal(denormalized)) {
+        //            denormalized = denormalized / 10;
+        //        }
+        //        else {
+        //            DecimalUInt32 dec = new DecimalUInt32();
+        //            dec.dec = (Decimal) denormalized;
+        //            dec.flags = (dec.flags & ~DecimalScaleMask) | (scale << 16);
+        //            return dec.dec;
+        //        }
+        //    }
+        //    throw new OverflowException("Value was either too large or too small for a Decimal.");
+        //}
         #endregion explicit conversions from BigRational
 
         // ----- SECTION: implicit conversions from numeric base types to BigRational  ----------------*
@@ -621,29 +628,30 @@ namespace ProteoformSuiteInternal {
         //    return new BigRational((BigInteger)value);
         //}
 
-        public static implicit operator BigRational(Byte value) {           
-            return new BigRational((BigInteger)value);
-        }
+        //public static implicit operator BigRational(Byte value) {           
+        //    return new BigRational((BigInteger)value);
+        //}
 
-        public static implicit operator BigRational(Int16 value) {           
-            return new BigRational((BigInteger)value);
-        }
+        //public static implicit operator BigRational(Int16 value) {           
+        //    return new BigRational((BigInteger)value);
+        //}
 
         public static implicit operator BigRational(Int32 value) {           
             return new BigRational((BigInteger)value);
         }
 
-        public static implicit operator BigRational(Int64 value) {           
-            return new BigRational((BigInteger)value);
-        }
+        //public static implicit operator BigRational(Int64 value)
+        //{
+        //    return new BigRational((BigInteger)value);
+        //}
 
         public static implicit operator BigRational(BigInteger value) {           
             return new BigRational(value);
         }
 
-        public static implicit operator BigRational(Single value) { 
-            return new BigRational((Double)value);
-        }
+        //public static implicit operator BigRational(Single value) { 
+        //    return new BigRational((Double)value);
+        //}
 
         public static implicit operator BigRational(Double value) {      
             return new BigRational(value);
@@ -657,44 +665,44 @@ namespace ProteoformSuiteInternal {
 
         // ----- SECTION: private serialization instance methods  ----------------*
         #region serialization
-        void IDeserializationCallback.OnDeserialization(Object sender) {
-            try {
-                // verify that the deserialized number is well formed
-                if (m_denominator.Sign == 0 || m_numerator.Sign == 0) {
-                    // n/0 -> 0/1
-                    // 0/m -> 0/1
-                    m_numerator   = BigInteger.Zero;
-                    m_denominator = BigInteger.One;
-                }
-                else if (m_denominator.Sign < 0) {
-                    m_numerator = BigInteger.Negate(m_numerator);
-                    m_denominator = BigInteger.Negate(m_denominator);
-                }
-                Simplify();
-            }
-            catch (ArgumentException e) {
-                throw new SerializationException("invalid serialization data", e);
-            }
-        }
+        //void IDeserializationCallback.OnDeserialization(Object sender) {
+        //    try {
+        //        // verify that the deserialized number is well formed
+        //        if (m_denominator.Sign == 0 || m_numerator.Sign == 0) {
+        //            // n/0 -> 0/1
+        //            // 0/m -> 0/1
+        //            m_numerator   = BigInteger.Zero;
+        //            m_denominator = BigInteger.One;
+        //        }
+        //        else if (m_denominator.Sign < 0) {
+        //            m_numerator = BigInteger.Negate(m_numerator);
+        //            m_denominator = BigInteger.Negate(m_denominator);
+        //        }
+        //        Simplify();
+        //    }
+        //    catch (ArgumentException e) {
+        //        throw new SerializationException("invalid serialization data", e);
+        //    }
+        //}
 
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context) {
-            if (info == null) {
-                throw new ArgumentNullException("info");
-            }
+        //[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
+        //void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context) {
+        //    if (info == null) {
+        //        throw new ArgumentNullException("info");
+        //    }
 
-            info.AddValue("Numerator", m_numerator);
-            info.AddValue("Denominator", m_denominator);
-        }
+        //    info.AddValue("Numerator", m_numerator);
+        //    info.AddValue("Denominator", m_denominator);
+        //}
         
-        BigRational(SerializationInfo info, StreamingContext context) {
-            if (info == null) {
-                throw new ArgumentNullException("info");
-            }
+        //BigRational(SerializationInfo info, StreamingContext context) {
+        //    if (info == null) {
+        //        throw new ArgumentNullException("info");
+        //    }
 
-            m_numerator   = (BigInteger)info.GetValue("Numerator", typeof(BigInteger));
-            m_denominator = (BigInteger)info.GetValue("Denominator", typeof(BigInteger));
-        }
+        //    m_numerator   = (BigInteger)info.GetValue("Numerator", typeof(BigInteger));
+        //    m_denominator = (BigInteger)info.GetValue("Denominator", typeof(BigInteger));
+        //}
         #endregion serialization
 
         // ----- SECTION: private instance utility methods ----------------*
@@ -720,9 +728,9 @@ namespace ProteoformSuiteInternal {
             return s_bnDoubleMinValue <= value && value <= s_bnDoubleMaxValue;
         }
 
-        private static bool SafeCastToDecimal(BigInteger value) {
-            return s_bnDecimalMinValue <= value && value <= s_bnDecimalMaxValue;
-        }
+        //private static bool SafeCastToDecimal(BigInteger value) {
+        //    return s_bnDecimalMinValue <= value && value <= s_bnDecimalMaxValue;
+        //}
 
         private static void SplitDoubleIntoParts(double dbl, out int sign, out int exp, out ulong man, out bool isFinite) {
             DoubleUlong du;
@@ -750,84 +758,84 @@ namespace ProteoformSuiteInternal {
            }
       }
 
-      private static double GetDoubleFromParts(int sign, int exp, ulong man) {
-          DoubleUlong du;
-          du.dbl = 0;
+      //private static double GetDoubleFromParts(int sign, int exp, ulong man) {
+      //    DoubleUlong du;
+      //    du.dbl = 0;
 
-          if (man == 0) {
-              du.uu = 0;
-          }
-          else {
-              // Normalize so that 0x0010 0000 0000 0000 is the highest bit set
-              int cbitShift = CbitHighZero(man) - 11;
-              if (cbitShift < 0)
-                  man >>= -cbitShift;
-              else
-                  man <<= cbitShift;
+      //    if (man == 0) {
+      //        du.uu = 0;
+      //    }
+      //    else {
+      //        // Normalize so that 0x0010 0000 0000 0000 is the highest bit set
+      //        int cbitShift = CbitHighZero(man) - 11;
+      //        if (cbitShift < 0)
+      //            man >>= -cbitShift;
+      //        else
+      //            man <<= cbitShift;
 
-              // Move the point to just behind the leading 1: 0x001.0 0000 0000 0000
-              // (52 bits) and skew the exponent (by 0x3FF == 1023)
-              exp += 1075;
+      //        // Move the point to just behind the leading 1: 0x001.0 0000 0000 0000
+      //        // (52 bits) and skew the exponent (by 0x3FF == 1023)
+      //        exp += 1075;
 
-              if (exp >= 0x7FF) {
-                  // Infinity
-                  du.uu = 0x7FF0000000000000;
-              }
-              else if (exp <= 0) {
-                  // Denormalized
-                  exp--;
-                  if (exp < -52) {
-                      // Underflow to zero
-                      du.uu = 0;
-                  }
-                  else {
-                      du.uu = man >> -exp;
-                  }
-              }
-              else {
-                  // Mask off the implicit high bit
-                  du.uu = (man & 0x000FFFFFFFFFFFFF) | ((ulong) exp << 52);
-              }        
-          }
+      //        if (exp >= 0x7FF) {
+      //            // Infinity
+      //            du.uu = 0x7FF0000000000000;
+      //        }
+      //        else if (exp <= 0) {
+      //            // Denormalized
+      //            exp--;
+      //            if (exp < -52) {
+      //                // Underflow to zero
+      //                du.uu = 0;
+      //            }
+      //            else {
+      //                du.uu = man >> -exp;
+      //            }
+      //        }
+      //        else {
+      //            // Mask off the implicit high bit
+      //            du.uu = (man & 0x000FFFFFFFFFFFFF) | ((ulong) exp << 52);
+      //        }        
+      //    }
 
-          if (sign < 0) {
-              du.uu |= 0x8000000000000000;
-          }
+      //    if (sign < 0) {
+      //        du.uu |= 0x8000000000000000;
+      //    }
 
-          return du.dbl;
-      }
+      //    return du.dbl;
+      //}
 
-      private static int CbitHighZero(ulong uu) {
-          if ((uu & 0xFFFFFFFF00000000) == 0)
-              return 32 + CbitHighZero((uint) uu);
-          return CbitHighZero((uint) (uu >> 32));
-      }
+      //private static int CbitHighZero(ulong uu) {
+      //    if ((uu & 0xFFFFFFFF00000000) == 0)
+      //        return 32 + CbitHighZero((uint) uu);
+      //    return CbitHighZero((uint) (uu >> 32));
+      //}
 
-      private static int CbitHighZero(uint u) {
-          if (u == 0)
-              return 32;
+      //private static int CbitHighZero(uint u) {
+      //    if (u == 0)
+      //        return 32;
 
-          int cbit = 0;
-          if ((u & 0xFFFF0000) == 0) {
-              cbit += 16;
-              u <<= 16;
-          }
-          if ((u & 0xFF000000) == 0) {
-              cbit += 8;
-              u <<= 8;
-          }
-          if ((u & 0xF0000000) == 0) {
-              cbit += 4;
-              u <<= 4;
-          }
-          if ((u & 0xC0000000) == 0) {
-              cbit += 2;
-              u <<= 2;
-          }
-          if ((u & 0x80000000) == 0)
-              cbit += 1;
-          return cbit;
-      }
+      //    int cbit = 0;
+      //    if ((u & 0xFFFF0000) == 0) {
+      //        cbit += 16;
+      //        u <<= 16;
+      //    }
+      //    if ((u & 0xFF000000) == 0) {
+      //        cbit += 8;
+      //        u <<= 8;
+      //    }
+      //    if ((u & 0xF0000000) == 0) {
+      //        cbit += 4;
+      //        u <<= 4;
+      //    }
+      //    if ((u & 0xC0000000) == 0) {
+      //        cbit += 2;
+      //        u <<= 2;
+      //    }
+      //    if ((u & 0x80000000) == 0)
+      //        cbit += 1;
+      //    return cbit;
+      //}
 
       #endregion static helper methods
     } // BigRational
