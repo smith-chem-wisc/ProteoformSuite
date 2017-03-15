@@ -34,6 +34,8 @@ namespace Test
             Assert.AreEqual(0.5, (double)big.GetFractionPart());
             Assert.AreEqual(new BigRational(3, 2).GetHashCode(), big.GetHashCode());
             Assert.True(new BigRational(3, 2).Equals(big));
+            Assert.True(new BigRational(6, 4).Equals(big));
+            Assert.False(new BigRational(6, 4).Equals(new object()));
             Assert.AreEqual(1, new HashSet<BigRational> { big, new BigRational(3, 2) }.Count);
             Assert.AreEqual(0.25, (double)(new List<BigRational> { big, new BigRational(1, 4) }.OrderBy(r => r).First()));
         }
