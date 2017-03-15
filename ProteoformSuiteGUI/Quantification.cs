@@ -446,6 +446,7 @@ namespace ProteoformSuite
             if (rb_customBackgroundSet.Checked)
             {
                 Lollipop.backgroundProteinsList = "";
+                tb_goTermCustomBackground.Text = "";
                 backgroundUpdated = false;
             }
         }
@@ -456,6 +457,7 @@ namespace ProteoformSuite
             if (rb_allTheoreticalProteins.Checked)
             {
                 Lollipop.backgroundProteinsList = "";
+                tb_goTermCustomBackground.Text = "";
                 backgroundUpdated = false;
             }
         }
@@ -463,7 +465,8 @@ namespace ProteoformSuite
         private void rb_customBackgroundSet_CheckedChanged(object sender, EventArgs e)
         {
             tb_goTermCustomBackground.Enabled = rb_customBackgroundSet.Checked;
-            if (rb_customBackgroundSet.Checked) backgroundUpdated = false;
+            btn_customBackgroundBrowse.Enabled = rb_customBackgroundSet.Checked;
+            if (rb_customBackgroundSet.Checked) btn_customBackgroundBrowse_Click(new object(), new EventArgs());
         }
 
         OpenFileDialog fileOpen = new OpenFileDialog();

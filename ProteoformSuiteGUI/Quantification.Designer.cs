@@ -496,6 +496,7 @@
             // 
             // btn_customBackgroundBrowse
             // 
+            this.btn_customBackgroundBrowse.Enabled = false;
             this.btn_customBackgroundBrowse.Location = new System.Drawing.Point(212, 73);
             this.btn_customBackgroundBrowse.Name = "btn_customBackgroundBrowse";
             this.btn_customBackgroundBrowse.Size = new System.Drawing.Size(75, 23);
