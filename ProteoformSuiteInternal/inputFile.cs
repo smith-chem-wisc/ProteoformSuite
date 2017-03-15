@@ -60,7 +60,7 @@ namespace ProteoformSuiteInternal
         public bool ContaminantDB { get; set; } = false;
 
         //For top-down files
-        public TDProgram td_program { get; set; } = TDProgram.NRTDP;
+        //public TDProgram td_program { get; set; } = TDProgram.NRTDP;
 
         public InputFile(string complete_path, Purpose purpose)
         {
@@ -85,11 +85,11 @@ namespace ProteoformSuiteInternal
     }
 
     //for TD 
-    public enum TDProgram
-    {
-        ProSight,
-        NRTDP //NU software
-    }
+    //public enum TDProgram
+    //{
+    //    ProSight,
+    //    NRTDP //NU software
+    //}
 
     public enum Purpose
     {
