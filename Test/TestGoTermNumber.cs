@@ -22,8 +22,9 @@ namespace Test
             DatabaseReference d = new DatabaseReference("GO", ":1", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:one") });
             GoTerm g = new GoTerm(d);
             GoTermNumber gtn = new GoTermNumber(g, q, k, m, t);
-            Assert.AreEqual(gtn.log_odds_ratio, 0);
-            Assert.AreEqual(Math.Round((decimal)gtn.p_value,6), 0.833333);
+            Assert.AreEqual(0, gtn.log_odds_ratio);
+            //Assert.AreEqual(0.833333m, Math.Round((decimal)gtn.p_value.Truncate(7), 6));
+            Assert.AreEqual(0.833333m, Math.Round(gtn.p_value, 6));
 
             q = 1;//number of enriched proteins with the term
             k = 2;//number of enriched proteins
@@ -31,8 +32,9 @@ namespace Test
             t = 4;//number of proteins in the background
 
             gtn = new GoTermNumber(g, q, k, m, t);
-            Assert.AreEqual(gtn.log_odds_ratio, -1);
-            Assert.AreEqual(Math.Round((decimal)gtn.p_value, 6), 1);
+            Assert.AreEqual(-1, gtn.log_odds_ratio);
+            //Assert.AreEqual(1m, Math.Round((decimal)gtn.p_value.Truncate(7), 6));
+            Assert.AreEqual(1m, Math.Round(gtn.p_value, 6));
 
             q = 2;//number of enriched proteins with the term
             k = 2;//number of enriched proteins
@@ -40,8 +42,9 @@ namespace Test
             t = 4;//number of proteins in the background
 
             gtn = new GoTermNumber(g, q, k, m, t);
-            Assert.AreEqual(gtn.log_odds_ratio, 1);
-            Assert.AreEqual(Math.Round((decimal)gtn.p_value, 6), 0.166667);
+            Assert.AreEqual(1, gtn.log_odds_ratio);
+            //Assert.AreEqual(0.166667m, Math.Round((decimal)gtn.p_value.Truncate(7), 6));
+            Assert.AreEqual(0.166667m, Math.Round(gtn.p_value, 6));
         }
 
         [Test]

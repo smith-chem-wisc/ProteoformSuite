@@ -705,13 +705,13 @@ namespace Test
         {
             int nbp = 100;
             List<double> pvals = new List<double>();
-            double pValue = 0.001;
+            double pValue = 0.001d;
 
-            for (int i = 1; i <= nbp; i++)
+            for (double i = 1; i <= nbp; i++)
             {
-                pvals.Add(0.1 / (double)i);
+                pvals.Add(0.1d / i);
             }
-
+            pvals.Sort();
             Assert.AreEqual(Math.Round(GoTermNumber.benjaminiYekutieli(nbp, pvals, pValue), 4), 0.5187);
             nbp++;
         }
@@ -721,19 +721,19 @@ namespace Test
         {
             int numberOfGoTermNumbers = 100;
             List<GoTermNumber> gtns = new List<GoTermNumber>();
-            for (int i = 1; i <= numberOfGoTermNumbers; i++)
+            for (double i = 1; i <= numberOfGoTermNumbers; i++)
             {
                 DatabaseReference d = new DatabaseReference("GO", ":id", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:description") });
                 GoTerm g = new GoTerm(d);
                 GoTermNumber gtn = new GoTermNumber(g, 0, 0, 0, 0);
-                gtn.p_value = (0.1d / (double)i - 0.0005d);
+                gtn.p_value = 0.1d / i - 0.0005d;
                 gtns.Add(gtn);
             }
             Lollipop.calculateGoTermFDR(gtns);
             foreach (GoTermNumber num in gtns)
             {
                 Assert.IsNotNull(num.by);
-                Assert.LessOrEqual(num.by, 1m);
+                Assert.True(num.by <= 1);
             }
         }
 
