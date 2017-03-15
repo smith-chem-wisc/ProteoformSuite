@@ -46,6 +46,8 @@ namespace Test
         {
             //Four experimental proteoforms, three relations (linear), all accepted; should give 1 bundled family
             ProteoformCommunity test_community = new ProteoformCommunity();
+            Lollipop.proteoform_community = test_community;
+
             Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
 
             Lollipop.min_peak_count_ee = 2;
@@ -85,6 +87,8 @@ namespace Test
         {
             //Five experimental proteoforms, four relations (linear), second on not accepted into a peak, one peak; should give 2 families
             ProteoformCommunity test_community = new ProteoformCommunity();
+            Lollipop.proteoform_community = test_community;
+
             Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
 
             Lollipop.ee_max_mass_difference = 20;
@@ -176,6 +180,7 @@ namespace Test
         {
             //Five experimental proteoforms, four relations (linear), second on not accepted into a peak, one peak; should give 2 families
             ProteoformCommunity community = new ProteoformCommunity();
+            Lollipop.proteoform_community = community;
             Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
 
             Lollipop.ee_max_mass_difference = 20;
@@ -259,6 +264,7 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET_with_two_theoretical_pf_groups_with_same_accession()
         {
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
+            Lollipop.proteoform_community = community;
 
             Assert.AreEqual(2, community.families.Count);
             Assert.AreEqual(8, community.families.SelectMany(f => f.proteoforms).Count());
