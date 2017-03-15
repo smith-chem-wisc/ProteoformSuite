@@ -114,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AminoAcidMasses.cs" />
+    <Compile Include="BigRational.cs" />
     <Compile Include="biorepIntensity.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Correction.cs" />
@@ -143,12 +144,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\NumericsBetaRelease\NumericsBetaRelease.csproj">
-      <Project>{34fbdf2f-fdd2-4984-987f-47cb1a67c360}</Project>
-      <Name>NumericsBetaRelease</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Accord.3.4.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.4.0\build\Accord.targets')" />

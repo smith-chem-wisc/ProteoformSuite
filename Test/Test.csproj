@@ -97,6 +97,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestAggregationMethods.cs" />
+    <Compile Include="TestBigRational.cs" />
     <Compile Include="TestComponent.cs" />
     <Compile Include="TestExtensions.cs" />
     <Compile Include="TestGoTermNumber.cs" />
