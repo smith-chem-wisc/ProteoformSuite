@@ -30,45 +30,50 @@ namespace ProteoformSuiteInternal
         //BUILDING RELATIONSHIPS
         public List<ProteoformRelation> relate_et(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
         {
-            ConcurrentBag<ProteoformRelation> relations = new ConcurrentBag<ProteoformRelation>();
+            ConcurrentBag<ProteoformRelation> relations = new ConcurrentBag<ProteoformRelation>(); // Note, this could be faster by adding to a temporary list, but the lock to an object outside the parallel loop is keeping the instanceId and maybe other fields from getting distorted.
 
-            foreach (Proteoform pf1 in pfs1) // thread-unsafe portion, accessing pfs2
+            Parallel.ForEach(pfs1, pf1 =>
             {
-                pf1.candidate_relatives = pfs2
-                    .Where(pf2 => (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
-                        && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
-                        && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference)
-                    .ToList();
-            }
+                lock (pf1)
+                    pf1.candidate_relatives = pfs2
+                        .Where(pf2 => (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
+                            && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
+                            && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference)
+                        .ToList();
+            });
 
             Parallel.ForEach(pfs1, pf1 => 
             {
-                lock (pf1) // doesn't look like a necessary lock -AC170315
-                    foreach (string accession in new HashSet<string>(pf1.candidate_relatives.Select(p => p.accession)))
-                    {
-                        List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.Where(x => x.accession == accession).ToList();
-                        candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
-                        Proteoform best_pf2 = candidate_pfs2_with_accession.First();
-                        lock (best_pf2) lock (relations)
-                                relations.Add(new ProteoformRelation(pf1, best_pf2, relation_type, pf1.modified_mass - best_pf2.modified_mass));
-                    }
+                List<ProteoformRelation> temp_relations = new List<ProteoformRelation>();
+
+                foreach (string accession in new HashSet<string>(pf1.candidate_relatives.Select(p => p.accession)))
+                {
+                    List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.Where(x => x.accession == accession).ToList();
+                    candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
+                    Proteoform best_pf2 = candidate_pfs2_with_accession.First();
+                    lock (best_pf2) lock (relations)
+                        relations.Add(new ProteoformRelation(pf1, best_pf2, relation_type, pf1.modified_mass - best_pf2.modified_mass));
+                }
             });
 
-            count_nearby_relations(relations.OrderBy(r => r.delta_mass).ToList());
-            return relations.ToList();
+            return count_nearby_relations(relations.OrderBy(r => r.delta_mass).ToList());
         }
 
         
         public List<ProteoformRelation> relate_ee(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2, ProteoformComparison relation_type)
         {
+            Parallel.ForEach(new HashSet<ExperimentalProteoform>(pfs1.Concat(pfs2)), pf =>
+            {
+                lock (pf) pf.candidate_relatives = pfs2.Where(pf2 => allowed_ee_relation(pf, pf2)).ToList<Proteoform>();
+            });
+
             List<ProteoformRelation> relations =
                 (from pf1 in pfs1
-                 from pf2 in pfs2
-                 where allowed_ee_relation(pf1, pf2)
+                 from pf2 in pf1.candidate_relatives
                  select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass))
-                .OrderBy(r => r.delta_mass).ToList();
-            count_nearby_relations(relations);  //putative counts include no-mans land
-            return relations;
+                 .OrderBy(r => r.delta_mass).ToList();
+
+            return count_nearby_relations(relations);  //putative counts include no-mans land
         }
 
         public bool allowed_ee_relation(ExperimentalProteoform pf1, ExperimentalProteoform pf2)
@@ -82,10 +87,11 @@ namespace ProteoformSuiteInternal
                 //putative counts include no-mans land, currently
         }
 
-        private static void count_nearby_relations(List<ProteoformRelation> all_ordered_relations)
+        private static List<ProteoformRelation> count_nearby_relations(List<ProteoformRelation> all_ordered_relations)
         {
             List<int> ordered_relation_ids = all_ordered_relations.Select(r => r.instanceId).ToList();
             Parallel.ForEach<ProteoformRelation>(all_ordered_relations, relation => relation.set_nearby_group(all_ordered_relations, ordered_relation_ids));
+            return all_ordered_relations;
         }
 
         public Dictionary<string, List<ProteoformRelation>> relate_ed()
@@ -112,8 +118,7 @@ namespace ProteoformSuiteInternal
                         .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass))
                         .OrderBy(r => r.delta_mass)
                         .ToList();
-                count_nearby_relations(ef_relation_addition);
-                ef_relations.AddRange(ef_relation_addition);
+                ef_relations.AddRange(count_nearby_relations(ef_relation_addition));
             }
             return ef_relations;
         }
