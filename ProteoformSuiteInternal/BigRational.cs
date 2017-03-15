@@ -31,7 +31,7 @@
 ** O(n(log n)^5 (log log n)) steps as n -> +infinity
 ============================================================*/
 
-namespace NumericsBetaRelease {
+namespace ProteoformSuiteInternal {
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -290,24 +290,25 @@ namespace NumericsBetaRelease {
             Simplify();           
         }
 
-        public BigRational(BigInteger whole, BigInteger numerator, BigInteger denominator) {
-            if (denominator.Sign == 0) {
-                throw new DivideByZeroException();
-            }
-            else if (numerator.Sign == 0 && whole.Sign == 0) {
-                m_numerator = BigInteger.Zero;
-                m_denominator = BigInteger.One;
-            }
-            else if (denominator.Sign < 0) {
-                m_denominator = BigInteger.Negate(denominator);
-                m_numerator = (BigInteger.Negate(whole) * m_denominator) + BigInteger.Negate(numerator);
-            }
-            else {
-                m_denominator = denominator;
-                m_numerator = (whole * denominator) + numerator;
-            }
-            Simplify(); 
-        }
+        //Failed tests
+        //public BigRational(BigInteger whole, BigInteger numerator, BigInteger denominator) {
+        //    if (denominator.Sign == 0) {
+        //        throw new DivideByZeroException();
+        //    }
+        //    else if (numerator.Sign == 0 && whole.Sign == 0) {
+        //        m_numerator = BigInteger.Zero;
+        //        m_denominator = BigInteger.One;
+        //    }
+        //    else if (denominator.Sign < 0) {
+        //        m_denominator = BigInteger.Negate(denominator);
+        //        m_numerator = (BigInteger.Negate(whole) * m_denominator) + BigInteger.Negate(numerator);
+        //    }
+        //    else {
+        //        m_denominator = denominator;
+        //        m_numerator = (whole * denominator) + numerator;
+        //    }
+        //    Simplify(); 
+        //}
         #endregion Constructors
 
         // -------- SECTION: public static methods -----------------*
@@ -342,48 +343,53 @@ namespace NumericsBetaRelease {
             return dividend / divisor;
         }
 
-        public static BigRational Remainder(BigRational dividend, BigRational divisor) {
-            return dividend % divisor;
-        }
+        //Failed tests
+        //public static BigRational Remainder(BigRational dividend, BigRational divisor)
+        //{
+        //    return dividend % divisor;
+        //}
 
-        public static BigRational DivRem(BigRational dividend, BigRational divisor, out BigRational remainder) {
-            // a/b / c/d  == (ad)/(bc)
-            // a/b % c/d  == (ad % bc)/bd
+        
+        //Untested
+        //public static BigRational DivRem(BigRational dividend, BigRational divisor, out BigRational remainder) {
+        //    // a/b / c/d  == (ad)/(bc)
+        //    // a/b % c/d  == (ad % bc)/bd
 
-            // (ad) and (bc) need to be calculated for both the division and the remainder operations.
-            BigInteger ad = dividend.m_numerator * divisor.Denominator;
-            BigInteger bc = dividend.Denominator * divisor.m_numerator;
-            BigInteger bd = dividend.Denominator * divisor.Denominator;
+        //    // (ad) and (bc) need to be calculated for both the division and the remainder operations.
+        //    BigInteger ad = dividend.m_numerator * divisor.Denominator;
+        //    BigInteger bc = dividend.Denominator * divisor.m_numerator;
+        //    BigInteger bd = dividend.Denominator * divisor.Denominator;
 
-            remainder = new BigRational(ad % bc, bd);
-            return new BigRational(ad, bc);
-        }    
+        //    remainder = new BigRational(ad % bc, bd);
+        //    return new BigRational(ad, bc);
+        //}
 
+        //Untested
+        //public static BigRational Pow(BigRational baseValue, BigInteger exponent) {
+        //    if (exponent.Sign == 0) {
+        //        // 0^0 -> 1
+        //        // n^0 -> 1
+        //        return BigRational.One;
+        //    }
+        //    else if (exponent.Sign < 0) {
+        //        if (baseValue == BigRational.Zero) {
+        //            throw new ArgumentException("cannot raise zero to a negative power", "baseValue");
+        //        }
+        //        // n^(-e) -> (1/n)^e
+        //        baseValue = BigRational.Invert(baseValue);
+        //        exponent  = BigInteger.Negate(exponent);
+        //    }
 
-        public static BigRational Pow(BigRational baseValue, BigInteger exponent) {
-            if (exponent.Sign == 0) {
-                // 0^0 -> 1
-                // n^0 -> 1
-                return BigRational.One;
-            }
-            else if (exponent.Sign < 0) {
-                if (baseValue == BigRational.Zero) {
-                    throw new ArgumentException("cannot raise zero to a negative power", "baseValue");
-                }
-                // n^(-e) -> (1/n)^e
-                baseValue = BigRational.Invert(baseValue);
-                exponent  = BigInteger.Negate(exponent);
-            }
+        //    BigRational result = baseValue;
+        //    while (exponent > BigInteger.One) {
+        //        result = result * baseValue;
+        //        exponent--;
+        //    }
 
-            BigRational result = baseValue;
-            while (exponent > BigInteger.One) {
-                result = result * baseValue;
-                exponent--;
-            }
+        //    return result;
+        //}
 
-            return result;
-        }
-
+        //Untested
         // Least Common Denominator (LCD)
         //
         // The LCD is the least common multiple of the two denominators.  For instance, the LCD of
@@ -395,10 +401,10 @@ namespace NumericsBetaRelease {
         // 1) Find the Greatest Common Divisor (GCD) of the denominators
         // 2) Multiply the denominators together
         // 3) Divide the product of the denominators by the GCD
-        public static BigInteger LeastCommonDenominator(BigRational x, BigRational y) {
-            // LCD( a/b, c/d ) == (bd) / gcd(b,d)
-            return (x.Denominator * y.Denominator) / BigInteger.GreatestCommonDivisor(x.Denominator, y.Denominator);
-        }
+        //public static BigInteger LeastCommonDenominator(BigRational x, BigRational y) {
+        //    // LCD( a/b, c/d ) == (bd) / gcd(b,d)
+        //    return (x.Denominator * y.Denominator) / BigInteger.GreatestCommonDivisor(x.Denominator, y.Denominator);
+        //}
 
         public static int Compare(BigRational r1, BigRational r2) {
             //     a/b = c/d, iff ad = bc
@@ -439,14 +445,17 @@ namespace NumericsBetaRelease {
             return new BigRational(-r.m_numerator, r.Denominator);
         }
 
-        public static BigRational operator ++ (BigRational r) {
-            return r + BigRational.One;
-        }
+        //Failed tests
+        //public static BigRational operator ++(BigRational r)
+        //{
+        //    return r + BigRational.One;
+        //}
 
-        public static BigRational operator -- (BigRational r) {
-            return r - BigRational.One;
-        }
-        
+        //Failed tests
+        //public static BigRational operator -- (BigRational r) {
+        //    return r - BigRational.One;
+        //}
+
         public static BigRational operator +(BigRational r1, BigRational r2) {
             // a/b + c/d  == (ad + bc)/bd
             return new BigRational((r1.m_numerator * r2.Denominator) + (r1.Denominator * r2.m_numerator), (r1.Denominator * r2.Denominator));
@@ -467,10 +476,12 @@ namespace NumericsBetaRelease {
             return new BigRational((r1.m_numerator * r2.Denominator), (r1.Denominator * r2.m_numerator));
         }
 
-        public static BigRational operator %(BigRational r1, BigRational r2) {
-            // a/b % c/d  == (ad % bc)/bd
-            return new BigRational((r1.m_numerator * r2.Denominator) % (r1.Denominator * r2.m_numerator), (r1.Denominator * r2.Denominator));
-        }
+        //Failed tests
+        //public static BigRational operator %(BigRational r1, BigRational r2)
+        //{
+        //    // a/b % c/d  == (ad % bc)/bd
+        //    return new BigRational((r1.m_numerator * r2.Denominator) % (r1.Denominator * r2.m_numerator), (r1.Denominator * r2.Denominator));
+        //}
         #endregion Operator Overloads
 
         // ----- SECTION: explicit conversions from BigRational to numeric base types  ----------------*
