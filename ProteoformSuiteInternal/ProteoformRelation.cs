@@ -38,7 +38,7 @@ namespace ProteoformSuiteInternal
             this.relation_type = relation_type;
             this.delta_mass = delta_mass;
             instanceId = instanceCounter;
-            instanceCounter += 1;
+            lock (Lollipop.proteoform_community) instanceCounter += 1; //Not thread safe
         }
     }
 
