@@ -43,7 +43,7 @@ namespace ProteoformSuiteInternal
 
             Parallel.ForEach(pfs1, pf1 => 
             {
-                lock (pf1)
+                lock (pf1) // doesn't look like a necessary lock -AC170315
                     foreach (string accession in new HashSet<string>(pf1.candidate_relatives.Select(p => p.accession)))
                     {
                         List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.Where(x => x.accession == accession).ToList();
@@ -54,19 +54,19 @@ namespace ProteoformSuiteInternal
                     }
             });
 
-            count_nearby_relations(relations.ToList());
+            count_nearby_relations(relations.OrderBy(r => r.delta_mass).ToList());
             return relations.ToList();
         }
 
         
         public List<ProteoformRelation> relate_ee(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2, ProteoformComparison relation_type)
         {
-            List<ProteoformRelation> relations = new List<ProteoformRelation>(
-                from pf1 in pfs1
-                from pf2 in pfs2
-                where allowed_ee_relation(pf1, pf2)
-                select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)
-            );
+            List<ProteoformRelation> relations =
+                (from pf1 in pfs1
+                 from pf2 in pfs2
+                 where allowed_ee_relation(pf1, pf2)
+                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass))
+                .OrderBy(r => r.delta_mass).ToList();
             count_nearby_relations(relations);  //putative counts include no-mans land
             return relations;
         }
@@ -82,9 +82,9 @@ namespace ProteoformSuiteInternal
                 //putative counts include no-mans land, currently
         }
 
-        private static void count_nearby_relations(List<ProteoformRelation> all_relations)
+        private static void count_nearby_relations(List<ProteoformRelation> all_ordered_relations)
         {
-            Parallel.ForEach<ProteoformRelation>(all_relations, relation => relation.set_nearby_group(all_relations));
+            Parallel.ForEach<ProteoformRelation>(all_ordered_relations, relation => relation.set_nearby_group(all_ordered_relations));
         }
 
         public Dictionary<string, List<ProteoformRelation>> relate_ed()
@@ -108,7 +108,9 @@ namespace ProteoformSuiteInternal
                 List<ProteoformRelation> ef_relation_addition = pfs2
                         .Where(p => p.lysine_count != pf1.lysine_count && Math.Abs(pf1.modified_mass - p.modified_mass) <= Lollipop.ee_max_mass_difference)
                         .Take(num_equal_lysines)
-                        .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass)).ToList();
+                        .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass))
+                        .OrderBy(r => r.delta_mass)
+                        .ToList();
                 count_nearby_relations(ef_relation_addition);
                 ef_relations.AddRange(ef_relation_addition);
             }

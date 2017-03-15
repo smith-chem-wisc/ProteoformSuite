@@ -110,7 +110,7 @@ namespace Test
             ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0);
             ProteoformRelation pr5 = new ProteoformRelation(pf6, pf7, comparison67, 0);
 
-            List<ProteoformRelation> prs2 = new List<ProteoformRelation> { pr2, pr3, pr4, pr5 };
+            List<ProteoformRelation> prs2 = new List<ProteoformRelation> { pr2, pr3, pr4, pr5 }.OrderBy(r => r.delta_mass).ToList();
             foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2);
             Assert.AreEqual(3, pr2.nearby_relations_count);
             Assert.AreEqual(1, pr3.nearby_relations_count);
@@ -235,8 +235,8 @@ namespace Test
             ProteoformRelation pr7 = new ProteoformRelation(pf7, pf8, comparison78, 0);
 
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1, pr2, pr3, pr4, pr5, pr6, pr7 };
-            List<ProteoformRelation> prs_et = prs.Where(r => r.relation_type == ProteoformComparison.et).ToList();
-            List<ProteoformRelation> prs_ee = prs.Where(r => r.relation_type == ProteoformComparison.ee).ToList();
+            List<ProteoformRelation> prs_et = prs.Where(r => r.relation_type == ProteoformComparison.et).OrderBy(r => r.delta_mass).ToList();
+            List<ProteoformRelation> prs_ee = prs.Where(r => r.relation_type == ProteoformComparison.ee).OrderBy(r => r.delta_mass).ToList();
             foreach (ProteoformRelation pr in prs_et) pr.set_nearby_group(prs_et);
             foreach (ProteoformRelation pr in prs_ee) pr.set_nearby_group(prs_ee);
             Assert.AreEqual(2, pr1.nearby_relations_count); // 2 ET relations at 0 delta mass

@@ -72,15 +72,28 @@ namespace ProteoformSuiteInternal
             if (!Lollipop.opening_results) this.nearby_relations = relation.nearby_relations;
         }
 
-        public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_relations)
+        public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_ordered_relations)
         {
-            double peak_width_base = typeof(TheoreticalProteoform).IsAssignableFrom(all_relations[0].connected_proteoforms[1].GetType()) ? 
+            double peak_width_base = typeof(TheoreticalProteoform).IsAssignableFrom(all_ordered_relations[0].connected_proteoforms[1].GetType()) ? 
                 Lollipop.peak_width_base_et :
                 Lollipop.peak_width_base_ee;
             double lower_limit_of_peak_width = this.delta_mass - peak_width_base / 2;
             double upper_limit_of_peak_width = this.delta_mass + peak_width_base / 2;
-            lock (this) nearby_relations = all_relations.Where(relation =>
-                lower_limit_of_peak_width <= relation.delta_mass && relation.delta_mass <= upper_limit_of_peak_width).ToList();
+            int idx = all_ordered_relations.IndexOf(this);
+            List<ProteoformRelation> within_range = new List<ProteoformRelation> { this };
+            int curr_idx = idx - 1;
+            while (curr_idx >= 0 && lower_limit_of_peak_width <= all_ordered_relations[curr_idx].delta_mass)
+            {
+                within_range.Add(all_ordered_relations[curr_idx]);
+                curr_idx--;
+            }
+            curr_idx = idx + 1;
+            while (curr_idx < all_ordered_relations.Count && all_ordered_relations[curr_idx].delta_mass <= upper_limit_of_peak_width)
+            {
+                within_range.Add(all_ordered_relations[curr_idx]);
+                curr_idx++;
+            }
+            lock (this) nearby_relations = within_range;
             return this.nearby_relations;
         }
 
