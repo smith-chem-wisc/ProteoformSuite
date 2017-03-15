@@ -7,6 +7,7 @@ namespace ProteoformSuiteInternal
 {
     public class ProteoformFamily
     {
+        private static int family_counter = 0;
         public int family_id { get; set; }
         public string name_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.name)); } }
         public string accession_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.accession)); } }
@@ -20,30 +21,31 @@ namespace ProteoformSuiteInternal
         public HashSet<ProteoformRelation> relations { get; set; }
         public int relation_count { get { return this.relations.Count; } }
         public HashSet<Proteoform> proteoforms { get; set; }
+        private Proteoform seed { get; set; }
 
-        public ProteoformFamily(IEnumerable<Proteoform> proteoforms, int family_id)
+        public ProteoformFamily(Proteoform seed)
         {
-            this.family_id = family_id;
-            this.proteoforms = new HashSet<Proteoform>(proteoforms);
+            family_counter++;
+            this.family_id = family_counter;
+            this.seed = seed;
+        }
+
+        public void construct_family()
+        {
+            this.proteoforms = new HashSet<Proteoform>(construct_family(new List<Proteoform> { seed }));
             HashSet<int> lysine_counts = new HashSet<int>(proteoforms.Select(p => p.lysine_count));
             if (lysine_counts.Count == 1) this.lysine_count = lysine_counts.FirstOrDefault();
             this.experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
             this.theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
-            this.relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted)), new RelationComparer());
+            this.relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted)));
         }
-    }
 
-    public class RelationComparer : IEqualityComparer<ProteoformRelation>
-    {
-        public bool Equals(ProteoformRelation r1, ProteoformRelation r2)
+        public List<Proteoform> construct_family(List<Proteoform> seed)
         {
-            return
-                r1.connected_proteoforms[0] == r2.connected_proteoforms[1] && r1.connected_proteoforms[1] == r2.connected_proteoforms[0] ||
-                r1.connected_proteoforms[0] == r2.connected_proteoforms[0] && r1.connected_proteoforms[1] == r2.connected_proteoforms[1];
-        }
-        public int GetHashCode(ProteoformRelation r)
-        {
-            return r.instanceId;
+            List<Proteoform> seed_expansion = seed.SelectMany(p => p.get_connected_proteoforms()).Except(seed).ToList();
+            if (seed_expansion.Count == 0) return seed;
+            seed.AddRange(seed_expansion);
+            return construct_family(seed);
         }
     }
 }

@@ -84,7 +84,8 @@ namespace ProteoformSuiteInternal
 
         private static void count_nearby_relations(List<ProteoformRelation> all_ordered_relations)
         {
-            Parallel.ForEach<ProteoformRelation>(all_ordered_relations, relation => relation.set_nearby_group(all_ordered_relations));
+            List<int> ordered_relation_ids = all_ordered_relations.Select(r => r.instanceId).ToList();
+            Parallel.ForEach<ProteoformRelation>(all_ordered_relations, relation => relation.set_nearby_group(all_ordered_relations, ordered_relation_ids));
         }
 
         public Dictionary<string, List<ProteoformRelation>> relate_ed()
@@ -185,31 +186,52 @@ namespace ProteoformSuiteInternal
         }
 
         //CONSTRUCTING FAMILIES
-        public void construct_families()
+        public List<ProteoformFamily> construct_families()
         {
-            List<Proteoform> inducted = new List<Proteoform>();
-            List<Proteoform> remaining = new List<Proteoform>(this.experimental_proteoforms);
-            int family_id = 1;
-            while (remaining.Count > 0)
+            Stack<Proteoform> remaining = new Stack<Proteoform>(this.experimental_proteoforms);
+            List<ProteoformFamily> running_families = new List<ProteoformFamily>();
+            List<Proteoform> running = new List<Proteoform>();
+            List<Thread> active = new List<Thread>();
+            while (remaining.Count > 0 || active.Count > 0)
             {
-                ProteoformFamily new_family = new ProteoformFamily(construct_family(new List<Proteoform> { remaining[0] }), family_id);
-                this.families.Add(new_family);
-                inducted.AddRange(new_family.proteoforms);
-                remaining = remaining.Except(inducted).ToList();
-                foreach (Proteoform member in new_family.proteoforms) member.family = new_family;
-                family_id++;
-            }
-        }
+                while (remaining.Count > 0 && active.Count < Environment.ProcessorCount)
+                {
+                    Proteoform root = remaining.Pop();
+                    ProteoformFamily fam = new ProteoformFamily(root);
+                    Thread t = new Thread(new ThreadStart(fam.construct_family));
+                    t.Start();
+                    running_families.Add(fam);
+                    running.Add(root);
+                    active.Add(t);
+                }
 
-        public List<Proteoform> construct_family(List<Proteoform> seed)
-        {
-            List<Proteoform> seed_expansion = seed.SelectMany(p => p.get_connected_proteoforms().Except(seed)).ToList();
-            if (seed_expansion.Except(seed).Count() == 0) return seed;
-            seed.AddRange(seed_expansion);
-            return construct_family(seed);
+                foreach (Thread t in active)
+                {
+                    t.Join();
+                }
+
+                List<Proteoform> cumulative_proteoforms = new List<Proteoform>();
+                foreach (ProteoformFamily family in running_families.ToList())
+                {
+                    if (cumulative_proteoforms.Contains(family.proteoforms.First()))
+                    {
+                        running_families.Remove(family); // check for duplicates due to arbitrary seed selection
+                    }
+                    else
+                    {
+                        cumulative_proteoforms.AddRange(family.proteoforms);
+                        Parallel.ForEach<Proteoform>(family.proteoforms, p => { lock (p) { p.family = family; } });
+                    }
+                }
+
+                this.families.AddRange(running_families);
+                remaining = new Stack<Proteoform>(remaining.Except(cumulative_proteoforms));
+
+                running_families.Clear();
+                running.Clear();
+                active.Clear();
+            }
+            return families;
         }
     }
 }
-
-// THREADING DELTAMASSPEAK FINDING (draft, not validated)
-
