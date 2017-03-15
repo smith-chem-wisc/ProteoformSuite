@@ -1070,8 +1070,8 @@ namespace ProteoformSuiteInternal
             List<ProteinWithGoTerms> backgroundProteinsForGoAnalysis;
             if (backgroundProteinsList != null && backgroundProteinsList != "")
             {
-                string[] protein_list = File.ReadAllLines(backgroundProteinsList).Select(acc => acc.Trim()).ToArray();
-                backgroundProteinsForGoAnalysis = expanded_proteins.Where(p => protein_list.Contains(p.Accession)).ToList();
+                string[] protein_accessions = File.ReadAllLines(backgroundProteinsList).Select(acc => acc.Trim()).ToArray();
+                backgroundProteinsForGoAnalysis = expanded_proteins.Where(p => p.AccessionList.Any(acc => protein_accessions.Contains(acc))).ToList();
             }
             else
             {
@@ -1086,7 +1086,13 @@ namespace ProteoformSuiteInternal
             Dictionary<string, int> goSignificantCounts = fillGoDictionary(inducedOrRepressedProteins);
             Dictionary<string, int> goBackgroundCounts = fillGoDictionary(backgroundProteinSet);
             return inducedOrRepressedProteins.SelectMany(p => p.GoTerms).DistinctBy(g => g.Id).Select(g => 
-                new GoTermNumber(g, goSignificantCounts[g.Id], inducedOrRepressedProteins.Count, goBackgroundCounts[g.Id], backgroundProteinSet.Count)).ToList();
+                new GoTermNumber(
+                    g, 
+                    goSignificantCounts.ContainsKey(g.Id) ? goSignificantCounts[g.Id] : 0, 
+                    inducedOrRepressedProteins.Count, 
+                    goBackgroundCounts.ContainsKey(g.Id) ? goBackgroundCounts[g.Id] : 0, 
+                    backgroundProteinSet.Count)
+                ).ToList();
         }
 
         private static Dictionary<string, int> fillGoDictionary(List<ProteinWithGoTerms> proteinSet)
@@ -1108,6 +1114,7 @@ namespace ProteoformSuiteInternal
         public static void calculateGoTermFDR(List<GoTermNumber> gtns)
         {
             List<double> pvals = gtns.Select(g => g.p_value).ToList();
+            pvals.Sort();
             Parallel.ForEach<GoTermNumber>(gtns, g => g.by = GoTermNumber.benjaminiYekutieli(gtns.Count, pvals, g.p_value)); 
         }
     }
