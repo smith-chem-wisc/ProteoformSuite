@@ -59,14 +59,14 @@ namespace ProteoformSuite
 
         public static void EditInputFileDGVs(DataGridView dgv, Purpose purpose)
         {
-            if (purpose == Purpose.TopDown)
-            {
-                DataGridViewComboBoxColumn cmCol = new DataGridViewComboBoxColumn();
-                cmCol.HeaderText = "TD Program";
-                cmCol.DataSource = Enum.GetValues(typeof(TDProgram));
-                cmCol.ValueType = typeof(TDProgram);
-                dgv.Columns.Add(cmCol);
-            }
+            //if (purpose == Purpose.TopDown)
+            //{
+            //    DataGridViewComboBoxColumn cmCol = new DataGridViewComboBoxColumn();
+            //    cmCol.HeaderText = "TD Program";
+            //    cmCol.DataSource = Enum.GetValues(typeof(TDProgram));
+            //    cmCol.ValueType = typeof(TDProgram);
+            //    dgv.Columns.Add(cmCol);
+            //}
         }
 
 
