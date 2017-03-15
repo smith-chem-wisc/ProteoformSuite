@@ -486,25 +486,25 @@ namespace ProteoformSuiteInternal {
 
         // ----- SECTION: explicit conversions from BigRational to numeric base types  ----------------*
         #region explicit conversions from BigRational
-        [CLSCompliant(false)]
-        public static explicit operator SByte(BigRational value) {
-            return (SByte)(BigInteger.Divide(value.m_numerator, value.m_denominator));
-        }
+        //[CLSCompliant(false)]
+        //public static explicit operator SByte(BigRational value) {
+        //    return (SByte)(BigInteger.Divide(value.m_numerator, value.m_denominator));
+        //}
 
-        [CLSCompliant(false)]
-        public static explicit operator UInt16(BigRational value) {
-            return (UInt16)(BigInteger.Divide(value.m_numerator, value.m_denominator));
-        }
+        //[CLSCompliant(false)]
+        //public static explicit operator UInt16(BigRational value) {
+        //    return (UInt16)(BigInteger.Divide(value.m_numerator, value.m_denominator));
+        //}
 
-        [CLSCompliant(false)]
-        public static explicit operator UInt32(BigRational value) {
-            return (UInt32)(BigInteger.Divide(value.m_numerator, value.m_denominator));
-        }
+        //[CLSCompliant(false)]
+        //public static explicit operator UInt32(BigRational value) {
+        //    return (UInt32)(BigInteger.Divide(value.m_numerator, value.m_denominator));
+        //}
 
-        [CLSCompliant(false)]
-        public static explicit operator UInt64(BigRational value) {
-            return (UInt64)(BigInteger.Divide(value.m_numerator, value.m_denominator));
-        }
+        //[CLSCompliant(false)]
+        //public static explicit operator UInt64(BigRational value) {
+        //    return (UInt64)(BigInteger.Divide(value.m_numerator, value.m_denominator));
+        //}
 
         public static explicit operator Byte(BigRational value) {
             return (Byte)(BigInteger.Divide(value.m_numerator, value.m_denominator));
@@ -601,25 +601,25 @@ namespace ProteoformSuiteInternal {
         // ----- SECTION: implicit conversions from numeric base types to BigRational  ----------------*
         #region implicit conversions to BigRational
 
-        [CLSCompliant(false)]
-        public static implicit operator BigRational(SByte value) {           
-            return new BigRational((BigInteger)value);
-        }
+        //[CLSCompliant(false)]
+        //public static implicit operator BigRational(SByte value) {           
+        //    return new BigRational((BigInteger)value);
+        //}
 
-        [CLSCompliant(false)]
-        public static implicit operator BigRational(UInt16 value) {           
-            return new BigRational((BigInteger)value);
-        }
+        //[CLSCompliant(false)]
+        //public static implicit operator BigRational(UInt16 value) {           
+        //    return new BigRational((BigInteger)value);
+        //}
 
-        [CLSCompliant(false)]
-        public static implicit operator BigRational(UInt32 value) {           
-            return new BigRational((BigInteger)value);
-        }
+        //[CLSCompliant(false)]
+        //public static implicit operator BigRational(UInt32 value) {           
+        //    return new BigRational((BigInteger)value);
+        //}
 
-        [CLSCompliant(false)]
-        public static implicit operator BigRational(UInt64 value) {           
-            return new BigRational((BigInteger)value);
-        }
+        //[CLSCompliant(false)]
+        //public static implicit operator BigRational(UInt64 value) {           
+        //    return new BigRational((BigInteger)value);
+        //}
 
         public static implicit operator BigRational(Byte value) {           
             return new BigRational((BigInteger)value);
