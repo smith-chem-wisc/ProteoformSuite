@@ -338,7 +338,13 @@ namespace ProteoformSuite
         private void cb_view_ef_CheckedChanged(object sender, EventArgs e)
         {
             if (cb_view_ef.Checked){
+
                 DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ef_relations, "relations");
+                if (!Lollipop.neucode_labeled)
+                {
+                    tb_rt_diff.Visible = true;
+                    tb_rt_diff.Text = Lollipop.ef_min_RetentionTime_difference.ToString();
+                }
 
             }
             else

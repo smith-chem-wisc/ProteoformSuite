@@ -78,6 +78,7 @@
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.tb_rt_diff = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
@@ -468,6 +469,7 @@
             // 
             // splitContainer5.Panel2
             // 
+            this.splitContainer5.Panel2.Controls.Add(this.tb_rt_diff);
             this.splitContainer5.Panel2.Controls.Add(this.cb_view_ef);
             this.splitContainer5.Panel2.Controls.Add(this.tb_notch_masses);
             this.splitContainer5.Panel2.Controls.Add(this.cb_notch_search);
@@ -673,6 +675,16 @@
             this.splitContainer3.SplitterDistance = 440;
             this.splitContainer3.TabIndex = 17;
             // 
+            // tb_rt_diff
+            // 
+            this.tb_rt_diff.Enabled = false;
+            this.tb_rt_diff.Location = new System.Drawing.Point(247, 17);
+            this.tb_rt_diff.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_rt_diff.Name = "tb_rt_diff";
+            this.tb_rt_diff.Size = new System.Drawing.Size(50, 20);
+            this.tb_rt_diff.TabIndex = 39;
+            this.tb_rt_diff.Visible = false;
+            // 
             // ExperimentExperimentComparison
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -778,6 +790,7 @@
         private System.Windows.Forms.TextBox tb_notch_masses;
         private System.Windows.Forms.CheckBox cb_notch_search;
         private System.Windows.Forms.CheckBox cb_view_ef;
+        private System.Windows.Forms.TextBox tb_rt_diff;
     }
 }
 

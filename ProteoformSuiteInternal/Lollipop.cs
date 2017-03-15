@@ -338,8 +338,17 @@ namespace ProteoformSuiteInternal
             else vetted_proteoforms = candidateExperimentalProteoforms;
             proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
             if (Lollipop.neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0) assignQuantificationComponents(vetted_proteoforms, raw_quantification_components);
-            return vetted_proteoforms;
 
+            using (var writer = new StreamWriter("C:\\Users\\lschaffer2\\Desktop\\neucode_yeast_experimental_proteoforms.tsv"))
+            {
+                writer.WriteLine("neucode_mass\tunlabeled_mass\trt");
+                foreach(ExperimentalProteoform e in proteoform_community.experimental_proteoforms)
+                {
+                    double unlabeled_mass = e.agg_mass - e.lysine_count * 136.109162 + e.lysine_count * 128.094963;
+                    writer.WriteLine(e.agg_mass + "\t" + unlabeled_mass + "\t" + e.agg_rt);
+                }
+            }
+            return vetted_proteoforms;
         }
 
         //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
@@ -761,6 +770,7 @@ namespace ProteoformSuiteInternal
         //ET,ED,EE,EF COMPARISONS
         public static double ee_max_mass_difference = 250; //TODO: implement this in ProteoformFamilies and elsewhere
         public static double ee_max_RetentionTime_difference = 2.5;
+        public static double ef_min_RetentionTime_difference = 2.5;
         public static double et_low_mass_difference = -250;
         public static double et_high_mass_difference = 250;
         public static double no_mans_land_lowerBound = 0.22;
@@ -868,7 +878,7 @@ namespace ProteoformSuiteInternal
             {
                 get_calibration_points(filename);
                 calibrate_td_hits(filename);
-                InputFile file = Lollipop.input_files.Where(f => f.purpose == Purpose.Identification && f.filename == filename).FirstOrDefault();
+                InputFile file = Lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.filename == filename).FirstOrDefault();
                 if (file != null) Calibration.calibrate_components_in_xlsx(file);
             }
 
