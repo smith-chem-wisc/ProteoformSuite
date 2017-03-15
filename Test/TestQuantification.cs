@@ -761,6 +761,16 @@ namespace Test
             satisfactoryProteoformsCount++;
         }
 
+        public void make_relation(Proteoform p1, Proteoform p2)
+        {
+            ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ee, 0);
+            DeltaMassPeak ppp = new DeltaMassPeak(pp, new List<ProteoformRelation> { pp });
+            pp.peak = ppp;
+            ppp.peak_accepted = true;
+            p1.relationships.Add(pp);
+            p2.relationships.Add(pp);
+        }
+
         [Test]
         public void test_get_observed_proteins()
         {
@@ -776,7 +786,20 @@ namespace Test
             TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
             TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
             ExperimentalProteoform e = new ExperimentalProteoform("E1");
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { e, t, u }, 0);
+            ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.et, 0);
+            DeltaMassPeak etp = new DeltaMassPeak(et, new List<ProteoformRelation> { et });
+            et.peak = etp;
+            etp.peak_accepted = true;
+            e.relationships.Add(et);
+            t.relationships.Add(et);
+            ProteoformRelation eu = new ProteoformRelation(e, u, ProteoformComparison.et, 0);
+            DeltaMassPeak eup = new DeltaMassPeak(eu, new List<ProteoformRelation> { eu });
+            eu.peak = eup;
+            eup.peak_accepted = true;
+            e.relationships.Add(eu);
+            u.relationships.Add(eu);
+            ProteoformFamily f = new ProteoformFamily(e);
+            f.construct_family();
             e.family = f;
             t.family = f;
             u.family = f;
@@ -805,7 +828,14 @@ namespace Test
             ExperimentalProteoform fx = new ExperimentalProteoform("E1");
             ExperimentalProteoform gx = new ExperimentalProteoform("E1");
             ExperimentalProteoform hx = new ExperimentalProteoform("E1");
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { ex, fx, gx, hx, t, u }, 0);
+            make_relation(ex, t);
+            make_relation(ex, u);
+            //make_relation(ex, v);
+            make_relation(ex, fx);
+            make_relation(ex, gx);
+            make_relation(ex, hx);
+            ProteoformFamily f = new ProteoformFamily(ex);
+            f.construct_family();
             ex.family = f;
             fx.family = f;
             gx.family = f;
@@ -899,9 +929,16 @@ namespace Test
             fx.quant.FDR = 0.4m;
             fx.quant.intensitySum = 2;
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
-            ProteoformFamily e = new ProteoformFamily(new List<Proteoform> { ex }, 0);
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { fx, gx, v }, 0);
-            ProteoformFamily h = new ProteoformFamily(new List<Proteoform> { hx, t, u }, 0);
+            make_relation(gx, v);
+            make_relation(fx, v);
+            make_relation(hx, t);
+            make_relation(hx, u);        
+            ProteoformFamily e = new ProteoformFamily(ex);
+            ProteoformFamily f = new ProteoformFamily(v);
+            ProteoformFamily h = new ProteoformFamily(hx);
+            e.construct_family();
+            f.construct_family();
+            h.construct_family();
             List<ProteoformFamily> families = new List<ProteoformFamily> { e, f, h };
             ex.family = e;
             fx.family = f;

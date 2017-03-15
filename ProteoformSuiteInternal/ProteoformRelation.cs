@@ -72,14 +72,14 @@ namespace ProteoformSuiteInternal
             if (!Lollipop.opening_results) this.nearby_relations = relation.nearby_relations;
         }
 
-        public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_ordered_relations)
+        public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_ordered_relations, List<int> ordered_relation_ids)
         {
             double peak_width_base = typeof(TheoreticalProteoform).IsAssignableFrom(all_ordered_relations[0].connected_proteoforms[1].GetType()) ? 
                 Lollipop.peak_width_base_et :
                 Lollipop.peak_width_base_ee;
             double lower_limit_of_peak_width = this.delta_mass - peak_width_base / 2;
             double upper_limit_of_peak_width = this.delta_mass + peak_width_base / 2;
-            int idx = all_ordered_relations.IndexOf(this);
+            int idx = ordered_relation_ids.IndexOf(this.instanceId);
             List<ProteoformRelation> within_range = new List<ProteoformRelation> { this };
             int curr_idx = idx - 1;
             while (curr_idx >= 0 && lower_limit_of_peak_width <= all_ordered_relations[curr_idx].delta_mass)
@@ -101,6 +101,20 @@ namespace ProteoformSuiteInternal
         {
             new DeltaMassPeak(this, Lollipop.proteoform_community.remaining_relations_outside_no_mans);
             if (Lollipop.decoy_databases > 0) this.peak.calculate_fdr(Lollipop.ed_relations);
+        }
+
+        public override bool Equals(object obj)
+        {
+            ProteoformRelation r2 = obj as ProteoformRelation; 
+            return r2 != null && 
+                (this.instanceId == r2.instanceId ||
+                this.connected_proteoforms[0] == r2.connected_proteoforms[1] && this.connected_proteoforms[1] == r2.connected_proteoforms[0] ||
+                this.connected_proteoforms[0] == r2.connected_proteoforms[0] && this.connected_proteoforms[1] == r2.connected_proteoforms[1]);
+        }
+
+        public override int GetHashCode()
+        {
+            return connected_proteoforms[0].GetHashCode() ^ connected_proteoforms[1].GetHashCode();
         }
 
         // FOR DATAGRIDVIEW DISPLAY

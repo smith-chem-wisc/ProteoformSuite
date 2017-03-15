@@ -23,7 +23,8 @@ namespace Test
             ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("", mod_title), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), -1, new List<double>(), new List<double>(), "");
 
             Proteoform p = new TheoreticalProteoform("T1", "", "T1_1", "", 0, 0, 100, 20, new PtmSet(new List<Ptm> { new Ptm(0, m) }), 100, true);
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { p }, 1);
+            ProteoformFamily f = new ProteoformFamily(p);
+            f.construct_family();
             string node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f }, false, CytoscapeScript.color_scheme_names[0], 2);
             Assert.True(node_table.Contains(CytoscapeScript.modified_theoretical_label));
             Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, 2));
@@ -37,7 +38,8 @@ namespace Test
             ModificationWithMass m = new ModificationWithMass("oxidation", new Tuple<string, string>("", ""), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), -1, new List<double>(), new List<double>(), "");
 
             Proteoform p = new TheoreticalProteoform("T1", "", "T1_1", "", 0, 0, 100, 20, new PtmSet(new List<Ptm> { new Ptm(0, m), new Ptm(0, m) }), 100, true);
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { p }, 1);
+            ProteoformFamily f = new ProteoformFamily(p);
+            f.construct_family();
             string node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f }, false, CytoscapeScript.color_scheme_names[0], 2);
             Assert.True(node_table.Contains(CytoscapeScript.modified_theoretical_label));
             Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, 2));
@@ -47,7 +49,8 @@ namespace Test
         public void nodes_table_gives_meaningful_unmodified_theoreticals()
         {
             Proteoform p = new TheoreticalProteoform("T1", "", "T1_1", "", 0, 0, 100, 20, new PtmSet(new List<Ptm> { new Ptm() }), 100, true); //unmodified has one PTM labeled unmodified
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { p }, 1);
+            ProteoformFamily f = new ProteoformFamily(p);
+            f.construct_family();
             string node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f }, false, CytoscapeScript.color_scheme_names[0], 2);
             Assert.True(node_table.Contains(CytoscapeScript.unmodified_theoretical_label));
             Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, 2));
@@ -62,7 +65,8 @@ namespace Test
             ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("N/A", mod_title), motif, ModificationSites.K, 0, new Dictionary<string, IList<string>>(), -1, new List<double>(), new List<double>(), "");
 
             Proteoform p = new TheoreticalProteoform("T1", "", "T1_1", "", 0, 0, 100, 20, new PtmSet(new List<Ptm> { new Ptm() }), 100, true); //unmodified has one PTM labeled unmodified
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { p }, 1);
+            ProteoformFamily f = new ProteoformFamily(p);
+            f.construct_family();
             string node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f }, false, CytoscapeScript.color_scheme_names[0], 2);
             Assert.True(node_table.Contains(CytoscapeScript.unmodified_theoretical_label));
             Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, 2));
@@ -75,7 +79,8 @@ namespace Test
             e.agg_intensity = 999.99;
             e.agg_mass = 888.88;
             e.agg_rt = 777.77;
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { e }, 1);
+            ProteoformFamily f = new ProteoformFamily(e);
+            f.construct_family();
             string node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f }, false, CytoscapeScript.color_scheme_names[0], 2);
             Assert.True(node_table.Contains("E1"));
             Assert.True(node_table.Contains("999.99"));
@@ -84,9 +89,8 @@ namespace Test
         [Test]
         public void test_write_families_no_experimentals_which_shouldnt_happen()
         {
-            List<ProteoformFamily> f = new List<ProteoformFamily> { new ProteoformFamily(new List<Proteoform> {
-                    new TheoreticalProteoform("T1","","T1_1","",0,0,100,20, new PtmSet(new List<Ptm> { new Ptm() }),100,true)
-                }, 1) };
+            List<ProteoformFamily> f = new List<ProteoformFamily> { new ProteoformFamily(new TheoreticalProteoform("T1","","T1_1","",0,0,100,20, new PtmSet(new List<Ptm> { new Ptm() }),100,true)) };
+            f.First().construct_family();
             string message = CytoscapeScript.write_cytoscape_script(f, f, TestContext.CurrentContext.TestDirectory, "test", false, false, false, false, CytoscapeScript.color_scheme_names[0], CytoscapeScript.node_label_positions[0], 2);
             Assert.True(message.Contains("Error"));
         }
@@ -96,11 +100,17 @@ namespace Test
         {
             TheoreticalProteoform t = new TheoreticalProteoform("T1", "", "T1_1", "", 0, 0, 100, 20, new PtmSet(new List<Ptm> { new Ptm() }), 100, true);
             ExperimentalProteoform e = new ExperimentalProteoform("E1");
+            ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.et, 0);
+            et.peak = new DeltaMassPeak(et, new List<ProteoformRelation> { et });
+            et.peak.peak_accepted = true;
+            e.relationships.Add(et);
+            t.relationships.Add(et);
             e.agg_intensity = 999.99;
             e.quant.lightIntensitySum = 444.44m;
             e.quant.heavyIntensitySum = 333.33m;
             e.quant.intensitySum = 777.77m;
-            List<ProteoformFamily> f = new List<ProteoformFamily> { new ProteoformFamily(new List<Proteoform> { t, e }, 1) };
+            List<ProteoformFamily> f = new List<ProteoformFamily> { new ProteoformFamily(e) };
+            f.First().construct_family();
             string message = CytoscapeScript.write_cytoscape_script(f, f, TestContext.CurrentContext.TestDirectory, "test", false, false, false, false, CytoscapeScript.color_scheme_names[0], CytoscapeScript.node_label_positions[0], 2);
             Assert.True(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.script_file_prefix + "test" + CytoscapeScript.script_file_extension)));
             Assert.True(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.style_file_prefix + "test" + CytoscapeScript.style_file_extension)));
@@ -134,11 +144,13 @@ namespace Test
         {
             TheoreticalProteoform t = new TheoreticalProteoform("T1", "", "T1_1", "", 0, 0, 100, 20, new PtmSet(new List<Ptm> { new Ptm() }), 100, true);
             ExperimentalProteoform e = new ExperimentalProteoform("E1");
+            ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.et, 0);
             e.agg_intensity = 999.99;
             e.quant.lightIntensitySum = 444.44m;
             e.quant.heavyIntensitySum = 333.33m;
             e.quant.intensitySum = 777.77m;
-            List<ProteoformFamily> f = new List<ProteoformFamily> { new ProteoformFamily(new List<Proteoform> { t, e }, 1) };
+            List<ProteoformFamily> f = new List<ProteoformFamily> { new ProteoformFamily(e) };
+            f.First().construct_family();
             string message = CytoscapeScript.write_cytoscape_script(f, f, "", "test", false, false, false, false, CytoscapeScript.color_scheme_names[0], CytoscapeScript.node_label_positions[0], 2);
             Assert.False(message.StartsWith("Finished"));
         }
@@ -291,7 +303,7 @@ namespace Test
 
             Assert.True(shared_pf_names_nodes.All(name => shared_pf_names_edges.Contains(name)));
             Assert.True(shared_pf_names_edges.All(name => shared_pf_names_nodes.Contains(name)));
-            Assert.AreEqual(5, shared_pf_names_nodes.Count); //only the first family
+            Assert.AreEqual(community.families.First().proteoforms.Count, shared_pf_names_nodes.Count);
         }
     }
 }

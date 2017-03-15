@@ -59,7 +59,7 @@ namespace Test
 
             ProteoformRelation base_relation = new ProteoformRelation(pf3, pf4, relation_type2, delta_mass2);
 
-            base_relation.nearby_relations = base_relation.set_nearby_group(theList);
+            base_relation.nearby_relations = base_relation.set_nearby_group(theList, theList.Select(r => r.instanceId).ToList());
             Console.WriteLine("Creating deltaMassPeak");
             DeltaMassPeak deltaMassPeak = new DeltaMassPeak(base_relation, theList);
             Console.WriteLine("Created deltaMassPeak");
@@ -131,7 +131,7 @@ namespace Test
             pr2.relation_type = comparison34;
 
             List<ProteoformRelation> prs2 = new List<ProteoformRelation> { pr2, pr3, pr4 };
-            foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2);
+            foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2, prs2.Select(r => r.instanceId).ToList());
             Assert.AreEqual(3, pr2.nearby_relations_count);
             Assert.AreEqual(3, pr3.nearby_relations_count);
             Assert.AreEqual(3, pr4.nearby_relations_count);
@@ -163,7 +163,7 @@ namespace Test
             ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, wrong_comparison, 0);
             ProteoformRelation pr3 = new ProteoformRelation(pf3, pf4, wrong_comparison, 0);
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr2, pr3 };
-            foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs);
+            foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.instanceId).ToList());
             test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
             Assert.False(test_community.delta_mass_peaks[0].shift_experimental_masses(1, true));
         }
@@ -218,7 +218,7 @@ namespace Test
             ProteoformRelation pr3 = new ProteoformRelation(pf3, pf7, comparison36, 1);
             ProteoformRelation pr4 = new ProteoformRelation(pf4, pf8, comparison47, 1);
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1, pr2, pr3, pr4 };
-            foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs);
+            foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.instanceId).ToList());
             test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
             Assert.AreEqual(2, test_community.delta_mass_peaks.Count);
 
@@ -283,7 +283,7 @@ namespace Test
             ProteoformRelation pr3 = new ProteoformRelation(pf3, pf7, comparison36, 1);
             ProteoformRelation pr4 = new ProteoformRelation(pf4, pf8, comparison47, 1);
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1, pr2, pr3, pr4 };
-            foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs);
+            foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.instanceId).ToList());
             test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
             Assert.AreEqual(2, test_community.delta_mass_peaks.Count);
 

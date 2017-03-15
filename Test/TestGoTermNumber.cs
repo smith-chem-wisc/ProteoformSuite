@@ -97,8 +97,13 @@ namespace Test
             t.proteinList = new List<ProteinWithGoTerms> { p1 };
             u.proteinList = new List<ProteinWithGoTerms> { p2 };
             v.proteinList = new List<ProteinWithGoTerms> { p3 };
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { t, v, e1 }, 0); // two theoreticals with the same GoTerms... expecting one GoTerm number but two theoretical proteins
-            ProteoformFamily h = new ProteoformFamily(new List<Proteoform> { u, e2 }, 0);
+            make_relation(e1, t);
+            make_relation(e1, v);
+            make_relation(e2, u);
+            ProteoformFamily f = new ProteoformFamily(e1); // two theoreticals with the same GoTerms... expecting one GoTerm number but two theoretical proteins
+            ProteoformFamily h = new ProteoformFamily(e2);
+            f.construct_family();
+            h.construct_family();
             List<ProteoformFamily> families = new List<ProteoformFamily> { f, h };
             t.family = f;
             v.family = f;
@@ -149,8 +154,13 @@ namespace Test
             t.proteinList = new List<ProteinWithGoTerms> { p1 };
             u.proteinList = new List<ProteinWithGoTerms> { p2 };
             v.proteinList = new List<ProteinWithGoTerms> { p3 };
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { t, v, e1 }, 0); // two theoreticals with the same GoTerms... expecting one GoTerm number but two theoretical proteins
-            ProteoformFamily h = new ProteoformFamily(new List<Proteoform> { u, e2 }, 0);
+            make_relation(e1, t);
+            make_relation(e1, v);
+            make_relation(e2, u);
+            ProteoformFamily f = new ProteoformFamily(e1); // two theoreticals with the same GoTerms... expecting one GoTerm number but two theoretical proteins
+            ProteoformFamily h = new ProteoformFamily(e2);
+            f.construct_family();
+            h.construct_family();
             List<ProteoformFamily> families = new List<ProteoformFamily> { f, h };
             t.family = f;
             v.family = f;
@@ -169,6 +179,16 @@ namespace Test
             List<ProteoformFamily> fams = Lollipop.getInterestingFamilies(Lollipop.goTermNumbers, families);
             Assert.AreEqual(1, fams.Count);
             Assert.AreEqual(2, fams[0].theoretical_proteoforms.Count);
+        }
+
+        public void make_relation(Proteoform p1, Proteoform p2)
+        {
+            ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ee, 0);
+            DeltaMassPeak ppp = new DeltaMassPeak(pp, new List<ProteoformRelation> { pp });
+            pp.peak = ppp;
+            ppp.peak_accepted = true;
+            p1.relationships.Add(pp);
+            p2.relationships.Add(pp);
         }
 
         [Test]
@@ -202,8 +222,13 @@ namespace Test
             t.proteinList = new List<ProteinWithGoTerms> { p1 };
             u.proteinList = new List<ProteinWithGoTerms> { p2 };
             v.proteinList = new List<ProteinWithGoTerms> { p3 };
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { t, v, e1 }, 0); // two theoreticals with the same GoTerms... expecting one GoTerm number but two theoretical proteins
-            ProteoformFamily h = new ProteoformFamily(new List<Proteoform> { u, e2 }, 0);
+            make_relation(e1, t);
+            make_relation(e1, v);
+            make_relation(e2, u);
+            ProteoformFamily f = new ProteoformFamily(e1); // two theoreticals with the same GoTerms... expecting one GoTerm number but two theoretical proteins
+            ProteoformFamily h = new ProteoformFamily(e2);
+            f.construct_family();
+            h.construct_family();
             List<ProteoformFamily> families = new List<ProteoformFamily> { f, h };
             t.family = f;
             v.family = f;
