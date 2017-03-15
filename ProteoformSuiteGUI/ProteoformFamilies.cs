@@ -81,7 +81,7 @@ namespace ProteoformSuite
             Lollipop.proteoform_community.families.Clear();
         }
 
-        private void update_figures_of_merit()
+        public void update_figures_of_merit()
         {
             this.tb_TotalFamilies.Text = Lollipop.proteoform_community.families.Count(f => f.proteoforms.Count > 1).ToString();
             this.tb_IdentifiedFamilies.Text = Lollipop.proteoform_community.families.Count(f => f.theoretical_count > 0).ToString();
@@ -126,7 +126,7 @@ namespace ProteoformSuite
             else if (cmbx_tableSelector.SelectedIndex == 4) fill_go(Aspect.MolecularFunction, tb_tableFilter.Text);
         }
 
-        private void fill_proteoform_families(string filter)
+        public void fill_proteoform_families(string filter)
         {
             IEnumerable<object> families = filter == "" ?
                 Lollipop.proteoform_community.families.OrderByDescending(f => f.relation_count) :

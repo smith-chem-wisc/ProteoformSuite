@@ -46,8 +46,6 @@ namespace ProteoformSuite
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.run_the_gamut();
             ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).experimentExperimentComparison.run_the_gamut();
-            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
-            ((ProteoformSweet)MdiParent).proteoformFamilies.run_the_gamut();
             ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).quantification.perform_calculations();
             updateFiguresOfMerit();

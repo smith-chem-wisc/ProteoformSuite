@@ -36,7 +36,7 @@ namespace ProteoformSuite
 
         Form current_form;
 
-        public static bool run_when_form_loads = true;
+        public static bool run_when_form_loads;
 
         public ProteoformSweet()
         {
