@@ -30,8 +30,8 @@
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.cb_td_file = new System.Windows.Forms.CheckBox();
-            this.btn_unlabeled = new System.Windows.Forms.RadioButton();
-            this.btn_neucode = new System.Windows.Forms.RadioButton();
+            this.rb_unlabeled = new System.Windows.Forms.RadioButton();
+            this.rb_neucode = new System.Windows.Forms.RadioButton();
             this.btn_clearFiles1 = new System.Windows.Forms.Button();
             this.btn_AddFiles1 = new System.Windows.Forms.Button();
             this.btn_addFiles2 = new System.Windows.Forms.Button();
@@ -73,8 +73,8 @@
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.cb_td_file);
-            this.groupBox1.Controls.Add(this.btn_unlabeled);
-            this.groupBox1.Controls.Add(this.btn_neucode);
+            this.groupBox1.Controls.Add(this.rb_unlabeled);
+            this.groupBox1.Controls.Add(this.rb_neucode);
             this.groupBox1.Location = new System.Drawing.Point(13, 610);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(213, 114);
@@ -85,6 +85,7 @@
             // cb_td_file
             // 
             this.cb_td_file.AutoSize = true;
+            this.cb_td_file.Enabled = false;
             this.cb_td_file.Location = new System.Drawing.Point(23, 91);
             this.cb_td_file.Name = "cb_td_file";
             this.cb_td_file.Size = new System.Drawing.Size(165, 17);
@@ -94,28 +95,28 @@
             this.cb_td_file.Visible = false;
             this.cb_td_file.CheckedChanged += new System.EventHandler(this.cb_td_file_CheckedChanged);
             // 
-            // btn_unlabeled
+            // rb_unlabeled
             // 
-            this.btn_unlabeled.AutoSize = true;
-            this.btn_unlabeled.Location = new System.Drawing.Point(23, 57);
-            this.btn_unlabeled.Name = "btn_unlabeled";
-            this.btn_unlabeled.Size = new System.Drawing.Size(73, 17);
-            this.btn_unlabeled.TabIndex = 1;
-            this.btn_unlabeled.Text = "Unlabeled";
-            this.btn_unlabeled.UseVisualStyleBackColor = true;
+            this.rb_unlabeled.AutoSize = true;
+            this.rb_unlabeled.Location = new System.Drawing.Point(23, 57);
+            this.rb_unlabeled.Name = "rb_unlabeled";
+            this.rb_unlabeled.Size = new System.Drawing.Size(73, 17);
+            this.rb_unlabeled.TabIndex = 1;
+            this.rb_unlabeled.Text = "Unlabeled";
+            this.rb_unlabeled.UseVisualStyleBackColor = true;
             // 
-            // btn_neucode
+            // rb_neucode
             // 
-            this.btn_neucode.AutoSize = true;
-            this.btn_neucode.Checked = true;
-            this.btn_neucode.Location = new System.Drawing.Point(23, 26);
-            this.btn_neucode.Name = "btn_neucode";
-            this.btn_neucode.Size = new System.Drawing.Size(111, 17);
-            this.btn_neucode.TabIndex = 0;
-            this.btn_neucode.TabStop = true;
-            this.btn_neucode.Text = "NeuCode Labeled";
-            this.btn_neucode.UseVisualStyleBackColor = true;
-            this.btn_neucode.CheckedChanged += new System.EventHandler(this.btn_neucode_CheckedChanged);
+            this.rb_neucode.AutoSize = true;
+            this.rb_neucode.Checked = true;
+            this.rb_neucode.Location = new System.Drawing.Point(23, 26);
+            this.rb_neucode.Name = "rb_neucode";
+            this.rb_neucode.Size = new System.Drawing.Size(111, 17);
+            this.rb_neucode.TabIndex = 0;
+            this.rb_neucode.TabStop = true;
+            this.rb_neucode.Text = "NeuCode Labeled";
+            this.rb_neucode.UseVisualStyleBackColor = true;
+            this.rb_neucode.CheckedChanged += new System.EventHandler(this.btn_neucode_CheckedChanged);
             // 
             // btn_clearFiles1
             // 
@@ -464,8 +465,8 @@
         #endregion
 
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.RadioButton btn_unlabeled;
-        private System.Windows.Forms.RadioButton btn_neucode;
+        private System.Windows.Forms.RadioButton rb_unlabeled;
+        private System.Windows.Forms.RadioButton rb_neucode;
         private System.Windows.Forms.Button btn_clearFiles1;
         private System.Windows.Forms.Button btn_AddFiles1;
         private System.Windows.Forms.Button btn_addFiles2;

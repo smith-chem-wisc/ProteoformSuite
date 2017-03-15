@@ -46,7 +46,14 @@ namespace ProteoformSuite
         {
             this.Cursor = Cursors.WaitCursor;
             Lollipop.make_ee_relationships();
-            this.FillTablesAndCharts();
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
+            Parallel.Invoke
+            (
+                () => this.FillTablesAndCharts(),
+                () => Lollipop.proteoform_community.construct_families()
+            );
+            ((ProteoformSweet)this.MdiParent).proteoformFamilies.fill_proteoform_families("");
+            ((ProteoformSweet)this.MdiParent).proteoformFamilies.update_figures_of_merit();
             this.Cursor = Cursors.Default;
             compared_ee = true;
         }

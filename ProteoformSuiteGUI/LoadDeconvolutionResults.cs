@@ -12,11 +12,13 @@ namespace ProteoformSuite
 {
     public partial class LoadDeconvolutionResults : Form
     {
-        
+        public bool run_when_form_loads;
+
         public LoadDeconvolutionResults()
         {
             InitializeComponent();
             populate_file_lists();
+            ProteoformSweet.run_when_form_loads = cb_run_when_load.Checked;
         }
 
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
@@ -24,25 +26,15 @@ namespace ProteoformSuite
         
         private void btn_neucode_CheckedChanged(object sender, EventArgs e)
         {
-            if (btn_unlabeled.Checked)
-            {
-                ProteoformSweet.run_when_form_loads = false; //if unlabeled, don't run automatically. 
-                cb_run_when_load.Checked = false;
-            }
-            else
-            {
-                ProteoformSweet.run_when_form_loads = true; //if unlabeled, don't run automatically. 
-                cb_run_when_load.Checked = true;
-            }
-            ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(btn_neucode.Checked);
-            Lollipop.neucode_labeled = btn_neucode.Checked;
-            Lollipop.neucode_light_lysine = btn_neucode.Checked;
-            Lollipop.natural_lysine_isotope_abundance = !btn_neucode.Checked;
+            ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(rb_neucode.Checked);
+            Lollipop.neucode_labeled = rb_neucode.Checked;
+            Lollipop.neucode_light_lysine = rb_neucode.Checked;
+            Lollipop.natural_lysine_isotope_abundance = !rb_neucode.Checked;
 
             foreach (InputFile f in Lollipop.input_files)
             {
-                if (btn_neucode.Checked) f.label = Labeling.NeuCode;
-                if (btn_unlabeled.Checked) f.label = Labeling.Unlabeled;
+                if (rb_neucode.Checked) f.label = Labeling.NeuCode;
+                if (rb_unlabeled.Checked) f.label = Labeling.Unlabeled;
             }
 
             match_files();
