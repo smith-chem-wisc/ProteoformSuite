@@ -45,26 +45,9 @@ namespace ProteoformSuiteInternal
     public class ProteoformRelation : MassDifference
     {
         public DeltaMassPeak peak { get; set; }
-        public int nearby_relations_count { get; set; } //"running sum"
-        private List<ProteoformRelation> _nearby_relations;
-        public List<ProteoformRelation> nearby_relations
-        {
-            get { return _nearby_relations; }
-            set
-            {
-                _nearby_relations = value;
-                this.nearby_relations_count = value.Count;
-            }
-        }
-        public static bool mass_difference_is_outside_no_mans_land(double delta_mass)
-        {
-            return Math.Abs(delta_mass - Math.Truncate(delta_mass)) >= Lollipop.no_mans_land_upperBound ||
-                Math.Abs(delta_mass - Math.Truncate(delta_mass)) <= Lollipop.no_mans_land_lowerBound;
-        }
-        public bool outside_no_mans_land
-        {
-            get { return ProteoformRelation.mass_difference_is_outside_no_mans_land(this.delta_mass); }
-        }
+        public int nearby_relations_count { get { return this.nearby_relations.Count; } } //"running sum"
+        public List<ProteoformRelation> nearby_relations { get; set; }
+        public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
 
         /// <summary>
@@ -77,12 +60,15 @@ namespace ProteoformSuiteInternal
             : base(pf1, pf2, relation_type, delta_mass)
         {
             if (Lollipop.neucode_labeled) this.lysine_count = pf1.lysine_count;
+            this.outside_no_mans_land = Math.Abs(delta_mass - Math.Truncate(delta_mass)) >= Lollipop.no_mans_land_upperBound ||
+                    Math.Abs(delta_mass - Math.Truncate(delta_mass)) <= Lollipop.no_mans_land_lowerBound;
         }
 
         public ProteoformRelation(ProteoformRelation relation) 
             : base(relation.connected_proteoforms[0], relation.connected_proteoforms[1], relation.relation_type, relation.delta_mass)
         {
             this.peak = relation.peak;
+            this.outside_no_mans_land = relation.outside_no_mans_land;
             if (!Lollipop.opening_results) this.nearby_relations = relation.nearby_relations;
         }
 
@@ -93,16 +79,16 @@ namespace ProteoformSuiteInternal
                 Lollipop.peak_width_base_ee;
             double lower_limit_of_peak_width = this.delta_mass - peak_width_base / 2;
             double upper_limit_of_peak_width = this.delta_mass + peak_width_base / 2;
-            this.nearby_relations = all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width
-                && relation.delta_mass <= upper_limit_of_peak_width).ToList();
+            lock (this) nearby_relations = all_relations.Where(relation =>
+                lower_limit_of_peak_width <= relation.delta_mass && relation.delta_mass <= upper_limit_of_peak_width).ToList();
             return this.nearby_relations;
         }
 
-        //public void generate_peak()
-        //{
-        //    this.peak = new DeltaMassPeak(this, Lollipop.proteoform_community.remaining_relations_outside_no_mans);
-        //    if (Lollipop.decoy_databases > 0) this.peak.calculate_fdr(Lollipop.ed_relations);
-        //}
+        public void generate_peak()
+        {
+            new DeltaMassPeak(this, Lollipop.proteoform_community.remaining_relations_outside_no_mans);
+            if (Lollipop.decoy_databases > 0) this.peak.calculate_fdr(Lollipop.ed_relations);
+        }
 
         // FOR DATAGRIDVIEW DISPLAY
         public static string et_string = "Experiment-Theoretical";

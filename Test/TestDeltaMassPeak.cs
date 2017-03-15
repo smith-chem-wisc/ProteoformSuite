@@ -93,6 +93,8 @@ namespace Test
         public void TestAcceptDeltaMassPeaks()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
+            Lollipop.proteoform_community = test_community;
+
             Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> {
                 { "unmodified", new List<Modification>() {
                     new ModificationWithMass("unmodified", new Tuple<string, string>("", ""), null, ModificationSites.K, 0, new Dictionary<string, IList<string>>(), -1, new List<double>(), new List<double>(), "") }
@@ -154,6 +156,7 @@ namespace Test
         public void wrong_relation_shifting()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
+            Lollipop.proteoform_community = test_community;
             ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
             ProteoformComparison wrong_comparison = ProteoformComparison.ee;
@@ -183,6 +186,7 @@ namespace Test
         public void shift_et_peak_neucode()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
+            Lollipop.proteoform_community = test_community;
 
             //Make a few experimental proteoforms
             List<Component> n1 = TestExperimentalProteoform.generate_neucode_components(100);
@@ -247,6 +251,7 @@ namespace Test
         public void shift_et_peak_unlabeled()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
+            Lollipop.proteoform_community = test_community;
 
             //Make a few experimental proteoforms
             List<Component> n1 = TestExperimentalProteoform.generate_neucode_components(100);
