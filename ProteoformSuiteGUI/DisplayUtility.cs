@@ -57,8 +57,8 @@ namespace ProteoformSuite
             { }           
         }
 
-        public static void EditInputFileDGVs(DataGridView dgv, Purpose purpose)
-        {
+        //public static void EditInputFileDGVs(DataGridView dgv, Purpose purpose)
+        //{
             //if (purpose == Purpose.TopDown)
             //{
             //    DataGridViewComboBoxColumn cmCol = new DataGridViewComboBoxColumn();
@@ -67,7 +67,7 @@ namespace ProteoformSuite
             //    cmCol.ValueType = typeof(TDProgram);
             //    dgv.Columns.Add(cmCol);
             //}
-        }
+        //}
 
 
         public static void GraphRelationsChart(Chart ct, List<ProteoformRelation> relations, string series)
