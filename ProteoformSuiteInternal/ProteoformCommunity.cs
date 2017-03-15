@@ -82,12 +82,12 @@ namespace ProteoformSuiteInternal
             //putative counts include no-mans land, currently
         }
 
-        public bool allowed_ef_relation(ExperimentalProteoform pf1, ExperimentalProteoform pf2)
+        public bool allowed_ef_relation(ExperimentalProteoform pf1, ExperimentalProteoform pf2, double rt_diff)
         {
             return pf1.modified_mass >= pf2.modified_mass
             && pf1 != pf2
             && (!Lollipop.neucode_labeled || pf1.lysine_count != pf2.lysine_count)
-            && (Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) > 2 * Lollipop.ee_max_RetentionTime_difference)
+            && (Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) > rt_diff)
             && allowed_mass_difference(pf1.modified_mass, pf2.modified_mass, ProteoformComparison.ef)
             && (!Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) <= Lollipop.ee_max_RetentionTime_difference);
         }
@@ -156,16 +156,45 @@ namespace ProteoformSuiteInternal
             List<ProteoformRelation> ef_relations = new List<ProteoformRelation>();
             ExperimentalProteoform[] pfs1 = new List<ExperimentalProteoform>(this.experimental_proteoforms.Where(p => p.accepted)).ToArray();
             ExperimentalProteoform[] pfs2 = new List<ExperimentalProteoform>(this.experimental_proteoforms.Where(p => p.accepted)).ToArray();
+            double rt_diff = Lollipop.ee_max_RetentionTime_difference - 1;
+
+            //figure out min RT diff to use for EF 
+            if (!Lollipop.neucode_labeled)
+            {
+                List<ProteoformRelation> temp_ef_relation = new List<ProteoformRelation>();
+                ExperimentalProteoform exp = experimental_proteoforms.OrderByDescending(e => e.relationships.Where(r => r.relation_type == ProteoformComparison.ee).Count()).First();
+                int num_relations = pfs2.Where(pf2 => allowed_ee_relation(exp, pf2)).Count(); //number that would be chosen with equal lysine counts or w/in retention time from a randomized set
+                do
+                {
+                    rt_diff++;
+                    temp_ef_relation = pfs2.Where(pf2 => allowed_ef_relation(exp, pf2, rt_diff))
+                        .Take(num_relations)
+                        .Select(pf2 => new ProteoformRelation(exp, pf2, ProteoformComparison.ef, exp.modified_mass - pf2.modified_mass)).ToList();
+                } while (temp_ef_relation.Count == num_relations && temp_ef_relation.Count / num_relations >= .05);
+                rt_diff--;
+                    Lollipop.ef_min_RetentionTime_difference = rt_diff;
+            }
+
+            double pf1_rt_diff = rt_diff;
+            bool correct_ef_number = false;
             foreach (ExperimentalProteoform pf1 in pfs1)
             {
                 int num_relations = pfs2.Where(pf2 => allowed_ee_relation(pf1, pf2)).Count(); //number that would be chosen with equal lysine counts or w/in retention time from a randomized set
                 new Random().Shuffle(pfs2);
-                List<ProteoformRelation> ef_relation_addition = pfs2.Where(pf2 => allowed_ef_relation(pf1, pf2))
-                    .Take(num_relations)
-                    .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass)).ToList();
-                ef_relations.AddRange(ef_relation_addition);
+                while (!correct_ef_number)
+                {
+                    List<ProteoformRelation> ef_relation_addition = pfs2.Where(pf2 => allowed_ef_relation(pf1, pf2, pf1_rt_diff))
+                        .Take(num_relations)
+                        .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass)).ToList();
+                    if (ef_relation_addition.Count == num_relations)
+                    {
+                        ef_relations.AddRange(ef_relation_addition);
+                        correct_ef_number = true;
+                    }
+                    else pf1_rt_diff--;
+                }
             }
-                count_nearby_relations(ef_relations);
+            count_nearby_relations(ef_relations);
             return ef_relations;
         }
 

@@ -65,6 +65,7 @@ namespace ProteoformSuite
             tb_ETPairs.Text = numETPairs.ToString();
             tb_ETPeaks.Text = numETPeaks.ToString();
             tb_EEPairs.Text = numEEPairs.ToString();
+            tb_ef_pairs.Text = Lollipop.ef_relations.Count.ToString();
             tb_EEPeaks.Text = numEEPeaks.ToString();
             tb_theoreticalProteoforms.Text = numTheoreticalProteoforms.ToString();
             tb_families.Text = numFamilies.ToString();

@@ -74,6 +74,14 @@ namespace ProteoformSuiteInternal
         {
             get { return aggregated_components.Count; }
         }
+        public int num_charge_states
+        {
+            get { return aggregated_components.Max(c => c.num_charge_states); }
+        }
+        public double rel_abundance
+        {
+            get { return aggregated_components.Max(c => c.relative_abundance); }
+        }
         public int light_observation_count
         {
             get { return lt_quant_components.Count; }
@@ -745,6 +753,18 @@ namespace ProteoformSuiteInternal
         public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count; } }
         public int ttd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count; } }
         public bool targeted { get; set; } = false;
+        public int observations { get { return topdown_hits.Count; } }
+        public int bottom_up_PSMs
+        {
+            get
+            {
+                try
+                {
+                  return  ((TheoreticalProteoform)relationships.Where(r => r.relation_type == ProteoformComparison.ttd).First().connected_proteoforms[1]).psm_count_BU;
+                }
+                catch { return 0; }
+            }
+        }
 
         public TopDownProteoform(string accession, TopDownHit root, List<TopDownHit> candidate_hits) : base(accession)
         {

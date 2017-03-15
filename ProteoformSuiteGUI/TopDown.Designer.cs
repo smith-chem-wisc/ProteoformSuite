@@ -151,7 +151,6 @@
             // 
             // bt_check_fragmented_e
             // 
-            this.bt_check_fragmented_e.Enabled = false;
             this.bt_check_fragmented_e.Location = new System.Drawing.Point(498, 1);
             this.bt_check_fragmented_e.Name = "bt_check_fragmented_e";
             this.bt_check_fragmented_e.Size = new System.Drawing.Size(208, 23);

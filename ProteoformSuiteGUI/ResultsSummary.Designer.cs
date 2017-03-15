@@ -52,6 +52,7 @@
             this.tb_families = new System.Windows.Forms.TextBox();
             this.tb_load_description = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
+            this.tb_ef_pairs = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label
@@ -259,11 +260,20 @@
             this.label11.TabIndex = 23;
             this.label11.Text = "Load Description";
             // 
+            // tb_ef_pairs
+            // 
+            this.tb_ef_pairs.Location = new System.Drawing.Point(303, 431);
+            this.tb_ef_pairs.Name = "tb_ef_pairs";
+            this.tb_ef_pairs.ReadOnly = true;
+            this.tb_ef_pairs.Size = new System.Drawing.Size(100, 20);
+            this.tb_ef_pairs.TabIndex = 24;
+            // 
             // ResultsSummary
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(750, 620);
+            this.Controls.Add(this.tb_ef_pairs);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.tb_load_description);
             this.Controls.Add(this.tb_families);
@@ -322,5 +332,6 @@
         private System.Windows.Forms.TextBox tb_families;
         private System.Windows.Forms.TextBox tb_load_description;
         private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.TextBox tb_ef_pairs;
     }
 }

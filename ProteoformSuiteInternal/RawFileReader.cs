@@ -41,25 +41,33 @@ namespace ProteoformSuiteInternal
             {
                 using (ThermoDynamicData myMsDataFile = ThermoDynamicData.InitiateDynamicConnection(file.complete_path))
                 {
-                    foreach (ExperimentalProteoform e in Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted && !p.fragmented).ToList())
+                    foreach (ExperimentalProteoform e in Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted && p.aggregated_components.Where(c => c.input_file.filename.Replace("_calibrated", "") == file.filename).Count() > 0).ToList())
                     {
 
                         //check for most intense component
-                        Component c = e.aggregated_components.OrderByDescending(agg => agg.intensity_sum).First();
-                        ChargeState cs = c.charge_states.OrderByDescending(a => a.intensity).First();
-                        int scan_number = 1;
-                        IThermoScan scan = myMsDataFile.GetOneBasedScan(scan_number);
-                        while (e.fragmented == false && scan_number < myMsDataFile.Count())
+                        foreach (Component comp in e.aggregated_components.Where(c => c.input_file.filename.Replace("_calibrated", "") == file.filename))
                         {
-                            scan = myMsDataFile.GetOneBasedScan(scan_number);
-                            if (scan.MsnOrder < 2) { scan_number++; continue; }
-
-                            //check for most intense charge state (on inclusion list)
-                            if (Math.Abs(cs.mz_centroid - (scan as ThermoScanWithPrecursor).IsolationMz) <= 1.5)
+                            if (!e.fragmented)
                             {
-                                e.fragmented = true;
+                                //ChargeState cs = c.charge_states.OrderByDescending(a => a.intensity).First();
+                                int scan_number = Convert.ToInt16(comp.scan_range.Split('-')[0]);
+                                IThermoScan scan = myMsDataFile.GetOneBasedScan(scan_number);
+                                while (e.fragmented == false && (scan.OneBasedScanNumber <= Convert.ToInt16(comp.scan_range.Split('-')[1]) || scan.MsnOrder == 2))
+                                {
+                                    if (scan.MsnOrder < 2) { scan_number++; scan = myMsDataFile.GetOneBasedScan(scan_number);
+                                        continue; }
+                                    foreach (ChargeState cs in comp.charge_states)
+                                    {
+                                        //check for most intense charge state (on inclusion list)
+                                        if (Math.Abs(cs.mz_centroid - (scan as ThermoScanWithPrecursor).IsolationMz) <= 1.5)
+                                        {
+                                            e.fragmented = true;
+                                        }
+                                    }
+                                    scan_number++;
+                                    scan = myMsDataFile.GetOneBasedScan(scan_number);
+                                }
                             }
-                            scan_number++;
                         }
                     }
                 }
