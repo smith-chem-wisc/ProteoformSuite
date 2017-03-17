@@ -299,5 +299,12 @@ namespace Test
                 Assert.AreEqual(200 - 1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.weighted_monoisotopic_mass);
             }
         }
+
+        [Test]
+        public static void accept_peaks_doesnt_crash_with_empty_list()
+        {
+            ProteoformCommunity c = new ProteoformCommunity();
+            Assert.AreEqual(0, c.accept_deltaMass_peaks(new List<ProteoformRelation>(), new List<ProteoformRelation>()).Count);
+        }
     }
 }

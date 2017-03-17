@@ -1,4 +1,4 @@
-﻿namespace ProteoformSuite
+﻿namespace ProteoformSuiteGUI
 {
     partial class LoadDeconvolutionResults
     {
@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoadDeconvolutionResults));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.cb_td_file = new System.Windows.Forms.CheckBox();
             this.rb_unlabeled = new System.Windows.Forms.RadioButton();
@@ -427,6 +428,7 @@
             // LoadDeconvolutionResults
             // 
             this.ClientSize = new System.Drawing.Size(1362, 736);
+            this.ControlBox = false;
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.cmb_loadTable3);
             this.Controls.Add(this.cmb_loadTable2);
@@ -446,7 +448,9 @@
             this.Controls.Add(this.btn_AddFiles1);
             this.Controls.Add(this.btn_clearFiles1);
             this.Controls.Add(this.groupBox1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LoadDeconvolutionResults";
+            this.Text = "Load Deconvolution Results and Protein Databases";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles1)).EndInit();
