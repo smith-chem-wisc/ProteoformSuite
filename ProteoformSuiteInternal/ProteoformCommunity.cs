@@ -44,9 +44,8 @@ namespace ProteoformSuiteInternal
 
             Parallel.ForEach(pfs1, pf1 => 
             {
-                List<ProteoformRelation> temp_relations = new List<ProteoformRelation>();
-
-                foreach (string accession in new HashSet<string>(pf1.candidate_relatives.Select(p => p.accession)))
+                HashSet<string> pf1_accessions = new HashSet<string>(pf1.candidate_relatives.Select(p => p.accession));
+                foreach (string accession in pf1_accessions)
                 {
                     List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.Where(x => x.accession == accession).ToList();
                     candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
