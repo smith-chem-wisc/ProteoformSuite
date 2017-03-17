@@ -53,15 +53,20 @@ namespace ProteoformSuiteGUI
             }
             this.Cursor = Cursors.WaitCursor;
             Lollipop.make_ee_relationships();
-            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
-            Parallel.Invoke
-            (
-                () => this.FillTablesAndCharts(),
-                () => Lollipop.proteoform_community.construct_families()
-            );
-            ((ProteoformSweet)this.MdiParent).proteoformFamilies.initialize_settings();
-            ((ProteoformSweet)this.MdiParent).proteoformFamilies.fill_proteoform_families("");
-            ((ProteoformSweet)this.MdiParent).proteoformFamilies.update_figures_of_merit();
+
+            //this is too slow for label-free
+            if (Lollipop.neucode_labeled)
+            {
+                ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
+                Parallel.Invoke
+                (
+                    () => this.FillTablesAndCharts(),
+                    () => Lollipop.proteoform_community.construct_families()
+                );
+                ((ProteoformSweet)this.MdiParent).proteoformFamilies.initialize_settings();
+                ((ProteoformSweet)this.MdiParent).proteoformFamilies.fill_proteoform_families("");
+                ((ProteoformSweet)this.MdiParent).proteoformFamilies.update_figures_of_merit();
+            }
             this.Cursor = Cursors.Default;
             compared_ee = true;
         }
@@ -249,8 +254,17 @@ namespace ProteoformSuiteGUI
         private void cb_Graph_lowerThreshold_CheckedChanged(object sender, EventArgs e)
         {
             if (cb_Graph_lowerThreshold.Checked)
+            {
                 ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
-            else if (!cb_Graph_lowerThreshold.Checked) ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+                ct_EE_Histogram.ChartAreas[0].AxisX.MajorGrid.Enabled = true;
+                ct_EE_Histogram.ChartAreas[0].AxisY.MajorGrid.Enabled = true;
+            }
+            else
+            {
+                ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+                ct_EE_Histogram.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+                ct_EE_Histogram.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
+            }
         }
 
         Point? ct_EE_Histogram_prevPosition = null;

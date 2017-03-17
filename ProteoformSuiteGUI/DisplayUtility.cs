@@ -67,8 +67,6 @@ namespace ProteoformSuiteGUI
             ct.DataBind();
             ct.ChartAreas[0].AxisX.Title = "Delta Mass (Da)";
             ct.ChartAreas[0].AxisY.Title = "Nearby Count";
-            ct.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
-            ct.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
             ct.ChartAreas[0].AxisX.LabelStyle.Format = "#";
             ct.ChartAreas[0].AxisY.LabelStyle.Format = "#";
 
