@@ -294,7 +294,9 @@ namespace Test
         [Test]
         public void test_results_summary_with_peaks()
         {
-            Lollipop.proteoform_community = construct_two_families_with_potentially_colliding_theoreticals();
+            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
+            Lollipop.et_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.et).ToList();
+            Lollipop.ee_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ee).ToList();
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
         }
     }
