@@ -42,15 +42,19 @@ namespace ProteoformSuiteGUI
             this.Cursor = Cursors.WaitCursor;
             Lollipop.aggregate_proteoforms(Lollipop.validate_proteoforms, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
             FillAggregatesTable();
-            if (Lollipop.proteoform_community.theoretical_proteoforms.Length > 0)
+
+            ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
+            ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
+            ((ProteoformSweet)MdiParent).quantification.perform_calculations();
+            ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
+
+            if (Lollipop.neucode_labeled)
             {
-                ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
-                ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.run_the_gamut();
-                ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();
+                if (Lollipop.proteoform_community.theoretical_proteoforms.Length > 0)  ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.run_the_gamut();
                 ((ProteoformSweet)MdiParent).experimentExperimentComparison.run_the_gamut();
-                ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
-                ((ProteoformSweet)MdiParent).quantification.perform_calculations();
             }
+
             updateFiguresOfMerit();
             this.Cursor = Cursors.Default;
         }
