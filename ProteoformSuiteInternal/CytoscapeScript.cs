@@ -24,11 +24,11 @@ namespace ProteoformSuiteInternal
 
             if (stuff.Length <= 0) return "No objects were selected";
             if (families.Count <= 0 && typeof(TheoreticalProteoform).IsAssignableFrom(stuff[0].GetType()))
-                families = get_families(stuff.OfType<TheoreticalProteoform>(), all_families).ToList();
+                families = get_families(stuff.OfType<TheoreticalProteoform>(), all_families).Distinct().ToList();
             if (families.Count <= 0 && typeof(GoTerm).IsAssignableFrom(stuff[0].GetType()))
-                families = get_families(stuff.OfType<GoTerm>(), all_families).ToList();
+                families = get_families(stuff.OfType<GoTerm>(), all_families).Distinct().ToList();
             if (families.Count <= 0 && typeof(ExperimentalProteoform.quantitativeValues).IsAssignableFrom(stuff[0].GetType()))
-                families = get_families(stuff.OfType<ExperimentalProteoform.quantitativeValues>(), all_families).ToList();
+                families = get_families(stuff.OfType<ExperimentalProteoform.quantitativeValues>(), all_families).Distinct().ToList();
             if (families.Count <= 0) return "Selected objects were not recognized.";
 
             return write_script(families, all_families, folder_path, time_stamp, quantitative, quantitative_redBorder, quantitative_boldFace, quantitative_moreOpacity, color_scheme, node_label_position, double_rounding);
@@ -176,23 +176,20 @@ namespace ProteoformSuiteInternal
                 if (quantitative && p.quant.intensitySum != 0) node_rows += "\t" + String.Join("\t", new List<string> { ((double)p.quant.lightIntensitySum).ToString(), ((double)p.quant.heavyIntensitySum).ToString(), p.quant.significant.ToString(), get_piechart_string(color_scheme) });
                 node_rows += Environment.NewLine;
             }
-            foreach (TheoreticalProteoform p in families.SelectMany(f => f.theoretical_proteoforms))
+
+            IEnumerable<TheoreticalProteoform> theoreticals = families.SelectMany(f => f.theoretical_proteoforms);
+            foreach (TheoreticalProteoform p in theoreticals)
             {
                 string node_type = String.Equals(p.ptm_list_string(), "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, double_rounding), node_type, mock_intensity }) + Environment.NewLine;
             }
-            foreach (TopDownProteoform p in families.SelectMany(f => f.topdown_proteoforms.Where(p => !p.targeted).ToList()))
+            foreach (TopDownProteoform p in families.SelectMany(f => f.topdown_proteoforms.ToList()))
             {
-                string node_type = td_label;
-                string mock_intensity = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
+                string node_type = p.ptm_list_string();
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, double_rounding), node_type, mock_intensity }) + Environment.NewLine;
             }
-            foreach (TopDownProteoform p in families.SelectMany(f => f.topdown_proteoforms.Where(p => p.targeted).ToList()))
-            {
-                string node_type = targeted_td_label;
-                string mock_intensity = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
-                node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, double_rounding), node_type, mock_intensity }) + Environment.NewLine;
-            }
+
+            foreach (string gene_name in theoreticals.SelectMany(t => t.proteinList.SelectMany(p => p.GeneNames).Where(n => n.Item1 == "primary").Select(n => n.Item2))) { }
             return tsv_header + Environment.NewLine + node_rows;
         }
 

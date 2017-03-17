@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Windows.Forms;
+using System.Text.RegularExpressions;
 
 namespace ProteoformSuiteGUI
 {
@@ -70,6 +71,8 @@ namespace ProteoformSuiteGUI
             ckbx_combineIdenticalSequences.Checked = Lollipop.combine_identical_sequences;
             ckbx_combineTheoreticalsByMass.Checked = Lollipop.combine_theoretical_proteoforms_byMass;
 
+            tb_modTypesToExclude.Text = String.Join(",", Lollipop.mod_types_to_exclude);
+
             tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
             tb_tableFilter.Text = "";
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
@@ -122,7 +125,7 @@ namespace ProteoformSuiteGUI
 
         private void set_Make_Database_Button()
         {
-            btn_Make_Databases.Enabled = Lollipop.get_files(Lollipop.input_files, Purpose.PtmList).Count() > 0 && Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() > 0;
+            btn_Make_Databases.Enabled = Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() > 0;
         }
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)
@@ -245,32 +248,6 @@ namespace ProteoformSuiteGUI
             if (!initial_load)
                 Lollipop.interest_type = tb_interest_label.Text;
         }
-        private void dgv_ptmLists_DragDrop(object sender, DragEventArgs e)
-        {
-            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            enter_input_files(files, new List<string> { ".txt" }, Purpose.Identification);
-
-            //DisplayUtility.FillDataGridView(dgv_identificationFiles, Lollipop.identification_files());
-        }
-        private void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, Purpose purpose)
-        {
-            foreach (string enteredFile in files)
-            {
-                //string path = Path.GetDirectoryName(enteredFile);
-                //string filename = Path.GetFileNameWithoutExtension(enteredFile);
-                //string extension = Path.GetExtension(enteredFile);
-                //Labeling label = Labeling.Unlabeled;
-                //if (btn_neucode.Checked) label = Labeling.NeuCode;
-
-                //if (acceptable_extensions.Contains(extension) && !Lollipop.input_files.Where(f => f.purpose == purpose).Any(f => f.filename == filename))
-                //{
-                //    reload_dgvs();
-
-                //    InputFile file = new InputFile(path, filename, extension, label, purpose);
-                //    Lollipop.input_files.Add(file);
-                //}
-            }
-        }
 
 
         // LOAD DATABASES GRID VIEW
@@ -308,6 +285,12 @@ namespace ProteoformSuiteGUI
                 ExtensionMethods.filter(Lollipop.proteoform_community.theoretical_proteoforms, tb_tableFilter.Text);
             DisplayUtility.FillDataGridView(dgv_Database, selected_theoreticals);
             if (selected_theoreticals.Count() > 0) DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
+        }
+
+        Regex substituteWhitespace = new Regex(@"\s+");
+        private void tb_modTypesToExclude_TextChanged(object sender, EventArgs e)
+        {
+            Lollipop.mod_types_to_exclude = substituteWhitespace.Replace(tb_modTypesToExclude.Text, "").Split(',');
         }
     }
 }
