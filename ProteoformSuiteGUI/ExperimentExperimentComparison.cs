@@ -46,10 +46,10 @@ namespace ProteoformSuiteGUI
         {
             this.Cursor = Cursors.WaitCursor;
             Lollipop.make_ee_relationships();
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
             //slow for labelfree - need to manually check peaks and raise peak threshold or too many peaks
             if (Lollipop.neucode_labeled)
             {
-                ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
                 Parallel.Invoke
                 (
                     () => this.FillTablesAndCharts(),
@@ -59,6 +59,7 @@ namespace ProteoformSuiteGUI
                 ((ProteoformSweet)this.MdiParent).proteoformFamilies.fill_proteoform_families("");
                 ((ProteoformSweet)this.MdiParent).proteoformFamilies.update_figures_of_merit();
             }
+            else { this.FillTablesAndCharts(); }
             this.Cursor = Cursors.Default;
             compared_ee = true;
         }
@@ -83,6 +84,9 @@ namespace ProteoformSuiteGUI
             foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ee || r.relation_type == ProteoformComparison.ef);
             Lollipop.proteoform_community.relations_in_peaks.RemoveAll(r => r.relation_type == ProteoformComparison.ee || r.relation_type == ProteoformComparison.ef);
             Lollipop.proteoform_community.delta_mass_peaks.RemoveAll(k => k.relation_type == ProteoformComparison.ee || k.relation_type == ProteoformComparison.ef);
+
+            foreach (var series in ct_EE_Histogram.Series) series.Points.Clear();
+            foreach (var series in ct_EE_peakList.Series) series.Points.Clear();
 
             dgv_EE_Relations.DataSource = null;
             dgv_EE_Peaks.DataSource = null;

@@ -47,6 +47,7 @@ namespace ProteoformSuiteGUI
         {
             this.Cursor = Cursors.WaitCursor;
             Lollipop.make_et_relationships();
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
             this.FillTablesAndCharts();
             this.Cursor = Cursors.Default;
             compared_et = true;
@@ -86,6 +87,10 @@ namespace ProteoformSuiteGUI
             foreach (Proteoform p in Lollipop.proteoform_community.decoy_proteoforms.Values.SelectMany(d => d)) p.relationships.Clear();
             Lollipop.proteoform_community.relations_in_peaks.RemoveAll(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.ed);
             Lollipop.proteoform_community.delta_mass_peaks.RemoveAll(k => k.relation_type == ProteoformComparison.et || k.relation_type == ProteoformComparison.ed);
+
+
+            foreach (var series in ct_ET_Histogram.Series) series.Points.Clear();
+            foreach (var series in ct_ET_peakList.Series) series.Points.Clear();
 
             dgv_ET_Pairs.DataSource = null;
             dgv_ET_Peak_List.DataSource = null;
@@ -209,7 +214,6 @@ namespace ProteoformSuiteGUI
                 }
                 Lollipop.regroup_components(Lollipop.neucode_labeled, Lollipop.validate_proteoforms, Lollipop.input_files, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
             }
-            tb_max_accepted_fdr.Text = Lollipop.et_peaks.Where(p => p.peak_accepted).Max(p => p.peak_group_fdr).ToString();
         }
 
         //will leave option to change one at a time by right clicking
