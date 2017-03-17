@@ -458,7 +458,8 @@ namespace ProteoformSuiteInternal
         public static bool combine_theoretical_proteoforms_byMass = true;
         public static string accessions_of_interest_list_filepath = "";
         public static string interest_type = "Of interest"; //label for proteins of interest. can be changed 
-        public static Dictionary<InputFile, Protein[]> theoretical_proteins;
+        public static string[] mod_types_to_exclude = new string[] { "Metal", "PeptideTermMod" };
+        public static Dictionary<InputFile, Protein[]> theoretical_proteins = new Dictionary<InputFile, Protein[]>();
         public static ProteinWithGoTerms[] expanded_proteins;
         public static List<Psm> psm_list = new List<Psm>();
         public static Dictionary<string, IList<Modification>> uniprotModificationTable = new Dictionary<string, IList<Modification>>();
@@ -474,10 +475,16 @@ namespace ProteoformSuiteInternal
 
             //Read the UniProt-XML and ptmlist
             Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
-            List<ModificationWithLocation> all_modifications = get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
-            read_mods(all_modifications);
+            List<ModificationWithLocation> all_known_modifications = get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
+            read_mods(all_known_modifications);
             Dictionary<string, Modification> um;
-            theoretical_proteins = get_files(Lollipop.input_files, Purpose.ProteinDatabase).ToDictionary(file => file, file => ProteinDbLoader.LoadProteinXML(file.complete_path, false, all_modifications, file.ContaminantDB, new string[] { "GO" }, new string[] { }, out um).ToArray());
+            foreach (InputFile database in get_files(Lollipop.input_files, Purpose.ProteinDatabase).ToList())
+            {
+                theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, false, all_known_modifications, database.ContaminantDB, new string[] { "GO" }, mod_types_to_exclude, out um).ToArray());
+                all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).OfType<ModificationWithLocation>());
+            }
+            all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
+            read_mods(all_known_modifications);
             expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
             aaIsotopeMassList = new AminoAcidMasses(methionine_oxidation, carbamidomethylation, Lollipop.natural_lysine_isotope_abundance, Lollipop.neucode_light_lysine, Lollipop.neucode_heavy_lysine).AA_Masses;
             if (combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
@@ -525,6 +532,7 @@ namespace ProteoformSuiteInternal
 
        public static void read_mods(List<ModificationWithLocation> all_modifications)
         {
+            uniprotModificationTable.Clear();
             foreach (var nice in all_modifications)
             {
                 IList<Modification> val;

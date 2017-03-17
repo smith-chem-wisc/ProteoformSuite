@@ -17,14 +17,6 @@ namespace Test
         [Test]
         public void nodes_table_gives_meaningful_modified_theoreticals()
         {
-<<<<<<< HEAD
-            ProteoformFamily f = new ProteoformFamily(
-                new List<Proteoform> {
-                    new TheoreticalProteoform("T1","","T1","",0,0,100,20,new List<GoTerm>(), new PtmSet(new List<Ptm> { new Ptm(), new Ptm() }),100, true)
-                }, 1);
-            CytoscapeScript c = new CytoscapeScript(new List<ProteoformFamily> { f }, "yup", false, false, false, false, CytoscapeScript.color_scheme_names[0], CytoscapeScript.node_label_positions[0]);
-            c.node_table.Contains(CytoscapeScript.modified_theoretical_label);
-=======
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
             string mod_title = "oxidation";
@@ -51,20 +43,11 @@ namespace Test
             string node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f }, false, CytoscapeScript.color_scheme_names[0], 2);
             Assert.True(node_table.Contains(CytoscapeScript.modified_theoretical_label));
             Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, 2));
->>>>>>> e87ee7a02e6f2a167571324d68aa7f000cbc9406
         }
 
         [Test]
         public void nodes_table_gives_meaningful_unmodified_theoreticals()
         {
-<<<<<<< HEAD
-            ProteoformFamily f = new ProteoformFamily(
-                new List<Proteoform> {
-                    new TheoreticalProteoform("T1","","T1","",0,0,100,20,new List<GoTerm>(), new PtmSet(new List<Ptm> { new Ptm() }),100, true)
-                }, 1);
-            CytoscapeScript c = new CytoscapeScript(new List<ProteoformFamily> { f }, "yup", false, false, false, false, CytoscapeScript.color_scheme_names[0], CytoscapeScript.node_label_positions[0]);
-            c.node_table.Contains(CytoscapeScript.unmodified_theoretical_label);
-=======
             Proteoform p = new TheoreticalProteoform("T1", "", "T1_1", "", 0, 0, 100, 20, new PtmSet(new List<Ptm> { new Ptm() }), 100, true); //unmodified has one PTM labeled unmodified
             ProteoformFamily f = new ProteoformFamily(p);
             f.construct_family();
@@ -321,7 +304,6 @@ namespace Test
             Assert.True(shared_pf_names_nodes.All(name => shared_pf_names_edges.Contains(name)));
             Assert.True(shared_pf_names_edges.All(name => shared_pf_names_nodes.Contains(name)));
             Assert.AreEqual(community.families.First().proteoforms.Count, shared_pf_names_nodes.Count);
->>>>>>> e87ee7a02e6f2a167571324d68aa7f000cbc9406
         }
     }
 }
