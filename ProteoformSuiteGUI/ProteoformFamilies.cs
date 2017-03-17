@@ -32,7 +32,7 @@ namespace ProteoformSuiteGUI
             this.cb_buildAsQuantitative.Checked = false;
         }
 
-        private void initialize_settings()
+        public void initialize_settings()
         {
             //Initialize display options
             cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
