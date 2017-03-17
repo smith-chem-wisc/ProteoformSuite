@@ -6,6 +6,24 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
+    public class BiorepIntensity
+    {
+        public bool light { get; set; } = true; // true if unlabelled or neucode light; false if neucode heavy
+        public bool imputed { get; set; } = false;
+        public int biorep { get; set; }
+        public string condition { get; set; }
+        public double intensity { get; set; }// this should be linear intensity not log intensity
+
+        public BiorepIntensity(bool light, bool imputed, int biorep, string condition, double intensity)
+        {
+            this.light = light;
+            this.imputed = imputed;
+            this.biorep = biorep;
+            this.condition = condition;
+            this.intensity = intensity;// this should be linear intensity not log intensity
+        }
+    }
+
     //public class bftIntensity
     //{        
     //    public bool light { get; set; } = true; // true if unlabelled or neucode light; false if neucode heavy
@@ -22,22 +40,4 @@ namespace ProteoformSuiteInternal
     //        this.intensity = intensity;
     //    }
     //}
-
-    public class biorepIntensity
-    {
-        public bool light { get; set; } = true; // true if unlabelled or neucode light; false if neucode heavy
-        public bool imputed { get; set; } = false;
-        public int biorep { get; set; }
-        public string condition { get; set; }
-        public double intensity { get; set; }// this should be linear intensity not log intensity
-
-        public biorepIntensity(bool light, bool imputed, int biorep, string condition, double intensity)
-        {
-            this.light = light;
-            this.imputed = imputed;
-            this.biorep = biorep;
-            this.condition = condition;
-            this.intensity = intensity;// this should be linear intensity not log intensity
-        }
-    }
 }

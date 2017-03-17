@@ -115,7 +115,7 @@
   <ItemGroup>
     <Compile Include="AminoAcidMasses.cs" />
     <Compile Include="BigRational.cs" />
-    <Compile Include="biorepIntensity.cs" />
+    <Compile Include="BiorepIntensity.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Correction.cs" />
     <Compile Include="CytoscapeScript.cs" />
@@ -138,6 +138,7 @@
     <Compile Include="ProteoformRelation.cs" />
     <Compile Include="ProteomeDatabaseReader.cs" />
     <Compile Include="Psm.cs" />
+    <Compile Include="ResultsSummaryGenerator.cs" />
     <Compile Include="SaveState.cs" />
     <Compile Include="TheoreticalProteoform.cs" />
     <Compile Include="TheoreticalProteoformGroup.cs" />

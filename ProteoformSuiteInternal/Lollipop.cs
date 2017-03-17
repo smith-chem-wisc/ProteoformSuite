@@ -66,7 +66,7 @@ namespace ProteoformSuiteInternal
             "Excel Files (*.xlsx) | *.xlsx",
             "Excel Files (*.xlsx) | *.xlsx",
             "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
-            "Text Files (*.txt, *.tsv) | *.tsv, *.txt",
+            "Text Files (*.txt, *.tsv) | *.tsv;*.txt",
             "Excel Files (*.xlsx) | *.xlsx",
             "Text Files (*.tsv) | *.tsv"
         };
@@ -272,8 +272,8 @@ namespace ProteoformSuiteInternal
         public static List<Component> remaining_verification_components = new List<Component>();
         public static List<Component> remaining_quantification_components = new List<Component>();
         public static bool validate_proteoforms = true;
-        public static decimal mass_tolerance = 3; //ppm
-        public static decimal retention_time_tolerance = 3; //min
+        public static decimal mass_tolerance = 5; //ppm
+        public static decimal retention_time_tolerance = 5; //min
         public static decimal missed_monos = 3;
         public static decimal missed_lysines = 2;
         public static double min_rel_abundance = 0;
@@ -730,10 +730,10 @@ namespace ProteoformSuiteInternal
 
 
         //ET,ED,EE,EF COMPARISONS
-        public static double ee_max_mass_difference = 250; //TODO: implement this in ProteoformFamilies and elsewhere
+        public static double ee_max_mass_difference = 300;
         public static double ee_max_RetentionTime_difference = 2.5;
-        public static double et_low_mass_difference = -250;
-        public static double et_high_mass_difference = 250;
+        public static double et_low_mass_difference = -300;
+        public static double et_high_mass_difference = 300;
         public static double no_mans_land_lowerBound = 0.22;
         public static double no_mans_land_upperBound = 0.88;
         public static double peak_width_base_ee = 0.015;

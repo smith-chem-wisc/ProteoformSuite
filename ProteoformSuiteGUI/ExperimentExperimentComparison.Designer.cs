@@ -1,4 +1,4 @@
-﻿namespace ProteoformSuite
+﻿namespace ProteoformSuiteGUI
 {
     partial class ExperimentExperimentComparison
     {
@@ -35,6 +35,7 @@
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExperimentExperimentComparison));
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.dgv_EE_Peaks = new System.Windows.Forms.DataGridView();
@@ -642,6 +643,7 @@
             this.ClientSize = new System.Drawing.Size(1652, 711);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer2);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ExperimentExperimentComparison";
             this.Text = "ExperimentExperimentComparison";
             this.Load += new System.EventHandler(this.ExperimentExperimentComparison_Load);
@@ -719,7 +721,7 @@
         private System.Windows.Forms.TextBox tb_IdentifiedProteoforms;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.CheckBox cb_Graph_lowerThreshold;
-        private System.Windows.Forms.DataVisualization.Charting.Chart ct_EE_Histogram;
+        public System.Windows.Forms.DataVisualization.Charting.Chart ct_EE_Histogram;
         private System.Windows.Forms.DataGridView dgv_EE_Relations;
         private System.Windows.Forms.DataVisualization.Charting.Chart ct_EE_peakList;
         private System.Windows.Forms.SplitContainer splitContainer2;

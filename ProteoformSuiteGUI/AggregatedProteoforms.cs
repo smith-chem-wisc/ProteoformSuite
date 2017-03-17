@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public partial class AggregatedProteoforms : Form
     {
@@ -46,8 +46,6 @@ namespace ProteoformSuite
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.run_the_gamut();
             ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).experimentExperimentComparison.run_the_gamut();
-            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
-            ((ProteoformSweet)MdiParent).proteoformFamilies.run_the_gamut();
             ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).quantification.perform_calculations();
             updateFiguresOfMerit();

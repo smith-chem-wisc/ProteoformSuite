@@ -131,7 +131,7 @@ namespace ProteoformSuiteInternal
             this.remaining_relations_outside_no_mans = relations.Where(r => r.outside_no_mans_land).OrderByDescending(r => r.nearby_relations_count).ThenByDescending(r => r.agg_intensity_1).ToList(); // Group count is the primary sort
             List<DeltaMassPeak> peaks = new List<DeltaMassPeak>();
 
-            ProteoformRelation root = remaining_relations_outside_no_mans.First();
+            ProteoformRelation root = remaining_relations_outside_no_mans.FirstOrDefault();
             List<ProteoformRelation> running = new List<ProteoformRelation>();
             List<Thread> active = new List<Thread>();
             while (remaining_relations_outside_no_mans.FirstOrDefault() != null || active.Count > 0)

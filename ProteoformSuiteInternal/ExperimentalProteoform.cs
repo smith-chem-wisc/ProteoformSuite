@@ -23,7 +23,7 @@ namespace ProteoformSuiteInternal
         public List<Component> hv_verification_components { get; set; } = new List<Component>();
         public List<Component> lt_quant_components { get; set; } = new List<Component>();
         public List<Component> hv_quant_components { get; set; } = new List<Component>();
-        public List<biorepIntensity> biorepIntensityList { get; set; } = new List<biorepIntensity>(); //(bool light = true, int biorep, double intensity)
+        public List<BiorepIntensity> biorepIntensityList { get; set; } = new List<BiorepIntensity>(); //(bool light = true, int biorep, double intensity)
         public quantitativeValues quant { get; set; }
         public bool accepted { get; set; } = true;
         public double agg_mass { get; set; } = 0;
@@ -152,7 +152,7 @@ namespace ProteoformSuiteInternal
             this.lt_verification_components = new List<Component>(e.lt_verification_components);
             this.hv_quant_components = new List<Component>(e.hv_quant_components);
             this.hv_verification_components = new List<Component>(e.hv_verification_components);
-            this.biorepIntensityList = new List<biorepIntensity>(e.biorepIntensityList);
+            this.biorepIntensityList = new List<BiorepIntensity>(e.biorepIntensityList);
         }
 
 
@@ -261,16 +261,16 @@ namespace ProteoformSuiteInternal
 
 
         // QUANTITATION CLASS AND METHODS
-        public List<biorepIntensity> make_biorepIntensityList<T>(List<T> lt_quant_components, List<T> hv_quant_components, IEnumerable<string> ltConditionStrings, IEnumerable<string> hvConditionStrings)
+        public List<BiorepIntensity> make_biorepIntensityList<T>(List<T> lt_quant_components, List<T> hv_quant_components, IEnumerable<string> ltConditionStrings, IEnumerable<string> hvConditionStrings)
             where T : IBiorepable
         {
-            List<biorepIntensity> biorepIntensityList = new List<biorepIntensity>();
+            List<BiorepIntensity> biorepIntensityList = new List<BiorepIntensity>();
             //foreach (string condition in Lollipop.ltConditionsBioReps.Keys)
             foreach (string condition in ltConditionStrings)
             {
                 foreach (int b in lt_quant_components.Where(c => c.input_file.lt_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())
                 {
-                    biorepIntensityList.Add(new biorepIntensity(true, false, b, condition, lt_quant_components.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum)));
+                    biorepIntensityList.Add(new BiorepIntensity(true, false, b, condition, lt_quant_components.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum)));
                 }
             }
             if (Lollipop.neucode_labeled)
@@ -280,7 +280,7 @@ namespace ProteoformSuiteInternal
                 {
                     foreach (int b in hv_quant_components.Where(c => c.input_file.hv_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())
                     {
-                        biorepIntensityList.Add(new biorepIntensity(false, false, b, condition, hv_quant_components.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum)));
+                        biorepIntensityList.Add(new BiorepIntensity(false, false, b, condition, hv_quant_components.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum)));
                     }
                 }
             }
@@ -291,10 +291,10 @@ namespace ProteoformSuiteInternal
         public class quantitativeValues
         {
             public string accession { get { return proteoform.accession; } }
-            public List<biorepIntensity> lightBiorepIntensities { get; set; }
-            public List<biorepIntensity> heavyBiorepIntensities { get; set; }
-            public List<biorepIntensity> lightImputedIntensities { get; set; }
-            public List<biorepIntensity> heavyImputedIntensities { get; set; }
+            public List<BiorepIntensity> lightBiorepIntensities { get; set; }
+            public List<BiorepIntensity> heavyBiorepIntensities { get; set; }
+            public List<BiorepIntensity> lightImputedIntensities { get; set; }
+            public List<BiorepIntensity> heavyImputedIntensities { get; set; }
             public decimal lightIntensitySum { get; set; } = 0;
             public decimal heavyIntensitySum { get; set; } = 0;
             public decimal intensitySum { get; set; } = 0;
@@ -314,7 +314,7 @@ namespace ProteoformSuiteInternal
                 proteoform = eP;
             }
 
-            public void determine_biorep_intensities_and_test_statistics(bool neucode_labeled, List<biorepIntensity> biorepIntensityList, decimal bkgdAverageIntensity, decimal bkgdStDev, string numerator, string denominator, decimal sKnot)
+            public void determine_biorep_intensities_and_test_statistics(bool neucode_labeled, List<BiorepIntensity> biorepIntensityList, decimal bkgdAverageIntensity, decimal bkgdStDev, string numerator, string denominator, decimal sKnot)
             {
                 //bkgdAverageIntensity is log base 2
                 //bkgdStDev is log base 2
@@ -324,9 +324,9 @@ namespace ProteoformSuiteInternal
                 lightBiorepIntensities = biorepIntensityList.Where(b => b.light).ToList();
                 lightImputedIntensities = imputedIntensities(true, lightBiorepIntensities, bkgdAverageIntensity, bkgdStDev, Lollipop.ltConditionsBioReps);
                 lightIntensitySum = (decimal)lightBiorepIntensities.Sum(i => i.intensity) + (decimal)lightImputedIntensities.Sum(i => i.intensity);
-                List<biorepIntensity> allLights = lightBiorepIntensities.Concat(lightImputedIntensities).ToList();
+                List<BiorepIntensity> allLights = lightBiorepIntensities.Concat(lightImputedIntensities).ToList();
 
-                List<biorepIntensity> allHeavys = new List<biorepIntensity>();
+                List<BiorepIntensity> allHeavys = new List<BiorepIntensity>();
                 if (neucode_labeled)
                 {
                     heavyBiorepIntensities = biorepIntensityList.Where(b => !b.light).ToList();
@@ -362,12 +362,12 @@ namespace ProteoformSuiteInternal
                 return avergePermuted / ((decimal)(sortedProteoformTestStatistics.Count(s => s >= minimumPositivePassingTestStatistic) + sortedProteoformTestStatistics.Count(s => s <= minimumNegativePassingTestStatistic)));
             }
 
-            public static List<biorepIntensity> imputedIntensities(bool light, List<biorepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev, Dictionary<string, List<int>> observedConditionsBioreps)
+            public static List<BiorepIntensity> imputedIntensities(bool light, List<BiorepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev, Dictionary<string, List<int>> observedConditionsBioreps)
             {
                 //bkgdAverageIntensity is log base 2
                 //bkgdStDev is log base 2
 
-                List<biorepIntensity> imputedBioreps = new List<biorepIntensity>();
+                List<BiorepIntensity> imputedBioreps = new List<BiorepIntensity>();
                 foreach (KeyValuePair<string, List<int>> entry in observedConditionsBioreps)//keys are conditions and values are bioreps.
                 {
                     foreach (int biorep in entry.Value)
@@ -381,7 +381,7 @@ namespace ProteoformSuiteInternal
                 return imputedBioreps;
             }
 
-            public static biorepIntensity add_biorep_intensity(decimal bkgdAverageIntensity, decimal bkgdStDev, int biorep, string key, bool light)
+            public static BiorepIntensity add_biorep_intensity(decimal bkgdAverageIntensity, decimal bkgdStDev, int biorep, string key, bool light)
             {
                 //bkgdAverageIntensity is coming in as a log 2 number
                 //bkgdStDev is coming in as a log 2 number
@@ -390,16 +390,16 @@ namespace ProteoformSuiteInternal
                 double u2 = ExtensionMethods.RandomNumber();
                 double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
                 double intensity = Math.Pow(2, (double)bkgdAverageIntensity) + (Math.Pow(2, (double)bkgdStDev) * randStdNormal);
-                return (new biorepIntensity(light, true, biorep, key, intensity));//random normal(mean,stdDev^2)
+                return (new BiorepIntensity(light, true, biorep, key, intensity));//random normal(mean,stdDev^2)
             }
 
-            public decimal Variance(decimal logFoldChange, List<biorepIntensity> allLights, List<biorepIntensity> allHeavies)
+            public decimal Variance(decimal logFoldChange, List<BiorepIntensity> allLights, List<BiorepIntensity> allHeavies)
             {
                 decimal squaredVariance = 0;
                 foreach (int biorep in allLights.Select(b => b.biorep).ToList())
                 {
-                    List<biorepIntensity> lights_in_biorep = allLights.Where(b => b.biorep == biorep).ToList();
-                    List<biorepIntensity> heavies_in_biorep = allHeavies.Where(b => b.biorep == biorep).ToList();
+                    List<BiorepIntensity> lights_in_biorep = allLights.Where(b => b.biorep == biorep).ToList();
+                    List<BiorepIntensity> heavies_in_biorep = allHeavies.Where(b => b.biorep == biorep).ToList();
 
                     if (lights_in_biorep.Count != heavies_in_biorep.Count)
                         throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for NeuCode light and heavy at this point.");
@@ -413,7 +413,7 @@ namespace ProteoformSuiteInternal
                 return (decimal)Math.Pow((double)squaredVariance, 0.5);
             }
 
-            public decimal getProteinLevelStdDev(List<biorepIntensity> allLights, List<biorepIntensity> allHeavys)
+            public decimal getProteinLevelStdDev(List<BiorepIntensity> allLights, List<BiorepIntensity> allHeavys)
             {
                 if ((allLights.Count + allHeavys.Count) == 2)
                     return 1000000m;
@@ -427,13 +427,13 @@ namespace ProteoformSuiteInternal
                 return stdev;
             }
 
-            public decimal getSingleTestStatistic(List<biorepIntensity> allLights, List<biorepIntensity> allHeavys, decimal proteinLevelStdDev, decimal sKnot)
+            public decimal getSingleTestStatistic(List<BiorepIntensity> allLights, List<BiorepIntensity> allHeavys, decimal proteinLevelStdDev, decimal sKnot)
             {
                 double t = (Math.Log(allLights.Average(l => l.intensity), 2) - Math.Log(allHeavys.Average(h => h.intensity), 2)) / ((double)(proteinLevelStdDev + sKnot));
                 return (decimal)t;
             }
 
-            public List<decimal> getPermutedTestStatistics(List<biorepIntensity> allLights, List<biorepIntensity> allHeavys, decimal protproteinLevelStdDevein, decimal sKnot)
+            public List<decimal> getPermutedTestStatistics(List<BiorepIntensity> allLights, List<BiorepIntensity> allHeavys, decimal protproteinLevelStdDevein, decimal sKnot)
             {
                 List<decimal> pst = new List<decimal>();
                 int ltCount = allLights.Count;
@@ -441,7 +441,7 @@ namespace ProteoformSuiteInternal
                 List<int> arr = Enumerable.Range(0, ltCount + hvCount).ToList();
                 var result = ExtensionMethods.Combinations(arr, ltCount);
 
-                List<biorepIntensity> allBiorepIntensities = new List<biorepIntensity>(allLights.Concat(allHeavys));
+                List<BiorepIntensity> allBiorepIntensities = new List<BiorepIntensity>(allLights.Concat(allHeavys));
 
                 int last = ltCount;
                 if (ltCount != hvCount) // This shouldn't happen because imputation forces these lists to be the same length
@@ -452,8 +452,8 @@ namespace ProteoformSuiteInternal
 
                 for (int i = 0; i < last; i++)
                 {
-                    List<biorepIntensity> lightlist = new List<biorepIntensity>();
-                    List<biorepIntensity> heavylist = new List<biorepIntensity>();
+                    List<BiorepIntensity> lightlist = new List<BiorepIntensity>();
+                    List<BiorepIntensity> heavylist = new List<BiorepIntensity>();
                     foreach (int index in result.ElementAt(i))
                         lightlist.Add(allBiorepIntensities[index]);
                     heavylist = allBiorepIntensities.Except(lightlist).ToList();
@@ -462,7 +462,7 @@ namespace ProteoformSuiteInternal
                 return pst;
             }
 
-            public decimal PValue(decimal logFoldChange, List<biorepIntensity> allLights, List<biorepIntensity> allHeavies)
+            public decimal PValue(decimal logFoldChange, List<BiorepIntensity> allLights, List<BiorepIntensity> allHeavies)
             {
                 if (allLights.Count != allHeavies.Count)
                     throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for NeuCode light and heavy at this point.");
