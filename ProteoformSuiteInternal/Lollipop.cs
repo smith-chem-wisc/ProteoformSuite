@@ -647,7 +647,7 @@ namespace ProteoformSuiteInternal
                             unmodified_mass, lysine_count, ptm_set, proteoform_mass, true, check_contaminants, theoretical_proteins));
                     else
                         theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot, isMetCleaved,
-                            unmodified_mass, lysine_count, ptm_set, proteoform_mass, false, false, theoretical_proteins));
+                            unmodified_mass, lysine_count, ptm_set, proteoform_mass, false, check_contaminants, theoretical_proteins));
                 }
                 listMemberNumber++;
             } 
