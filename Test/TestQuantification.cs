@@ -436,6 +436,9 @@ namespace Test
             //One permuted value passes each time, the nine
             //Eight values in the set {0,1,2,3,4,5,6,7,8,9} pass the two cutoffs, 6 and 9
             Assert.AreEqual((double)1 / (double)8, Lollipop.computeFoldChangeFDR(Lollipop.sortedAvgPermutationTestStatistics, Lollipop.sortedProteoformTestStatistics, satisfactoryProteoforms, satisfactoryProteoforms.SelectMany(e => e.quant.permutedTestStatistics), 1));
+
+            Lollipop.satisfactoryProteoforms = satisfactoryProteoforms;
+            Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
         }
 
         [Test]
@@ -735,6 +738,29 @@ namespace Test
                 Assert.IsNotNull(num.by);
                 Assert.True(num.by <= 1);
             }
+        }
+
+        [Test]
+        public void test_results_summary_with_gtns()
+        {
+            int numberOfGoTermNumbers = 100;
+            List<GoTermNumber> gtns = new List<GoTermNumber>();
+            for (double i = 1; i <= numberOfGoTermNumbers; i++)
+            {
+                DatabaseReference d = new DatabaseReference("GO", ":id", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:description") });
+                GoTerm g = new GoTerm(d);
+                GoTermNumber gtn = new GoTermNumber(g, 0, 0, 0, 0);
+                gtn.p_value = 0.1d / i - 0.0005d;
+                gtns.Add(gtn);
+            }
+            Lollipop.calculateGoTermFDR(gtns);
+            foreach (GoTermNumber num in gtns)
+            {
+                Assert.IsNotNull(num.by);
+                Assert.True(num.by <= 1);
+            }
+            Lollipop.goTermNumbers = gtns;
+            Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
         }
 
         [Test]
