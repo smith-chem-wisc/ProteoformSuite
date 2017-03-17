@@ -131,9 +131,11 @@ namespace ProteoformSuiteInternal
         public static string size_header = "total_intensity";
         public static string piechart_header = "piechart_graphics";
         public static string significant_header = "significant_difference";
-        public static string experimental_label = "exp";
-        public static string unmodified_theoretical_label = "theo";
-        public static string modified_theoretical_label = "ptm";
+        public static string experimental_label = "experimental";
+        public static string experimental_notQuantified_label = "experimental_below_quantification_threshold";
+        public static string unmodified_theoretical_label = "theoretical";
+        public static string modified_theoretical_label = "modified_theoretical";
+        public static string mock_intensity = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
         public static string get_cytoscape_edges_tsv(List<ProteoformFamily> families, int double_rounding)
         {
             string tsv_header = "accession_1\t" + lysine_count_header + "\taccession_2\t" + delta_mass_header;
@@ -160,17 +162,20 @@ namespace ProteoformSuiteInternal
             string node_rows = "";
             foreach (ExperimentalProteoform p in families.SelectMany(f => f.experimental_proteoforms))
             {
-                string node_type = experimental_label;
-                string total_intensity = quantitative ? ((double)p.quant.intensitySum).ToString() : p.agg_intensity.ToString();
+                string node_type = quantitative && p.quant.intensitySum == 0 ? 
+                    experimental_notQuantified_label : 
+                    experimental_label;
+                string total_intensity = quantitative ?
+                    p.quant.intensitySum == 0 ? mock_intensity : ((double)p.quant.intensitySum).ToString() : 
+                    p.agg_intensity.ToString();
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, double_rounding), node_type, total_intensity });
-                if (quantitative) node_rows += "\t" + String.Join("\t", new List<string> { ((double)p.quant.lightIntensitySum).ToString(), ((double)p.quant.heavyIntensitySum).ToString(), p.quant.significant.ToString(), get_piechart_string(color_scheme) });
+                if (quantitative && p.quant.intensitySum != 0) node_rows += "\t" + String.Join("\t", new List<string> { ((double)p.quant.lightIntensitySum).ToString(), ((double)p.quant.heavyIntensitySum).ToString(), p.quant.significant.ToString(), get_piechart_string(color_scheme) });
                 node_rows += Environment.NewLine;
             }
 
             foreach (TheoreticalProteoform p in families.SelectMany(f => f.theoretical_proteoforms))
             {
                 string node_type = String.Equals(p.ptm_list_string(), "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
-                string mock_intensity = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, double_rounding), node_type, mock_intensity }) + Environment.NewLine;
             }
 
@@ -222,6 +227,7 @@ namespace ProteoformSuiteInternal
             { color_scheme_names[4], new List<string> { "#A8E1FF", "#B29162", "#B26276", "#FFF08C" } },
             { color_scheme_names[5], new List<string> { "#3D8A99", "#979C9C", "#963C4B", "#F2EBC7" } }
         };
+        public static string not_quantified = "#D3D3D3";
 
         public static string[] node_label_positions = new string[3] 
         {
@@ -295,6 +301,7 @@ namespace ProteoformSuiteInternal
                         write_discreteMapping(writer, "string", proteoform_type_header, new List<Tuple<string, string>>()
                         {
                             new Tuple<string, string>(quantitative ? "#FFFFFF" : color_schemes[color_scheme][0], experimental_label),
+                            new Tuple<string, string>("#D3D3D3", experimental_notQuantified_label),
                             new Tuple<string, string>(color_schemes[color_scheme][1], modified_theoretical_label),
                             new Tuple<string, string>(color_schemes[color_scheme][2], unmodified_theoretical_label)
                         });

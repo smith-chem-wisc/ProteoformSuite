@@ -52,6 +52,7 @@ namespace ProteoformSuiteGUI
                 () => this.FillTablesAndCharts(),
                 () => Lollipop.proteoform_community.construct_families()
             );
+            ((ProteoformSweet)this.MdiParent).proteoformFamilies.initialize_settings();
             ((ProteoformSweet)this.MdiParent).proteoformFamilies.fill_proteoform_families("");
             ((ProteoformSweet)this.MdiParent).proteoformFamilies.update_figures_of_merit();
             this.Cursor = Cursors.Default;
