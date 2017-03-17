@@ -12,7 +12,7 @@ using System.IO;
 using System.Security;
 using Proteomics;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public partial class ProteoformFamilies : Form
     {
@@ -28,9 +28,11 @@ namespace ProteoformSuite
         {
             this.tb_familyBuildFolder.Text = Lollipop.family_build_folder_path;
             this.nud_decimalRoundingLabels.Value = Convert.ToDecimal(Lollipop.deltaM_edge_display_rounding);
+            this.cb_buildAsQuantitative.Enabled = Lollipop.qVals.Count > 0;
+            this.cb_buildAsQuantitative.Checked = false;
         }
 
-        private void initialize_settings()
+        public void initialize_settings()
         {
             //Initialize display options
             cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
@@ -65,7 +67,7 @@ namespace ProteoformSuite
             return dgv_main;
         }
 
-        private void run_the_gamut()
+        public void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
             initialize_settings();
@@ -75,7 +77,12 @@ namespace ProteoformSuite
             this.Cursor = Cursors.Default;
         }
 
-        private void update_figures_of_merit()
+        public void ClearListsAndTables()
+        {
+            Lollipop.proteoform_community.families.Clear();
+        }
+
+        public void update_figures_of_merit()
         {
             this.tb_TotalFamilies.Text = Lollipop.proteoform_community.families.Count(f => f.proteoforms.Count > 1).ToString();
             this.tb_IdentifiedFamilies.Text = Lollipop.proteoform_community.families.Count(f => f.theoretical_count > 0).ToString();
@@ -88,30 +95,39 @@ namespace ProteoformSuite
         {
             "Proteoform Families",
             "Theoretical Proteoforms in Families",
-            "GO Terms of Families -- " + Aspect.biologicalProcess,
-            "GO Terms of Families -- " + Aspect.cellularComponent,
-            "GO Terms of Families -- " + Aspect.molecularFunction,
+            "GO Terms of Families -- " + Aspect.BiologicalProcess,
+            "GO Terms of Families -- " + Aspect.CellularComponent,
+            "GO Terms of Families -- " + Aspect.MolecularFunction,
+        };
+
+        private static Type[] table_types = new Type[5]
+        {
+            typeof(ProteoformFamily),
+            typeof(TheoreticalProteoform),
+            typeof(GoTerm),
+            typeof(GoTerm),
+            typeof(GoTerm)
         };
 
         private void cmbx_tableSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 1) fill_theoreticals(tb_tableFilter.Text);
-            else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.biologicalProcess, tb_tableFilter.Text);
-            else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.cellularComponent, tb_tableFilter.Text);
-            else if (cmbx_tableSelector.SelectedIndex == 4) fill_go(Aspect.molecularFunction, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.BiologicalProcess, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.CellularComponent, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 4) fill_go(Aspect.MolecularFunction, tb_tableFilter.Text);
         }
 
         private void tb_tableFilter_TextChanged(object sender, EventArgs e)
         {
             if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 1) fill_theoreticals(tb_tableFilter.Text);
-            else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.biologicalProcess, tb_tableFilter.Text);
-            else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.cellularComponent, tb_tableFilter.Text);
-            else if (cmbx_tableSelector.SelectedIndex == 4) fill_go(Aspect.molecularFunction, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.BiologicalProcess, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.CellularComponent, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex == 4) fill_go(Aspect.MolecularFunction, tb_tableFilter.Text);
         }
 
-        private void fill_proteoform_families(string filter)
+        public void fill_proteoform_families(string filter)
         {
             IEnumerable<object> families = filter == "" ?
                 Lollipop.proteoform_community.families.OrderByDescending(f => f.relation_count) :
@@ -132,8 +148,8 @@ namespace ProteoformSuite
         private void fill_go(Aspect aspect, string filter)
         {
             DisplayUtility.FillDataGridView(dgv_main, filter == "" ?
-                Lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.proteinList).SelectMany(g => g.GoTerms).Where(g => g.aspect == aspect) :
-                ExtensionMethods.filter(Lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.proteinList).SelectMany(g => g.GoTerms).Where(g => g.aspect == aspect), filter));
+                Lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.proteinList).SelectMany(g => g.GoTerms).Where(g => g.Aspect == aspect) :
+                ExtensionMethods.filter(Lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.proteinList).SelectMany(g => g.GoTerms).Where(g => g.Aspect == aspect), filter));
         }
 
         private void dgv_proteoform_families_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -147,6 +163,7 @@ namespace ProteoformSuite
         private void display_family_members(int row_index, int column_index)
         {
             ProteoformFamily selected_family = (ProteoformFamily)this.dgv_main.Rows[row_index].DataBoundItem;
+            if (column_index < 0) return;
             if (new List<string> { "theoretical_count", "accession_list","name_list" }.Contains(dgv_main.Columns[column_index].Name))
             {
                 if (selected_family.theoretical_count > 0) 
@@ -213,65 +230,19 @@ namespace ProteoformSuite
 
         private void btn_buildAllFamilies_Click(object sender, EventArgs e)
         {
-            bool built = build_families(Lollipop.proteoform_community.families);
-            if (!built) return;
-            MessageBox.Show("Finished building all families.\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
+            string time_stamp = SaveState.time_stamp();
+            tb_recentTimeStamp.Text = time_stamp;
+            string message = CytoscapeScript.write_cytoscape_script(Lollipop.proteoform_community.families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, cb_buildAsQuantitative.Checked, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            MessageBox.Show(message, "Cytoscape Build");
         }
 
         private void btn_buildSelectedFamilies_Click(object sender, EventArgs e)
         {
-            List<ProteoformFamily> families = new List<ProteoformFamily>();
-            if (cmbx_tableSelector.SelectedIndex == 0) families = (DisplayUtility.get_selected_objects(dgv_main).Select(o => (ProteoformFamily)o)).ToList();
-            else if (cmbx_tableSelector.SelectedIndex == 1)
-            {
-                families =
-                    (
-                    from f in Lollipop.proteoform_community.families
-                    from t in f.theoretical_proteoforms
-                    where DisplayUtility.get_selected_objects(dgv_main).Select(o => (TheoreticalProteoform)o).Contains(t)
-                    select f
-                    ).ToList();
-            }
-            else
-            {
-                families =
-                    (
-                    from f in Lollipop.proteoform_community.families
-                    from t in f.theoretical_proteoforms
-                    from p in t.proteinList
-                    from g in p.GoTerms
-                    where DisplayUtility.get_selected_objects(dgv_main).Select(o => (GoTerm)o).Contains(g)
-                    select f
-                    ).ToList();
-            }
-
-            bool built = build_families(families.Distinct().ToList());
-            if (!built) return;
-
-            string selected_family_string = "Finished building selected famil";
-            if (families.Count() == 1) selected_family_string += "y :";
-            else selected_family_string += "ies :";
-            if (families.Count() > 3) selected_family_string = String.Join(", ", families.Select(f => f.family_id).ToList().Take(3)) + ". . .";
-            else selected_family_string = String.Join(", ", families.Select(f => f.family_id));
-            MessageBox.Show(selected_family_string + ".\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
-        }
-
-        private bool build_families(List<ProteoformFamily> families)
-        {
-            //Check if valid folder
-            if (Lollipop.family_build_folder_path == "" || !Directory.Exists(Lollipop.family_build_folder_path))
-            {
-                MessageBox.Show("Please choose a folder in which the families will be built, so you can load them into Cytoscape.");
-                return false;
-            }
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
-            CytoscapeScript c = new CytoscapeScript(families, time_stamp, false, false, false, false, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString());
-            File.WriteAllText(c.edges_path, c.edge_table);
-            File.WriteAllText(c.nodes_path, c.node_table);
-            File.WriteAllText(c.script_path, c.script);
-            c.write_styles(); //cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), "");
-            return true;
+            object[] selected = DisplayUtility.get_selected_objects(dgv_main);
+            string message = CytoscapeScript.write_cytoscape_script(selected, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, cb_buildAsQuantitative.Checked, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            MessageBox.Show(message, "Cytoscape Build");
         }
 
         private void Families_update_Click(object sender, EventArgs e)
@@ -317,82 +288,16 @@ namespace ProteoformSuite
             else return;
             }
 
-        private void bt_export_inclusion_list_Click(object sender, EventArgs e)
-        {
-            //maybe make selected families button?? 
-            //exports an inclusion list of any experimental proteoforms not in an e-td pair 
-            //to do... check raw file and not put anything on inclusion list that was already fragmented
-
-            DialogResult dr = this.folderBrowser.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                string folder_path = folderBrowser.SelectedPath;
-
-                List<ExperimentalProteoform> experimentals = new List<ExperimentalProteoform>();
-                //if (cb_inclusion_list_identified_family.Checked)
-                //    //family not null, ET relation in family, e proteoform not in topdown relation
-                //    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.etd).ToList().Count > 0 && p.relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
-
-                //if (cb_inclusion_list_unidentified_fam.Checked)
-                //{
-                //    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family != null && p.family.relations.Where(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.etd).ToList().Count == 0).ToList());
-                //}
-                //if (cb_inclusion_list_orphans.Checked)
-                //{
-                //    experimentals.AddRange(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.family.relations.Count == 0));
-                //}
-
-                experimentals = Lollipop.proteoform_community.experimental_proteoforms.Where(exp => exp.etd_match_count == 0).ToList();
-                using (var writer = new StreamWriter(folder_path + "\\inclusion_list.txt"))
-                { 
-                    foreach (ExperimentalProteoform exp in experimentals)
-                    {
-                            //max intensity charge state of the max intensity component
-                            //ChargeState best_charge_state = (experimentals[experimental_num].aggregated_components.OrderBy(c => c.intensity_sum).First().charge_states.OrderBy(c => c.intensity).First());
-                            if (!cb_inclusion_list_charge_state.Checked)
-                            {
-                                foreach (ChargeState cs in exp.aggregated_components.OrderBy(c => c.intensity_sum).ToList().First().charge_states)
-                                {
-                                    if (cs.charge_count <= 25)
-                                    {
-                                        //want calibrated mass m/z
-                                        double mz = cs.calculated_mass / cs.charge_count + cs.charge_count * 1.007276466879;
-                                        writer.WriteLine(mz + "\t" + cs.charge_count + "\t" + "mass: " + exp.agg_mass + " RT: " + exp.agg_rt + " obs count: " + exp.observation_count);
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                ChargeState cs = exp.aggregated_components.OrderBy(c => c.intensity_sum).ToList().First().charge_states.Where(c => c.charge_count <= 25).ToList().OrderBy(c => c.intensity).ToList().FirstOrDefault();
-                                if (cs != null)
-                                {
-                                    //want calibrated mass m/z
-                                    double mz = cs.calculated_mass / cs.charge_count + cs.charge_count * 1.007276466879;
-                                    writer.WriteLine(mz + "\t" + cs.charge_count + "\t" + "mass: " + exp.agg_mass + " RT: " + exp.agg_rt + " obs count: " + exp.observation_count);
-                                }
-                                else //if no charge count <= 25, calculate what m/z would be at z = 25
-                                {
-                                    double mz = exp.agg_mass / 25 + 25 * 1.007276466879;
-                                    writer.WriteLine(mz + "\t" + 25 + "\t" + "mass: " + exp.agg_mass + " RT: " + exp.agg_rt + " obs count: " + exp.observation_count);
-                                }
-                            }
-                        }
-                    }
-            }
-            else return;
-                MessageBox.Show("Successfully exported inclusion list(s).");
-            }
-
         private void btn_merge_Click(object sender, EventArgs e)
         {
             
         }
 
-        private void bt_export_identified_families_Click(object sender, EventArgs e)
+        private void cb_buildAsQuantitative_CheckedChanged(object sender, EventArgs e)
         {
-            bool built = build_families(Lollipop.proteoform_community.families.Where(f => f.topdown_count > 0 || f.theoretical_count > 0).ToList());
-            if (!built) return;
-            MessageBox.Show("Finished building identified families.\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
+            cb_redBorder.Enabled = cb_buildAsQuantitative.Checked;
+            cb_boldLabel.Enabled = cb_buildAsQuantitative.Checked;
+            cb_moreOpacity.Enabled = false; //not fully implemented
         }
     }
 }

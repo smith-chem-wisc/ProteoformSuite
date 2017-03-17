@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public class DisplayUtility
     {
@@ -57,19 +57,6 @@ namespace ProteoformSuite
             { }           
         }
 
-        public static void EditInputFileDGVs(DataGridView dgv, Purpose purpose)
-        {
-            if (purpose == Purpose.TopDown)
-            {
-                DataGridViewComboBoxColumn cmCol = new DataGridViewComboBoxColumn();
-                cmCol.HeaderText = "TD Program";
-                cmCol.DataSource = Enum.GetValues(typeof(TDSoftware));
-                cmCol.ValueType = typeof(TDSoftware);
-                dgv.Columns.Add(cmCol);
-            }
-        }
-
-
         public static void GraphRelationsChart(Chart ct, List<ProteoformRelation> relations, string series)
         {
             ct.Series[series].Points.Clear();
@@ -95,7 +82,7 @@ namespace ProteoformSuite
             ct.Series[relations_series].Points.Clear();
 
             double peak_threshold;
-            if (relations[0].connected_proteoforms[1] is TheoreticalProteoform) peak_threshold = Lollipop.min_peak_count_et;
+            if (typeof(TheoreticalProteoform).IsAssignableFrom(relations[0].connected_proteoforms[1].GetType())) peak_threshold = Lollipop.min_peak_count_et;
             else peak_threshold = Lollipop.min_peak_count_ee;
             List<DeltaMassPeak> peaks_ordered = peaks.OrderBy(r => r.peak_deltaM_average).ToList();
             foreach (DeltaMassPeak peak in peaks_ordered)
@@ -117,7 +104,7 @@ namespace ProteoformSuite
         {
             ct.ChartAreas[0].AxisY.StripLines.Clear();
             double peak_width_base;
-            if (relations[0].connected_proteoforms[1] is TheoreticalProteoform) peak_width_base = Lollipop.peak_width_base_et;
+            if (typeof(TheoreticalProteoform).IsAssignableFrom(relations[0].connected_proteoforms[1].GetType())) peak_width_base = Lollipop.peak_width_base_et;
             else peak_width_base = Lollipop.peak_width_base_ee;
             ct.ChartAreas[0].AxisX.Minimum = peak.peak_deltaM_average - peak_width_base;
             ct.ChartAreas[0].AxisX.Maximum = peak.peak_deltaM_average + peak_width_base;
@@ -141,6 +128,8 @@ namespace ProteoformSuite
 
         public static void FormatAggregatesTable(DataGridView dgv)
         {
+            if (dgv.Columns.Count <= 0) return;
+
             //round table values
             dgv.Columns["agg_mass"].DefaultCellStyle.Format = "0.####";
             dgv.Columns["agg_intensity"].DefaultCellStyle.Format = "0.####";
@@ -165,6 +154,8 @@ namespace ProteoformSuite
 
         public static void FormatTheoreticalProteoformTable(DataGridView dgv)
         {
+            if (dgv.Columns.Count <= 0) return;
+
             //round table values
             dgv.Columns["unmodified_mass"].DefaultCellStyle.Format = "0.####";
             dgv.Columns["ptm_mass"].DefaultCellStyle.Format = "0.####";
@@ -195,6 +186,8 @@ namespace ProteoformSuite
         public static void FormatRelationsGridView(DataGridView dgv, bool mask_experimental, bool mask_theoretical)
 
         {
+            if (dgv.Columns.Count <= 0) return;
+
             //round table values
             dgv.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
             dgv.Columns["peak_center_deltaM"].DefaultCellStyle.Format = "0.####";
@@ -263,6 +256,8 @@ namespace ProteoformSuite
 
         public static void FormatPeakListGridView(DataGridView dgv, bool mask_mass_shifter)
         {
+            if (dgv.Columns.Count <= 0) return;
+
             //making all columns invisible first - faster
             foreach (DataGridViewColumn column in dgv.Columns) { column.Visible = false; }
             if (!mask_mass_shifter)
@@ -340,6 +335,8 @@ namespace ProteoformSuite
 
         public static void format_families_dgv(DataGridView dgv)
         {
+            if (dgv.Columns.Count <= 0) return;
+
             //set column header
             //dgv_proteoform_families.Columns["family_id"].HeaderText = "Light Monoisotopic Mass";
             dgv.Columns["lysine_count"].HeaderText = "Lysine Count";

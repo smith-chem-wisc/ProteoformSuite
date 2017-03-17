@@ -8,14 +8,18 @@ using System.Reflection;
 using System.Windows.Forms;
 
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
-    public partial class LoadResults : Form
+    public partial class LoadDeconvolutionResults : Form
     {
-        public LoadResults()
+
+        public bool run_when_form_loads;
+
+        public LoadDeconvolutionResults()
         {
             InitializeComponent();
             populate_file_lists();
+            ProteoformSweet.run_when_form_loads = cb_run_when_load.Checked;
         }
 
         public void loadResults_Load(object sender, EventArgs e)
@@ -23,25 +27,15 @@ namespace ProteoformSuite
 
         private void btn_neucode_CheckedChanged(object sender, EventArgs e)
         {
-            if (btn_unlabeled.Checked)
-            {
-                ProteoformSweet.run_when_form_loads = false; //if unlabeled, don't run automatically. 
-                cb_run_when_load.Checked = false;
-            }
-            else
-            {
-                ProteoformSweet.run_when_form_loads = true; //if unlabeled, don't run automatically. 
-                cb_run_when_load.Checked = true;
-            }
-            ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(btn_neucode.Checked);
-            Lollipop.neucode_labeled = btn_neucode.Checked;
-            Lollipop.neucode_light_lysine = btn_neucode.Checked;
-            Lollipop.natural_lysine_isotope_abundance = !btn_neucode.Checked;
+            ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(rb_neucode.Checked);
+            Lollipop.neucode_labeled = rb_neucode.Checked;
+            Lollipop.neucode_light_lysine = rb_neucode.Checked;
+            Lollipop.natural_lysine_isotope_abundance = !rb_neucode.Checked;
 
             foreach (InputFile f in Lollipop.input_files)
             {
-                if (btn_neucode.Checked) f.label = Labeling.NeuCode;
-                if (btn_unlabeled.Checked) f.label = Labeling.Unlabeled;
+                if (rb_neucode.Checked) f.label = Labeling.NeuCode;
+                if (rb_unlabeled.Checked) f.label = Labeling.Unlabeled;
             }
 
         }
@@ -167,19 +161,19 @@ namespace ProteoformSuite
         // CELL FORMATTING EVENTS
         private void dgv_loadFiles1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if ((dgv_loadFiles1.Rows[e.RowIndex].DataBoundItem != null) && (dgv_loadFiles1.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+            if ((dgv_loadFiles1.Rows[e.RowIndex].DataBoundItem != null) && e.ColumnIndex >= 0 && (dgv_loadFiles1.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
                 e.Value = BindProperty(dgv_loadFiles1.Rows[e.RowIndex].DataBoundItem, dgv_loadFiles1.Columns[e.ColumnIndex].DataPropertyName);
         }
 
         private void dgv_loadFiles2_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if ((dgv_loadFiles2.Rows[e.RowIndex].DataBoundItem != null) && (dgv_loadFiles2.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+            if ((dgv_loadFiles2.Rows[e.RowIndex].DataBoundItem != null) && e.ColumnIndex >= 0 && (dgv_loadFiles2.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
                 e.Value = BindProperty(dgv_loadFiles2.Rows[e.RowIndex].DataBoundItem, dgv_loadFiles2.Columns[e.ColumnIndex].DataPropertyName);
         }
 
         private void dgv_loadFiles3_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if ((dgv_loadFiles3.Rows[e.RowIndex].DataBoundItem != null) && (dgv_loadFiles3.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
+            if ((dgv_loadFiles3.Rows[e.RowIndex].DataBoundItem != null) && e.ColumnIndex >= 0 && (dgv_loadFiles3.Columns[e.ColumnIndex].DataPropertyName.Contains(".")))
                 e.Value = BindProperty(dgv_loadFiles3.Rows[e.RowIndex].DataBoundItem, dgv_loadFiles3.Columns[e.ColumnIndex].DataPropertyName);
         }
 
@@ -263,13 +257,12 @@ namespace ProteoformSuite
         {
             if (Lollipop.input_files.Count == 0)
             {
-                MessageBox.Show("Please load in deconvolution result files in order to use load and run.");
+                MessageBox.Show("Please load in deconvolution result files in order to use load and run.", "Full Run");
                 return;
             }
-            MessageBox.Show("Will start the run now.\n\nWill show as non-responsive.");
             bool successful_run = ((ProteoformSweet)MdiParent).full_run();
-            if (successful_run) MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
-            else { MessageBox.Show("Method did not successfully run."); }
+            if (successful_run) MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.", "Full Run");
+            else MessageBox.Show("Method did not successfully run.", "Full Run"); 
         }
 
 

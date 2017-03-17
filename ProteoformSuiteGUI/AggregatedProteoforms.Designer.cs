@@ -1,4 +1,4 @@
-﻿namespace ProteoformSuite
+﻿namespace ProteoformSuiteGUI
 {
     partial class AggregatedProteoforms
     {
@@ -28,9 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AggregatedProteoforms));
             this.dgv_AggregatedProteoforms = new System.Windows.Forms.DataGridView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.label9 = new System.Windows.Forms.Label();
+            this.tb_tableFilter = new System.Windows.Forms.TextBox();
             this.cb_validateProteoforms = new System.Windows.Forms.CheckBox();
             this.nUD_min_num_CS = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
@@ -114,6 +117,8 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.label9);
+            this.splitContainer2.Panel1.Controls.Add(this.tb_tableFilter);
             this.splitContainer2.Panel1.Controls.Add(this.cb_validateProteoforms);
             this.splitContainer2.Panel1.Controls.Add(this.nUD_min_num_CS);
             this.splitContainer2.Panel1.Controls.Add(this.label8);
@@ -141,12 +146,26 @@
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 0;
             // 
-            // cb_validateProteoforms
+            // label9
             // 
-            this.cb_validateProteoforms.AutoSize = true;
-            this.cb_validateProteoforms.Checked = true;
-            this.cb_validateProteoforms.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(9, 294);
+            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(171, 13);
+            this.label9.TabIndex = 50;
+            this.label9.Text = "Aggregated Proteoform Table Filter";
+            // 
+            // tb_tableFilter
+            // 
+            this.tb_tableFilter.Location = new System.Drawing.Point(185, 291);
+            this.tb_tableFilter.Name = "tb_tableFilter";
+            this.tb_tableFilter.Size = new System.Drawing.Size(184, 20);
+            this.tb_tableFilter.TabIndex = 49;
+            this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
+            // 
             this.cb_validateProteoforms.Location = new System.Drawing.Point(28, 242);
+            this.cb_validateProteoforms.Location = new System.Drawing.Point(90, 227);
             this.cb_validateProteoforms.Name = "cb_validateProteoforms";
             this.cb_validateProteoforms.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.cb_validateProteoforms.Size = new System.Drawing.Size(123, 17);
@@ -343,6 +362,7 @@
             this.ClientSize = new System.Drawing.Size(1016, 680);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.Name = "AggregatedProteoforms";
             this.Text = "AggregatedProteoforms";
@@ -393,5 +413,7 @@
         private System.Windows.Forms.NumericUpDown nUD_min_num_CS;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.CheckBox cb_validateProteoforms;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox tb_tableFilter;
     }
 }

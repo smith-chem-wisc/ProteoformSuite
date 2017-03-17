@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public partial class ExperimentTheoreticalComparison : Form
     {
@@ -46,7 +46,7 @@ namespace ProteoformSuite
         }
 
 
-        private void run_the_gamut()
+        public void run_the_gamut()
         {
             if (Lollipop.notch_search_et)
             {
@@ -108,7 +108,7 @@ namespace ProteoformSuite
             return dgv_ET_Peak_List;
         }
 
-        private void ClearListsAndTables()
+        public void ClearListsAndTables()
         {
             Lollipop.et_relations.Clear();
             Lollipop.et_peaks.Clear();
@@ -421,6 +421,7 @@ namespace ProteoformSuite
                 int columnIndex = dgv_ET_Peak_List.CurrentCell.ColumnIndex;
                 int rowIndex = dgv_ET_Peak_List.CurrentCell.RowIndex;
 
+                if (columnIndex < 0) return;
                 string columnName = dgv_ET_Peak_List.Columns[columnIndex].Name;
 
                 if (columnName == "peak_accepted")

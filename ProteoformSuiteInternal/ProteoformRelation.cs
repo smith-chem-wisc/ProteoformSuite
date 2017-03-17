@@ -28,6 +28,8 @@ namespace ProteoformSuiteInternal
     //referring to an individual value. 
     public class MassDifference
     {
+        private static int instanceCounter = 0;
+        public int instanceId;
         public Proteoform[] connected_proteoforms = new Proteoform[2];
         public ProteoformComparison relation_type;
         public double delta_mass { get; set; }        
@@ -38,63 +40,85 @@ namespace ProteoformSuiteInternal
             this.connected_proteoforms[1] = pf2;
             this.relation_type = relation_type;
             this.delta_mass = delta_mass;
+            instanceId = instanceCounter;
+            lock (Lollipop.proteoform_community) instanceCounter += 1; //Not thread safe
         }
     }
 
     public class ProteoformRelation : MassDifference
     {
         public DeltaMassPeak peak { get; set; }
-        public int nearby_relations_count { get; set; } //"running sum"
-        private List<ProteoformRelation> _nearby_relations;
-        public List<ProteoformRelation> nearby_relations
-        {
-            get { return _nearby_relations; }
-            set
-            {
-                _nearby_relations = value;
-                this.nearby_relations_count = value.Count;
-            }
-        }
-        public static bool mass_difference_is_outside_no_mans_land(double delta_mass)
-        {
-            return Math.Abs(delta_mass - Math.Truncate(delta_mass)) >= Lollipop.no_mans_land_upperBound ||
-                Math.Abs(delta_mass - Math.Truncate(delta_mass)) <= Lollipop.no_mans_land_lowerBound;
-        }
-        public bool outside_no_mans_land
-        {
-            get { return ProteoformRelation.mass_difference_is_outside_no_mans_land(this.delta_mass); }
-        }
+        public int nearby_relations_count { get { return this.nearby_relations.Count; } } //"running sum"
+        public List<ProteoformRelation> nearby_relations { get; set; }
+        public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
+
+        /// <summary>
+        /// Is this relation in an accepted peak?
+        /// ProteoformRelation.accepted may not be the same as DeltaMassPeak.peak_accepted, which denotes whether the peak is accepted.
+        /// </summary>
         public bool accepted { get; set; }
 
-        public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass) : base(pf1, pf2, relation_type, delta_mass)
+        public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass) 
+            : base(pf1, pf2, relation_type, delta_mass)
         {
             if (Lollipop.neucode_labeled) this.lysine_count = pf1.lysine_count;
+            this.outside_no_mans_land = Math.Abs(delta_mass - Math.Truncate(delta_mass)) >= Lollipop.no_mans_land_upperBound ||
+                    Math.Abs(delta_mass - Math.Truncate(delta_mass)) <= Lollipop.no_mans_land_lowerBound;
         }
 
-        public ProteoformRelation(ProteoformRelation relation) : base(relation.connected_proteoforms[0], relation.connected_proteoforms[1], relation.relation_type, relation.delta_mass)
+        public ProteoformRelation(ProteoformRelation relation) 
+            : base(relation.connected_proteoforms[0], relation.connected_proteoforms[1], relation.relation_type, relation.delta_mass)
         {
             this.peak = relation.peak;
+            this.outside_no_mans_land = relation.outside_no_mans_land;
             if (!Lollipop.opening_results) this.nearby_relations = relation.nearby_relations;
         }
 
-        public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_relations)
+        public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_ordered_relations, List<int> ordered_relation_ids)
         {
-            double peak_width_base;
-            if (all_relations[0].connected_proteoforms[1] is TheoreticalProteoform) peak_width_base = Lollipop.peak_width_base_et;
-            else peak_width_base = Lollipop.peak_width_base_ee;
+            double peak_width_base = typeof(TheoreticalProteoform).IsAssignableFrom(all_ordered_relations[0].connected_proteoforms[1].GetType()) ? 
+                Lollipop.peak_width_base_et :
+                Lollipop.peak_width_base_ee;
             double lower_limit_of_peak_width = this.delta_mass - peak_width_base / 2;
             double upper_limit_of_peak_width = this.delta_mass + peak_width_base / 2;
-            this.nearby_relations = all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width
-                && relation.delta_mass <= upper_limit_of_peak_width).ToList();
+            int idx = ordered_relation_ids.IndexOf(this.instanceId);
+            List<ProteoformRelation> within_range = new List<ProteoformRelation> { this };
+            int curr_idx = idx - 1;
+            while (curr_idx >= 0 && lower_limit_of_peak_width <= all_ordered_relations[curr_idx].delta_mass)
+            {
+                within_range.Add(all_ordered_relations[curr_idx]);
+                curr_idx--;
+            }
+            curr_idx = idx + 1;
+            while (curr_idx < all_ordered_relations.Count && all_ordered_relations[curr_idx].delta_mass <= upper_limit_of_peak_width)
+            {
+                within_range.Add(all_ordered_relations[curr_idx]);
+                curr_idx++;
+            }
+            lock (this) nearby_relations = within_range;
             return this.nearby_relations;
         }
 
-        //public void generate_peak()
-        //{
-        //    this.peak = new DeltaMassPeak(this, Lollipop.proteoform_community.remaining_relations_outside_no_mans);
-        //    if (Lollipop.decoy_databases > 0) this.peak.calculate_fdr(Lollipop.ed_relations);
-        //}
+        public void generate_peak()
+        {
+            new DeltaMassPeak(this, Lollipop.proteoform_community.remaining_relations_outside_no_mans);
+            if (Lollipop.decoy_databases > 0) this.peak.calculate_fdr(Lollipop.ed_relations);
+        }
+
+        public override bool Equals(object obj)
+        {
+            ProteoformRelation r2 = obj as ProteoformRelation; 
+            return r2 != null && 
+                (this.instanceId == r2.instanceId ||
+                this.connected_proteoforms[0] == r2.connected_proteoforms[1] && this.connected_proteoforms[1] == r2.connected_proteoforms[0] ||
+                this.connected_proteoforms[0] == r2.connected_proteoforms[0] && this.connected_proteoforms[1] == r2.connected_proteoforms[1]);
+        }
+
+        public override int GetHashCode()
+        {
+            return connected_proteoforms[0].GetHashCode() ^ connected_proteoforms[1].GetHashCode();
+        }
 
         // FOR DATAGRIDVIEW DISPLAY
         public static string et_string = "Experiment-Theoretical";

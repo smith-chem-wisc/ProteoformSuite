@@ -173,17 +173,17 @@ namespace Test
         [Test]
         public void proteinLevelStDev_divide_by_zero_crash()
         {
-            ExperimentalProteoform e = new ExperimentalProteoform();
-            List<biorepIntensity> singleton_list = new List<biorepIntensity> { new biorepIntensity(false, false, 1, "", 0) };
+            ExperimentalProteoform e = new ExperimentalProteoform("E");
+            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
             Assert.True(e.quant.getProteinLevelStdDev(singleton_list, singleton_list) > 0);
         }
 
         [Test]
         public void quant_variance_without_imputation_aka_unequal_list_lengths()
         {
-            ExperimentalProteoform e = new ExperimentalProteoform();
-            List<biorepIntensity> singleton_list = new List<biorepIntensity> { new biorepIntensity(false, false, 1, "", 0) };
-            List<biorepIntensity> shorter_list = new List<biorepIntensity>();
+            ExperimentalProteoform e = new ExperimentalProteoform("E");
+            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
+            List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
             {
                 e.quant.Variance(0, shorter_list, singleton_list);
@@ -197,9 +197,9 @@ namespace Test
         [Test]
         public void quant_permuations_without_imputation_aka_unequal_list_lengths()
         {
-            ExperimentalProteoform e = new ExperimentalProteoform();
-            List<biorepIntensity> singleton_list = new List<biorepIntensity> { new biorepIntensity(false, false, 1, "", 0) };
-            List<biorepIntensity> shorter_list = new List<biorepIntensity>();
+            ExperimentalProteoform e = new ExperimentalProteoform("E");
+            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
+            List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
             {
                 e.quant.getPermutedTestStatistics(shorter_list, singleton_list, 0, 1);
@@ -213,9 +213,9 @@ namespace Test
         [Test]
         public void quant_pvalue_without_imputation_aka_unequal_list_lengths()
         {
-            ExperimentalProteoform e = new ExperimentalProteoform();
-            List<biorepIntensity> singleton_list = new List<biorepIntensity> { new biorepIntensity(false, false, 1, "", 0) };
-            List<biorepIntensity> shorter_list = new List<biorepIntensity>();
+            ExperimentalProteoform e = new ExperimentalProteoform("E");
+            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
+            List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
             {
                 e.quant.PValue(0, shorter_list, singleton_list);
@@ -354,7 +354,7 @@ namespace Test
                 db.Add(new DummyBiorepable(new InputFile("path", Labeling.NeuCode, Purpose.Quantification, "light", "heavy", 1),1d));
             }
 
-            List<biorepIntensity> bril = new ExperimentalProteoform().make_biorepIntensityList(db,db,lightConditions,heavyConditions);
+            List<BiorepIntensity> bril = new ExperimentalProteoform("E").make_biorepIntensityList(db,db,lightConditions,heavyConditions);
 
             Assert.AreEqual(2, bril.Count());
 
@@ -363,13 +363,13 @@ namespace Test
                 db.Add(new DummyBiorepable(new InputFile("path", Labeling.NeuCode, Purpose.Quantification, "light", "heavy", 2), 2d));
             }
 
-            bril = new ExperimentalProteoform().make_biorepIntensityList(db, db, lightConditions, heavyConditions);
+            bril = new ExperimentalProteoform("E").make_biorepIntensityList(db, db, lightConditions, heavyConditions);
 
             Assert.AreEqual(4, bril.Count());
 
             Lollipop.neucode_labeled = false;
 
-            bril = new ExperimentalProteoform().make_biorepIntensityList(db, db, lightConditions, heavyConditions);
+            bril = new ExperimentalProteoform("E").make_biorepIntensityList(db, db, lightConditions, heavyConditions);
 
             Assert.AreEqual(2, bril.Count());
 
@@ -382,7 +382,7 @@ namespace Test
 
             for (int i = 0; i < 10; i++)
             {
-                ExperimentalProteoform e = new ExperimentalProteoform();
+                ExperimentalProteoform e = new ExperimentalProteoform("E");
                 List<decimal> onepst = new List<decimal>();
                 for (int j = 0; j < 10; j++)
                 {
@@ -410,7 +410,7 @@ namespace Test
 
             for (int i = 0; i < 10; i++)
             {
-                ExperimentalProteoform e = new ExperimentalProteoform();
+                ExperimentalProteoform e = new ExperimentalProteoform("E");
                 List<decimal> onepst = new List<decimal>();
                 for (int j = 0; j < 10; j++)
                 {
@@ -436,12 +436,15 @@ namespace Test
             //One permuted value passes each time, the nine
             //Eight values in the set {0,1,2,3,4,5,6,7,8,9} pass the two cutoffs, 6 and 9
             Assert.AreEqual((double)1 / (double)8, Lollipop.computeFoldChangeFDR(Lollipop.sortedAvgPermutationTestStatistics, Lollipop.sortedProteoformTestStatistics, satisfactoryProteoforms, satisfactoryProteoforms.SelectMany(e => e.quant.permutedTestStatistics), 1));
+
+            Lollipop.satisfactoryProteoforms = satisfactoryProteoforms;
+            Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
         }
 
         [Test]
         public void test_addBiorepIntensity()
         {
-            List<biorepIntensity> briList = new List<biorepIntensity>();
+            List<BiorepIntensity> briList = new List<BiorepIntensity>();
 
             for (int i = 0; i < 10000; i++)
             {
@@ -462,7 +465,7 @@ namespace Test
         {
             Dictionary<string, List<int>> observedConditions = new Dictionary<string, List<int>>();
             observedConditions.Add("light", new List<int> { 0, 1, 2 });
-            List<biorepIntensity> briList = new List<biorepIntensity>();
+            List<BiorepIntensity> briList = new List<BiorepIntensity>();
             briList.AddRange(ExperimentalProteoform.quantitativeValues.imputedIntensities(true,briList,(decimal)Math.Log(100d,2), (decimal)Math.Log(5d, 2),observedConditions));
             Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 3);//we started with no real observations but there were three observed bioreps in the experiment. Therefore we need 3 imputed bioreps
             Assert.AreEqual(briList[0].condition, "light");
@@ -472,7 +475,7 @@ namespace Test
             Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(2), true);
 
             briList.Clear();
-            briList.Add(new biorepIntensity(true, false, 0, "light", 1000d));
+            briList.Add(new BiorepIntensity(true, false, 0, "light", 1000d));
             briList.AddRange(ExperimentalProteoform.quantitativeValues.imputedIntensities(true, briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), observedConditions));
 
             Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 2);//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
@@ -485,9 +488,9 @@ namespace Test
 
 
             briList.Clear();
-            briList.Add(new biorepIntensity(true, false, 0, "light", 1000d));
-            briList.Add(new biorepIntensity(true, false, 1, "light", 2000d));
-            briList.Add(new biorepIntensity(true, false, 2, "light", 3000d));
+            briList.Add(new BiorepIntensity(true, false, 0, "light", 1000d));
+            briList.Add(new BiorepIntensity(true, false, 1, "light", 2000d));
+            briList.Add(new BiorepIntensity(true, false, 2, "light", 3000d));
             briList.AddRange(ExperimentalProteoform.quantitativeValues.imputedIntensities(true, briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), observedConditions));
 
             Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 0);//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
@@ -503,11 +506,16 @@ namespace Test
         public void test_gaussian_area_calculation()
         {
             SortedDictionary<decimal, int> histogram = new SortedDictionary<decimal, int>();
-            ExperimentalProteoform e = new ExperimentalProteoform();
-            e.biorepIntensityList = (from i in Enumerable.Range(0, 10) select new biorepIntensity(false, false, 1, "", 0)).ToList();
+            ExperimentalProteoform e = new ExperimentalProteoform("E");
+            
+            //Each biorepIntensity has a unique combination of light/heavy + condition + biorep, since that's how they're made in the program
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "second", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, false, i, "second", 0));
 
             double log2_intensity = 0.06; //rounds up
-            foreach(biorepIntensity b in e.biorepIntensityList)
+            foreach(BiorepIntensity b in e.biorepIntensityList)
             {
                 b.intensity = Math.Pow(2, log2_intensity);
                 log2_intensity += 0.05;
@@ -516,27 +524,32 @@ namespace Test
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { e };
             List<decimal> rounded_intensities = Lollipop.define_intensity_distribution(exps, histogram);
 
-            //10 intensity values, bundled in twos; therefore 5 rounded values
-            Assert.AreEqual(10, rounded_intensities.Count);
-            Assert.AreEqual(5, histogram.Keys.Count);
+            //12 intensity values, bundled in twos; therefore 6 rounded values
+            Assert.AreEqual(12, rounded_intensities.Count);
+            Assert.AreEqual(6, histogram.Keys.Count);
 
-            //4 bins of width 0.1 and height 2; the first one gets swallowed up in smoothing
-            Assert.AreEqual(0.8, Lollipop.get_gaussian_area(histogram));
+            //5 bins of width 0.1 and height 2; the first one gets swallowed up in smoothing
+            Assert.AreEqual(1, Lollipop.get_gaussian_area(histogram));
             histogram.Add(Math.Round((decimal)log2_intensity, 1), 1);
 
             //Added 1 bin of width 0.1 and height 1.5, since we're smoothing by taking width and the mean of the two adjacent bars
-            Assert.AreEqual(0.95, Lollipop.get_gaussian_area(histogram));            
+            Assert.AreEqual(1.15, Lollipop.get_gaussian_area(histogram));            
         }
 
         [Test]
         public void all_intensity_distribution_avgIntensity_and_stdv_calculations()
         {
             SortedDictionary<decimal, int> histogram = new SortedDictionary<decimal, int>();
-            ExperimentalProteoform e = new ExperimentalProteoform();
-            e.biorepIntensityList = (from i in Enumerable.Range(0, 10) select new biorepIntensity(false, false, 1, "", 0)).ToList();
+            ExperimentalProteoform e = new ExperimentalProteoform("E");
+
+            //Each biorepIntensity has a unique combination of light/heavy + condition + biorep, since that's how they're made in the program
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "second", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, false, i, "second", 0));
 
             double log2_intensity = 1.06; //rounds up
-            foreach (biorepIntensity b in e.biorepIntensityList)
+            foreach (BiorepIntensity b in e.biorepIntensityList)
             {
                 b.intensity = Math.Pow(2, log2_intensity);
                 log2_intensity += 0.05;
@@ -549,29 +562,37 @@ namespace Test
             //ALL INTENSITIES
             //Test the standard deviation and other calculations
             Lollipop.defineAllObservedIntensityDistribution(exps, histogram); // creates the histogram again, checking that it's cleared, too
-            Assert.AreEqual(0.8m, Lollipop.observedGaussianArea);
-            Assert.AreEqual(1.3m, Lollipop.observedAverageIntensity);
-            Assert.AreEqual(0.141m, Math.Round(Lollipop.observedStDev, 3));
-            Assert.AreEqual(2.26m, Math.Round(Lollipop.observedGaussianHeight, 2));
+            Assert.AreEqual(1m, Lollipop.observedGaussianArea);
+            Assert.AreEqual(1.35m, Lollipop.observedAverageIntensity);
+            Assert.AreEqual(0.171m, Math.Round(Lollipop.observedStDev, 3));
+            Assert.AreEqual(2.34m, Math.Round(Lollipop.observedGaussianHeight, 2));
+
+            //The rest of the calculations should be based off of selected, so setting those to zero
+            Lollipop.observedGaussianArea = 0;
+            Lollipop.observedAverageIntensity = 0;
+            Lollipop.observedStDev = 0;
+            Lollipop.observedGaussianHeight = 0;
 
             //SELECTED INTENSITIES
             Lollipop.defineSelectObservedIntensityDistribution(exps, histogram);
-            Assert.AreEqual(0.8m, Lollipop.selectGaussianArea);
-            Assert.AreEqual(1.3m, Lollipop.selectAverageIntensity);
-            Assert.AreEqual(0.141m, Math.Round(Lollipop.selectStDev, 3));
-            Assert.AreEqual(2.26m, Math.Round(Lollipop.selectGaussianHeight, 2)); //shouldn't this be calculated with the selectStDev? changed from //selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
+            Assert.AreEqual(1m, Lollipop.selectGaussianArea);
+            Assert.AreEqual(1.35m, Lollipop.selectAverageIntensity);
+            Assert.AreEqual(0.171m, Math.Round(Lollipop.selectStDev, 3));
+            Assert.AreEqual(2.34m, Math.Round(Lollipop.selectGaussianHeight, 2)); //shouldn't this be calculated with the selectStDev? changed from //selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
 
             //SELECTED BACKGROUND
-            Dictionary<int, List<int>> qBioFractions = new Dictionary<int, List<int>> { { 1, new List<int> { 1, 2, 3 } } };
-            Lollipop.defineBackgroundIntensityDistribution(false, qBioFractions, exps, 1, 2);
-            Assert.AreEqual(1.44m, Math.Round(Lollipop.bkgdAverageIntensity, 2));
-            Assert.AreEqual(0.283m, Math.Round(Lollipop.bkgdStDev, 3));
-            Assert.AreEqual(-1.02m, Math.Round(Lollipop.bkgdGaussianHeight, 2));
+            Lollipop.condition_count = e.biorepIntensityList.Select(b => b.condition + b.light.ToString()).Distinct().Count();
+            Dictionary<int, List<int>> qBioFractions = e.biorepIntensityList.Select(b => b.biorep).Distinct().ToDictionary(b => b, b => new List<int>());
+            Lollipop.defineBackgroundIntensityDistribution(false, qBioFractions, exps, -2, 0.5m);
+            Assert.AreEqual(1.01m, Math.Round(Lollipop.bkgdAverageIntensity, 2));
+            Assert.AreEqual(0.085m, Math.Round(Lollipop.bkgdStDev, 3));
+            Assert.AreEqual(0, Math.Round(Lollipop.bkgdGaussianHeight, 2));
 
-            Lollipop.defineBackgroundIntensityDistribution(true, qBioFractions, exps, 1, 2);
-            Assert.AreEqual(1.44m, Math.Round(Lollipop.bkgdAverageIntensity, 2));
-            Assert.AreEqual(0.283m, Math.Round(Lollipop.bkgdStDev, 3));
-            Assert.AreEqual(-0.90m, Math.Round(Lollipop.bkgdGaussianHeight, 2));
+            //unlabeled works similarly
+            Lollipop.defineBackgroundIntensityDistribution(true, qBioFractions, exps, -2, 0.5m);
+            Assert.AreEqual(1.01m, Math.Round(Lollipop.bkgdAverageIntensity, 2));
+            Assert.AreEqual(0.085m, Math.Round(Lollipop.bkgdStDev, 3));
+            Assert.AreEqual(0, Math.Round(Lollipop.bkgdGaussianHeight, 2));
         }
 
         [Test]
@@ -582,8 +603,8 @@ namespace Test
             string fromeach = "From Each Condition";
 
             List<string> conditions = new List<string> { "s", "ns" };
-            biorepIntensity b1 = new biorepIntensity(false, false, 1, conditions[0], 0);
-            List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { new ExperimentalProteoform() };
+            BiorepIntensity b1 = new BiorepIntensity(false, false, 1, conditions[0], 0);
+            List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { new ExperimentalProteoform("E") };
             exps[0].biorepIntensityList.Add(b1);
             List<ExperimentalProteoform> exps_out = new List<ExperimentalProteoform>();
 
@@ -615,7 +636,7 @@ namespace Test
             Assert.AreEqual(0, exps_out.Count);
 
 
-            biorepIntensity b2 = new biorepIntensity(false, false, 100, conditions[1], 0);
+            BiorepIntensity b2 = new BiorepIntensity(false, false, 100, conditions[1], 0);
             exps[0].biorepIntensityList.Add(b2);
 
             //One biorep in each condition passes for-each-conditon test
@@ -638,7 +659,7 @@ namespace Test
 
 
             //DOESN'T PASS WHEN NOT MATCHING LISTED CONDITIONS, EXCEPT FOR ANY-CONDITION
-            foreach (biorepIntensity b in exps[0].biorepIntensityList) b.condition = "not_a_condition";
+            foreach (BiorepIntensity b in exps[0].biorepIntensityList) b.condition = "not_a_condition";
             exps_out = Lollipop.determineProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
             Assert.AreEqual(0, exps_out.Count);
 
@@ -650,11 +671,11 @@ namespace Test
 
 
             //NOT JUST COUNTING BIOREP INTENSITIES, BUT RATHER BIOREPS WITH OBSERVATIONS
-            biorepIntensity b3 = new biorepIntensity(false, false, 1, conditions[0], 0);
-            biorepIntensity b4 = new biorepIntensity(false, false, 1, conditions[0], 0);
-            biorepIntensity b5 = new biorepIntensity(false, false, 1, conditions[0], 0);
-            biorepIntensity b6 = new biorepIntensity(false, false, 1, conditions[0], 0);
-            exps[0].biorepIntensityList = new List<biorepIntensity> { b3, b4, b5, b6 };
+            BiorepIntensity b3 = new BiorepIntensity(false, false, 1, conditions[0], 0);
+            BiorepIntensity b4 = new BiorepIntensity(false, false, 1, conditions[0], 0);
+            BiorepIntensity b5 = new BiorepIntensity(false, false, 1, conditions[0], 0);
+            BiorepIntensity b6 = new BiorepIntensity(false, false, 1, conditions[0], 0);
+            exps[0].biorepIntensityList = new List<BiorepIntensity> { b3, b4, b5, b6 };
             exps_out = Lollipop.determineProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
             Assert.AreEqual(0, exps_out.Count);
 
@@ -664,10 +685,10 @@ namespace Test
             exps_out = Lollipop.determineProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
             Assert.AreEqual(0, exps_out.Count);
 
-            biorepIntensity b7 = new biorepIntensity(false, false, 1, conditions[1], 0);
-            biorepIntensity b8 = new biorepIntensity(false, false, 1, conditions[1], 0);
-            biorepIntensity b9 = new biorepIntensity(false, false, 1, conditions[1], 0);
-            biorepIntensity b10 = new biorepIntensity(false, false, 1, conditions[1], 0);
+            BiorepIntensity b7 = new BiorepIntensity(false, false, 1, conditions[1], 0);
+            BiorepIntensity b8 = new BiorepIntensity(false, false, 1, conditions[1], 0);
+            BiorepIntensity b9 = new BiorepIntensity(false, false, 1, conditions[1], 0);
+            BiorepIntensity b10 = new BiorepIntensity(false, false, 1, conditions[1], 0);
             exps[0].biorepIntensityList.Add(b7);
             exps[0].biorepIntensityList.Add(b8);
             exps[0].biorepIntensityList.Add(b9);
@@ -687,13 +708,13 @@ namespace Test
         {
             int nbp = 100;
             List<double> pvals = new List<double>();
-            double pValue = 0.001;
+            double pValue = 0.001d;
 
-            for (int i = 1; i <= nbp; i++)
+            for (double i = 1; i <= nbp; i++)
             {
-                pvals.Add(0.1 / (double)i);
+                pvals.Add(0.1d / i);
             }
-
+            pvals.Sort();
             Assert.AreEqual(Math.Round(GoTermNumber.benjaminiYekutieli(nbp, pvals, pValue), 4), 0.5187);
             nbp++;
         }
@@ -703,23 +724,43 @@ namespace Test
         {
             int numberOfGoTermNumbers = 100;
             List<GoTermNumber> gtns = new List<GoTermNumber>();
-            for (int i = 1; i <= numberOfGoTermNumbers; i++)
+            for (double i = 1; i <= numberOfGoTermNumbers; i++)
             {
-                GoTerm g = new GoTerm();
-                g.aspect = Aspect.biologicalProcess;
-                g.description = "description";
-                g.id = "id";
-                GoTermNumber gtn = new GoTermNumber();
-                gtn.goTerm = g;
-                gtn.p_value = (0.1d / (double)i - 0.0005d);
+                DatabaseReference d = new DatabaseReference("GO", ":id", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:description") });
+                GoTerm g = new GoTerm(d);
+                GoTermNumber gtn = new GoTermNumber(g, 0, 0, 0, 0);
+                gtn.p_value = 0.1d / i - 0.0005d;
                 gtns.Add(gtn);
             }
             Lollipop.calculateGoTermFDR(gtns);
             foreach (GoTermNumber num in gtns)
             {
                 Assert.IsNotNull(num.by);
-                Assert.LessOrEqual(num.by, 1m);
+                Assert.True(num.by <= 1);
             }
+        }
+
+        [Test]
+        public void test_results_summary_with_gtns()
+        {
+            int numberOfGoTermNumbers = 100;
+            List<GoTermNumber> gtns = new List<GoTermNumber>();
+            for (double i = 1; i <= numberOfGoTermNumbers; i++)
+            {
+                DatabaseReference d = new DatabaseReference("GO", ":id", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:description") });
+                GoTerm g = new GoTerm(d);
+                GoTermNumber gtn = new GoTermNumber(g, 0, 0, 0, 0);
+                gtn.p_value = 0.1d / i - 0.0005d;
+                gtns.Add(gtn);
+            }
+            Lollipop.calculateGoTermFDR(gtns);
+            foreach (GoTermNumber num in gtns)
+            {
+                Assert.IsNotNull(num.by);
+                Assert.True(num.by <= 1);
+            }
+            Lollipop.goTermNumbers = gtns;
+            Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
         }
 
         [Test]
@@ -746,26 +787,49 @@ namespace Test
             satisfactoryProteoformsCount++;
         }
 
+        public void make_relation(Proteoform p1, Proteoform p2)
+        {
+            ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ee, 0);
+            DeltaMassPeak ppp = new DeltaMassPeak(pp, new List<ProteoformRelation> { pp });
+            pp.peak = ppp;
+            ppp.peak_accepted = true;
+            p1.relationships.Add(pp);
+            p2.relationships.Add(pp);
+        }
+
         [Test]
         public void test_get_observed_proteins()
         {
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
             ExperimentalProteoform e = new ExperimentalProteoform("E1");
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { e, t, u }, 0);
+            ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.et, 0);
+            DeltaMassPeak etp = new DeltaMassPeak(et, new List<ProteoformRelation> { et });
+            et.peak = etp;
+            etp.peak_accepted = true;
+            e.relationships.Add(et);
+            t.relationships.Add(et);
+            ProteoformRelation eu = new ProteoformRelation(e, u, ProteoformComparison.et, 0);
+            DeltaMassPeak eup = new DeltaMassPeak(eu, new List<ProteoformRelation> { eu });
+            eu.peak = eup;
+            eup.peak_accepted = true;
+            e.relationships.Add(eu);
+            u.relationships.Add(eu);
+            ProteoformFamily f = new ProteoformFamily(e);
+            f.construct_family();
             e.family = f;
             t.family = f;
             u.family = f;
-            List<Protein> prots = Lollipop.getObservedProteins(new List<ExperimentalProteoform> { e }, dict.SelectMany(kv => kv.Value).ToArray());
+            List<ProteinWithGoTerms> prots = Lollipop.getObservedProteins(new List<ExperimentalProteoform> { e });
             Assert.AreEqual(2, prots.Count);
             Assert.True(prots.Select(p => p.Accession).Contains("T1"));
             Assert.True(prots.Select(p => p.Accession).Contains("T2"));
@@ -775,22 +839,29 @@ namespace Test
         [Test]
         public void test_get_repressed_or_induced_proteins()
         {
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
             ExperimentalProteoform ex = new ExperimentalProteoform("E1");
             ExperimentalProteoform fx = new ExperimentalProteoform("E1");
             ExperimentalProteoform gx = new ExperimentalProteoform("E1");
             ExperimentalProteoform hx = new ExperimentalProteoform("E1");
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { ex, fx, gx, hx, t, u }, 0);
+            make_relation(ex, t);
+            make_relation(ex, u);
+            //make_relation(ex, v);
+            make_relation(ex, fx);
+            make_relation(ex, gx);
+            make_relation(ex, hx);
+            ProteoformFamily f = new ProteoformFamily(ex);
+            f.construct_family();
             ex.family = f;
             fx.family = f;
             gx.family = f;
@@ -811,7 +882,7 @@ namespace Test
             hx.quant.logFoldChange = 8;
             hx.quant.FDR = 1;
             hx.quant.intensitySum = 2;
-            List<Protein> prots = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex,fx,gx }, dict.SelectMany(kv => kv.Value).ToArray(), 10, 0.5m, 1);
+            List<ProteinWithGoTerms> prots = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex,fx,gx }, 10, 0.5m, 1);
             Assert.AreEqual(0, prots.Count);
 
             //Nothing passing, but two things passing for each
@@ -827,14 +898,14 @@ namespace Test
             hx.quant.logFoldChange = 12;
             hx.quant.FDR = 1;
             hx.quant.intensitySum = 2;
-            prots = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, dict.SelectMany(kv => kv.Value).ToArray(), 10, 0.5m, 1);
+            prots = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
             Assert.AreEqual(0, prots.Count);
 
             //Passing
             ex.quant.logFoldChange = 12;
             ex.quant.FDR = 0.4m;
             ex.quant.intensitySum = 2;
-            prots = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, dict.SelectMany(kv => kv.Value).ToArray(), 10, 0.5m, 1);
+            prots = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
             Assert.AreEqual(2, prots.Count);
             Assert.True(prots.Select(p => p.Accession).Contains("T1"));
             Assert.True(prots.Select(p => p.Accession).Contains("T2"));
@@ -855,24 +926,24 @@ namespace Test
             fx.quant.FDR = 0.4m;
             fx.quant.intensitySum = 2;
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
-            List<ExperimentalProteoform> interesting = Lollipop.getInterestingProteoforms(exps.Select(x => x.quant), 10, 0.5m, 1);
+            List<ExperimentalProteoform> interesting = Lollipop.getInterestingProteoforms(exps, 10, 0.5m, 1).ToList();
             Assert.AreEqual(2, interesting.Count);
         }
 
         [Test]
         public void get_interesting_families()
         {
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
+            ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
             ExperimentalProteoform ex = new ExperimentalProteoform("E1");
             ExperimentalProteoform fx = new ExperimentalProteoform("E2");
             ExperimentalProteoform gx = new ExperimentalProteoform("E3");
@@ -884,9 +955,16 @@ namespace Test
             fx.quant.FDR = 0.4m;
             fx.quant.intensitySum = 2;
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
-            ProteoformFamily e = new ProteoformFamily(new List<Proteoform> { ex }, 0);
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { fx, gx, v }, 0);
-            ProteoformFamily h = new ProteoformFamily(new List<Proteoform> { hx, t, u }, 0);
+            make_relation(gx, v);
+            make_relation(fx, v);
+            make_relation(hx, t);
+            make_relation(hx, u);        
+            ProteoformFamily e = new ProteoformFamily(ex);
+            ProteoformFamily f = new ProteoformFamily(v);
+            ProteoformFamily h = new ProteoformFamily(hx);
+            e.construct_family();
+            f.construct_family();
+            h.construct_family();
             List<ProteoformFamily> families = new List<ProteoformFamily> { e, f, h };
             ex.family = e;
             fx.family = f;
@@ -896,47 +974,12 @@ namespace Test
             u.family = h;
             v.family = f;
 
-            List<ProteoformFamily> fams = Lollipop.getInterestingFamilies(exps.Select(x => x.quant), families, 10, 0.5m, 1);
+            List<ProteoformFamily> fams = Lollipop.getInterestingFamilies(exps, 10, 0.5m, 1);
             Assert.AreEqual(2, fams.Count);
             Assert.AreEqual(1, fams.Where(x => x.theoretical_count == 0).Count());
             Assert.AreEqual(1, fams.Where(x => x.theoretical_count == 1).Count());
             Assert.AreEqual(0, fams.Where(x => x.theoretical_count == 2).Count());
             Assert.AreEqual(1, fams.Where(x => x.experimental_count == 2).Count());
-        }
-
-        [Test]
-        public void get_interesting_goterm_families()
-        {
-            Protein p1 = new Protein("", "T1", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p2 = new Protein("", "T2", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            Protein p3 = new Protein("", "T3", new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[0], "T2", "T3", true, false, new List<GoTerm>());
-            GoTerm g1 = new GoTerm();
-            GoTerm g2 = new GoTerm();
-            GoTerm g3 = new GoTerm();
-            p1.GoTerms.Add(g1);
-            p2.GoTerms.Add(g2);
-            p3.GoTerms.Add(g3);
-            Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
-                { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
-                { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
-                { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
-            };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new List<GoTerm>(), new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            t.proteinList = new List<Protein> { p1 };
-            u.proteinList = new List<Protein> { p2 };
-            v.proteinList = new List<Protein> { p3 };
-            List<GoTermNumber> gtn = new List<GoTermNumber> { new GoTermNumber(g2), new GoTermNumber(g3) };
-            ProteoformFamily f = new ProteoformFamily(new List<Proteoform> { t }, 0);
-            ProteoformFamily h = new ProteoformFamily(new List<Proteoform> { u }, 0);
-            List<ProteoformFamily> families = new List<ProteoformFamily> { f, h };
-            t.family = h;
-            u.family = h;
-
-            List<ProteoformFamily> fams = Lollipop.getInterestingFamilies(gtn, families);
-            Assert.AreEqual(1, fams.Count);
-            Assert.AreEqual(u, fams[0].theoretical_proteoforms[0]);
         }
     }
 }

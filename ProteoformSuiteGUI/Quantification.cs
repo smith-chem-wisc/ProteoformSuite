@@ -13,7 +13,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
 using Proteomics;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public partial class Quantification : Form
     {
@@ -46,6 +46,17 @@ namespace ProteoformSuite
             }
         }
 
+        public void ClearListsAndTables()
+        {
+            Lollipop.logIntensityHistogram.Clear();
+            Lollipop.logSelectIntensityHistogram.Clear();
+            Lollipop.satisfactoryProteoforms.Clear();
+            Lollipop.qVals.Clear();
+            Lollipop.observedProteins.Clear();
+            Lollipop.inducedOrRepressedProteins.Clear();
+            Lollipop.goTermNumbers.Clear();
+        }
+
         public void fillGuiTablesAndGraphs()
         {
             plotObservedVsExpectedRelativeDifference();
@@ -57,8 +68,10 @@ namespace ProteoformSuite
 
         private void btn_refreshCalculation_Click(object sender, EventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor;
             Lollipop.quantify();
             fillGuiTablesAndGraphs();
+            this.Cursor = Cursors.Default;
         }
 
         public void initialize_every_time()
@@ -139,9 +152,9 @@ namespace ProteoformSuite
             nud_Offset.Value = Lollipop.offsetTestStatistics;
             nud_Offset.ValueChanged += nud_Offset_ValueChanged;
 
-            cmbx_goAspect.Items.Add(Aspect.biologicalProcess);
-            cmbx_goAspect.Items.Add(Aspect.cellularComponent);
-            cmbx_goAspect.Items.Add(Aspect.molecularFunction);
+            cmbx_goAspect.Items.Add(Aspect.BiologicalProcess);
+            cmbx_goAspect.Items.Add(Aspect.CellularComponent);
+            cmbx_goAspect.Items.Add(Aspect.MolecularFunction);
 
             cmbx_goAspect.SelectedIndexChanged -= cmbx_goAspect_SelectedIndexChanged; //disable event on load to prevent premature firing
             cmbx_goAspect.SelectedIndex = 0;
@@ -151,7 +164,13 @@ namespace ProteoformSuite
             rb_allSampleGOTerms.Checked = !Lollipop.allTheoreticalProteins; //initiallizes the background for GO analysis to the set of observed proteins. not the set of theoretical proteins.
             rb_allSampleGOTerms.Enabled = true;
 
+            rb_allTheoreticalProteins.Enabled = false;
+            rb_allTheoreticalProteins.Checked = Lollipop.allTheoreticalProteins; //initiallizes the background for GO analysis to the set of observed proteins. not the set of theoretical proteins.
+            rb_allTheoreticalProteins.Enabled = true;
+
             rb_allSampleGOTerms.CheckedChanged += new EventHandler(goTermBackgroundChanged);
+            rb_allTheoreticalProteins.CheckedChanged += new EventHandler(goTermBackgroundChanged);
+            rb_customBackgroundSet.CheckedChanged += new EventHandler(goTermBackgroundChanged);
         }
 
         private void plotObservedVsExpectedRelativeDifference()
@@ -248,16 +267,9 @@ namespace ProteoformSuite
             }
         }
 
-
-        private void goTermBackgroundChanged(object s, EventArgs e)
-        {
-            Lollipop.allTheoreticalProteins = !Lollipop.allTheoreticalProteins;
-            Lollipop.GO_analysis();
-        }
-
         private void fillGoTermsTable()
         {
-            DisplayUtility.FillDataGridView(dgv_goAnalysis, Lollipop.goTermNumbers.Where(x => x.goTerm.aspect.ToString() == cmbx_goAspect.SelectedItem.ToString()));
+            DisplayUtility.FillDataGridView(dgv_goAnalysis, Lollipop.goTermNumbers.Where(x => x.Aspect.ToString() == cmbx_goAspect.SelectedItem.ToString()));
         }
 
         private void updateGoTermsTable(object s, EventArgs e)
@@ -265,7 +277,7 @@ namespace ProteoformSuite
             Lollipop.minProteoformFDR = nud_FDR.Value;
             Lollipop.minProteoformFoldChange = nud_ratio.Value;
             Lollipop.minProteoformIntensity = nud_intensity.Value;
-            Lollipop.inducedOrRepressedProteins = Lollipop.getInducedOrRepressedProteins(Lollipop.satisfactoryProteoforms, Lollipop.expanded_proteins, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity);
+            Lollipop.inducedOrRepressedProteins = Lollipop.getInducedOrRepressedProteins(Lollipop.satisfactoryProteoforms, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity);
             Lollipop.GO_analysis();
             fillGoTermsTable();
         }
@@ -275,7 +287,7 @@ namespace ProteoformSuite
             Lollipop.minProteoformFDR = nud_FDR.Value;
             Lollipop.minProteoformFoldChange = nud_ratio.Value;
             Lollipop.minProteoformIntensity = nud_intensity.Value;
-            Lollipop.inducedOrRepressedProteins = Lollipop.getInducedOrRepressedProteins(Lollipop.satisfactoryProteoforms, Lollipop.expanded_proteins, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity);
+            Lollipop.inducedOrRepressedProteins = Lollipop.getInducedOrRepressedProteins(Lollipop.satisfactoryProteoforms, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity);
             Lollipop.GO_analysis();
             fillGoTermsTable();
         }
@@ -311,75 +323,60 @@ namespace ProteoformSuite
 
         private void enable_buildAllFamilies_button()
         {
-            if (got_cyto_temp_folder) btn_buildAllFamilies.Enabled = true;
+            if (got_cyto_temp_folder)
+                btn_buildAllFamilies.Enabled = true;
         }
 
         private void enable_buildSelectedFamilies_button()
         {
-            if (got_cyto_temp_folder && dgv_quantification_results.SelectedRows.Count > 0) btn_buildSelectedQuantFamilies.Enabled = true;
+            if (got_cyto_temp_folder && dgv_quantification_results.SelectedRows.Count > 0)
+                btn_buildSelectedQuantFamilies.Enabled = true;
         }
 
         private void btn_buildAllQuantifiedFamilies_Click(object sender, EventArgs e)
         {
-            bool built = build_families(Lollipop.getInterestingFamilies(Lollipop.qVals, Lollipop.proteoform_community.families, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity).Distinct().ToList());
-            if (!built) return;
-            MessageBox.Show("Finished building all families.\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
+            string time_stamp = SaveState.time_stamp();
+            tb_recentTimeStamp.Text = time_stamp;
+            string message = CytoscapeScript.write_cytoscape_script(Lollipop.proteoform_community.families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            MessageBox.Show(message, "Cytoscape Build");
+        }
+
+        private void btn_buildFamiliesWithSignificantChange_Click(object sender, EventArgs e)
+        {
+            List<ProteoformFamily> families = Lollipop.getInterestingFamilies(Lollipop.satisfactoryProteoforms, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity).Distinct().ToList();
+            string time_stamp = SaveState.time_stamp();
+            tb_recentTimeStamp.Text = time_stamp;
+            string message = CytoscapeScript.write_cytoscape_script(families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            MessageBox.Show(message, "Cytoscape Build");
         }
 
         private void btn_buildSelectedQuantFamilies_Click(object sender, EventArgs e)
         {
-            List<ExperimentalProteoform.quantitativeValues> selected_qvals = (DisplayUtility.get_selected_objects(dgv_quantification_results).Select(o => (ExperimentalProteoform.quantitativeValues)o)).ToList();
-            List<ProteoformFamily> selected_families = Lollipop.getInterestingFamilies(selected_qvals, Lollipop.proteoform_community.families, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity).Distinct().ToList();
-            bool built = build_families(selected_families);
-            if (!built) return;
-
-            string selected_family_string = "Finished building selected famil";
-            if (selected_families.Count() == 1) selected_family_string += "y :";
-            else selected_family_string += "ies :";
-            if (selected_families.Count() > 3) selected_family_string = String.Join(", ", selected_families.Select(f => f.family_id).ToList().Take(3)) + ". . .";
-            else selected_family_string = String.Join(", ", selected_families.Select(f => f.family_id));
-            MessageBox.Show(selected_family_string + ".\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
+            string time_stamp = SaveState.time_stamp();
+            tb_recentTimeStamp.Text = time_stamp;
+            object[] selected = DisplayUtility.get_selected_objects(dgv_quantification_results);
+            string message = CytoscapeScript.write_cytoscape_script(selected, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            MessageBox.Show(message, "Cytoscape Build");
         }
 
         private void btn_buildFamiliesAllGO_Click(object sender, EventArgs e)
         {
             Aspect a = (Aspect)cmbx_goAspect.SelectedItem;
-            bool built = build_families(Lollipop.getInterestingFamilies(Lollipop.goTermNumbers.Where(n=>n.goTerm.aspect == a).Distinct().ToList(), Lollipop.proteoform_community.families));
-            if (!built) return;
-            MessageBox.Show("Finished building all families.\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
+            List<ProteoformFamily> go_families = Lollipop.getInterestingFamilies(Lollipop.goTermNumbers.Where(n => n.Aspect == a).Distinct().ToList(), Lollipop.proteoform_community.families);
+            string time_stamp = SaveState.time_stamp();
+            tb_recentTimeStamp.Text = time_stamp;
+            string message = CytoscapeScript.write_cytoscape_script(go_families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            MessageBox.Show(message, "Cytoscape Build");
         }
 
         private void btn_buildFromSelectedGoTerms_Click(object sender, EventArgs e)
         {
             List<GoTermNumber> selected_gos = (DisplayUtility.get_selected_objects(dgv_goAnalysis).Select(o => (GoTermNumber)o)).ToList();
             List<ProteoformFamily> selected_families = Lollipop.getInterestingFamilies(selected_gos, Lollipop.proteoform_community.families).Distinct().ToList();
-            bool built = build_families(selected_families);
-            if (!built) return;
-
-            string selected_family_string = "Finished building selected famil";
-            if (selected_families.Count() == 1) selected_family_string += "y :";
-            else selected_family_string += "ies :";
-            if (selected_families.Count() > 3) selected_family_string = String.Join(", ", selected_families.Select(f => f.family_id).ToList().Take(3)) + ". . .";
-            else selected_family_string = String.Join(", ", selected_families.Select(f => f.family_id));
-            MessageBox.Show(selected_family_string + ".\n\nPlease load them into Cytoscape 3.0 or later using \"Tools\" -> \"Execute Command File\" and choosing the script_[TIMESTAMP].txt file in your specified directory.");
-        }
-
-        private bool build_families(List<ProteoformFamily> families)
-        {
-            //Check if valid folder
-            if (Lollipop.family_build_folder_path == "" || !Directory.Exists(Lollipop.family_build_folder_path))
-            {
-                MessageBox.Show("Please choose a folder in which the families will be built, so you can load them into Cytoscape.");
-                return false;
-            }
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
-            CytoscapeScript c = new CytoscapeScript(families, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString());
-            File.WriteAllText(c.edges_path, c.edge_table);
-            File.WriteAllText(c.nodes_path, c.node_table);
-            File.WriteAllText(c.script_path, c.script);
-            c.write_styles(); //cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLayout.SelectedItem.ToString(), "");
-            return true;
+            string message = CytoscapeScript.write_cytoscape_script(selected_families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            MessageBox.Show(message, "Cytoscape Build");
         }
 
         private void cmbx_ratioNumerator_SelectedIndexChanged(object sender, EventArgs e)
@@ -433,10 +430,61 @@ namespace ProteoformSuite
             plotObservedVsExpectedOffsets();
         }
 
+        bool backgroundUpdated = true;
+        private void goTermBackgroundChanged(object s, EventArgs e)
+        {
+            if (!backgroundUpdated)
+            {
+                Lollipop.GO_analysis();
+                fillGoTermsTable();
+            }
+            backgroundUpdated = true;
+        }
+
+        private void rb_allSampleGOTerms_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_customBackgroundSet.Checked)
+            {
+                Lollipop.backgroundProteinsList = "";
+                tb_goTermCustomBackground.Text = "";
+                backgroundUpdated = false;
+            }
+        }
+
         private void rb_allTheoreticalProteins_CheckedChanged(object sender, EventArgs e)
         {
-            Lollipop.GO_analysis();
-            fillGoTermsTable();
+            Lollipop.allTheoreticalProteins = rb_allTheoreticalProteins.Checked;
+            if (rb_allTheoreticalProteins.Checked)
+            {
+                Lollipop.backgroundProteinsList = "";
+                tb_goTermCustomBackground.Text = "";
+                backgroundUpdated = false;
+            }
+        }
+
+        private void rb_customBackgroundSet_CheckedChanged(object sender, EventArgs e)
+        {
+            tb_goTermCustomBackground.Enabled = rb_customBackgroundSet.Checked;
+            btn_customBackgroundBrowse.Enabled = rb_customBackgroundSet.Checked;
+            if (rb_customBackgroundSet.Checked) btn_customBackgroundBrowse_Click(new object(), new EventArgs());
+        }
+
+        OpenFileDialog fileOpen = new OpenFileDialog();
+        private void btn_customBackgroundBrowse_Click(object sender, EventArgs e)
+        {
+            fileOpen.Filter = "Protein accession list (*.txt)|*.txt";
+            fileOpen.FileName = "";
+            DialogResult dr = this.fileOpen.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK && File.Exists(fileOpen.FileName))
+            {
+                Lollipop.backgroundProteinsList = fileOpen.FileName;
+                tb_goTermCustomBackground.Text = fileOpen.FileName;
+                if (rb_customBackgroundSet.Checked)
+                {
+                    backgroundUpdated = false;
+                    goTermBackgroundChanged(new object(), new EventArgs());
+                }
+            }
         }
     }
 }

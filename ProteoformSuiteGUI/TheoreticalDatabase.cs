@@ -7,7 +7,7 @@ using System.Linq;
 using System.Security;
 using System.Windows.Forms;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public partial class TheoreticalDatabase : Form
     {

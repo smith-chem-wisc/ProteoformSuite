@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using ProteoformSuiteInternal;
 using System.IO;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public partial class TopDown : Form
     {

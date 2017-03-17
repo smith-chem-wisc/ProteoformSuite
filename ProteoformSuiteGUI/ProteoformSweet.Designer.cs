@@ -1,4 +1,4 @@
-﻿namespace ProteoformSuite
+﻿namespace ProteoformSuiteGUI
 {
     partial class ProteoformSweet
     {
@@ -288,11 +288,12 @@
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(795, 425);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.IsMdiContainer = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "ProteoformSweet";
-            this.Text = "Proteoform Suite 0.00";
+            this.Text = "Proteoform Suite";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

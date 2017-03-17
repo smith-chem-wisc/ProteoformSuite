@@ -1,4 +1,4 @@
-﻿namespace ProteoformSuite
+﻿namespace ProteoformSuiteGUI
 {
     partial class TopDown
     {
