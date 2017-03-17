@@ -12,7 +12,7 @@ using System.IO;
 using System.Windows.Forms.DataVisualization.Charting;
 using ProteoformSuiteInternal;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 { 
     public partial class ExperimentExperimentComparison : Form
     {

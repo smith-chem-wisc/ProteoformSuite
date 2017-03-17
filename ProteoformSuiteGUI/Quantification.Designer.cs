@@ -1,4 +1,4 @@
-﻿namespace ProteoformSuite
+﻿namespace ProteoformSuiteGUI
 {
     partial class Quantification
     {
@@ -38,6 +38,7 @@
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Quantification));
             this.dgv_quantification_results = new System.Windows.Forms.DataGridView();
             this.gb_quantDataDisplaySelection = new System.Windows.Forms.GroupBox();
             this.btn_refreshCalculation = new System.Windows.Forms.Button();
@@ -944,6 +945,7 @@
             this.Controls.Add(this.ct_volcano_logFold_logP);
             this.Controls.Add(this.gb_quantDataDisplaySelection);
             this.Controls.Add(this.dgv_quantification_results);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Quantification";
             this.Text = "Quantification";
@@ -984,7 +986,7 @@
 
         private System.Windows.Forms.DataGridView dgv_quantification_results;
         private System.Windows.Forms.GroupBox gb_quantDataDisplaySelection;
-        private System.Windows.Forms.DataVisualization.Charting.Chart ct_volcano_logFold_logP;
+        public System.Windows.Forms.DataVisualization.Charting.Chart ct_volcano_logFold_logP;
         private System.Windows.Forms.DataGridView dgv_goAnalysis;
         private System.Windows.Forms.ComboBox cmbx_goAspect;
         private System.Windows.Forms.GroupBox gb_goThresholds;
@@ -994,7 +996,7 @@
         private System.Windows.Forms.NumericUpDown nud_ratio;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown nud_FDR;
-        private System.Windows.Forms.DataVisualization.Charting.Chart ct_proteoformIntensities;
+        public System.Windows.Forms.DataVisualization.Charting.Chart ct_proteoformIntensities;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown nud_bkgdWidth;
@@ -1034,7 +1036,7 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox cmbx_edgeLabel;
         private System.Windows.Forms.Button btn_buildFamiliesAllGO;
-        private System.Windows.Forms.DataVisualization.Charting.Chart ct_relativeDifference;
+        public System.Windows.Forms.DataVisualization.Charting.Chart ct_relativeDifference;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox tb_FDR;

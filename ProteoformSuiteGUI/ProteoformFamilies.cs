@@ -12,7 +12,7 @@ using System.IO;
 using System.Security;
 using Proteomics;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public partial class ProteoformFamilies : Form
     {

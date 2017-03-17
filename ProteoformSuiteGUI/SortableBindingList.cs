@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public class SortableBindingList<T> : BindingList<T>
     {

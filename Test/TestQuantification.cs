@@ -174,7 +174,7 @@ namespace Test
         public void proteinLevelStDev_divide_by_zero_crash()
         {
             ExperimentalProteoform e = new ExperimentalProteoform("E");
-            List<biorepIntensity> singleton_list = new List<biorepIntensity> { new biorepIntensity(false, false, 1, "", 0) };
+            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
             Assert.True(e.quant.getProteinLevelStdDev(singleton_list, singleton_list) > 0);
         }
 
@@ -182,8 +182,8 @@ namespace Test
         public void quant_variance_without_imputation_aka_unequal_list_lengths()
         {
             ExperimentalProteoform e = new ExperimentalProteoform("E");
-            List<biorepIntensity> singleton_list = new List<biorepIntensity> { new biorepIntensity(false, false, 1, "", 0) };
-            List<biorepIntensity> shorter_list = new List<biorepIntensity>();
+            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
+            List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
             {
                 e.quant.Variance(0, shorter_list, singleton_list);
@@ -198,8 +198,8 @@ namespace Test
         public void quant_permuations_without_imputation_aka_unequal_list_lengths()
         {
             ExperimentalProteoform e = new ExperimentalProteoform("E");
-            List<biorepIntensity> singleton_list = new List<biorepIntensity> { new biorepIntensity(false, false, 1, "", 0) };
-            List<biorepIntensity> shorter_list = new List<biorepIntensity>();
+            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
+            List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
             {
                 e.quant.getPermutedTestStatistics(shorter_list, singleton_list, 0, 1);
@@ -214,8 +214,8 @@ namespace Test
         public void quant_pvalue_without_imputation_aka_unequal_list_lengths()
         {
             ExperimentalProteoform e = new ExperimentalProteoform("E");
-            List<biorepIntensity> singleton_list = new List<biorepIntensity> { new biorepIntensity(false, false, 1, "", 0) };
-            List<biorepIntensity> shorter_list = new List<biorepIntensity>();
+            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
+            List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
             {
                 e.quant.PValue(0, shorter_list, singleton_list);
@@ -354,7 +354,7 @@ namespace Test
                 db.Add(new DummyBiorepable(new InputFile("path", Labeling.NeuCode, Purpose.Quantification, "light", "heavy", 1),1d));
             }
 
-            List<biorepIntensity> bril = new ExperimentalProteoform("E").make_biorepIntensityList(db,db,lightConditions,heavyConditions);
+            List<BiorepIntensity> bril = new ExperimentalProteoform("E").make_biorepIntensityList(db,db,lightConditions,heavyConditions);
 
             Assert.AreEqual(2, bril.Count());
 
@@ -441,7 +441,7 @@ namespace Test
         [Test]
         public void test_addBiorepIntensity()
         {
-            List<biorepIntensity> briList = new List<biorepIntensity>();
+            List<BiorepIntensity> briList = new List<BiorepIntensity>();
 
             for (int i = 0; i < 10000; i++)
             {
@@ -462,7 +462,7 @@ namespace Test
         {
             Dictionary<string, List<int>> observedConditions = new Dictionary<string, List<int>>();
             observedConditions.Add("light", new List<int> { 0, 1, 2 });
-            List<biorepIntensity> briList = new List<biorepIntensity>();
+            List<BiorepIntensity> briList = new List<BiorepIntensity>();
             briList.AddRange(ExperimentalProteoform.quantitativeValues.imputedIntensities(true,briList,(decimal)Math.Log(100d,2), (decimal)Math.Log(5d, 2),observedConditions));
             Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 3);//we started with no real observations but there were three observed bioreps in the experiment. Therefore we need 3 imputed bioreps
             Assert.AreEqual(briList[0].condition, "light");
@@ -472,7 +472,7 @@ namespace Test
             Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(2), true);
 
             briList.Clear();
-            briList.Add(new biorepIntensity(true, false, 0, "light", 1000d));
+            briList.Add(new BiorepIntensity(true, false, 0, "light", 1000d));
             briList.AddRange(ExperimentalProteoform.quantitativeValues.imputedIntensities(true, briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), observedConditions));
 
             Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 2);//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
@@ -485,9 +485,9 @@ namespace Test
 
 
             briList.Clear();
-            briList.Add(new biorepIntensity(true, false, 0, "light", 1000d));
-            briList.Add(new biorepIntensity(true, false, 1, "light", 2000d));
-            briList.Add(new biorepIntensity(true, false, 2, "light", 3000d));
+            briList.Add(new BiorepIntensity(true, false, 0, "light", 1000d));
+            briList.Add(new BiorepIntensity(true, false, 1, "light", 2000d));
+            briList.Add(new BiorepIntensity(true, false, 2, "light", 3000d));
             briList.AddRange(ExperimentalProteoform.quantitativeValues.imputedIntensities(true, briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), observedConditions));
 
             Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 0);//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
@@ -506,13 +506,13 @@ namespace Test
             ExperimentalProteoform e = new ExperimentalProteoform("E");
             
             //Each biorepIntensity has a unique combination of light/heavy + condition + biorep, since that's how they're made in the program
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(true, false, i, "first", 0));
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(true, false, i, "second", 0));
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(false, false, i, "first", 0));
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(false, false, i, "second", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "second", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, false, i, "second", 0));
 
             double log2_intensity = 0.06; //rounds up
-            foreach(biorepIntensity b in e.biorepIntensityList)
+            foreach(BiorepIntensity b in e.biorepIntensityList)
             {
                 b.intensity = Math.Pow(2, log2_intensity);
                 log2_intensity += 0.05;
@@ -540,13 +540,13 @@ namespace Test
             ExperimentalProteoform e = new ExperimentalProteoform("E");
 
             //Each biorepIntensity has a unique combination of light/heavy + condition + biorep, since that's how they're made in the program
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(true, false, i, "first", 0));
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(true, false, i, "second", 0));
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(false, false, i, "first", 0));
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new biorepIntensity(false, false, i, "second", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "second", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, false, i, "second", 0));
 
             double log2_intensity = 1.06; //rounds up
-            foreach (biorepIntensity b in e.biorepIntensityList)
+            foreach (BiorepIntensity b in e.biorepIntensityList)
             {
                 b.intensity = Math.Pow(2, log2_intensity);
                 log2_intensity += 0.05;
@@ -600,7 +600,7 @@ namespace Test
             string fromeach = "From Each Condition";
 
             List<string> conditions = new List<string> { "s", "ns" };
-            biorepIntensity b1 = new biorepIntensity(false, false, 1, conditions[0], 0);
+            BiorepIntensity b1 = new BiorepIntensity(false, false, 1, conditions[0], 0);
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { new ExperimentalProteoform("E") };
             exps[0].biorepIntensityList.Add(b1);
             List<ExperimentalProteoform> exps_out = new List<ExperimentalProteoform>();
@@ -633,7 +633,7 @@ namespace Test
             Assert.AreEqual(0, exps_out.Count);
 
 
-            biorepIntensity b2 = new biorepIntensity(false, false, 100, conditions[1], 0);
+            BiorepIntensity b2 = new BiorepIntensity(false, false, 100, conditions[1], 0);
             exps[0].biorepIntensityList.Add(b2);
 
             //One biorep in each condition passes for-each-conditon test
@@ -656,7 +656,7 @@ namespace Test
 
 
             //DOESN'T PASS WHEN NOT MATCHING LISTED CONDITIONS, EXCEPT FOR ANY-CONDITION
-            foreach (biorepIntensity b in exps[0].biorepIntensityList) b.condition = "not_a_condition";
+            foreach (BiorepIntensity b in exps[0].biorepIntensityList) b.condition = "not_a_condition";
             exps_out = Lollipop.determineProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
             Assert.AreEqual(0, exps_out.Count);
 
@@ -668,11 +668,11 @@ namespace Test
 
 
             //NOT JUST COUNTING BIOREP INTENSITIES, BUT RATHER BIOREPS WITH OBSERVATIONS
-            biorepIntensity b3 = new biorepIntensity(false, false, 1, conditions[0], 0);
-            biorepIntensity b4 = new biorepIntensity(false, false, 1, conditions[0], 0);
-            biorepIntensity b5 = new biorepIntensity(false, false, 1, conditions[0], 0);
-            biorepIntensity b6 = new biorepIntensity(false, false, 1, conditions[0], 0);
-            exps[0].biorepIntensityList = new List<biorepIntensity> { b3, b4, b5, b6 };
+            BiorepIntensity b3 = new BiorepIntensity(false, false, 1, conditions[0], 0);
+            BiorepIntensity b4 = new BiorepIntensity(false, false, 1, conditions[0], 0);
+            BiorepIntensity b5 = new BiorepIntensity(false, false, 1, conditions[0], 0);
+            BiorepIntensity b6 = new BiorepIntensity(false, false, 1, conditions[0], 0);
+            exps[0].biorepIntensityList = new List<BiorepIntensity> { b3, b4, b5, b6 };
             exps_out = Lollipop.determineProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
             Assert.AreEqual(0, exps_out.Count);
 
@@ -682,10 +682,10 @@ namespace Test
             exps_out = Lollipop.determineProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
             Assert.AreEqual(0, exps_out.Count);
 
-            biorepIntensity b7 = new biorepIntensity(false, false, 1, conditions[1], 0);
-            biorepIntensity b8 = new biorepIntensity(false, false, 1, conditions[1], 0);
-            biorepIntensity b9 = new biorepIntensity(false, false, 1, conditions[1], 0);
-            biorepIntensity b10 = new biorepIntensity(false, false, 1, conditions[1], 0);
+            BiorepIntensity b7 = new BiorepIntensity(false, false, 1, conditions[1], 0);
+            BiorepIntensity b8 = new BiorepIntensity(false, false, 1, conditions[1], 0);
+            BiorepIntensity b9 = new BiorepIntensity(false, false, 1, conditions[1], 0);
+            BiorepIntensity b10 = new BiorepIntensity(false, false, 1, conditions[1], 0);
             exps[0].biorepIntensityList.Add(b7);
             exps[0].biorepIntensityList.Add(b8);
             exps[0].biorepIntensityList.Add(b9);

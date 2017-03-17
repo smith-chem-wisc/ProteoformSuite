@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Windows.Forms;
 
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public partial class LoadDeconvolutionResults : Form
     {

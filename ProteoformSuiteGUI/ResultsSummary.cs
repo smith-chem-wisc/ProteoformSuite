@@ -1,75 +1,41 @@
 ﻿using System;
 using ProteoformSuiteInternal;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public partial class ResultsSummary : Form
     {
-
-        BindingList<string> identificationFileNames = new BindingList<string>();
-        int numRawExpComponents;
-        int numNeucodePairs;
-        int numExperimentalProteoforms;
-        string uniprotXmlFiles;
-        int numETPairs;
-        int numETPeaks;
-        int numEEPairs;
-        int numEEPeaks;
-        int numTheoreticalProteoforms;
-        int numFamilies;
-        public static string loadDescription = null; //set in GUI
-        
-
         public ResultsSummary()
         {
             InitializeComponent();
         }
 
         private void ResultsSummary_Load(object sender, EventArgs e)
-        {
-            createResultsSummary();
-            displayResultsSummary();
+        { }
 
+        public void create_summary()
+        {
+            rtb_summary.Text = ResultsSummaryGenerator.generate_full_report();
         }
 
-        public void createResultsSummary()
+        FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+        private void btn_browseSummarySaveFolder_Click(object sender, EventArgs e)
         {
-            identificationFileNames = new BindingList<string>((from s in Lollipop.input_files.Where(f => f.purpose == Purpose.Identification) select s.filename).ToList());
-            numRawExpComponents = Lollipop.raw_experimental_components.Count;
-            numNeucodePairs = Lollipop.raw_neucode_pairs.Count;
-            numExperimentalProteoforms = Lollipop.proteoform_community.experimental_proteoforms.Count();
-            uniprotXmlFiles = String.Join(", ", Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Select(f => f.filename));
-            numETPairs = Lollipop.et_relations.Count;
-            numETPeaks = Lollipop.et_peaks.Count;
-            numEEPairs = Lollipop.ee_relations.Count;
-            numEEPeaks = Lollipop.ee_peaks.Count;
-            numTheoreticalProteoforms = Lollipop.proteoform_community.theoretical_proteoforms.Count();
-            numFamilies = Lollipop.proteoform_community.families.Count;
+            DialogResult dr = this.folderBrowser.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                string temp_folder_path = folderBrowser.SelectedPath;
+                tb_summarySaveFolder.Text = temp_folder_path; //triggers TextChanged method
+            }
         }
 
-        public void displayResultsSummary()
+        private void btn_save_Click(object sender, EventArgs e)
         {
-            lb_deconResults.DataSource = identificationFileNames; 
-            tb_RawExperimentalComponents.Text = numRawExpComponents.ToString();
-            tb_neucodePairs.Text = numNeucodePairs.ToString();
-            tb_experimentalProteoforms.Text = numExperimentalProteoforms.ToString();
-            tb_uniprotXmlDatabase.Text = uniprotXmlFiles;
-            tb_ETPairs.Text = numETPairs.ToString();
-            tb_ETPeaks.Text = numETPeaks.ToString();
-            tb_EEPairs.Text = numEEPairs.ToString();
-            tb_EEPeaks.Text = numEEPeaks.ToString();
-            tb_theoreticalProteoforms.Text = numTheoreticalProteoforms.ToString();
-            tb_families.Text = numFamilies.ToString();
-            if (loadDescription == null) { tb_load_description.Visible = false; label11.Visible = false; }
-            else { tb_load_description.Text = loadDescription.ToString() ; }
+            string timestamp = SaveState.time_stamp();
+            using (StreamWriter writer = new StreamWriter(Path.Combine(tb_summarySaveFolder.Text, "summary_" + timestamp + ".txt"))) writer.Write(ResultsSummaryGenerator.generate_full_report());
+            if (cb_savePlots.Checked && Directory.Exists(tb_summarySaveFolder.Text)) ((ProteoformSweet)MdiParent).save_all_plots(tb_summarySaveFolder.Text, timestamp);
         }
     }
 }
