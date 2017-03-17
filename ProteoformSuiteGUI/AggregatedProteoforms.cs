@@ -42,12 +42,19 @@ namespace ProteoformSuiteGUI
             this.Cursor = Cursors.WaitCursor;
             Lollipop.aggregate_proteoforms(Lollipop.validate_proteoforms, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
             FillAggregatesTable();
+
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
-            ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.run_the_gamut();
-            ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();
-            ((ProteoformSweet)MdiParent).experimentExperimentComparison.run_the_gamut();
             ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).quantification.perform_calculations();
+            ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
+
+            if (Lollipop.neucode_labeled)
+            {
+                if (Lollipop.proteoform_community.theoretical_proteoforms.Length > 0)  ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.run_the_gamut();
+                ((ProteoformSweet)MdiParent).experimentExperimentComparison.run_the_gamut();
+            }
+
             updateFiguresOfMerit();
             this.Cursor = Cursors.Default;
         }
@@ -196,8 +203,13 @@ namespace ProteoformSuiteGUI
 
         private void bt_aggregate_Click(object sender, EventArgs e)
         {
-            ClearListsAndTables();
-            run_the_gamut();
+            if (Lollipop.neucode_labeled && Lollipop.raw_neucode_pairs.Count > 0 || Lollipop.raw_experimental_components.Count > 0)
+            {
+                ClearListsAndTables();
+                run_the_gamut();
+            }
+            else if (Lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
+
         }
 
         private void nUD_rel_abundance_ValueChanged(object sender, EventArgs e)
