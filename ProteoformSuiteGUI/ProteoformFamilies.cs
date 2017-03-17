@@ -80,6 +80,11 @@ namespace ProteoformSuiteGUI
         public void ClearListsAndTables()
         {
             Lollipop.proteoform_community.families.Clear();
+            foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.family = null;
+            foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.family = null;
+            foreach (Proteoform p in Lollipop.proteoform_community.decoy_proteoforms.Values.SelectMany(d => d)) p.family = null;
+            dgv_main.DataSource = null;
+            dgv_main.Rows.Clear();
         }
 
         public void update_figures_of_merit()
@@ -247,7 +252,7 @@ namespace ProteoformSuiteGUI
 
         private void Families_update_Click(object sender, EventArgs e)
         {
-            Lollipop.proteoform_community.families.Clear();
+            ClearListsAndTables();
             run_the_gamut();
         }
 

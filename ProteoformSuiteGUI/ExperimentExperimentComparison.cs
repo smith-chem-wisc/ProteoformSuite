@@ -13,9 +13,10 @@ using System.Windows.Forms.DataVisualization.Charting;
 using ProteoformSuiteInternal;
 
 namespace ProteoformSuiteGUI
-{ 
+{
     public partial class ExperimentExperimentComparison : Form
     {
+        public event EEPeakAcceptabilityChangedEventHandler EEPeakAcceptabilityChanged;
         private bool compared_ee = false;
 
         public ExperimentExperimentComparison()
@@ -24,8 +25,8 @@ namespace ProteoformSuiteGUI
             this.dgv_EE_Peaks.MouseClick += new MouseEventHandler(dgv_EE_Peak_List_CellClick);
             this.ct_EE_Histogram.MouseClick += new MouseEventHandler(ct_EE_Histogram_MouseClick);
             this.ct_EE_peakList.MouseClick += new MouseEventHandler(ct_EE_peakList_MouseClick);
-            dgv_EE_Peaks.CurrentCellDirtyStateChanged += new EventHandler(peakListSpecificPeakAcceptanceChanged); //makes the change immediate and automatic
-            dgv_EE_Peaks.CellValueChanged += new DataGridViewCellEventHandler(propagatePeakListAcceptedPeakChangeToPairsTable); //when 'acceptance' of an ET peak gets changed, we change the ET pairs table.
+            dgv_EE_Peaks.CurrentCellDirtyStateChanged += new EventHandler(EE_Peak_List_DirtyStateChanged); //makes the change immediate and automatic
+            EEPeakAcceptabilityChanged += ExperimentExperimentComparison_EEPeakAcceptabilityChanged;
             InitializeParameterSet();
             InitializeMassWindow();
         }
@@ -135,7 +136,7 @@ namespace ProteoformSuiteGUI
         {
             int clickedRow = dgv_EE_Peaks.HitTest(e.X, e.Y).RowIndex;
             int clickedCol = dgv_EE_Peaks.HitTest(e.X, e.Y).ColumnIndex;
-            if (e.Button == MouseButtons.Left && clickedRow >= 0 && clickedRow < Lollipop.ee_relations.Count 
+            if (e.Button == MouseButtons.Left && clickedRow >= 0 && clickedRow < Lollipop.ee_relations.Count
                 && clickedCol < dgv_EE_Peaks.ColumnCount && clickedCol >= 0)
             {
                 ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
@@ -199,15 +200,43 @@ namespace ProteoformSuiteGUI
         }
 
 
-        private void peakListSpecificPeakAcceptanceChanged(object sender, EventArgs e)
+        private void EE_Peak_List_DirtyStateChanged(object sender, EventArgs e)
         {
             if (dgv_EE_Peaks.IsCurrentCellDirty)
             {
-                dgv_EE_Peaks.EndEdit();
-                dgv_EE_Peaks.Update();
-                dgv_EE_Relations.Refresh();
+                dgv_EE_Peaks.CommitEdit(DataGridViewDataErrorContexts.Commit);
+
+                int columnIndex = dgv_EE_Peaks.CurrentCell.ColumnIndex;
+                int rowIndex = dgv_EE_Peaks.CurrentCell.RowIndex;
+
+                if (columnIndex < 0) return;
+                string columnName = dgv_EE_Peaks.Columns[columnIndex].Name;
+
+                if (columnName == "peak_accepted")
+                {
+                    bool acceptibilityStatus = Convert.ToBoolean(dgv_EE_Peaks.Rows[rowIndex].Cells[columnIndex].Value);
+                    DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_EE_Peaks.Rows[rowIndex].DataBoundItem;
+                    EEPeakAcceptabilityChangedEventArgs EEAcceptabilityChangedEventData = new EEPeakAcceptabilityChangedEventArgs(acceptibilityStatus, selected_peak);
+                    ONEEAcceptibilityChanged(EEAcceptabilityChangedEventData);
+                }
             }
         }
+
+        protected void ExperimentExperimentComparison_EEPeakAcceptabilityChanged(object sender, EEPeakAcceptabilityChangedEventArgs e)
+        {
+            foreach (ProteoformRelation pRelation in Lollipop.ee_relations.Where(p => e.EEPeak.grouped_relations.Contains(p)))
+            {
+                pRelation.accepted = e.IsPeakAcceptable;
+            }
+            dgv_EE_Peaks.Refresh();
+            dgv_EE_Relations.Refresh();
+        }
+
+        protected virtual void ONEEAcceptibilityChanged(EEPeakAcceptabilityChangedEventArgs e)
+        {
+            if (EEPeakAcceptabilityChanged != null) EEPeakAcceptabilityChanged(this, e);
+        }
+
 
         private void xMaxEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
         {
@@ -239,19 +268,23 @@ namespace ProteoformSuiteGUI
         private void ct_EE_Histogram_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
-               DisplayUtility.tooltip_graph_display(ct_EE_Histogram_tt, e, ct_EE_Histogram, ct_EE_Histogram_prevPosition);
+                DisplayUtility.tooltip_graph_display(ct_EE_Histogram_tt, e, ct_EE_Histogram, ct_EE_Histogram_prevPosition);
         }
         private void ct_EE_peakList_MouseClick(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
-              DisplayUtility.tooltip_graph_display(ct_EE_peakList_tt, e, ct_EE_peakList, ct_EE_peakList_prevPosition);
+                DisplayUtility.tooltip_graph_display(ct_EE_peakList_tt, e, ct_EE_peakList, ct_EE_peakList_prevPosition);
         }
 
         private void bt_compare_EE_Click(object sender, EventArgs e)
         {
-            ClearListsAndTables();
-            run_the_gamut();
-            xMaxEE.Value = Convert.ToDecimal(Lollipop.ee_max_mass_difference);
+            if (Lollipop.proteoform_community.has_e_proteoforms)
+            {
+                ClearListsAndTables();
+                run_the_gamut();
+                xMaxEE.Value = Convert.ToDecimal(Lollipop.ee_max_mass_difference);
+            }
+            else MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void nUD_EE_Upper_Bound_ValueChanged(object sender, EventArgs e)
@@ -261,7 +294,7 @@ namespace ProteoformSuiteGUI
 
         private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e)
         {
-             Lollipop.peak_width_base_ee = Convert.ToDouble(nUD_PeakWidthBase.Value);
+            Lollipop.peak_width_base_ee = Convert.ToDouble(nUD_PeakWidthBase.Value);
         }
 
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
@@ -287,7 +320,7 @@ namespace ProteoformSuiteGUI
 
         private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
         {
-            Lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value); 
+            Lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value);
         }
 
         private void nUD_MaxRetTimeDifference_ValueChanged(object sender, EventArgs e)
@@ -295,4 +328,34 @@ namespace ProteoformSuiteGUI
             Lollipop.ee_max_RetentionTime_difference = Convert.ToDouble(nUD_MaxRetTimeDifference.Value);
         }
     }
+
+
+public class EEPeakAcceptabilityChangedEventArgs : EventArgs
+{
+    private bool _isPeakAcceptable;
+    public bool IsPeakAcceptable
+    {
+        get
+        {
+            return this._isPeakAcceptable;
+        }
+    }
+
+    private DeltaMassPeak _EEPeak;
+    public DeltaMassPeak EEPeak
+    {
+        get
+        {
+            return this._EEPeak;
+        }
+    }
+
+    public EEPeakAcceptabilityChangedEventArgs(bool IsPeakAcceptable, DeltaMassPeak EEPeak)
+    {
+        this._isPeakAcceptable = IsPeakAcceptable; //True if peak is acceptable
+        this._EEPeak = EEPeak;
+    }
+}
+
+public delegate void EEPeakAcceptabilityChangedEventHandler(object sender, EEPeakAcceptabilityChangedEventArgs e);
 }

@@ -203,8 +203,13 @@ namespace ProteoformSuiteGUI
 
         private void bt_aggregate_Click(object sender, EventArgs e)
         {
-            ClearListsAndTables();
-            run_the_gamut();
+            if (Lollipop.neucode_labeled && Lollipop.raw_neucode_pairs.Count > 0 || Lollipop.raw_experimental_components.Count > 0)
+            {
+                ClearListsAndTables();
+                run_the_gamut();
+            }
+            else if (Lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
+
         }
 
         private void nUD_rel_abundance_ValueChanged(object sender, EventArgs e)
