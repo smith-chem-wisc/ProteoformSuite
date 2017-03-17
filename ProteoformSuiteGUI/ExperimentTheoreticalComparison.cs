@@ -47,6 +47,7 @@ namespace ProteoformSuiteGUI
         {
             this.Cursor = Cursors.WaitCursor;
             Lollipop.make_et_relationships();
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
             this.FillTablesAndCharts();
             this.Cursor = Cursors.Default;
             compared_et = true;
@@ -87,6 +88,9 @@ namespace ProteoformSuiteGUI
             Lollipop.proteoform_community.relations_in_peaks.RemoveAll(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.ed);
             Lollipop.proteoform_community.delta_mass_peaks.RemoveAll(k => k.relation_type == ProteoformComparison.et || k.relation_type == ProteoformComparison.ed);
 
+            foreach (var series in ct_ET_Histogram.Series) series.Points.Clear();
+            foreach (var series in ct_ET_peakList.Series) series.Points.Clear();
+
             dgv_ET_Pairs.DataSource = null;
             dgv_ET_Peak_List.DataSource = null;
             dgv_ET_Pairs.Rows.Clear();
@@ -126,7 +130,8 @@ namespace ProteoformSuiteGUI
             {
                 pRelation.accepted = e.IsPeakAcceptable;
             }
-            FillTablesAndCharts();
+            dgv_ET_Pairs.Refresh();
+            dgv_ET_Peak_List.Refresh();
         }
 
         private void dgv_ET_Pairs_CellClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -180,11 +185,16 @@ namespace ProteoformSuiteGUI
 
         private void bt_compare_et_Click(object sender, EventArgs e)
         {
-            shift_masses();
-            ClearListsAndTables();
-            run_the_gamut();
-            xMaxET.Value = (decimal)Lollipop.et_high_mass_difference;
-            xMinET.Value = (decimal)Lollipop.et_low_mass_difference;
+            if (Lollipop.proteoform_community.has_e_and_t_proteoforms)
+            {
+                shift_masses();
+                ClearListsAndTables();
+                run_the_gamut();
+                xMaxET.Value = (decimal)Lollipop.et_high_mass_difference;
+                xMinET.Value = (decimal)Lollipop.et_low_mass_difference;
+            }
+            else if (Lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
+            else MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         //shifts any mass shifts that have been changed from 0 in dgv
@@ -209,7 +219,6 @@ namespace ProteoformSuiteGUI
                 }
                 Lollipop.regroup_components(Lollipop.neucode_labeled, Lollipop.validate_proteoforms, Lollipop.input_files, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
             }
-            tb_max_accepted_fdr.Text = Lollipop.et_peaks.Where(p => p.peak_accepted).Max(p => p.peak_group_fdr).ToString();
         }
 
         //will leave option to change one at a time by right clicking

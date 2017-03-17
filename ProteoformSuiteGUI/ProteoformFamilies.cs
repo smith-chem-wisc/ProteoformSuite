@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Security;
 using Proteomics;
+using Chemistry;
 
 namespace ProteoformSuiteGUI
 {
@@ -79,6 +80,11 @@ namespace ProteoformSuiteGUI
         public void ClearListsAndTables()
         {
             Lollipop.proteoform_community.families.Clear();
+            foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.family = null;
+            foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.family = null;
+            foreach (Proteoform p in Lollipop.proteoform_community.decoy_proteoforms.Values.SelectMany(d => d)) p.family = null;
+            dgv_main.DataSource = null;
+            dgv_main.Rows.Clear();
         }
 
         public void update_figures_of_merit()
@@ -246,7 +252,7 @@ namespace ProteoformSuiteGUI
 
         private void Families_update_Click(object sender, EventArgs e)
         {
-            Lollipop.proteoform_community.families.Clear();
+            ClearListsAndTables();
             run_the_gamut();
         }
 
@@ -265,6 +271,47 @@ namespace ProteoformSuiteGUI
             cb_redBorder.Enabled = cb_buildAsQuantitative.Checked;
             cb_boldLabel.Enabled = cb_buildAsQuantitative.Checked;
             cb_moreOpacity.Enabled = false; //not fully implemented
+        }
+
+        private void btn_inclusion_list_all_families_Click(object sender, EventArgs e)
+        {
+            List<ExperimentalProteoform> proteoforms = new List<ExperimentalProteoform>();
+            if (cb_identified_families.Checked) proteoforms.AddRange(Lollipop.proteoform_community.families.Where(f => f.relation_count > 0 && f.theoretical_count > 0).SelectMany(f => f.experimental_proteoforms).ToList());
+            if (cb_unidentified_families.Checked) proteoforms.AddRange(Lollipop.proteoform_community.families.Where(f => f.relation_count > 0 && f.theoretical_count == 0).SelectMany(f => f.experimental_proteoforms).ToList());
+            if (cb_orphans.Checked) proteoforms.AddRange(Lollipop.proteoform_community.families.Where(f => f.relation_count == 0).SelectMany(f => f.experimental_proteoforms).ToList());
+            write_inclusion_list(proteoforms);
+        }
+
+
+        private void btn_inclusion_list_selected_families_Click(object sender, EventArgs e)
+        {
+            object[] selected = DisplayUtility.get_selected_objects(dgv_main);
+            List<ProteoformFamily> families = selected.OfType<ProteoformFamily>().ToList();
+            write_inclusion_list(families.SelectMany(f => f.experimental_proteoforms).ToList());
+        }
+
+        private void write_inclusion_list(List<ExperimentalProteoform> proteoforms)
+        {
+            SaveFileDialog saveDialog = new SaveFileDialog();
+            saveDialog.Filter = "Text files (*.txt)|*.txt";
+            saveDialog.FileName = "inclusion_list.txt";
+            DialogResult dr = saveDialog.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                using (var writer = new StreamWriter(saveDialog.FileName))
+                {
+                    foreach (ExperimentalProteoform proteoform in proteoforms)
+                    {
+                        //get highest intensity charge state 
+                        ChargeState max = proteoform.aggregated_components.SelectMany(p => p.charge_states).OrderByDescending(c => c.intensity).First();
+                        double mz = max.mz_centroid;
+                        if (Lollipop.neucode_labeled) mz = mz - (136.109162 * proteoform.lysine_count).ToMz(max.charge_count) + (128.094963 * proteoform.lysine_count).ToMz(max.charge_count);
+                        writer.WriteLine(mz + "\t" + max.charge_count + "\t" + proteoform.agg_rt);
+                    }
+                }
+                MessageBox.Show("Successfully exported inclusion list.");
+            }
+            else return;
         }
     }
 }
