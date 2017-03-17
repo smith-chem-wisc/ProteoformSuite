@@ -471,8 +471,17 @@ namespace ProteoformSuiteGUI
         private void cb_Graph_lowerThreshold_CheckedChanged(object sender, EventArgs e)
         {
             if (cb_Graph_lowerThreshold.Checked)
+            {
                 ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
-            else if (!cb_Graph_lowerThreshold.Checked) ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+                ct_ET_Histogram.ChartAreas[0].AxisX.MajorGrid.Enabled = true;
+                ct_ET_Histogram.ChartAreas[0].AxisY.MajorGrid.Enabled = true;
+            }
+            else
+            {
+                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+                ct_ET_Histogram.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
+                ct_ET_Histogram.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
+            }
         }
     }
 

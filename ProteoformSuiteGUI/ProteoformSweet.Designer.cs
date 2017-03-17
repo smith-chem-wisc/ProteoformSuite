@@ -175,7 +175,7 @@
             // 
             this.loadResultsToolStripMenuItem.Name = "loadResultsToolStripMenuItem";
             this.loadResultsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.loadResultsToolStripMenuItem.Text = "Load Results";
+            this.loadResultsToolStripMenuItem.Text = "Load Deconvolution Results";
             this.loadResultsToolStripMenuItem.Click += new System.EventHandler(this.loadResultsToolStripMenuItem_Click);
             // 
             // rawExperimentalProteoformsToolStripMenuItem
