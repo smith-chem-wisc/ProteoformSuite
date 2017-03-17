@@ -84,13 +84,6 @@ namespace ProteoformSuiteInternal
         }
     }
 
-    //for TD 
-    public enum TDSoftware
-    {
-        ProSight,
-        NRTDP //NU software
-    }
-
     public enum Purpose
     {
         Identification,

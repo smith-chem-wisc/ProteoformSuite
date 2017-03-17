@@ -24,64 +24,51 @@ namespace ProteoformSuiteInternal
         {
             this.raw_components_in_file.Clear();
             string absolute_path = file.directory + "\\" + file.filename + file.extension;
-            try
+
+            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(absolute_path, false))
             {
-                using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(absolute_path, false))
+                // Get Data in Sheet1 of Excel file
+                IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
+                WorksheetPart worksheet_1 = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
+                SheetData sheet_1 = worksheet_1.Worksheet.Elements<SheetData>().First();
+                List<Row> rowcollection = worksheet_1.Worksheet.Descendants<Row>().ToList();
+
+                Component new_component = new Component();
+                int charge_row_index = 0;
+                string scan_range = "";
+                for (int i = 0; i < rowcollection.Count(); i++)
                 {
-                    // Get Data in Sheet1 of Excel file
-                    IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
-                    WorksheetPart worksheet_1 = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
-                    SheetData sheet_1 = worksheet_1.Worksheet.Elements<SheetData>().First();
-                    List<Row> rowcollection = worksheet_1.Worksheet.Descendants<Row>().ToList();
+                    if (i == 0) continue; //skip component header                        
+                    IEnumerable<Cell> cells = rowcollection[i].Descendants<Cell>();
 
-                    Component new_component = new Component();
-                    int charge_row_index = 0;
-                    string scan_range = "";
-                    string rt_range = "";
-                    for (int i = 0; i < rowcollection.Count(); i++)
+                    List<string> cellStrings = new List<string>();
+
+                    for (int k = 0; k < rowcollection[i].Descendants<Cell>().Count(); k++)
                     {
-                        if (i == 0) continue; //skip component header
-                        
-                        IEnumerable<Cell> cells = rowcollection[i].Descendants<Cell>();
-
-                        List<string> cellStrings = new List<string>();
-
-                        for (int k = 0; k < rowcollection[i].Descendants<Cell>().Count(); k++)
-                        {
-                            cellStrings.Add(GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
-                        }
-                        
-                        if (cellStrings.Count > 4) //component row
-                        {
-                            if (i > 1) add_component(new_component); // here we're adding the previously read component
-                            new_component = new Component(cellStrings, file); // starting fresh here with a newly created componet.
-                            charge_row_index = 0;
-                            scan_range = cellStrings[8];
-                            rt_range = cellStrings[9];
-                        }
-                        else if (cellStrings.Count == 4) //charge-state row
-                        {
-                            if (charge_row_index == 0)
-                            {
-                                charge_row_index += 1;
-                                continue; //skip charge state headers
-                            }
-                            else
-                            {
-                                new_component.add_charge_state(cellStrings);
-                            }
-                        }
+                        cellStrings.Add(GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
                     }
-                    add_component(new_component); //add the final component
+                    if (cellStrings.Count > 4) //component row
+                    {
+                        if (i > 1) add_component(new_component); // here we're adding the previously read component
+                        new_component = new Component(cellStrings, file); // starting fresh here with a newly created componet.
+                        charge_row_index = 0;
+                        scan_range = cellStrings[8];
+                    }
+                    else if (cellStrings.Count == 4) //charge-state row
+                    {
+                        if (charge_row_index == 0)
+                        {
+                            charge_row_index += 1;
+                            continue; //skip charge state headers
+                        }
+                        else new_component.add_charge_state(cellStrings);
+                    }
                 }
-                this.final_components = remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file);
-                this.scan_ranges = new HashSet<string>(this.final_components.Select(c => c.scan_range).ToList());
-                return final_components;
+                add_component(new_component); //add the final component
             }
-            catch (IOException ex)
-            {
-                throw new IOException(ex.Message);
-            }
+            this.final_components = remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file);
+            this.scan_ranges = new HashSet<string>(this.final_components.Select(c => c.scan_range).ToList());
+            return final_components;
         }
 
         private void add_component(Component c)

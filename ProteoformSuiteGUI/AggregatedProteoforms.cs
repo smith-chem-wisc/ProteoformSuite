@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public partial class AggregatedProteoforms : Form
     {
@@ -42,6 +42,15 @@ namespace ProteoformSuite
             this.Cursor = Cursors.WaitCursor;
             Lollipop.aggregate_proteoforms(Lollipop.validate_proteoforms, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
             FillAggregatesTable();
+            if (Lollipop.proteoform_community.theoretical_proteoforms.Length > 0)
+            {
+                ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
+                ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.run_the_gamut();
+                ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();
+                ((ProteoformSweet)MdiParent).experimentExperimentComparison.run_the_gamut();
+                ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
+                ((ProteoformSweet)MdiParent).quantification.perform_calculations();
+            }
             updateFiguresOfMerit();
             this.Cursor = Cursors.Default;
         }
@@ -80,6 +89,10 @@ namespace ProteoformSuite
             nUD_min_num_CS.Minimum = 0;
             nUD_min_num_CS.Maximum = 20;
             nUD_min_num_CS.Value = Lollipop.min_num_CS;
+
+            tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
+            tb_tableFilter.Text = "";
+            tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
         }
 
         public void FillAggregatesTable()
@@ -212,6 +225,15 @@ namespace ProteoformSuite
         private void cb_validateProteoforms_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.validate_proteoforms = cb_validateProteoforms.Checked;
+        }
+
+        private void tb_tableFilter_TextChanged(object sender, EventArgs e)
+        {
+            IEnumerable<object> selected_aggregates = tb_tableFilter.Text == "" ?
+                Lollipop.proteoform_community.experimental_proteoforms :
+                ExtensionMethods.filter(Lollipop.proteoform_community.experimental_proteoforms, tb_tableFilter.Text);
+            DisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, selected_aggregates);
+            if (selected_aggregates.Count() > 0) DisplayUtility.FormatAggregatesTable(dgv_AggregatedProteoforms);
         }
     }
 }

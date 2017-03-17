@@ -1,4 +1,4 @@
-﻿namespace ProteoformSuite
+﻿namespace ProteoformSuiteGUI
 {
     partial class ExperimentExperimentComparison
     {
@@ -35,6 +35,7 @@
             System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExperimentExperimentComparison));
             this.button1 = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.dgv_EE_Peaks = new System.Windows.Forms.DataGridView();
@@ -46,7 +47,7 @@
             this.yMaxEE = new System.Windows.Forms.NumericUpDown();
             this.xMaxEE = new System.Windows.Forms.NumericUpDown();
             this.yMinEE = new System.Windows.Forms.NumericUpDown();
-            this.tb_TotalPeaks = new System.Windows.Forms.TextBox();
+            this.tb_TotalEEPeaks = new System.Windows.Forms.TextBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.cb_Graph_lowerThreshold = new System.Windows.Forms.CheckBox();
             this.xMinEE = new System.Windows.Forms.NumericUpDown();
@@ -56,7 +57,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.tb_IdentifiedProteoforms = new System.Windows.Forms.TextBox();
+            this.tb_totalAcceptedEERelations = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
             this.ct_EE_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.dgv_EE_Relations = new System.Windows.Forms.DataGridView();
@@ -78,7 +79,7 @@
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.tb_rt_diff = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
@@ -244,12 +245,12 @@
             this.yMinEE.TabIndex = 12;
             this.yMinEE.ValueChanged += new System.EventHandler(this.yMinEE_ValueChanged);
             // 
-            // tb_TotalPeaks
+            // tb_TotalEEPeaks
             // 
-            this.tb_TotalPeaks.Location = new System.Drawing.Point(305, 8);
-            this.tb_TotalPeaks.Name = "tb_TotalPeaks";
-            this.tb_TotalPeaks.Size = new System.Drawing.Size(82, 20);
-            this.tb_TotalPeaks.TabIndex = 13;
+            this.tb_TotalEEPeaks.Location = new System.Drawing.Point(305, 8);
+            this.tb_TotalEEPeaks.Name = "tb_TotalEEPeaks";
+            this.tb_TotalEEPeaks.Size = new System.Drawing.Size(82, 20);
+            this.tb_TotalEEPeaks.TabIndex = 13;
             // 
             // splitContainer1
             // 
@@ -339,21 +340,20 @@
             this.label2.TabIndex = 14;
             this.label2.Text = "Total Peaks";
             // 
-            // tb_IdentifiedProteoforms
+            // tb_totalAcceptedEERelations
             // 
-            this.tb_IdentifiedProteoforms.Location = new System.Drawing.Point(127, 8);
-            this.tb_IdentifiedProteoforms.Name = "tb_IdentifiedProteoforms";
-            this.tb_IdentifiedProteoforms.Size = new System.Drawing.Size(65, 20);
-            this.tb_IdentifiedProteoforms.TabIndex = 19;
+            this.tb_totalAcceptedEERelations.Location = new System.Drawing.Point(149, 8);
+            this.tb_totalAcceptedEERelations.Name = "tb_totalAcceptedEERelations";
+            this.tb_totalAcceptedEERelations.Size = new System.Drawing.Size(65, 20);
+            this.tb_totalAcceptedEERelations.TabIndex = 19;
             // 
             // label12
             // 
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(12, 11);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(109, 13);
+            this.label12.Size = new System.Drawing.Size(0, 13);
             this.label12.TabIndex = 20;
-            this.label12.Text = "Identified Proteoforms";
             // 
             // ct_EE_Histogram
             // 
@@ -443,10 +443,11 @@
             // 
             // splitContainer6.Panel1
             // 
+            this.splitContainer6.Panel1.Controls.Add(this.label5);
             this.splitContainer6.Panel1.Controls.Add(this.label12);
-            this.splitContainer6.Panel1.Controls.Add(this.tb_TotalPeaks);
+            this.splitContainer6.Panel1.Controls.Add(this.tb_TotalEEPeaks);
             this.splitContainer6.Panel1.Controls.Add(this.label2);
-            this.splitContainer6.Panel1.Controls.Add(this.tb_IdentifiedProteoforms);
+            this.splitContainer6.Panel1.Controls.Add(this.tb_totalAcceptedEERelations);
             // 
             // splitContainer6.Panel2
             // 
@@ -469,7 +470,6 @@
             // 
             // splitContainer5.Panel2
             // 
-            this.splitContainer5.Panel2.Controls.Add(this.tb_rt_diff);
             this.splitContainer5.Panel2.Controls.Add(this.cb_view_ef);
             this.splitContainer5.Panel2.Controls.Add(this.tb_notch_masses);
             this.splitContainer5.Panel2.Controls.Add(this.cb_notch_search);
@@ -675,15 +675,14 @@
             this.splitContainer3.SplitterDistance = 440;
             this.splitContainer3.TabIndex = 17;
             // 
-            // tb_rt_diff
+            // label5
             // 
-            this.tb_rt_diff.Enabled = false;
-            this.tb_rt_diff.Location = new System.Drawing.Point(247, 17);
-            this.tb_rt_diff.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_rt_diff.Name = "tb_rt_diff";
-            this.tb_rt_diff.Size = new System.Drawing.Size(50, 20);
-            this.tb_rt_diff.TabIndex = 39;
-            this.tb_rt_diff.Visible = false;
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(42, 11);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(100, 13);
+            this.label5.TabIndex = 21;
+            this.label5.Text = "Accepted Relations";
             // 
             // ExperimentExperimentComparison
             // 
@@ -692,6 +691,7 @@
             this.ClientSize = new System.Drawing.Size(1652, 711);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer2);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ExperimentExperimentComparison";
             this.Text = "ExperimentExperimentComparison";
             this.Load += new System.EventHandler(this.ExperimentExperimentComparison_Load);
@@ -758,7 +758,7 @@
         private System.Windows.Forms.NumericUpDown yMaxEE;
         private System.Windows.Forms.NumericUpDown xMaxEE;
         private System.Windows.Forms.NumericUpDown yMinEE;
-        private System.Windows.Forms.TextBox tb_TotalPeaks;
+        private System.Windows.Forms.TextBox tb_TotalEEPeaks;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Label label10;
         private System.Windows.Forms.Label label7;
@@ -767,10 +767,10 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.NumericUpDown xMinEE;
-        private System.Windows.Forms.TextBox tb_IdentifiedProteoforms;
+        private System.Windows.Forms.TextBox tb_totalAcceptedEERelations;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.CheckBox cb_Graph_lowerThreshold;
-        private System.Windows.Forms.DataVisualization.Charting.Chart ct_EE_Histogram;
+        public System.Windows.Forms.DataVisualization.Charting.Chart ct_EE_Histogram;
         private System.Windows.Forms.DataGridView dgv_EE_Relations;
         private System.Windows.Forms.DataVisualization.Charting.Chart ct_EE_peakList;
         private System.Windows.Forms.SplitContainer splitContainer2;
@@ -790,7 +790,7 @@
         private System.Windows.Forms.TextBox tb_notch_masses;
         private System.Windows.Forms.CheckBox cb_notch_search;
         private System.Windows.Forms.CheckBox cb_view_ef;
-        private System.Windows.Forms.TextBox tb_rt_diff;
+        private System.Windows.Forms.Label label5;
     }
 }
 

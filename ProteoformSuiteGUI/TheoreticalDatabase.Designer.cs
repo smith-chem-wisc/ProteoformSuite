@@ -1,4 +1,4 @@
-﻿namespace ProteoformSuite
+﻿namespace ProteoformSuiteGUI
 {
     partial class TheoreticalDatabase
     {
@@ -28,7 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TheoreticalDatabase));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tb_tableFilter = new System.Windows.Forms.TextBox();
             this.cmb_loadTable = new System.Windows.Forms.ComboBox();
             this.dgv_loadFiles = new System.Windows.Forms.DataGridView();
             this.btn_addFiles = new System.Windows.Forms.Button();
@@ -56,8 +59,6 @@
             this.ckbx_Carbam = new System.Windows.Forms.CheckBox();
             this.ckbx_OxidMeth = new System.Windows.Forms.CheckBox();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
-            this.label6 = new System.Windows.Forms.Label();
-            this.tb_tableFilter = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -113,6 +114,24 @@
             this.splitContainer1.SplitterDistance = 452;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(236, 600);
+            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(59, 13);
+            this.label6.TabIndex = 48;
+            this.label6.Text = "Table Filter";
+            // 
+            // tb_tableFilter
+            // 
+            this.tb_tableFilter.Location = new System.Drawing.Point(239, 616);
+            this.tb_tableFilter.Name = "tb_tableFilter";
+            this.tb_tableFilter.Size = new System.Drawing.Size(202, 20);
+            this.tb_tableFilter.TabIndex = 47;
+            this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
             // 
             // cmb_loadTable
             // 
@@ -412,24 +431,6 @@
             this.dgv_Database.RowTemplate.Height = 28;
             this.dgv_Database.Size = new System.Drawing.Size(903, 737);
             this.dgv_Database.TabIndex = 0;
-            //
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(236, 600);
-            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(59, 13);
-            this.label6.TabIndex = 48;
-            this.label6.Text = "Table Filter";
-            // 
-            // tb_tableFilter
-            // 
-            this.tb_tableFilter.Location = new System.Drawing.Point(239, 616);
-            this.tb_tableFilter.Name = "tb_tableFilter";
-            this.tb_tableFilter.Size = new System.Drawing.Size(202, 20);
-            this.tb_tableFilter.TabIndex = 47;
-            this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
             // 
             // TheoreticalDatabase
             // 
@@ -438,9 +439,10 @@
             this.ClientSize = new System.Drawing.Size(1362, 741);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "TheoreticalDatabase";
-            this.Text = "TheoreticalDatabase";
+            this.Text = "Theoretical Database";
             this.Load += new System.EventHandler(this.TheoreticalDatabase_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();

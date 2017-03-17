@@ -1,4 +1,4 @@
-﻿namespace ProteoformSuite
+﻿namespace ProteoformSuiteGUI
 {
     partial class Quantification
     {
@@ -28,16 +28,17 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea5 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea6 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series11 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.Series series12 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Quantification));
             this.dgv_quantification_results = new System.Windows.Forms.DataGridView();
             this.gb_quantDataDisplaySelection = new System.Windows.Forms.GroupBox();
             this.btn_refreshCalculation = new System.Windows.Forms.Button();
@@ -46,7 +47,6 @@
             this.nud_bkgdWidth = new System.Windows.Forms.NumericUpDown();
             this.nud_bkgdShift = new System.Windows.Forms.NumericUpDown();
             this.ct_volcano_logFold_logP = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.cmbx_quantColumns = new System.Windows.Forms.ComboBox();
             this.dgv_goAnalysis = new System.Windows.Forms.DataGridView();
             this.cmbx_goAspect = new System.Windows.Forms.ComboBox();
             this.gb_goThresholds = new System.Windows.Forms.GroupBox();
@@ -64,10 +64,14 @@
             this.label6 = new System.Windows.Forms.Label();
             this.cmbx_ratioDenominator = new System.Windows.Forms.ComboBox();
             this.cmbx_ratioNumerator = new System.Windows.Forms.ComboBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.gb_backgroundGoTerms = new System.Windows.Forms.GroupBox();
+            this.btn_customBackgroundBrowse = new System.Windows.Forms.Button();
+            this.tb_goTermCustomBackground = new System.Windows.Forms.TextBox();
+            this.rb_customBackgroundSet = new System.Windows.Forms.RadioButton();
             this.rb_allTheoreticalProteins = new System.Windows.Forms.RadioButton();
             this.rb_allSampleGOTerms = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.btn_buildFamiliesWithSignificantChange = new System.Windows.Forms.Button();
             this.btn_buildFamiliesAllGO = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
             this.btn_buildFromSelectedGoTerms = new System.Windows.Forms.Button();
@@ -113,7 +117,7 @@
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_minObservations)).BeginInit();
             this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.gb_backgroundGoTerms.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ct_relativeDifference)).BeginInit();
@@ -199,7 +203,7 @@
             this.nud_bkgdWidth.Size = new System.Drawing.Size(48, 20);
             this.nud_bkgdWidth.TabIndex = 5;
             this.nud_bkgdWidth.Value = new decimal(new int[] {
-            1,
+            5,
             0,
             0,
             65536});
@@ -213,7 +217,7 @@
             0,
             0,
             65536});
-            this.nud_bkgdShift.Location = new System.Drawing.Point(77, 20);
+            this.nud_bkgdShift.Location = new System.Drawing.Point(76, 26);
             this.nud_bkgdShift.Maximum = new decimal(new int[] {
             0,
             0,
@@ -227,31 +231,27 @@
             this.nud_bkgdShift.Name = "nud_bkgdShift";
             this.nud_bkgdShift.Size = new System.Drawing.Size(48, 20);
             this.nud_bkgdShift.TabIndex = 4;
+            this.nud_bkgdShift.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            -2147483648});
             this.nud_bkgdShift.ValueChanged += new System.EventHandler(this.nud_bkgdShift_ValueChanged);
             // 
             // ct_volcano_logFold_logP
             // 
-            chartArea4.Name = "ChartArea1";
-            this.ct_volcano_logFold_logP.ChartAreas.Add(chartArea4);
+            chartArea1.Name = "ChartArea1";
+            this.ct_volcano_logFold_logP.ChartAreas.Add(chartArea1);
             this.ct_volcano_logFold_logP.Location = new System.Drawing.Point(523, 32);
             this.ct_volcano_logFold_logP.Margin = new System.Windows.Forms.Padding(2);
             this.ct_volcano_logFold_logP.Name = "ct_volcano_logFold_logP";
-            series7.ChartArea = "ChartArea1";
-            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series7.Name = "Series1";
-            this.ct_volcano_logFold_logP.Series.Add(series7);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series1.Name = "Series1";
+            this.ct_volcano_logFold_logP.Series.Add(series1);
             this.ct_volcano_logFold_logP.Size = new System.Drawing.Size(476, 298);
             this.ct_volcano_logFold_logP.TabIndex = 6;
             this.ct_volcano_logFold_logP.Text = "Volcano";
-            // 
-            // cmbx_quantColumns
-            // 
-            this.cmbx_quantColumns.FormattingEnabled = true;
-            this.cmbx_quantColumns.Location = new System.Drawing.Point(811, 370);
-            this.cmbx_quantColumns.Margin = new System.Windows.Forms.Padding(2);
-            this.cmbx_quantColumns.Name = "cmbx_quantColumns";
-            this.cmbx_quantColumns.Size = new System.Drawing.Size(188, 21);
-            this.cmbx_quantColumns.TabIndex = 7;
             // 
             // dgv_goAnalysis
             // 
@@ -266,7 +266,7 @@
             // cmbx_goAspect
             // 
             this.cmbx_goAspect.FormattingEnabled = true;
-            this.cmbx_goAspect.Location = new System.Drawing.Point(1295, 380);
+            this.cmbx_goAspect.Location = new System.Drawing.Point(1293, 335);
             this.cmbx_goAspect.Margin = new System.Windows.Forms.Padding(2);
             this.cmbx_goAspect.Name = "cmbx_goAspect";
             this.cmbx_goAspect.Size = new System.Drawing.Size(188, 21);
@@ -280,7 +280,7 @@
             this.gb_goThresholds.Controls.Add(this.nud_ratio);
             this.gb_goThresholds.Controls.Add(this.label1);
             this.gb_goThresholds.Controls.Add(this.nud_FDR);
-            this.gb_goThresholds.Location = new System.Drawing.Point(1010, 353);
+            this.gb_goThresholds.Location = new System.Drawing.Point(1010, 364);
             this.gb_goThresholds.Margin = new System.Windows.Forms.Padding(2);
             this.gb_goThresholds.Name = "gb_goThresholds";
             this.gb_goThresholds.Padding = new System.Windows.Forms.Padding(2);
@@ -382,22 +382,22 @@
             // 
             // ct_proteoformIntensities
             // 
-            chartArea5.Name = "ChartArea1";
-            this.ct_proteoformIntensities.ChartAreas.Add(chartArea5);
-            legend2.Name = "Legend1";
-            this.ct_proteoformIntensities.Legends.Add(legend2);
+            chartArea2.Name = "ChartArea1";
+            this.ct_proteoformIntensities.ChartAreas.Add(chartArea2);
+            legend1.Name = "Legend1";
+            this.ct_proteoformIntensities.Legends.Add(legend1);
             this.ct_proteoformIntensities.Location = new System.Drawing.Point(55, 518);
             this.ct_proteoformIntensities.Name = "ct_proteoformIntensities";
-            series8.ChartArea = "ChartArea1";
-            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series8.Legend = "Legend1";
-            series8.Name = "Series1";
-            series9.ChartArea = "ChartArea1";
-            series9.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series9.Legend = "Legend1";
-            series9.Name = "Series2";
-            this.ct_proteoformIntensities.Series.Add(series8);
-            this.ct_proteoformIntensities.Series.Add(series9);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            series3.ChartArea = "ChartArea1";
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.Legend = "Legend1";
+            series3.Name = "Series2";
+            this.ct_proteoformIntensities.Series.Add(series2);
+            this.ct_proteoformIntensities.Series.Add(series3);
             this.ct_proteoformIntensities.Size = new System.Drawing.Size(452, 357);
             this.ct_proteoformIntensities.TabIndex = 11;
             this.ct_proteoformIntensities.Text = "log2_intensity";
@@ -481,16 +481,50 @@
             this.cmbx_ratioNumerator.TabIndex = 0;
             this.cmbx_ratioNumerator.SelectedIndexChanged += new System.EventHandler(this.cmbx_ratioNumerator_SelectedIndexChanged);
             // 
-            // groupBox3
+            // gb_backgroundGoTerms
             // 
-            this.groupBox3.Controls.Add(this.rb_allTheoreticalProteins);
-            this.groupBox3.Controls.Add(this.rb_allSampleGOTerms);
-            this.groupBox3.Location = new System.Drawing.Point(1295, 406);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(188, 70);
-            this.groupBox3.TabIndex = 14;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Background GO Terms";
+            this.gb_backgroundGoTerms.Controls.Add(this.btn_customBackgroundBrowse);
+            this.gb_backgroundGoTerms.Controls.Add(this.tb_goTermCustomBackground);
+            this.gb_backgroundGoTerms.Controls.Add(this.rb_customBackgroundSet);
+            this.gb_backgroundGoTerms.Controls.Add(this.rb_allTheoreticalProteins);
+            this.gb_backgroundGoTerms.Controls.Add(this.rb_allSampleGOTerms);
+            this.gb_backgroundGoTerms.Location = new System.Drawing.Point(1186, 364);
+            this.gb_backgroundGoTerms.Name = "gb_backgroundGoTerms";
+            this.gb_backgroundGoTerms.Size = new System.Drawing.Size(297, 104);
+            this.gb_backgroundGoTerms.TabIndex = 14;
+            this.gb_backgroundGoTerms.TabStop = false;
+            this.gb_backgroundGoTerms.Text = "Background GO Terms";
+            // 
+            // btn_customBackgroundBrowse
+            // 
+            this.btn_customBackgroundBrowse.Enabled = false;
+            this.btn_customBackgroundBrowse.Location = new System.Drawing.Point(212, 73);
+            this.btn_customBackgroundBrowse.Name = "btn_customBackgroundBrowse";
+            this.btn_customBackgroundBrowse.Size = new System.Drawing.Size(75, 23);
+            this.btn_customBackgroundBrowse.TabIndex = 18;
+            this.btn_customBackgroundBrowse.Text = "Browse";
+            this.btn_customBackgroundBrowse.UseVisualStyleBackColor = true;
+            this.btn_customBackgroundBrowse.Click += new System.EventHandler(this.btn_customBackgroundBrowse_Click);
+            // 
+            // tb_goTermCustomBackground
+            // 
+            this.tb_goTermCustomBackground.Enabled = false;
+            this.tb_goTermCustomBackground.Location = new System.Drawing.Point(23, 76);
+            this.tb_goTermCustomBackground.Name = "tb_goTermCustomBackground";
+            this.tb_goTermCustomBackground.Size = new System.Drawing.Size(183, 20);
+            this.tb_goTermCustomBackground.TabIndex = 17;
+            // 
+            // rb_customBackgroundSet
+            // 
+            this.rb_customBackgroundSet.AutoSize = true;
+            this.rb_customBackgroundSet.Location = new System.Drawing.Point(23, 58);
+            this.rb_customBackgroundSet.Name = "rb_customBackgroundSet";
+            this.rb_customBackgroundSet.Size = new System.Drawing.Size(77, 17);
+            this.rb_customBackgroundSet.TabIndex = 2;
+            this.rb_customBackgroundSet.TabStop = true;
+            this.rb_customBackgroundSet.Text = "Protein List";
+            this.rb_customBackgroundSet.UseVisualStyleBackColor = true;
+            this.rb_customBackgroundSet.CheckedChanged += new System.EventHandler(this.rb_customBackgroundSet_CheckedChanged);
             // 
             // rb_allTheoreticalProteins
             // 
@@ -514,9 +548,11 @@
             this.rb_allSampleGOTerms.TabStop = true;
             this.rb_allSampleGOTerms.Text = "Sample Set";
             this.rb_allSampleGOTerms.UseVisualStyleBackColor = true;
+            this.rb_allSampleGOTerms.CheckedChanged += new System.EventHandler(this.rb_allSampleGOTerms_CheckedChanged);
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.btn_buildFamiliesWithSignificantChange);
             this.groupBox4.Controls.Add(this.btn_buildFamiliesAllGO);
             this.groupBox4.Controls.Add(this.label11);
             this.groupBox4.Controls.Add(this.btn_buildFromSelectedGoTerms);
@@ -544,9 +580,19 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Quantified Family Display with Cytoscape";
             // 
+            // btn_buildFamiliesWithSignificantChange
+            // 
+            this.btn_buildFamiliesWithSignificantChange.Location = new System.Drawing.Point(6, 215);
+            this.btn_buildFamiliesWithSignificantChange.Name = "btn_buildFamiliesWithSignificantChange";
+            this.btn_buildFamiliesWithSignificantChange.Size = new System.Drawing.Size(255, 23);
+            this.btn_buildFamiliesWithSignificantChange.TabIndex = 62;
+            this.btn_buildFamiliesWithSignificantChange.Text = "Build All Quantified Families w/ Significant Change";
+            this.btn_buildFamiliesWithSignificantChange.UseVisualStyleBackColor = true;
+            this.btn_buildFamiliesWithSignificantChange.Click += new System.EventHandler(this.btn_buildFamiliesWithSignificantChange_Click);
+            // 
             // btn_buildFamiliesAllGO
             // 
-            this.btn_buildFamiliesAllGO.Location = new System.Drawing.Point(6, 257);
+            this.btn_buildFamiliesAllGO.Location = new System.Drawing.Point(6, 282);
             this.btn_buildFamiliesAllGO.Name = "btn_buildFamiliesAllGO";
             this.btn_buildFamiliesAllGO.Size = new System.Drawing.Size(255, 23);
             this.btn_buildFamiliesAllGO.TabIndex = 61;
@@ -567,7 +613,7 @@
             // 
             // btn_buildFromSelectedGoTerms
             // 
-            this.btn_buildFromSelectedGoTerms.Location = new System.Drawing.Point(6, 286);
+            this.btn_buildFromSelectedGoTerms.Location = new System.Drawing.Point(6, 311);
             this.btn_buildFromSelectedGoTerms.Name = "btn_buildFromSelectedGoTerms";
             this.btn_buildFromSelectedGoTerms.Size = new System.Drawing.Size(255, 23);
             this.btn_buildFromSelectedGoTerms.TabIndex = 57;
@@ -725,7 +771,7 @@
             // 
             // btn_buildSelectedQuantFamilies
             // 
-            this.btn_buildSelectedQuantFamilies.Location = new System.Drawing.Point(6, 218);
+            this.btn_buildSelectedQuantFamilies.Location = new System.Drawing.Point(6, 243);
             this.btn_buildSelectedQuantFamilies.Name = "btn_buildSelectedQuantFamilies";
             this.btn_buildSelectedQuantFamilies.Size = new System.Drawing.Size(255, 23);
             this.btn_buildSelectedQuantFamilies.TabIndex = 44;
@@ -772,22 +818,22 @@
             // 
             // ct_relativeDifference
             // 
-            chartArea6.Name = "ChartArea1";
-            this.ct_relativeDifference.ChartAreas.Add(chartArea6);
+            chartArea3.Name = "ChartArea1";
+            this.ct_relativeDifference.ChartAreas.Add(chartArea3);
             this.ct_relativeDifference.Location = new System.Drawing.Point(523, 518);
             this.ct_relativeDifference.Name = "ct_relativeDifference";
-            series10.ChartArea = "ChartArea1";
-            series10.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series10.Name = "obsVSexp";
-            series11.ChartArea = "ChartArea1";
-            series11.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series11.Name = "positiveOffset";
-            series12.ChartArea = "ChartArea1";
-            series12.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series12.Name = "negativeOffset";
-            this.ct_relativeDifference.Series.Add(series10);
-            this.ct_relativeDifference.Series.Add(series11);
-            this.ct_relativeDifference.Series.Add(series12);
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series4.Name = "obsVSexp";
+            series5.ChartArea = "ChartArea1";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series5.Name = "positiveOffset";
+            series6.ChartArea = "ChartArea1";
+            series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series6.Name = "negativeOffset";
+            this.ct_relativeDifference.Series.Add(series4);
+            this.ct_relativeDifference.Series.Add(series5);
+            this.ct_relativeDifference.Series.Add(series6);
             this.ct_relativeDifference.Size = new System.Drawing.Size(476, 357);
             this.ct_relativeDifference.TabIndex = 15;
             this.ct_relativeDifference.Text = "Observed vs. Expected Relative Difference";
@@ -889,17 +935,17 @@
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.ct_relativeDifference);
             this.Controls.Add(this.groupBox4);
-            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.gb_backgroundGoTerms);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.ct_proteoformIntensities);
             this.Controls.Add(this.gb_goThresholds);
             this.Controls.Add(this.cmbx_goAspect);
             this.Controls.Add(this.dgv_goAnalysis);
-            this.Controls.Add(this.cmbx_quantColumns);
             this.Controls.Add(this.ct_volcano_logFold_logP);
             this.Controls.Add(this.gb_quantDataDisplaySelection);
             this.Controls.Add(this.dgv_quantification_results);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Quantification";
             this.Text = "Quantification";
@@ -921,8 +967,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nud_minObservations)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.gb_backgroundGoTerms.ResumeLayout(false);
+            this.gb_backgroundGoTerms.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox5.ResumeLayout(false);
@@ -940,8 +986,7 @@
 
         private System.Windows.Forms.DataGridView dgv_quantification_results;
         private System.Windows.Forms.GroupBox gb_quantDataDisplaySelection;
-        private System.Windows.Forms.DataVisualization.Charting.Chart ct_volcano_logFold_logP;
-        private System.Windows.Forms.ComboBox cmbx_quantColumns;
+        public System.Windows.Forms.DataVisualization.Charting.Chart ct_volcano_logFold_logP;
         private System.Windows.Forms.DataGridView dgv_goAnalysis;
         private System.Windows.Forms.ComboBox cmbx_goAspect;
         private System.Windows.Forms.GroupBox gb_goThresholds;
@@ -951,7 +996,7 @@
         private System.Windows.Forms.NumericUpDown nud_ratio;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown nud_FDR;
-        private System.Windows.Forms.DataVisualization.Charting.Chart ct_proteoformIntensities;
+        public System.Windows.Forms.DataVisualization.Charting.Chart ct_proteoformIntensities;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown nud_bkgdWidth;
@@ -964,7 +1009,7 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox cmbx_ratioDenominator;
         private System.Windows.Forms.ComboBox cmbx_ratioNumerator;
-        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox gb_backgroundGoTerms;
         private System.Windows.Forms.RadioButton rb_allTheoreticalProteins;
         private System.Windows.Forms.RadioButton rb_allSampleGOTerms;
         private System.Windows.Forms.GroupBox groupBox4;
@@ -991,7 +1036,7 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox cmbx_edgeLabel;
         private System.Windows.Forms.Button btn_buildFamiliesAllGO;
-        private System.Windows.Forms.DataVisualization.Charting.Chart ct_relativeDifference;
+        public System.Windows.Forms.DataVisualization.Charting.Chart ct_relativeDifference;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox tb_FDR;
@@ -999,5 +1044,9 @@
         private System.Windows.Forms.NumericUpDown nud_Offset;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.NumericUpDown nud_sKnot_minFoldChange;
+        private System.Windows.Forms.Button btn_buildFamiliesWithSignificantChange;
+        private System.Windows.Forms.TextBox tb_goTermCustomBackground;
+        private System.Windows.Forms.RadioButton rb_customBackgroundSet;
+        private System.Windows.Forms.Button btn_customBackgroundBrowse;
     }
 }

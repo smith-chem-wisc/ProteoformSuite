@@ -11,11 +11,12 @@ using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public partial class NeuCodePairs : Form
     {
-        bool initial_load = true; 
+        bool initial_load = true;
+        public bool preloaded = false; 
 
         public NeuCodePairs()
         {
@@ -30,12 +31,13 @@ namespace ProteoformSuite
 
         public void display_neucode_pairs()
         {
-            if (Lollipop.raw_neucode_pairs.Count > 0)
+            if (Lollipop.raw_neucode_pairs.Count > 0 && !preloaded)
             {
                 GraphNeuCodePairs();
                 FillNeuCodePairsDGV();
-                initial_load = false;
             }
+            preloaded = false;
+            initial_load = false;
         }
 
         public void FillNeuCodePairsDGV()
@@ -66,6 +68,7 @@ namespace ProteoformSuite
 
         private void FormatNeuCodePairsDGV()
         {
+            if (dgv_RawExpNeuCodePairs.Columns.Count <= 0) return;
             //round table values
             dgv_RawExpNeuCodePairs.Columns["reported_monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
             dgv_RawExpNeuCodePairs.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";

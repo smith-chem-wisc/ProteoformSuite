@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace ProteoformSuite.Properties
+namespace ProteoformSuiteGUI.Properties
 {
 
 

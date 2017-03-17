@@ -24,5 +24,13 @@ namespace Test
             z = z.DistinctBy(p => p.accession).ToList();
             Assert.AreEqual(3, z.Count);
         }
+
+        [Test]
+        public void test_slice()
+        {
+            int[] a = Enumerable.Range(0, 10).ToArray();
+            int[] b = a.Slice(3, 4);
+            Assert.AreEqual(new int[] { 3, 4, 5, 6 }, b);
+        }
     }
 }

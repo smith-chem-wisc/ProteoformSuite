@@ -12,7 +12,7 @@ using System.IO;
 using System.Windows.Forms.DataVisualization.Charting;
 using ProteoformSuiteInternal;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 { 
     public partial class ExperimentExperimentComparison : Form
     {
@@ -44,7 +44,7 @@ namespace ProteoformSuite
             else if (Lollipop.ee_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
-        private  void run_the_gamut()
+        public void run_the_gamut()
         {
             if (Lollipop.notch_search_ee)
             {
@@ -53,8 +53,15 @@ namespace ProteoformSuite
             }
             this.Cursor = Cursors.WaitCursor;
             Lollipop.make_ee_relationships();
-            this.FillTablesAndCharts();
-            if (Lollipop.ef_relations.Count > 0) cb_view_ef.Enabled = true;
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
+            Parallel.Invoke
+            (
+                () => this.FillTablesAndCharts(),
+                () => Lollipop.proteoform_community.construct_families()
+            );
+            ((ProteoformSweet)this.MdiParent).proteoformFamilies.initialize_settings();
+            ((ProteoformSweet)this.MdiParent).proteoformFamilies.fill_proteoform_families("");
+            ((ProteoformSweet)this.MdiParent).proteoformFamilies.update_figures_of_merit();
             this.Cursor = Cursors.Default;
             compared_ee = true;
         }
@@ -68,7 +75,6 @@ namespace ProteoformSuite
         {
             return dgv_EE_Peaks;
         }
-
 
         public bool get_notch_masses()
         {
@@ -93,7 +99,7 @@ namespace ProteoformSuite
             }
         }
 
-        private void ClearListsAndTables()
+        public void ClearListsAndTables()
         {
             Lollipop.ee_relations.Clear();
             Lollipop.ee_peaks.Clear();
@@ -124,8 +130,8 @@ namespace ProteoformSuite
         private void updateFiguresOfMerit()
         {
             List<DeltaMassPeak> big_peaks = Lollipop.ee_peaks.Where(p => p.peak_accepted).ToList();
-            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.grouped_relations.Count).Sum().ToString();
-            tb_TotalPeaks.Text = big_peaks.Count.ToString();
+            tb_totalAcceptedEERelations.Text = big_peaks.Sum(p => p.grouped_relations.Count).ToString();
+            tb_TotalEEPeaks.Text = big_peaks.Count.ToString();
             if (Lollipop.ef_relations.Count > 0 && big_peaks.Count > 0) tb_max_accepted_fdr.Text = Math.Round(big_peaks.Max(p => p.peak_group_fdr), 3).ToString(); // this errors when no peaks are accepted
 
         }
@@ -337,20 +343,8 @@ namespace ProteoformSuite
 
         private void cb_view_ef_CheckedChanged(object sender, EventArgs e)
         {
-            if (cb_view_ef.Checked){
-
-                DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ef_relations, "relations");
-                if (!Lollipop.neucode_labeled)
-                {
-                    tb_rt_diff.Visible = true;
-                    tb_rt_diff.Text = Lollipop.ef_min_RetentionTime_difference.ToString();
-                }
-
-            }
-            else
-            {
-                DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ee_relations, "relations");
-            }
+            if (cb_view_ef.Checked) DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ef_relations, "relations");
+            else  DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ee_relations, "relations");
         }
     }
 }

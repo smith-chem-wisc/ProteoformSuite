@@ -7,90 +7,47 @@ namespace ProteoformSuiteInternal
 {
     public class ProteoformFamily
     {
+        private static int family_counter = 0;
         public int family_id { get; set; }
-        public string name_list
-        {
-            get { return string.Join("; ", theoretical_proteoforms.Select(p => p.name)); }
-        }
-        public string accession_list
-        {
-            get { return string.Join("; ", theoretical_proteoforms.Select(p => p.accession)); }
-        }
-        public string experimentals_list
-        {
-            get { return string.Join("; ", experimental_proteoforms.Select(p => p.accession)); }
-        }
-        public string agg_mass_list
-        {
-            get { return string.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, Lollipop.deltaM_edge_display_rounding))); }
-        }
+        public string name_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.name)); } }
+        public string accession_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.accession)); } }
+        public string experimentals_list { get { return String.Join("; ", experimental_proteoforms.Select(p => p.accession)); } }
+        public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, Lollipop.deltaM_edge_display_rounding))); } }
         public int lysine_count { get; set; } = -1;
         public List<ExperimentalProteoform> experimental_proteoforms { get; set; }
-        public int experimental_count
-        {
-            get { return this.experimental_proteoforms.Count; }
-        }
+        public int experimental_count { get { return this.experimental_proteoforms.Count; } }
         public List<TheoreticalProteoform> theoretical_proteoforms { get; set; }
-        public int theoretical_count
-        {
-            get { return this.theoretical_proteoforms.Count; }
-        }
+        public int theoretical_count { get { return this.theoretical_proteoforms.Count; } }
         public List<TopDownProteoform> topdown_proteoforms { get; set; }
-        public int topdown_count
-        {
-            get { return this.topdown_proteoforms.Count; }
-        }
-        public int relation_count
-        {
-            get { return this.relations.Count; }
-        }
+        public int topdown_count { get { return this.topdown_proteoforms.Count; }}
         public HashSet<ProteoformRelation> relations { get; set; }
-        public HashSet<Proteoform> _proteoforms;
-        public HashSet<Proteoform> proteoforms
+        public int relation_count { get { return this.relations.Count; } }
+        public HashSet<Proteoform> proteoforms { get; set; }
+        private Proteoform seed { get; set; }
+        public ProteoformFamily(Proteoform seed)
         {
-            get { return this._proteoforms; }
-            set
-            {
-                _proteoforms = value;
-                HashSet<int> lysine_counts = new HashSet<int>(value.Select(p => p.lysine_count));
-                if (lysine_counts.Count == 1) this.lysine_count = lysine_counts.FirstOrDefault();
-                this.experimental_proteoforms = value.Where(p => p is ExperimentalProteoform).Select(p => (ExperimentalProteoform)p).ToList();
-                this.theoretical_proteoforms = value.Where(p => p is TheoreticalProteoform && !(p is TopDownProteoform)).Select(p => (TheoreticalProteoform)p).ToList();
-                this.topdown_proteoforms = value.Where(p => p is TopDownProteoform).Select(p => (TopDownProteoform)p).ToList();
-                this.relations = new HashSet<ProteoformRelation>(value.SelectMany(p => p.relationships.Where(r => r.accepted)), new RelationComparer());
-            }
+            family_counter++;
+            this.family_id = family_counter;
+            this.seed = seed;
         }
 
-        public ProteoformFamily(IEnumerable<Proteoform> proteoforms, int family_id)
+        public void construct_family()
         {
-            this.proteoforms = new HashSet<Proteoform>(proteoforms, new ProteoformComparer());
-            this.family_id = family_id;
+            this.proteoforms = new HashSet<Proteoform>(construct_family(new List<Proteoform> { seed }));
+            HashSet<int> lysine_counts = new HashSet<int>(proteoforms.Select(p => p.lysine_count));
+            if (lysine_counts.Count == 1) this.lysine_count = lysine_counts.FirstOrDefault();
+            this.experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
+            this.theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
+            this.topdown_proteoforms = proteoforms.OfType<TopDownProteoform>().ToList();
+            this.relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.accepted))); //etd relations don't have peaks, so check if relation accepted (will be unacceptedi if peak unaccepted)
         }
-    }
 
-    public class RelationComparer : IEqualityComparer<ProteoformRelation>
-    {
-        public bool Equals(ProteoformRelation r1, ProteoformRelation r2)
+        public List<Proteoform> construct_family(List<Proteoform> seed)
         {
-            return
-                r1.connected_proteoforms[0] == r2.connected_proteoforms[1] && r1.connected_proteoforms[1] == r2.connected_proteoforms[0] ||
-                r1.connected_proteoforms[0] == r2.connected_proteoforms[0] && r1.connected_proteoforms[1] == r2.connected_proteoforms[1];
-        }
-        public int GetHashCode(ProteoformRelation r)
-        {
-            return r.nearby_relations_count;
-        }
-    }
-
-    public class ProteoformComparer: IEqualityComparer<Proteoform>
-    {
-        public bool Equals(Proteoform p1, Proteoform p2)
-        {
-            return p1.accession == p2.accession;
-        }
-        public int GetHashCode(Proteoform p)
-        {
-            return p.accession.ToCharArray().Sum(c => Convert.ToInt32(c));
+            List<Proteoform> seed_expansion = seed.SelectMany(p => p.get_connected_proteoforms()).Except(seed).ToList();
+            if (seed_expansion.Count == 0) return seed;
+            seed.AddRange(seed_expansion);
+            return construct_family(seed);
         }
     }
 }

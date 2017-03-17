@@ -46,7 +46,7 @@ namespace ProteoformSuiteInternal
     public class Ptm
     {
         public int position = -1;
-        public ModificationWithMass modification = new ModificationWithMass("unmodified", null, null, ModificationSites.Any, 0, null, -1, null, null, null);
+        public ModificationWithMass modification = new ModificationWithMass("Unmodified", new Tuple<string, string>("N/A", "Unmodified"), null, ModificationSites.Any, 0, null, -1, null, null, null);
         public Ptm() // initializes an "un-Modification"
         { }
         public Ptm(int position, ModificationWithMass modification)
@@ -94,7 +94,7 @@ namespace ProteoformSuiteInternal
         public List<PtmSet> get_combinations(int num_ptms_needed)
         {
             List<PtmSet> combinations = all_unique_positional_combinations(num_ptms_needed);
-            List<PtmSet> unique_mass_combinations = new List<PtmSet>();
+            List<PtmSet> unique_mass_combinations = new List<PtmSet> { new PtmSet(new List<Ptm>()) }; //initialize with an "unmodified" ptmset
 
             //I tried speeding this up by removing all similar masses instead; it doesn't speed it up... AC170223
             foreach (PtmSet combination in combinations)
@@ -105,7 +105,6 @@ namespace ProteoformSuiteInternal
                     unique_mass_combinations.Add(combination);
             }
 
-            unique_mass_combinations.Add(new PtmSet(new List<Ptm>()));
             return unique_mass_combinations;
         }
 
