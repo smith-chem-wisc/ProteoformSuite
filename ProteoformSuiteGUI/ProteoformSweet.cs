@@ -10,8 +10,9 @@ using System.Windows.Forms;
 using System.IO;
 using System.Threading.Tasks;
 using ProteoformSuiteInternal;
+using System.Windows.Forms.DataVisualization.Charting;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public partial class ProteoformSweet : Form
     {
@@ -36,7 +37,7 @@ namespace ProteoformSuite
 
         Form current_form;
 
-        public static bool run_when_form_loads = true;
+        public static bool run_when_form_loads;
 
         public ProteoformSweet()
         {
@@ -55,7 +56,7 @@ namespace ProteoformSuite
             forms = new List<Form>(new Form[] {
                 loadDeconvolutionResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
                 theoreticalDatabase, experimentalTheoreticalComparison, experimentExperimentComparison,
-                proteoformFamilies, quantification
+                proteoformFamilies, quantification, resultsSummary
             });
             foreach (Form form in forms)
             {
@@ -119,8 +120,7 @@ namespace ProteoformSuite
         }
         private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            resultsSummary.createResultsSummary();
-            resultsSummary.displayResultsSummary();
+            resultsSummary.create_summary();
             showForm(resultsSummary);
         }
 
@@ -162,7 +162,6 @@ namespace ProteoformSuite
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
                 string method_filename = methodFileOpen.FileName;
-                ResultsSummary.loadDescription = method_filename;
                 SaveState.open_method(File.ReadAllLines(method_filename));
                 return true;
             }
@@ -305,6 +304,22 @@ namespace ProteoformSuite
                 MessageBox.Show("Successfully exported table.");
             }
             else return; 
+        }
+
+        public void save_all_plots(string folder, string timestamp)
+        {
+            if (Lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_IntensityRatio, folder, "NeuCode_IntensityRatios_", timestamp);
+            if (Lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_LysineCount, folder, "NeuCode_LysineCounts_", timestamp);
+            if (Lollipop.et_relations.Count > 0) save_as_png(experimentalTheoreticalComparison.ct_ET_Histogram, folder, "ExperimentalTheoretical_MassDifferences_", timestamp);
+            if (Lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
+            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_proteoformIntensities, folder, "QuantifiedProteoform_Intensities_", timestamp);
+            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_relativeDifference, folder, "QuantifiedProteoform_Tusher2001Plot_", timestamp);
+            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_volcano_logFold_logP, folder, "QuantifiedProteoform_VolcanoPlot_", timestamp);
+        }
+
+        private void save_as_png(Chart ct, string folder, string prefix, string timestamp)
+        {
+            ct.SaveImage(Path.Combine(folder, prefix + timestamp + ".png"), ChartImageFormat.Png);
         }
     }
 }

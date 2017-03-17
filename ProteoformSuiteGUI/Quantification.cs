@@ -13,7 +13,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
 using Proteomics;
 
-namespace ProteoformSuite
+namespace ProteoformSuiteGUI
 {
     public partial class Quantification : Form
     {

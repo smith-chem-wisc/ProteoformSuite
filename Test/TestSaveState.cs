@@ -88,5 +88,11 @@ namespace Test
                 else continue;
             }
         }
+
+        [Test]
+        public void results_summary_doesnt_crash_without_initializing()
+        {
+            Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
+        }
     }
 }

@@ -242,8 +242,6 @@ namespace Test
             make_relation(pf6, pf7, comparison67, 0);
             make_relation(pf7, pf8, comparison78, 0);
 
-
-
             List<ProteoformRelation> prs = new HashSet<ProteoformRelation>(community.experimental_proteoforms.SelectMany(p => p.relationships).Concat(community.theoretical_proteoforms.SelectMany(p => p.relationships))).ToList();
             List<ProteoformRelation> prs_et = prs.Where(r => r.relation_type == ProteoformComparison.et).OrderBy(r => r.delta_mass).ToList();
             List<ProteoformRelation> prs_ee = prs.Where(r => r.relation_type == ProteoformComparison.ee).OrderBy(r => r.delta_mass).ToList();
@@ -291,6 +289,15 @@ namespace Test
             HashSet<Proteoform> relation_proteoforms = new HashSet<Proteoform>(community.families.SelectMany(f => f.relations).SelectMany(r => r.connected_proteoforms));
             Assert.True(community.experimental_proteoforms.OfType<Proteoform>().Concat(community.theoretical_proteoforms).All(p => relation_proteoforms.Contains(p)));
             Assert.True(relation_proteoforms.All(p => community.experimental_proteoforms.Contains(p) || community.theoretical_proteoforms.Contains(p)));
+        }
+
+        [Test]
+        public void test_results_summary_with_peaks()
+        {
+            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
+            Lollipop.et_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.et).ToList();
+            Lollipop.ee_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ee).ToList();
+            Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
         }
     }
 }
