@@ -67,6 +67,7 @@ namespace ProteoformSuiteGUI
                 ((ProteoformSweet)this.MdiParent).proteoformFamilies.update_figures_of_merit();
             }
             else { this.FillTablesAndCharts(); }
+            if (Lollipop.ef_relations.Count > 0) cb_view_ef.Enabled = true;
             this.Cursor = Cursors.Default;
             compared_ee = true;
         }

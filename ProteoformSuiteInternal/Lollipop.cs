@@ -469,9 +469,10 @@ namespace ProteoformSuiteInternal
         {
             updated_theoretical = true;
             //Clear out data from potential previous runs
-            Lollipop.proteoform_community.decoy_proteoforms = new Dictionary<string, TheoreticalProteoform[]>();
+            Lollipop.proteoform_community.decoy_proteoforms.Clear();
             Lollipop.psm_list.Clear();
             Lollipop.uniprotModificationTable.Clear();
+            Lollipop.theoretical_proteins.Clear();
 
             //Read the UniProt-XML and ptmlist
             Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));

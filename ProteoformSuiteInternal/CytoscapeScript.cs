@@ -151,7 +151,7 @@ namespace ProteoformSuiteInternal
                     get_proteoform_shared_name(r.connected_proteoforms[0], double_rounding),
                     r.lysine_count.ToString(),
                     get_proteoform_shared_name(r.connected_proteoforms[1], double_rounding),
-                    Math.Round(r.peak_center_deltaM, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")))
+                    Math.Round(mass_label, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")))
                 });
                 edge_rows += Environment.NewLine;
             }
@@ -203,6 +203,11 @@ namespace ProteoformSuiteInternal
             else if (typeof(TheoreticalProteoform).IsAssignableFrom(p.GetType()))
             {
                 return p.accession.Split(new char[] { '_' }).FirstOrDefault() + " " + ((TheoreticalProteoform)p).ptm_list_string();
+            }
+
+            else if (typeof(TopDownProteoform).IsAssignableFrom(p.GetType()))
+            {
+                return p.accession + "_" + Math.Round(((TopDownProteoform)p).agg_rt, 0) +  " " + ((TopDownProteoform)p).ptm_list_string();
             }
 
             else
