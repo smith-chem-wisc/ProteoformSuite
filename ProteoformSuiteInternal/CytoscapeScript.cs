@@ -75,8 +75,8 @@ namespace ProteoformSuiteInternal
             if (folder_path == "" || !Directory.Exists(folder_path))
                 return "Please choose a folder in which the families will be built, so you can load them into Cytoscape.";
 
-            if (families.Any(f => f.experimental_count == 0))
-                return "Error: there is a family with zero experimental proteoforms.";
+            if (families.Any(f => f.experimental_count == 0 && f.topdown_count == 0))
+                return "Error: there is a family with zero experimental or top-down proteoforms.";
 
             string nodes_path = Path.Combine(folder_path, node_file_prefix + time_stamp + node_file_extension);
             string edges_path = Path.Combine(folder_path, edge_file_prefix + time_stamp + edge_file_extension);
