@@ -90,12 +90,12 @@ namespace ProteoformSuiteInternal
             //putative counts include no-mans land, currently
         }
 
-        public bool allowed_ef_relation(ExperimentalProteoform pf1, ExperimentalProteoform pf2, double rt_diff)
+        public bool allowed_ef_relation(ExperimentalProteoform pf1, ExperimentalProteoform pf2)
         {
             return pf1.modified_mass >= pf2.modified_mass
             && pf1 != pf2
             && (!Lollipop.neucode_labeled || pf1.lysine_count != pf2.lysine_count)
-            && (Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) > rt_diff)
+            && (Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) > 2 * Lollipop.ee_max_RetentionTime_difference)
             && allowed_mass_difference(pf1.modified_mass, pf2.modified_mass, ProteoformComparison.ef)
             && (!Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) <= Lollipop.ee_max_RetentionTime_difference);
         }
@@ -170,13 +170,13 @@ namespace ProteoformSuiteInternal
                 int num_relations = pfs2.Where(pf2 => allowed_ee_relation(pf1, pf2)).Count(); //number that would be chosen with equal lysine counts or w/in retention time from a randomized set
                 new Random().Shuffle(pfs2);
                 List<ProteoformRelation> ef_relation_addition = pfs2
-                        .Where(p => p.lysine_count != pf1.lysine_count && Math.Abs(pf1.modified_mass - p.modified_mass) <= Lollipop.ee_max_mass_difference)
+                        .Where(pf2 => allowed_ef_relation(pf1, pf2))
                         .Take(num_relations)
                         .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass))
-                        .OrderBy(r => r.delta_mass)
                         .ToList();
-                ef_relations.AddRange(count_nearby_relations(ef_relation_addition));
+                ef_relations.AddRange(ef_relation_addition);
             }
+            ef_relations = ef_relations.OrderBy(r => r.delta_mass).ToList();
             count_nearby_relations(ef_relations);
             return ef_relations;
         }
@@ -348,7 +348,7 @@ namespace ProteoformSuiteInternal
         {
             clean_up_td_relations();
             List<Proteoform> proteoforms = new List<Proteoform>();
-            proteoforms.AddRange(this.experimental_proteoforms.ToList());
+            proteoforms.AddRange(this.experimental_proteoforms.Where(e => e.accepted).ToList());
             proteoforms.AddRange(topdown_proteoforms);
             Stack<Proteoform> remaining = new Stack<Proteoform>(proteoforms);
             List<ProteoformFamily> running_families = new List<ProteoformFamily>();
