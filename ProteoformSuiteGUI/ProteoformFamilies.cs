@@ -239,7 +239,7 @@ namespace ProteoformSuiteGUI
         {
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
-            string message = CytoscapeScript.write_cytoscape_script(Lollipop.proteoform_community.families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, cb_buildAsQuantitative.Checked, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            string message = CytoscapeScript.write_cytoscape_script(Lollipop.proteoform_community.families.Where(f => f.relation_count > 0).ToList(), Lollipop.proteoform_community.families.Where(f => f.relation_count > 0).ToList(), Lollipop.family_build_folder_path, time_stamp, cb_buildAsQuantitative.Checked, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
             MessageBox.Show(message, "Cytoscape Build");
         }
 

@@ -340,7 +340,10 @@ namespace ProteoformSuiteGUI
             if (compared_ee)
             {
                 Parallel.ForEach(Lollipop.ee_peaks, p =>
-                p.peak_accepted = p.peak_relation_group_count >= Lollipop.min_peak_count_ee);
+                {
+                    p.peak_accepted = p.peak_relation_group_count >= Lollipop.min_peak_count_ee;
+                    Parallel.ForEach(p.grouped_relations, r => r.accepted = p.peak_accepted);
+                });
                 dgv_EE_Peaks.Refresh();
                 dgv_EE_Relations.Refresh();
             }
