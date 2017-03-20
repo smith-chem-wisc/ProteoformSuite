@@ -350,9 +350,12 @@ namespace ProteoformSuiteGUI
         {
             Lollipop.min_peak_count_et = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
             if (compared_et)
-            { 
+            {
                 Parallel.ForEach(Lollipop.et_peaks, p =>
-                    p.peak_accepted = p.peak_relation_group_count >= Lollipop.min_peak_count_et);
+                {
+                    p.peak_accepted = p.peak_relation_group_count >= Lollipop.min_peak_count_et;
+                    Parallel.ForEach(p.grouped_relations, r => r.accepted = p.peak_accepted);
+                });
                 dgv_ET_Pairs.Refresh();
                 dgv_ET_Peak_List.Refresh();
             }
