@@ -29,8 +29,8 @@ namespace ProteoformSuiteInternal
         public string get_prefered_name(string prefered_gene_label)
         {
             string name;
-            if (prefered_gene_label.ToLower().StartsWith("primary")) name = primary != null ? primary : ordered_locus;
-            else if (prefered_gene_label.ToLower().StartsWith("ordered locus")) name = ordered_locus != null ? ordered_locus : primary;
+            if (prefered_gene_label != null && prefered_gene_label.ToLower().StartsWith("primary")) name = primary != null ? primary : ordered_locus;
+            else if (prefered_gene_label != null && prefered_gene_label.ToLower().StartsWith("ordered locus")) name = ordered_locus != null ? ordered_locus : primary;
             else name = null;
             return name != null || gene_names.Count() == 0 ? name : gene_names.FirstOrDefault().Item2;
         }
