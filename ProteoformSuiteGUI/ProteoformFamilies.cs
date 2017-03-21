@@ -23,7 +23,9 @@ namespace ProteoformSuiteGUI
             InitializeComponent();
         }
         private void ProteoformFamilies_Load(object sender, EventArgs e)
-        { }
+        {
+            initialize_settings();
+        }
 
         public void initialize_every_time()
         {
@@ -70,7 +72,6 @@ namespace ProteoformSuiteGUI
         public void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
-            initialize_settings();
             Lollipop.proteoform_community.construct_families();
             fill_proteoform_families("");
             update_figures_of_merit();

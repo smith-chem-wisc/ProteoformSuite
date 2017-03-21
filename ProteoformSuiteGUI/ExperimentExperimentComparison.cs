@@ -48,7 +48,7 @@ namespace ProteoformSuiteGUI
             this.Cursor = Cursors.WaitCursor;
             Lollipop.make_ee_relationships();
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
-            //slow for labelfree - need to manually check peaks and raise peak threshold or too many peaks
+
             if (Lollipop.neucode_labeled)
             {
                 Parallel.Invoke
@@ -56,7 +56,6 @@ namespace ProteoformSuiteGUI
                     () => this.FillTablesAndCharts(),
                     () => Lollipop.proteoform_community.construct_families()
                 );
-                ((ProteoformSweet)this.MdiParent).proteoformFamilies.initialize_settings();
                 ((ProteoformSweet)this.MdiParent).proteoformFamilies.fill_proteoform_families("");
                 ((ProteoformSweet)this.MdiParent).proteoformFamilies.update_figures_of_merit();
             }

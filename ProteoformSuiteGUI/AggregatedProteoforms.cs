@@ -1,14 +1,9 @@
 ﻿using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 
 namespace ProteoformSuiteGUI
 {
@@ -45,14 +40,14 @@ namespace ProteoformSuiteGUI
 
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
-            ((ProteoformSweet)MdiParent).quantification.perform_calculations();
             ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
 
-            if (Lollipop.neucode_labeled)
+            if (Lollipop.neucode_labeled && Lollipop.proteoform_community.theoretical_proteoforms.Length > 0)
             {
-                if (Lollipop.proteoform_community.theoretical_proteoforms.Length > 0)  ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.run_the_gamut();
+                ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.run_the_gamut();
                 ((ProteoformSweet)MdiParent).experimentExperimentComparison.run_the_gamut();
+                ((ProteoformSweet)MdiParent).quantification.perform_calculations();
             }
 
             updateFiguresOfMerit();
