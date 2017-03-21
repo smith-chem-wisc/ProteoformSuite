@@ -10,14 +10,27 @@ namespace ProteoformSuiteInternal
 
         public ProteinSequenceGroup(IEnumerable<ProteinWithGoTerms> proteins)
             : base(proteins.First().BaseSequence,
-                proteins.Any(p => p.IsContaminant) ? proteins.FirstOrDefault(p => p.IsContaminant).Accession + "_G" + proteins.Count() : proteins.First().Accession + "_G" + proteins.Count(),
+                proteins.Any(p => p.IsContaminant) ? 
+                  proteins.FirstOrDefault(p => p.IsContaminant).Accession + "_" + proteins.Count() + "G" : 
+                  proteins.First().Accession + "_" + proteins.Count() + "G",
                 proteins.SelectMany(p => p.GeneNames),
-                proteins.SelectMany(p => p.OneBasedPossibleLocalizedModifications.Keys).Distinct().ToDictionary(i => i, i => proteins.Where(p => p.OneBasedPossibleLocalizedModifications.ContainsKey(i)).SelectMany(p => p.OneBasedPossibleLocalizedModifications[i]).ToList()),
-                proteins.Any(p => p.IsContaminant) ? proteins.FirstOrDefault(p => p.IsContaminant).ProteolysisProducts.Select(p => p.OneBasedBeginPosition).ToArray() : proteins.First().ProteolysisProducts.Select(p => p.OneBasedBeginPosition).ToArray(),
-                proteins.Any(p => p.IsContaminant) ? proteins.FirstOrDefault(p => p.IsContaminant).ProteolysisProducts.Select(p => p.OneBasedEndPosition).ToArray() : proteins.First().ProteolysisProducts.Select(p => p.OneBasedEndPosition).ToArray(),
-                proteins.Any(p => p.IsContaminant) ? proteins.FirstOrDefault(p => p.IsContaminant).ProteolysisProducts.Select(p => p.Type).ToArray() : proteins.First().ProteolysisProducts.Select(p => p.Type).ToArray(),
-                proteins.Any(p => p.IsContaminant) ? proteins.FirstOrDefault(p => p.IsContaminant).Name : proteins.First().Name,
-                proteins.Any(p => p.IsContaminant) ? proteins.FirstOrDefault(p => p.IsContaminant).FullName : proteins.First().FullName, 
+                proteins.SelectMany(p => p.OneBasedPossibleLocalizedModifications.Keys).Distinct()
+                  .ToDictionary(i => i, i => proteins.Where(p => p.OneBasedPossibleLocalizedModifications.ContainsKey(i)).SelectMany(p => p.OneBasedPossibleLocalizedModifications[i]).ToList()),
+                proteins.Any(p => p.IsContaminant) ? 
+                  proteins.FirstOrDefault(p => p.IsContaminant).ProteolysisProducts.Select(p => p.OneBasedBeginPosition).ToArray() : 
+                  proteins.First().ProteolysisProducts.Select(p => p.OneBasedBeginPosition).ToArray(),
+                proteins.Any(p => p.IsContaminant) ? 
+                  proteins.FirstOrDefault(p => p.IsContaminant).ProteolysisProducts.Select(p => p.OneBasedEndPosition).ToArray() : 
+                  proteins.First().ProteolysisProducts.Select(p => p.OneBasedEndPosition).ToArray(),
+                proteins.Any(p => p.IsContaminant) ? 
+                  proteins.FirstOrDefault(p => p.IsContaminant).ProteolysisProducts.Select(p => p.Type).ToArray() : 
+                  proteins.First().ProteolysisProducts.Select(p => p.Type).ToArray(),
+                proteins.Any(p => p.IsContaminant) ? 
+                  proteins.FirstOrDefault(p => p.IsContaminant).Name : 
+                  proteins.First().Name,
+                proteins.Any(p => p.IsContaminant) ? 
+                  proteins.FirstOrDefault(p => p.IsContaminant).FullName : 
+                  proteins.First().FullName, 
                 false, 
                 proteins.Any(p => p.IsContaminant), 
                 proteins.SelectMany(p => p.DatabaseReferences),

@@ -12,13 +12,15 @@ namespace ProteoformSuiteInternal
     public static class CytoscapeScript
     {
         public static string write_cytoscape_script(List<ProteoformFamily> families, List<ProteoformFamily> all_families, string folder_path, string time_stamp, bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace, bool quantitative_moreOpacity,
-            string color_scheme, string node_label_position, int double_rounding)
+            string color_scheme, string node_label_position, int double_rounding,
+            bool gene_centric_families, string prefered_gene_label)
         {
-            return write_script(families, all_families, folder_path, time_stamp, quantitative, quantitative_redBorder, quantitative_boldFace, quantitative_moreOpacity, color_scheme, node_label_position, double_rounding);
+            return write_script(families, all_families, folder_path, time_stamp, quantitative, quantitative_redBorder, quantitative_boldFace, quantitative_moreOpacity, color_scheme, node_label_position, double_rounding, gene_centric_families, prefered_gene_label);
         }
 
         public static string write_cytoscape_script(object[] stuff, List<ProteoformFamily> all_families, string folder_path, string time_stamp, bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace, bool quantitative_moreOpacity,
-            string color_scheme, string node_label_position, int double_rounding)
+            string color_scheme, string node_label_position, int double_rounding,
+            bool gene_centric_families, string prefered_gene_label)
         {
             List<ProteoformFamily> families = stuff.OfType<ProteoformFamily>().ToList();
 
@@ -31,7 +33,7 @@ namespace ProteoformSuiteInternal
                 families = get_families(stuff.OfType<ExperimentalProteoform.quantitativeValues>(), all_families).Distinct().ToList();
             if (families.Count <= 0) return "Selected objects were not recognized.";
 
-            return write_script(families, all_families, folder_path, time_stamp, quantitative, quantitative_redBorder, quantitative_boldFace, quantitative_moreOpacity, color_scheme, node_label_position, double_rounding);
+            return write_script(families, all_families, folder_path, time_stamp, quantitative, quantitative_redBorder, quantitative_boldFace, quantitative_moreOpacity, color_scheme, node_label_position, double_rounding, gene_centric_families, prefered_gene_label);
         }
 
         private static IEnumerable<ProteoformFamily> get_families(IEnumerable<TheoreticalProteoform> theoreticals, List<ProteoformFamily> all_families)
@@ -69,7 +71,8 @@ namespace ProteoformSuiteInternal
         public static string style_file_extension = ".xml";
         public static string script_file_extension = ".txt";
         private static string write_script(List<ProteoformFamily> families, List<ProteoformFamily> all_families, string folder_path, string time_stamp, bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace, bool quantitative_moreOpacity,
-            string color_scheme, string node_label_position, int double_rounding)
+            string color_scheme, string node_label_position, int double_rounding,
+            bool gene_centric_families, string preferred_gene_label)
         {
             //Check if valid folder
             if (folder_path == "" || !Directory.Exists(folder_path))
@@ -84,9 +87,19 @@ namespace ProteoformSuiteInternal
             string script_path = Path.Combine(folder_path, script_file_prefix + time_stamp + script_file_extension);
             string style_name = "ProteoformFamilies" + time_stamp;
 
+            IEnumerable<TheoreticalProteoform> theoreticals = families.SelectMany(f => f.theoretical_proteoforms);
+            //Dictionary<string, GeneName> gene_dict = new Dictionary<string, GeneName>();
+            //if (gene_centric_families)
+            //    foreach (TheoreticalProteoform t in theoreticals)
+            //    {
+            //        string preferred = t.gene_name.get_prefered_name(prefered_gene_label);
+            //        if (gene_dict.ContainsKey(preferred)) gene_dict[preferred].merge(t.gene_name);
+            //        else gene_dict.Add(preferred, t.gene_name);
+            //    }
+
             string script = get_script(families.Sum(f => f.proteoforms.Count() + f.relation_count), quantitative, edges_path, nodes_path, styles_path, style_name);
-            string node_table = get_cytoscape_nodes_tsv(families, quantitative, color_scheme, double_rounding);
-            string edge_table = get_cytoscape_edges_tsv(families, double_rounding);
+            string node_table = get_cytoscape_nodes_tsv(families, quantitative, color_scheme, double_rounding, theoreticals, gene_centric_families, preferred_gene_label);
+            string edge_table = get_cytoscape_edges_tsv(families, double_rounding, theoreticals, gene_centric_families, preferred_gene_label);
             File.WriteAllText(edges_path, edge_table);
             File.WriteAllText(nodes_path, node_table);
             File.WriteAllText(script_path, script);
@@ -102,7 +115,7 @@ namespace ProteoformSuiteInternal
         private static string get_script(int feature_count, bool quantitative, string edges_path, string nodes_path, string styles_path, string style_name)
         {
             double sleep_factor = feature_count / 1000;
-            string node_column_types = quantitative ? "s,s,d,d,d,boolean,s" : "s,s,d"; //Cytoscape bug: "b" doesn't work in 3.4.0, only "boolean" does
+            string node_column_types = quantitative ? "s,s,d,s,d,d,boolean,s" : "s,s,d,s"; //Cytoscape bug: "b" doesn't work in 3.4.0, only "boolean" does
             string edge_column_types = "s,s,s,s";
             return String.Join(Environment.NewLine, new string[] {
 
@@ -129,14 +142,17 @@ namespace ProteoformSuiteInternal
         public static string delta_mass_header = "delta_mass";
         public static string proteoform_type_header = "E_or_T";
         public static string size_header = "total_intensity";
+        public static string tooltip_header = "more_info";
         public static string piechart_header = "piechart_graphics";
         public static string significant_header = "significant_difference";
         public static string experimental_label = "experimental";
         public static string experimental_notQuantified_label = "experimental_below_quantification_threshold";
         public static string unmodified_theoretical_label = "theoretical";
         public static string modified_theoretical_label = "modified_theoretical";
+        public static string gene_name_label = "gene_name";
         public static string mock_intensity = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
-        public static string get_cytoscape_edges_tsv(List<ProteoformFamily> families, int double_rounding)
+        public static string get_cytoscape_edges_tsv(List<ProteoformFamily> families, int double_rounding, 
+            IEnumerable<TheoreticalProteoform> theoreticals, bool gene_centric_families, string preferred_gene_label)
         {
             string tsv_header = "accession_1\t" + lysine_count_header + "\taccession_2\t" + delta_mass_header;
             string edge_rows = "";
@@ -151,12 +167,27 @@ namespace ProteoformSuiteInternal
                 });
                 edge_rows += Environment.NewLine;
             }
+
+            if (gene_centric_families)
+            {
+                foreach (TheoreticalProteoform t in theoreticals)
+                {
+                    edge_rows += String.Join("\t", new List<string>
+                    {
+                        get_proteoform_shared_name(t, double_rounding),
+                        t.lysine_count.ToString(),
+                        t.gene_name.get_prefered_name(preferred_gene_label),
+                    });
+                    edge_rows += Environment.NewLine;
+                }
+            }
             return tsv_header + Environment.NewLine + edge_rows;
         }
 
-        public static string get_cytoscape_nodes_tsv(List<ProteoformFamily> families, bool quantitative, string color_scheme, int double_rounding)
+        public static string get_cytoscape_nodes_tsv(List<ProteoformFamily> families, bool quantitative, string color_scheme, int double_rounding,
+            IEnumerable<TheoreticalProteoform> theoreticals, bool gene_centric_families, string preferred_gene_label)
         {
-            string tsv_header = "accession\t" + proteoform_type_header + "\t" + size_header;
+            string tsv_header = "accession\t" + proteoform_type_header + "\t" + size_header + "\t" + tooltip_header;
             if (quantitative) tsv_header += "\t" + Lollipop.numerator_condition + "\t" + Lollipop.denominator_condition + "\t" + significant_header + "\t" + piechart_header;
 
             string node_rows = "";
@@ -168,19 +199,47 @@ namespace ProteoformSuiteInternal
                 string total_intensity = quantitative ?
                     p.quant.intensitySum == 0 ? mock_intensity : ((double)p.quant.intensitySum).ToString() : 
                     p.agg_intensity.ToString();
+
+                //Names and size
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, double_rounding), node_type, total_intensity });
+
+                //Set tooltip information
+                node_rows += "\t" + String.Join("; ", new string[] {
+                    "Accession = " + p.accession.ToString(),
+                    "Aggregated Mass = " + p.agg_mass.ToString(),
+                    "Aggregated Retention Time = " + p.agg_rt.ToString(),
+                    "Total Intensity = " + total_intensity.ToString(),
+                    "Aggregated Component Count = " + p.aggregated_components.Count.ToString(),
+                });
+                if (Lollipop.neucode_labeled) node_rows += "; Lysine Count = " + p.lysine_count;
+                if (quantitative && p.quant.intensitySum > 0)
+                {
+                    node_rows += "\\n\\nQuantitation Results:";
+                    node_rows += String.Join("; ", new string[] {
+                        "Q-Value = " + p.quant.FDR.ToString(),
+                        "Log2FC = " + p.quant.logFoldChange.ToString(),
+                        "Variance = " + p.quant.variance.ToString(),
+                        "Significant = " + p.quant.significant.ToString(),
+                        Lollipop.numerator_condition + " Quantitative Component Count = " + p.lt_quant_components.ToString(),
+                        Lollipop.denominator_condition + " Quantitative Component Count = " + p.hv_quant_components.ToString(),
+                    });
+                }
+
+                //Quantification information
                 if (quantitative && p.quant.intensitySum != 0) node_rows += "\t" + String.Join("\t", new List<string> { ((double)p.quant.lightIntensitySum).ToString(), ((double)p.quant.heavyIntensitySum).ToString(), p.quant.significant.ToString(), get_piechart_string(color_scheme) });
                 node_rows += Environment.NewLine;
             }
 
-            IEnumerable<TheoreticalProteoform> theoreticals = families.SelectMany(f => f.theoretical_proteoforms);
             foreach (TheoreticalProteoform p in theoreticals)
             {
                 string node_type = String.Equals(p.ptm_list_string(), "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, double_rounding), node_type, mock_intensity }) + Environment.NewLine;
             }
 
-            foreach (string gene_name in theoreticals.SelectMany(t => t.proteinList.SelectMany(p => p.GeneNames).Where(n => n.Item1 == "primary").Select(n => n.Item2))) { }
+            foreach (string gene_name in theoreticals.Select(t => t.gene_name.get_prefered_name(preferred_gene_label)).Distinct())
+            {
+                node_rows += gene_name + "\t" + gene_name_label + "\t" + mock_intensity + "\tOther Gene Names: " + Environment.NewLine; //TODO: implement tooltip for other gene names
+            }
 
             return tsv_header + Environment.NewLine + node_rows;
         }
@@ -194,7 +253,7 @@ namespace ProteoformSuiteInternal
 
             else if (typeof(TheoreticalProteoform).IsAssignableFrom(p.GetType()))
             {
-                return p.accession.Split(new char[] { '_' }).FirstOrDefault() + " " + ((TheoreticalProteoform)p).ptm_list_string();
+                return p.accession + " " + ((TheoreticalProteoform)p).ptm_list_string();
             }
 
             else
@@ -306,7 +365,8 @@ namespace ProteoformSuiteInternal
                             new Tuple<string, string>(quantitative ? "#FFFFFF" : color_schemes[color_scheme][0], experimental_label),
                             new Tuple<string, string>("#D3D3D3", experimental_notQuantified_label),
                             new Tuple<string, string>(color_schemes[color_scheme][1], modified_theoretical_label),
-                            new Tuple<string, string>(color_schemes[color_scheme][2], unmodified_theoretical_label)
+                            new Tuple<string, string>(color_schemes[color_scheme][2], unmodified_theoretical_label),
+                            new Tuple<string, string>(color_schemes[color_scheme][3], gene_name_label)
                         });
                     if (style.Key == "NODE_LABEL_COLOR") write_passthrough(writer, "string", "shared name");
                     if (style.Key == "NODE_LABEL") write_passthrough(writer, "string", "name");
@@ -345,6 +405,7 @@ namespace ProteoformSuiteInternal
                         {
                             new Tuple<string, string>("Dialog.bold,plain,14", "True"),
                         });
+                    if (style.Key == "NODE_TOOLTIP") write_passthrough(writer, "string", tooltip_header);
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();

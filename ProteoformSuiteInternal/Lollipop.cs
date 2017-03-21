@@ -546,7 +546,7 @@ namespace ProteoformSuiteInternal
                 int begin = 1;
                 int end = p.BaseSequence.Length;
                 List<GoTerm> goTerms = p.DatabaseReferences.Where(reference => reference.Type == "GO").Select(reference => new GoTerm(reference)).ToList();
-                new_prots.Add(new ProteinWithGoTerms(p.BaseSequence, p.Accession, p.GeneNames, p.OneBasedPossibleLocalizedModifications, new int?[] { begin }, new int?[] { end }, new string[] { methionine_cleavage ? "full-met-cleaved" : "full" }, p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
+                new_prots.Add(new ProteinWithGoTerms(p.BaseSequence, p.Accession + "_" + begin.ToString() + "full" + end.ToString(), p.GeneNames, p.OneBasedPossibleLocalizedModifications, new int?[] { begin }, new int?[] { end }, new string[] { methionine_cleavage ? "full-met-cleaved" : "full" }, p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
                 List<ProteolysisProduct> products = p.ProteolysisProducts.ToList();
                 foreach (ProteolysisProduct product in p.ProteolysisProducts)
                 {
@@ -562,7 +562,7 @@ namespace ProteoformSuiteInternal
                     string subsequence = p.BaseSequence.Substring(feature_begin - 1, feature_end - feature_begin + 1);
                     Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= feature_begin && kv.Key <= feature_end).ToDictionary(kv => kv.Key, kv => kv.Value);
                     if (!just_met_cleavage && subsequence.Length != p.BaseSequence.Length && subsequence.Length >= Lollipop.min_peptide_length)
-                        new_prots.Add(new ProteinWithGoTerms(subsequence, p.Accession, p.GeneNames, segmented_ptms, new int?[] { feature_begin }, new int?[] { feature_end }, new string[] { feature_type }, p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
+                        new_prots.Add(new ProteinWithGoTerms(subsequence, p.Accession + "_" + feature_begin.ToString() + "frag" + feature_end.ToString(), p.GeneNames, segmented_ptms, new int?[] { feature_begin }, new int?[] { feature_end }, new string[] { feature_type }, p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
                 }
                 expanded_prots.AddRange(new_prots);
             }
@@ -642,22 +642,23 @@ namespace ProteoformSuiteInternal
             List<PtmSet> unique_ptm_groups = new PtmCombos(prot.OneBasedPossibleLocalizedModifications).get_combinations(max_ptms);
             bool check_contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
 
-            int listMemberNumber = 1;
-
+            //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
+            int ptm_set_counter = 1;
             foreach (PtmSet ptm_set in unique_ptm_groups)
             {
                 double proteoform_mass = unmodified_mass + ptm_set.mass;
-                string protein_description = prot.FullDescription + "_" + listMemberNumber.ToString();
+                string protein_description = prot.FullDescription + "_P" + ptm_set_counter.ToString();
+                string new_accession = accession + "_P" + ptm_set_counter.ToString();
                 lock (theoretical_proteoforms)
                 {
                     if (decoy_number < 0)
-                        theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description, prot, isMetCleaved,
+                        theoretical_proteoforms.Add(new TheoreticalProteoform(new_accession, protein_description, prot, isMetCleaved,
                             unmodified_mass, lysine_count, ptm_set, proteoform_mass, true, check_contaminants, theoretical_proteins));
                     else
-                        theoretical_proteoforms.Add(new TheoreticalProteoform(accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot, isMetCleaved,
+                        theoretical_proteoforms.Add(new TheoreticalProteoform(new_accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot, isMetCleaved,
                             unmodified_mass, lysine_count, ptm_set, proteoform_mass, false, check_contaminants, theoretical_proteins));
                 }
-                listMemberNumber++;
+                ptm_set_counter++;
             } 
         }
 
@@ -775,6 +776,7 @@ namespace ProteoformSuiteInternal
         public static int deltaM_edge_display_rounding = 2;
         public static string[] node_positioning = new string[] { "Arbitrary Circle", "Mass X-Axis", "Circle by Mass" };
         public static string[] edge_labels = new string[] { "Mass Difference" };
+        public static List<string> gene_name_labels = new List<string> { "Primary, e.g. HOG1", "Ordered Locus, e.g. YLR113W" };
 
 
         //QUANTIFICATION SETUP

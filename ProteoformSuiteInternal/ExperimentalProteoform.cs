@@ -408,7 +408,7 @@ namespace ProteoformSuiteInternal
                             (double)(((decimal)lights_in_biorep.Sum(i => i.intensity)) /
                             ((decimal)heavies_in_biorep.Sum(i => i.intensity)))
                             , 2);
-                    squaredVariance = squaredVariance + (decimal)Math.Pow(((double)logRepRatio - (double)logFoldChange), 2);
+                    squaredVariance += (decimal)Math.Pow(((double)logRepRatio - (double)logFoldChange), 2);
                 }
                 return (decimal)Math.Pow((double)squaredVariance, 0.5);
             }

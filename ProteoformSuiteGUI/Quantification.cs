@@ -77,6 +77,8 @@ namespace ProteoformSuiteGUI
         public void initialize_every_time()
         {
             this.tb_familyBuildFolder.Text = Lollipop.family_build_folder_path;
+            this.cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(ProteoformCommunity.preferred_gene_label);
+            this.cb_geneCentric.Checked = ProteoformCommunity.gene_centric_families;
         }
 
         private void initialize()
@@ -97,6 +99,7 @@ namespace ProteoformSuiteGUI
             cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
             cmbx_nodeLayout.Items.AddRange(Lollipop.node_positioning);
             cmbx_nodeLabelPositioning.Items.AddRange(CytoscapeScript.node_label_positions);
+            cmbx_geneLabel.Items.AddRange(Lollipop.gene_name_labels.ToArray());
             cb_redBorder.Checked = true;
             cb_boldLabel.Checked = true;
             cb_moreOpacity.Checked = false;
@@ -104,6 +107,9 @@ namespace ProteoformSuiteGUI
             cmbx_colorScheme.SelectedIndex = 0;
             cmbx_nodeLayout.SelectedIndex = 0;
             cmbx_nodeLabelPositioning.SelectedIndex = 0;
+            cmbx_geneLabel.SelectedIndex = 1;
+            ProteoformCommunity.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
+            ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
 
             //Set parameters
             nud_bkgdShift.ValueChanged -= nud_bkgdShift_ValueChanged;
@@ -337,7 +343,7 @@ namespace ProteoformSuiteGUI
         {
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
-            string message = CytoscapeScript.write_cytoscape_script(Lollipop.proteoform_community.families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            string message = CytoscapeScript.write_cytoscape_script(Lollipop.proteoform_community.families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding, cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -346,7 +352,7 @@ namespace ProteoformSuiteGUI
             List<ProteoformFamily> families = Lollipop.getInterestingFamilies(Lollipop.satisfactoryProteoforms, Lollipop.minProteoformFoldChange, Lollipop.minProteoformFDR, Lollipop.minProteoformIntensity).Distinct().ToList();
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
-            string message = CytoscapeScript.write_cytoscape_script(families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            string message = CytoscapeScript.write_cytoscape_script(families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding, cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -355,7 +361,7 @@ namespace ProteoformSuiteGUI
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
             object[] selected = DisplayUtility.get_selected_objects(dgv_quantification_results);
-            string message = CytoscapeScript.write_cytoscape_script(selected, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            string message = CytoscapeScript.write_cytoscape_script(selected, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding, cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -365,7 +371,7 @@ namespace ProteoformSuiteGUI
             List<ProteoformFamily> go_families = Lollipop.getInterestingFamilies(Lollipop.goTermNumbers.Where(n => n.Aspect == a).Distinct().ToList(), Lollipop.proteoform_community.families);
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
-            string message = CytoscapeScript.write_cytoscape_script(go_families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            string message = CytoscapeScript.write_cytoscape_script(go_families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding, cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -375,7 +381,7 @@ namespace ProteoformSuiteGUI
             List<ProteoformFamily> selected_families = Lollipop.getInterestingFamilies(selected_gos, Lollipop.proteoform_community.families).Distinct().ToList();
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
-            string message = CytoscapeScript.write_cytoscape_script(selected_families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding);
+            string message = CytoscapeScript.write_cytoscape_script(selected_families, Lollipop.proteoform_community.families, Lollipop.family_build_folder_path, time_stamp, true, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked, cmbx_colorScheme.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), Lollipop.deltaM_edge_display_rounding, cb_geneCentric.Checked, cmbx_geneLabel.SelectedItem.ToString());
             MessageBox.Show(message, "Cytoscape Build");
         }
 
@@ -485,6 +491,16 @@ namespace ProteoformSuiteGUI
                     goTermBackgroundChanged(new object(), new EventArgs());
                 }
             }
+        }
+
+        private void cmbx_geneLabel_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ProteoformCommunity.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
+        }
+
+        private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
+        {
+            ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
         }
     }
 }

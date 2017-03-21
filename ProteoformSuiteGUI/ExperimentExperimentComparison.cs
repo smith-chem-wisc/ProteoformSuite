@@ -49,17 +49,18 @@ namespace ProteoformSuiteGUI
             Lollipop.make_ee_relationships();
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
 
+            Parallel.Invoke
+            (
+                () => this.FillTablesAndCharts(),
+                () => { if (Lollipop.neucode_labeled) Lollipop.proteoform_community.construct_families(); }
+            );
+
             if (Lollipop.neucode_labeled)
             {
-                Parallel.Invoke
-                (
-                    () => this.FillTablesAndCharts(),
-                    () => Lollipop.proteoform_community.construct_families()
-                );
                 ((ProteoformSweet)this.MdiParent).proteoformFamilies.fill_proteoform_families("");
                 ((ProteoformSweet)this.MdiParent).proteoformFamilies.update_figures_of_merit();
             }
-            else { this.FillTablesAndCharts(); }
+
             this.Cursor = Cursors.Default;
             compared_ee = true;
         }

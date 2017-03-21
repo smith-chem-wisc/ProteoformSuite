@@ -44,10 +44,10 @@ namespace ProteoformSuiteInternal
 
             Parallel.ForEach(pfs1, pf1 => 
             {
-                HashSet<string> pf1_accessions = new HashSet<string>(pf1.candidate_relatives.Select(p => p.accession));
+                HashSet<string> pf1_accessions = new HashSet<string>(pf1.candidate_relatives.Select(p => p.accession.Split('_')[0]));
                 foreach (string accession in pf1_accessions)
                 {
-                    List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.Where(x => x.accession == accession).ToList();
+                    List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.Where(x => x.accession.Split('_')[0] == accession).ToList();
                     candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
                     Proteoform best_pf2 = candidate_pfs2_with_accession.First();
                     lock (best_pf2) lock (relations)
@@ -189,7 +189,10 @@ namespace ProteoformSuiteInternal
             return accept_deltaMass_peaks(relations, new Dictionary<string, List<ProteoformRelation>> { { "", false_relations } });
         }
 
+
         //CONSTRUCTING FAMILIES
+        public static bool gene_centric_families = false;
+        public static string preferred_gene_label;
         public List<ProteoformFamily> construct_families()
         {
             Stack<Proteoform> remaining = new Stack<Proteoform>(this.experimental_proteoforms);
@@ -224,7 +227,7 @@ namespace ProteoformSuiteInternal
                     else
                     {
                         cumulative_proteoforms.AddRange(family.proteoforms);
-                        Parallel.ForEach<Proteoform>(family.proteoforms, p => { lock (p) { p.family = family; } });
+                        Parallel.ForEach<Proteoform>(family.proteoforms, p => { lock (p) p.family = family; });
                     }
                 }
 
@@ -235,7 +238,46 @@ namespace ProteoformSuiteInternal
                 running.Clear();
                 active.Clear();
             }
+            if (gene_centric_families) families = combine_gene_families(families).ToList();
             return families;
+        }
+
+        public IEnumerable<ProteoformFamily> combine_gene_families(IEnumerable<ProteoformFamily> families)
+        {
+            Stack<ProteoformFamily> remaining = new Stack<ProteoformFamily>(families);
+            List<ProteoformFamily> running = new List<ProteoformFamily>();
+            List<Proteoform> cumulative_proteoforms = new List<Proteoform>();
+            List<Thread> active = new List<Thread>();
+            while (remaining.Count > 0 || active.Count > 0)
+            {
+                while (remaining.Count > 0 && active.Count < Environment.ProcessorCount)
+                {
+                    ProteoformFamily fam = remaining.Pop();
+                    Thread t = new Thread(new ThreadStart(fam.merge_families));
+                    t.Start();
+                    running.Add(fam);
+                    active.Add(t);
+                }
+            
+                foreach (Thread t in active)
+                {
+                    t.Join();
+                }
+
+                remaining = new Stack<ProteoformFamily>(remaining.Except(running));
+                foreach (ProteoformFamily family in running)
+                {
+                    if (!cumulative_proteoforms.Contains(family.proteoforms.First()))
+                    {
+                        cumulative_proteoforms.AddRange(family.proteoforms);
+                        Parallel.ForEach(family.proteoforms, p => { lock (p) p.family = family; });
+                        yield return family;
+                    }
+                }
+
+                running.Clear();
+                active.Clear();
+            }
         }
     }
 }
