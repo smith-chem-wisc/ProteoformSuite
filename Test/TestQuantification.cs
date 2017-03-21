@@ -351,7 +351,7 @@ namespace Test
             List<DummyBiorepable> db = new List<DummyBiorepable>();
             for (int i = 0; i < 6; i++)
             {
-                db.Add(new DummyBiorepable(new InputFile("path", Labeling.NeuCode, Purpose.Quantification, "light", "heavy", 1),1d));
+                db.Add(new DummyBiorepable(ConstructorsForTesting.InputFile("path.txt", Labeling.NeuCode, Purpose.Quantification, "light", "heavy", 1, -1, -1), 1d));
             }
 
             List<BiorepIntensity> bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db,db,lightConditions,heavyConditions);
@@ -360,7 +360,7 @@ namespace Test
 
             for (int i = 0; i < 6; i++)
             {
-                db.Add(new DummyBiorepable(new InputFile("path", Labeling.NeuCode, Purpose.Quantification, "light", "heavy", 2), 2d));
+                db.Add(new DummyBiorepable(ConstructorsForTesting.InputFile("path.txt", Labeling.NeuCode, Purpose.Quantification, "light", "heavy", 2, -1, -1), 2d));
             }
 
             bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, db, lightConditions, heavyConditions);

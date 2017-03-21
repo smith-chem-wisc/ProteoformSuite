@@ -275,6 +275,7 @@ namespace Test
             Assert.AreEqual(3, community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E6")).proteoforms.Count);
             Assert.AreEqual(3, community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E1")).experimental_count);
             Assert.AreEqual(2, community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E1")).theoretical_count);
+            Assert.AreEqual("", community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E1")).gene_list); //both would give null preferred gene names, since that field isn't set up
             Assert.True(String.Join("", community.families.Select(f => f.experimentals_list)).Contains("E1"));
             Assert.True(String.Join("", community.families.Select(f => f.name_list)).Contains(p1_name));
             Assert.True(String.Join("", community.families.Select(f => f.accession_list)).Contains(pf1_accession));
