@@ -62,13 +62,13 @@ namespace ProteoformSuiteInternal
         public static string proteins_of_significance()
         {
             return "Identified Proteins with Significant Change: " + Environment.NewLine 
-                + String.Join(Environment.NewLine, Lollipop.inducedOrRepressedProteins.Select(p => p.Accession).Distinct()) + Environment.NewLine + Environment.NewLine;
+                + String.Join(Environment.NewLine, Lollipop.inducedOrRepressedProteins.Select(p => p.Accession).Distinct().OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
         }
 
         public static string go_terms_of_significance()
         {
             return "GO Terms of Significance (Benjimini-Yekeulti p-value < " + Lollipop.minProteoformFDR.ToString() + "): " + Environment.NewLine 
-                + String.Join(Environment.NewLine, Lollipop.goTermNumbers.Where(g => g.by < (double)Lollipop.minProteoformFDR).Select(g => g.ToString())) + Environment.NewLine + Environment.NewLine;
+                + String.Join(Environment.NewLine, Lollipop.goTermNumbers.Where(g => g.by < (double)Lollipop.minProteoformFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
 
         }
     }

@@ -92,37 +92,7 @@ namespace ProteoformSuiteInternal
 
 
         // TESTING CONSTRUCTORS
-        public ExperimentalProteoform(string accession) : base(accession)
-        {
-            quant = new quantitativeValues(this);
-            this.aggregated_components = new List<Component>() { root };
-            this.accession = accession;
-        }
-
-        public ExperimentalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession)
-        {
-            quant = new quantitativeValues(this);
-            this.aggregated_components = new List<Component>() { root };
-            this.accession = accession;
-            this.modified_mass = modified_mass;
-            this.lysine_count = lysine_count;
-            this.is_target = is_target;
-            this.is_decoy = !is_target;
-        }
-
-        public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession)
-        {
-            quant = new quantitativeValues(this);
-            this.root = root;
-            this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
-            this.calculate_properties();
-            if (quantitative_observations.Count > 0)
-            {
-                this.lt_quant_components.AddRange(quantitative_observations.Where(r => this.includes_neucode_component(r, this, true)));
-                if (Lollipop.neucode_labeled) this.hv_quant_components.AddRange(quantitative_observations.Where(r => this.includes_neucode_component(r, this, false)));
-            }
-            this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
-        }
+        
 
 
         // COPYING CONSTRUCTOR
@@ -408,7 +378,7 @@ namespace ProteoformSuiteInternal
                             (double)(((decimal)lights_in_biorep.Sum(i => i.intensity)) /
                             ((decimal)heavies_in_biorep.Sum(i => i.intensity)))
                             , 2);
-                    squaredVariance = squaredVariance + (decimal)Math.Pow(((double)logRepRatio - (double)logFoldChange), 2);
+                    squaredVariance += (decimal)Math.Pow(((double)logRepRatio - (double)logFoldChange), 2);
                 }
                 return (decimal)Math.Pow((double)squaredVariance, 0.5);
             }
