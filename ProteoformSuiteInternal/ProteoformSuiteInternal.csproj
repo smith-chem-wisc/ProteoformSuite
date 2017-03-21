@@ -123,6 +123,7 @@
     <Compile Include="ComponentReader.cs" />
     <Compile Include="ExperimentalProteoform.cs" />
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="GeneName.cs" />
     <Compile Include="GoTerm.cs" />
     <Compile Include="IBiorepable.cs" />
     <Compile Include="InputFile.cs" />

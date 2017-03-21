@@ -83,17 +83,17 @@ namespace Test
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
             };
-            ExperimentalProteoform e1 = new ExperimentalProteoform("E");
-            ExperimentalProteoform e2 = new ExperimentalProteoform("E");
+            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E");
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E");
             e1.quant.intensitySum = 1;
             e1.quant.FDR = 0;
             e1.quant.logFoldChange = 1;
             e2.quant.intensitySum = 1;
             e2.quant.FDR = 0;
             e2.quant.logFoldChange = 1;
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
+            TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
+            TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
             t.proteinList = new List<ProteinWithGoTerms> { p1 };
             u.proteinList = new List<ProteinWithGoTerms> { p2 };
             v.proteinList = new List<ProteinWithGoTerms> { p3 };
@@ -140,17 +140,17 @@ namespace Test
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
             };
-            ExperimentalProteoform e1 = new ExperimentalProteoform("E");
-            ExperimentalProteoform e2 = new ExperimentalProteoform("E");
+            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E");
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E");
             e1.quant.intensitySum = 1;
             e1.quant.FDR = 0;
             e1.quant.logFoldChange = 1;
             e2.quant.intensitySum = 1;
             e2.quant.FDR = 0;
             e2.quant.logFoldChange = 1;
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
+            TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
+            TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
             t.proteinList = new List<ProteinWithGoTerms> { p1 };
             u.proteinList = new List<ProteinWithGoTerms> { p2 };
             v.proteinList = new List<ProteinWithGoTerms> { p3 };
@@ -208,17 +208,17 @@ namespace Test
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
             };
-            ExperimentalProteoform e1 = new ExperimentalProteoform("E");
-            ExperimentalProteoform e2 = new ExperimentalProteoform("E");
+            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E");
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E");
             e1.quant.intensitySum = 1;
             e1.quant.FDR = 0;
             e1.quant.logFoldChange = 1;
             e2.quant.intensitySum = 1;
             e2.quant.FDR = 0;
             e2.quant.logFoldChange = 1;
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
+            TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
+            TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
             t.proteinList = new List<ProteinWithGoTerms> { p1 };
             u.proteinList = new List<ProteinWithGoTerms> { p2 };
             v.proteinList = new List<ProteinWithGoTerms> { p3 };

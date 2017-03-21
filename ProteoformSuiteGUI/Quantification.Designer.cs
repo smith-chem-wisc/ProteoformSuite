@@ -71,7 +71,10 @@
             this.rb_allTheoreticalProteins = new System.Windows.Forms.RadioButton();
             this.rb_allSampleGOTerms = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.cb_geneCentric = new System.Windows.Forms.CheckBox();
+            this.label14 = new System.Windows.Forms.Label();
             this.btn_buildFamiliesWithSignificantChange = new System.Windows.Forms.Button();
+            this.cmbx_geneLabel = new System.Windows.Forms.ComboBox();
             this.btn_buildFamiliesAllGO = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
             this.btn_buildFromSelectedGoTerms = new System.Windows.Forms.Button();
@@ -552,7 +555,10 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.cb_geneCentric);
+            this.groupBox4.Controls.Add(this.label14);
             this.groupBox4.Controls.Add(this.btn_buildFamiliesWithSignificantChange);
+            this.groupBox4.Controls.Add(this.cmbx_geneLabel);
             this.groupBox4.Controls.Add(this.btn_buildFamiliesAllGO);
             this.groupBox4.Controls.Add(this.label11);
             this.groupBox4.Controls.Add(this.btn_buildFromSelectedGoTerms);
@@ -580,6 +586,30 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Quantified Family Display with Cytoscape";
             // 
+            // cb_geneCentric
+            // 
+            this.cb_geneCentric.AutoSize = true;
+            this.cb_geneCentric.Checked = true;
+            this.cb_geneCentric.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_geneCentric.Location = new System.Drawing.Point(267, 181);
+            this.cb_geneCentric.Name = "cb_geneCentric";
+            this.cb_geneCentric.Size = new System.Drawing.Size(154, 17);
+            this.cb_geneCentric.TabIndex = 62;
+            this.cb_geneCentric.Text = "Build Gene-Centric Families";
+            this.cb_geneCentric.UseVisualStyleBackColor = true;
+            this.cb_geneCentric.CheckedChanged += new System.EventHandler(this.cb_geneCentric_CheckedChanged);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.BackColor = System.Drawing.SystemColors.Control;
+            this.label14.Location = new System.Drawing.Point(347, 157);
+            this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(62, 13);
+            this.label14.TabIndex = 52;
+            this.label14.Text = "Gene Label";
+            // 
             // btn_buildFamiliesWithSignificantChange
             // 
             this.btn_buildFamiliesWithSignificantChange.Location = new System.Drawing.Point(6, 215);
@@ -589,6 +619,16 @@
             this.btn_buildFamiliesWithSignificantChange.Text = "Build All Quantified Families w/ Significant Change";
             this.btn_buildFamiliesWithSignificantChange.UseVisualStyleBackColor = true;
             this.btn_buildFamiliesWithSignificantChange.Click += new System.EventHandler(this.btn_buildFamiliesWithSignificantChange_Click);
+            // 
+            // cmbx_geneLabel
+            // 
+            this.cmbx_geneLabel.Enabled = false;
+            this.cmbx_geneLabel.FormattingEnabled = true;
+            this.cmbx_geneLabel.Location = new System.Drawing.Point(267, 154);
+            this.cmbx_geneLabel.Name = "cmbx_geneLabel";
+            this.cmbx_geneLabel.Size = new System.Drawing.Size(75, 21);
+            this.cmbx_geneLabel.TabIndex = 51;
+            this.cmbx_geneLabel.SelectedIndexChanged += new System.EventHandler(this.cmbx_geneLabel_SelectedIndexChanged);
             // 
             // btn_buildFamiliesAllGO
             // 
@@ -635,7 +675,7 @@
             this.groupBox5.Controls.Add(this.cb_moreOpacity);
             this.groupBox5.Controls.Add(this.cb_boldLabel);
             this.groupBox5.Controls.Add(this.cb_redBorder);
-            this.groupBox5.Location = new System.Drawing.Point(267, 189);
+            this.groupBox5.Location = new System.Drawing.Point(267, 214);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(200, 120);
             this.groupBox5.TabIndex = 56;
@@ -1048,5 +1088,8 @@
         private System.Windows.Forms.TextBox tb_goTermCustomBackground;
         private System.Windows.Forms.RadioButton rb_customBackgroundSet;
         private System.Windows.Forms.Button btn_customBackgroundBrowse;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.ComboBox cmbx_geneLabel;
+        private System.Windows.Forms.CheckBox cb_geneCentric;
     }
 }

@@ -30,23 +30,23 @@ namespace Test
             Lollipop.peak_width_base_et = 0.015;
 
 
-            ExperimentalProteoform pf1 = new ExperimentalProteoform("acession1");
-            TheoreticalProteoform pf2 = new TheoreticalProteoform("acession2");
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("acession1");
+            TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
             ProteoformComparison relation_type = ProteoformComparison.et;
             double delta_mass = 1 - 1e-7;
 
-            ExperimentalProteoform pf3 = new ExperimentalProteoform("acession3");
-            TheoreticalProteoform pf4 = new TheoreticalProteoform("acession4");
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("acession3");
+            TheoreticalProteoform pf4 = ConstructorsForTesting.make_a_theoretical();
             ProteoformComparison relation_type2 = ProteoformComparison.et;
             double delta_mass2 = 1;
 
-            ExperimentalProteoform pf5 = new ExperimentalProteoform("acession5");
-            TheoreticalProteoform pf6 = new TheoreticalProteoform("acession6");
+            ExperimentalProteoform pf5 = ConstructorsForTesting.ExperimentalProteoform("acession5");
+            TheoreticalProteoform pf6 = ConstructorsForTesting.make_a_theoretical();
             ProteoformComparison relation_type3 = ProteoformComparison.et;
             double delta_mass3 = 1 + 1e-7;
 
-            ExperimentalProteoform pf55 = new ExperimentalProteoform("acession5");
-            TheoreticalProteoform pf65 = new TheoreticalProteoform("acession6");
+            ExperimentalProteoform pf55 = ConstructorsForTesting.ExperimentalProteoform("acession5");
+            TheoreticalProteoform pf65 = ConstructorsForTesting.make_a_theoretical();
             ProteoformComparison relation_type35 = ProteoformComparison.et;
             double delta_mass35 = 1 + 2e-7;
 
@@ -70,8 +70,8 @@ namespace Test
 
             decoy_relations["decoyDatabase1"] = new List<ProteoformRelation>();
 
-            ExperimentalProteoform pf7 = new ExperimentalProteoform("experimental1");
-            TheoreticalProteoform pf8 = new TheoreticalProteoform("decoy1");
+            ExperimentalProteoform pf7 = ConstructorsForTesting.ExperimentalProteoform("experimental1");
+            TheoreticalProteoform pf8 = ConstructorsForTesting.make_a_theoretical();
             ProteoformComparison relation_type4 = ProteoformComparison.ed;
             double delta_mass4 = 1;
             ProteoformRelation decoy_relation = new ProteoformRelation(pf7, pf8, relation_type4, delta_mass4);
@@ -105,10 +105,10 @@ namespace Test
             //Testing the acceptance of peaks. The FDR is tested above, so I'm not going to work with that here.
             //Four proteoforms, three relations (linear), middle one isn't accepted; should give 2 families
             Lollipop.min_peak_count_ee = 2;
-            ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
-            ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
-            ExperimentalProteoform pf5 = new ExperimentalProteoform("E3");
-            ExperimentalProteoform pf6 = new ExperimentalProteoform("E4");
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
+            ExperimentalProteoform pf5 = ConstructorsForTesting.ExperimentalProteoform("E3");
+            ExperimentalProteoform pf6 = ConstructorsForTesting.ExperimentalProteoform("E4");
 
             ProteoformComparison comparison34 = ProteoformComparison.ee;
             ProteoformComparison comparison45 = ProteoformComparison.ee;
@@ -157,8 +157,8 @@ namespace Test
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.proteoform_community = test_community;
-            ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
-            ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
             ProteoformComparison wrong_comparison = ProteoformComparison.ee;
             ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, wrong_comparison, 0);
             ProteoformRelation pr3 = new ProteoformRelation(pf3, pf4, wrong_comparison, 0);
@@ -172,8 +172,8 @@ namespace Test
         public void artificial_deltaMPeak()
         {
             Lollipop.opening_results = true;
-            ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
-            ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
             ProteoformComparison comparison = ProteoformComparison.ee;
             ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison, 0);
             ProteoformRelation pr3 = new ProteoformRelation(pf3, pf4, comparison, 0);
@@ -193,13 +193,13 @@ namespace Test
             List<Component> n2 = TestExperimentalProteoform.generate_neucode_components(100);
             List<Component> n3 = TestExperimentalProteoform.generate_neucode_components(200);
             List<Component> n4 = TestExperimentalProteoform.generate_neucode_components(200);
-            ExperimentalProteoform pf1 = new ExperimentalProteoform("E1");
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
             pf1.aggregated_components = n1;
-            ExperimentalProteoform pf2 = new ExperimentalProteoform("E2");
+            ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("E2");
             pf2.aggregated_components = n2;
-            ExperimentalProteoform pf3 = new ExperimentalProteoform("E3");
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E3");
             pf3.aggregated_components = n3;
-            ExperimentalProteoform pf4 = new ExperimentalProteoform("E4");
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4");
             pf4.aggregated_components = n4;
 
             Lollipop.proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
@@ -209,10 +209,10 @@ namespace Test
             ProteoformComparison comparison25 = ProteoformComparison.et;
             ProteoformComparison comparison36 = ProteoformComparison.et;
             ProteoformComparison comparison47 = ProteoformComparison.et;
-            TheoreticalProteoform pf5 = new TheoreticalProteoform("acession1");
-            TheoreticalProteoform pf6 = new TheoreticalProteoform("acession2");
-            TheoreticalProteoform pf7 = new TheoreticalProteoform("acession2");
-            TheoreticalProteoform pf8 = new TheoreticalProteoform("acession2");
+            TheoreticalProteoform pf5 = ConstructorsForTesting.make_a_theoretical();
+            TheoreticalProteoform pf6 = ConstructorsForTesting.make_a_theoretical();
+            TheoreticalProteoform pf7 = ConstructorsForTesting.make_a_theoretical();
+            TheoreticalProteoform pf8 = ConstructorsForTesting.make_a_theoretical();
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf5, comparison14, 0);
             ProteoformRelation pr2 = new ProteoformRelation(pf2, pf6, comparison25, 0);
             ProteoformRelation pr3 = new ProteoformRelation(pf3, pf7, comparison36, 1);
@@ -258,13 +258,13 @@ namespace Test
             List<Component> n2 = TestExperimentalProteoform.generate_neucode_components(200);
             List<Component> n3 = TestExperimentalProteoform.generate_neucode_components(200);
             List<Component> n4 = TestExperimentalProteoform.generate_neucode_components(200);
-            ExperimentalProteoform pf1 = new ExperimentalProteoform("E1");
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
             pf1.aggregated_components = n1;
-            ExperimentalProteoform pf2 = new ExperimentalProteoform("E2");
+            ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("E2");
             pf2.aggregated_components = n2;
-            ExperimentalProteoform pf3 = new ExperimentalProteoform("E3");
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E3");
             pf3.aggregated_components = n3;
-            ExperimentalProteoform pf4 = new ExperimentalProteoform("E4");
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4");
             pf4.aggregated_components = n4;
 
             Lollipop.proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
@@ -274,10 +274,10 @@ namespace Test
             ProteoformComparison comparison25 = ProteoformComparison.et;
             ProteoformComparison comparison36 = ProteoformComparison.et;
             ProteoformComparison comparison47 = ProteoformComparison.et;
-            TheoreticalProteoform pf5 = new TheoreticalProteoform("acession1");
-            TheoreticalProteoform pf6 = new TheoreticalProteoform("acession2");
-            TheoreticalProteoform pf7 = new TheoreticalProteoform("acession2");
-            TheoreticalProteoform pf8 = new TheoreticalProteoform("acession2");
+            TheoreticalProteoform pf5 = ConstructorsForTesting.make_a_theoretical();
+            TheoreticalProteoform pf6 = ConstructorsForTesting.make_a_theoretical();
+            TheoreticalProteoform pf7 = ConstructorsForTesting.make_a_theoretical();
+            TheoreticalProteoform pf8 = ConstructorsForTesting.make_a_theoretical();
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf5, comparison14, 0);
             ProteoformRelation pr2 = new ProteoformRelation(pf2, pf6, comparison25, 0);
             ProteoformRelation pr3 = new ProteoformRelation(pf3, pf7, comparison36, 1);
@@ -305,6 +305,16 @@ namespace Test
         {
             ProteoformCommunity c = new ProteoformCommunity();
             Assert.AreEqual(0, c.accept_deltaMass_peaks(new List<ProteoformRelation>(), new List<ProteoformRelation>()).Count);
+        }
+
+        [Test]
+        public static void accept_peaks_doesnt_crash_with_weird_relation()
+        {
+            ProteoformCommunity c = new ProteoformCommunity();
+            ProteoformRelation r = new ProteoformRelation(ConstructorsForTesting.ExperimentalProteoform("E1"), ConstructorsForTesting.ExperimentalProteoform("E1"), ProteoformComparison.ef, 0);
+            r.outside_no_mans_land = true;
+            r.nearby_relations = new List<ProteoformRelation>();
+            Assert.Throws<ArgumentException>(() => c.accept_deltaMass_peaks(new List<ProteoformRelation> { r }, new List<ProteoformRelation>()));
         }
     }
 }
