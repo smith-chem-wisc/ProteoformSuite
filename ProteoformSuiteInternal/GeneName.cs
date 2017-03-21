@@ -21,9 +21,8 @@ namespace ProteoformSuiteInternal
 
         public GeneName(IEnumerable<GeneName> gene_names)
         {
-            GeneName first = gene_names.FirstOrDefault();
-            this.ordered_locus = first != null ? first.ordered_locus : null;
-            this.primary = first != null ? first.primary : null;
+            this.ordered_locus = gene_names.Count(g => g.ordered_locus != null) > 0 ? gene_names.FirstOrDefault(g => g.ordered_locus != null).ordered_locus : null;
+            this.primary = gene_names.Count(g => g.primary != null) > 0 ? gene_names.FirstOrDefault(g => g.primary != null).primary : null;
             this.gene_names = gene_names.SelectMany(g => g.gene_names);
         }
 
@@ -34,17 +33,6 @@ namespace ProteoformSuiteInternal
             else if (prefered_gene_label.ToLower().StartsWith("ordered locus")) name = ordered_locus != null ? ordered_locus : primary;
             else name = null;
             return name != null || gene_names.Count() == 0 ? name : gene_names.FirstOrDefault().Item2;
-        }
-
-        public void merge(GeneName more_names)
-        {
-            gene_names = gene_names.Concat(more_names.gene_names).Distinct();
-        }
-
-        public void set_preferred(GeneName top_name)
-        {
-            this.primary = top_name.primary;
-            this.ordered_locus = top_name.primary;
         }
     }
 }
