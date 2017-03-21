@@ -155,7 +155,7 @@ namespace Test
             Assert.AreEqual(1, vetted_quant[0].hv_quant_components.Count);
             Assert.AreEqual(2, quant_components.Count);
             Assert.AreEqual(0, Lollipop.remaining_quantification_components.Count);
-        }
+        }        
         
         [Test]
         public void full_agg_without_validation()
@@ -202,6 +202,15 @@ namespace Test
             Assert.AreEqual(0, e.hv_verification_components.Count); // everything goes into light with unlabeled
             Assert.AreEqual(0, e.lt_quant_components.Count); // no quantitation for unlabeled, yet
             Assert.AreEqual(0, e.hv_quant_components.Count);
+        }
+
+        [Test]
+        public void basic_regroup_test()
+        {
+            Lollipop.raw_neucode_pairs.Add(new NeuCodePair());
+            Assert.IsNotEmpty(Lollipop.raw_neucode_pairs);
+            Assert.IsEmpty(Lollipop.regroup_components(true, false, new List<InputFile>(), Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, 0, 0));
+            Assert.IsEmpty(Lollipop.raw_neucode_pairs);
         }
     }
 }

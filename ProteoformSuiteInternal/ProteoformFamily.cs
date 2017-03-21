@@ -24,7 +24,7 @@ namespace ProteoformSuiteInternal
         public int relation_count { get { return this.relations.Count; } }
         public HashSet<Proteoform> proteoforms { get; set; }
         private Proteoform seed { get; set; }
-
+        
         public ProteoformFamily(Proteoform seed)
         {
             family_counter++;

@@ -99,7 +99,7 @@ namespace ProteoformSuiteInternal
 
         public void generate_peak()
         {
-            new DeltaMassPeak(this, Lollipop.proteoform_community.remaining_relations_outside_no_mans);
+            new DeltaMassPeak(this, Lollipop.proteoform_community.remaining_relations_outside_no_mans); //setting the peak takes place elsewhere, but this constructs it
             if (Lollipop.decoy_databases > 0) this.peak.calculate_fdr(Lollipop.ed_relations);
         }
 

@@ -146,17 +146,17 @@ namespace ProteoformSuiteInternal
         public static bool neucode_labeled = true;
         public static bool td_results = false;
 
-        public static void process_raw_components()
+        public static void process_raw_components(List<InputFile> input_files, Purpose purpose)
         {
-            if (get_files(Lollipop.input_files, Purpose.Calibration).Count() > 0)
-                correctionFactors = get_files(Lollipop.input_files, Purpose.Calibration).SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
-            Parallel.ForEach(input_files.Where(f => f.purpose == Purpose.Identification).ToList(), file =>
+            correctionFactors = get_files(Lollipop.input_files, Purpose.Calibration).SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
+
+            Parallel.ForEach(input_files.Where(f => f.purpose == purpose).ToList(), file =>
             {
                 List<Component> someComponents = file.reader.read_components_from_xlsx(file, correctionFactors);
                 lock (raw_experimental_components) raw_experimental_components.AddRange(someComponents);
             });
 
-            if (neucode_labeled) process_neucode_components(Lollipop.raw_neucode_pairs);
+            if (neucode_labeled && purpose == Purpose.Identification) process_neucode_components(Lollipop.raw_neucode_pairs);
         }
 
         private static void process_neucode_components(List<NeuCodePair> raw_neucode_pairs)
@@ -168,20 +168,6 @@ namespace ProteoformSuiteInternal
                     find_neucode_pairs(inputFile.reader.final_components.Where(c => c.scan_range == scan_range), raw_neucode_pairs);
                 }
             }
-        }
-
-        public static void process_raw_quantification_components()
-        {
-            if (input_files.Any(f => f.purpose == Purpose.Quantification))
-            {
-                correctionFactors = get_files(Lollipop.input_files, Purpose.Calibration).SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
-            }
-
-            Parallel.ForEach(get_files(Lollipop.input_files, Purpose.Quantification).ToList(), file => 
-            {
-                List<Component> someComponents = file.reader.read_components_from_xlsx(file, correctionFactors);
-                lock (raw_quantification_components) raw_quantification_components.AddRange(someComponents);
-            });
         }
 
         public static IEnumerable<Correction> read_corrections(InputFile file)
@@ -757,18 +743,18 @@ namespace ProteoformSuiteInternal
         public static List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
         public static List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
 
-        public static void make_et_relationships()
+        public static void make_et_relationships(ProteoformCommunity community)
         {
-            Lollipop.et_relations = Lollipop.proteoform_community.relate_et(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), Lollipop.proteoform_community.theoretical_proteoforms, ProteoformComparison.et);
-            Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
-            Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
+            Lollipop.et_relations = community.relate_et(community.experimental_proteoforms.Where(p => p.accepted).ToArray(), community.theoretical_proteoforms, ProteoformComparison.et);
+            Lollipop.ed_relations = community.relate_ed();
+            Lollipop.et_peaks = community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
-        public static void make_ee_relationships()
+        public static void make_ee_relationships(ProteoformCommunity community)
         {
-            Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ee);
-            Lollipop.ef_relations = Lollipop.proteoform_community.relate_unequal_ee_lysine_counts();
-            Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
+            Lollipop.ee_relations = community.relate_ee(community.experimental_proteoforms.Where(p => p.accepted).ToArray(), community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ee);
+            Lollipop.ef_relations = community.relate_unequal_ee_lysine_counts();
+            Lollipop.ee_peaks = community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 
         //PROTEOFORM FAMILIES -- see ProteoformCommunity

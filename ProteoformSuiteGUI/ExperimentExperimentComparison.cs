@@ -46,7 +46,7 @@ namespace ProteoformSuiteGUI
         public void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
-            Lollipop.make_ee_relationships();
+            Lollipop.make_ee_relationships(Lollipop.proteoform_community);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
 
             Parallel.Invoke
