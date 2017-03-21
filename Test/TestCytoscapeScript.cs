@@ -187,7 +187,7 @@ namespace Test
         {
             ProteoformCommunity community = TestProteoformFamilies.construct_two_families_with_potentially_colliding_theoreticals();
             Lollipop.proteoform_community = community;
-            CytoscapeScript.write_cytoscape_script(community.families.SelectMany(f => f.theoretical_proteoforms).ToArray(), community.families, TestContext.CurrentContext.TestDirectory, "test", false, false, false, false, CytoscapeScript.color_scheme_names[0], CytoscapeScript.node_label_positions[0], 2, false, Lollipop.gene_name_labels[1]);
+            CytoscapeScript.write_cytoscape_script(community.families.SelectMany(f => f.theoretical_proteoforms.Where(t => t.proteinList.Select(p => p.FullName).Contains(TestProteoformFamilies.p1_fullName))).ToArray(), community.families, TestContext.CurrentContext.TestDirectory, "test", false, false, false, false, CytoscapeScript.color_scheme_names[0], CytoscapeScript.node_label_positions[0], 2, false, Lollipop.gene_name_labels[1]);
             string[] edge_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.edge_file_prefix + "test" + CytoscapeScript.edge_file_extension));
             HashSet<string> shared_pf_names_edges = new HashSet<string>();
             for (int i = 1; i < edge_lines.Length; i++)
