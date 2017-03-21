@@ -92,17 +92,6 @@ namespace ProteoformSuiteInternal
             this.accession = accession;
         }
 
-        //for Tests
-        public TheoreticalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) 
-            : base(accession, modified_mass, lysine_count, is_target)
-        {
-            this.accession = accession;
-            this.modified_mass = modified_mass;
-            this.lysine_count = lysine_count;
-            this.is_target = is_target;
-            this.is_decoy = !is_target;
-        }
-
         public static double CalculateProteoformMass(string pForm, Dictionary<char, double> aaIsotopeMassList)
         {
             double proteoformMass = 18.010565; // start with water
