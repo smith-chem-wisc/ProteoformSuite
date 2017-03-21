@@ -100,6 +100,7 @@
     <Compile Include="TestBigRational.cs" />
     <Compile Include="TestComponent.cs" />
     <Compile Include="TestExtensions.cs" />
+    <Compile Include="TestGeneName.cs" />
     <Compile Include="TestGoTermNumber.cs" />
     <Compile Include="TestInputFile.cs" />
     <Compile Include="TestQuantification.cs" />
