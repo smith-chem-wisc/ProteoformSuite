@@ -32,7 +32,7 @@ namespace Test
             ProteinSequenceGroup psg = new ProteinSequenceGroup(new List<ProteinWithGoTerms> { p1, p2, p3 });
             Assert.AreEqual(3, psg.GoTerms.Count());
             Assert.AreEqual(3, psg.GeneNames.Count());
-            Assert.AreEqual("T1_G3", psg.Accession);
+            Assert.AreEqual("T1_3G", psg.Accession);
             Assert.False(psg.IsContaminant);
             Assert.AreEqual("MSSSSSSSSSSS", psg.BaseSequence);
         }
@@ -52,7 +52,7 @@ namespace Test
             ProteinSequenceGroup psg = new ProteinSequenceGroup(new List<ProteinWithGoTerms> { p1, p2, p3 });
             Assert.AreEqual(3, psg.GoTerms.Count());
             Assert.AreEqual(3, psg.GeneNames.Count());
-            Assert.AreEqual("T3_G3", psg.Accession);
+            Assert.AreEqual("T3_3G", psg.Accession);
             Assert.True(psg.IsContaminant);
             Assert.AreEqual("MSSSSSSSSSSS", psg.BaseSequence);
         }

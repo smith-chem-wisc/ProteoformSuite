@@ -77,7 +77,7 @@ namespace ProteoformSuiteGUI
         public void initialize_every_time()
         {
             this.tb_familyBuildFolder.Text = Lollipop.family_build_folder_path;
-            this.cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(ProteoformCommunity.preferred_gene_label);
+            if (cmbx_geneLabel.Items.Count > 0) this.cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(ProteoformCommunity.preferred_gene_label);
             this.cb_geneCentric.Checked = ProteoformCommunity.gene_centric_families;
         }
 

@@ -2,6 +2,8 @@
 using ProteoformSuiteInternal;
 using System.Collections.Generic;
 using System;
+using System.Linq;
+using Proteomics;
 
 namespace Test
 {
@@ -9,6 +11,7 @@ namespace Test
     public class TestProteoformCommunityRelate
     {
         ProteoformCommunity community = new ProteoformCommunity();
+        ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
 
         [Test]
         public void TestNeuCodeLabeledProteoformCommunityRelate_EE()
@@ -218,7 +221,11 @@ namespace Test
 
             // One experimental one theoretical proteoforms; lysine count equal; mass difference < 500 -- return 1
             ExperimentalProteoform pf1 = new ExperimentalProteoform("A1", 1000.0, 1, true);
-            TheoreticalProteoform pf2 = new TheoreticalProteoform("T1", 1010.0, 1, true);
+            TheoreticalProteoform pf2 = new TheoreticalProteoform("T1");
+            pf2.modified_mass = 1010.0;
+            pf2.lysine_count = 1;
+            pf2.is_target = true;
+            pf2.proteinList = new List<ProteinWithGoTerms> { p1 };
             ExperimentalProteoform[] paE = new ExperimentalProteoform[1];
             TheoreticalProteoform[] paT = new TheoreticalProteoform[1];
             paE[0] = pf1;
@@ -250,7 +257,11 @@ namespace Test
             //Two experimental one theoretical proteoforms; lysine count equal; mass difference < 500 Da -- return 2
             ExperimentalProteoform pf3 = new ExperimentalProteoform("A1", 1000.0, 1, true);
             ExperimentalProteoform pf4 = new ExperimentalProteoform("A2", 1010.0, 1, true);
-            TheoreticalProteoform pf5 = new TheoreticalProteoform("T1", 1020.0, 1, true);
+            TheoreticalProteoform pf5 = new TheoreticalProteoform("T1");
+            pf5.modified_mass = 1020.0;
+            pf5.lysine_count = 1;
+            pf5.is_target = true;
+            pf5.proteinList = new List<ProteinWithGoTerms> { p1 };
             ExperimentalProteoform[] paE2 = new ExperimentalProteoform[2];
             paE2[0] = pf3;
             paE2[1] = pf4;
@@ -306,7 +317,11 @@ namespace Test
 
             // One experimental one theoretical protoeform; mass difference < 500 -- return 1
             ExperimentalProteoform pf1 = new ExperimentalProteoform("A1", 1000.0, -1, true);
-            TheoreticalProteoform pf2 = new TheoreticalProteoform("T1", 1010.0, 1, true);
+            TheoreticalProteoform pf2 = new TheoreticalProteoform("T1");
+            pf2.modified_mass = 1010.0;
+            pf2.lysine_count = 1;
+            pf2.is_target = true;
+            pf2.proteinList = new List<ProteinWithGoTerms> { p1 };
             ExperimentalProteoform[] paE = new ExperimentalProteoform[1];
             TheoreticalProteoform[] paT = new TheoreticalProteoform[1];
             paE[0] = pf1;
@@ -326,7 +341,11 @@ namespace Test
             //Two experimental one theoretical proteoforms; mass difference < 500 Da -- return 2
             ExperimentalProteoform pf3 = new ExperimentalProteoform("A1", 1000.0, -1, true);
             ExperimentalProteoform pf4 = new ExperimentalProteoform("A2", 1010.0, -1, true);
-            TheoreticalProteoform pf5 = new TheoreticalProteoform("T1", 1020.0, 1, true);
+            TheoreticalProteoform pf5 = new TheoreticalProteoform("T1");
+            pf5.modified_mass = 1020.0;
+            pf5.lysine_count = 1;
+            pf5.is_target = true;
+            pf5.proteinList = new List<ProteinWithGoTerms> { p1 };
             ExperimentalProteoform[] paE2 = new ExperimentalProteoform[2];
             paE2[0] = pf3;
             paE2[1] = pf4;
@@ -381,6 +400,7 @@ namespace Test
             // So testProteoformCommunity.experimental_proteoforms must be non-empty
             // And decoy_proteoforms["fake_decoy_proteoform1"] must be non-empty
             testProteoformCommunity.decoy_proteoforms["fake_decoy_proteoform1"] = new TheoreticalProteoform[] { new TheoreticalProteoform("decoyProteoform1") };
+            testProteoformCommunity.decoy_proteoforms["fake_decoy_proteoform1"].First().proteinList = new List<ProteinWithGoTerms> { p1 };
 
             Assert.IsEmpty(testProteoformCommunity.experimental_proteoforms);
             testProteoformCommunity.experimental_proteoforms = new ExperimentalProteoform[] { new ExperimentalProteoform("experimentalProteoform1") };

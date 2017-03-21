@@ -172,13 +172,17 @@ namespace ProteoformSuiteInternal
             {
                 foreach (TheoreticalProteoform t in theoreticals)
                 {
-                    edge_rows += String.Join("\t", new List<string>
+                    string gene_name = t.gene_name.get_prefered_name(preferred_gene_label);
+                    if (gene_name != null)
                     {
-                        get_proteoform_shared_name(t, double_rounding),
-                        t.lysine_count.ToString(),
-                        t.gene_name.get_prefered_name(preferred_gene_label),
-                    });
-                    edge_rows += Environment.NewLine;
+                        edge_rows += String.Join("\t", new List<string>
+                        {
+                            get_proteoform_shared_name(t, double_rounding),
+                            t.lysine_count.ToString(),
+                            t.gene_name.get_prefered_name(preferred_gene_label),
+                        });
+                        edge_rows += Environment.NewLine;
+                    }
                 }
             }
             return tsv_header + Environment.NewLine + edge_rows;
@@ -236,10 +240,11 @@ namespace ProteoformSuiteInternal
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, double_rounding), node_type, mock_intensity }) + Environment.NewLine;
             }
 
-            foreach (string gene_name in theoreticals.Select(t => t.gene_name.get_prefered_name(preferred_gene_label)).Distinct())
-            {
-                node_rows += gene_name + "\t" + gene_name_label + "\t" + mock_intensity + "\tOther Gene Names: " + Environment.NewLine; //TODO: implement tooltip for other gene names
-            }
+            if (gene_centric_families)
+                foreach (string gene_name in theoreticals.Select(t => t.gene_name.get_prefered_name(preferred_gene_label)).Distinct())
+                {
+                    if (gene_name != null) node_rows += gene_name + "\t" + gene_name_label + "\t" + mock_intensity + "\tOther Gene Names: " + Environment.NewLine; //TODO: implement tooltip for other gene names
+                }
 
             return tsv_header + Environment.NewLine + node_rows;
         }

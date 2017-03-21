@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using ProteoformSuiteInternal;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Threading;
 
@@ -44,10 +44,10 @@ namespace ProteoformSuiteInternal
 
             Parallel.ForEach(pfs1, pf1 => 
             {
-                HashSet<string> pf1_accessions = new HashSet<string>(pf1.candidate_relatives.Select(p => p.accession.Split('_')[0]));
-                foreach (string accession in pf1_accessions)
+                HashSet<string> pf1_prot_accessions = new HashSet<string>(pf1.candidate_relatives.OfType<TheoreticalProteoform>().Select(t => t.proteinList[0].Accession + "_G" + t.proteinList.Count + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "")));
+                foreach (string accession in pf1_prot_accessions)
                 {
-                    List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.Where(x => x.accession.Split('_')[0] == accession).ToList();
+                    List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.OfType<TheoreticalProteoform>().Where(t => t.proteinList[0].Accession + "_G" + t.proteinList.Count + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "") == accession).ToList<Proteoform>();
                     candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
                     Proteoform best_pf2 = candidate_pfs2_with_accession.First();
                     lock (best_pf2) lock (relations)
@@ -227,7 +227,7 @@ namespace ProteoformSuiteInternal
                     else
                     {
                         cumulative_proteoforms.AddRange(family.proteoforms);
-                        Parallel.ForEach<Proteoform>(family.proteoforms, p => { lock (p) p.family = family; });
+                        Parallel.ForEach(family.proteoforms, p => { lock (p) p.family = family; });
                     }
                 }
 
