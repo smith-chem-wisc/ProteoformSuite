@@ -97,7 +97,7 @@ namespace Test
             List<Component> quant_components_list = generate_neucode_quantitative_components(proteoformMass, 99d, 51d, 1, lysineCount);//these are for quantification
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 101d, 54d, 2, lysineCount));//these are for quantification
             List<Component> components = generate_neucode_components(proteoformMass, intensity, intensity/2d, lysineCount); // these are for indentification
-            ExperimentalProteoform e1 = new ExperimentalProteoform("E1", components[0], components, quant_components_list, true);
+            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, quant_components_list, true);
             Assert.AreEqual(2, e1.light_observation_count);
             Assert.AreEqual(2, e1.heavy_observation_count);
 
@@ -138,7 +138,7 @@ namespace Test
             List<Component> components = generate_neucode_components(proteoformMass, intensity, intensity / 2d, lysineCount); // these are for indentification
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 50d, 100d, 3, lysineCount));//these are for quantification
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 48d, 102d, 4, lysineCount));//these are for quantification
-            ExperimentalProteoform e2 = new ExperimentalProteoform("E2", components[0], components, quant_components_list, true);
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E2", components[0], components, quant_components_list, true);
             Assert.AreEqual(4, e2.light_observation_count);
             Assert.AreEqual(4, e2.heavy_observation_count);
 
@@ -173,7 +173,7 @@ namespace Test
         [Test]
         public void proteinLevelStDev_divide_by_zero_crash()
         {
-            ExperimentalProteoform e = new ExperimentalProteoform("E");
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
             Assert.True(e.quant.getProteinLevelStdDev(singleton_list, singleton_list) > 0);
         }
@@ -181,7 +181,7 @@ namespace Test
         [Test]
         public void quant_variance_without_imputation_aka_unequal_list_lengths()
         {
-            ExperimentalProteoform e = new ExperimentalProteoform("E");
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
             List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
@@ -197,7 +197,7 @@ namespace Test
         [Test]
         public void quant_permuations_without_imputation_aka_unequal_list_lengths()
         {
-            ExperimentalProteoform e = new ExperimentalProteoform("E");
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
             List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
@@ -213,7 +213,7 @@ namespace Test
         [Test]
         public void quant_pvalue_without_imputation_aka_unequal_list_lengths()
         {
-            ExperimentalProteoform e = new ExperimentalProteoform("E");
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
             List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
@@ -239,8 +239,8 @@ namespace Test
             List<Component> components = generate_neucode_components(proteoformMass, intensity, intensity / 2d, lysineCount); // these are for indentification
             Lollipop.input_files = quant_components_list.Select(c => c.input_file).Distinct().ToList();
             Lollipop.getObservationParameters(true, Lollipop.input_files);
-            ExperimentalProteoform e1 = new ExperimentalProteoform("E1", components[0], components, quant_components_list, true);
-            ExperimentalProteoform e2 = new ExperimentalProteoform("E2", components[0], components, quant_components_list.Concat(generate_neucode_quantitative_components(proteoformMass, 50d, 100d, 3, lysineCount)).ToList(), true);
+            ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, quant_components_list, true);
+            ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E2", components[0], components, quant_components_list.Concat(generate_neucode_quantitative_components(proteoformMass, 50d, 100d, 3, lysineCount)).ToList(), true);
             Lollipop.computeBiorepIntensities(new List<ExperimentalProteoform> { e1, e2 }, Lollipop.ltConditionsBioReps.Keys, Lollipop.hvConditionsBioReps.Keys);
             Assert.True(e1.biorepIntensityList.Count > 0);
             Assert.True(e2.biorepIntensityList.Count > 0);
@@ -354,7 +354,7 @@ namespace Test
                 db.Add(new DummyBiorepable(new InputFile("path", Labeling.NeuCode, Purpose.Quantification, "light", "heavy", 1),1d));
             }
 
-            List<BiorepIntensity> bril = new ExperimentalProteoform("E").make_biorepIntensityList(db,db,lightConditions,heavyConditions);
+            List<BiorepIntensity> bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db,db,lightConditions,heavyConditions);
 
             Assert.AreEqual(2, bril.Count());
 
@@ -363,13 +363,13 @@ namespace Test
                 db.Add(new DummyBiorepable(new InputFile("path", Labeling.NeuCode, Purpose.Quantification, "light", "heavy", 2), 2d));
             }
 
-            bril = new ExperimentalProteoform("E").make_biorepIntensityList(db, db, lightConditions, heavyConditions);
+            bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, db, lightConditions, heavyConditions);
 
             Assert.AreEqual(4, bril.Count());
 
             Lollipop.neucode_labeled = false;
 
-            bril = new ExperimentalProteoform("E").make_biorepIntensityList(db, db, lightConditions, heavyConditions);
+            bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, db, lightConditions, heavyConditions);
 
             Assert.AreEqual(2, bril.Count());
 
@@ -382,7 +382,7 @@ namespace Test
 
             for (int i = 0; i < 10; i++)
             {
-                ExperimentalProteoform e = new ExperimentalProteoform("E");
+                ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
                 List<decimal> onepst = new List<decimal>();
                 for (int j = 0; j < 10; j++)
                 {
@@ -410,7 +410,7 @@ namespace Test
 
             for (int i = 0; i < 10; i++)
             {
-                ExperimentalProteoform e = new ExperimentalProteoform("E");
+                ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
                 List<decimal> onepst = new List<decimal>();
                 for (int j = 0; j < 10; j++)
                 {
@@ -506,7 +506,7 @@ namespace Test
         public void test_gaussian_area_calculation()
         {
             SortedDictionary<decimal, int> histogram = new SortedDictionary<decimal, int>();
-            ExperimentalProteoform e = new ExperimentalProteoform("E");
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             
             //Each biorepIntensity has a unique combination of light/heavy + condition + biorep, since that's how they're made in the program
             e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "first", 0));
@@ -540,7 +540,7 @@ namespace Test
         public void all_intensity_distribution_avgIntensity_and_stdv_calculations()
         {
             SortedDictionary<decimal, int> histogram = new SortedDictionary<decimal, int>();
-            ExperimentalProteoform e = new ExperimentalProteoform("E");
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
 
             //Each biorepIntensity has a unique combination of light/heavy + condition + biorep, since that's how they're made in the program
             e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "first", 0));
@@ -604,7 +604,7 @@ namespace Test
 
             List<string> conditions = new List<string> { "s", "ns" };
             BiorepIntensity b1 = new BiorepIntensity(false, false, 1, conditions[0], 0);
-            List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { new ExperimentalProteoform("E") };
+            List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ConstructorsForTesting.ExperimentalProteoform("E") };
             exps[0].biorepIntensityList.Add(b1);
             List<ExperimentalProteoform> exps_out = new List<ExperimentalProteoform>();
 
@@ -787,16 +787,6 @@ namespace Test
             satisfactoryProteoformsCount++;
         }
 
-        public void make_relation(Proteoform p1, Proteoform p2)
-        {
-            ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ee, 0);
-            DeltaMassPeak ppp = new DeltaMassPeak(pp, new List<ProteoformRelation> { pp });
-            pp.peak = ppp;
-            ppp.peak_accepted = true;
-            p1.relationships.Add(pp);
-            p2.relationships.Add(pp);
-        }
-
         [Test]
         public void test_get_observed_proteins()
         {
@@ -808,10 +798,10 @@ namespace Test
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            ExperimentalProteoform e = new ExperimentalProteoform("E1");
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
+            TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
+            TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
             ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.et, 0);
             DeltaMassPeak etp = new DeltaMassPeak(et, new List<ProteoformRelation> { et });
             et.peak = etp;
@@ -847,19 +837,19 @@ namespace Test
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            ExperimentalProteoform ex = new ExperimentalProteoform("E1");
-            ExperimentalProteoform fx = new ExperimentalProteoform("E1");
-            ExperimentalProteoform gx = new ExperimentalProteoform("E1");
-            ExperimentalProteoform hx = new ExperimentalProteoform("E1");
-            make_relation(ex, t);
-            make_relation(ex, u);
-            //make_relation(ex, v);
-            make_relation(ex, fx);
-            make_relation(ex, gx);
-            make_relation(ex, hx);
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
+            TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
+            TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
+            ExperimentalProteoform ex = ConstructorsForTesting.ExperimentalProteoform("E1");
+            ExperimentalProteoform fx = ConstructorsForTesting.ExperimentalProteoform("E1");
+            ExperimentalProteoform gx = ConstructorsForTesting.ExperimentalProteoform("E1");
+            ExperimentalProteoform hx = ConstructorsForTesting.ExperimentalProteoform("E1");
+            ConstructorsForTesting.make_relation(ex, t);
+            ConstructorsForTesting.make_relation(ex, u);
+            //ConstructorsForTesting.make_relation(ex, v);
+            ConstructorsForTesting.make_relation(ex, fx);
+            ConstructorsForTesting.make_relation(ex, gx);
+            ConstructorsForTesting.make_relation(ex, hx);
             ProteoformFamily f = new ProteoformFamily(ex);
             f.construct_family();
             ex.family = f;
@@ -915,10 +905,10 @@ namespace Test
         [Test]
         public void get_interesting_pfs()
         {
-            ExperimentalProteoform ex = new ExperimentalProteoform("E1");
-            ExperimentalProteoform fx = new ExperimentalProteoform("E2");
-            ExperimentalProteoform gx = new ExperimentalProteoform("E3");
-            ExperimentalProteoform hx = new ExperimentalProteoform("E4");
+            ExperimentalProteoform ex = ConstructorsForTesting.ExperimentalProteoform("E1");
+            ExperimentalProteoform fx = ConstructorsForTesting.ExperimentalProteoform("E2");
+            ExperimentalProteoform gx = ConstructorsForTesting.ExperimentalProteoform("E3");
+            ExperimentalProteoform hx = ConstructorsForTesting.ExperimentalProteoform("E4");
             ex.quant.logFoldChange = 12;
             ex.quant.FDR = 0.4m;
             ex.quant.intensitySum = 2;
@@ -941,13 +931,13 @@ namespace Test
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform u = new TheoreticalProteoform("T2_T1_asdf_asdf", "", p2, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            TheoreticalProteoform v = new TheoreticalProteoform("T3_T1_asdf_Asdf_Asdf", "", p3, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
-            ExperimentalProteoform ex = new ExperimentalProteoform("E1");
-            ExperimentalProteoform fx = new ExperimentalProteoform("E2");
-            ExperimentalProteoform gx = new ExperimentalProteoform("E3");
-            ExperimentalProteoform hx = new ExperimentalProteoform("E4");
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
+            TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
+            TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
+            ExperimentalProteoform ex = ConstructorsForTesting.ExperimentalProteoform("E1");
+            ExperimentalProteoform fx = ConstructorsForTesting.ExperimentalProteoform("E2");
+            ExperimentalProteoform gx = ConstructorsForTesting.ExperimentalProteoform("E3");
+            ExperimentalProteoform hx = ConstructorsForTesting.ExperimentalProteoform("E4");
             ex.quant.logFoldChange = 12;
             ex.quant.FDR = 0.4m;
             ex.quant.intensitySum = 2;
@@ -955,10 +945,10 @@ namespace Test
             fx.quant.FDR = 0.4m;
             fx.quant.intensitySum = 2;
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
-            make_relation(gx, v);
-            make_relation(fx, v);
-            make_relation(hx, t);
-            make_relation(hx, u);        
+            ConstructorsForTesting.make_relation(gx, v);
+            ConstructorsForTesting.make_relation(fx, v);
+            ConstructorsForTesting.make_relation(hx, t);
+            ConstructorsForTesting.make_relation(hx, u);        
             ProteoformFamily e = new ProteoformFamily(ex);
             ProteoformFamily f = new ProteoformFamily(v);
             ProteoformFamily h = new ProteoformFamily(hx);

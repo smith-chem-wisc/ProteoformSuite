@@ -20,8 +20,8 @@ namespace Test
 
             //One accepted ET relation; should give one ProteoformFamily
             Lollipop.min_peak_count_et = 1;
-            ExperimentalProteoform pf1 = new ExperimentalProteoform("E1");
-            TheoreticalProteoform pf2 = new TheoreticalProteoform("T1");
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
+            TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
             pf2.name = "T1";
             ProteoformComparison comparison = ProteoformComparison.et;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
@@ -51,18 +51,18 @@ namespace Test
             Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
 
             Lollipop.min_peak_count_ee = 2;
-            ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
-            ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
-            ExperimentalProteoform pf5 = new ExperimentalProteoform("E3");
-            ExperimentalProteoform pf6 = new ExperimentalProteoform("E4");
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
+            ExperimentalProteoform pf5 = ConstructorsForTesting.ExperimentalProteoform("E3");
+            ExperimentalProteoform pf6 = ConstructorsForTesting.ExperimentalProteoform("E4");
             test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf3, pf4, pf5, pf6 };
 
             ProteoformComparison comparison34 = ProteoformComparison.ee;
             ProteoformComparison comparison45 = ProteoformComparison.ee;
             ProteoformComparison comparison56 = ProteoformComparison.ee;
-            make_relation(pf3, pf4, comparison34, 0);
-            make_relation(pf4, pf5, comparison45, 0);
-            make_relation(pf5, pf6, comparison56, 0);
+            ConstructorsForTesting.make_relation(pf3, pf4, comparison34, 0);
+            ConstructorsForTesting.make_relation(pf4, pf5, comparison45, 0);
+            ConstructorsForTesting.make_relation(pf5, pf6, comparison56, 0);
 
             List<ProteoformRelation> prs2 = new HashSet<ProteoformRelation>(test_community.experimental_proteoforms.SelectMany(p => p.relationships).Concat(test_community.theoretical_proteoforms.SelectMany(p => p.relationships))).OrderBy(r => r.delta_mass).ToList();
             foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2, prs2.Select(r => r.instanceId).ToList());
@@ -96,11 +96,11 @@ namespace Test
             Lollipop.peak_width_base_ee = 0.015;
             Lollipop.min_peak_count_ee = 3; //needs to be high so that 0 peak accepted, other peak isn't.... 
 
-            ExperimentalProteoform pf3 = new ExperimentalProteoform("E1");
-            ExperimentalProteoform pf4 = new ExperimentalProteoform("E2");
-            ExperimentalProteoform pf5 = new ExperimentalProteoform("E3");
-            ExperimentalProteoform pf6 = new ExperimentalProteoform("E4");
-            ExperimentalProteoform pf7 = new ExperimentalProteoform("E5");
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
+            ExperimentalProteoform pf5 = ConstructorsForTesting.ExperimentalProteoform("E3");
+            ExperimentalProteoform pf6 = ConstructorsForTesting.ExperimentalProteoform("E4");
+            ExperimentalProteoform pf7 = ConstructorsForTesting.ExperimentalProteoform("E5");
 
             ProteoformComparison comparison34 = ProteoformComparison.ee;
             ProteoformComparison comparison45 = ProteoformComparison.ee;
@@ -147,12 +147,13 @@ namespace Test
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
                 { f, new Protein[] { p1 } }
             };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf", "", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 0, true, true, dict);
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
+            
 
             //One accepted ET relation; should give one ProteoformFamily
             Lollipop.min_peak_count_et = 1;
-            ExperimentalProteoform pf1 = new ExperimentalProteoform("E1");
-            TheoreticalProteoformGroup pf2 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t }, false, new Dictionary<InputFile, Protein[]> { { f, new Protein[] { p1 } } });
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
+            TheoreticalProteoformGroup pf2 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
             ProteoformComparison comparison = ProteoformComparison.et;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
@@ -170,13 +171,7 @@ namespace Test
             Assert.AreEqual(p1.Name, test_community.families.First().name_list);
             Assert.AreEqual(pf2.accession, test_community.families.First().accession_list);
         }
-
-        public static void make_relation(Proteoform p1, Proteoform p2, ProteoformComparison c, double delta_mass)
-        {
-            ProteoformRelation pp = new ProteoformRelation(p1, p2, c, delta_mass);
-            p1.relationships.Add(pp);
-            p2.relationships.Add(pp);
-        }
+        
 
         public static string p1_accession = "T1";
         public static string p1_name = "name";
@@ -200,25 +195,25 @@ namespace Test
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("", p1_accession, new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, p1_name, p1_fullName, true, false, new List<DatabaseReference> { p1_dbRef }, new List<GoTerm> { p1_goterm });
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> { { f, new Protein[] { p1 } } };
-            TheoreticalProteoform t = new TheoreticalProteoform("T1_asdf", "T1_asdf", p1, true, 0, 0, new PtmSet(new List<Ptm>()), 1234.56, true, true, dict);
-            TheoreticalProteoformGroup pf1 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t }, false, new Dictionary<InputFile, Protein[]> { { f, new Protein[] { p1 } } });
+            TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_asdf", "T1_asdf", 1234.56, p1, dict);
+            TheoreticalProteoformGroup pf1 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
 
             //TheoreticalProteoform with an oxidation, but the same accession as the former
             ModificationMotif motif;
             ModificationMotif.TryGetMotif("K", out motif);
             string mod_title = "oxidation"; //fake; I'm giving it 0 mass difference, but it still differentiates the two
             ModificationWithMass m = new ModificationWithMass(mod_title, new Tuple<string, string>("", mod_title), motif, ModificationSites.K, 1, new Dictionary<string, IList<string>>(), -1, new List<double>(), new List<double>(), "");
-            TheoreticalProteoform pf2 = new TheoreticalProteoform("T1_asdf", "T1_asdf_1", p1, true, 0, 0, new PtmSet(new List<Ptm> { new Ptm(0, m) }), 1234.56, true, true, dict);
+            TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical("T1_asdf", "T1_asdf_1", 1234.56, p1, dict);
 
             community.theoretical_proteoforms = new TheoreticalProteoform[] { pf1, pf2 };
 
             //ExperimentalProteoforms
-            ExperimentalProteoform pf3 = new ExperimentalProteoform("E1", 0, 0, true);
-            ExperimentalProteoform pf4 = new ExperimentalProteoform("E2", 0, 0, true);
-            ExperimentalProteoform pf5 = new ExperimentalProteoform("E3", 0, 0, true);
-            ExperimentalProteoform pf6 = new ExperimentalProteoform("E4", 0, 0, true);
-            ExperimentalProteoform pf7 = new ExperimentalProteoform("E5", 0, 0, true);
-            ExperimentalProteoform pf8 = new ExperimentalProteoform("E6", 0, 0, true);
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1", 0, 0, true);
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2", 0, 0, true);
+            ExperimentalProteoform pf5 = ConstructorsForTesting.ExperimentalProteoform("E3", 0, 0, true);
+            ExperimentalProteoform pf6 = ConstructorsForTesting.ExperimentalProteoform("E4", 0, 0, true);
+            ExperimentalProteoform pf7 = ConstructorsForTesting.ExperimentalProteoform("E5", 0, 0, true);
+            ExperimentalProteoform pf8 = ConstructorsForTesting.ExperimentalProteoform("E6", 0, 0, true);
             community.experimental_proteoforms = new ExperimentalProteoform[] { pf3, pf4, pf5, pf6, pf7, pf8 };
             pf3.agg_mass = 1234.56;
             pf4.agg_mass = 1234.56;
@@ -234,13 +229,13 @@ namespace Test
             ProteoformComparison comparison56 = ProteoformComparison.ee;
             ProteoformComparison comparison67 = ProteoformComparison.ee;
             ProteoformComparison comparison78 = ProteoformComparison.ee;
-            make_relation(pf3, pf1, comparison13, 0);
-            make_relation(pf3, pf2, comparison23, 0);
-            make_relation(pf3, pf4, comparison34, 0);
-            make_relation(pf4, pf5, comparison45, 0);
-            make_relation(pf5, pf6, comparison56, 19); //not accepted
-            make_relation(pf6, pf7, comparison67, 0);
-            make_relation(pf7, pf8, comparison78, 0);
+            ConstructorsForTesting.make_relation(pf3, pf1, comparison13, 0);
+            ConstructorsForTesting.make_relation(pf3, pf2, comparison23, 0);
+            ConstructorsForTesting.make_relation(pf3, pf4, comparison34, 0);
+            ConstructorsForTesting.make_relation(pf4, pf5, comparison45, 0);
+            ConstructorsForTesting.make_relation(pf5, pf6, comparison56, 19); //not accepted
+            ConstructorsForTesting.make_relation(pf6, pf7, comparison67, 0);
+            ConstructorsForTesting.make_relation(pf7, pf8, comparison78, 0);
 
             List<ProteoformRelation> prs = new HashSet<ProteoformRelation>(community.experimental_proteoforms.SelectMany(p => p.relationships).Concat(community.theoretical_proteoforms.SelectMany(p => p.relationships))).ToList();
             List<ProteoformRelation> prs_et = prs.Where(r => r.relation_type == ProteoformComparison.et).OrderBy(r => r.delta_mass).ToList();
