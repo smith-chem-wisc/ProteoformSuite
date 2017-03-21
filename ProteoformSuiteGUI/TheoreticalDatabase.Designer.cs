@@ -59,6 +59,8 @@
             this.ckbx_Carbam = new System.Windows.Forms.CheckBox();
             this.ckbx_OxidMeth = new System.Windows.Forms.CheckBox();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
+            this.tb_modTypesToExclude = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -81,6 +83,8 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.label7);
+            this.splitContainer1.Panel1.Controls.Add(this.tb_modTypesToExclude);
             this.splitContainer1.Panel1.Controls.Add(this.label6);
             this.splitContainer1.Panel1.Controls.Add(this.tb_tableFilter);
             this.splitContainer1.Panel1.Controls.Add(this.cmb_loadTable);
@@ -432,6 +436,25 @@
             this.dgv_Database.Size = new System.Drawing.Size(903, 737);
             this.dgv_Database.TabIndex = 0;
             // 
+            // tb_modTypesToExclude
+            // 
+            this.tb_modTypesToExclude.Location = new System.Drawing.Point(238, 373);
+            this.tb_modTypesToExclude.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_modTypesToExclude.Name = "tb_modTypesToExclude";
+            this.tb_modTypesToExclude.Size = new System.Drawing.Size(202, 20);
+            this.tb_modTypesToExclude.TabIndex = 49;
+            this.tb_modTypesToExclude.TextChanged += new System.EventHandler(this.tb_modTypesToExclude_TextChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(236, 358);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(149, 13);
+            this.label7.TabIndex = 50;
+            this.label7.Text = "Modification Types to Exclude";
+            // 
             // TheoreticalDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -492,5 +515,7 @@
         private System.Windows.Forms.ComboBox cmb_loadTable;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox tb_tableFilter;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox tb_modTypesToExclude;
     }
 }
