@@ -12,7 +12,7 @@ namespace ProteoformSuiteInternal
 {
     public class TheoreticalProteoform : Proteoform
     {
-        public List<ProteinWithGoTerms> proteinList { get; set; } = new List<ProteinWithGoTerms>();
+        public IEnumerable<ProteinWithGoTerms> proteinList { get; set; } = new List<ProteinWithGoTerms>();
         public string name { get; set; }
         public string description { get; set; }
         public string fragment { get; set; }
@@ -55,41 +55,21 @@ namespace ProteoformSuiteInternal
         public string of_interest { get; set; } = "";
         public bool contaminant { get; set; }
 
-        public TheoreticalProteoform(string accession, string description, ProteinWithGoTerms protein, bool is_metCleaved, double unmodified_mass, int lysine_count, PtmSet ptm_set, double modified_mass, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) 
-            : base(accession, modified_mass, lysine_count, is_target)
+        public TheoreticalProteoform(string accession, string description, IEnumerable<ProteinWithGoTerms> protein_list, bool is_metCleaved, double unmodified_mass, int lysine_count, PtmSet ptm_set, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) 
+            : base(accession, unmodified_mass + ptm_set.mass, lysine_count, is_target)
         {
-            this.proteinList.Add(protein);
+            this.proteinList = protein_list;
             this.accession = accession;
             this.description = description;
-            this.name = protein.Name;
-            this.fragment = protein.ProteolysisProducts.FirstOrDefault().Type;
-            this.begin = (int)protein.ProteolysisProducts.FirstOrDefault().OneBasedBeginPosition + Convert.ToInt32(is_metCleaved);
-            this.end = (int)protein.ProteolysisProducts.FirstOrDefault().OneBasedEndPosition;
-            this.goTerms = protein.GoTerms.ToList();
-            this.gene_name = new GeneName(protein.GeneNames);
+            this.name = String.Join(";", protein_list.Select(p => p.Name));
+            this.fragment = String.Join(";", protein_list.Select(p => p.ProteolysisProducts.FirstOrDefault().Type));
+            this.begin = (int)protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedBeginPosition + Convert.ToInt32(is_metCleaved);
+            this.end = (int)protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedEndPosition;
+            this.goTerms = proteinList.SelectMany(p => p.GoTerms).ToList();
+            this.gene_name = new GeneName(protein_list.SelectMany(t => t.GeneNames));
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
             if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
-        }
-
-        public TheoreticalProteoform(string accession, string description, string name, string fragment, int begin, int end, double unmodified_mass, int lysine_count, PtmSet ptm_set, double modified_mass, bool is_target)
-            : base(accession, modified_mass, lysine_count, is_target)
-        {
-            this.accession = accession;
-            this.description = description;
-            this.name = name;
-            this.fragment = fragment;
-            this.begin = begin;
-            this.end = end;
-            this.ptm_set = ptm_set;
-            this.unmodified_mass = unmodified_mass;
-        }
-
-        //for Tests
-        public TheoreticalProteoform(string accession) 
-            : base(accession)
-        {
-            this.accession = accession;
         }
 
         public static double CalculateProteoformMass(string pForm, Dictionary<char, double> aaIsotopeMassList)

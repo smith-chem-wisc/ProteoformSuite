@@ -577,19 +577,18 @@ namespace ProteoformSuiteInternal
                 if (sequence_groupings.ContainsKey(p.BaseSequence)) sequence_groupings[p.BaseSequence].Add(p);
                 else sequence_groupings.Add(p.BaseSequence, new List<ProteinWithGoTerms> { p });
             }
-            return sequence_groupings.Select(kv => new ProteinSequenceGroup(kv.Value)).ToArray();
+            return sequence_groupings.Select(kv => new ProteinSequenceGroup(kv.Value.OrderByDescending(p => p.IsContaminant ? 1 : 0))).ToArray();
         }
 
         private static TheoreticalProteoformGroup[] group_proteoforms_byMass(IEnumerable<TheoreticalProteoform> theoreticals)
         {
-            bool contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
             Dictionary<double, List<TheoreticalProteoform>> mass_groupings = new Dictionary<double, List<TheoreticalProteoform>>();
             foreach (TheoreticalProteoform t in theoreticals)
             {
                 if (mass_groupings.ContainsKey(t.modified_mass)) mass_groupings[t.modified_mass].Add(t);
                 else mass_groupings.Add(t.modified_mass, new List<TheoreticalProteoform> { t });
             }
-            return mass_groupings.Select(kv => new TheoreticalProteoformGroup(kv.Value, contaminants, theoretical_proteins)).ToArray();
+            return mass_groupings.Select(kv => new TheoreticalProteoformGroup(kv.Value.OrderByDescending(t => t.contaminant ? 1 : 0))).ToArray();
         }
 
         private static void process_entries(IEnumerable<ProteinWithGoTerms> expanded_proteins)
@@ -646,18 +645,19 @@ namespace ProteoformSuiteInternal
             int ptm_set_counter = 1;
             foreach (PtmSet ptm_set in unique_ptm_groups)
             {
-                double proteoform_mass = unmodified_mass + ptm_set.mass;
-                string protein_description = prot.FullDescription + "_P" + ptm_set_counter.ToString();
-                string new_accession = accession + "_P" + ptm_set_counter.ToString();
-                lock (theoretical_proteoforms)
-                {
-                    if (decoy_number < 0)
-                        theoretical_proteoforms.Add(new TheoreticalProteoform(new_accession, protein_description, prot, isMetCleaved,
-                            unmodified_mass, lysine_count, ptm_set, proteoform_mass, true, check_contaminants, theoretical_proteins));
-                    else
-                        theoretical_proteoforms.Add(new TheoreticalProteoform(new_accession, protein_description + "_DECOY" + "_" + decoy_number.ToString(), prot, isMetCleaved,
-                            unmodified_mass, lysine_count, ptm_set, proteoform_mass, false, check_contaminants, theoretical_proteins));
-                }
+                lock (theoretical_proteoforms) theoretical_proteoforms.Add(
+                    new TheoreticalProteoform(
+                        accession + "_P" + ptm_set_counter.ToString(), 
+                        prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()), 
+                        new ProteinWithGoTerms[] { prot }, 
+                        isMetCleaved,
+                        unmodified_mass, 
+                        lysine_count, 
+                        ptm_set, 
+                        decoy_number < 0, 
+                        check_contaminants, 
+                        theoretical_proteins)
+                    );
                 ptm_set_counter++;
             } 
         }

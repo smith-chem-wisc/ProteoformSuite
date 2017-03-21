@@ -8,36 +8,24 @@ namespace ProteoformSuiteInternal
     {
         public List<ProteinWithGoTerms> proteinList { get; private set; }
 
-        public ProteinSequenceGroup(IEnumerable<ProteinWithGoTerms> proteins)
-            : base(proteins.First().BaseSequence,
-                proteins.Any(p => p.IsContaminant) ? 
-                  proteins.FirstOrDefault(p => p.IsContaminant).Accession + "_" + proteins.Count() + "G" : 
-                  proteins.First().Accession + "_" + proteins.Count() + "G",
-                proteins.SelectMany(p => p.GeneNames),
-                proteins.SelectMany(p => p.OneBasedPossibleLocalizedModifications.Keys).Distinct()
-                  .ToDictionary(i => i, i => proteins.Where(p => p.OneBasedPossibleLocalizedModifications.ContainsKey(i)).SelectMany(p => p.OneBasedPossibleLocalizedModifications[i]).ToList()),
-                proteins.Any(p => p.IsContaminant) ? 
-                  proteins.FirstOrDefault(p => p.IsContaminant).ProteolysisProducts.Select(p => p.OneBasedBeginPosition).ToArray() : 
-                  proteins.First().ProteolysisProducts.Select(p => p.OneBasedBeginPosition).ToArray(),
-                proteins.Any(p => p.IsContaminant) ? 
-                  proteins.FirstOrDefault(p => p.IsContaminant).ProteolysisProducts.Select(p => p.OneBasedEndPosition).ToArray() : 
-                  proteins.First().ProteolysisProducts.Select(p => p.OneBasedEndPosition).ToArray(),
-                proteins.Any(p => p.IsContaminant) ? 
-                  proteins.FirstOrDefault(p => p.IsContaminant).ProteolysisProducts.Select(p => p.Type).ToArray() : 
-                  proteins.First().ProteolysisProducts.Select(p => p.Type).ToArray(),
-                proteins.Any(p => p.IsContaminant) ? 
-                  proteins.FirstOrDefault(p => p.IsContaminant).Name : 
-                  proteins.First().Name,
-                proteins.Any(p => p.IsContaminant) ? 
-                  proteins.FirstOrDefault(p => p.IsContaminant).FullName : 
-                  proteins.First().FullName, 
+        public ProteinSequenceGroup(IEnumerable<ProteinWithGoTerms> proteins_with_contaminants_first)
+            : base(proteins_with_contaminants_first.First().BaseSequence,
+                proteins_with_contaminants_first.First().Accession + "_" + proteins_with_contaminants_first.Count() + "G",
+                proteins_with_contaminants_first.SelectMany(p => p.GeneNames),
+                proteins_with_contaminants_first.SelectMany(p => p.OneBasedPossibleLocalizedModifications.Keys).Distinct()
+                  .ToDictionary(i => i, i => proteins_with_contaminants_first.Where(p => p.OneBasedPossibleLocalizedModifications.ContainsKey(i)).SelectMany(p => p.OneBasedPossibleLocalizedModifications[i]).ToList()),
+                proteins_with_contaminants_first.First().ProteolysisProducts.Select(p => p.OneBasedBeginPosition).ToArray(),
+                proteins_with_contaminants_first.First().ProteolysisProducts.Select(p => p.OneBasedEndPosition).ToArray(),
+                proteins_with_contaminants_first.First().ProteolysisProducts.Select(p => p.Type).ToArray(),
+                proteins_with_contaminants_first.First().Name,
+                proteins_with_contaminants_first.First().FullName,
                 false, 
-                proteins.Any(p => p.IsContaminant), 
-                proteins.SelectMany(p => p.DatabaseReferences),
-                proteins.SelectMany(p => p.GoTerms))
+                proteins_with_contaminants_first.Any(p => p.IsContaminant), 
+                proteins_with_contaminants_first.SelectMany(p => p.DatabaseReferences),
+                proteins_with_contaminants_first.SelectMany(p => p.GoTerms))
         {
-            this.proteinList = proteins.ToList();
-            this.AccessionList = proteins.Select(p => p.Accession).ToList();
+            this.proteinList = proteins_with_contaminants_first.ToList();
+            this.AccessionList = proteins_with_contaminants_first.Select(p => p.Accession).ToList();
             this.AccessionList.Sort();
         }
     }
