@@ -306,5 +306,15 @@ namespace Test
             ProteoformCommunity c = new ProteoformCommunity();
             Assert.AreEqual(0, c.accept_deltaMass_peaks(new List<ProteoformRelation>(), new List<ProteoformRelation>()).Count);
         }
+
+        [Test]
+        public static void accept_peaks_doesnt_crash_with_weird_relation()
+        {
+            ProteoformCommunity c = new ProteoformCommunity();
+            ProteoformRelation r = new ProteoformRelation(ConstructorsForTesting.ExperimentalProteoform("E1"), ConstructorsForTesting.ExperimentalProteoform("E1"), ProteoformComparison.ef, 0);
+            r.outside_no_mans_land = true;
+            r.nearby_relations = new List<ProteoformRelation>();
+            Assert.Throws<ArgumentException>(() => c.accept_deltaMass_peaks(new List<ProteoformRelation> { r }, new List<ProteoformRelation>()));
+        }
     }
 }

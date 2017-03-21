@@ -138,7 +138,7 @@ namespace ProteoformSuiteInternal
                 while (root != null && active.Count < Environment.ProcessorCount)
                 {
                     if (root.relation_type != ProteoformComparison.ee && root.relation_type != ProteoformComparison.et)
-                        throw new Exception("Only EE and ET peaks can be accepted");
+                        throw new ArgumentException("Only EE and ET peaks can be accepted");
 
                     Thread t = new Thread(new ThreadStart(root.generate_peak));
                     t.Start();
