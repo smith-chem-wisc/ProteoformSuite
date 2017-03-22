@@ -464,19 +464,20 @@ namespace ProteoformSuiteInternal
         {
             updated_theoretical = true;
             //Clear out data from potential previous runs
-            Lollipop.proteoform_community.decoy_proteoforms = new Dictionary<string, TheoreticalProteoform[]>();
-            Lollipop.psm_list.Clear();
+            proteoform_community.decoy_proteoforms.Clear();
+            psm_list.Clear();
+            theoretical_proteins.Clear();
 
             //Read the UniProt-XML and ptmlist
             Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
             List<ModificationWithLocation> all_known_modifications = get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
             read_mods(all_known_modifications);
             Dictionary<string, Modification> um;
-            foreach (InputFile database in get_files(Lollipop.input_files, Purpose.ProteinDatabase).ToList())
+            Parallel.ForEach(get_files(Lollipop.input_files, Purpose.ProteinDatabase).ToList(), database =>
             {
-                theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, false, all_known_modifications, database.ContaminantDB, new string[] { "GO" }, mod_types_to_exclude, out um).ToArray());
-                all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).OfType<ModificationWithLocation>());
-            }
+                lock (theoretical_proteins) theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, false, all_known_modifications, database.ContaminantDB, new string[] { "GO" }, mod_types_to_exclude, out um).ToArray());
+                lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).OfType<ModificationWithLocation>());
+            });
             all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
             read_mods(all_known_modifications);
             expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
