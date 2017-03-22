@@ -121,6 +121,9 @@
     <Compile Include="TestTheoreticalDatabaseCreate.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="example_corrections.tsv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="noisy.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
