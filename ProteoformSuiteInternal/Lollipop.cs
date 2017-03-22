@@ -146,14 +146,17 @@ namespace ProteoformSuiteInternal
         public static bool neucode_labeled = true;
         public static bool td_results = false;
 
-        public static void process_raw_components(List<InputFile> input_files, Purpose purpose)
+        public static void process_raw_components(List<InputFile> input_files, List<Component> destination, Purpose purpose)
         {
-            correctionFactors = get_files(Lollipop.input_files, Purpose.Calibration).SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
+            if (get_files(Lollipop.input_files, Purpose.Calibration).Count() > 0)
+            {
+                correctionFactors = get_files(Lollipop.input_files, Purpose.Calibration).SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
+            }
 
             Parallel.ForEach(input_files.Where(f => f.purpose == purpose).ToList(), file =>
             {
                 List<Component> someComponents = file.reader.read_components_from_xlsx(file, correctionFactors);
-                lock (raw_experimental_components) raw_experimental_components.AddRange(someComponents);
+                lock (destination) destination.AddRange(someComponents);
             });
 
             if (neucode_labeled && purpose == Purpose.Identification) process_neucode_components(Lollipop.raw_neucode_pairs);
