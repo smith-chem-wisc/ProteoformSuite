@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using ProteoformSuiteInternal;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -52,6 +53,13 @@ namespace Test
             string mz_centroid = "123.2";
             string reported_mass = "125.0";
             c.add_charge_state(new List<string> { charge_count, intensity, mz_centroid, reported_mass }, new ComponentReader().GetCorrectionFactor(filename, scan_range, corrections));
+        }
+
+        [Test]
+        public void basic_read_correction_factors()
+        {
+            InputFile corr = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "example_corrections.tsv"), Purpose.Calibration);
+            Assert.IsNotEmpty(Lollipop.read_corrections(corr));
         }
     }
 }
