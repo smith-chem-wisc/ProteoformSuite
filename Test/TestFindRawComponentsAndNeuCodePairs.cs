@@ -29,7 +29,7 @@ namespace Test
             string inFileId = noisy.UniqueId.ToString();
 
             Lollipop.neucode_labeled = true;
-            Lollipop.process_raw_components(Lollipop.input_files, Purpose.Identification);
+            Lollipop.process_raw_components(Lollipop.input_files, Lollipop.raw_experimental_components, Purpose.Identification);
             Assert.AreEqual(223, Lollipop.raw_experimental_components.Count);
 
             //Check the validity of one component read from the Excel file
