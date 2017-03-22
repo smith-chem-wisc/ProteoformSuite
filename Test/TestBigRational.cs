@@ -161,5 +161,17 @@ namespace Test
             Assert.AreEqual(1, ((IComparable)BigRational.One).CompareTo(null));
             Assert.AreEqual(1, ((IComparable)BigRational.One).CompareTo(BigRational.Zero));
         }
+
+        //[Test]
+        //public void tough_double_conversion()
+        //{
+        //    Assert.Greater((double)(new BigRational(Math.PI)), 3); // this fails...!
+        //}
+
+        [Test]
+        public void tough_double_cast_from_bigint()
+        {
+
+        }
     }
 }

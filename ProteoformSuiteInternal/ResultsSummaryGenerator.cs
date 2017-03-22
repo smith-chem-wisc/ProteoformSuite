@@ -34,6 +34,8 @@ namespace ProteoformSuiteInternal
             report += Lollipop.raw_neucode_pairs.Count.ToString() + "\tNeuCode Pairs" + Environment.NewLine + Environment.NewLine;
 
             report += Lollipop.proteoform_community.experimental_proteoforms.Length.ToString() + "\tExperimental Proteoforms" + Environment.NewLine;
+            report += Lollipop.theoretical_proteins.Sum(kv => kv.Value.Length).ToString() + "\tTheoretical Proteins" + Environment.NewLine;
+            report += Lollipop.expanded_proteins.Length + "\tExpanded Theoretical Proteins" + Environment.NewLine;
             report += Lollipop.proteoform_community.theoretical_proteoforms.Length.ToString() + "\tTheoretical Proteoforms" + Environment.NewLine + Environment.NewLine;
 
             report += Lollipop.et_relations.Count.ToString() + "\tExperimental-Theoretical Pairs" + Environment.NewLine;
