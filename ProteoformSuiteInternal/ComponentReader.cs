@@ -1,11 +1,8 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using ProteoformSuiteInternal;
 using System.Collections.Generic;
 using System;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
@@ -17,7 +14,7 @@ namespace ProteoformSuiteInternal
         public List<Component> final_components = new List<Component>();
         public HashSet<string> scan_ranges = new HashSet<string>();
 
-        public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction>correctionFactors)
+        public List<Component> read_components_from_xlsx(InputFile file, IEnumerable<Correction> correctionFactors)
         {
             this.raw_components_in_file.Clear();
             string absolute_path = file.directory + "\\" + file.filename + file.extension;
@@ -331,7 +328,7 @@ namespace ProteoformSuiteInternal
 
         public double GetCorrectionFactor(string filename, string scan_range, IEnumerable<Correction> correctionFactors)
         {
-            if(correctionFactors == null) return 0D;
+            if(correctionFactors == null || correctionFactors.Count() <= 0) return 0D;
 
             int[] scans = new int[2] { 0, 0 };
             try
@@ -345,8 +342,8 @@ namespace ProteoformSuiteInternal
 
             IEnumerable<double> allCorrectionFactors = 
                 (from s in correctionFactors
-                 where s.file_name == filename
-                 where s.scan_number >= scans[0]
+                where s.file_name == filename
+                where s.scan_number >= scans[0]
                 where s.scan_number <= scans[1]
                 select s.correction).ToList();
 
