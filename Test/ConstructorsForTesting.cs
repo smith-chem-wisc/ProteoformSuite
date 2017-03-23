@@ -117,5 +117,15 @@ namespace Test
             f.technical_replicate = techrep;
             return f;
         }
+
+
+        //MODIFICATION
+        public static ModificationWithMass get_modWithMass(string id, double mass)
+        {
+            ModificationMotif motif;
+            ModificationMotif.TryGetMotif("K", out motif);
+            ModificationWithMass m = new ModificationWithMass(id, new Tuple<string, string>("", ""), motif, ModificationSites.K, mass, new Dictionary<string, IList<string>>(), -1, new List<double>(), new List<double>(), "");
+            return m;
+        }
     }
 }

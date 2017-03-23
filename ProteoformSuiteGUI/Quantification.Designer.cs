@@ -83,8 +83,6 @@
             this.cb_moreOpacity = new System.Windows.Forms.CheckBox();
             this.cb_boldLabel = new System.Windows.Forms.CheckBox();
             this.cb_redBorder = new System.Windows.Forms.CheckBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
@@ -106,6 +104,8 @@
             this.nud_Offset = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.nud_sKnot_minFoldChange = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
+            this.cmbx_nodeLabel = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantification_results)).BeginInit();
             this.gb_quantDataDisplaySelection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).BeginInit();
@@ -555,6 +555,8 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.label7);
+            this.groupBox4.Controls.Add(this.cmbx_nodeLabel);
             this.groupBox4.Controls.Add(this.cb_geneCentric);
             this.groupBox4.Controls.Add(this.label14);
             this.groupBox4.Controls.Add(this.btn_buildFamiliesWithSignificantChange);
@@ -564,8 +566,6 @@
             this.groupBox4.Controls.Add(this.btn_buildFromSelectedGoTerms);
             this.groupBox4.Controls.Add(this.cmbx_edgeLabel);
             this.groupBox4.Controls.Add(this.groupBox5);
-            this.groupBox4.Controls.Add(this.label7);
-            this.groupBox4.Controls.Add(this.textBox1);
             this.groupBox4.Controls.Add(this.label8);
             this.groupBox4.Controls.Add(this.label9);
             this.groupBox4.Controls.Add(this.label10);
@@ -591,7 +591,7 @@
             this.cb_geneCentric.AutoSize = true;
             this.cb_geneCentric.Checked = true;
             this.cb_geneCentric.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_geneCentric.Location = new System.Drawing.Point(267, 181);
+            this.cb_geneCentric.Location = new System.Drawing.Point(283, 215);
             this.cb_geneCentric.Name = "cb_geneCentric";
             this.cb_geneCentric.Size = new System.Drawing.Size(154, 17);
             this.cb_geneCentric.TabIndex = 62;
@@ -675,9 +675,9 @@
             this.groupBox5.Controls.Add(this.cb_moreOpacity);
             this.groupBox5.Controls.Add(this.cb_boldLabel);
             this.groupBox5.Controls.Add(this.cb_redBorder);
-            this.groupBox5.Location = new System.Drawing.Point(267, 214);
+            this.groupBox5.Location = new System.Drawing.Point(267, 243);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(200, 120);
+            this.groupBox5.Size = new System.Drawing.Size(200, 91);
             this.groupBox5.TabIndex = 56;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Highlights for Significant Differences";
@@ -686,7 +686,7 @@
             // 
             this.cb_moreOpacity.AutoSize = true;
             this.cb_moreOpacity.Enabled = false;
-            this.cb_moreOpacity.Location = new System.Drawing.Point(21, 76);
+            this.cb_moreOpacity.Location = new System.Drawing.Point(16, 65);
             this.cb_moreOpacity.Name = "cb_moreOpacity";
             this.cb_moreOpacity.Size = new System.Drawing.Size(96, 17);
             this.cb_moreOpacity.TabIndex = 58;
@@ -696,7 +696,7 @@
             // cb_boldLabel
             // 
             this.cb_boldLabel.AutoSize = true;
-            this.cb_boldLabel.Location = new System.Drawing.Point(21, 53);
+            this.cb_boldLabel.Location = new System.Drawing.Point(16, 42);
             this.cb_boldLabel.Name = "cb_boldLabel";
             this.cb_boldLabel.Size = new System.Drawing.Size(76, 17);
             this.cb_boldLabel.TabIndex = 57;
@@ -706,31 +706,12 @@
             // cb_redBorder
             // 
             this.cb_redBorder.AutoSize = true;
-            this.cb_redBorder.Location = new System.Drawing.Point(21, 30);
+            this.cb_redBorder.Location = new System.Drawing.Point(16, 19);
             this.cb_redBorder.Name = "cb_redBorder";
             this.cb_redBorder.Size = new System.Drawing.Size(109, 17);
             this.cb_redBorder.TabIndex = 56;
             this.cb_redBorder.Text = "Red Node Border";
             this.cb_redBorder.UseVisualStyleBackColor = true;
-            // 
-            // label7
-            // 
-            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label7.AutoSize = true;
-            this.label7.BackColor = System.Drawing.SystemColors.Control;
-            this.label7.Location = new System.Drawing.Point(347, 107);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(105, 13);
-            this.label7.TabIndex = 54;
-            this.label7.Text = "Node Label Example";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(267, 101);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(75, 20);
-            this.textBox1.TabIndex = 53;
             // 
             // label8
             // 
@@ -966,6 +947,26 @@
             this.nud_sKnot_minFoldChange.TabIndex = 0;
             this.nud_sKnot_minFoldChange.ValueChanged += new System.EventHandler(this.nud_sKnot_minFoldChange_ValueChanged);
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.BackColor = System.Drawing.SystemColors.Control;
+            this.label7.Location = new System.Drawing.Point(347, 107);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(117, 13);
+            this.label7.TabIndex = 64;
+            this.label7.Text = "Node Label Information";
+            // 
+            // cmbx_nodeLabel
+            // 
+            this.cmbx_nodeLabel.Enabled = false;
+            this.cmbx_nodeLabel.FormattingEnabled = true;
+            this.cmbx_nodeLabel.Location = new System.Drawing.Point(267, 101);
+            this.cmbx_nodeLabel.Name = "cmbx_nodeLabel";
+            this.cmbx_nodeLabel.Size = new System.Drawing.Size(75, 21);
+            this.cmbx_nodeLabel.TabIndex = 63;
+            // 
             // Quantification
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1060,8 +1061,6 @@
         private System.Windows.Forms.Label label_tempFileFolder;
         private System.Windows.Forms.TextBox tb_familyBuildFolder;
         private System.Windows.Forms.Button btn_browseTempFolder;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
@@ -1091,5 +1090,7 @@
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.ComboBox cmbx_geneLabel;
         private System.Windows.Forms.CheckBox cb_geneCentric;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.ComboBox cmbx_nodeLabel;
     }
 }
