@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -49,6 +48,7 @@ namespace ProteoformSuiteInternal
         public List<ProteoformRelation> nearby_relations { get; set; }
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
+        public ModificationWithMass represented_modification { get; set; }
 
         /// <summary>
         /// Is this relation in an accepted peak?

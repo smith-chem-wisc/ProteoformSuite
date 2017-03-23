@@ -3,10 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Threading;
 using System.Threading.Tasks;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -30,18 +27,9 @@ namespace ProteoformSuiteInternal
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
         public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once. 
-        public int observation_count
-        {
-            get { return aggregated_components.Count; }
-        }
-        public int light_observation_count
-        {
-            get { return lt_quant_components.Count; }
-        }
-        public int heavy_observation_count
-        {
-            get { return hv_quant_components.Count; }
-        }
+        public int observation_count { get { return aggregated_components.Count; } }
+        public int light_observation_count { get { return lt_quant_components.Count; } }
+        public int heavy_observation_count {  get { return hv_quant_components.Count; } }
 
 
         // CONTRUCTORS
@@ -89,10 +77,6 @@ namespace ProteoformSuiteInternal
                 this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
         }
-
-
-        // TESTING CONSTRUCTORS
-        
 
 
         // COPYING CONSTRUCTOR

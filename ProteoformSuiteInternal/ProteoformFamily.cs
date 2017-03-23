@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
+using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
@@ -65,6 +66,38 @@ namespace ProteoformSuiteInternal
                     select f;
             proteoforms = new HashSet<Proteoform>(proteoforms.Concat(gene_family.SelectMany(f => f.proteoforms)));
             separate_proteoforms();
+        }
+
+        public void identify_experimentals()
+        {
+            HashSet<ExperimentalProteoform> identified_experimentals = new HashSet<ExperimentalProteoform>();
+            Parallel.ForEach(theoretical_proteoforms, t =>
+            {
+                lock (identified_experimentals)
+                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals())
+                    {
+                        identified_experimentals.Add(e);
+                    }
+            });
+
+            //Continue looking for new experimental identifications until no more remain to be identified
+            List<ExperimentalProteoform> newly_identified_experimentals = new List<ExperimentalProteoform>(identified_experimentals);
+            int last_identified_count = identified_experimentals.Count - 1;
+            while (newly_identified_experimentals.Count > 0 && identified_experimentals.Count > last_identified_count)
+            {
+                last_identified_count = identified_experimentals.Count;
+                HashSet<ExperimentalProteoform> tmp_new_experimentals = new HashSet<ExperimentalProteoform>();
+                Parallel.ForEach(newly_identified_experimentals, id_experimental => 
+                {
+                    lock (identified_experimentals) lock (tmp_new_experimentals)
+                        foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals())
+                        {
+                            identified_experimentals.Add(new_e);
+                            tmp_new_experimentals.Add(new_e);
+                        }
+                });
+                newly_identified_experimentals = new List<ExperimentalProteoform>(tmp_new_experimentals);
+            }
         }
     }
 }

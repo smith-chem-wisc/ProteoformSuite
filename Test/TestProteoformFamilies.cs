@@ -182,7 +182,12 @@ namespace Test
             //Five experimental proteoforms, four relations (linear), second on not accepted into a peak, one peak; should give 2 families
             ProteoformCommunity community = new ProteoformCommunity();
             Lollipop.proteoform_community = community;
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>>
+            {
+                { "unmodified", new List<Modification> { new Modification("unmodified") } },
+                { "fake", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake", 19) } },
+                { "fake_zero", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake_zero", 0) } }
+            };
 
             Lollipop.ee_max_mass_difference = 20;
             Lollipop.peak_width_base_ee = 0.015;
@@ -195,7 +200,7 @@ namespace Test
             Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> { { f, new Protein[] { p1 } } };
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_asdf", "T1_asdf", 1234.56, p1, dict);
             TheoreticalProteoformGroup pf1 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
-            TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical("T1_asdf", "T1_asdf_1", 1234.56, dict);
+            TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical("T1_asdf_pf2", "T1_asdf_1", 1234.56, dict);
 
 
             //ExperimentalProteoforms
@@ -205,7 +210,7 @@ namespace Test
             ExperimentalProteoform pf6 = ConstructorsForTesting.ExperimentalProteoform("E4", 0, 0, true);
             ExperimentalProteoform pf7 = ConstructorsForTesting.ExperimentalProteoform("E5", 0, 0, true);
             ExperimentalProteoform pf8 = ConstructorsForTesting.ExperimentalProteoform("E6", 0, 0, true);
-            TheoreticalProteoform pf9 = ConstructorsForTesting.make_a_theoretical("T1_asdf", "T1_asdf_1", 1253.56, dict);
+            TheoreticalProteoform pf9 = ConstructorsForTesting.make_a_theoretical("T1_asdf_pf9", "T1_asdf_1", 1253.56, dict);
             community.theoretical_proteoforms = new TheoreticalProteoform[] { pf1, pf2, pf9 };
             community.experimental_proteoforms = new ExperimentalProteoform[] { pf3, pf4, pf5, pf6, pf7, pf8 };
             pf3.agg_mass = 1234.56;
@@ -233,6 +238,7 @@ namespace Test
             ConstructorsForTesting.make_relation(pf8, pf9, comparison89, 0);
 
             List<ProteoformRelation> prs = new HashSet<ProteoformRelation>(community.experimental_proteoforms.SelectMany(p => p.relationships).Concat(community.theoretical_proteoforms.SelectMany(p => p.relationships))).ToList();
+            foreach (Proteoform p in prs.SelectMany(r => r.connected_proteoforms)) Assert.IsNotNull(p);
             List<ProteoformRelation> prs_et = prs.Where(r => r.relation_type == ProteoformComparison.et).OrderBy(r => r.delta_mass).ToList();
             List<ProteoformRelation> prs_ee = prs.Where(r => r.relation_type == ProteoformComparison.ee).OrderBy(r => r.delta_mass).ToList();
             foreach (ProteoformRelation pr in prs_et) pr.set_nearby_group(prs_et, prs_et.Select(r => r.instanceId).ToList());
@@ -255,6 +261,22 @@ namespace Test
             Assert.AreEqual(3, community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.et).First().grouped_relations.Count());
 
             community.construct_families();
+
+            //Testing the identification of experimentals   
+            //test with a modificationwithmass that's 0 mass, and then see that it crawls around and labels them each with growing ptm sets with that modification
+            //test that the relation.represented_modification gets set
+            Assert.True(community.relations_in_peaks.All(r => r.peak_center_deltaM != 0 || r.represented_modification.id == "fake_zero"));
+            Assert.True(community.relations_in_peaks.All(r => r.peak_center_deltaM != 19 || r.represented_modification == null));
+            Assert.True(pf1 == pf3.theoretical_reference || pf2 == pf3.theoretical_reference);
+
+            //test I don't get re-reassignments
+            Assert.AreEqual(pf3, pf4.theoretical_reference); //test that the proteoform.theoretical_reference gets set to each successive PF base
+            Assert.AreEqual(pf3.theoretical_reference_accession, pf4.theoretical_reference_accession);
+            Assert.AreEqual(pf3.theoretical_reference_fragment, pf4.theoretical_reference_fragment);
+            Assert.AreEqual(pf4, pf5.theoretical_reference);
+            Assert.AreEqual(pf3.theoretical_reference_accession, pf5.theoretical_reference_accession); //test that the accession gets carried all the way through the depth of connections
+            Assert.AreEqual(pf3.theoretical_reference_fragment, pf5.theoretical_reference_fragment);
+            Assert.AreEqual(pf9, pf8.theoretical_reference);
             return community;
         }
 
@@ -286,6 +308,8 @@ namespace Test
         [Test]
         public void test_results_summary_with_peaks()
         {
+            Lollipop.theoretical_proteins = new Dictionary<InputFile, Protein[]>();
+            Lollipop.expanded_proteins = new ProteinWithGoTerms[0];
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
             Lollipop.et_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.et).ToList();
             Lollipop.ee_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ee).ToList();

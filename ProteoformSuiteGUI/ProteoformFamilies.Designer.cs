@@ -81,6 +81,8 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.Families_update = new System.Windows.Forms.Button();
+            this.label11 = new System.Windows.Forms.Label();
+            this.cmbx_nodeLabel = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -135,6 +137,8 @@
             // 
             // splitContainer2.Panel2
             // 
+            this.splitContainer2.Panel2.Controls.Add(this.label11);
+            this.splitContainer2.Panel2.Controls.Add(this.cmbx_nodeLabel);
             this.splitContainer2.Panel2.Controls.Add(this.label10);
             this.splitContainer2.Panel2.Controls.Add(this.cmbx_geneLabel);
             this.splitContainer2.Panel2.Controls.Add(this.label9);
@@ -195,7 +199,7 @@
             // 
             this.label9.AutoSize = true;
             this.label9.BackColor = System.Drawing.SystemColors.Control;
-            this.label9.Location = new System.Drawing.Point(134, 167);
+            this.label9.Location = new System.Drawing.Point(134, 195);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(116, 13);
@@ -206,7 +210,7 @@
             // 
             this.cmbx_edgeLabel.Enabled = false;
             this.cmbx_edgeLabel.FormattingEnabled = true;
-            this.cmbx_edgeLabel.Location = new System.Drawing.Point(7, 165);
+            this.cmbx_edgeLabel.Location = new System.Drawing.Point(7, 193);
             this.cmbx_edgeLabel.Name = "cmbx_edgeLabel";
             this.cmbx_edgeLabel.Size = new System.Drawing.Size(121, 21);
             this.cmbx_edgeLabel.TabIndex = 47;
@@ -700,6 +704,26 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.BackColor = System.Drawing.SystemColors.Control;
+            this.label11.Location = new System.Drawing.Point(134, 167);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(117, 13);
+            this.label11.TabIndex = 52;
+            this.label11.Text = "Node Label Information";
+            // 
+            // cmbx_nodeLabel
+            // 
+            this.cmbx_nodeLabel.Enabled = false;
+            this.cmbx_nodeLabel.FormattingEnabled = true;
+            this.cmbx_nodeLabel.Location = new System.Drawing.Point(7, 165);
+            this.cmbx_nodeLabel.Name = "cmbx_nodeLabel";
+            this.cmbx_nodeLabel.Size = new System.Drawing.Size(121, 21);
+            this.cmbx_nodeLabel.TabIndex = 51;
+            // 
             // ProteoformFamilies
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -792,5 +816,7 @@
         public System.Windows.Forms.CheckBox cb_geneCentric;
         private System.Windows.Forms.Label label10;
         public System.Windows.Forms.ComboBox cmbx_geneLabel;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.ComboBox cmbx_nodeLabel;
     }
 }

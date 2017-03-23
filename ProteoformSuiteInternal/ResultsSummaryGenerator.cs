@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Data;
+using System.Text;
 
 namespace ProteoformSuiteInternal
 {
@@ -72,6 +74,59 @@ namespace ProteoformSuiteInternal
             return "GO Terms of Significance (Benjimini-Yekeulti p-value < " + Lollipop.minProteoformFDR.ToString() + "): " + Environment.NewLine 
                 + String.Join(Environment.NewLine, Lollipop.goTermNumbers.Where(g => g.by < (double)Lollipop.minProteoformFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
 
+        }
+
+        public static string results_dataframe()
+        {
+            DataTable results = new DataTable();
+            results.Columns.Add("Proteoform ID", typeof(string));
+            results.Columns.Add("Aggregated Observation ID", typeof(string));
+            results.Columns.Add("SGD ID", typeof(string));
+            results.Columns.Add("Gene Name", typeof(string));
+            results.Columns.Add("Protein Fragment Type", typeof(string));
+            results.Columns.Add("PTM Type", typeof(string));
+            results.Columns.Add("Mass Difference", typeof(double));
+            results.Columns.Add("Retention Time", typeof(double));
+            results.Columns.Add("Aggregated Intensity", typeof(double));
+            results.Columns.Add(Lollipop.numerator_condition + " Quantified Proteoform Intensity", typeof(double));
+            results.Columns.Add(Lollipop.denominator_condition + " Quantified Proteoform Intensity", typeof(double));
+            results.Columns.Add("Statistically Significant", typeof(bool));
+
+            foreach (ExperimentalProteoform e in Lollipop.proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
+                .OrderByDescending(e => e.quant.significant ? 1 : 0)
+                .ThenBy(e => e.theoretical_reference_accession)
+                .ThenBy(e => e.ptm_set.ptm_combination.Count))
+            {
+                if (e.theoretical_reference == null) continue;
+
+                results.Rows.Add(
+                    e.theoretical_reference_accession,
+                    e.accession,
+                    e.theoretical_reference.gene_name.ordered_locus,
+                    e.theoretical_reference.gene_name.primary,
+                    e.theoretical_reference_fragment,
+                    String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => ptm.modification.id)),
+                    e.modified_mass - e.theoretical_reference.modified_mass,
+                    e.agg_rt,
+                    e.agg_intensity,
+                    e.quant.lightIntensitySum,
+                    e.quant.heavyIntensitySum,
+                    e.quant.significant
+                );
+            }
+
+            StringBuilder result_string = new StringBuilder();
+            string header = "";
+            foreach (DataColumn column in results.Columns)
+            {
+                header += column.ColumnName + "\t";
+            }
+            result_string.AppendLine(header);
+            foreach (DataRow row in results.Rows)
+            {
+                result_string.AppendLine(String.Join("\t", row.ItemArray));
+            }
+            return result_string.ToString();
         }
     }
 }

@@ -1,8 +1,6 @@
 ﻿using Accord.Math;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel; // needed for bindinglist
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -452,7 +450,7 @@ namespace ProteoformSuiteInternal
         public static bool combine_theoretical_proteoforms_byMass = true;
         public static string accessions_of_interest_list_filepath = "";
         public static string interest_type = "Of interest"; //label for proteins of interest. can be changed 
-        public static string[] mod_types_to_exclude = new string[] { "Metal", "PeptideTermMod" };
+        public static string[] mod_types_to_exclude = new string[] { "Metal", "PeptideTermMod", "TrypticProduct" };
         public static Dictionary<InputFile, Protein[]> theoretical_proteins = new Dictionary<InputFile, Protein[]>();
         public static ProteinWithGoTerms[] expanded_proteins;
         public static List<Psm> psm_list = new List<Psm>();
@@ -765,7 +763,8 @@ namespace ProteoformSuiteInternal
         public static string family_build_folder_path = "";
         public static int deltaM_edge_display_rounding = 2;
         public static string[] node_positioning = new string[] { "Arbitrary Circle", "Mass X-Axis", "Circle by Mass" };
-        public static string[] edge_labels = new string[] { "Mass Difference" };
+        public static string[] node_labels = new string[] { "Experimental ID", "Inferred Theoretical ID" };
+        public static string[] edge_labels = new string[] { "Mass Difference", "Modification IDs (omits edges with null IDs)" };
         public static List<string> gene_name_labels = new List<string> { "Primary, e.g. HOG1", "Ordered Locus, e.g. YLR113W" };
 
 

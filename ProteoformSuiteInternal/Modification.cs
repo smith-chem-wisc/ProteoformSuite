@@ -46,10 +46,12 @@ namespace ProteoformSuiteInternal
 
     public class Ptm
     {
-        public int position = -1;
-        public ModificationWithMass modification = new ModificationWithMass("Unmodified", new Tuple<string, string>("N/A", "Unmodified"), null, ModificationSites.Any, 0, null, -1, null, null, null);
+        public int position { get; private set; } = -1;
+        public ModificationWithMass modification { get; private set; } = new ModificationWithMass("Unmodified", new Tuple<string, string>("N/A", "Unmodified"), null, ModificationSites.Any, 0, null, -1, null, null, null);
+
         public Ptm() // initializes an "un-Modification"
         { }
+
         public Ptm(int position, ModificationWithMass modification)
         {
             this.position = position;
@@ -59,21 +61,13 @@ namespace ProteoformSuiteInternal
 
     public class PtmSet
     {
-        public double mass;
-        private List<Ptm> _ptm_combination;
-        public List<Ptm> ptm_combination
-        {
-            get { return this._ptm_combination; }
-            set
-            {
-                this._ptm_combination = value;
-                this.mass = value.Sum(ptm => ptm.modification.monoisotopicMass);
-            }
-        }
+        public double mass { get; private set; }
+        public List<Ptm> ptm_combination { get; private set; }
 
         public PtmSet(List<Ptm> unique_ptm_combination)
         {
-            this.ptm_combination = unique_ptm_combination;
+            ptm_combination = unique_ptm_combination;
+            mass = ptm_combination.Sum(ptm => ptm.modification.monoisotopicMass);
         }
     }
 

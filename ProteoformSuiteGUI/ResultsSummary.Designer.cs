@@ -36,6 +36,7 @@
             this.btn_save = new System.Windows.Forms.Button();
             this.cb_savePlots = new System.Windows.Forms.CheckBox();
             this.rtb_summary = new System.Windows.Forms.RichTextBox();
+            this.cb_saveCytoScripts = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // splitter1
@@ -112,12 +113,26 @@
             this.rtb_summary.TabIndex = 9;
             this.rtb_summary.Text = "";
             // 
+            // cb_saveCytoScripts
+            // 
+            this.cb_saveCytoScripts.AutoSize = true;
+            this.cb_saveCytoScripts.Checked = true;
+            this.cb_saveCytoScripts.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_saveCytoScripts.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.cb_saveCytoScripts.Location = new System.Drawing.Point(552, 28);
+            this.cb_saveCytoScripts.Name = "cb_saveCytoScripts";
+            this.cb_saveCytoScripts.Size = new System.Drawing.Size(171, 20);
+            this.cb_saveCytoScripts.TabIndex = 10;
+            this.cb_saveCytoScripts.Text = "Save Cytoscape Scripts";
+            this.cb_saveCytoScripts.UseVisualStyleBackColor = true;
+            // 
             // ResultsSummary
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(750, 620);
             this.ControlBox = false;
+            this.Controls.Add(this.cb_saveCytoScripts);
             this.Controls.Add(this.rtb_summary);
             this.Controls.Add(this.cb_savePlots);
             this.Controls.Add(this.btn_save);
@@ -143,5 +158,6 @@
         private System.Windows.Forms.Button btn_save;
         private System.Windows.Forms.CheckBox cb_savePlots;
         private System.Windows.Forms.RichTextBox rtb_summary;
+        private System.Windows.Forms.CheckBox cb_saveCytoScripts;
     }
 }
