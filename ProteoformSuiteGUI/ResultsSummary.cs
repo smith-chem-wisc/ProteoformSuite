@@ -41,9 +41,9 @@ namespace ProteoformSuiteGUI
             (
                 () => save_summary(timestamp),
                 () => save_dataframe(timestamp),
-                () => save_plots(timestamp),
                 () => save_cytoscripts(timestamp)
             );
+            save_plots(timestamp);
         }
 
         private void save_summary(string timestamp)
