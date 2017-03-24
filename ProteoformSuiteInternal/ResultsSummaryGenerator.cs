@@ -88,8 +88,8 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Mass Difference", typeof(double));
             results.Columns.Add("Retention Time", typeof(double));
             results.Columns.Add("Aggregated Intensity", typeof(double));
-            results.Columns.Add(Lollipop.numerator_condition + " Quantified Proteoform Intensity", typeof(double));
-            results.Columns.Add(Lollipop.denominator_condition + " Quantified Proteoform Intensity", typeof(double));
+            results.Columns.Add((Lollipop.numerator_condition == "" ? "Condition #1" : Lollipop.numerator_condition) + " Quantified Proteoform Intensity", typeof(double));
+            results.Columns.Add((Lollipop.denominator_condition == "" ? "Condition #2" : Lollipop.denominator_condition) + " Quantified Proteoform Intensity", typeof(double));
             results.Columns.Add("Statistically Significant", typeof(bool));
 
             foreach (ExperimentalProteoform e in Lollipop.proteoform_community.families.SelectMany(f => f.experimental_proteoforms)

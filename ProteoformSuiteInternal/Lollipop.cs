@@ -452,7 +452,7 @@ namespace ProteoformSuiteInternal
         public static string interest_type = "Of interest"; //label for proteins of interest. can be changed 
         public static string[] mod_types_to_exclude = new string[] { "Metal", "PeptideTermMod", "TrypticProduct" };
         public static Dictionary<InputFile, Protein[]> theoretical_proteins = new Dictionary<InputFile, Protein[]>();
-        public static ProteinWithGoTerms[] expanded_proteins;
+        public static ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
         public static List<Psm> psm_list = new List<Psm>();
 
         public static Dictionary<string, IList<Modification>> uniprotModificationTable = new Dictionary<string, IList<Modification>>();
