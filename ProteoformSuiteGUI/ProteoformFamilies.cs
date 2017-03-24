@@ -265,34 +265,7 @@ namespace ProteoformSuiteGUI
 
         private void bt_export_families_Click(object sender, EventArgs e)
         {
-            DialogResult dr = this.folderBrowser.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                string folder_path = folderBrowser.SelectedPath;
-                using (var writer = new StreamWriter(folder_path + "\\identified_proteoforms.tsv"))
-                {
-                    int fam_id = 1;
-                    writer.WriteLine("family_id\tproteoform_type\tp_id\tptm\tmass\tname");
-                    foreach (ProteoformFamily family in Lollipop.proteoform_community.families.Where(f => f.theoretical_count > 0 || f.topdown_count > 0).Distinct())
-                    {
-                        foreach (TheoreticalProteoform t in family.theoretical_proteoforms)
-                        {
-                            writer.WriteLine(String.Join("\t", fam_id, "Theoretical", t.accession, t.ptm_descriptions, t.modified_mass, t.name));
-                        }
-                        foreach (ExperimentalProteoform exp in family.experimental_proteoforms)
-                        {
-                            writer.WriteLine(String.Join("\t", fam_id, "Experimental", exp.accession, "", exp.modified_mass, ""));
-                        }
-                        foreach (TopDownProteoform td in family.topdown_proteoforms)
-                        {
-                            writer.WriteLine(String.Join("\t", fam_id, "Top-down", td.accession, td.ptm_descriptions, td.modified_mass, td.name));
-                        }
-                        fam_id++;
-                    }
-                }
-                MessageBox.Show("Successfully exported list of proteoforms in identified families.");
-            }
-            else return;
+
             }
 
         private void btn_merge_Click(object sender, EventArgs e)
@@ -346,6 +319,11 @@ namespace ProteoformSuiteGUI
                 MessageBox.Show("Successfully exported inclusion list.");
             }
             else return;
+        }
+
+        private void bt_export_family_list_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -336,8 +336,12 @@ namespace ProteoformSuiteGUI
 
         private void bt_calibrate_Click(object sender, EventArgs e)
         {
-            if (Lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationTopDown).Count() > 0) Lollipop.read_in_calibration_td_hits();
-            else { MessageBox.Show("Please enter top-down results files to calibrate."); return; }
+            if (!cb_tdhits.Checked && !cb_lockmass.Checked) { MessageBox.Show("Please select at least one calibration method."); return; }
+            if (cb_tdhits.Checked)
+            {
+                if (Lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationTopDown).Count() > 0) Lollipop.read_in_calibration_td_hits();
+                else { MessageBox.Show("Please enter top-down results files to calibrate."); return; }
+            }
             if (Lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() > 0)
             {
               Lollipop.calibrate_files();
