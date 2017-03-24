@@ -280,6 +280,40 @@ namespace Test
         }
 
         [Test]
+        public void cytoscape_script_from_gotermnumber()
+        {
+            ProteoformCommunity community = TestProteoformFamilies.construct_two_families_with_potentially_colliding_theoreticals();
+            Lollipop.proteoform_community = community;
+            CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { new GoTermNumber(TestProteoformFamilies.p1_goterm, 0,0,0,0) }, community.families,
+                TestContext.CurrentContext.TestDirectory, "", "test",
+                false, false, false, false,
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], 2,
+                false, Lollipop.gene_name_labels[1]);
+            string[] edge_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.edge_file_prefix + "test" + CytoscapeScript.edge_file_extension));
+            HashSet<string> shared_pf_names_edges = new HashSet<string>();
+            for (int i = 1; i < edge_lines.Length; i++)
+            {
+                if (edge_lines[i] == "") break;
+                string[] line = edge_lines[i].Split(new char[] { '\t' });
+                shared_pf_names_edges.Add(line[0]);
+                shared_pf_names_edges.Add(line[2]);
+            }
+
+            string[] node_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.node_file_prefix + "test" + CytoscapeScript.node_file_extension));
+            HashSet<string> shared_pf_names_nodes = new HashSet<string>();
+            for (int i = 1; i < node_lines.Length; i++)
+            {
+                if (node_lines[i] == "") break;
+                string[] line = node_lines[i].Split(new char[] { '\t' });
+                shared_pf_names_nodes.Add(line[0]);
+            }
+
+            Assert.True(shared_pf_names_nodes.All(name => shared_pf_names_edges.Contains(name)));
+            Assert.True(shared_pf_names_edges.All(name => shared_pf_names_nodes.Contains(name)));
+            Assert.AreEqual(9, shared_pf_names_nodes.Count); //both families this time because they all have the same stuff...
+        }
+
+        [Test]
         public void cytoscape_script_from_quantValues()
         {
             ProteoformCommunity community = TestProteoformFamilies.construct_two_families_with_potentially_colliding_theoreticals();

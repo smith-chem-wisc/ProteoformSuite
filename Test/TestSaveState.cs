@@ -93,6 +93,21 @@ namespace Test
         public void results_summary_doesnt_crash_without_initializing()
         {
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
+            Assert.True(ResultsSummaryGenerator.results_dataframe().Length > 0);
+        }
+
+        [Test]
+        public void results_dataframe_with_something()
+        {
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
+            e.theoretical_reference = ConstructorsForTesting.make_a_theoretical();
+            e.ptm_set = e.theoretical_reference.ptm_set;
+            ProteoformFamily f = new ProteoformFamily(e);
+            f.construct_family();
+            Lollipop.proteoform_community.families = new List<ProteoformFamily> { f };
+            string[] lines = ResultsSummaryGenerator.results_dataframe().Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            Assert.True(lines.Count() == 3);
+            Assert.True(lines.Any(a => a.Contains("E1")));
         }
     }
 }
