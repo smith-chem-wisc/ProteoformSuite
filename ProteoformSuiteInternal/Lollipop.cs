@@ -818,11 +818,10 @@ namespace ProteoformSuiteInternal
 
         public static void calibrate_files()
         {
-            foreach (string filename in Lollipop.td_hits_calibration.Select(h => h.filename).Distinct())
+            foreach (InputFile file in Lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList())
             {
-                get_calibration_points(filename);
-                calibrate_td_hits(filename);
-                InputFile file = Lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.filename == filename).FirstOrDefault();
+                get_calibration_points(file.filename);
+                calibrate_td_hits(file.filename);
                 if (file != null) Calibration.calibrate_components_in_xlsx(file);
             }
 
