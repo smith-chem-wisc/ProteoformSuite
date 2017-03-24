@@ -28,7 +28,6 @@ namespace ProteoformSuiteGUI
             dgv_EE_Peaks.CurrentCellDirtyStateChanged += new EventHandler(EE_Peak_List_DirtyStateChanged); //makes the change immediate and automatic
             EEPeakAcceptabilityChanged += ExperimentExperimentComparison_EEPeakAcceptabilityChanged;
             InitializeParameterSet();
-            InitializeMassWindow();
         }
 
         public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
@@ -145,15 +144,6 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        private void InitializeMassWindow()
-        {
-            nUD_EE_Upper_Bound.Minimum = 0;
-            nUD_EE_Upper_Bound.Maximum = 500;
-            if (!Lollipop.neucode_labeled) Lollipop.ee_max_mass_difference = 150;
-            else Lollipop.ee_max_mass_difference = 250;
-            nUD_EE_Upper_Bound.Value = (decimal)Lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
-        }
-
         private void InitializeParameterSet()
         {
             yMaxEE.Minimum = 0;
@@ -192,6 +182,12 @@ namespace ProteoformSuiteGUI
             nUD_MaxRetTimeDifference.Maximum = 60;
             nUD_MaxRetTimeDifference.Value = Convert.ToDecimal(Lollipop.ee_max_RetentionTime_difference);
 
+            //MASS WINDOW
+            nUD_EE_Upper_Bound.Minimum = 0;
+            nUD_EE_Upper_Bound.Maximum = 500;
+            if (!Lollipop.neucode_labeled) Lollipop.ee_max_mass_difference = 150;
+            nUD_EE_Upper_Bound.Value = (decimal)Lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
+
         }
 
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
@@ -219,6 +215,7 @@ namespace ProteoformSuiteGUI
                     EEPeakAcceptabilityChangedEventArgs EEAcceptabilityChangedEventData = new EEPeakAcceptabilityChangedEventArgs(acceptibilityStatus, selected_peak);
                     ONEEAcceptibilityChanged(EEAcceptabilityChangedEventData);
                 }
+                updateFiguresOfMerit();
             }
         }
 

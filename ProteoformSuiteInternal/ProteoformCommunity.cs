@@ -239,6 +239,7 @@ namespace ProteoformSuiteInternal
                 active.Clear();
             }
             if (gene_centric_families) families = combine_gene_families(families).ToList();
+            Parallel.ForEach(families, f => f.identify_experimentals());
             return families;
         }
 
