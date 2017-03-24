@@ -622,7 +622,6 @@
             // 
             // cmbx_geneLabel
             // 
-            this.cmbx_geneLabel.Enabled = false;
             this.cmbx_geneLabel.FormattingEnabled = true;
             this.cmbx_geneLabel.Location = new System.Drawing.Point(267, 154);
             this.cmbx_geneLabel.Name = "cmbx_geneLabel";
@@ -663,7 +662,6 @@
             // 
             // cmbx_edgeLabel
             // 
-            this.cmbx_edgeLabel.Enabled = false;
             this.cmbx_edgeLabel.FormattingEnabled = true;
             this.cmbx_edgeLabel.Location = new System.Drawing.Point(267, 127);
             this.cmbx_edgeLabel.Name = "cmbx_edgeLabel";
@@ -960,7 +958,6 @@
             // 
             // cmbx_nodeLabel
             // 
-            this.cmbx_nodeLabel.Enabled = false;
             this.cmbx_nodeLabel.FormattingEnabled = true;
             this.cmbx_nodeLabel.Location = new System.Drawing.Point(267, 101);
             this.cmbx_nodeLabel.Name = "cmbx_nodeLabel";

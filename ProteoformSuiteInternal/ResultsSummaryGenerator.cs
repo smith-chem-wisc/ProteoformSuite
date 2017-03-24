@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 using System.Text;
@@ -33,25 +34,33 @@ namespace ProteoformSuiteInternal
 
             report += Lollipop.raw_experimental_components.Count.ToString() + "\tRaw Experimental Components" + Environment.NewLine;
             report += Lollipop.raw_quantification_components.Count.ToString() + "\tRaw Quantitative Components" + Environment.NewLine;
-            report += Lollipop.raw_neucode_pairs.Count.ToString() + "\tNeuCode Pairs" + Environment.NewLine + Environment.NewLine;
+            report += Lollipop.raw_neucode_pairs.Count.ToString() + "\tRaw NeuCode Pairs" + Environment.NewLine;
+            report += Lollipop.raw_neucode_pairs.Count(nc => nc.accepted).ToString() + "\tAccepted NeuCode Pairs" + Environment.NewLine + Environment.NewLine;
 
             report += Lollipop.proteoform_community.experimental_proteoforms.Length.ToString() + "\tExperimental Proteoforms" + Environment.NewLine;
+            report += Lollipop.proteoform_community.experimental_proteoforms.Count(e => e.accepted).ToString() + "\tAccepted Experimental Proteoforms" + Environment.NewLine;
             report += Lollipop.theoretical_proteins.Sum(kv => kv.Value.Length).ToString() + "\tTheoretical Proteins" + Environment.NewLine;
             report += Lollipop.expanded_proteins.Length + "\tExpanded Theoretical Proteins" + Environment.NewLine;
             report += Lollipop.proteoform_community.theoretical_proteoforms.Length.ToString() + "\tTheoretical Proteoforms" + Environment.NewLine + Environment.NewLine;
 
-            report += Lollipop.et_relations.Count.ToString() + "\tExperimental-Theoretical Pairs" + Environment.NewLine;
             report += Lollipop.et_peaks.Count.ToString() + "\tExperimental-Theoretical Peaks" + Environment.NewLine;
-            report += Lollipop.et_peaks.Count(p => p.peak_accepted).ToString() + "\tAccepted Experimental-Theoretical Peaks" + Environment.NewLine + Environment.NewLine;
+            report += Lollipop.et_relations.Count.ToString() + "\tExperimental-Theoretical Pairs" + Environment.NewLine;
+            report += Lollipop.et_peaks.Count(p => p.peak_accepted).ToString() + "\tAccepted Experimental-Theoretical Peaks" + Environment.NewLine;
+            report += Lollipop.et_relations.Count(r => r.accepted).ToString() + "\tAccepted Experimental-Theoretical Pairs" + Environment.NewLine + Environment.NewLine;
 
-            report += Lollipop.ee_relations.Count.ToString() + "\tExperimental-Experimental Pairs" + Environment.NewLine;
             report += Lollipop.ee_peaks.Count.ToString() + "\tExperimental-Experimental Peaks" + Environment.NewLine;
-            report += Lollipop.ee_peaks.Count(p => p.peak_accepted).ToString() + "\tAccepted Experimental-Experimental Peaks" + Environment.NewLine + Environment.NewLine;
+            report += Lollipop.ee_relations.Count.ToString() + "\tExperimental-Experimental Pairs" + Environment.NewLine;
+            report += Lollipop.ee_peaks.Count(p => p.peak_accepted).ToString() + "\tAccepted Experimental-Experimental Peaks" + Environment.NewLine;
+            report += Lollipop.ee_relations.Count(r => r.accepted).ToString() + "\tAccepted Experimental-Experimental Pairs" + Environment.NewLine + Environment.NewLine;
 
             report += Lollipop.proteoform_community.families.Count.ToString() + "\tProteoform Families" + Environment.NewLine;
-            report += Lollipop.proteoform_community.families.Count(f => f.theoretical_count > 0).ToString() + "\tIdentified Families" + Environment.NewLine;
-            report += Lollipop.proteoform_community.families.Count(f => f.proteoforms.Count > 1).ToString() + "\tExperimental Proteoforms in Families" +  Environment.NewLine;
-            report += Lollipop.proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString() + "\tOrphaned Experimental Proteoforms" + Environment.NewLine + Environment.NewLine;
+            List<ProteoformFamily> identified_families = Lollipop.proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() == 1).ToList();
+            List<ProteoformFamily> ambiguous_families = Lollipop.proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() > 1).ToList();
+            report += identified_families.Count.ToString() + "\tIdentified Families (Correspond to 1 gene)" + Environment.NewLine;
+            report += identified_families.Sum(f => f.experimental_count).ToString() + "\tExperimental Proteoforms in Identified Families" + Environment.NewLine;
+            report += ambiguous_families.Count.ToString() + "\tAmbiguous Families (Correspond to > 1 gene)" + Environment.NewLine;
+            report += ambiguous_families.Sum(f => f.experimental_count).ToString() + "\tExperimental Proteoforms in Ambiguous Families" + Environment.NewLine;
+            report += Lollipop.proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString() + "\tOrphaned Experimental Proteoforms (Not joined with another proteoform)" + Environment.NewLine + Environment.NewLine;
 
             report += Lollipop.satisfactoryProteoforms.Count.ToString() + "\tQuantified Experimental Proteoforms (Threshold for Quantification: " + Lollipop.minBiorepsWithObservations.ToString() + " = " + Lollipop.observation_requirement + ")" + Environment.NewLine;
             report += Lollipop.satisfactoryProteoforms.Count(p => p.quant.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + Lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + Lollipop.minProteoformFDR.ToString() + ")" + Environment.NewLine + Environment.NewLine;
