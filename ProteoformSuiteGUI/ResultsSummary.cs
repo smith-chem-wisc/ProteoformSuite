@@ -55,7 +55,8 @@ namespace ProteoformSuiteGUI
         private void save_dataframe(string timestamp)
         {
             using (StreamWriter writer = new StreamWriter(Path.Combine(tb_summarySaveFolder.Text, "results_" + timestamp + ".tsv")))
-                writer.Write(ResultsSummaryGenerator.results_dataframe());
+                if (cb_saveDataframe.Checked)
+                    writer.Write(ResultsSummaryGenerator.results_dataframe());
         }
 
         private void save_plots(string timestamp)

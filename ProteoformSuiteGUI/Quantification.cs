@@ -99,6 +99,8 @@ namespace ProteoformSuiteGUI
             cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
             cmbx_nodeLayout.Items.AddRange(Lollipop.node_positioning);
             cmbx_nodeLabelPositioning.Items.AddRange(CytoscapeScript.node_label_positions);
+            cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels.ToArray());
+            cmbx_nodeLabel.Items.AddRange(Lollipop.node_labels.ToArray());
             cmbx_geneLabel.Items.AddRange(Lollipop.gene_name_labels.ToArray());
             cb_redBorder.Checked = true;
             cb_boldLabel.Checked = true;
@@ -108,6 +110,8 @@ namespace ProteoformSuiteGUI
             cmbx_nodeLayout.SelectedIndex = 0;
             cmbx_nodeLabelPositioning.SelectedIndex = 0;
             cmbx_geneLabel.SelectedIndex = 1;
+            cmbx_nodeLabel.SelectedIndex = 1;
+            cmbx_edgeLabel.SelectedIndex = 1;
             ProteoformCommunity.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
             ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
 
