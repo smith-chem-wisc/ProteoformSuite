@@ -50,7 +50,7 @@ namespace ProteoformSuiteInternal
             "Raw Files (.raw)",
              "Uncalibrated ProSight Top-Down Results (.xlsx)",
             "ProSight Top-Down Results (.xlsx)",
-            "Morpheus Bottom-Up Results (.tsv)"
+            "Bottom-Up Results MzIdentML (.mzid)"
         };
 
         public static List<string>[] acceptable_extensions = new List<string>[]
@@ -62,7 +62,7 @@ namespace ProteoformSuiteInternal
             new List<string> {".raw"},
             new List<string> { ".xlsx" },
             new List<string> { ".xlsx" },
-            new List<string> { ".tsv" }
+            new List<string> { ".mzid" }
         };
 
         public static string[] file_filters = new string[] 
@@ -74,7 +74,7 @@ namespace ProteoformSuiteInternal
             "Raw Files (*.raw) | *.raw",
             "Excel Files (*.xlsx) | *.xlsx",
             "Excel Files (*.xlsx) | *.xlsx",
-            "Text Files (*.tsv) | *.tsv"
+            "MZIdentML Files (*.mzid) | *.mzid"
         };
 
         public static List<Purpose>[] file_types = new List<Purpose>[]
@@ -470,7 +470,6 @@ namespace ProteoformSuiteInternal
             updated_theoretical = true;
             //Clear out data from potential previous runs
             Lollipop.proteoform_community.decoy_proteoforms.Clear();
-            Lollipop.psm_list.Clear();
             Lollipop.uniprotModificationTable.Clear();
             Lollipop.theoretical_proteins.Clear();
 
@@ -518,15 +517,13 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach<TheoreticalProteoform>(Lollipop.proteoform_community.theoretical_proteoforms, tp =>
             {
                 //PSMs in BU data with that protein accession
-                string[] accession_to_search = tp.accession.Split('_');
-                tp.psm_list = Lollipop.psm_list.Where(p => p.protein_description.Contains(accession_to_search[0])).ToList();
+                tp.psm_list = Lollipop.psm_list.Where(p => p.protein_accession == tp.accession.Split('_')[0]).ToList();
             });
             for (int i = 0; i < decoy_databases; i++)
             {
                 Parallel.ForEach<TheoreticalProteoform>(Lollipop.proteoform_community.decoy_proteoforms["DecoyDatabase_" + i], dp =>
                  {
-                     string[] accession_to_search = dp.accession.Split('_');
-                     dp.psm_list = Lollipop.psm_list.Where(p => p.protein_description.Contains(accession_to_search[0])).ToList();
+                     dp.psm_list = Lollipop.psm_list.Where(p => p.protein_accession == dp.accession.Split('_')[0]).ToList();
                  });
             }
         }

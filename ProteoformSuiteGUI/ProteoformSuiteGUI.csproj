@@ -64,9 +64,8 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Chemistry, Version=1.0.121.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.121\lib\Chemistry.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Chemistry, Version=1.0.142.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\mzLib.1.0.142\lib\Chemistry.dll</HintPath>
     </Reference>
     <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
@@ -80,9 +79,11 @@
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MassSpectrometry, Version=1.0.121.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.121\lib\MassSpectrometry.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="ManagedThermoHelperLayer, Version=1.0.142.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\mzLib.1.0.142\lib\ManagedThermoHelperLayer.dll</HintPath>
+    </Reference>
+    <Reference Include="MassSpectrometry, Version=1.0.142.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\mzLib.1.0.142\lib\MassSpectrometry.dll</HintPath>
     </Reference>
     <Reference Include="MathNet.Numerics, Version=3.17.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MathNet.Numerics.3.17.0\lib\net40\MathNet.Numerics.dll</HintPath>
@@ -91,25 +92,20 @@
     <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="mzIdentML, Version=1.0.121.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.121\lib\mzIdentML.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="mzIdentML, Version=1.0.142.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\mzLib.1.0.142\lib\mzIdentML.dll</HintPath>
     </Reference>
-    <Reference Include="MzLibUtil, Version=1.0.121.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.121\lib\MzLibUtil.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="MzLibUtil, Version=1.0.142.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\mzLib.1.0.142\lib\MzLibUtil.dll</HintPath>
     </Reference>
-    <Reference Include="MzML, Version=1.0.121.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.121\lib\MzML.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="MzML, Version=1.0.142.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\mzLib.1.0.142\lib\MzML.dll</HintPath>
     </Reference>
-    <Reference Include="Proteomics, Version=1.0.121.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.121\lib\Proteomics.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Proteomics, Version=1.0.142.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\mzLib.1.0.142\lib\Proteomics.dll</HintPath>
     </Reference>
-    <Reference Include="Spectra, Version=1.0.121.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.121\lib\Spectra.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Spectra, Version=1.0.142.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\mzLib.1.0.142\lib\Spectra.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -126,13 +122,11 @@
     <Reference Include="System.Xml">
       <Private>True</Private>
     </Reference>
-    <Reference Include="Thermo, Version=1.0.121.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.121\lib\Thermo.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Thermo, Version=1.0.142.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\mzLib.1.0.142\lib\Thermo.dll</HintPath>
     </Reference>
-    <Reference Include="UsefulProteomicsDatabases, Version=1.0.121.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>..\packages\mzLib.1.0.121\lib\UsefulProteomicsDatabases.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="UsefulProteomicsDatabases, Version=1.0.142.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>..\packages\mzLib.1.0.142\lib\UsefulProteomicsDatabases.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -291,6 +285,13 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\mzLib.1.0.142\build\mzLib.targets" Condition="Exists('..\packages\mzLib.1.0.142\build\mzLib.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\mzLib.1.0.142\build\mzLib.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\mzLib.1.0.142\build\mzLib.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
