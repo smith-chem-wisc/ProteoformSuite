@@ -38,7 +38,7 @@ namespace Test
             Assert.AreEqual(4, next.intensity_sum_olcs);
 
             //Based on experimental proteoforms
-            ExperimentalProteoform exp = new ExperimentalProteoform("E");
+            ExperimentalProteoform exp = ConstructorsForTesting.ExperimentalProteoform("E");
             exp.root = is_running;
             List<ExperimentalProteoform> active2 = new List<ExperimentalProteoform> { exp };
             Component next2 = Lollipop.find_next_root(ordered, active2);
@@ -49,10 +49,10 @@ namespace Test
         [Test]
         public void choose_next_exp_proteoform()
         {
-            ExperimentalProteoform c = new ExperimentalProteoform("E");
-            ExperimentalProteoform d = new ExperimentalProteoform("E");
-            ExperimentalProteoform e = new ExperimentalProteoform("E");
-            ExperimentalProteoform f = new ExperimentalProteoform("E");
+            ExperimentalProteoform c = ConstructorsForTesting.ExperimentalProteoform("E");
+            ExperimentalProteoform d = ConstructorsForTesting.ExperimentalProteoform("E");
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
+            ExperimentalProteoform f = ConstructorsForTesting.ExperimentalProteoform("E");
             c.agg_mass = 100;
             d.agg_mass = 119;
             e.agg_mass = 121;
@@ -62,7 +62,7 @@ namespace Test
             e.agg_intensity = 3;
             f.agg_intensity = 4;
             List<ExperimentalProteoform> ordered = new List<ExperimentalProteoform> { c, d, e, f }.OrderByDescending(cc => cc.agg_intensity).ToList();
-            ExperimentalProteoform is_running = new ExperimentalProteoform("E");
+            ExperimentalProteoform is_running = ConstructorsForTesting.ExperimentalProteoform("E");
             is_running.agg_mass = 100;
             is_running.agg_intensity = 100;
 
@@ -155,7 +155,7 @@ namespace Test
             Assert.AreEqual(1, vetted_quant[0].hv_quant_components.Count);
             Assert.AreEqual(2, quant_components.Count);
             Assert.AreEqual(0, Lollipop.remaining_quantification_components.Count);
-        }
+        }        
         
         [Test]
         public void full_agg_without_validation()
@@ -192,7 +192,7 @@ namespace Test
             Lollipop.neucode_labeled = false;
             Lollipop.remaining_components = new List<Component>(components);
             Lollipop.remaining_verification_components = new List<Component>(components);
-            ExperimentalProteoform e = new ExperimentalProteoform("E");
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             e.root = components[0];
             e.aggregate();
             e.verify();
@@ -202,6 +202,15 @@ namespace Test
             Assert.AreEqual(0, e.hv_verification_components.Count); // everything goes into light with unlabeled
             Assert.AreEqual(0, e.lt_quant_components.Count); // no quantitation for unlabeled, yet
             Assert.AreEqual(0, e.hv_quant_components.Count);
+        }
+
+        [Test]
+        public void basic_regroup_test()
+        {
+            Lollipop.raw_neucode_pairs.Add(new NeuCodePair());
+            Assert.IsNotEmpty(Lollipop.raw_neucode_pairs);
+            Assert.IsEmpty(Lollipop.regroup_components(true, false, new List<InputFile>(), Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, 0, 0));
+            Assert.IsEmpty(Lollipop.raw_neucode_pairs);
         }
     }
 }

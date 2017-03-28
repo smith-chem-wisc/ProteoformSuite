@@ -21,23 +21,16 @@ namespace ProteoformSuiteInternal
         {
             List<Psm> psm_list = new List<Psm>();
             var identifications = new MzidIdentifications(filename);
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\bu.tsv"))
+            for (int i = 0; i < identifications.Count; i++)
             {
-                for (int i = 0; i < identifications.Count; i++)
+                List<Ptm> modifications = new List<Ptm>();
+                for (int p = 0; p < identifications.NumModifications(i); p++)
                 {
-                    List<Ptm> modifications = new List<Ptm>();
-                    for (int p = 0; p < identifications.NumModifications(i); p++)
-                    {
-                        ModificationWithMass mod = Lollipop.uniprotModificationTable.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
-                        if (mod != null) modifications.Add(new Ptm(identifications.ModificationLocation(i, p), mod));
-                        else modifications.Add(new Ptm(identifications.ModificationLocation(i, p), new ModificationWithMass(identifications.ModificationAcession(i, p), null, null, ModificationSites.Any, 0, null, 0, null, null, null)));
-                    }
-                    psm_list.Add(new Psm(identifications.PeptideSequenceWithoutModifications(i), identifications.StartResidueInProtein(i), identifications.EndResidueInProtein(i), modifications, identifications.Ms2SpectrumID(i), identifications.ProteinAccession(i), identifications.ProteinFullName(i), identifications.ExperimentalMassToCharge(i), identifications.ChargeState(i), (identifications.ExperimentalMassToCharge(i) - identifications.CalculatedMassToCharge(i))));
+                    ModificationWithMass mod = Lollipop.uniprotModificationTable.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
+                    if (mod != null) modifications.Add(new Ptm(identifications.ModificationLocation(i, p), mod));
+                    else modifications.Add(new Ptm(identifications.ModificationLocation(i, p), new ModificationWithMass(identifications.ModificationAcession(i, p), null, null, ModificationSites.Any, 0, null, 0, null, null, null)));
                 }
-                foreach(Psm psm in psm_list)
-                {
-                    writer.WriteLine(psm.protein_description + "\t" + psm.precursor_mass_error + "\t" + psm.base_sequence + "\t" + psm.sequence_with_modifications + "\t" + psm.modifications.Count);
-                }
+                psm_list.Add(new Psm(identifications.PeptideSequenceWithoutModifications(i), identifications.StartResidueInProtein(i), identifications.EndResidueInProtein(i), modifications, identifications.Ms2SpectrumID(i), identifications.ProteinAccession(i), identifications.ProteinFullName(i), identifications.ExperimentalMassToCharge(i), identifications.ChargeState(i), (identifications.ExperimentalMassToCharge(i) - identifications.CalculatedMassToCharge(i))));
             }
            return psm_list;
         }

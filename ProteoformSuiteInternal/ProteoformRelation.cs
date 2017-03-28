@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -52,6 +51,7 @@ namespace ProteoformSuiteInternal
         public List<ProteoformRelation> nearby_relations { get; set; }
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
+        public ModificationWithMass represented_modification { get; set; }
 
         /// <summary>
         /// Is this relation in an accepted peak?
@@ -105,7 +105,6 @@ namespace ProteoformSuiteInternal
             new DeltaMassPeak(this, Lollipop.proteoform_community.remaining_relations_outside_no_mans);
             if (connected_proteoforms[1] is TheoreticalProteoform && Lollipop.decoy_databases > 0) this.peak.calculate_fdr(Lollipop.ed_relations);
             else if (connected_proteoforms[1] is ExperimentalProteoform) this.peak.calculate_fdr((new Dictionary<string, List<ProteoformRelation>>() { { "ef_relations", Lollipop.ef_relations } })) ;
-
         }
 
         public override bool Equals(object obj)
@@ -232,10 +231,6 @@ namespace ProteoformSuiteInternal
         public int psm_count_BU
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).psm_count_BU; } catch { return 0; }}
-        }
-        public int psm_count_TD
-        {
-            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count; } catch { return 0; } }
         }
         public string of_interest
         {

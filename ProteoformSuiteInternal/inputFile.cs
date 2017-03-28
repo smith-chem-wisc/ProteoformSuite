@@ -37,24 +37,6 @@ namespace ProteoformSuiteInternal
         public int technical_replicate { get; set; } = 1;
         public string lt_condition { get; set; } = "lt_condition";
         public string hv_condition { get; set; } = "hv_condition";
-        public InputFile(string complete_path, Labeling label, Purpose purpose, string lt_con, string hv_con, int biorep) // for neucode files. here both conditions are present in one file
-        {
-            this.complete_path = complete_path;
-            this.label = label;
-            this.purpose = purpose;
-            this.lt_condition = lt_con;
-            this.hv_condition = hv_con;
-            this.biological_replicate = biorep;
-        }
-        public InputFile(string complete_path, Labeling label, Purpose purpose, string lt_con, int biorep) // for non-neucode files. here only one condition is present per file
-        {
-            this.complete_path = complete_path;
-            this.label = label;
-            this.purpose = purpose;
-            this.lt_condition = lt_con;
-            this.biological_replicate = biorep;
-        }
-
 
         //For database files
         public bool ContaminantDB { get; set; } = false;
