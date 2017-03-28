@@ -3,10 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Threading;
 using System.Threading.Tasks;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -30,24 +27,11 @@ namespace ProteoformSuiteInternal
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
         public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once. 
-        public bool fragmented { get; set; } = false; //can check in TD if experimental was fragmented but unidentified
-        public int observation_count
-        {
-            get { return aggregated_components.Count; }
-        }
-        public int light_observation_count
-        {
-            get { return lt_quant_components.Count; }
-        }
-        public int heavy_observation_count
-        {
-            get { return hv_quant_components.Count; }
-        }
-        public int etd_match_count
-        {
-            get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).Count(); }
-        }
-
+        public int observation_count { get { return aggregated_components.Count; } }
+        public int light_observation_count { get { return lt_quant_components.Count; } }
+        public int heavy_observation_count {  get { return hv_quant_components.Count; } }
+        public bool fragmented { get; set; }
+        public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).Count(); } }
 
         // CONTRUCTORS
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession)
@@ -93,40 +77,6 @@ namespace ProteoformSuiteInternal
                 this.calculate_properties();
                 this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
-        }
-
-
-        // TESTING CONSTRUCTORS
-        public ExperimentalProteoform(string accession) : base(accession)
-        {
-            quant = new quantitativeValues(this);
-            this.aggregated_components = new List<Component>() { root };
-            this.accession = accession;
-        }
-
-        public ExperimentalProteoform(string accession, double modified_mass, int lysine_count, bool is_target) : base(accession)
-        {
-            quant = new quantitativeValues(this);
-            this.aggregated_components = new List<Component>() { root };
-            this.accession = accession;
-            this.modified_mass = modified_mass;
-            this.lysine_count = lysine_count;
-            this.is_target = is_target;
-            this.is_decoy = !is_target;
-        }
-
-        public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, List<Component> quantitative_observations, bool is_target) : base(accession)
-        {
-            quant = new quantitativeValues(this);
-            this.root = root;
-            this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
-            this.calculate_properties();
-            if (quantitative_observations.Count > 0)
-            {
-                this.lt_quant_components.AddRange(quantitative_observations.Where(r => this.includes_neucode_component(r, this, true)));
-                if (Lollipop.neucode_labeled) this.hv_quant_components.AddRange(quantitative_observations.Where(r => this.includes_neucode_component(r, this, false)));
-            }
-            this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
         }
 
 
@@ -413,7 +363,7 @@ namespace ProteoformSuiteInternal
                             (double)(((decimal)lights_in_biorep.Sum(i => i.intensity)) /
                             ((decimal)heavies_in_biorep.Sum(i => i.intensity)))
                             , 2);
-                    squaredVariance = squaredVariance + (decimal)Math.Pow(((double)logRepRatio - (double)logFoldChange), 2);
+                    squaredVariance += (decimal)Math.Pow(((double)logRepRatio - (double)logFoldChange), 2);
                 }
                 return (decimal)Math.Pow((double)squaredVariance, 0.5);
             }

@@ -2,6 +2,8 @@
 using ProteoformSuiteInternal;
 using System.Collections.Generic;
 using System;
+using System.Linq;
+using Proteomics;
 
 namespace Test
 {
@@ -9,6 +11,7 @@ namespace Test
     public class TestProteoformCommunityRelate
     {
         ProteoformCommunity community = new ProteoformCommunity();
+        ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
 
         [Test]
         public void TestNeuCodeLabeledProteoformCommunityRelate_EE()
@@ -16,8 +19,8 @@ namespace Test
             Lollipop.neucode_labeled = true;
 
             // Two proteoforms; lysine count equal; mass difference < 250 -- return 1
-            ExperimentalProteoform pf1 = new ExperimentalProteoform("A1", 1000.0, 1, true);
-            ExperimentalProteoform pf2 = new ExperimentalProteoform("A2", 1010.0, 1, true);
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, 1, true);
+            ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("A2", 1010.0, 1, true);
             ExperimentalProteoform[] pa1 = new ExperimentalProteoform[2];
             pa1[0] = pf1;
             pa1[1] = pf2;
@@ -46,9 +49,9 @@ namespace Test
             Assert.AreEqual(0, prList.Count);
 
             //Three proteoforms; lysine count equal; mass difference < 250 Da -- return 3
-            ExperimentalProteoform pf3 = new ExperimentalProteoform("A1", 1000.0, 1, true);
-            ExperimentalProteoform pf4 = new ExperimentalProteoform("A2", 1010.0, 1, true);
-            ExperimentalProteoform pf5 = new ExperimentalProteoform("A3", 1020.0, 1, true);
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, 1, true);
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("A2", 1010.0, 1, true);
+            ExperimentalProteoform pf5 = ConstructorsForTesting.ExperimentalProteoform("A3", 1020.0, 1, true);
             ExperimentalProteoform[] pa2 = new ExperimentalProteoform[3];
             pa2[0] = pf3;
             pa2[1] = pf4;
@@ -103,8 +106,8 @@ namespace Test
             Lollipop.neucode_labeled = false;
 
             // Two proteoforms; mass difference < 250 -- return 1
-            ExperimentalProteoform pf1 = new ExperimentalProteoform("A1", 1000.0, -1, true);
-            ExperimentalProteoform pf2 = new ExperimentalProteoform("A2", 1010.0, -1, true);
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, -1, true);
+            ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("A2", 1010.0, -1, true);
             ExperimentalProteoform[] pa1 = new ExperimentalProteoform[2];
             pa1[0] = pf1;
             pa1[1] = pf2;
@@ -121,9 +124,9 @@ namespace Test
             Assert.AreEqual(0, prList.Count);
 
             //Three proteoforms; mass difference < 250 Da -- return 3
-            ExperimentalProteoform pf3 = new ExperimentalProteoform("A1", 1000.0, -1, true);
-            ExperimentalProteoform pf4 = new ExperimentalProteoform("A2", 1010.0, -1, true);
-            ExperimentalProteoform pf5 = new ExperimentalProteoform("A3", 1020.0, -1, true);
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, -1, true);
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("A2", 1010.0, -1, true);
+            ExperimentalProteoform pf5 = ConstructorsForTesting.ExperimentalProteoform("A3", 1020.0, -1, true);
             ExperimentalProteoform[] pa2 = new ExperimentalProteoform[3];
             pa2[0] = pf3;
             pa2[1] = pf4;
@@ -163,10 +166,10 @@ namespace Test
             test_community = new ProteoformCommunity();
             Lollipop.neucode_labeled = true;
             test_community.experimental_proteoforms = new ExperimentalProteoform[] {
-                new ExperimentalProteoform("A1", 1000.0, 1, true),
-                new ExperimentalProteoform("A2", 1000.0, 2, true),
-                new ExperimentalProteoform("A3", 1000.0, 1, true),
-                new ExperimentalProteoform("A4", 1000.0, 2, true)
+                ConstructorsForTesting. ExperimentalProteoform("A1", 1000.0, 1, true),
+                ConstructorsForTesting. ExperimentalProteoform("A2", 1000.0, 2, true),
+                ConstructorsForTesting. ExperimentalProteoform("A3", 1000.0, 1, true),
+                ConstructorsForTesting. ExperimentalProteoform("A4", 1000.0, 2, true)
             };
             unequal_relations = test_community.relate_ef();
             Assert.AreNotEqual(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2]);
@@ -180,10 +183,10 @@ namespace Test
             //Two equal, two unequal lysine count. But one each has mass_difference > 250, so no relations
             test_community = new ProteoformCommunity();
             test_community.experimental_proteoforms = new ExperimentalProteoform[] {
-                new ExperimentalProteoform("A1", 1000.0, 1, true),
-                new ExperimentalProteoform("A2", 1000.0, 2, true),
-                new ExperimentalProteoform("A3", 2000.0, 1, true),
-                new ExperimentalProteoform("A4", 2000.0, 2, true)
+                ConstructorsForTesting. ExperimentalProteoform("A1", 1000.0, 1, true),
+                ConstructorsForTesting. ExperimentalProteoform("A2", 1000.0, 2, true),
+                ConstructorsForTesting. ExperimentalProteoform("A3", 2000.0, 1, true),
+                ConstructorsForTesting. ExperimentalProteoform("A4", 2000.0, 2, true)
             };
             unequal_relations = test_community.relate_ef();
             Assert.AreEqual(0, unequal_relations.Count);
@@ -191,10 +194,10 @@ namespace Test
             //None equal lysine count (apart from itself), four unequal lysine count. Each should create no unequal relations, so no relations total
             test_community = new ProteoformCommunity();
             test_community.experimental_proteoforms = new ExperimentalProteoform[] {
-                new ExperimentalProteoform("A1", 1000.0, 1, true),
-                new ExperimentalProteoform("A2", 1000.0, 2, true),
-                new ExperimentalProteoform("A3", 1000.0, 3, true),
-                new ExperimentalProteoform("A4", 1000.0, 4, true)
+                ConstructorsForTesting. ExperimentalProteoform("A1", 1000.0, 1, true),
+                ConstructorsForTesting. ExperimentalProteoform("A2", 1000.0, 2, true),
+                ConstructorsForTesting. ExperimentalProteoform("A3", 1000.0, 3, true),
+                ConstructorsForTesting. ExperimentalProteoform("A4", 1000.0, 4, true)
             };
             unequal_relations = test_community.relate_ef();
             Assert.AreEqual(0, unequal_relations.Count);
@@ -202,10 +205,10 @@ namespace Test
             //All equal, no unequal lysine count because there's an empty list of unequal lysine-count proteoforms. Each should create no unequal relations, so no relations total
             test_community = new ProteoformCommunity();
             test_community.experimental_proteoforms = new ExperimentalProteoform[] {
-                new ExperimentalProteoform("A1", 1000.0, 1, true),
-                new ExperimentalProteoform("A2", 1000.0, 1, true),
-                new ExperimentalProteoform("A3", 1000.0, 1, true),
-                new ExperimentalProteoform("A4", 1000.0, 1, true)  
+                ConstructorsForTesting. ExperimentalProteoform("A1", 1000.0, 1, true),
+                ConstructorsForTesting. ExperimentalProteoform("A2", 1000.0, 1, true),
+                ConstructorsForTesting. ExperimentalProteoform("A3", 1000.0, 1, true),
+                ConstructorsForTesting. ExperimentalProteoform("A4", 1000.0, 1, true)  
             };
             unequal_relations = test_community.relate_ef();
             Assert.AreEqual(0, unequal_relations.Count);
@@ -217,8 +220,12 @@ namespace Test
             Lollipop.neucode_labeled = true;
 
             // One experimental one theoretical proteoforms; lysine count equal; mass difference < 500 -- return 1
-            ExperimentalProteoform pf1 = new ExperimentalProteoform("A1", 1000.0, 1, true);
-            TheoreticalProteoform pf2 = new TheoreticalProteoform("T1", 1010.0, 1, true);
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, 1, true);
+            TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
+            pf2.modified_mass = 1010.0;
+            pf2.lysine_count = 1;
+            pf2.is_target = true;
+            pf2.proteinList = new List<ProteinWithGoTerms> { p1 };
             ExperimentalProteoform[] paE = new ExperimentalProteoform[1];
             TheoreticalProteoform[] paT = new TheoreticalProteoform[1];
             paE[0] = pf1;
@@ -248,9 +255,13 @@ namespace Test
             Assert.AreEqual(0, prList.Count);
 
             //Two experimental one theoretical proteoforms; lysine count equal; mass difference < 500 Da -- return 2
-            ExperimentalProteoform pf3 = new ExperimentalProteoform("A1", 1000.0, 1, true);
-            ExperimentalProteoform pf4 = new ExperimentalProteoform("A2", 1010.0, 1, true);
-            TheoreticalProteoform pf5 = new TheoreticalProteoform("T1", 1020.0, 1, true);
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, 1, true);
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("A2", 1010.0, 1, true);
+            TheoreticalProteoform pf5 = ConstructorsForTesting.make_a_theoretical();
+            pf5.modified_mass = 1020.0;
+            pf5.lysine_count = 1;
+            pf5.is_target = true;
+            pf5.proteinList = new List<ProteinWithGoTerms> { p1 };
             ExperimentalProteoform[] paE2 = new ExperimentalProteoform[2];
             paE2[0] = pf3;
             paE2[1] = pf4;
@@ -305,8 +316,12 @@ namespace Test
             Lollipop.neucode_labeled = false;
 
             // One experimental one theoretical protoeform; mass difference < 500 -- return 1
-            ExperimentalProteoform pf1 = new ExperimentalProteoform("A1", 1000.0, -1, true);
-            TheoreticalProteoform pf2 = new TheoreticalProteoform("T1", 1010.0, 1, true);
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, -1, true);
+            TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
+            pf2.modified_mass = 1010.0;
+            pf2.lysine_count = 1;
+            pf2.is_target = true;
+            pf2.proteinList = new List<ProteinWithGoTerms> { p1 };
             ExperimentalProteoform[] paE = new ExperimentalProteoform[1];
             TheoreticalProteoform[] paT = new TheoreticalProteoform[1];
             paE[0] = pf1;
@@ -324,9 +339,13 @@ namespace Test
             Assert.AreEqual(0, prList.Count);
 
             //Two experimental one theoretical proteoforms; mass difference < 500 Da -- return 2
-            ExperimentalProteoform pf3 = new ExperimentalProteoform("A1", 1000.0, -1, true);
-            ExperimentalProteoform pf4 = new ExperimentalProteoform("A2", 1010.0, -1, true);
-            TheoreticalProteoform pf5 = new TheoreticalProteoform("T1", 1020.0, 1, true);
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, -1, true);
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("A2", 1010.0, -1, true);
+            TheoreticalProteoform pf5 = ConstructorsForTesting.make_a_theoretical();
+            pf5.modified_mass = 1020.0;
+            pf5.lysine_count = 1;
+            pf5.is_target = true;
+            pf5.proteinList = new List<ProteinWithGoTerms> { p1 };
             ExperimentalProteoform[] paE2 = new ExperimentalProteoform[2];
             paE2[0] = pf3;
             paE2[1] = pf4;
@@ -380,10 +399,11 @@ namespace Test
             // it must take as arguments non-empty pfs1 and pfs2
             // So testProteoformCommunity.experimental_proteoforms must be non-empty
             // And decoy_proteoforms["fake_decoy_proteoform1"] must be non-empty
-            testProteoformCommunity.decoy_proteoforms["fake_decoy_proteoform1"] = new TheoreticalProteoform[] { new TheoreticalProteoform("decoyProteoform1") };
+            testProteoformCommunity.decoy_proteoforms["fake_decoy_proteoform1"] = new TheoreticalProteoform[] { ConstructorsForTesting.make_a_theoretical("decoyProteoform1", 0, -1) };
+            testProteoformCommunity.decoy_proteoforms["fake_decoy_proteoform1"].First().proteinList = new List<ProteinWithGoTerms> { p1 };
 
             Assert.IsEmpty(testProteoformCommunity.experimental_proteoforms);
-            testProteoformCommunity.experimental_proteoforms = new ExperimentalProteoform[] { new ExperimentalProteoform("experimentalProteoform1") };
+            testProteoformCommunity.experimental_proteoforms = new ExperimentalProteoform[] { ConstructorsForTesting.ExperimentalProteoform("experimentalProteoform1") };
 
             edDictionary = testProteoformCommunity.relate_ed();
             // Make sure there is one relation total, because only a single decoy was provided
@@ -392,9 +412,7 @@ namespace Test
             // Make sure there is one relation for the provided fake_decoy_proteoform1
             Assert.AreEqual(1, edDictionary["fake_decoy_proteoform1"].Count);
 
-
             ProteoformRelation rel = edDictionary["fake_decoy_proteoform1"][0];
-
 
             Assert.IsFalse(rel.accepted);
             Assert.AreEqual("decoyProteoform1", rel.connected_proteoforms[1].accession);
@@ -403,12 +421,17 @@ namespace Test
             Assert.AreEqual(0, rel.agg_RT_1);
             Assert.AreEqual(0, rel.agg_RT_2);
             Assert.AreEqual(0, rel.delta_mass);
-            Assert.IsNull(rel.fragment);
+            Assert.IsEmpty(rel.fragment);
             Assert.AreEqual(1, rel.nearby_relations_count);  //shows that calculate_unadjusted_group_count works
             //Assert.AreEqual(1, rel.mass_difference_group.Count);  //I don't think we need this test anymore w/ way peaks are made -LVS
             Assert.AreEqual(-1, rel.lysine_count);
+<<<<<<< HEAD
             Assert.IsNull(rel.name_2);
             Assert.AreEqual(1, rel.num_observations_1);
+=======
+            Assert.AreEqual("T2", rel.name);
+            Assert.AreEqual(0, rel.num_observations_1); //nothing aggregated with the basic constructor
+>>>>>>> 87133b6d8b406ad757e2e7718913e6fa02ff85eb
             Assert.AreEqual(0, rel.num_observations_2);
             Assert.IsTrue(rel.outside_no_mans_land);
             Assert.IsNull(rel.peak);
@@ -425,10 +448,10 @@ namespace Test
             community.theoretical_proteoforms = new TheoreticalProteoform[] { };
             Assert.False(community.has_e_proteoforms);
             Assert.False(community.has_e_and_t_proteoforms);
-            community.experimental_proteoforms = new ExperimentalProteoform[] { new ExperimentalProteoform("E1") };
+            community.experimental_proteoforms = new ExperimentalProteoform[] { ConstructorsForTesting.ExperimentalProteoform("E1") };
             Assert.True(community.has_e_proteoforms);
             Assert.False(community.has_e_and_t_proteoforms);
-            community.theoretical_proteoforms = new TheoreticalProteoform[] { new TheoreticalProteoform("T1") };
+            community.theoretical_proteoforms = new TheoreticalProteoform[] { ConstructorsForTesting.make_a_theoretical() };
             Assert.True(community.has_e_proteoforms);
             Assert.True(community.has_e_and_t_proteoforms);
         }

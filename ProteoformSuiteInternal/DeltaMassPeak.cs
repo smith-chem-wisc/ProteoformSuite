@@ -30,7 +30,8 @@ namespace ProteoformSuiteInternal
             }
 
             grouped_relations = !Lollipop.opening_results ? this.find_nearby_relations(relations_to_group) : relations_to_group.ToList();
-            this.peak_accepted = typeof(TheoreticalProteoform).IsAssignableFrom(grouped_relations.First().connected_proteoforms[1].GetType()) ?
+            this.peak_accepted = grouped_relations != null && grouped_relations.Count > 0 &&
+                typeof(TheoreticalProteoform).IsAssignableFrom(grouped_relations.First().connected_proteoforms[1].GetType()) ?
                      this.peak_relation_group_count >= Lollipop.min_peak_count_et :
                      this.peak_relation_group_count >= Lollipop.min_peak_count_ee;
             if (!Lollipop.opening_results && Lollipop.updated_theoretical) this.possiblePeakAssignments = nearestPTMs(this.peak_deltaM_average);
@@ -55,6 +56,12 @@ namespace ProteoformSuiteInternal
             of incorrect relations (average shouldn't include relations already grouped into peaks)*/
         private List<ProteoformRelation> find_nearby_relations(List<ProteoformRelation> ungrouped_relations)
         {
+            if (ungrouped_relations.Count <= 0)
+            {
+                this.grouped_relations = new List<ProteoformRelation>();
+                return this.grouped_relations;
+            }
+
             for (int i = 0; i < Lollipop.relation_group_centering_iterations; i++)
             {
                 double center_deltaM = i > 0 ? peak_deltaM_average : this.delta_mass;

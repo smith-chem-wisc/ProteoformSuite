@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -91,6 +92,21 @@ namespace ProteoformSuiteInternal
             bool tolerable_mass = candidate.corrected_mass >= low && candidate.corrected_mass <= high;
             if (tolerable_mass) return true; //Return a true result immediately; acts as an OR between these conditions
             return false;
+        }
+
+        public bool same_ptms(TheoreticalProteoform theo)
+        {                   
+            //equal numbers of each type of modification
+            if (this.ptm_list.Count == theo.ptm_set.ptm_combination.Count)
+            {
+                foreach (ModificationWithMass mod in this.ptm_list.Select(p => p.modification).Distinct())
+                {
+                    if (theo.ptm_set.ptm_combination.Where(p => p.modification == mod).Count() == this.ptm_list.Where(p => p.modification == mod).Count()) continue;
+                    else return false;
+                }
+                return true;
+            }
+            else return false;
         }
     }
 }

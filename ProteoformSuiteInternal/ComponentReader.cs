@@ -1,11 +1,8 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using ProteoformSuiteInternal;
 using System.Collections.Generic;
 using System;
-using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using IO.Thermo;
 
@@ -18,7 +15,6 @@ namespace ProteoformSuiteInternal
         private List<int> MS1_scans = new List<int>();
         public List<Component> final_components = new List<Component>();
         public HashSet<string> scan_ranges = new HashSet<string>();
-
 
         public List<Component> read_components_from_xlsx(InputFile file)
         {
@@ -334,7 +330,7 @@ namespace ProteoformSuiteInternal
             string[] scans = c.scan_range.Split('-');
             bool same_scan = scans[0] == scans[1];
             bool MS1_scan = MS1_scans.Contains(Convert.ToInt16(scans[0]));
-            bool not_repeat = raw_components_in_file.Where(r => r.scan_range == c.scan_range && r.reported_monoisotopic_mass == c.reported_monoisotopic_mass).ToList().Count == 0;
+            bool not_repeat = raw_components_in_file.Where(r => r.input_file == c.input_file && r.scan_range == c.scan_range && r.reported_monoisotopic_mass == c.reported_monoisotopic_mass).ToList().Count == 0;
             if (same_scan && MS1_scan && not_repeat) return true;
             else return false;
         }

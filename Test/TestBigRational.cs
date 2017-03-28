@@ -152,5 +152,26 @@ namespace Test
             //Assert.True(new BigRational(1.5) % new BigRational(1.0) == new BigRational(0.5));
             //Assert.True(new BigRational(1.0) % new BigRational(2.0) == 0);
         }
+
+        [Test]
+        public void bigrational_basic_equals_compare()
+        {
+            Assert.False(BigRational.One.Equals(new object()));
+            Assert.Throws<ArgumentException>(() => ((IComparable)BigRational.One).CompareTo(new object()));
+            Assert.AreEqual(1, ((IComparable)BigRational.One).CompareTo(null));
+            Assert.AreEqual(1, ((IComparable)BigRational.One).CompareTo(BigRational.Zero));
+        }
+
+        //[Test]
+        //public void tough_double_conversion()
+        //{
+        //    Assert.Greater((double)(new BigRational(Math.PI)), 3); // this fails...!
+        //}
+
+        [Test]
+        public void tough_double_cast_from_bigint()
+        {
+
+        }
     }
 }

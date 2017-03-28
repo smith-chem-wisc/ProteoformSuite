@@ -27,7 +27,6 @@ namespace ProteoformSuiteGUI
             dgv_ET_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(ET_Peak_List_DirtyStateChanged); //makes the change immediate and automatic
             ETPeakAcceptabilityChanged += ExperimentTheoreticalComparison_ETPeakAcceptabilityChanged;
             InitializeParameterSet();
-            InitializeMassWindow();
         }
 
         public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
@@ -55,7 +54,7 @@ namespace ProteoformSuiteGUI
             }
             ClearListsAndTables();
             this.Cursor = Cursors.WaitCursor;
-            Lollipop.make_et_relationships();
+            Lollipop.make_et_relationships(Lollipop.proteoform_community);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
             this.FillTablesAndCharts();
             if (Lollipop.ed_relations.Count > 0) cb_view_ed.Enabled = true;
@@ -286,22 +285,6 @@ namespace ProteoformSuiteGUI
             if (ETPeakAcceptabilityChanged != null) ETPeakAcceptabilityChanged(this, e);
         }
 
-        private void InitializeMassWindow()
-        {
-            //only do this if ET hasn't already been run
-            nUD_ET_Lower_Bound.Minimum = -500;
-            nUD_ET_Lower_Bound.Maximum = 0;
-            if (Lollipop.neucode_labeled) Lollipop.et_low_mass_difference = -250;
-            else Lollipop.et_low_mass_difference = -50;
-            nUD_ET_Lower_Bound.Value = Convert.ToDecimal(Lollipop.et_low_mass_difference); // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
-
-            nUD_ET_Upper_Bound.Minimum = 0;
-            nUD_ET_Upper_Bound.Maximum = 500;
-            if (Lollipop.neucode_labeled) Lollipop.et_high_mass_difference = 250;
-            else Lollipop.et_high_mass_difference = 150;
-            nUD_ET_Upper_Bound.Value = Convert.ToDecimal(Lollipop.et_high_mass_difference); // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
-        }
-
         private void InitializeParameterSet()
         {
 
@@ -336,6 +319,19 @@ namespace ProteoformSuiteGUI
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
             nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(Lollipop.min_peak_count_et); // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
+
+            //MASS WINDOW
+            //only do this if ET hasn't already been run
+            nUD_ET_Lower_Bound.Minimum = -500;
+            nUD_ET_Lower_Bound.Maximum = 0;
+            if (!Lollipop.neucode_labeled) Lollipop.et_low_mass_difference = -50;
+            nUD_ET_Lower_Bound.Value = Convert.ToDecimal(Lollipop.et_low_mass_difference); // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
+
+            nUD_ET_Upper_Bound.Minimum = 0;
+            nUD_ET_Upper_Bound.Maximum = 500;
+            if (!Lollipop.neucode_labeled) Lollipop.et_high_mass_difference = 150;
+            nUD_ET_Upper_Bound.Value = Convert.ToDecimal(Lollipop.et_high_mass_difference); // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
+
         }
 
         private void nUD_ET_Lower_Bound_ValueChanged(object sender, EventArgs e) // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
@@ -440,6 +436,7 @@ namespace ProteoformSuiteGUI
                     ONETAcceptibilityChanged(ETAcceptabilityChangedEventData);
                 }
             }
+            updateFiguresOfMerit();
         }
 
         private static string ET_relations_list()

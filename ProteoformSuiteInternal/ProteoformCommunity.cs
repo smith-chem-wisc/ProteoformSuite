@@ -2,7 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using ProteoformSuiteInternal;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
 using System.Threading;
@@ -47,10 +47,10 @@ namespace ProteoformSuiteInternal
 
             Parallel.ForEach(pfs1, pf1 => 
             {
-                HashSet<string> pf1_accessions = new HashSet<string>(pf1.candidate_relatives.Select(p => p.accession));
-                foreach (string accession in pf1_accessions)
+                HashSet<string> pf1_prot_accessions = new HashSet<string>(pf1.candidate_relatives.OfType<TheoreticalProteoform>().Select(t => t.proteinList.FirstOrDefault().Accession + "_G" + t.proteinList.Count() + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "")));
+                foreach (string accession in pf1_prot_accessions)
                 {
-                    List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.Where(x => x.accession == accession).ToList();
+                    List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.OfType<TheoreticalProteoform>().Where(t => t.proteinList.FirstOrDefault().Accession + "_G" + t.proteinList.Count() + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "") == accession).ToList<Proteoform>();
                     candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
                     Proteoform best_pf2 = candidate_pfs2_with_accession.First();
                     lock (best_pf2) lock (relations)
@@ -214,31 +214,24 @@ namespace ProteoformSuiteInternal
                     else i = 3; //don't recheck
                 }
 
-                //match each td proteoform group to the closest theoretical w/ same accession and number of modifications. (if no match always make relationship with unmodified)
+                //match each td proteoform group to the closest theoretical w/ same accession and modifications. (if no match always make relationship with unmodified)
                 if (theoreticals.Count > 0)
                 {
-                    TheoreticalProteoform theo = null;
-                    try
-                    {
-                        theo = theoreticals.Where(t => t.accession.Split('_')[0] == topdown.accession.Split('_')[0] && t.ptm_list.Count
-                            == topdown.ptm_list.Count).OrderBy(t => Math.Abs(t.modified_mass - topdown.theoretical_mass)).First();
-                    }
-                    catch
-                    {
-
+                    TheoreticalProteoform theo = theoreticals.Where(t => t.accession.Split('_')[0] == topdown.accession.Split('_')[0] && topdown.same_ptms(t)).FirstOrDefault();
+                    if (theo == null)
+                    { 
                         if (topdown.ptm_list.Count == 0) continue; //if can't find match to unmodified topdown, nothing to do (not in database)
                                                                    //if modified topdown, compare with unmodified theoretical
                         else
                         {
                             try
                             {
-                                theo = theoreticals.Where(t => t.accession.Split('_')[0] == topdown.accession.Split('_')[0] && t.ptm_list.Count == 0).OrderBy(
-                          t => Math.Abs(t.modified_mass - topdown.theoretical_mass)).First();
+                                theo = theoreticals.Where(t => t.accession.Split('_')[0] == topdown.accession.Split('_')[0] && t.ptm_set.ptm_combination.Count == 0).OrderBy(
+                                t => Math.Abs(t.modified_mass - topdown.theoretical_mass)).First();
                             }
                             catch { continue; }
                         }
                     }
-
                     ProteoformRelation t_td_relation = new ProteoformRelation(topdown, theo, ProteoformComparison.ttd, (topdown.theoretical_mass - theo.modified_mass));
                     t_td_relation.accepted = true;
                     t_td_relation.connected_proteoforms[0].relationships.Add(t_td_relation);
@@ -292,7 +285,7 @@ namespace ProteoformSuiteInternal
                 while (root != null && active.Count < Environment.ProcessorCount)
                 {
                     if (root.relation_type != ProteoformComparison.ee && root.relation_type != ProteoformComparison.et)
-                        throw new Exception("Only EE and ET peaks can be accepted");
+                        throw new ArgumentException("Only EE and ET peaks can be accepted");
 
                     Thread t = new Thread(new ThreadStart(root.generate_peak));
                     t.Start();
@@ -343,7 +336,10 @@ namespace ProteoformSuiteInternal
             return accept_deltaMass_peaks(relations, new Dictionary<string, List<ProteoformRelation>> { { "", false_relations } });
         }
 
+
         //CONSTRUCTING FAMILIES
+        public static bool gene_centric_families = false;
+        public static string preferred_gene_label;
         public List<ProteoformFamily> construct_families()
         {
             clean_up_td_relations();
@@ -382,7 +378,7 @@ namespace ProteoformSuiteInternal
                     else
                     {
                         cumulative_proteoforms.AddRange(family.proteoforms);
-                        Parallel.ForEach<Proteoform>(family.proteoforms, p => { lock (p) { p.family = family; } });
+                        Parallel.ForEach(family.proteoforms, p => { lock (p) p.family = family; });
                     }
                 }
 
@@ -393,6 +389,8 @@ namespace ProteoformSuiteInternal
                 running.Clear();
                 active.Clear();
             }
+            if (gene_centric_families) families = combine_gene_families(families).ToList();
+            Parallel.ForEach(families, f => f.identify_experimentals());
             return families;
         }
 
@@ -407,6 +405,44 @@ namespace ProteoformSuiteInternal
                 {
                     relation.accepted = false;
                 }
+            }
+        }
+
+        public IEnumerable<ProteoformFamily> combine_gene_families(IEnumerable<ProteoformFamily> families)
+        {
+            Stack<ProteoformFamily> remaining = new Stack<ProteoformFamily>(families);
+            List<ProteoformFamily> running = new List<ProteoformFamily>();
+            List<Proteoform> cumulative_proteoforms = new List<Proteoform>();
+            List<Thread> active = new List<Thread>();
+            while (remaining.Count > 0 || active.Count > 0)
+            {
+                while (remaining.Count > 0 && active.Count < Environment.ProcessorCount)
+                {
+                    ProteoformFamily fam = remaining.Pop();
+                    Thread t = new Thread(new ThreadStart(fam.merge_families));
+                    t.Start();
+                    running.Add(fam);
+                    active.Add(t);
+                }
+            
+                foreach (Thread t in active)
+                {
+                    t.Join();
+                }
+
+                remaining = new Stack<ProteoformFamily>(remaining.Except(running));
+                foreach (ProteoformFamily family in running)
+                {
+                    if (!cumulative_proteoforms.Contains(family.proteoforms.First()))
+                    {
+                        cumulative_proteoforms.AddRange(family.proteoforms);
+                        Parallel.ForEach(family.proteoforms, p => { lock (p) p.family = family; });
+                        yield return family;
+                    }
+                }
+
+                running.Clear();
+                active.Clear();
             }
         }
     }
