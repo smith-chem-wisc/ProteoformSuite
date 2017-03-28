@@ -734,8 +734,6 @@
         private System.Windows.Forms.NumericUpDown nud_decimalRoundingLabels;
         private System.Windows.Forms.TextBox tb_singleton_count;
         private System.Windows.Forms.Label lb_singletons;
-        private System.Windows.Forms.Button bt_export_families;
-        private System.Windows.Forms.Button bt_export_inclusion_list;
         private System.Windows.Forms.ComboBox cmbx_tableSelector;
         private System.Windows.Forms.Label lb_dgv_selection;
         private System.Windows.Forms.Button btn_merge;

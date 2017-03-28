@@ -9,6 +9,7 @@ using DocumentFormat.OpenXml.Spreadsheet;
 using System.Text.RegularExpressions;
 using UsefulProteomicsDatabases;
 using Proteomics;
+using MzIdentML;
 
 namespace ProteoformSuiteInternal
 {
@@ -19,29 +20,26 @@ namespace ProteoformSuiteInternal
         public static List<Psm> ReadBUFile(string filename)
         {
             List<Psm> psm_list = new List<Psm>();
-            string[] lines = File.ReadAllLines(filename);
-
-            int i = 1;
-            bool qLessThan1 = true;
-            //only add PSMs with q less than 1. this assumes the tsv is in increasing order of q-value! 
-            while (qLessThan1)
+            var identifications = new MzidIdentifications(filename);
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\bu.tsv"))
             {
-                string[] parts = lines[i].Split('\t');
-                //only read in with Q-value < 1%
-                if (Convert.ToDouble(parts[30]) < 1)
+                for (int i = 0; i < identifications.Count; i++)
                 {
-                    if (Convert.ToBoolean(parts[26]))
+                    List<Ptm> modifications = new List<Ptm>();
+                    for (int p = 0; p < identifications.NumModifications(i); p++)
                     {
-                        Psm new_psm = new Psm(parts[11].ToString(), parts[0].ToString(), Convert.ToInt32(parts[14]), Convert.ToInt32(parts[15]),
-                            Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]), Convert.ToInt32(parts[1]),
-                            parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]), PsmType.BottomUp);
-                        psm_list.Add(new_psm);
+                        ModificationWithMass mod = Lollipop.uniprotModificationTable.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
+                        if (mod != null) modifications.Add(new Ptm(identifications.ModificationLocation(i, p), mod));
+                        else modifications.Add(new Ptm(identifications.ModificationLocation(i, p), new ModificationWithMass(identifications.ModificationAcession(i, p), null, null, ModificationSites.Any, 0, null, 0, null, null, null)));
                     }
-                    i++;
+                    psm_list.Add(new Psm(identifications.PeptideSequenceWithoutModifications(i), identifications.StartResidueInProtein(i), identifications.EndResidueInProtein(i), modifications, identifications.Ms2SpectrumID(i), identifications.ProteinAccession(i), identifications.ProteinFullName(i), identifications.ExperimentalMassToCharge(i), identifications.ChargeState(i), (identifications.ExperimentalMassToCharge(i) - identifications.CalculatedMassToCharge(i))));
                 }
-                else { qLessThan1 = false; }
+                foreach(Psm psm in psm_list)
+                {
+                    writer.WriteLine(psm.protein_description + "\t" + psm.precursor_mass_error + "\t" + psm.base_sequence + "\t" + psm.sequence_with_modifications + "\t" + psm.modifications.Count);
+                }
             }
-            return psm_list;
+           return psm_list;
         }
 
         //Reading in Top-down excel
