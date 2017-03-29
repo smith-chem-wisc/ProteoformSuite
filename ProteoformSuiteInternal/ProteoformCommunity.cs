@@ -48,17 +48,13 @@ namespace ProteoformSuiteInternal
                 foreach (string accession in pf1_prot_accessions)
                 {
                     List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.OfType<TheoreticalProteoform>().Where(t => t.ProteinList.FirstOrDefault().Accession + "_G" + t.ProteinList.Count() + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "") == accession).ToList<Proteoform>();
-
-                    Proteoform closest_pf2 = null;
-                    foreach (Proteoform p in candidate_pfs2_with_accession)
-                    {
-                        if (closest_pf2 == null 
-                            || Math.Abs(p.modified_mass - pf1.modified_mass) < Math.Abs(p.modified_mass - closest_pf2.modified_mass))
-                                closest_pf2 = p;
-                    }
-                    Proteoform best_pf2 = candidate_pfs2_with_accession
+                    candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
+                    Proteoform closest_pf2 = candidate_pfs2_with_accession.First();
+                    int best_pf2_ranksum = candidate_pfs2_with_accession
                         .OrderBy(pf => pf.ptm_set_rank_sum)
-                        .FirstOrDefault(pf => Math.Abs(closest_pf2.modified_mass - pf.modified_mass) <= mass_tolerance);
+                        .FirstOrDefault(pf => Math.Abs(closest_pf2.modified_mass - pf.modified_mass) <= mass_tolerance)
+                        .ptm_set_rank_sum;
+                    Proteoform best_pf2 = candidate_pfs2_with_accession.FirstOrDefault(x => x.ptm_set_rank_sum == best_pf2_ranksum);
 
                     lock (best_pf2) lock (relations)
                         relations.Add(new ProteoformRelation(pf1, best_pf2, relation_type, pf1.modified_mass - best_pf2.modified_mass));
