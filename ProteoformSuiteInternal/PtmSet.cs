@@ -7,6 +7,7 @@ namespace ProteoformSuiteInternal
     {
         public double mass { get; private set; }
         public List<Ptm> ptm_combination { get; private set; }
+        public int ptm_rank_sum { get; set; }
 
         public PtmSet(List<Ptm> unique_ptm_combination)
         {

@@ -44,10 +44,10 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(pfs1, pf1 =>
             {
                 double mass_tolerance = pf1.modified_mass / 1000000 * (double)Lollipop.mass_tolerance;
-                HashSet<string> pf1_prot_accessions = new HashSet<string>(pf1.candidate_relatives.OfType<TheoreticalProteoform>().Select(t => t.proteinList.FirstOrDefault().Accession + "_G" + t.proteinList.Count() + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "")));
+                HashSet<string> pf1_prot_accessions = new HashSet<string>(pf1.candidate_relatives.OfType<TheoreticalProteoform>().Select(t => t.ProteinList.FirstOrDefault().Accession + "_G" + t.ProteinList.Count() + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "")));
                 foreach (string accession in pf1_prot_accessions)
                 {
-                    List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.OfType<TheoreticalProteoform>().Where(t => t.proteinList.FirstOrDefault().Accession + "_G" + t.proteinList.Count() + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "") == accession).ToList<Proteoform>();
+                    List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.OfType<TheoreticalProteoform>().Where(t => t.ProteinList.FirstOrDefault().Accession + "_G" + t.ProteinList.Count() + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "") == accession).ToList<Proteoform>();
 
                     Proteoform closest_pf2 = null;
                     foreach (Proteoform p in candidate_pfs2_with_accession)
@@ -266,6 +266,7 @@ namespace ProteoformSuiteInternal
                 active.Clear();
             }
             if (gene_centric_families) families = combine_gene_families(families).ToList();
+            ProteoformFamily.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(3, Lollipop.all_mods_with_mass);
             Parallel.ForEach(families, f => f.identify_experimentals());
             return families;
         }

@@ -62,7 +62,7 @@ namespace ProteoformSuiteInternal
         {
             return from f in all_families
                    from t in f.theoretical_proteoforms
-                   from p in t.proteinList
+                   from p in t.ProteinList
                    from g in p.GoTerms
                    where go_terms.Contains(g)
                    select f;
@@ -72,7 +72,7 @@ namespace ProteoformSuiteInternal
         {
             return from f in all_families
                    from t in f.theoretical_proteoforms
-                   from p in t.proteinList
+                   from p in t.ProteinList
                    from g in p.GoTerms
                    where go_terms.Any(selected => selected.Id == g.Id && selected.Description == g.Description && selected.Aspect == g.Aspect)
                    select f;
@@ -196,13 +196,16 @@ namespace ProteoformSuiteInternal
             {
                 string delta_mass = Math.Round(r.peak_center_deltaM, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
                 //if (edge_label == Lollipop.edge_labels[1] && r.represented_modification == null) continue;
+                bool append_ptmlist = r.represented_ptmset != null && (r.relation_type != ProteoformComparison.et || r.represented_ptmset.ptm_combination.First().modification.id != "Unmodified");
                 edge_rows += String.Join("\t", new List<string>
                 {
                     get_proteoform_shared_name(r.connected_proteoforms[0], node_label, double_rounding),
                     r.lysine_count.ToString(),
                     get_proteoform_shared_name(r.connected_proteoforms[1], node_label, double_rounding),
                     delta_mass,
-                    edge_label == Lollipop.edge_labels[1] ? (r.represented_modification != null ? delta_mass + " " + r.represented_modification.id : delta_mass) : delta_mass
+                    edge_label == Lollipop.edge_labels[1] && append_ptmlist ?
+                        delta_mass + " " + String.Join("; ", r.represented_ptmset.ptm_combination.Select(ptm => ptm.modification.id)) :
+                        delta_mass
                 });
                 edge_rows += Environment.NewLine;
             }

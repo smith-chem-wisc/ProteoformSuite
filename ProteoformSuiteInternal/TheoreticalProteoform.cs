@@ -12,7 +12,7 @@ namespace ProteoformSuiteInternal
 {
     public class TheoreticalProteoform : Proteoform
     {
-        public IEnumerable<ProteinWithGoTerms> proteinList { get; set; } = new List<ProteinWithGoTerms>();
+        public IEnumerable<ProteinWithGoTerms> ProteinList { get; set; } = new List<ProteinWithGoTerms>();
         public string name { get; set; }
         public string description { get; set; }
         public string fragment { get; set; }
@@ -32,15 +32,14 @@ namespace ProteoformSuiteInternal
             : base(accession, unmodified_mass + ptm_set.mass, lysine_count, is_target)
         {
             this.linked_proteoform_references = new LinkedList<Proteoform>();
-            this.theoretical_base_sequence = protein_list.FirstOrDefault().BaseSequence;
-            this.proteinList = protein_list;
+            this.ProteinList = protein_list;
             this.accession = accession;
             this.description = description;
             this.name = String.Join(";", protein_list.Select(p => p.Name));
             this.fragment = String.Join(";", protein_list.Select(p => p.ProteolysisProducts.FirstOrDefault().Type));
             this.begin = (int)protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedBeginPosition + Convert.ToInt32(is_metCleaved);
             this.end = (int)protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedEndPosition;
-            this.goTerms = proteinList.SelectMany(p => p.GoTerms).ToList();
+            this.goTerms = ProteinList.SelectMany(p => p.GoTerms).ToList();
             this.gene_name = new GeneName(protein_list.SelectMany(t => t.GeneNames));
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;

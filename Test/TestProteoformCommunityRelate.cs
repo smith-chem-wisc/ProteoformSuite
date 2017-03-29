@@ -228,7 +228,7 @@ namespace Test
             pf2.modified_mass = 1010.0;
             pf2.lysine_count = 1;
             pf2.is_target = true;
-            pf2.proteinList = new List<ProteinWithGoTerms> { p1 };
+            pf2.ProteinList = new List<ProteinWithGoTerms> { p1 };
             ExperimentalProteoform[] paE = new ExperimentalProteoform[1];
             TheoreticalProteoform[] paT = new TheoreticalProteoform[1];
             paE[0] = pf1;
@@ -264,7 +264,7 @@ namespace Test
             pf5.modified_mass = 1020.0;
             pf5.lysine_count = 1;
             pf5.is_target = true;
-            pf5.proteinList = new List<ProteinWithGoTerms> { p1 };
+            pf5.ProteinList = new List<ProteinWithGoTerms> { p1 };
             ExperimentalProteoform[] paE2 = new ExperimentalProteoform[2];
             paE2[0] = pf3;
             paE2[1] = pf4;
@@ -324,7 +324,7 @@ namespace Test
             pf2.modified_mass = 1010.0;
             pf2.lysine_count = 1;
             pf2.is_target = true;
-            pf2.proteinList = new List<ProteinWithGoTerms> { p1 };
+            pf2.ProteinList = new List<ProteinWithGoTerms> { p1 };
             ExperimentalProteoform[] paE = new ExperimentalProteoform[1];
             TheoreticalProteoform[] paT = new TheoreticalProteoform[1];
             paE[0] = pf1;
@@ -348,7 +348,7 @@ namespace Test
             pf5.modified_mass = 1020.0;
             pf5.lysine_count = 1;
             pf5.is_target = true;
-            pf5.proteinList = new List<ProteinWithGoTerms> { p1 };
+            pf5.ProteinList = new List<ProteinWithGoTerms> { p1 };
             ExperimentalProteoform[] paE2 = new ExperimentalProteoform[2];
             paE2[0] = pf3;
             paE2[1] = pf4;
@@ -403,7 +403,7 @@ namespace Test
             // So testProteoformCommunity.experimental_proteoforms must be non-empty
             // And decoy_proteoforms["fake_decoy_proteoform1"] must be non-empty
             testProteoformCommunity.decoy_proteoforms["fake_decoy_proteoform1"] = new TheoreticalProteoform[] { ConstructorsForTesting.make_a_theoretical("decoyProteoform1", 0, -1) };
-            testProteoformCommunity.decoy_proteoforms["fake_decoy_proteoform1"].First().proteinList = new List<ProteinWithGoTerms> { p1 };
+            testProteoformCommunity.decoy_proteoforms["fake_decoy_proteoform1"].First().ProteinList = new List<ProteinWithGoTerms> { p1 };
 
             Assert.IsEmpty(testProteoformCommunity.experimental_proteoforms);
             testProteoformCommunity.experimental_proteoforms = new ExperimentalProteoform[] { ConstructorsForTesting.ExperimentalProteoform("experimentalProteoform1") };
