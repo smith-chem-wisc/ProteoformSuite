@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Threading;
 
@@ -42,14 +41,25 @@ namespace ProteoformSuiteInternal
                         .ToList();
             });
 
-            Parallel.ForEach(pfs1, pf1 => 
+            Parallel.ForEach(pfs1, pf1 =>
             {
+                double mass_tolerance = pf1.modified_mass / 1000000 * (double)Lollipop.mass_tolerance;
                 HashSet<string> pf1_prot_accessions = new HashSet<string>(pf1.candidate_relatives.OfType<TheoreticalProteoform>().Select(t => t.proteinList.FirstOrDefault().Accession + "_G" + t.proteinList.Count() + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "")));
                 foreach (string accession in pf1_prot_accessions)
                 {
                     List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.OfType<TheoreticalProteoform>().Where(t => t.proteinList.FirstOrDefault().Accession + "_G" + t.proteinList.Count() + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "") == accession).ToList<Proteoform>();
-                    candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
-                    Proteoform best_pf2 = candidate_pfs2_with_accession.First();
+
+                    Proteoform closest_pf2 = null;
+                    foreach (Proteoform p in candidate_pfs2_with_accession)
+                    {
+                        if (closest_pf2 == null 
+                            || Math.Abs(p.modified_mass - pf1.modified_mass) < Math.Abs(p.modified_mass - closest_pf2.modified_mass))
+                                closest_pf2 = p;
+                    }
+                    Proteoform best_pf2 = candidate_pfs2_with_accession
+                        .OrderBy(pf => pf.ptm_set_rank_sum)
+                        .FirstOrDefault(pf => Math.Abs(closest_pf2.modified_mass - pf.modified_mass) <= mass_tolerance);
+
                     lock (best_pf2) lock (relations)
                         relations.Add(new ProteoformRelation(pf1, best_pf2, relation_type, pf1.modified_mass - best_pf2.modified_mass));
                 }

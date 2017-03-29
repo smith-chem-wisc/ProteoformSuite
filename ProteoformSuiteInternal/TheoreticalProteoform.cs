@@ -31,14 +31,13 @@ namespace ProteoformSuiteInternal
         public TheoreticalProteoform(string accession, string description, IEnumerable<ProteinWithGoTerms> protein_list, bool is_metCleaved, double unmodified_mass, int lysine_count, PtmSet ptm_set, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) 
             : base(accession, unmodified_mass + ptm_set.mass, lysine_count, is_target)
         {
-            this.theoretical_reference = this;
+            this.linked_proteoform_references = new LinkedList<Proteoform>();
+            this.theoretical_base_sequence = protein_list.FirstOrDefault().BaseSequence;
             this.proteinList = protein_list;
             this.accession = accession;
-            this.theoretical_reference_accession = accession;
             this.description = description;
             this.name = String.Join(";", protein_list.Select(p => p.Name));
             this.fragment = String.Join(";", protein_list.Select(p => p.ProteolysisProducts.FirstOrDefault().Type));
-            this.theoretical_reference_fragment = fragment;
             this.begin = (int)protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedBeginPosition + Convert.ToInt32(is_metCleaved);
             this.end = (int)protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedEndPosition;
             this.goTerms = proteinList.SelectMany(p => p.GoTerms).ToList();

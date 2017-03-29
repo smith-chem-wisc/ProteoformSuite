@@ -18,9 +18,9 @@ namespace ProteoformSuiteInternal
         public List<ProteoformRelation> relationships { get; set; } = new List<ProteoformRelation>();
         public ProteoformFamily family { get; set; }
         public PtmSet ptm_set { get; set; } = new PtmSet(new List<Ptm>());
-        public string theoretical_reference_accession { get; set; }
-        public string theoretical_reference_fragment { get; set; }
-        public Proteoform theoretical_reference { get; set; }
+        public int ptm_set_rank_sum { get; set; }
+        public LinkedList<Proteoform> linked_proteoform_references { get; set; } // TheoreticalProteoform is first, Experimental chain comes afterwards
+        public string theoretical_base_sequence { get; set; }
         public GeneName gene_name { get; set; }
 
         public Proteoform(string accession, double modified_mass, int lysine_count, bool is_target)
@@ -42,6 +42,11 @@ namespace ProteoformSuiteInternal
             return relationships.Where(r => r.peak.peak_accepted).SelectMany(r => r.connected_proteoforms).ToList();
         }
 
+        public void compute_ptm_rank_sum(Dictionary<double, int> mod_ranks)
+        {
+            ptm_set_rank_sum = ptm_set.ptm_combination.Sum(ptm => mod_ranks[ptm.modification.monoisotopicMass]);
+        }
+
         public List<ExperimentalProteoform> identify_connected_experimentals()
         {
             List<ExperimentalProteoform> identified = new List<ExperimentalProteoform>();
@@ -55,9 +60,14 @@ namespace ProteoformSuiteInternal
                 double deltaM = Math.Sign(r.peak_center_deltaM) < 0 ? r.peak_center_deltaM : sign * r.peak_center_deltaM; // give EE relations the correct sign, but don't switch negative ET relation deltaM's
                 ModificationWithMass best_addition = null;
                 ModificationWithMass best_loss = null;
+                int n_terminal_degraded_aas = degraded_aas_count(this.theoretical_base_sequence, this.ptm_set, true);
+                int c_terminal_degraded_aas = degraded_aas_count(this.theoretical_base_sequence, this.ptm_set, false);
                 foreach (ModificationWithMass m in Lollipop.uniprotModificationTable.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList())
                 {
-                    if (deltaM >= m.monoisotopicMass - mass_tolerance && deltaM <= m.monoisotopicMass + mass_tolerance 
+                    if (deltaM >= m.monoisotopicMass - mass_tolerance && deltaM <= m.monoisotopicMass + mass_tolerance
+                        && (m.modificationType != "Missing"
+                            || (n_terminal_degraded_aas < theoretical_base_sequence.Length && m.motif.Motif == theoretical_base_sequence[n_terminal_degraded_aas].ToString() 
+                            || c_terminal_degraded_aas < theoretical_base_sequence.Length && m.motif.Motif == theoretical_base_sequence[theoretical_base_sequence.Length - c_terminal_degraded_aas - 1].ToString()))
                         && (best_addition == null || Math.Abs(deltaM - m.monoisotopicMass) < Math.Abs(deltaM - best_addition.monoisotopicMass))
                         || best_addition != null && Math.Abs(deltaM - m.monoisotopicMass) == Math.Abs(deltaM - best_addition.monoisotopicMass) && m.modificationType == "Unlocalized")
                     {
@@ -97,17 +107,29 @@ namespace ProteoformSuiteInternal
             {
                 r.represented_modification = m;
             }
-            if (e.theoretical_reference == null)
+            if (e.linked_proteoform_references == null)
             {
-                e.theoretical_reference_accession = this.theoretical_reference_accession;
-                e.theoretical_reference_fragment = this.theoretical_reference_fragment;
-                e.theoretical_reference = this;
+                e.linked_proteoform_references = new LinkedList<Proteoform>(this.linked_proteoform_references);
+                e.linked_proteoform_references.AddLast(this);
                 e.ptm_set = set;
             }
             if (e.gene_name == null)
                 e.gene_name = this.gene_name;
             else
                 e.gene_name.gene_names.Concat(this.gene_name.gene_names);
+        }
+
+        private int degraded_aas_count(string seq, PtmSet set, bool from_beginning)
+        {
+            List<string> missing_aas = set.ptm_combination.Select(ptm => ptm.modification).Where(m => m.modificationType == "Missing").Select(m => m.motif.Motif).ToList();
+            int degraded = 0;
+            if (missing_aas.Count != 0)
+                foreach (char c in from_beginning ? seq.ToCharArray() : seq.ToCharArray().Reverse())
+                {
+                    if (missing_aas.Contains(c.ToString().ToUpper())) degraded++;
+                    else break;
+                }
+            return degraded;
         }
     }
 }

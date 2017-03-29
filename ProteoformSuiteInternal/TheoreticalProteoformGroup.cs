@@ -24,7 +24,6 @@ namespace ProteoformSuiteInternal
             this.description = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.description));
             this.name = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.name));
             this.fragment = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.fragment));
-            this.theoretical_reference_fragment = fragment;
             this.accessionList = theoreticals_with_contaminants_first.Select(p => p.accession).ToList();
             this.contaminant = theoreticals_with_contaminants_first.FirstOrDefault().contaminant;
         }
