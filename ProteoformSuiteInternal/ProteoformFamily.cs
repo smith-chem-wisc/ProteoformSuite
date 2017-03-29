@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 using System.Threading.Tasks;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
     public class ProteoformFamily
     {
         private static int family_counter = 0;
+        public static List<PtmSet> all_possible_ptmsets;
         public int family_id { get; set; }
         public string name_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.name)); } }
         public string accession_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.accession)); } }
@@ -74,7 +76,7 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(theoretical_proteoforms, t =>
             {
                 lock (identified_experimentals)
-                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals())
+                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(all_possible_ptmsets))
                     {
                         identified_experimentals.Add(e);
                     }
@@ -90,7 +92,7 @@ namespace ProteoformSuiteInternal
                 Parallel.ForEach(newly_identified_experimentals, id_experimental => 
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
-                        foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals())
+                        foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(all_possible_ptmsets))
                         {
                             identified_experimentals.Add(new_e);
                             tmp_new_experimentals.Add(new_e);

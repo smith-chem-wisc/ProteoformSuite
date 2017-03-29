@@ -186,7 +186,6 @@ namespace Test
             {
                 { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } },
                 { "fake", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake", 19) } },
-                { "fake_zero", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake_zero", 0) } }
             };
 
             Lollipop.ee_max_mass_difference = 20;
@@ -265,8 +264,8 @@ namespace Test
             //Testing the identification of experimentals   
             //test with a modificationwithmass that's 0 mass, and then see that it crawls around and labels them each with growing ptm sets with that modification
             //test that the relation.represented_modification gets set
-            Assert.True(community.relations_in_peaks.All(r => r.peak_center_deltaM != 0 || r.represented_modification.id == "fake_zero"));
-            Assert.True(community.relations_in_peaks.All(r => r.peak_center_deltaM != 19 || r.represented_modification == null));
+            Assert.True(community.relations_in_peaks.All(r => r.peak_center_deltaM != 0 || r.represented_ptmset.ptm_combination.First().modification.id == "Unmodified"));
+            Assert.True(community.relations_in_peaks.All(r => r.peak_center_deltaM != 19 || r.represented_ptmset == null));
             Assert.True(pf1 == pf3.linked_proteoform_references.First.Value || pf2 == pf3.linked_proteoform_references.First.Value);
 
             //test I don't get re-reassignments

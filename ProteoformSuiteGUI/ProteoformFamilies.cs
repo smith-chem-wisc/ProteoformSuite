@@ -64,6 +64,10 @@ namespace ProteoformSuiteGUI
             tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
             tb_tableFilter.Text = "";
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
+
+            tb_likelyCleavages.TextChanged -= tb_likelyCleavages_TextChanged;
+            tb_likelyCleavages.Text = String.Join(",", Lollipop.likely_cleavages);
+            tb_likelyCleavages.TextChanged += tb_likelyCleavages_TextChanged;
         }
 
         public void construct_families()
@@ -164,8 +168,8 @@ namespace ProteoformSuiteGUI
         private void fill_go(Aspect aspect, string filter)
         {
             DisplayUtility.FillDataGridView(dgv_main, filter == "" ?
-                Lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.proteinList).SelectMany(g => g.GoTerms).Where(g => g.Aspect == aspect) :
-                ExtensionMethods.filter(Lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.proteinList).SelectMany(g => g.GoTerms).Where(g => g.Aspect == aspect), filter));
+                Lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.ProteinList).SelectMany(g => g.GoTerms).Where(g => g.Aspect == aspect) :
+                ExtensionMethods.filter(Lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.ProteinList).SelectMany(g => g.GoTerms).Where(g => g.Aspect == aspect), filter));
         }
 
         private void dgv_proteoform_families_CellContentClick(object sender, DataGridViewCellEventArgs e)
@@ -341,6 +345,11 @@ namespace ProteoformSuiteGUI
         private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
         {
             ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
+        }
+
+        private void tb_likelyCleavages_TextChanged(object sender, EventArgs e)
+        {
+            Lollipop.likely_cleavages = tb_likelyCleavages.Text.Split(',');
         }
     }
 }

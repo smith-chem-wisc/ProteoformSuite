@@ -435,7 +435,13 @@ namespace ProteoformSuiteInternal
         public static Dictionary<InputFile, Protein[]> theoretical_proteins = new Dictionary<InputFile, Protein[]>();
         public static ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
         public static Dictionary<string, IList<Modification>> uniprotModificationTable = new Dictionary<string, IList<Modification>>();
+        public static List<ModificationWithMass> all_mods_with_mass = new List<ModificationWithMass>();
         public static Dictionary<double, int> modification_ranks = new Dictionary<double, int>();
+        public static int rank_sum_threshold = 0; // set to the maximum rank of any single modification
+        public static int rank_first_quartile = 0; // approximate quartiles used for heuristics with unranked modifications
+        public static int rank_second_quartile = 0;
+        public static int rank_third_quartile = 0;
+        public static List<PtmSet> acceptable_ptm_sets = new List<PtmSet>();
         static Dictionary<char, double> aaIsotopeMassList;
 
         public static void get_theoretical_proteoforms()
@@ -456,7 +462,13 @@ namespace ProteoformSuiteInternal
             });
             all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
             uniprotModificationTable = read_mods(all_known_modifications);
+            all_mods_with_mass = uniprotModificationTable.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
             modification_ranks = rank_mods(theoretical_proteins);
+            List<int> ranks = modification_ranks.Select(kv => kv.Value).OrderBy(x => x).ToList();
+            rank_sum_threshold = ranks.Max();
+            rank_first_quartile = ranks[ranks.Count / 4];
+            rank_first_quartile = ranks[2 * ranks.Count / 4];
+            rank_first_quartile = ranks[3 * ranks.Count / 4];
             expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
             aaIsotopeMassList = new AminoAcidMasses(methionine_oxidation, carbamidomethylation, Lollipop.natural_lysine_isotope_abundance, Lollipop.neucode_light_lysine, Lollipop.neucode_heavy_lysine).AA_Masses;
             if (combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
@@ -604,7 +616,7 @@ namespace ProteoformSuiteInternal
             //Calculate the properties of this sequence
             double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
             int lysine_count = seq.Split('K').Length - 1;
-            List<PtmSet> unique_ptm_groups = new PtmCombos(prot.OneBasedPossibleLocalizedModifications).get_combinations(max_ptms);
+            List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(prot.OneBasedPossibleLocalizedModifications, max_ptms);
             bool check_contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
 
             //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
@@ -694,6 +706,7 @@ namespace ProteoformSuiteInternal
         public static string[] node_labels = new string[] { "Experimental ID", "Inferred Theoretical ID" };
         public static string[] edge_labels = new string[] { "Mass Difference", "Modification IDs (omits edges with null IDs)" };
         public static List<string> gene_name_labels = new List<string> { "Primary, e.g. HOG1", "Ordered Locus, e.g. YLR113W" };
+        public static string[] likely_cleavages = new string[] { "I", "L", "A" };
 
 
         //QUANTIFICATION SETUP
@@ -955,7 +968,7 @@ namespace ProteoformSuiteInternal
             return satisfactoryProteoforms
                 .Select(p => p.family)
                 .SelectMany(pf => pf.theoretical_proteoforms)
-                .SelectMany(t => t.proteinList).ToList();
+                .SelectMany(t => t.ProteinList).ToList();
         }
 
         public static List<ProteinWithGoTerms> getInducedOrRepressedProteins(List<ExperimentalProteoform> satisfactoryProteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
@@ -963,7 +976,7 @@ namespace ProteoformSuiteInternal
             return getInterestingProteoforms(satisfactoryProteoforms, minProteoformAbsLogFoldChange, maxProteoformFDR, minProteoformIntensity)
                 .Select(p => p.family)
                 .SelectMany(pf => pf.theoretical_proteoforms)
-                .SelectMany(t => t.proteinList).ToList();
+                .SelectMany(t => t.ProteinList).ToList();
         }
 
         public static List<ProteoformFamily> getInterestingFamilies(IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformFoldChange, decimal minProteoformFDR, decimal minProteoformIntensity)
@@ -977,7 +990,7 @@ namespace ProteoformSuiteInternal
             return
                 (from fam in families
                  from theo in fam.theoretical_proteoforms
-                 from p in theo.proteinList
+                 from p in theo.ProteinList
                  from g in p.GoTerms
                  where go_terms_numbers.Select(gtn => gtn.Id).Contains(g.Id)
                  select fam)
