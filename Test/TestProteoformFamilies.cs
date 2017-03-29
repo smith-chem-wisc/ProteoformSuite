@@ -14,7 +14,7 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
             //One accepted ET relation; should give one ProteoformFamily
             Lollipop.min_peak_count_et = 1;
@@ -46,7 +46,7 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.proteoform_community = test_community;
 
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
             Lollipop.min_peak_count_ee = 2;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
@@ -88,7 +88,7 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.proteoform_community = test_community;
 
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
             Lollipop.ee_max_mass_difference = 20;
             Lollipop.peak_width_base_ee = 0.015;
@@ -138,7 +138,7 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET_with_theoretical_pf_group()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "name", "full_name", true, false, new List<DatabaseReference>(), new List<GoTerm>());
@@ -184,7 +184,7 @@ namespace Test
             Lollipop.proteoform_community = community;
             Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>>
             {
-                { "unmodified", new List<Modification> { new Modification("unmodified") } },
+                { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } },
                 { "fake", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake", 19) } },
                 { "fake_zero", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake_zero", 0) } }
             };
@@ -267,16 +267,16 @@ namespace Test
             //test that the relation.represented_modification gets set
             Assert.True(community.relations_in_peaks.All(r => r.peak_center_deltaM != 0 || r.represented_modification.id == "fake_zero"));
             Assert.True(community.relations_in_peaks.All(r => r.peak_center_deltaM != 19 || r.represented_modification == null));
-            Assert.True(pf1 == pf3.theoretical_reference || pf2 == pf3.theoretical_reference);
+            Assert.True(pf1 == pf3.linked_proteoform_references.First.Value || pf2 == pf3.linked_proteoform_references.First.Value);
 
             //test I don't get re-reassignments
-            Assert.AreEqual(pf3, pf4.theoretical_reference); //test that the proteoform.theoretical_reference gets set to each successive PF base
-            Assert.AreEqual(pf3.theoretical_reference_accession, pf4.theoretical_reference_accession);
-            Assert.AreEqual(pf3.theoretical_reference_fragment, pf4.theoretical_reference_fragment);
-            Assert.AreEqual(pf4, pf5.theoretical_reference);
-            Assert.AreEqual(pf3.theoretical_reference_accession, pf5.theoretical_reference_accession); //test that the accession gets carried all the way through the depth of connections
-            Assert.AreEqual(pf3.theoretical_reference_fragment, pf5.theoretical_reference_fragment);
-            Assert.AreEqual(pf9, pf8.theoretical_reference);
+            Assert.AreEqual(pf3, pf4.linked_proteoform_references.Last.Value); //test that the proteoform.theoretical_reference gets set to each successive PF base
+            Assert.AreEqual((pf3.linked_proteoform_references.First.Value as TheoreticalProteoform).accession, (pf4.linked_proteoform_references.First.Value as TheoreticalProteoform).accession);
+            Assert.AreEqual((pf3.linked_proteoform_references.First.Value as TheoreticalProteoform).fragment, (pf4.linked_proteoform_references.First.Value as TheoreticalProteoform).fragment);
+            Assert.AreEqual(pf4, pf5.linked_proteoform_references.Last.Value);
+            Assert.AreEqual((pf3.linked_proteoform_references.First.Value as TheoreticalProteoform).accession, (pf5.linked_proteoform_references.First.Value as TheoreticalProteoform).accession); //test that the accession gets carried all the way through the depth of connections
+            Assert.AreEqual((pf3.linked_proteoform_references.First.Value as TheoreticalProteoform).fragment, (pf5.linked_proteoform_references.First.Value as TheoreticalProteoform).fragment);
+            Assert.AreEqual(pf9, pf8.linked_proteoform_references.Last.Value);
             return community;
         }
 

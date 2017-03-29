@@ -23,7 +23,7 @@ namespace Test
         public void TestDeltaMassPeakConstructor()
         {
             Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Lollipop.input_files);
-            Lollipop.read_mods();
+            ConstructorsForTesting.read_mods();
             Lollipop.et_high_mass_difference = 250;
             Lollipop.et_low_mass_difference = -250;
             Lollipop.peak_width_base_ee = 0.015;
@@ -142,7 +142,7 @@ namespace Test
             Assert.AreEqual(3, pr2.peak_center_count);
             Assert.AreEqual(0, pr2.peak_center_deltaM);
             Assert.AreEqual("unmodified", peak.possiblePeakAssignments_string);
-            peak.possiblePeakAssignments.Add(new Modification("unmodified"));
+            peak.possiblePeakAssignments.Add(new Modification("unmodified", "unknown"));
             Assert.AreEqual("unmodified; unmodified", peak.possiblePeakAssignments_string);
 
             //Test that the relations in the peak are added to each of the proteoforms referenced in the peak

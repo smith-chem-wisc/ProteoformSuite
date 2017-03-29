@@ -2,75 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Proteomics;
-using System.Threading.Tasks;
-using System.Threading;
 
 namespace ProteoformSuiteInternal
 {
-    //public class Modification
-    //{
-    //    //Adapted from the class by the same name from Morpheus (http://cwenger.github.io/Morpheus) by Craig Wenger
-    //    // unused but available public string pA, cF, lC, tR, kW, dR;
-    //    public string description { get; set; } = "unmodified"; //ID
-    //    public string accession { get; set; } = ""; //AC
-    //    public string feature_type { get; set; } = ""; //FT
-    //    public string position { get; set; } = ""; //PP
-    //    public char[] target_aas { get; set; } = new char[0]; //TG
-    //    public double monoisotopic_mass_shift { get; set; } = 0; //MM
-    //    public double average_mass_shift { get; set; } = 0; //MA
-    //    public Modification() // constructs an "un-Modification"
-    //    { }
-    //    public Modification(string description, string accession, string featureType,
-    //        string position, char[] targetAAs, double monoisotopicMassShift, double averageMassShift)
-    //    {
-    //        this.description = description;
-    //        this.accession = accession;
-    //        this.feature_type = featureType;
-    //        this.position = position;
-    //        this.target_aas = targetAAs;
-    //        this.monoisotopic_mass_shift = monoisotopicMassShift;
-    //        this.average_mass_shift = averageMassShift;
-    //    }
-
-    //    public Modification(string description)
-    //    {
-    //        this.description = description;
-    //    }
-
-    //    public override string ToString()
-    //    {
-    //        return "Description=" + this.description + " Accession=" + this.accession +
-    //            " FeatureType=" + this.feature_type + " MonisotopicMass=" + this.monoisotopic_mass_shift;
-    //    }
-    //}
-
-    public class Ptm
-    {
-        public int position { get; private set; } = -1;
-        public ModificationWithMass modification { get; private set; } = new ModificationWithMass("Unmodified", new Tuple<string, string>("N/A", "Unmodified"), null, ModificationSites.Any, 0, null, -1, null, null, null);
-
-        public Ptm() // initializes an "un-Modification"
-        { }
-
-        public Ptm(int position, ModificationWithMass modification)
-        {
-            this.position = position;
-            this.modification = modification;
-        }
-    }
-
-    public class PtmSet
-    {
-        public double mass { get; private set; }
-        public List<Ptm> ptm_combination { get; private set; }
-
-        public PtmSet(List<Ptm> unique_ptm_combination)
-        {
-            ptm_combination = unique_ptm_combination;
-            mass = ptm_combination.Sum(ptm => ptm.modification.monoisotopicMass);
-        }
-    }
-
     public class PtmCombos
     {
         public List<Ptm> all_ptms;

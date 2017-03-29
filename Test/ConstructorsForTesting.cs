@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Proteomics;
 using ProteoformSuiteInternal;
+using UsefulProteomicsDatabases;
+using System.IO;
 
 namespace Test
 {
@@ -71,7 +73,8 @@ namespace Test
 
         public static TheoreticalProteoform make_a_theoretical(string a, double mass, int lysine_count)
         {
-            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 0, new List<Modification> { new Modification("unmodified") } } }, new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
+            ModificationWithMass unmodification = new ModificationWithMass("Unmodified", new Tuple<string, string>("N/A", "Unmodified"), null, ModificationSites.Any, 0, null, -1, null, null, null);
+            ProteinWithGoTerms p1 = new ProteinWithGoTerms("MSSSSSSSSSSS", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>> { { 0, new List<Modification> { unmodification } } }, new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference> { new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") }) }, new List<GoTerm> { new GoTerm(new DatabaseReference("GO", ":", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:") })) });
             PtmSet set = new PtmSet(new List<Ptm>());
             return new TheoreticalProteoform(a, "", new List<ProteinWithGoTerms> { p1 }, false, mass, lysine_count, set, true, false, new Dictionary<InputFile, Protein[]>());
         }
@@ -126,6 +129,13 @@ namespace Test
             ModificationMotif.TryGetMotif("K", out motif);
             ModificationWithMass m = new ModificationWithMass(id, new Tuple<string, string>("", ""), motif, ModificationSites.K, mass, new Dictionary<string, IList<string>>(), -1, new List<double>(), new List<double>(), "");
             return m;
+        }
+
+        public static Dictionary<string, IList<Modification>> read_mods()
+        {
+            Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
+            List<ModificationWithLocation> all_modifications = Lollipop.get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
+            return Lollipop.read_mods(all_modifications);
         }
     }
 }

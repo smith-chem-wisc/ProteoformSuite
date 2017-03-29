@@ -435,6 +435,7 @@ namespace ProteoformSuiteInternal
         public static Dictionary<InputFile, Protein[]> theoretical_proteins = new Dictionary<InputFile, Protein[]>();
         public static ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
         public static Dictionary<string, IList<Modification>> uniprotModificationTable = new Dictionary<string, IList<Modification>>();
+        public static Dictionary<double, int> modification_ranks = new Dictionary<double, int>();
         static Dictionary<char, double> aaIsotopeMassList;
 
         public static void get_theoretical_proteoforms()
@@ -446,7 +447,7 @@ namespace ProteoformSuiteInternal
             //Read the UniProt-XML and ptmlist
             Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
             List<ModificationWithLocation> all_known_modifications = get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
-            read_mods(all_known_modifications);
+            uniprotModificationTable = read_mods(all_known_modifications);
             Dictionary<string, Modification> um;
             Parallel.ForEach(get_files(Lollipop.input_files, Purpose.ProteinDatabase).ToList(), database =>
             {
@@ -454,7 +455,8 @@ namespace ProteoformSuiteInternal
                 lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).OfType<ModificationWithLocation>());
             });
             all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
-            read_mods(all_known_modifications);
+            uniprotModificationTable = read_mods(all_known_modifications);
+            modification_ranks = rank_mods(theoretical_proteins);
             expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
             aaIsotopeMassList = new AminoAcidMasses(methionine_oxidation, carbamidomethylation, Lollipop.natural_lysine_isotope_abundance, Lollipop.neucode_light_lysine, Lollipop.neucode_heavy_lysine).AA_Masses;
             if (combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
@@ -468,26 +470,37 @@ namespace ProteoformSuiteInternal
                 Lollipop.proteoform_community.theoretical_proteoforms = group_proteoforms_byMass(Lollipop.proteoform_community.theoretical_proteoforms);
                 Lollipop.proteoform_community.decoy_proteoforms = Lollipop.proteoform_community.decoy_proteoforms.ToDictionary(kv => kv.Key, kv => (TheoreticalProteoform[])group_proteoforms_byMass(kv.Value));
             }
+
+            foreach (TheoreticalProteoform t in Lollipop.proteoform_community.theoretical_proteoforms.Concat(Lollipop.proteoform_community.decoy_proteoforms.SelectMany(kv => kv.Value)))
+            {
+                t.compute_ptm_rank_sum(modification_ranks);
+            }
         }
 
-        public static void read_mods(List<ModificationWithLocation> all_modifications)
+        public static Dictionary<string, IList<Modification>> read_mods(List<ModificationWithLocation> all_modifications)
         {
-            uniprotModificationTable.Clear();
+            Dictionary<string, IList<Modification>> mod_dict = new Dictionary<string, IList<Modification>>();
             foreach (var nice in all_modifications)
             {
                 IList<Modification> val;
-                if (uniprotModificationTable.TryGetValue(nice.id, out val))
+                if (mod_dict.TryGetValue(nice.id, out val))
                     val.Add(nice);
                 else
-                    uniprotModificationTable.Add(nice.id, new List<Modification> { nice });
+                    mod_dict.Add(nice.id, new List<Modification> { nice });
             }
+            return mod_dict;
         }
-        
-        public static void read_mods()
+
+        public static Dictionary<double, int> rank_mods(Dictionary<InputFile, Protein[]> theoretical_proteins)
         {
-            Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
-            List<ModificationWithLocation> all_modifications = get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
-            read_mods(all_modifications);
+            Dictionary<double, int> mod_counts = new Dictionary<double, int> { { 0, int.MaxValue } }; //unmodified gets first rank
+            foreach (ModificationWithMass m in theoretical_proteins.SelectMany(kv => kv.Value).SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList())
+            {
+                if (mod_counts.ContainsKey(m.monoisotopicMass) && m.monoisotopicMass != 0) mod_counts[m.monoisotopicMass]++;
+                else mod_counts.Add(m.monoisotopicMass, 1);
+            }
+            List<KeyValuePair<double, int>> ordered_mod_counts = mod_counts.OrderByDescending(kv => kv.Value).ToList();
+            return Enumerable.Range(1, ordered_mod_counts.Count).ToDictionary(i => ordered_mod_counts[i - 1].Key, i => i);
         }
 
         private static ProteinWithGoTerms[] expand_protein_entries(Protein[] proteins)
@@ -778,8 +791,8 @@ namespace ProteoformSuiteInternal
         //public static decimal negativeOffsetTestStatistics = -1m;
         public static decimal offsetFDR;
 
-        public static List<ProteinWithGoTerms> observedProteins = new List<ProteinWithGoTerms>();//This is the complete list of proteins included in any accepted proteoform family
-        public static List<ProteinWithGoTerms> inducedOrRepressedProteins = new List<ProteinWithGoTerms>();//This is the of proteins from proteoforms that underwent significant induction or repression
+        public static List<ProteinWithGoTerms> observedProteins = new List<ProteinWithGoTerms>(); //This is the complete list of proteins included in any accepted proteoform family
+        public static List<ProteinWithGoTerms> inducedOrRepressedProteins = new List<ProteinWithGoTerms>(); //This is the list of proteins from proteoforms that underwent significant induction or repression
         public static decimal minProteoformIntensity = 500000m;
         public static decimal minProteoformFoldChange = 1m;
         public static decimal minProteoformFDR = 0.05m;
@@ -939,17 +952,24 @@ namespace ProteoformSuiteInternal
 
         public static List<ProteinWithGoTerms> getObservedProteins(List<ExperimentalProteoform> satisfactoryProteoforms) // these are all observed proteins in any of the proteoform families.
         {
-            return satisfactoryProteoforms.Select(p => p.family).SelectMany(pf => pf.theoretical_proteoforms).SelectMany(t => t.proteinList).ToList();
+            return satisfactoryProteoforms
+                .Select(p => p.family)
+                .SelectMany(pf => pf.theoretical_proteoforms)
+                .SelectMany(t => t.proteinList).ToList();
         }
 
         public static List<ProteinWithGoTerms> getInducedOrRepressedProteins(List<ExperimentalProteoform> satisfactoryProteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
         {
-            return getInterestingProteoforms(satisfactoryProteoforms, minProteoformAbsLogFoldChange, maxProteoformFDR, minProteoformIntensity).Select(p => p.family).SelectMany(pf => pf.theoretical_proteoforms).SelectMany(t => t.proteinList).ToList();
+            return getInterestingProteoforms(satisfactoryProteoforms, minProteoformAbsLogFoldChange, maxProteoformFDR, minProteoformIntensity)
+                .Select(p => p.family)
+                .SelectMany(pf => pf.theoretical_proteoforms)
+                .SelectMany(t => t.proteinList).ToList();
         }
 
         public static List<ProteoformFamily> getInterestingFamilies(IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformFoldChange, decimal minProteoformFDR, decimal minProteoformIntensity)
         {
-            return getInterestingProteoforms(proteoforms, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity).Select(e => e.family).ToList();
+            return getInterestingProteoforms(proteoforms, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity)
+                .Select(e => e.family).ToList();
         }
 
         public static List<ProteoformFamily> getInterestingFamilies(List<GoTermNumber> go_terms_numbers, List<ProteoformFamily> families)
@@ -1005,8 +1025,8 @@ namespace ProteoformSuiteInternal
                     goSignificantCounts.ContainsKey(g.Id) ? goSignificantCounts[g.Id] : 0, 
                     inducedOrRepressedProteins.Count, 
                     goBackgroundCounts.ContainsKey(g.Id) ? goBackgroundCounts[g.Id] : 0, 
-                    backgroundProteinSet.Count)
-                ).ToList();
+                    backgroundProteinSet.Count
+                )).ToList();
         }
 
         private static Dictionary<string, int> fillGoDictionary(List<ProteinWithGoTerms> proteinSet)

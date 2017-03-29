@@ -105,19 +105,19 @@ namespace ProteoformSuiteInternal
 
             foreach (ExperimentalProteoform e in Lollipop.proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
                 .OrderByDescending(e => e.quant.significant ? 1 : 0)
-                .ThenBy(e => e.theoretical_reference_accession)
+                .ThenBy(e => (e.linked_proteoform_references.First.Value as TheoreticalProteoform).accession)
                 .ThenBy(e => e.ptm_set.ptm_combination.Count))
             {
-                if (e.theoretical_reference == null) continue;
+                if (e.linked_proteoform_references == null) continue;
 
                 results.Rows.Add(
-                    e.theoretical_reference_accession,
+                    (e.linked_proteoform_references.First.Value as TheoreticalProteoform).accession,
                     e.accession,
-                    e.theoretical_reference.gene_name.ordered_locus,
-                    e.theoretical_reference.gene_name.primary,
-                    e.theoretical_reference_fragment,
+                    e.linked_proteoform_references.Last.Value.gene_name.ordered_locus,
+                    e.linked_proteoform_references.Last.Value.gene_name.primary,
+                    (e.linked_proteoform_references.First.Value as TheoreticalProteoform).fragment,
                     String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => ptm.modification.id)),
-                    e.modified_mass - e.theoretical_reference.modified_mass,
+                    e.modified_mass - e.linked_proteoform_references.Last.Value.modified_mass,
                     e.agg_rt,
                     e.agg_intensity,
                     e.quant.lightIntensitySum,
