@@ -156,12 +156,18 @@ namespace ProteoformSuiteInternal
 
                 //Load Settings
                 "vizmap load file file=\"" + styles_path + "\"",
-                "command sleep duration=0.5",
-                "vizmap apply styles=\"" + style_name + "\"",
                 "command sleep duration=" + (1.0 + Math.Round((1.0 * sleep_factor), 2)).ToString(),
                 "layout degree-circle",
                 "command sleep duration=" + (0.5 + Math.Round((0.5 * sleep_factor), 2)).ToString(),
-                "view fit content"
+                "view fit content",
+
+                //Mash applying the style because it flakes out
+                "command sleep duration=1",
+                "vizmap apply styles=\"" + style_name + "\"",
+                "command sleep duration=1",
+                "vizmap apply styles=\"" + style_name + "\"",
+                "command sleep duration=1",
+                "vizmap apply styles=\"" + style_name + "\"",
             });
         }
 
