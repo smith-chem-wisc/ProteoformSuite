@@ -104,11 +104,11 @@ namespace ProteoformSuiteInternal
             results.Columns.Add("Statistically Significant", typeof(bool));
 
             foreach (ExperimentalProteoform e in Lollipop.proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
+                .Where(e => e.linked_proteoform_references != null)
                 .OrderByDescending(e => e.quant.significant ? 1 : 0)
                 .ThenBy(e => (e.linked_proteoform_references.First.Value as TheoreticalProteoform).accession)
                 .ThenBy(e => e.ptm_set.ptm_combination.Count))
             {
-                if (e.linked_proteoform_references == null) continue;
 
                 results.Rows.Add(
                     (e.linked_proteoform_references.First.Value as TheoreticalProteoform).accession,
