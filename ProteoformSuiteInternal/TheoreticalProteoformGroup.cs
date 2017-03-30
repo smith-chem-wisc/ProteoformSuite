@@ -12,8 +12,7 @@ namespace ProteoformSuiteInternal
         public TheoreticalProteoformGroup(IEnumerable<TheoreticalProteoform> theoreticals_with_contaminants_first)
             : base(theoreticals_with_contaminants_first.FirstOrDefault().accession + "_" + theoreticals_with_contaminants_first.Count() + "T",
                 theoreticals_with_contaminants_first.FirstOrDefault().description,
-                theoreticals_with_contaminants_first.SelectMany(p => p.ProteinList),
-                false, //don't increment begin...
+                theoreticals_with_contaminants_first.SelectMany(p => p.ExpandedProteinList),
                 theoreticals_with_contaminants_first.FirstOrDefault().unmodified_mass,
                 theoreticals_with_contaminants_first.FirstOrDefault().lysine_count,
                 theoreticals_with_contaminants_first.FirstOrDefault().ptm_set,

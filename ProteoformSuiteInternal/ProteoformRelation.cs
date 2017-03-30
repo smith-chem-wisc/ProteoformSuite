@@ -28,7 +28,7 @@ namespace ProteoformSuiteInternal
         public int instanceId;
         public Proteoform[] connected_proteoforms = new Proteoform[2];
         public ProteoformComparison relation_type;
-        public double delta_mass { get; set; }        
+        public double delta_mass { get; set; }   
 
         public MassDifference(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass)
         {

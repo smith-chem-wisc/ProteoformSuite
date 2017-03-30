@@ -62,7 +62,7 @@ namespace ProteoformSuiteInternal
         {
             return from f in all_families
                    from t in f.theoretical_proteoforms
-                   from p in t.ProteinList
+                   from p in t.ExpandedProteinList
                    from g in p.GoTerms
                    where go_terms.Contains(g)
                    select f;
@@ -72,7 +72,7 @@ namespace ProteoformSuiteInternal
         {
             return from f in all_families
                    from t in f.theoretical_proteoforms
-                   from p in t.ProteinList
+                   from p in t.ExpandedProteinList
                    from g in p.GoTerms
                    where go_terms.Any(selected => selected.Id == g.Id && selected.Description == g.Description && selected.Aspect == g.Aspect)
                    select f;
