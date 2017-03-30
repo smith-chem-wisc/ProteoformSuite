@@ -112,8 +112,10 @@ namespace ProteoformSuiteInternal
 
         public List<ProteoformRelation> find_nearby_decoys(List<ProteoformRelation> all_relations)
         {
-            double lower_limit_of_peak_width = this.peak_deltaM_average - Lollipop.peak_width_base_et / 2;
-            double upper_limit_of_peak_width = this.peak_deltaM_average + Lollipop.peak_width_base_et / 2;
+            double peak_width_base = Lollipop.peak_width_base_et;
+            if (all_relations[0].relation_type == ProteoformComparison.ef) peak_width_base = Lollipop.peak_width_base_ee;
+            double lower_limit_of_peak_width = this.peak_deltaM_average - peak_width_base / 2; 
+            double upper_limit_of_peak_width = this.peak_deltaM_average + peak_width_base / 2;
             return all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
         }
 

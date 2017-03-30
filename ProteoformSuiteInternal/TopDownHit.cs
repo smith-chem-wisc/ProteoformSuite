@@ -75,7 +75,6 @@ namespace ProteoformSuiteInternal
     public enum Result_Set
     {
         tight_absolute_mass,
-        find_unexpected_mods,
         biomarker
     }
 

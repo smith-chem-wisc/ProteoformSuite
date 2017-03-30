@@ -32,6 +32,7 @@
             this.dgv_AggregatedProteoforms = new System.Windows.Forms.DataGridView();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.cb_merge_RT = new System.Windows.Forms.CheckBox();
             this.label9 = new System.Windows.Forms.Label();
             this.tb_tableFilter = new System.Windows.Forms.TextBox();
             this.cb_validateProteoforms = new System.Windows.Forms.CheckBox();
@@ -117,6 +118,7 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.cb_merge_RT);
             this.splitContainer2.Panel1.Controls.Add(this.label9);
             this.splitContainer2.Panel1.Controls.Add(this.tb_tableFilter);
             this.splitContainer2.Panel1.Controls.Add(this.cb_validateProteoforms);
@@ -146,6 +148,17 @@
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 0;
             // 
+            // cb_merge_RT
+            // 
+            this.cb_merge_RT.Location = new System.Drawing.Point(90, 242);
+            this.cb_merge_RT.Name = "cb_merge_RT";
+            this.cb_merge_RT.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.cb_merge_RT.Size = new System.Drawing.Size(123, 17);
+            this.cb_merge_RT.TabIndex = 51;
+            this.cb_merge_RT.Text = "Merge by Retention Time";
+            this.cb_merge_RT.UseVisualStyleBackColor = true;
+            this.cb_merge_RT.CheckedChanged += new System.EventHandler(this.cb_merge_RT_CheckedChanged);
+            // 
             // label9
             // 
             this.label9.AutoSize = true;
@@ -164,7 +177,8 @@
             this.tb_tableFilter.TabIndex = 49;
             this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
             // 
-            this.cb_validateProteoforms.Location = new System.Drawing.Point(28, 242);
+            // cb_validateProteoforms
+            // 
             this.cb_validateProteoforms.Location = new System.Drawing.Point(90, 227);
             this.cb_validateProteoforms.Name = "cb_validateProteoforms";
             this.cb_validateProteoforms.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -415,5 +429,6 @@
         private System.Windows.Forms.CheckBox cb_validateProteoforms;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.TextBox tb_tableFilter;
+        private System.Windows.Forms.CheckBox cb_merge_RT;
     }
 }

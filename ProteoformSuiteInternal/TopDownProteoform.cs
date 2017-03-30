@@ -18,13 +18,13 @@ namespace ProteoformSuiteInternal
         public double monoisotopic_mass { get; set; } //calibrated mass
         public double theoretical_mass { get; set; }
         public double agg_rt { get; set; }
+        public List<double> all_RTs { get; set; }
         public string ptm_descriptions
         {
             get { return ptm_list_string(); }
         }
-        private TopDownHit root;
+        public TopDownHit root;
         public List<TopDownHit> topdown_hits;
-        public bool observed_theoretical_mass { get; set; } = false; //if tight abs mass or biomarker search, observed mass is close to theoretical. If only find unexpected mods search result, could be co-isolation
         public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count; } }
         public int ttd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count; } }
         public bool targeted { get; set; } = false;
@@ -60,12 +60,11 @@ namespace ProteoformSuiteInternal
 
         private void calculate_properties()
         {
-            if (this.topdown_hits.Where(h => h.result_set == Result_Set.tight_absolute_mass || h.result_set == Result_Set.biomarker).Count() > 0) this.observed_theoretical_mass = true;
             this.agg_rt = topdown_hits.Select(h => h.retention_time).Average(); //need to use average (no intensity info)
-            if (observed_theoretical_mass) this.monoisotopic_mass = topdown_hits.Where(h => h.result_set == Result_Set.tight_absolute_mass || h.result_set == Result_Set.biomarker).Select(h => (h.corrected_mass - Math.Round(h.corrected_mass - root.corrected_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
-            else this.monoisotopic_mass = root.theoretical_mass; //if only found w/ unexpected mod search, use theoretical mass
+            this.monoisotopic_mass = topdown_hits.Select(h => (h.corrected_mass - Math.Round(h.corrected_mass - root.corrected_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.monoisotopic_mass;
             this.accession = accession + "_" + Math.Round(this.theoretical_mass, 2);
+            this.all_RTs = new List<double>() { agg_rt };
         }
 
         public string ptm_list_string()

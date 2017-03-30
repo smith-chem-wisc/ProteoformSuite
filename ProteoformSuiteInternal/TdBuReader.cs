@@ -91,16 +91,13 @@ namespace ProteoformSuiteInternal
                             }
                         }
 
-                        string[] full_filename = cellStrings[14].Split('.');
-
                         Result_Set result_set = new Result_Set();
                         if (cellStrings[15] == "Tight Absolute Mass") result_set = Result_Set.tight_absolute_mass;
-                        else if (cellStrings[15] == "Find Unexpected Modifications") result_set = Result_Set.find_unexpected_mods;
                         else if (cellStrings[15] == "BioMarker") result_set = Result_Set.biomarker;
                             //convert into new td hit
                             TopDownHit td_hit = new TopDownHit(file, cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
                             Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]), ptm_list, Convert.ToDouble(cellStrings[16]), Convert.ToDouble(cellStrings[12]),
-                            Convert.ToInt16(cellStrings[17]), Convert.ToDouble(cellStrings[18]), full_filename[0], result_set, file.targeted_td_result);
+                            Convert.ToInt16(cellStrings[17]), Convert.ToDouble(cellStrings[18]), cellStrings[14].Split('.')[0], result_set, file.targeted_td_result);
                             td_hits.Add(td_hit);
                     }
                 }

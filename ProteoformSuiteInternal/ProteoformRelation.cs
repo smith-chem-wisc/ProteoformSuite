@@ -48,7 +48,7 @@ namespace ProteoformSuiteInternal
     {
         public DeltaMassPeak peak { get; set; }
         public int nearby_relations_count { get { return this.nearby_relations.Count; } } //"running sum"
-        public List<ProteoformRelation> nearby_relations { get; set; }
+        public List<ProteoformRelation> nearby_relations { get; set; } = new List<ProteoformRelation>();
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
         public ModificationWithMass represented_modification { get; set; }
