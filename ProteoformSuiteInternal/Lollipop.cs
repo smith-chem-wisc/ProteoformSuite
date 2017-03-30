@@ -514,13 +514,23 @@ namespace ProteoformSuiteInternal
         public static Dictionary<double, int> rank_mods(Dictionary<InputFile, Protein[]> theoretical_proteins)
         {
             Dictionary<double, int> mod_counts = new Dictionary<double, int> { { 0, int.MaxValue } }; //unmodified gets first rank
-            foreach (ModificationWithMass m in new HashSet<ModificationWithMass>(theoretical_proteins.SelectMany(kv => kv.Value).SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).OfType<ModificationWithMass>()))
+            foreach (ModificationWithMass m in theoretical_proteins.SelectMany(kv => kv.Value).SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList())
             {
-                if (mod_counts.ContainsKey(m.monoisotopicMass) && m.monoisotopicMass != 0) mod_counts[m.monoisotopicMass]++;
+                if (mod_counts.TryGetValue(m.monoisotopicMass, out int a) && m.monoisotopicMass != 0) mod_counts[m.monoisotopicMass]++;
                 else mod_counts.Add(m.monoisotopicMass, 1);
             }
             List<KeyValuePair<double, int>> ordered_mod_counts = mod_counts.OrderByDescending(kv => kv.Value).ToList();
-            return Enumerable.Range(1, ordered_mod_counts.Count).ToDictionary(i => ordered_mod_counts[i - 1].Key, i => i);
+
+            int rank = 1;
+            int last_count = 0;
+            Dictionary<double, int> mod_ranks = new Dictionary<double, int>();
+            foreach (KeyValuePair<double, int> mod_count in ordered_mod_counts)
+            {
+                mod_ranks.Add(mod_count.Key, rank);
+                if (mod_count.Value < last_count) rank++;
+                last_count = mod_count.Value;
+            }
+            return mod_ranks;
         }
 
         private static ProteinWithGoTerms[] expand_protein_entries(Protein[] proteins)
