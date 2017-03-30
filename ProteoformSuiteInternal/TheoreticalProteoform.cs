@@ -12,12 +12,13 @@ namespace ProteoformSuiteInternal
 {
     public class TheoreticalProteoform : Proteoform
     {
-        public IEnumerable<ProteinWithGoTerms> ProteinList { get; set; } = new List<ProteinWithGoTerms>();
+        public IEnumerable<ProteinWithGoTerms> ExpandedProteinList { get; set; } = new List<ProteinWithGoTerms>();
         public string name { get; set; }
         public string description { get; set; }
         public string fragment { get; set; }
         public int begin { get; set; }
         public int end { get; set; }
+        public string sequence { get; private set; }
         public double unmodified_mass { get; set; }
         public List<GoTerm> goTerms { get; set; } = new List<GoTerm>();
         public string goTerm_IDs { get { return String.Join("; ", goTerms.Select(g => g.Id)); } }
@@ -28,19 +29,20 @@ namespace ProteoformSuiteInternal
         }
         public bool contaminant { get; set; }
 
-        public TheoreticalProteoform(string accession, string description, IEnumerable<ProteinWithGoTerms> protein_list, bool is_metCleaved, double unmodified_mass, int lysine_count, PtmSet ptm_set, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) 
+        public TheoreticalProteoform(string accession, string description, IEnumerable<ProteinWithGoTerms> expanded_protein_list, double unmodified_mass, int lysine_count, PtmSet ptm_set, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) 
             : base(accession, unmodified_mass + ptm_set.mass, lysine_count, is_target)
         {
             this.linked_proteoform_references = new LinkedList<Proteoform>();
-            this.ProteinList = protein_list;
+            this.ExpandedProteinList = expanded_protein_list;
             this.accession = accession;
             this.description = description;
-            this.name = String.Join(";", protein_list.Select(p => p.Name));
-            this.fragment = String.Join(";", protein_list.Select(p => p.ProteolysisProducts.FirstOrDefault().Type));
-            this.begin = (int)protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedBeginPosition + Convert.ToInt32(is_metCleaved);
-            this.end = (int)protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedEndPosition;
-            this.goTerms = ProteinList.SelectMany(p => p.GoTerms).ToList();
-            this.gene_name = new GeneName(protein_list.SelectMany(t => t.GeneNames));
+            this.name = String.Join(";", expanded_protein_list.Select(p => p.Name));
+            this.fragment = String.Join(";", expanded_protein_list.Select(p => p.ProteolysisProducts.FirstOrDefault().Type));
+            this.begin = (int)expanded_protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedBeginPosition;
+            this.end = (int)expanded_protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedEndPosition;
+            this.sequence = expanded_protein_list.First().BaseSequence;
+            this.goTerms = expanded_protein_list.SelectMany(p => p.GoTerms).ToList();
+            this.gene_name = new GeneName(expanded_protein_list.SelectMany(t => t.GeneNames));
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
             if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);

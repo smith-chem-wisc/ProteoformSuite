@@ -16,8 +16,8 @@ namespace ProteoformSuiteInternal
         public double peak_group_fdr { get; set; }
         public bool peak_accepted { get; set; } = false;
         public string mass_shifter { get; set; } = "0";
-        public List<Modification> possiblePeakAssignments { get; set; }
-        public string possiblePeakAssignments_string { get { return String.Join("; ", possiblePeakAssignments.Select(m => m.id).ToArray()); } }
+        public List<PtmSet> possiblePeakAssignments { get; set; }
+        public string possiblePeakAssignments_string { get; set; }
         public ProteoformRelation base_relation { get; set; }
 
         public DeltaMassPeak(ProteoformRelation base_relation, List<ProteoformRelation> relations_to_group) : base(base_relation)
@@ -29,13 +29,14 @@ namespace ProteoformSuiteInternal
                 base_relation.peak = this;
             }
 
-            grouped_relations = this.find_nearby_relations(relations_to_group);
-            this.peak_accepted = grouped_relations != null && grouped_relations.Count > 0 &&
-                typeof(TheoreticalProteoform).IsAssignableFrom(grouped_relations.First().connected_proteoforms[1].GetType()) ?
-                     this.peak_relation_group_count >= Lollipop.min_peak_count_et :
-                     this.peak_relation_group_count >= Lollipop.min_peak_count_ee;
-            this.possiblePeakAssignments = nearestPTMs(this.peak_deltaM_average);
-        }
+            grouped_relations = !Lollipop.opening_results ? this.find_nearby_relations(relations_to_group) : relations_to_group.ToList();
+            this.peak_accepted = grouped_relations != null && grouped_relations.Count > 0 && grouped_relations.First().relation_type == ProteoformComparison.et ?
+                this.peak_relation_group_count >= Lollipop.min_peak_count_et :
+                this.peak_relation_group_count >= Lollipop.min_peak_count_ee;
+
+            possiblePeakAssignments = nearestPTMs(peak_deltaM_average).ToList();
+            possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.Select(ptmset => String.Join(";", ptmset.ptm_combination.Select(m => m.modification.id)))) + "]";
+       }
 
         /*(this needs to be done at the actual time of forming peaks or else the average is wrong so the peak can be formed out
             of incorrect relations (average shouldn't include relations already grouped into peaks)*/
@@ -66,11 +67,19 @@ namespace ProteoformSuiteInternal
             return this.grouped_relations;
         }
 
-        private List<Modification> nearestPTMs(double dMass)
+        private IEnumerable<PtmSet> nearestPTMs(double dMass)
         {
-            List<ModificationWithMass> all_modifications = Lollipop.uniprotModificationTable.SelectMany(i => i.Value).OfType<ModificationWithMass>().ToList();
-            List<Modification> possiblePTMs = all_modifications.Where(m => Math.Abs(dMass - m.monoisotopicMass) <= Lollipop.peak_width_base_et / 2).ToList<Modification>();
-            return possiblePTMs;
+            double peak_width_base = this.relation_type == ProteoformComparison.et ?
+                    Lollipop.peak_width_base_et :
+                    Lollipop.peak_width_base_ee;
+
+            foreach (PtmSet set in ProteoformCommunity.all_possible_ptmsets)
+            {
+                bool valid_or_no_unmodified = set.ptm_combination.Count == 1 || !set.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0);
+                bool within_addition_tolerance = Math.Abs(dMass - set.mass) <= 0.1; //In Daltons. This is a liberal threshold because these are filtered upon actual assignment
+                if (valid_or_no_unmodified && within_addition_tolerance)
+                    yield return set;
+            }
         }
 
         public void calculate_fdr(Dictionary<string, List<ProteoformRelation>> decoy_relations)

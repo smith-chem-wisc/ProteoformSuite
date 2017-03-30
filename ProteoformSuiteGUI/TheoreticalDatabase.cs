@@ -90,10 +90,12 @@ namespace ProteoformSuiteGUI
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)
         {
+            this.Cursor = Cursors.WaitCursor;
             make_databases(); 
             DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
             this.initialize_table_bindinglist();
             DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
+            this.Cursor = Cursors.Default;
         }
 
         public void make_databases()

@@ -44,17 +44,18 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(pfs1, pf1 =>
             {
                 double mass_tolerance = pf1.modified_mass / 1000000 * (double)Lollipop.mass_tolerance;
-                HashSet<string> pf1_prot_accessions = new HashSet<string>(pf1.candidate_relatives.OfType<TheoreticalProteoform>().Select(t => t.ProteinList.FirstOrDefault().Accession + "_G" + t.ProteinList.Count() + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "")));
+                HashSet<string> pf1_prot_accessions = new HashSet<string>(pf1.candidate_relatives.OfType<TheoreticalProteoform>().Select(t => t.ExpandedProteinList.FirstOrDefault().Accession + "_G" + t.ExpandedProteinList.Count() + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "")));
                 foreach (string accession in pf1_prot_accessions)
                 {
-                    List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.OfType<TheoreticalProteoform>().Where(t => t.ProteinList.FirstOrDefault().Accession + "_G" + t.ProteinList.Count() + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "") == accession).ToList<Proteoform>();
-                    candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
-                    Proteoform closest_pf2 = candidate_pfs2_with_accession.First();
-                    int best_pf2_ranksum = candidate_pfs2_with_accession
-                        .OrderBy(pf => pf.ptm_set_rank_sum)
-                        .FirstOrDefault(pf => Math.Abs(closest_pf2.modified_mass - pf.modified_mass) <= mass_tolerance)
-                        .ptm_set_rank_sum;
-                    Proteoform best_pf2 = candidate_pfs2_with_accession.FirstOrDefault(x => x.ptm_set_rank_sum == best_pf2_ranksum);
+                    List<Proteoform> candidate_pfs2_with_accession = pf1.candidate_relatives.OfType<TheoreticalProteoform>().Where(t => t.ExpandedProteinList.FirstOrDefault().Accession + "_G" + t.ExpandedProteinList.Count() + (t as TheoreticalProteoformGroup != null ? "_T" + ((TheoreticalProteoformGroup)t).accessionList.Count : "") == accession).ToList<Proteoform>();
+                    //candidate_pfs2_with_accession.Sort(Comparer<Proteoform>.Create((x, y) => Math.Abs(pf1.modified_mass - x.modified_mass).CompareTo(Math.Abs(pf1.modified_mass - y.modified_mass))));
+                    //Proteoform closest_pf2 = candidate_pfs2_with_accession.First();
+                    //int best_pf2_ranksum = candidate_pfs2_with_accession
+                    //    .OrderBy(pf => pf.ptm_set_rank_sum)
+                    //    .FirstOrDefault(pf => Math.Abs(closest_pf2.modified_mass - pf.modified_mass) <= mass_tolerance)
+                    //    .ptm_set_rank_sum;
+                    Proteoform best_pf2 = candidate_pfs2_with_accession.OrderBy(x => (double)x.ptm_set_rank_sum + Math.Abs(x.modified_mass - pf1.modified_mass) * 10E-6).FirstOrDefault(); // major score: delta rank; tie breaker: mass difference divided by constant, so less than one
+                    //Proteoform best_pf2 = candidate_pfs2_with_accession.FirstOrDefault(x => x.ptm_set_rank_sum == best_pf2_ranksum);
 
                     lock (best_pf2) lock (relations)
                         relations.Add(new ProteoformRelation(pf1, best_pf2, relation_type, pf1.modified_mass - best_pf2.modified_mass));
@@ -146,9 +147,13 @@ namespace ProteoformSuiteInternal
 
 
         //GROUP and ANALYZE RELATIONS
+        public static List<PtmSet> all_possible_ptmsets;
         public List<ProteoformRelation> remaining_relations_outside_no_mans = new List<ProteoformRelation>();
         public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
         {
+            if (all_possible_ptmsets == null)
+                all_possible_ptmsets = PtmCombos.generate_all_ptmsets(2, Lollipop.all_mods_with_mass);
+
             //order by E intensity, then by descending unadjusted_group_count (running sum) before forming peaks, and analyze only relations outside of no-man's-land
             this.remaining_relations_outside_no_mans = relations.Where(r => r.outside_no_mans_land).OrderByDescending(r => r.nearby_relations_count).ThenByDescending(r => r.agg_intensity_1).ToList(); // Group count is the primary sort
             List<DeltaMassPeak> peaks = new List<DeltaMassPeak>();
@@ -262,7 +267,6 @@ namespace ProteoformSuiteInternal
                 active.Clear();
             }
             if (gene_centric_families) families = combine_gene_families(families).ToList();
-            ProteoformFamily.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(3, Lollipop.all_mods_with_mass);
             Parallel.ForEach(families, f => f.identify_experimentals());
             return families;
         }
