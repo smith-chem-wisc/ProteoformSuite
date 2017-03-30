@@ -3,7 +3,7 @@ ID   Water Adduct
 TG   Any
 PP   Anywhere.
 MM   18.010565
-MT   Adduct
+MT   Unlocalized
 CF   H2O
 //
 ID   Oxidation
