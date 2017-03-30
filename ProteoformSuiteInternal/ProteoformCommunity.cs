@@ -70,7 +70,13 @@ namespace ProteoformSuiteInternal
         {
             Parallel.ForEach(new HashSet<ExperimentalProteoform>(pfs1.Concat(pfs2)), pf =>
             {
-                lock (pf) pf.candidate_relatives = pfs2.Where(pf2 => allowed_ee_relation(pf, pf2)).ToList<Proteoform>();
+                lock (pf)
+                {
+                    pf.candidate_relatives = pfs2.Where(pf2 => allowed_ee_relation(pf, pf2)).ToList<Proteoform>();
+                    pf.ptm_set = null;
+                    pf.linked_proteoform_references = null;
+                    pf.gene_name = null;
+                }
             });
 
             List<ProteoformRelation> relations =

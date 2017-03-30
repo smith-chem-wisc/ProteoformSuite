@@ -69,14 +69,12 @@ namespace ProteoformSuiteInternal
 
         private IEnumerable<PtmSet> nearestPTMs(double dMass)
         {
-            double peak_width_base = this.relation_type == ProteoformComparison.et ?
-                    Lollipop.peak_width_base_et :
-                    Lollipop.peak_width_base_ee;
-
             foreach (PtmSet set in ProteoformCommunity.all_possible_ptmsets)
             {
                 bool valid_or_no_unmodified = set.ptm_combination.Count == 1 || !set.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0);
-                bool within_addition_tolerance = Math.Abs(dMass - set.mass) <= 0.1; //In Daltons. This is a liberal threshold because these are filtered upon actual assignment
+                bool within_addition_tolerance = relation_type == ProteoformComparison.et ? 
+                    Math.Abs(dMass - set.mass) <= 0.1 :
+                    Math.Abs(Math.Abs(dMass) - Math.Abs(set.mass)) <= 0.1; //In Daltons. This is a liberal threshold because these are filtered upon actual assignment
                 if (valid_or_no_unmodified && within_addition_tolerance)
                     yield return set;
             }
