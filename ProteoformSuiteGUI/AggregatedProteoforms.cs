@@ -66,7 +66,7 @@ namespace ProteoformSuiteGUI
             nUP_mass_tolerance.Value = Lollipop.mass_tolerance;
 
             nUD_RetTimeToleranace.Minimum = 0;
-            nUD_RetTimeToleranace.Maximum = 10;
+            nUD_RetTimeToleranace.Maximum = 200;
             nUD_RetTimeToleranace.Value = Lollipop.retention_time_tolerance;
 
             nUD_Missed_Monos.Minimum = 0;
@@ -234,6 +234,11 @@ namespace ProteoformSuiteGUI
                 ExtensionMethods.filter(Lollipop.proteoform_community.experimental_proteoforms, tb_tableFilter.Text);
             DisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, selected_aggregates);
             if (selected_aggregates.Count() > 0) DisplayUtility.FormatAggregatesTable(dgv_AggregatedProteoforms);
+        }
+
+        private void cb_merge_RT_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.merge_by_RT = cb_merge_RT.Checked;
         }
     }
 }

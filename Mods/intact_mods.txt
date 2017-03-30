@@ -20,3 +20,9 @@ MT   Unlocalized
 MM   -113.08406397853
 CF   C-6 H-11 O-1 N-1
 //
+ID   Sulfate Adduct
+TG   Any
+PP   Anywhere.
+MM   97.967377
+MT   Adduct
+CF   H-2 O-4 S-1
