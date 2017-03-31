@@ -69,6 +69,7 @@ namespace ProteoformSuiteGUI
             }
             else { this.FillTablesAndCharts(); }
             if (Lollipop.ef_relations.Count > 0) cb_view_ef.Enabled = true;
+            cb_view_ef.Checked = false;
             this.Cursor = Cursors.Default;
             compared_ee = true;
         }

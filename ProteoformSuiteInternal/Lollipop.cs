@@ -734,7 +734,6 @@ namespace ProteoformSuiteInternal
         //ET,ED,EE,EF COMPARISONS
         public static double ee_max_mass_difference = 300;
         public static double ee_max_RetentionTime_difference = 2.5;
-        public static double ef_min_RetentionTime_difference = 2.5;
         public static double et_low_mass_difference = -300;
         public static double et_high_mass_difference = 300;
         public static double no_mans_land_lowerBound = 0.22;
@@ -803,22 +802,26 @@ namespace ProteoformSuiteInternal
             topdown_proteoforms = topdown_proteoforms.Where(p => p != null).OrderByDescending(p => p.topdown_hits.Count).ToList();
             //aggregate all RT's
             List<TopDownProteoform> refined_topdown_proteoforms = new List<TopDownProteoform>();
-            while(topdown_proteoforms.Count > 0)
+            if (Lollipop.merge_by_RT)
             {
-                TopDownProteoform p = topdown_proteoforms[0];
-                refined_topdown_proteoforms.Add(p);
-                topdown_proteoforms.Remove(p);
-                List<TopDownProteoform> p_diff_RT = topdown_proteoforms.Where(t => t != p && t.accession == p.accession && p.sequence == t.sequence && p.topdown_hits[0].same_ptm_hits(t.topdown_hits[0])).ToList();
-                p.all_RTs.AddRange(p_diff_RT.Select(t => t.agg_rt));
-                //foreach(ExperimentalProteoform exp in e_same_mass) 
-                p.topdown_hits.AddRange(p_diff_RT.SelectMany(t => t.topdown_hits));
-                topdown_proteoforms = topdown_proteoforms.Except(p_diff_RT).ToList();
+                while (topdown_proteoforms.Count > 0)
+                {
+                    TopDownProteoform p = topdown_proteoforms[0];
+                    refined_topdown_proteoforms.Add(p);
+                    topdown_proteoforms.Remove(p);
+                    List<TopDownProteoform> p_diff_RT = topdown_proteoforms.Where(t => t != p && t.accession == p.accession && p.sequence == t.sequence && p.topdown_hits[0].same_ptm_hits(t.topdown_hits[0])).ToList();
+                    p.all_RTs.AddRange(p_diff_RT.Select(t => t.agg_rt));
+                    //foreach(ExperimentalProteoform exp in e_same_mass) 
+                    p.topdown_hits.AddRange(p_diff_RT.SelectMany(t => t.topdown_hits));
+                    topdown_proteoforms = topdown_proteoforms.Except(p_diff_RT).ToList();
+                }
+                Parallel.ForEach(refined_topdown_proteoforms, p =>
+                {
+                    p.modified_mass = p.topdown_hits.Average(h => h.corrected_mass - Math.Round(h.corrected_mass - p.root.corrected_mass));
+                    p.monoisotopic_mass = p.modified_mass;
+                });
             }
-            Parallel.ForEach(refined_topdown_proteoforms, p =>
-            {
-                p.modified_mass = p.topdown_hits.Average(h => h.corrected_mass - Math.Round(h.corrected_mass - p.root.corrected_mass));
-                p.monoisotopic_mass = p.modified_mass;
-            });
+            else refined_topdown_proteoforms = topdown_proteoforms;
             Lollipop.proteoform_community.topdown_proteoforms = refined_topdown_proteoforms.ToArray();
         }
 

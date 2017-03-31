@@ -185,6 +185,7 @@ namespace Test
         {
             ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ee, 0);
             DeltaMassPeak ppp = new DeltaMassPeak(pp, new List<ProteoformRelation> { pp });
+            pp.accepted = true;
             pp.peak = ppp;
             ppp.peak_accepted = true;
             p1.relationships.Add(pp);

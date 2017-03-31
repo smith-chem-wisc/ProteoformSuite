@@ -171,6 +171,7 @@ namespace Test
                 ConstructorsForTesting. ExperimentalProteoform("A3", 1000.0, 1, true),
                 ConstructorsForTesting. ExperimentalProteoform("A4", 1000.0, 2, true)
             };
+            Lollipop.ee_relations = test_community.relate_ee(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ee);
             unequal_relations = test_community.relate_ef();
             Assert.AreNotEqual(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2]);
             Assert.False(test_community.allowed_ee_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[0]));
@@ -182,6 +183,7 @@ namespace Test
 
             //Two equal, two unequal lysine count. But one each has mass_difference > 250, so no relations
             test_community = new ProteoformCommunity();
+            Lollipop.ee_relations.Clear();
             test_community.experimental_proteoforms = new ExperimentalProteoform[] {
                 ConstructorsForTesting. ExperimentalProteoform("A1", 1000.0, 1, true),
                 ConstructorsForTesting. ExperimentalProteoform("A2", 1000.0, 2, true),
@@ -425,7 +427,7 @@ namespace Test
             Assert.AreEqual(1, rel.nearby_relations_count);  //shows that calculate_unadjusted_group_count works
             //Assert.AreEqual(1, rel.mass_difference_group.Count);  //I don't think we need this test anymore w/ way peaks are made -LVS
             Assert.AreEqual(-1, rel.lysine_count);
-            Assert.AreEqual("T2", rel.name_1);
+            Assert.AreEqual("T2", rel.name_2);
             Assert.AreEqual(0, rel.num_observations_1); //nothing aggregated with the basic constructor
             Assert.AreEqual(0, rel.num_observations_2);
             Assert.IsTrue(rel.outside_no_mans_land);

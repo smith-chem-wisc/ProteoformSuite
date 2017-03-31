@@ -59,6 +59,7 @@ namespace ProteoformSuiteGUI
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
             this.FillTablesAndCharts();
             if (Lollipop.ed_relations.Count > 0) cb_view_ed.Enabled = true;
+            cb_view_ed.Checked = false;
             this.Cursor = Cursors.Default;
             compared_et = true;
         }

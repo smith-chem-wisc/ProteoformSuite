@@ -83,7 +83,7 @@ namespace ProteoformSuiteInternal
                 && pf1 != pf2
                 && (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
                 && allowed_mass_difference(pf1.modified_mass, pf2.modified_mass, ProteoformComparison.ee)
-                && matching_RT(pf1.all_RTs, pf2.all_RTs, Lollipop.ee_max_RetentionTime_difference);
+                && Math.Abs(pf1.agg_rt - pf2.agg_rt) < Lollipop.ee_max_RetentionTime_difference;
 
             //where ProteoformRelation.mass_difference_is_outside_no_mans_land(pf1.modified_mass - pf2.modified_mass)
             //putative counts include no-mans land, currently
@@ -96,7 +96,7 @@ namespace ProteoformSuiteInternal
             && (!Lollipop.neucode_labeled || pf1.lysine_count != pf2.lysine_count)
             && (Lollipop.neucode_labeled || !matching_RT(pf1.all_RTs, pf2.all_RTs, Lollipop.ee_max_RetentionTime_difference * 2))
             && allowed_mass_difference(pf1.modified_mass, pf2.modified_mass, ProteoformComparison.ef)
-            && (!Lollipop.neucode_labeled || matching_RT(pf1.all_RTs, pf2.all_RTs, Lollipop.ee_max_RetentionTime_difference));
+            && (!Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) < Lollipop.ee_max_RetentionTime_difference);
         }
 
         public bool allowed_mass_difference(double pf1_mass, double pf2_mass, ProteoformComparison comparison)

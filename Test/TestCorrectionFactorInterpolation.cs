@@ -55,11 +55,11 @@ namespace Test
             c.add_charge_state(new List<string> { charge_count, intensity, mz_centroid, reported_mass });
         }
 
-        [Test]
-        public void basic_read_correction_factors()
-        {
-            InputFile corr = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "example_corrections.tsv"), Purpose.Calibration);
-            Assert.IsNotEmpty(Lollipop.read_corrections(corr));
-        }
+        //[Test]
+        //public void basic_read_correction_factors()
+        //{
+        //    InputFile corr = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "example_corrections.tsv"), Purpose.Calibration);
+        //    Assert.IsNotEmpty(Lollipop.read_corrections(corr));
+        //}
     }
 }

@@ -14,6 +14,7 @@ namespace Test
             ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ee, 0);
             DeltaMassPeak ppp = new DeltaMassPeak(pp, new List<ProteoformRelation> { pp });
             pp.peak = ppp;
+            pp.accepted = true;
             ppp.peak_accepted = true;
             p1.relationships.Add(pp);
             p2.relationships.Add(pp);
@@ -88,6 +89,7 @@ namespace Test
             ExperimentalProteoform e = new ExperimentalProteoform(accession, new Component(), is_target);
             e.modified_mass = modified_mass;
             e.lysine_count = lysine_count;
+            e.accepted = true;
             return e;
         }
 

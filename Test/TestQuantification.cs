@@ -804,6 +804,7 @@ namespace Test
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
             ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.et, 0);
             DeltaMassPeak etp = new DeltaMassPeak(et, new List<ProteoformRelation> { et });
+            et.accepted = true;
             et.peak = etp;
             etp.peak_accepted = true;
             e.relationships.Add(et);
@@ -811,6 +812,7 @@ namespace Test
             ProteoformRelation eu = new ProteoformRelation(e, u, ProteoformComparison.et, 0);
             DeltaMassPeak eup = new DeltaMassPeak(eu, new List<ProteoformRelation> { eu });
             eu.peak = eup;
+            eu.accepted = true;
             eup.peak_accepted = true;
             e.relationships.Add(eu);
             u.relationships.Add(eu);
