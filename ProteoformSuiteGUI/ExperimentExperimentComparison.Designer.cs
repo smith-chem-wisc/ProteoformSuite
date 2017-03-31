@@ -64,6 +64,7 @@
             this.ct_EE_peakList = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.splitContainer6 = new System.Windows.Forms.SplitContainer();
+            this.label5 = new System.Windows.Forms.Label();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.cb_view_ef = new System.Windows.Forms.CheckBox();
@@ -79,7 +80,7 @@
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.label5 = new System.Windows.Forms.Label();
+            this.cb_automate_peak_acceptance = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
@@ -456,6 +457,15 @@
             this.splitContainer6.SplitterDistance = 31;
             this.splitContainer6.TabIndex = 21;
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(42, 11);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(100, 13);
+            this.label5.TabIndex = 21;
+            this.label5.Text = "Accepted Relations";
+            // 
             // splitContainer5
             // 
             this.splitContainer5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
@@ -589,6 +599,7 @@
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox1.Controls.Add(this.cb_automate_peak_acceptance);
             this.groupBox1.Controls.Add(this.tb_max_accepted_fdr);
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.nUD_MaxRetTimeDifference);
@@ -675,14 +686,16 @@
             this.splitContainer3.SplitterDistance = 440;
             this.splitContainer3.TabIndex = 17;
             // 
-            // label5
+            // cb_automate_peak_acceptance
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(42, 11);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(100, 13);
-            this.label5.TabIndex = 21;
-            this.label5.Text = "Accepted Relations";
+            this.cb_automate_peak_acceptance.AutoSize = true;
+            this.cb_automate_peak_acceptance.Location = new System.Drawing.Point(0, 82);
+            this.cb_automate_peak_acceptance.Name = "cb_automate_peak_acceptance";
+            this.cb_automate_peak_acceptance.Size = new System.Drawing.Size(237, 17);
+            this.cb_automate_peak_acceptance.TabIndex = 30;
+            this.cb_automate_peak_acceptance.Text = "Automate peak acceptance above threshold";
+            this.cb_automate_peak_acceptance.UseVisualStyleBackColor = true;
+            this.cb_automate_peak_acceptance.CheckedChanged += new System.EventHandler(this.cb_automate_peak_acceptance_CheckedChanged);
             // 
             // ExperimentExperimentComparison
             // 
@@ -791,6 +804,7 @@
         private System.Windows.Forms.CheckBox cb_notch_search;
         private System.Windows.Forms.CheckBox cb_view_ef;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.CheckBox cb_automate_peak_acceptance;
     }
 }
 

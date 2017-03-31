@@ -76,7 +76,7 @@ namespace ProteoformSuiteInternal
             return _modifications_string;
         }
 
-
+         
         private bool tolerable_rt(TopDownHit candidate, double rt)
         {
             return candidate.retention_time >= rt - Convert.ToDouble(Lollipop.retention_time_tolerance) &&

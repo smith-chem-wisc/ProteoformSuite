@@ -434,7 +434,7 @@ namespace ProteoformSuiteInternal
                 refined_experimentals.Add(e);
                 if (!e.all_RTs.Contains(e.agg_rt)) e.all_RTs.Add(e.agg_rt);
                 experimentals.Remove(e);
-                List<ExperimentalProteoform> e_same_mass =  experimentals.Where(p => p != e && Math.Abs(p.agg_mass - e.agg_mass) <= e.agg_mass / 1000000 * (double)Lollipop.mass_tolerance).ToList();
+                List<ExperimentalProteoform> e_same_mass =  experimentals.Where(p => p != e && Math.Abs(p.agg_mass - e.agg_mass) <= e.agg_mass / 1000000 * (double)Lollipop.mass_tolerance / 2 ).ToList();
                 if (e_same_mass.Count > 0)
                 {
                     e.all_RTs.AddRange(e_same_mass.Select(p => p.agg_rt));
@@ -476,6 +476,7 @@ namespace ProteoformSuiteInternal
         public static List<Psm> psm_list = new List<Psm>();
         public static Dictionary<string, IList<Modification>> uniprotModificationTable = new Dictionary<string, IList<Modification>>();
         static Dictionary<char, double> aaIsotopeMassList;
+        public static List<ModificationWithLocation> defaultMods = new List<ModificationWithLocation>();
 
         public static void get_theoretical_proteoforms()
         {
@@ -487,7 +488,9 @@ namespace ProteoformSuiteInternal
 
             //Read the UniProt-XML and ptmlist
             Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
-            List<ModificationWithLocation> all_known_modifications = get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
+            List<ModificationWithLocation> all_known_modifications = defaultMods;
+            all_known_modifications.AddRange(get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList());
+            all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
             read_mods(all_known_modifications);
             Dictionary<string, Modification> um;
             Parallel.ForEach(get_files(Lollipop.input_files, Purpose.ProteinDatabase).ToList(), database =>
@@ -540,7 +543,14 @@ namespace ProteoformSuiteInternal
             }
         }
 
-       public static void read_mods(List<ModificationWithLocation> all_modifications)
+        public static void read_mods_folder()
+        {
+            Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
+            defaultMods = Directory.GetFiles(@"Mods").SelectMany(file => PtmListLoader.ReadModsFromFile(Path.GetFullPath(file))).ToList();
+            read_mods(defaultMods);
+        }
+
+        public static void read_mods(List<ModificationWithLocation> all_modifications)
         {
             uniprotModificationTable.Clear();
             foreach (var nice in all_modifications)
@@ -768,9 +778,6 @@ namespace ProteoformSuiteInternal
 
         public static void read_in_td_hits()
         {
-            Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
-            List<ModificationWithLocation> all_modifications = get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
-            read_mods(all_modifications);
             foreach (InputFile file in Lollipop.input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
             {
                 top_down_hits.AddRange(TdBuReader.ReadTDFile(file));

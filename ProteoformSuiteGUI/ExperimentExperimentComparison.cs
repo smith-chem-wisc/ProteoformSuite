@@ -11,6 +11,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Windows.Forms.DataVisualization.Charting;
 using ProteoformSuiteInternal;
+using Proteomics;
 
 namespace ProteoformSuiteGUI
 {
@@ -123,6 +124,9 @@ namespace ProteoformSuiteGUI
             dgv_EE_Peaks.DataSource = null;
             dgv_EE_Relations.Rows.Clear();
             dgv_EE_Peaks.Rows.Clear();
+
+            cb_automate_peak_acceptance.Checked = false;
+
         }
 
         public void FillTablesAndCharts()
@@ -335,6 +339,7 @@ namespace ProteoformSuiteGUI
 
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
         {
+            cb_automate_peak_acceptance.Checked = false;
             Lollipop.min_peak_count_ee = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
             if (compared_ee)
             {
@@ -393,10 +398,31 @@ namespace ProteoformSuiteGUI
             if (cb_view_ef.Checked) DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ef_relations, "relations");
             else  DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ee_relations, "relations");
         }
+
+        private void cb_automate_peak_acceptance_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cb_automate_peak_acceptance.Checked)
+            {
+                foreach (DeltaMassPeak peak in Lollipop.ee_peaks.Where(p => p.peak_relation_group_count >= Lollipop.min_peak_count_ee))
+                {
+                    for (int i = -1; i <= 1; i++)
+                    {
+                        if (Lollipop.uniprotModificationTable.SelectMany(m => m.Value).OfType<ModificationWithMass>().Where(m => Math.Abs(m.monoisotopicMass - (peak.peak_deltaM_average + i * Lollipop.MONOISOTOPIC_UNIT_MASS)) <= Lollipop.peak_width_base_ee / 2).Count() > 0)
+                        {
+                            peak.peak_accepted = true;
+                            i = 10;
+                        }
+                        else peak.peak_accepted = false;
+                    }
+                    Parallel.ForEach(peak.grouped_relations, r => r.accepted = peak.peak_accepted);
+                }
+                dgv_EE_Peaks.Refresh();
+            }
+        }
     }
 
 
-public class EEPeakAcceptabilityChangedEventArgs : EventArgs
+    public class EEPeakAcceptabilityChangedEventArgs : EventArgs
 {
     private bool _isPeakAcceptable;
     public bool IsPeakAcceptable

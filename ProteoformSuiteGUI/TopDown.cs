@@ -48,10 +48,6 @@ namespace ProteoformSuiteGUI
             return (Lollipop.top_down_hits.Count == 0 && Lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
         }
 
-        private bool ptm_list_ready()
-        {
-            return (Lollipop.input_files.Where(f => f.purpose == Purpose.PtmList).Count() > 0);
-        }
         private void run_the_gamut()
         {
             if (Lollipop.top_down_hits.Count == 0) read_in_topdown();
@@ -71,16 +67,7 @@ namespace ProteoformSuiteGUI
         {
             if (ready_for_top_down())
             {
-                if (ptm_list_ready())
-                {
-                    Lollipop.read_in_td_hits();
-                }
-
-                else
-                {
-                    MessageBox.Show("Go back to Load Results and load in a ptm list.");
-                    return;
-                }
+                 Lollipop.read_in_td_hits();
             }
             else
             {

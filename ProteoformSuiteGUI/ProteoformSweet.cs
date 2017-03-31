@@ -49,6 +49,7 @@ namespace ProteoformSuiteGUI
             methodFileOpen.Filter = "Method XML File (*.xml)| *.xml";
             methodFileSave.DefaultExt = ".xml";
             methodFileSave.Filter = "Method XML File (*.xml)| *.xml";
+            Lollipop.read_mods_folder();
         }
 
         public void InitializeForms()
