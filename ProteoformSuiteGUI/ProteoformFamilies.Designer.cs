@@ -53,6 +53,9 @@
             this.pictureBox_familyDisplay = new System.Windows.Forms.PictureBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tb_likelyCleavages = new System.Windows.Forms.TextBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.cb_geneCentric = new System.Windows.Forms.CheckBox();
             this.btn_inclusion_list_all_families = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -82,9 +85,6 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.Families_update = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.tb_likelyCleavages = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -100,10 +100,10 @@
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_proteoform_family_members)).BeginInit();
+            this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_decimalRoundingLabels)).BeginInit();
-            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -405,6 +405,34 @@
             this.dgv_proteoform_family_members.Name = "dgv_proteoform_family_members";
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(675, 513);
             this.dgv_proteoform_family_members.TabIndex = 3;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.tb_likelyCleavages);
+            this.groupBox2.Controls.Add(this.label12);
+            this.groupBox2.Location = new System.Drawing.Point(31, 329);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(239, 79);
+            this.groupBox2.TabIndex = 62;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Proteoform Identification Options";
+            // 
+            // tb_likelyCleavages
+            // 
+            this.tb_likelyCleavages.Location = new System.Drawing.Point(7, 20);
+            this.tb_likelyCleavages.Name = "tb_likelyCleavages";
+            this.tb_likelyCleavages.Size = new System.Drawing.Size(112, 20);
+            this.tb_likelyCleavages.TabIndex = 1;
+            this.tb_likelyCleavages.TextChanged += new System.EventHandler(this.tb_likelyCleavages_TextChanged);
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(125, 23);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(104, 13);
+            this.label12.TabIndex = 0;
+            this.label12.Text = "Likely AA Cleavages";
             // 
             // cb_geneCentric
             // 
@@ -715,34 +743,6 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.tb_likelyCleavages);
-            this.groupBox2.Controls.Add(this.label12);
-            this.groupBox2.Location = new System.Drawing.Point(31, 329);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(239, 63);
-            this.groupBox2.TabIndex = 62;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Proteoform Identification Options";
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(125, 23);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(104, 13);
-            this.label12.TabIndex = 0;
-            this.label12.Text = "Likely AA Cleavages";
-            // 
-            // tb_likelyCleavages
-            // 
-            this.tb_likelyCleavages.Location = new System.Drawing.Point(7, 20);
-            this.tb_likelyCleavages.Name = "tb_likelyCleavages";
-            this.tb_likelyCleavages.Size = new System.Drawing.Size(112, 20);
-            this.tb_likelyCleavages.TabIndex = 1;
-            this.tb_likelyCleavages.TextChanged += new System.EventHandler(this.tb_likelyCleavages_TextChanged);
-            // 
             // ProteoformFamilies
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -771,13 +771,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_proteoform_family_members)).EndInit();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_decimalRoundingLabels)).EndInit();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
 
         }

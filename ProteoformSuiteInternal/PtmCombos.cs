@@ -40,7 +40,8 @@ namespace ProteoformSuiteInternal
             List<Ptm> unlocalized_ptms = mods.Select(m => new Ptm(-1, m)).Concat(new Ptm[] { new Ptm() }).ToList();
             Parallel.For(1, max_num_ptms + 1, ptm_set_length =>
             {
-                lock (sets) sets.AddRange(combinations(unlocalized_ptms, ptm_set_length).ToList());
+                List<PtmSet> new_ptmsets = combinations(unlocalized_ptms, ptm_set_length).ToList();
+                lock (sets) sets.AddRange(new_ptmsets);
             });
             return sets;
         }

@@ -114,6 +114,7 @@ namespace ProteoformSuiteInternal
                 List<ModificationWithMass> mods_in_set = set.ptm_combination.Select(ptm => ptm.modification).ToList();
                 //bool valid_or_no_unmodified = set.ptm_combination.Count == 1 || !mods_in_set.Any(m => m.monoisotopicMass == 0);
                 //bool within_addition_tolerance = deltaM >= set.mass - mass_tolerance && deltaM <= set.mass + mass_tolerance;
+
                 int rank_sum = 0;
                 foreach (ModificationWithMass m in mods_in_set)
                 {
@@ -139,16 +140,18 @@ namespace ProteoformSuiteInternal
                     bool likely_cleavage_site = could_be_n_term_degradation && Lollipop.likely_cleavages.Contains(theoretical_base_sequence[n_terminal_degraded_aas].ToString())
                         || could_be_c_term_degradation && Lollipop.likely_cleavages.Contains(theoretical_base_sequence[theoretical_base_sequence.Length - c_terminal_degraded_aas - 1].ToString());
 
-                    if (likely_cleavage_site || m.modificationType == "FattyAcid" || m.modificationType == "Unlocalized" || m.modificationType == "Adduct")
+                    if (likely_cleavage_site || m.modificationType == "FattyAcid" || m.modificationType == "Unlocalized")
                         rank_sum += Lollipop.rank_first_quartile;
-                    else if (could_be_n_term_degradation || could_be_c_term_degradation || could_be_m_retention)
+                    else if (could_be_m_retention)
+                        rank_sum += Lollipop.rank_second_quartile;
+                    else if (could_be_n_term_degradation || could_be_c_term_degradation)
                         rank_sum += Lollipop.rank_third_quartile;
                     else
-                        rank_sum += known_mods.Contains(m) ? 
+                        rank_sum += known_mods.Contains(m) ?
                             Lollipop.modification_ranks[m.monoisotopicMass] :
-                            Math.Min(Lollipop.modification_ranks[m.monoisotopicMass] + Lollipop.rank_first_quartile, Lollipop.rank_sum_threshold); //Penalize modifications that aren't known for this protein
+                            Lollipop.modification_ranks[m.monoisotopicMass] + Lollipop.rank_first_quartile / 2; //Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
                 }
-                set.ptm_rank_sum = rank_sum + Lollipop.rank_first_quartile * (set.ptm_combination.Count - 1); //penalize the second PTM
+                set.ptm_rank_sum = rank_sum + Lollipop.rank_first_quartile * (set.ptm_combination.Count - 1) / 2; //penalize additional PTMs
                 if (rank_sum <= Lollipop.rank_sum_threshold)
                     possible_ptmsets.Add(set);
             }

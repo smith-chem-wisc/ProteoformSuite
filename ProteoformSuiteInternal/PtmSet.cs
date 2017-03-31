@@ -12,7 +12,7 @@ namespace ProteoformSuiteInternal
         public PtmSet(List<Ptm> unique_ptm_combination)
         {
             ptm_combination = unique_ptm_combination;
-            mass = ptm_combination.Sum(ptm => ptm.modification.monoisotopicMass);
+            mass = ptm_combination.Select(ptm => ptm.modification).Sum(m => m.monoisotopicMass);
         }
     }
  }
