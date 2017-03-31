@@ -54,7 +54,7 @@ namespace ProteoformSuiteInternal
                     //    .OrderBy(pf => pf.ptm_set_rank_sum)
                     //    .FirstOrDefault(pf => Math.Abs(closest_pf2.modified_mass - pf.modified_mass) <= mass_tolerance)
                     //    .ptm_set_rank_sum;
-                    Proteoform best_pf2 = candidate_pfs2_with_accession.OrderBy(x => (double)x.ptm_set_rank_sum + Math.Abs(x.modified_mass - pf1.modified_mass) * 10E-6).FirstOrDefault(); // major score: delta rank; tie breaker: mass difference divided by constant, so less than one
+                    Proteoform best_pf2 = candidate_pfs2_with_accession.OrderBy(x => (double)x.ptm_set_rank_sum * Math.Abs(x.modified_mass - pf1.modified_mass)).FirstOrDefault(); // major score: delta rank; tie breaker: mass difference divided by constant, so less than one
                     //Proteoform best_pf2 = candidate_pfs2_with_accession.FirstOrDefault(x => x.ptm_set_rank_sum == best_pf2_ranksum);
 
                     lock (best_pf2) lock (relations)
@@ -115,6 +115,7 @@ namespace ProteoformSuiteInternal
             });
             return ed_relations;
         }
+
         public Dictionary<string, List<ProteoformRelation>> relate_ef()
         {
             List<ProteoformRelation> all_ef_relations = new List<ProteoformRelation>();
@@ -158,10 +159,19 @@ namespace ProteoformSuiteInternal
         public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
         {
             if (all_possible_ptmsets == null)
+            {
+                //Generate all two-member sets and all three-member sets of the same modification (three-member combinitorics gets out of hand for assignment)
                 all_possible_ptmsets = PtmCombos.generate_all_ptmsets(2, Lollipop.all_mods_with_mass);
+                all_possible_ptmsets.AddRange(Lollipop.all_mods_with_mass.Select(m => 
+                    new PtmSet(new List<Ptm> {
+                        new Ptm(-1, m),
+                        new Ptm(-1, m),
+                        new Ptm(-1, m)
+                    })));
+            }
 
             //order by E intensity, then by descending unadjusted_group_count (running sum) before forming peaks, and analyze only relations outside of no-man's-land
-            this.remaining_relations_outside_no_mans = relations.Where(r => r.outside_no_mans_land).OrderByDescending(r => r.nearby_relations_count).ThenByDescending(r => r.agg_intensity_1).ToList(); // Group count is the primary sort
+            remaining_relations_outside_no_mans = relations.Where(r => r.outside_no_mans_land).OrderByDescending(r => r.nearby_relations_count).ThenByDescending(r => r.agg_intensity_1).ToList(); // Group count is the primary sort
             List<DeltaMassPeak> peaks = new List<DeltaMassPeak>();
 
             ProteoformRelation root = remaining_relations_outside_no_mans.FirstOrDefault();
