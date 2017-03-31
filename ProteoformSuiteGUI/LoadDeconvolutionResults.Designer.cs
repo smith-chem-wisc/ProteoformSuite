@@ -449,9 +449,10 @@
             this.cb_tdhits.Visible = false;
             this.cb_tdhits.CheckedChanged += new System.EventHandler(this.cb_tdhits_CheckedChanged);
             // 
-            // LoadResults
+            // LoadDeconvolutionResults
             // 
             this.ClientSize = new System.Drawing.Size(1362, 736);
+            this.ControlBox = false;
             this.Controls.Add(this.cb_tdhits);
             this.Controls.Add(this.cb_lockmass);
             this.Controls.Add(this.bt_calibrate);

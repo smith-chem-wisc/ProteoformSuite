@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using System.IO;
+using Proteomics;
 
 namespace ProteoformSuiteGUI
 {
@@ -110,6 +111,7 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsAndTables()
         {
+            cb_automate_peak_acceptance.Checked = false;
             Lollipop.et_relations.Clear();
             Lollipop.et_peaks.Clear();
             Lollipop.ed_relations.Clear();
@@ -378,6 +380,7 @@ namespace ProteoformSuiteGUI
         // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
         {
+            cb_automate_peak_acceptance.Checked = false;
             Lollipop.min_peak_count_et = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
             if (compared_et)
             {
@@ -486,6 +489,34 @@ namespace ProteoformSuiteGUI
                 ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
                 ct_ET_Histogram.ChartAreas[0].AxisX.MajorGrid.Enabled = false;
                 ct_ET_Histogram.ChartAreas[0].AxisY.MajorGrid.Enabled = false;
+            }
+        }
+
+        private void cb_automate_peak_acceptance_CheckedChanged(object sender, EventArgs e)
+        {
+           if (cb_automate_peak_acceptance.Checked)
+            {
+                foreach(DeltaMassPeak peak in Lollipop.et_peaks.Where(p => p.peak_relation_group_count >= Lollipop.min_peak_count_et))
+                {
+                    for (int i = -1; i <= 1; i++)
+                    {
+                        //unmodified
+                        if (Math.Abs(peak.peak_center_deltaM + i * Lollipop.MONOISOTOPIC_UNIT_MASS) <= Lollipop.peak_width_base_et / 2)
+                        {
+                            peak.peak_accepted = true;
+                            i = 10;
+                        }
+                        //PTM
+                        else if (Lollipop.uniprotModificationTable.SelectMany(m => m.Value).OfType<ModificationWithMass>().Where(m => Math.Abs(m.monoisotopicMass - (peak.peak_deltaM_average + i * Lollipop.MONOISOTOPIC_UNIT_MASS)) <= Lollipop.peak_width_base_et / 2).Count() > 0)
+                        {
+                            peak.peak_accepted = true;
+                            i = 10;
+                        }
+                        else peak.peak_accepted = false;
+                    }
+                        Parallel.ForEach(peak.grouped_relations, r => r.accepted = peak.peak_accepted);
+                }
+                dgv_ET_Peak_List.Refresh();
             }
         }
     }

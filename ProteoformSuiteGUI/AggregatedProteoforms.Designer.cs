@@ -155,7 +155,7 @@
             this.cb_merge_RT.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.cb_merge_RT.Size = new System.Drawing.Size(123, 17);
             this.cb_merge_RT.TabIndex = 51;
-            this.cb_merge_RT.Text = "Merge by Retention Time";
+            this.cb_merge_RT.Text = "Merge Ret. Time";
             this.cb_merge_RT.UseVisualStyleBackColor = true;
             this.cb_merge_RT.CheckedChanged += new System.EventHandler(this.cb_merge_RT_CheckedChanged);
             // 

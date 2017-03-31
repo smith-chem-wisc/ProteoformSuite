@@ -52,6 +52,8 @@
             this.cb_TDBUpsm = new System.Windows.Forms.CheckBox();
             this.bt_compare_ET = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.cb_automate_peak_acceptance = new System.Windows.Forms.CheckBox();
+            this.cb_Graph_lowerThreshold = new System.Windows.Forms.CheckBox();
             this.tb_max_accepted_fdr = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -78,7 +80,6 @@
             this.dgv_ET_Pairs = new System.Windows.Forms.DataGridView();
             this.dgv_psmList = new System.Windows.Forms.DataGridView();
             this.ct_ET_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.cb_Graph_lowerThreshold = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -168,7 +169,7 @@
             this.splitContainer3.Panel2.Controls.Add(this.groupBox1);
             this.splitContainer3.Panel2MinSize = 125;
             this.splitContainer3.Size = new System.Drawing.Size(832, 819);
-            this.splitContainer3.SplitterDistance = 505;
+            this.splitContainer3.SplitterDistance = 504;
             this.splitContainer3.SplitterWidth = 3;
             this.splitContainer3.TabIndex = 0;
             // 
@@ -190,8 +191,8 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.splitContainer5);
-            this.splitContainer4.Size = new System.Drawing.Size(832, 505);
-            this.splitContainer4.SplitterDistance = 43;
+            this.splitContainer4.Size = new System.Drawing.Size(832, 504);
+            this.splitContainer4.SplitterDistance = 42;
             this.splitContainer4.SplitterWidth = 3;
             this.splitContainer4.TabIndex = 0;
             // 
@@ -247,7 +248,7 @@
             // 
             this.splitContainer5.Panel2.Controls.Add(this.ct_ET_peakList);
             this.splitContainer5.Size = new System.Drawing.Size(832, 459);
-            this.splitContainer5.SplitterDistance = 383;
+            this.splitContainer5.SplitterDistance = 382;
             this.splitContainer5.TabIndex = 16;
             // 
             // dgv_ET_Peak_List
@@ -261,7 +262,7 @@
             this.dgv_ET_Peak_List.Margin = new System.Windows.Forms.Padding(2);
             this.dgv_ET_Peak_List.Name = "dgv_ET_Peak_List";
             this.dgv_ET_Peak_List.RowTemplate.Height = 28;
-            this.dgv_ET_Peak_List.Size = new System.Drawing.Size(383, 459);
+            this.dgv_ET_Peak_List.Size = new System.Drawing.Size(382, 459);
             this.dgv_ET_Peak_List.TabIndex = 0;
             // 
             // ct_ET_peakList
@@ -292,7 +293,7 @@
             this.ct_ET_peakList.Series.Add(series1);
             this.ct_ET_peakList.Series.Add(series2);
             this.ct_ET_peakList.Series.Add(series3);
-            this.ct_ET_peakList.Size = new System.Drawing.Size(445, 459);
+            this.ct_ET_peakList.Size = new System.Drawing.Size(446, 459);
             this.ct_ET_peakList.TabIndex = 1;
             this.ct_ET_peakList.Text = "chart1";
             // 
@@ -342,7 +343,7 @@
             // bt_compare_ET
             // 
             this.bt_compare_ET.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bt_compare_ET.Location = new System.Drawing.Point(0, 288);
+            this.bt_compare_ET.Location = new System.Drawing.Point(0, 289);
             this.bt_compare_ET.Name = "bt_compare_ET";
             this.bt_compare_ET.Size = new System.Drawing.Size(832, 23);
             this.bt_compare_ET.TabIndex = 32;
@@ -354,6 +355,7 @@
             // groupBox4
             // 
             this.groupBox4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.groupBox4.Controls.Add(this.cb_automate_peak_acceptance);
             this.groupBox4.Controls.Add(this.cb_Graph_lowerThreshold);
             this.groupBox4.Controls.Add(this.tb_max_accepted_fdr);
             this.groupBox4.Controls.Add(this.label9);
@@ -361,7 +363,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(199, 94);
+            this.groupBox4.Location = new System.Drawing.Point(199, 97);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -369,6 +371,30 @@
             this.groupBox4.TabIndex = 15;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "ET Peak List Parameters";
+            // 
+            // cb_automate_peak_acceptance
+            // 
+            this.cb_automate_peak_acceptance.AutoSize = true;
+            this.cb_automate_peak_acceptance.Location = new System.Drawing.Point(0, 57);
+            this.cb_automate_peak_acceptance.Name = "cb_automate_peak_acceptance";
+            this.cb_automate_peak_acceptance.Size = new System.Drawing.Size(237, 17);
+            this.cb_automate_peak_acceptance.TabIndex = 29;
+            this.cb_automate_peak_acceptance.Text = "Automate peak acceptance above threshold";
+            this.cb_automate_peak_acceptance.UseVisualStyleBackColor = true;
+            this.cb_automate_peak_acceptance.CheckedChanged += new System.EventHandler(this.cb_automate_peak_acceptance_CheckedChanged);
+            // 
+            // cb_Graph_lowerThreshold
+            // 
+            this.cb_Graph_lowerThreshold.AutoSize = true;
+            this.cb_Graph_lowerThreshold.Checked = true;
+            this.cb_Graph_lowerThreshold.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_Graph_lowerThreshold.Location = new System.Drawing.Point(43, 34);
+            this.cb_Graph_lowerThreshold.Name = "cb_Graph_lowerThreshold";
+            this.cb_Graph_lowerThreshold.Size = new System.Drawing.Size(55, 17);
+            this.cb_Graph_lowerThreshold.TabIndex = 28;
+            this.cb_Graph_lowerThreshold.Text = "Graph";
+            this.cb_Graph_lowerThreshold.UseVisualStyleBackColor = true;
+            this.cb_Graph_lowerThreshold.CheckedChanged += new System.EventHandler(this.cb_Graph_lowerThreshold_CheckedChanged);
             // 
             // tb_max_accepted_fdr
             // 
@@ -455,7 +481,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(431, 112);
+            this.groupBox3.Location = new System.Drawing.Point(431, 115);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -528,7 +554,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(431, 199);
+            this.groupBox2.Location = new System.Drawing.Point(431, 202);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -616,7 +642,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(199, 199);
+            this.groupBox1.Location = new System.Drawing.Point(199, 202);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -784,19 +810,6 @@
             this.ct_ET_Histogram.TabIndex = 0;
             this.ct_ET_Histogram.Text = "chart1";
             // 
-            // cb_Graph_lowerThreshold
-            // 
-            this.cb_Graph_lowerThreshold.AutoSize = true;
-            this.cb_Graph_lowerThreshold.Checked = true;
-            this.cb_Graph_lowerThreshold.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_Graph_lowerThreshold.Location = new System.Drawing.Point(43, 34);
-            this.cb_Graph_lowerThreshold.Name = "cb_Graph_lowerThreshold";
-            this.cb_Graph_lowerThreshold.Size = new System.Drawing.Size(55, 17);
-            this.cb_Graph_lowerThreshold.TabIndex = 28;
-            this.cb_Graph_lowerThreshold.Text = "Graph";
-            this.cb_Graph_lowerThreshold.UseVisualStyleBackColor = true;
-            this.cb_Graph_lowerThreshold.CheckedChanged += new System.EventHandler(this.cb_Graph_lowerThreshold_CheckedChanged);
-            // 
             // ExperimentTheoreticalComparison
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -906,5 +919,6 @@
         private System.Windows.Forms.TextBox tb_notch_masses;
         private System.Windows.Forms.CheckBox cb_view_ed;
         private System.Windows.Forms.CheckBox cb_Graph_lowerThreshold;
+        private System.Windows.Forms.CheckBox cb_automate_peak_acceptance;
     }
 }
