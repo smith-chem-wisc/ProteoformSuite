@@ -19,10 +19,12 @@ namespace Test
             //One accepted ET relation; should give one ProteoformFamily
             Lollipop.min_peak_count_et = 1;
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
+            pf1.accepted = true;
             TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
             pf2.name = "T1";
             ProteoformComparison comparison = ProteoformComparison.et;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
+            pr1.accepted = true;
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.instanceId).ToList());
             DeltaMassPeak peak = new DeltaMassPeak(prs[0], prs);
@@ -154,6 +156,7 @@ namespace Test
             TheoreticalProteoformGroup pf2 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
             ProteoformComparison comparison = ProteoformComparison.et;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
+            pr1.accepted = true;
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.instanceId).ToList());
             DeltaMassPeak peak = new DeltaMassPeak(prs[0], prs);
