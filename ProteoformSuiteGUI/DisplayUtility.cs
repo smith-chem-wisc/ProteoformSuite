@@ -22,6 +22,7 @@ namespace ProteoformSuiteGUI
             dgv.AllowUserToAddRows = false;
             dgv.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
             dgv.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+            foreach (DataGridViewColumn col in dgv.Columns) col.SortMode = DataGridViewColumnSortMode.Automatic; 
         }
 
         public static void tooltip_graph_display(ToolTip t, MouseEventArgs e, Chart c, Point? p)
@@ -80,6 +81,7 @@ namespace ProteoformSuiteGUI
             ct.DataBind();
             ct.ChartAreas[0].AxisX.Title = "Delta Mass (Da)";
             ct.ChartAreas[0].AxisY.Title = "Nearby Count";
+
         }
 
         public static void GraphDeltaMassPeaks(Chart ct, List<DeltaMassPeak> peaks, string peak_series, string decoy_series, List<ProteoformRelation> relations, string relations_series)
