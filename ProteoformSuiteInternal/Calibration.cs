@@ -14,6 +14,8 @@ using MathNet.Numerics;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml;
+using ClosedXML.Excel;
+using System.Text.RegularExpressions;
 
 namespace ProteoformSuiteInternal
 {
@@ -197,76 +199,33 @@ namespace ProteoformSuiteInternal
         //READ AND WRITE NEW CALIBRATED RAW EXPERIMENTAL COMPONENTS FILE
         public static void calibrate_components_in_xlsx(InputFile file)
         {
-            Func<double[], double> bestCf = null;
-            if (Lollipop.calibrate_td_results && Lollipop.td_calibration_functions.ContainsKey(file.filename)) bestCf = Lollipop.td_calibration_functions[file.filename];
-            else if (Lollipop.calibrate_td_results) return; //if no calibration function, don't calibrate components file
-
-            //Copy file to new worksheet
-            string old_absolute_path = file.complete_path;
-            string new_absolute_path = file.directory + "\\" + file.filename + "_calibrated" + file.extension;
-
-            //create copy of excel file
-            byte[] byteArray = File.ReadAllBytes(old_absolute_path);
-            using (MemoryStream stream = new MemoryStream())
+            if (!Lollipop.calibrate_td_results || Lollipop.td_calibration_functions.ContainsKey(file.filename))
             {
-                stream.Write(byteArray, 0, (int)byteArray.Length);
-                File.WriteAllBytes(new_absolute_path, stream.ToArray());
-            }
+                //Copy file to new worksheet
+                string old_absolute_path = file.complete_path;
+                string new_absolute_path = file.directory + "\\" + file.filename + "_calibrated" + file.extension;
 
-            //update m/z for each charge state with calibrated value
-            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(new_absolute_path, true))
-            {
-                // Get Data in Sheet1 of Excel file
-                IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
-                WorksheetPart worksheet_1 = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
-                List<Row> rowcollection = worksheet_1.Worksheet.Descendants<Row>().ToList();
-
-                int charge_row_index = 0;
-                string rt_range = "";
-                string scan_range = "";
-
-                for (int i = 0; i < rowcollection.Count(); i++)
+                //create copy of excel file
+                byte[] byteArray = File.ReadAllBytes(old_absolute_path);
+                using (MemoryStream stream = new MemoryStream())
                 {
-                    List<string> cellStrings = new List<string>();
-                    if (i == 0) continue; //skip component header
-                    for (int k = 0; k < rowcollection[i].Descendants<Cell>().Count(); k++)
-                    {
-                        cellStrings.Add(GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
-                    }
-
-                    if (cellStrings.Count > 4) //component row
-                    {
-                        charge_row_index = 0;
-                        rt_range = cellStrings[9];
-                        scan_range = cellStrings[8];
-                    }
-
-                    else if (cellStrings.Count == 4) //charge-state row
-                    {
-                        if (charge_row_index == 0)
-                        {
-                            charge_row_index += 1;
-                            continue; //skip charge state headers
-                        }
-                        else
-                        {
-                            double correction = 0;
-                            //if calibrate td results only, use td results' function
-                            //if calibrate td results & lock mass, lock mass peptide was used to make td results' function
-                            //if lock mass only, use lock mass correction factors
-                            if (Lollipop.calibrate_td_results) correction = -1 * bestCf(new double[] { Convert.ToDouble(cellStrings[2]), Convert.ToDouble(rt_range.Split('-')[0]) });
-                            if (Lollipop.calibrate_lock_mass && !Lollipop.calibrate_td_results) correction = -1 * get_correction_factor(file.filename, scan_range);
-                            worksheet_1.Worksheet.Descendants<Row>().ToList()[i].Descendants<Cell>().ElementAt(2).CellValue = new CellValue((Convert.ToDouble(cellStrings[2]) + correction).ToString());
-                            worksheet_1.Worksheet.Descendants<Row>().ToList()[i].Descendants<Cell>().ElementAt(2).DataType = new EnumValue<CellValues>(CellValues.Number);
-                        }
-                    }
+                    stream.Write(byteArray, 0, (int)byteArray.Length);
+                    File.WriteAllBytes(new_absolute_path, stream.ToArray());
                 }
-                worksheet_1.Worksheet.Save();
-                spreadsheetDocument.Close();
+                var workbook = new XLWorkbook(new_absolute_path);
+                var worksheet = workbook.Worksheets.Worksheet(1);
+                Parallel.ForEach(worksheet.Rows(), row =>
+                {
+                    if (row.Cell(1).Value.ToString().Length == 0 && Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
+                    {
+                        row.Cell(4).SetValue(Lollipop.file_mz_correction[new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(4).GetDouble(), 0), Math.Round(row.Cell(3).GetDouble(), 0))]);
+                    }
+                });
+                workbook.Save();
             }
         }
 
-        private static double get_correction_factor(string filename, string scan_range)
+        public static double get_correction_factor(string filename, string scan_range)
         {
             if (Lollipop.correctionFactors == null) return 0D;
             int[] scans = new int[2] { 0, 0 };

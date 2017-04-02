@@ -20,7 +20,7 @@ namespace ProteoformSuiteGUI
 
         private bool ready_to_aggregate()
         {
-            return  (Lollipop.neucode_labeled && Lollipop.raw_neucode_pairs.Count > 0) || Lollipop.raw_experimental_components.Count > 0;
+            return Lollipop.proteoform_community.experimental_proteoforms.Length <= 0 && (Lollipop.neucode_labeled && Lollipop.raw_neucode_pairs.Count > 0) || Lollipop.raw_experimental_components.Count > 0;
         }
 
         public void aggregate_proteoforms()

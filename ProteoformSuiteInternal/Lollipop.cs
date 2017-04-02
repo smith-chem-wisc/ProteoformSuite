@@ -150,11 +150,11 @@ namespace ProteoformSuiteInternal
         public static List<Component> raw_experimental_components = new List<Component>();
         public static List<Component> raw_quantification_components = new List<Component>();
         public static bool neucode_labeled = true;
-        public static void process_raw_components(List<InputFile> input_files, List<Component> destination, Purpose purpose)
+        public static void process_raw_components(List<InputFile> input_files, List<Component> destination, Purpose purpose, bool remove_missed_monos_and_harmonics)
         {
             Parallel.ForEach(input_files.Where(f => f.purpose == purpose).ToList(), file =>
             {
-                List<Component> someComponents = file.reader.read_components_from_xlsx(file);
+                List<Component> someComponents = file.reader.read_components_from_xlsx(file, remove_missed_monos_and_harmonics);
                 lock (destination) destination.AddRange(someComponents);
             });
 
@@ -845,6 +845,8 @@ namespace ProteoformSuiteInternal
         public static List<MsScan> Ms_scans = new List<MsScan>();
         public static Dictionary<string, Func<double[], double>> td_calibration_functions = new Dictionary<string, Func<double[], double>>();
         public static List<Correction> correctionFactors = new List<Correction>();
+        public static Dictionary<Tuple<string, double, double>, double> file_mz_correction = new Dictionary<Tuple<string, double, double>, double>();
+        public static List<Component> calibration_components = new List<Component>();
 
         public static void read_in_calibration_td_hits()
         {
@@ -863,6 +865,10 @@ namespace ProteoformSuiteInternal
             {
                 get_calibration_points(filename);
                 calibrate_td_hits(filename);
+            }
+            determine_component_shift(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).ToList());
+            foreach(string filename in filenames.Distinct())
+            { 
                 InputFile file = input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.filename == filename).FirstOrDefault();
                 if (file != null) Calibration.calibrate_components_in_xlsx(file);
             }
@@ -875,9 +881,10 @@ namespace ProteoformSuiteInternal
        
         public static void get_calibration_points(string filename)
         {
-            List<InputFile> raw_files = Lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Where(f => f.filename == filename).ToList();
+            List<InputFile> raw_files = Lollipop.input_files.Where(f => f.purpose == Purpose.RawFile && f.filename == filename).ToList();
             if (raw_files.Count > 0)
             {
+                //get calibration points
                 InputFile raw_file = raw_files.First();
                 RawFileReader.get_ms_scans(filename, raw_file.complete_path);
 
@@ -896,6 +903,23 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
+        }
+
+        public static void determine_component_shift(List<InputFile> input_files)
+        {
+            process_raw_components(input_files, calibration_components, Purpose.CalibrationIdentification, false);
+            Parallel.ForEach(calibration_components, c =>
+            {
+                if (!calibrate_td_results || td_calibration_functions.ContainsKey(c.input_file.filename))
+                {
+                    foreach (ChargeState cs in c.charge_states)
+                    {
+                        double corrected_mz = cs.mz_centroid + (Lollipop.calibrate_td_results ? -1 * td_calibration_functions[c.input_file.filename](new double[] { cs.mz_centroid, Convert.ToDouble(c.rt_range.Split('-')[0]) }) : -1 * Calibration.get_correction_factor(c.input_file.filename, c.scan_range));
+                        var key = new Tuple<string, double, double>(c.input_file.filename, Math.Round(cs.mz_centroid, 0), Math.Round(cs.intensity, 0));
+                        lock (file_mz_correction) if (!file_mz_correction.ContainsKey(key)) file_mz_correction.Add(key, corrected_mz);
+                    }
+                }
+            });
         }
 
         public static void calibrate_td_hits(string filename)

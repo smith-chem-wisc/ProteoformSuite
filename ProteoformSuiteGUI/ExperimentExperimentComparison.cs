@@ -373,20 +373,6 @@ namespace ProteoformSuiteGUI
             Lollipop.ee_max_RetentionTime_difference = Convert.ToDouble(nUD_MaxRetTimeDifference.Value);
         }
 
-        private static string ET_relations_list()
-        {
-            string tsv_header = "experimental1_mass\texperimental1_RT\texperimental2_mass\texperimental2_RT\tlysinecount\tdelta_mass";
-            List<string> rows = new List<string>();
-            foreach (ProteoformRelation relation in Lollipop.ee_relations)
-            {
-                ExperimentalProteoform e1 = (ExperimentalProteoform)relation.connected_proteoforms[0];
-                ExperimentalProteoform e2 = (ExperimentalProteoform)relation.connected_proteoforms[1];
-                rows.Add(String.Join("\t", e1.agg_mass, e1.agg_rt, e2.agg_mass, e2.agg_rt, e1.lysine_count, relation.delta_mass));
-            }
-            string results_rows = String.Join(Environment.NewLine, rows.Select(r => r.ToString()));
-            return tsv_header + "\n" + results_rows;
-        }
-
         private void cb_notch_search_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.notch_search_ee = cb_notch_search.Checked;

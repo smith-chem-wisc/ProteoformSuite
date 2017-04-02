@@ -22,7 +22,7 @@ namespace ProteoformSuiteGUI
             ProteoformSweet.run_when_form_loads = cb_run_when_load.Checked;
         }
 
-        public void loadResults_Load(object sender, EventArgs e)
+        public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
         { }
 
         private void btn_neucode_CheckedChanged(object sender, EventArgs e)

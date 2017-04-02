@@ -10,7 +10,7 @@ ID   Tyrosine (Y)
 PP   Anywhere.
 TG   Y
 MT   AminoAcid
-MM   -163.06332853364
+MM   163.06332853364
 CF   C9 H9 O2 N1
 //
 ID   Arginine (R)

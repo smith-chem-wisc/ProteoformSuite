@@ -443,20 +443,6 @@ namespace ProteoformSuiteGUI
             updateFiguresOfMerit();
         }
 
-        private static string ET_relations_list()
-        {
-            string tsv_header = "experimental_mass\texperimental_RT\ttheoretical_mass\ttheoretical_accession\tmodification\t\tlysinecount\tdelta_mass";
-            List<string> rows = new List<string>();
-                foreach (ProteoformRelation relation in Lollipop.et_relations)
-                {
-                    ExperimentalProteoform e = (ExperimentalProteoform)relation.connected_proteoforms[0];
-                    TheoreticalProteoform t = (TheoreticalProteoform)relation.connected_proteoforms[1];
-                    rows.Add(String.Join("\t", e.agg_mass, e.agg_rt,t.modified_mass, t.accession, t.ptm_descriptions, t.lysine_count, relation.delta_mass));
-                 }
-            string results_rows = String.Join(Environment.NewLine, rows.Select(r => r.ToString()));
-            return tsv_header + "\n" + results_rows;
-        }
-
         private void cb_notch_search_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.notch_search_et = cb_notch_search.Checked;

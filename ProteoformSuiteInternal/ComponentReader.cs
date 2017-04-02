@@ -16,7 +16,7 @@ namespace ProteoformSuiteInternal
         public List<Component> final_components = new List<Component>();
         public HashSet<string> scan_ranges = new HashSet<string>();
 
-        public List<Component> read_components_from_xlsx(InputFile file)
+        public List<Component> read_components_from_xlsx(InputFile file, bool remove_missed_monos_and_harmonics)
         {
             this.raw_components_in_file.Clear();
             string absolute_path = file.directory + "\\" + file.filename + file.extension;
@@ -62,7 +62,7 @@ namespace ProteoformSuiteInternal
                 }
                 add_component(new_component); //add the final component
             }
-            this.final_components = remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file);
+            this.final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
             this.scan_ranges = new HashSet<string>(this.final_components.Select(c => c.scan_range).ToList());
             return final_components;
         }

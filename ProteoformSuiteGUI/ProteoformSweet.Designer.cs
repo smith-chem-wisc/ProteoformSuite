@@ -41,7 +41,7 @@
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadDeconvolutionResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rawExperimentalProteoformsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.neuCodeProteoformPairsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aggregatedProteoformsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -156,7 +156,7 @@
             // resultsToolStripMenuItem
             // 
             this.resultsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadResultsToolStripMenuItem,
+            this.loadDeconvolutionResultsToolStripMenuItem,
             this.rawExperimentalProteoformsToolStripMenuItem,
             this.neuCodeProteoformPairsToolStripMenuItem,
             this.aggregatedProteoformsToolStripMenuItem,
@@ -171,12 +171,12 @@
             this.resultsToolStripMenuItem.Size = new System.Drawing.Size(56, 22);
             this.resultsToolStripMenuItem.Text = "Results";
             // 
-            // loadResultsToolStripMenuItem
+            // loadDeconvolutionResultsToolStripMenuItem
             // 
-            this.loadResultsToolStripMenuItem.Name = "loadResultsToolStripMenuItem";
-            this.loadResultsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.loadResultsToolStripMenuItem.Text = "Load Deconvolution Results";
-            this.loadResultsToolStripMenuItem.Click += new System.EventHandler(this.loadResultsToolStripMenuItem_Click);
+            this.loadDeconvolutionResultsToolStripMenuItem.Name = "loadDeconvolutionResultsToolStripMenuItem";
+            this.loadDeconvolutionResultsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.loadDeconvolutionResultsToolStripMenuItem.Text = "Load Deconvolution Results";
+            this.loadDeconvolutionResultsToolStripMenuItem.Click += new System.EventHandler(this.loadDeconvolutionResultsToolStripMenuItem_Click);
             // 
             // rawExperimentalProteoformsToolStripMenuItem
             // 
@@ -308,7 +308,7 @@
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resultsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem loadResultsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadDeconvolutionResultsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rawExperimentalProteoformsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem neuCodeProteoformPairsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aggregatedProteoformsToolStripMenuItem;

@@ -41,6 +41,7 @@ namespace ProteoformSuiteInternal
             {
                 using (ThermoDynamicData myMsDataFile = ThermoDynamicData.InitiateDynamicConnection(file.complete_path))
                 {
+                    //TODO: CHECK WITHIN FIVE MINUTES 
                     foreach (ExperimentalProteoform e in Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted && p.aggregated_components.Where(c => c.input_file.filename.Replace("_calibrated", "") == file.filename).Count() > 0).ToList())
                     {
 

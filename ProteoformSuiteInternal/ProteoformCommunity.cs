@@ -94,13 +94,14 @@ namespace ProteoformSuiteInternal
             return pf1.modified_mass >= pf2.modified_mass
             && pf1 != pf2
             && (!Lollipop.neucode_labeled || pf1.lysine_count != pf2.lysine_count)
-            && (Lollipop.neucode_labeled || !matching_RT(pf1.all_RTs, pf2.all_RTs, Lollipop.ee_max_RetentionTime_difference * 2))
+            && (Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) > Lollipop.ee_max_RetentionTime_difference * 2)
             && allowed_mass_difference(pf1.modified_mass, pf2.modified_mass, ProteoformComparison.ef)
             && (!Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) < Lollipop.ee_max_RetentionTime_difference);
         }
 
         public bool allowed_mass_difference(double pf1_mass, double pf2_mass, ProteoformComparison comparison)
         {
+            //foreach (double mass in comparison == ProteoformComparison.et || comparison == ProteoformComparison.ed ? Lollipop.notch_masses_et : Lollipop.notch_masses_ee
             if (comparison == ProteoformComparison.et || comparison == ProteoformComparison.ed)
             {
                 if (Lollipop.notch_search_et)
@@ -140,6 +141,7 @@ namespace ProteoformSuiteInternal
 
         public Dictionary<string, List<ProteoformRelation>> relate_ed()
         {
+            //TODO: simply fy with ?: operator
             Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
             if (!Lollipop.limit_TD_BU_theoreticals)
             {
@@ -198,7 +200,7 @@ namespace ProteoformSuiteInternal
                         double low = mass + shift - mass_tol;
                         double high = mass + shift + mass_tol;
                         List<ExperimentalProteoform> matching_e = experimentals.Where(ep => ep.modified_mass >= low && ep.modified_mass <= high
-                        && matching_RT(ep.all_RTs, topdown.all_RTs, Convert.ToDouble(Lollipop.retention_time_tolerance))).ToList();
+                        && (Math.Abs(ep.agg_rt - topdown.agg_rt) <= Convert.ToDouble(Lollipop.retention_time_tolerance))).ToList();
                         foreach (ExperimentalProteoform e in matching_e)
                         {
                             e.accepted = true;

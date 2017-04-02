@@ -25,5 +25,5 @@ TG   Any
 PP   Anywhere.
 MM   97.967377
 MT   Adduct
-CF   H-2 O-4 S-1
+CF   H2 O4 S1
 //
