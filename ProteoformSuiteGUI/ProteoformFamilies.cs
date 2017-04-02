@@ -68,14 +68,8 @@ namespace ProteoformSuiteGUI
 
         public void construct_families()
         {
-            initialize_settings();
-            if (Lollipop.proteoform_community.families.Count <= 0 && (Lollipop.proteoform_community.has_e_proteoforms || Lollipop.proteoform_community.topdown_proteoforms.Length > 0)) run_the_gamut();
             initialize_every_time();
-        }
-
-        public DataGridView GetDGV()
-        {
-            return dgv_main;
+            if (Lollipop.proteoform_community.families.Count <= 0 && (Lollipop.proteoform_community.has_e_proteoforms || Lollipop.proteoform_community.topdown_proteoforms.Length > 0)) run_the_gamut();
         }
 
         public void run_the_gamut()
@@ -85,6 +79,11 @@ namespace ProteoformSuiteGUI
             fill_proteoform_families("");
             update_figures_of_merit();
             this.Cursor = Cursors.Default;
+        }
+
+        public DataGridView GetDGV()
+        {
+            return dgv_main;
         }
 
         public void ClearListsAndTables()

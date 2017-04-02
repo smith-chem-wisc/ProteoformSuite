@@ -32,7 +32,7 @@ namespace ProteoformSuiteInternal
         public int light_observation_count { get { return lt_quant_components.Count; } }
         public int heavy_observation_count {  get { return hv_quant_components.Count; } }
         public bool fragmented { get; set; }
-        public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).Count(); } }
+        public int etd_match_count { get { return relationships.Count(r => r.relation_type == ProteoformComparison.etd); } }
 
         // CONTRUCTORS
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession)

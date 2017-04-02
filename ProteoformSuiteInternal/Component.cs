@@ -164,7 +164,6 @@ namespace ProteoformSuiteInternal
                 this.intensity_sum = charge_states.Select(cs => cs.intensity).Sum();
                 this.weighted_monoisotopic_mass = this.charge_states.Select(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass).Sum() + manual_mass_shift + neuCodeCorrection;
                 this.num_charge_states = charge_states.Count;
-                //put here?
                 this.calculating_properties = false;
             }
         }

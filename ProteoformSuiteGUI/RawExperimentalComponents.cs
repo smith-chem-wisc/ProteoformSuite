@@ -31,9 +31,9 @@ namespace ProteoformSuiteGUI
                 Parallel.Invoke
                 (
                     () => { if (Lollipop.raw_experimental_components.Count <= 0)
-                                Lollipop.process_raw_components(Lollipop.input_files, Lollipop.raw_experimental_components, Purpose.Identification); }, //Includes reading correction factors if present,
+                                Lollipop.process_raw_components(Lollipop.input_files, Lollipop.raw_experimental_components, Purpose.Identification, true); }, //Includes reading correction factors if present,
                     () => { if (Lollipop.raw_quantification_components.Count <= 0)
-                                Lollipop.process_raw_components(Lollipop.input_files, Lollipop.raw_quantification_components, Purpose.Quantification); },
+                                Lollipop.process_raw_components(Lollipop.input_files, Lollipop.raw_quantification_components, Purpose.Quantification, true); },
                     () => { if (Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() > 0 && Lollipop.proteoform_community.theoretical_proteoforms.Length <= 0) Lollipop.get_theoretical_proteoforms(); }
                 );
 

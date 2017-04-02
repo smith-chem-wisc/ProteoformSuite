@@ -30,7 +30,7 @@ namespace ProteoformSuiteInternal
         public bool targeted { get; set; } = false;
         public int observations { get { return topdown_hits.Count; } }
         public int bottom_up_PSMs
-        {
+        {//TODO: oftype instead of casting 
             get
             {
                 try
@@ -88,9 +88,7 @@ namespace ProteoformSuiteInternal
             double mass_tolerance = corrected_mass / 1000000 * (double)Lollipop.mass_tolerance;
             double low = corrected_mass - mass_tolerance;
             double high = corrected_mass + mass_tolerance;
-            bool tolerable_mass = candidate.corrected_mass >= low && candidate.corrected_mass <= high;
-            if (tolerable_mass) return true; //Return a true result immediately; acts as an OR between these conditions
-            return false;
+            return candidate.corrected_mass >= low && candidate.corrected_mass <= high;
         }
 
         public bool same_ptms(TheoreticalProteoform theo)

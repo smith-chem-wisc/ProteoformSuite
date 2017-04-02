@@ -57,7 +57,7 @@ namespace ProteoformSuiteGUI
                 clear_lists();
                 Lollipop.aggregate_td_hits();
                 if (Lollipop.proteoform_community.topdown_proteoforms.Where(p => p.targeted).Count() > 0) bt_targeted_td_relations.Enabled = true;
-                tb_tdProteoforms.Text = Lollipop.proteoform_community.topdown_proteoforms.Where(p => !p.targeted).ToArray().Length.ToString();
+                tb_tdProteoforms.Text = Lollipop.proteoform_community.topdown_proteoforms.Count(p => !p.targeted).ToString();
                 load_dgv();
                 bt_td_relations.Enabled = true;
             }
@@ -100,7 +100,7 @@ namespace ProteoformSuiteGUI
             {
                 clear_lists();
                 Lollipop.make_td_relationships();
-                tb_exp_proteoforms.Text = Lollipop.proteoform_community.experimental_proteoforms.Where(exp => exp.etd_match_count == 0 & exp.accepted).ToList().Count.ToString();
+                tb_exp_proteoforms.Text = Lollipop.proteoform_community.experimental_proteoforms.Count(exp => exp.etd_match_count == 0 & exp.accepted).ToString();
                 load_dgv();
                 bt_check_fragmented_e.Enabled = true;
             }
@@ -226,7 +226,7 @@ namespace ProteoformSuiteGUI
 
         private void cmbx_td_or_e_proteoforms_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbx_td_or_e_proteoforms.SelectedItem.ToString() == "TopDown Proteoforms" && Lollipop.proteoform_community.topdown_proteoforms.Where(p => !p.targeted).ToList().Count > 0)
+            if (cmbx_td_or_e_proteoforms.SelectedItem.ToString() == "TopDown Proteoforms" && Lollipop.proteoform_community.topdown_proteoforms.Count(p => !p.targeted) > 0)
                 DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.topdown_proteoforms.Where(p => !p.targeted).ToList());
             else if (cmbx_td_or_e_proteoforms.SelectedItem.ToString() == "Experimental Proteoforms" && Lollipop.proteoform_community.experimental_proteoforms.Length > 0)
                 DisplayUtility.FillDataGridView(dgv_TD_proteoforms, Lollipop.proteoform_community.experimental_proteoforms.Where(exp => exp.accepted).ToList());
