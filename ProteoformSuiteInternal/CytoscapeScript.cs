@@ -192,7 +192,7 @@ namespace ProteoformSuiteInternal
         {
             string tsv_header = "accession_1\t" + lysine_count_header + "\taccession_2\t" + delta_mass_header + "\t" + edge_ptm_header;
             string edge_rows = "";
-            foreach (ProteoformRelation r in families.SelectMany(f => f.relations))
+            foreach (ProteoformRelation r in families.SelectMany(f => f.relations).Distinct())
             {
                 string delta_mass = Math.Round(r.peak_center_deltaM, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
                 //if (edge_label == Lollipop.edge_labels[1] && r.represented_modification == null) continue;

@@ -1006,7 +1006,9 @@ namespace ProteoformSuiteInternal
             return satisfactoryProteoforms
                 .Select(p => p.family)
                 .SelectMany(pf => pf.theoretical_proteoforms)
-                .SelectMany(t => t.ExpandedProteinList).ToList();
+                .SelectMany(t => t.ExpandedProteinList)
+                .DistinctBy(pwg => pwg.Accession.Split('_')[0])
+                .ToList();
         }
 
         public static List<ProteinWithGoTerms> getInducedOrRepressedProteins(List<ExperimentalProteoform> satisfactoryProteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
@@ -1014,7 +1016,9 @@ namespace ProteoformSuiteInternal
             return getInterestingProteoforms(satisfactoryProteoforms, minProteoformAbsLogFoldChange, maxProteoformFDR, minProteoformIntensity)
                 .Select(p => p.family)
                 .SelectMany(pf => pf.theoretical_proteoforms)
-                .SelectMany(t => t.ExpandedProteinList).ToList();
+                .SelectMany(t => t.ExpandedProteinList)
+                .DistinctBy(pwg => pwg.Accession.Split('_')[0])
+                .ToList();
         }
 
         public static List<ProteoformFamily> getInterestingFamilies(IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformFoldChange, decimal minProteoformFDR, decimal minProteoformIntensity)
@@ -1056,11 +1060,11 @@ namespace ProteoformSuiteInternal
             if (backgroundProteinsList != null && backgroundProteinsList != "")
             {
                 string[] protein_accessions = File.ReadAllLines(backgroundProteinsList).Select(acc => acc.Trim()).ToArray();
-                backgroundProteinsForGoAnalysis = expanded_proteins.Where(p => p.AccessionList.Any(acc => protein_accessions.Contains(acc))).ToList();
+                backgroundProteinsForGoAnalysis = expanded_proteins.Where(p => p.AccessionList.Any(acc => protein_accessions.Contains(acc))).DistinctBy(pwg => pwg.Accession.Split('_')[0]).ToList();
             }
             else
             {
-                backgroundProteinsForGoAnalysis = allTheoreticalProteins ? expanded_proteins.ToList() : observedProteins;
+                backgroundProteinsForGoAnalysis = allTheoreticalProteins ? expanded_proteins.DistinctBy(pwg => pwg.Accession.Split('_')[0]).ToList() : observedProteins;
             }
             goTermNumbers = getGoTermNumbers(inducedOrRepressedProteins, backgroundProteinsForGoAnalysis);
             calculateGoTermFDR(goTermNumbers);
