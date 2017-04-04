@@ -57,8 +57,6 @@ namespace ProteoformSuiteGUI
             Lollipop.make_et_relationships(Lollipop.proteoform_community);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
             this.FillTablesAndCharts();
-            if (Lollipop.ed_relations.Count > 0) cb_view_ed.Enabled = true;
-            cb_view_ed.Checked = false;
             this.Cursor = Cursors.Default;
         }
 
@@ -113,12 +111,20 @@ namespace ProteoformSuiteGUI
         private void GraphETRelations()
         {
             DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Lollipop.et_relations, "relations");
+            ct_ET_Histogram.Series["relations"].Enabled = true;
+            if (Lollipop.ed_relations.Count > 0)
+            {
+                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Lollipop.ed_relations["DecoyDatabase_0"], "decoys");
+                ct_ET_Histogram.Series["decoys"].Enabled = false;
+                cb_view_ed.Enabled = true; 
+            }
+            cb_view_ed.Checked = false;
 
+            DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, "Peak Count", "Median Decoy Count", Lollipop.et_relations, "Nearby Relations");
             ct_ET_Histogram.ChartAreas[0].RecalculateAxesScale();
         }
         private void GraphETPeaks()
         {
-            DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, "Peak Count", "Median Decoy Count", Lollipop.et_relations, "Nearby Relations");
         }
 
         private void dgv_ET_Pairs_CellClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -377,15 +383,8 @@ namespace ProteoformSuiteGUI
 
         private void cb_view_ed_CheckedChanged(object sender, EventArgs e)
         {
-            if (cb_view_ed.Checked)
-            {
-                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Lollipop.ed_relations["DecoyDatabase_0"], "relations");
-            }
-            else
-            {
-                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Lollipop.et_relations, "relations");
-
-            }
+            ct_ET_Histogram.Series["relations"].Enabled = !cb_view_ed.Checked;
+            ct_ET_Histogram.Series["decoys"].Enabled = cb_view_ed.Checked;
         }
 
         private void cb_Graph_lowerThreshold_CheckedChanged(object sender, EventArgs e)

@@ -67,8 +67,6 @@ namespace ProteoformSuiteGUI
                 ((ProteoformSweet)this.MdiParent).proteoformFamilies.update_figures_of_merit();
             }
             else { this.FillTablesAndCharts(); }
-            if (Lollipop.ef_relations.Count > 0) cb_view_ef.Enabled = true;
-            cb_view_ef.Checked = false;
             relationFormUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
             this.Cursor = Cursors.Default;
         }
@@ -126,6 +124,14 @@ namespace ProteoformSuiteGUI
         private void GraphEERelations()
         {
             DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ee_relations, "relations");
+            ct_EE_Histogram.Series["relations"].Enabled = true;
+            if (Lollipop.ef_relations.Count > 0)
+            {
+                DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ef_relations["EF_relations_0"], "decoys");
+                ct_EE_Histogram.Series["decoys"].Enabled = false;
+                cb_view_ef.Enabled = true;
+            }
+            cb_view_ef.Checked = false;
         }
         private void GraphEEPeaks()
         {
@@ -313,8 +319,8 @@ namespace ProteoformSuiteGUI
 
         private void cb_view_ef_CheckedChanged(object sender, EventArgs e)
         {
-            if (cb_view_ef.Checked) DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ef_relations["EF_relations_0"], "relations");
-            else DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ee_relations, "relations");
+            ct_EE_Histogram.Series["relations"].Enabled = !cb_view_ef.Checked;
+            ct_EE_Histogram.Series["decoys"].Enabled = cb_view_ef.Checked;
         }
 
         private void cb_automate_peak_acceptance_CheckedChanged(object sender, EventArgs e)
