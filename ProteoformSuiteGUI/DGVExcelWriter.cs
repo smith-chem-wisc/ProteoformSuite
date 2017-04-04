@@ -20,7 +20,11 @@ namespace ProteoformSuiteInternal
             foreach (DataGridView dgv in dgvs)
             {
                 System.Data.DataTable dt = new System.Data.DataTable();
-                foreach (DataGridViewColumn col in dgv.Columns) dt.Columns.Add(col.HeaderText);
+                foreach (DataGridViewColumn col in dgv.Columns)
+                {
+                    dt.Columns.Add(col.HeaderText);
+
+                }
                 Parallel.ForEach(dgv.Rows.Cast<DataGridViewRow>(), row =>
                 {
                     DataRow new_row = dt.NewRow();
@@ -28,16 +32,19 @@ namespace ProteoformSuiteInternal
                     {
                         if(dgv.Columns[cell.ColumnIndex].Visible) new_row[cell.ColumnIndex] = cell.Value == null ? "" : cell.Value;
                     }
-                    lock(dt) dt.Rows.Add(new_row);
+                    lock (dt) dt.Rows.Add(new_row);
                 });
-                foreach (DataGridViewColumn col in dgv.Columns)
-                {
-                    if (!col.Visible) dt.Columns.Remove(col.HeaderText);
-                }
-                
+                foreach (DataGridViewColumn col in dgv.Columns) { if (!col.Visible) dt.Columns.Remove(col.HeaderText);  }
+
                 var worksheet = workbook.Worksheets.Add(dt, dgv.Name);
-            }   
-                workbook.SaveAs(filename);
+                foreach (var col in worksheet.Columns())
+                {
+                    double ok;
+                    col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = Double.TryParse(worksheet.Row(2).Cell(col.ColumnNumber()).Value.ToString(), out ok) ? XLCellValues.Number : XLCellValues.Text;
+                }
+
+            }
+            workbook.SaveAs(filename);
         }
     }
 }
