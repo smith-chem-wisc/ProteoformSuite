@@ -54,7 +54,8 @@ namespace ProteoformSuiteInternal
                     //    .OrderBy(pf => pf.ptm_set_rank_sum)
                     //    .FirstOrDefault(pf => Math.Abs(closest_pf2.modified_mass - pf.modified_mass) <= mass_tolerance)
                     //    .ptm_set_rank_sum;
-                    Proteoform best_pf2 = candidate_pfs2_with_accession.OrderBy(x => (double)x.ptm_set_rank_sum * Math.Abs(x.modified_mass - pf1.modified_mass)).FirstOrDefault(); // major score: delta rank; tie breaker: mass difference divided by constant, so less than one
+
+                    Proteoform best_pf2 = candidate_pfs2_with_accession.OrderBy(x => Math.Abs(pf1.modified_mass - x.modified_mass)).ThenBy(x => x.ptm_set_rank_sum).FirstOrDefault(); // major score: delta rank; tie breaker: mass difference divided by constant, so less than one
                     //Proteoform best_pf2 = candidate_pfs2_with_accession.FirstOrDefault(x => x.ptm_set_rank_sum == best_pf2_ranksum);
 
                     lock (best_pf2) lock (relations)
@@ -65,7 +66,6 @@ namespace ProteoformSuiteInternal
             return count_nearby_relations(relations.OrderBy(r => r.delta_mass).ToList());
         }
 
-        
         public List<ProteoformRelation> relate_ee(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2, ProteoformComparison relation_type)
         {
             Parallel.ForEach(new HashSet<ExperimentalProteoform>(pfs1.Concat(pfs2)), pf =>
