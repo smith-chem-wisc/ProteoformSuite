@@ -54,7 +54,8 @@ namespace ProteoformSuiteInternal
             report += Lollipop.ee_relations.Count.ToString() + "\tExperimental-Experimental Pairs" + Environment.NewLine;
             report += Lollipop.ee_peaks.Count(p => p.peak_accepted).ToString() + "\tAccepted Experimental-Experimental Peaks" + Environment.NewLine;
             report += Lollipop.ee_relations.Count(r => r.accepted).ToString() + "\tAccepted Experimental-Experimental Pairs" + Environment.NewLine;
-            report += Lollipop.ef_relations.Count.ToString() + "\tTotal Experimental-False Pairs" + Environment.NewLine + Environment.NewLine;
+            if (Lollipop.ef_relations.Count > 0) report += Lollipop.ef_relations.Average(d => d.Value.Count).ToString() + "\tTotal Experimental-False Pairs" + Environment.NewLine + Environment.NewLine;
+            else report += Environment.NewLine;
 
             report += Lollipop.proteoform_community.families.Count.ToString() + "\tProteoform Families" + Environment.NewLine;
             List<ProteoformFamily> identified_families = Lollipop.proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() == 1).ToList();

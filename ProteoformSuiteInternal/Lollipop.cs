@@ -765,13 +765,35 @@ namespace ProteoformSuiteInternal
             Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
+
+
+        public static double test = 0;
         public static void make_ee_relationships(ProteoformCommunity community)
         {
             Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ee);
             Lollipop.ef_relations = Lollipop.proteoform_community.relate_ef();
             Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\Desktop\\testingef.txt"))
+            {
+                writer.WriteLine(test);
+                for (int i = 0; i < 10; i++)
+                foreach (List<ProteoformRelation> ef in ef_relations.Values)
+                {
+                    writer.WriteLine(ef.Count);
+                }
+
+                foreach (DeltaMassPeak peak in ee_peaks)
+                {
+                    foreach (List<ProteoformRelation> ef in ef_relations.Values)
+                    {
+                        List<ProteoformRelation> relations = ef.Where(r => r.delta_mass >= peak.peak_deltaM_average - peak_width_base_ee / 2 && r.delta_mass <= peak.peak_deltaM_average + peak_width_base_ee / 2).ToList();
+                        writer.WriteLine(peak.peak_deltaM_average + "\t" + relations.Count);
+                    }
+                }
+            }
+
         }
-           
+
         //TOPDOWN DATA
         public static List<TopDownHit> top_down_hits = new List<TopDownHit>();
 

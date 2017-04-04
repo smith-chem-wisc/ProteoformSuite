@@ -64,12 +64,15 @@ namespace ProteoformSuiteGUI
             ct.Series[series].XValueMember = "delta_mass";
             ct.Series[series].YValueMembers = "nearby_relations_count";
             List<ProteoformRelation> relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
-            ct.DataSource = relations_ordered;
-            ct.DataBind();
+            foreach (ProteoformRelation relation in relations_ordered)
+            {
+                ct.Series[series].Points.AddXY(relation.delta_mass, relation.nearby_relations_count);
+            }
             ct.ChartAreas[0].AxisX.Title = "Delta Mass (Da)";
             ct.ChartAreas[0].AxisY.Title = "Nearby Count";
             ct.ChartAreas[0].AxisX.LabelStyle.Format = "#";
             ct.ChartAreas[0].AxisY.LabelStyle.Format = "#";
+            ct.Series[series].Color = Color.DodgerBlue; 
         }
 
         public static void GraphDeltaMassPeaks(Chart ct, List<DeltaMassPeak> peaks, string peak_series, string decoy_series, List<ProteoformRelation> relations, string relations_series)

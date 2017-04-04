@@ -166,22 +166,24 @@ namespace ProteoformSuiteInternal
             Dictionary<string, List<ProteoformRelation>> ef_relations = new Dictionary<string, List<ProteoformRelation>>();
             ExperimentalProteoform[] pfs1 = new List<ExperimentalProteoform>(this.experimental_proteoforms.Where(p => p.accepted)).ToArray();
             ExperimentalProteoform[] pfs2 = new List<ExperimentalProteoform>(this.experimental_proteoforms.Where(p => p.accepted)).ToArray();
-            Parallel.ForEach(pfs1, pf1 =>
+            foreach(ExperimentalProteoform pf1 in pfs1) 
             {
                 List<ProteoformRelation> ef_relation_addition = pfs2
                         .Where(pf2 => allowed_ef_relation(pf1, pf2))
                         .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass))
                         .ToList();
-                lock(all_ef_relations) all_ef_relations.AddRange(ef_relation_addition);
-            });
+                all_ef_relations.AddRange(ef_relation_addition);
+            }
             //take random subset equal to # EE relations, 10 times
             for (int i = 0; i < 10; i++)
             {
                 string key = "EF_relations_" + i;
-                new Random().Shuffle(all_ef_relations.ToArray());
-                ef_relations.Add(key, all_ef_relations.Take(Lollipop.ee_relations.Count).OrderBy(r => r.delta_mass).ToList());
+                // all_ef_relations = all_ef_relations.OrderBy(x => Guid.NewGuid()).ToList();
+                all_ef_relations.Shuffle();
+                ef_relations.Add(key, all_ef_relations.Take(Lollipop.ee_relations.Count).ToList());
             }
-            count_nearby_relations(ef_relations["EF_relations_0"]);
+            Lollipop.test = all_ef_relations.Count;
+            count_nearby_relations(ef_relations["EF_relations_0"].OrderBy(r => r.delta_mass).ToList());
             return ef_relations;
         }
 
