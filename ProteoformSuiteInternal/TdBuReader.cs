@@ -28,7 +28,7 @@ namespace ProteoformSuiteInternal
                 {
                     ModificationWithMass mod = Lollipop.uniprotModificationTable.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
                     if (mod != null) modifications.Add(new Ptm(identifications.ModificationLocation(i, p), mod));
-                    else modifications.Add(new Ptm(identifications.ModificationLocation(i, p), new ModificationWithMass(identifications.ModificationAcession(i, p), null, null, ModificationSites.Any, 0, null, 0, null, null, null)));
+                    else modifications.Add(new Ptm(identifications.ModificationLocation(i, p), new ModificationWithMass(identifications.ModificationAcession(i, p), null, null, ModificationSites.Any, 0, null, new List<double>(), null, null, null)));
                 }
                 psm_list.Add(new Psm(identifications.PeptideSequenceWithoutModifications(i), identifications.StartResidueInProtein(i), identifications.EndResidueInProtein(i), modifications, identifications.Ms2SpectrumID(i), identifications.ProteinAccession(i), identifications.ProteinFullName(i), identifications.ExperimentalMassToCharge(i), identifications.ChargeState(i), (identifications.ExperimentalMassToCharge(i) - identifications.CalculatedMassToCharge(i))));
             }
@@ -71,7 +71,7 @@ namespace ProteoformSuiteInternal
                                 //found one case where PTM not in ptmlist.txt (acetylasparagine)
                                 else
                                 {
-                                    ptm_list.Add(new Ptm(position, new ModificationWithMass("N-acetylation", null, null, ModificationSites.NTerminus, 0, null, -1, null, null, null)));
+                                    ptm_list.Add(new Ptm(position, new ModificationWithMass("N-acetylation", null, null, ModificationSites.NTerminus, 0, null, new List<double>(), null, null, null)));
                                 }
                             }
                         }

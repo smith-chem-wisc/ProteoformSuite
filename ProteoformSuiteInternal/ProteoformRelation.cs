@@ -104,7 +104,7 @@ namespace ProteoformSuiteInternal
         {
             new DeltaMassPeak(this, Lollipop.proteoform_community.remaining_relations_outside_no_mans);
             if (connected_proteoforms[1] is TheoreticalProteoform && Lollipop.decoy_databases > 0) this.peak.calculate_fdr(Lollipop.ed_relations);
-            else if (connected_proteoforms[1] is ExperimentalProteoform) this.peak.calculate_fdr((new Dictionary<string, List<ProteoformRelation>>() { { "ef_relations", Lollipop.ef_relations } })) ;
+            else if (connected_proteoforms[1] is ExperimentalProteoform) this.peak.calculate_fdr(Lollipop.ef_relations) ;
         }
 
         public override bool Equals(object obj)

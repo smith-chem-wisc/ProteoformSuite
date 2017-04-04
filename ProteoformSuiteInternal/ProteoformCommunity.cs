@@ -160,25 +160,28 @@ namespace ProteoformSuiteInternal
             return ed_relations;
         }
 
-        public List<ProteoformRelation> relate_ef()
+        public Dictionary<string, List<ProteoformRelation>> relate_ef()
         {
-            List<ProteoformRelation> ef_relations = new List<ProteoformRelation>();
+            List<ProteoformRelation> all_ef_relations = new List<ProteoformRelation>();
+            Dictionary<string, List<ProteoformRelation>> ef_relations = new Dictionary<string, List<ProteoformRelation>>();
             ExperimentalProteoform[] pfs1 = new List<ExperimentalProteoform>(this.experimental_proteoforms.Where(p => p.accepted)).ToArray();
             ExperimentalProteoform[] pfs2 = new List<ExperimentalProteoform>(this.experimental_proteoforms.Where(p => p.accepted)).ToArray();
-
-            foreach (ExperimentalProteoform pf1 in pfs1)
+            Parallel.ForEach(pfs1, pf1 =>
             {
                 List<ProteoformRelation> ef_relation_addition = pfs2
                         .Where(pf2 => allowed_ef_relation(pf1, pf2))
                         .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass))
                         .ToList();
-                ef_relations.AddRange(ef_relation_addition);
+                lock(all_ef_relations) all_ef_relations.AddRange(ef_relation_addition);
+            });
+            //take random subset equal to # EE relations, 10 times
+            for (int i = 0; i < 10; i++)
+            {
+                string key = "EF_relations_" + i;
+                new Random().Shuffle(all_ef_relations.ToArray());
+                ef_relations.Add(key, all_ef_relations.Take(Lollipop.ee_relations.Count).OrderBy(r => r.delta_mass).ToList());
             }
-            //take subset equal to # EE relations
-            new Random().Shuffle(ef_relations.ToArray());
-            ef_relations = ef_relations.Take(Lollipop.ee_relations.Count).ToList();
-            ef_relations = ef_relations.OrderBy(r => r.delta_mass).ToList();
-            count_nearby_relations(ef_relations);
+            count_nearby_relations(ef_relations["EF_relations_0"]);
             return ef_relations;
         }
 

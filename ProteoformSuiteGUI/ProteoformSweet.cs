@@ -247,49 +247,37 @@ namespace ProteoformSuiteGUI
 
         private void export_table()
         {
-            List<DataGridView> dgvs = new List<DataGridView>();
             if (current_form == rawExperimentalComponents)
             {
-                dgvs.Add(rawExperimentalComponents.GetDGV());
-                SaveExcelFile(dgvs, "raw_experimental_components_table.xlsx");
+                SaveExcelFile(new List<DataGridView> { rawExperimentalComponents.GetDGV() }, "raw_experimental_components_table.xlsx");
             }
             if (current_form == neuCodePairs)
             {
-                dgvs.Add(neuCodePairs.GetDGV());
-                SaveExcelFile(dgvs, "neucode_pairs_table.xlsx");
+                SaveExcelFile(new List<DataGridView> { neuCodePairs.GetDGV() }, "neucode_pairs_table.xlsx");
             }
             if (current_form == aggregatedProteoforms)
             {
-                dgvs.Add(aggregatedProteoforms.GetDGV());
-                SaveExcelFile(dgvs, "aggregated_proteoforms_table.xlsx");
+                SaveExcelFile(new List<DataGridView> { aggregatedProteoforms.GetDGV() }, "aggregated_proteoforms_table.xlsx");
            }
             if (current_form == theoreticalDatabase)
             {
-                dgvs.Add(theoreticalDatabase.GetDGV());
-                SaveExcelFile(dgvs, "theoretical_database_table.xlsx");
+                SaveExcelFile(new List<DataGridView> { theoreticalDatabase.GetDGV() }, "theoretical_database_table.xlsx");
             }
             if ( current_form == experimentalTheoreticalComparison)
             {
-                dgvs.Add(experimentalTheoreticalComparison.GetETPeaksDGV());
-                dgvs.Add(experimentalTheoreticalComparison.GetETRelationsDGV());
-                SaveExcelFile(dgvs, "experimental_theoretical_comparison_table.xlsx");
+                SaveExcelFile(new List<DataGridView> { experimentalTheoreticalComparison.GetETPeaksDGV(), experimentalTheoreticalComparison.GetETRelationsDGV() } , "experimental_theoretical_comparison_table.xlsx");
             }
             if ( current_form == experimentExperimentComparison)
             {
-                dgvs.Add(experimentExperimentComparison.GetEEPeaksDGV());
-                dgvs.Add(experimentExperimentComparison.GetEERelationDGV());
-                SaveExcelFile(dgvs, "experiment_experiment_comparison_table.xlsx");
+                SaveExcelFile(new List<DataGridView>() { experimentExperimentComparison.GetEEPeaksDGV(), experimentExperimentComparison.GetEERelationDGV() }, "experiment_experiment_comparison_table.xlsx");
             }
             if (current_form == proteoformFamilies)
             {
-                dgvs.Add(proteoformFamilies.GetDGV());
-                SaveExcelFile(dgvs, "proteoform_families_table.xlsx");
+                SaveExcelFile(new List<DataGridView>() { proteoformFamilies.GetDGV() }, "proteoform_families_table.xlsx");
             }
             if (current_form == quantification)
             {
-                dgvs.Add(quantification.Get_GoTerms_DGV());
-                dgvs.Add(quantification.Get_quant_results_DGV());
-                SaveExcelFile(dgvs, "quantification_table.xlsx");
+                SaveExcelFile(new List<DataGridView>() { quantification.Get_GoTerms_DGV(), quantification.Get_quant_results_DGV() }, "quantification_table.xlsx");
             }
         }
 
