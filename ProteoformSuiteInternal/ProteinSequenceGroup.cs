@@ -6,7 +6,7 @@ namespace ProteoformSuiteInternal
 {
     public class ProteinSequenceGroup : ProteinWithGoTerms
     {
-        public List<ProteinWithGoTerms> proteinList { get; private set; }
+        public List<ProteinWithGoTerms> proteinWithGoTermList { get; private set; }
 
         public ProteinSequenceGroup(IEnumerable<ProteinWithGoTerms> proteins_with_contaminants_first)
             : base(proteins_with_contaminants_first.First().BaseSequence,
@@ -24,7 +24,7 @@ namespace ProteoformSuiteInternal
                 proteins_with_contaminants_first.SelectMany(p => p.DatabaseReferences),
                 proteins_with_contaminants_first.SelectMany(p => p.GoTerms))
         {
-            this.proteinList = proteins_with_contaminants_first.ToList();
+            this.proteinWithGoTermList = proteins_with_contaminants_first.ToList();
             this.AccessionList = proteins_with_contaminants_first.Select(p => p.Accession).ToList();
             this.AccessionList.Sort();
         }
