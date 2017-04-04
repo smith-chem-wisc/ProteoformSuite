@@ -17,17 +17,16 @@ namespace ProteoformSuiteGUI
 {
     public partial class ExperimentExperimentComparison : Form
     {
-        public event EEPeakAcceptabilityChangedEventHandler EEPeakAcceptabilityChanged;
-        private bool compared_ee = false;
+        private RelationFormUtility relationFormUtility;
 
         public ExperimentExperimentComparison()
         {
+            this.relationFormUtility = new RelationFormUtility();
             InitializeComponent();
             this.dgv_EE_Peaks.MouseClick += new MouseEventHandler(dgv_EE_Peak_List_CellClick);
             this.ct_EE_Histogram.MouseClick += new MouseEventHandler(ct_EE_Histogram_MouseClick);
             this.ct_EE_peakList.MouseClick += new MouseEventHandler(ct_EE_peakList_MouseClick);
             dgv_EE_Peaks.CurrentCellDirtyStateChanged += new EventHandler(EE_Peak_List_DirtyStateChanged); //makes the change immediate and automatic
-            EEPeakAcceptabilityChanged += ExperimentExperimentComparison_EEPeakAcceptabilityChanged;
             InitializeParameterSet();
         }
 
@@ -49,8 +48,8 @@ namespace ProteoformSuiteGUI
         {
             if (Lollipop.notch_search_ee)
             {
-                bool notch_masses = get_notch_masses();
-                if (!notch_masses) return;
+                Lollipop.notch_masses_ee = relationFormUtility.get_notch_masses(tb_notch_masses);
+                if (Lollipop.notch_masses_ee == null) return;
             }
             this.Cursor = Cursors.WaitCursor;
             Lollipop.make_ee_relationships(Lollipop.proteoform_community);
@@ -70,8 +69,8 @@ namespace ProteoformSuiteGUI
             else { this.FillTablesAndCharts(); }
             if (Lollipop.ef_relations.Count > 0) cb_view_ef.Enabled = true;
             cb_view_ef.Checked = false;
+            relationFormUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
             this.Cursor = Cursors.Default;
-            compared_ee = true;
         }
 
         public DataGridView GetEERelationDGV()
@@ -84,39 +83,14 @@ namespace ProteoformSuiteGUI
             return dgv_EE_Peaks;
         }
 
-        public bool get_notch_masses()
-        {
-            try
-            {
-                string[] notch_masses = tb_notch_masses.Text.Split(';');
-                if (notch_masses.Length == 0)
-                {
-                    MessageBox.Show("No notch masses entered.");
-                    return false;
-                }
-                foreach (string mass in notch_masses)
-                {
-                    Lollipop.notch_masses_ee.Add(Convert.ToDouble(mass));
-                }
-                return true;
-            }
-            catch
-            {
-                MessageBox.Show("Masses in incorrect format.");
-                return false;
-            }
-        }
-
         public void ClearListsAndTables()
         {
             Lollipop.ee_relations.Clear();
             Lollipop.ee_peaks.Clear();
             Lollipop.ef_relations.Clear();
             Lollipop.proteoform_community.families.Clear();
-            foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ee || r.relation_type == ProteoformComparison.ef);
-            foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ee || r.relation_type == ProteoformComparison.ef);
-            Lollipop.proteoform_community.relations_in_peaks.RemoveAll(r => r.relation_type == ProteoformComparison.ee || r.relation_type == ProteoformComparison.ef);
-            Lollipop.proteoform_community.delta_mass_peaks.RemoveAll(k => k.relation_type == ProteoformComparison.ee || k.relation_type == ProteoformComparison.ef);
+
+            relationFormUtility.clear_lists(new List<ProteoformComparison>() { ProteoformComparison.ee, ProteoformComparison.ef });
 
             foreach (var series in ct_EE_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_EE_peakList.Series) series.Points.Clear();
@@ -138,16 +112,7 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FormatPeakListGridView(dgv_EE_Peaks, true);
             GraphEERelations();
             GraphEEPeaks();
-            updateFiguresOfMerit();
-        }
-
-        private void updateFiguresOfMerit()
-        {
-            List<DeltaMassPeak> big_peaks = Lollipop.ee_peaks.Where(p => p.peak_accepted).ToList();
-            tb_totalAcceptedEERelations.Text = big_peaks.Sum(p => p.grouped_relations.Count).ToString();
-            tb_TotalEEPeaks.Text = big_peaks.Count.ToString();
-            if (Lollipop.ef_relations.Count > 0 && big_peaks.Count > 0) tb_max_accepted_fdr.Text = Math.Round(big_peaks.Max(p => p.peak_group_fdr), 3).ToString(); // this errors when no peaks are accepted
-
+            relationFormUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
         }
 
         private void FillEEPairsGridView()
@@ -171,7 +136,7 @@ namespace ProteoformSuiteGUI
         {
             int clickedRow = dgv_EE_Peaks.HitTest(e.X, e.Y).RowIndex;
             int clickedCol = dgv_EE_Peaks.HitTest(e.X, e.Y).ColumnIndex;
-            if (e.Button == MouseButtons.Left && clickedRow >= 0 && clickedRow < Lollipop.ee_relations.Count
+            if (e.Button == MouseButtons.Left && clickedRow >= 0 && clickedRow < dgv_EE_Peaks.RowCount
                 && clickedCol < dgv_EE_Peaks.ColumnCount && clickedCol >= 0)
             {
                 ct_EE_peakList.ChartAreas[0].AxisX.StripLines.Clear();
@@ -227,48 +192,17 @@ namespace ProteoformSuiteGUI
 
         private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
         {
-            updateFiguresOfMerit();
+            relationFormUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
         }
 
 
         private void EE_Peak_List_DirtyStateChanged(object sender, EventArgs e)
         {
-            if (dgv_EE_Peaks.IsCurrentCellDirty)
-            {
-                dgv_EE_Peaks.CommitEdit(DataGridViewDataErrorContexts.Commit);
-
-                int columnIndex = dgv_EE_Peaks.CurrentCell.ColumnIndex;
-                int rowIndex = dgv_EE_Peaks.CurrentCell.RowIndex;
-
-                if (columnIndex < 0) return;
-                string columnName = dgv_EE_Peaks.Columns[columnIndex].Name;
-
-                if (columnName == "peak_accepted")
-                {
-                    bool acceptibilityStatus = Convert.ToBoolean(dgv_EE_Peaks.Rows[rowIndex].Cells[columnIndex].Value);
-                    DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_EE_Peaks.Rows[rowIndex].DataBoundItem;
-                    EEPeakAcceptabilityChangedEventArgs EEAcceptabilityChangedEventData = new EEPeakAcceptabilityChangedEventArgs(acceptibilityStatus, selected_peak);
-                    ONEEAcceptibilityChanged(EEAcceptabilityChangedEventData);
-                }
-                updateFiguresOfMerit();
-            }
-        }
-
-        protected void ExperimentExperimentComparison_EEPeakAcceptabilityChanged(object sender, EEPeakAcceptabilityChangedEventArgs e)
-        {
-            foreach (ProteoformRelation pRelation in Lollipop.ee_relations.Where(p => e.EEPeak.grouped_relations.Contains(p)))
-            {
-                pRelation.accepted = e.IsPeakAcceptable;
-            }
-            dgv_EE_Peaks.Refresh();
+            relationFormUtility.peak_acceptability_change(dgv_EE_Peaks);
             dgv_EE_Relations.Refresh();
+            dgv_EE_Peaks.Refresh();
+            relationFormUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
         }
-
-        protected virtual void ONEEAcceptibilityChanged(EEPeakAcceptabilityChangedEventArgs e)
-        {
-            if (EEPeakAcceptabilityChanged != null) EEPeakAcceptabilityChanged(this, e);
-        }
-
 
         private void xMaxEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
         {
@@ -342,20 +276,17 @@ namespace ProteoformSuiteGUI
         {
             cb_automate_peak_acceptance.Checked = false;
             Lollipop.min_peak_count_ee = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
-            if (compared_ee)
+            Parallel.ForEach(Lollipop.ee_peaks, p =>
             {
-                Parallel.ForEach(Lollipop.ee_peaks, p =>
-                {
-                    p.peak_accepted = p.peak_relation_group_count >= Lollipop.min_peak_count_ee;
-                    Parallel.ForEach(p.grouped_relations, r => r.accepted = p.peak_accepted);
-                });
-                dgv_EE_Peaks.Refresh();
-                dgv_EE_Relations.Refresh();
-            }
+                p.peak_accepted = p.peak_relation_group_count >= Lollipop.min_peak_count_ee;
+                Parallel.ForEach(p.grouped_relations, r => r.accepted = p.peak_accepted);
+            });
+            dgv_EE_Peaks.Refresh();
+            dgv_EE_Relations.Refresh();
             ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count_ee };
             ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
-            this.updateFiguresOfMerit();
+            relationFormUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
         }
 
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
@@ -382,8 +313,8 @@ namespace ProteoformSuiteGUI
 
         private void cb_view_ef_CheckedChanged(object sender, EventArgs e)
         {
-            if (cb_view_ef.Checked) DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ef_relations, "relations");
-            else  DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ee_relations, "relations");
+            if (cb_view_ef.Checked) DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ef_relations["EF_relations_0"], "relations");
+            else DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ee_relations, "relations");
         }
 
         private void cb_automate_peak_acceptance_CheckedChanged(object sender, EventArgs e)
@@ -407,34 +338,4 @@ namespace ProteoformSuiteGUI
             }
         }
     }
-
-
-    public class EEPeakAcceptabilityChangedEventArgs : EventArgs
-{
-    private bool _isPeakAcceptable;
-    public bool IsPeakAcceptable
-    {
-        get
-        {
-            return this._isPeakAcceptable;
-        }
-    }
-
-    private DeltaMassPeak _EEPeak;
-    public DeltaMassPeak EEPeak
-    {
-        get
-        {
-            return this._EEPeak;
-        }
-    }
-
-    public EEPeakAcceptabilityChangedEventArgs(bool IsPeakAcceptable, DeltaMassPeak EEPeak)
-    {
-        this._isPeakAcceptable = IsPeakAcceptable; //True if peak is acceptable
-        this._EEPeak = EEPeak;
-    }
-}
-
-public delegate void EEPeakAcceptabilityChangedEventHandler(object sender, EEPeakAcceptabilityChangedEventArgs e);
 }

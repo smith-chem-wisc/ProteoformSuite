@@ -71,70 +71,67 @@ namespace ProteoformSuiteInternal
 
 
         //CALIBRATION WITH TD HITS
-        public static Func<double[], double> Run_TdMzCal(string filename, string raw_file_path, List<TopDownHit> identifications)
+        public static Func<double[], double> Run_TdMzCal(string filename, List<TopDownHit> identifications)
         {
             Func<double[], double> calibration_function = null;
-            using (ThermoDynamicData myMsDataFile = ThermoDynamicData.InitiateDynamicConnection(raw_file_path))
+            if (identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList().Count >= 5)
             {
-                if (identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList().Count >= 5)
+                List<TopDownHit> identifications_tight_mass = identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList();
+                //filter out 5% outliers
+                List<double> mass_errors = identifications_tight_mass.Select(h => (h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0)).ToList().OrderBy(m => m).ToList();
+                double percent_in_window = 1;
+                int start = 0; //start index
+                int count = identifications_tight_mass.Count; //end index
+                while (percent_in_window > .95)  //decrease window until ~95% of points in it
                 {
-                    List<TopDownHit> identifications_tight_mass = identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList();
-                    //filter out 5% outliers
-                    List<double> mass_errors = identifications_tight_mass.Select(h => (h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0)).ToList().OrderBy(m => m).ToList();
-                    double percent_in_window = 1;
-                    int start = 0; //start index
-                    int count = identifications_tight_mass.Count; //end index
-                    while (percent_in_window > .95)  //decrease window until ~95% of points in it
-                    {
-                        List<double> mass_errors_start = mass_errors.GetRange(start + 1, count - 1);
-                        double start_range = mass_errors_start.Max() - mass_errors_start.Min();
-                        List<double> mass_errors_end = mass_errors.GetRange(start, count - 1);
-                        double end_range = mass_errors_end.Max() - mass_errors_end.Min();
-                        if (start_range < end_range) start++; //if window smaller from removing first delta m, keep this window
-                        count--; //either way count fewer
-                        percent_in_window = (double)mass_errors.GetRange(start, count).ToList().Count / mass_errors.Count;
-                    }
-                    List<TopDownHit> identifications_to_use = identifications_tight_mass.OrderBy(h => ((h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0))).ToList().GetRange(start, count).ToList();
-
-                    List<LabeledDataPoint> pointList = new List<LabeledDataPoint>();
-
-                    //get data points
-                    UsefulProteomicsDatabases.Loaders.LoadElements("elements.dat");
-                    foreach (TopDownHit hit in identifications_to_use)
-                    {
-                        double[] inputs = new double[2] { hit.mz, hit.retention_time };
-                        var a = new LabeledDataPoint(inputs, (hit.reported_mass - hit.theoretical_mass - Math.Round(hit.reported_mass - hit.theoretical_mass, 0)) / hit.charge);
-                        pointList.Add(a);
-                    }
-
-                    ////if lock mass, add lock mass peptide to training points
-                    if (Lollipop.calibrate_lock_mass)
-                    {
-                        foreach (MsScan scan in Lollipop.Ms_scans.Where(s => s.filename == filename && s.lock_mass_shift > 0 || s.lock_mass_shift < 0))
-                        {
-                            pointList.Add(new LabeledDataPoint(new double[2] { 589.2, scan.retention_time }, scan.lock_mass_shift));
-                        }
-                    }
-
-                    //linear fit, mz correction as a function of retention time and m/z value
-                    double[][] variables = new double[pointList.Count()][];
-                    int k = 0;
-                    foreach (LabeledDataPoint p in pointList)
-                    {
-                        variables[k] = p.inputs;
-                        k++;
-                    }
-
-                    var mz_errors = pointList.Select(p => p.output).ToArray();
-                    var functions = new Func<double[], double>[3];
-                    functions[0] = a => 1;
-                    for (int i = 0; i < 2; i++)
-                    {
-                        int j = i;
-                        functions[j + 1] = a => a[j];
-                    }
-                    calibration_function = Fit.LinearMultiDimFunc(variables, mz_errors, functions);
+                    List<double> mass_errors_start = mass_errors.GetRange(start + 1, count - 1);
+                    double start_range = mass_errors_start.Max() - mass_errors_start.Min();
+                    List<double> mass_errors_end = mass_errors.GetRange(start, count - 1);
+                    double end_range = mass_errors_end.Max() - mass_errors_end.Min();
+                    if (start_range < end_range) start++; //if window smaller from removing first delta m, keep this window
+                    count--; //either way count fewer
+                    percent_in_window = (double)mass_errors.GetRange(start, count).ToList().Count / mass_errors.Count;
                 }
+                List<TopDownHit> identifications_to_use = identifications_tight_mass.OrderBy(h => ((h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0))).ToList().GetRange(start, count).ToList();
+
+                List<LabeledDataPoint> pointList = new List<LabeledDataPoint>();
+
+                //get data points
+                UsefulProteomicsDatabases.Loaders.LoadElements("elements.dat");
+                foreach (TopDownHit hit in identifications_to_use)
+                {
+                    double[] inputs = new double[2] { hit.mz, hit.retention_time };
+                    var a = new LabeledDataPoint(inputs, (hit.reported_mass - hit.theoretical_mass - Math.Round(hit.reported_mass - hit.theoretical_mass, 0)) / hit.charge);
+                    pointList.Add(a);
+                }
+
+                ////if lock mass, add lock mass peptide to training points
+                if (Lollipop.calibrate_lock_mass)
+                {
+                    foreach (MsScan scan in Lollipop.Ms_scans.Where(s => s.filename == filename && s.lock_mass_shift > 0 || s.lock_mass_shift < 0))
+                    {
+                        pointList.Add(new LabeledDataPoint(new double[2] { 589.2, scan.retention_time }, scan.lock_mass_shift));
+                    }
+                }
+
+                //linear fit, mz correction as a function of retention time and m/z value
+                double[][] variables = new double[pointList.Count()][];
+                int k = 0;
+                foreach (LabeledDataPoint p in pointList)
+                {
+                    variables[k] = p.inputs;
+                    k++;
+                }
+
+                var mz_errors = pointList.Select(p => p.output).ToArray();
+                var functions = new Func<double[], double>[3];
+                functions[0] = a => 1;
+                for (int i = 0; i < 2; i++)
+                {
+                    int j = i;
+                    functions[j + 1] = a => a[j];
+                }
+                calibration_function = Fit.LinearMultiDimFunc(variables, mz_errors, functions);
             }
             return calibration_function;
         }
@@ -154,46 +151,27 @@ namespace ProteoformSuiteInternal
                 stream.Write(byteArray, 0, (int)byteArray.Length);
                 File.WriteAllBytes(new_absolute_path, stream.ToArray());
             }
-
-            //update m/z for each charge state with calibrated value
-            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(new_absolute_path, true))
+            // Get Data in Sheet1 of Excel file
+            var workbook = new XLWorkbook(new_absolute_path);
+            var worksheet = workbook.Worksheets.Worksheet(1);
+            List<IXLRow> rows_to_delete = new List<IXLRow>();
+            Parallel.ForEach(worksheet.Rows(), row =>
             {
-                // Get Data in Sheet1 of Excel file
-                IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
-                WorksheetPart worksheet_1 = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
-                IEnumerable<Row> rowcollection = worksheet_1.Worksheet.Descendants<Row>().ToList();
-                uint rowindex = 2;
-                foreach (Row row in rowcollection)
+                if (row.RowNumber() != 1)
                 {
-                    if (row.RowIndex.Value == 1) continue;
-                    IEnumerable<Cell> cells = TdBuReader.GetRowCells(row);
-                    List<string> cellStrings = new List<string>();
-                    foreach (Cell cell in cells)
+                    if (Lollipop.td_calibration_functions.ContainsKey(row.Cell(15).Value.ToString().Split('.')[0]))
                     {
-                        cellStrings.Add(TdBuReader.GetCellValue(spreadsheetDocument, cell));
+                        row.Cell(17).SetValue(Lollipop.td_hit_correction[new Tuple<string, int, double>(row.Cell(15).Value.ToString().Split('.')[0], Convert.ToInt16(row.Cell(18).GetDouble()), row.Cell(17).GetDouble())]);
                     }
-                    if (Lollipop.td_calibration_functions.ContainsKey(cellStrings[14].Split('.')[0]))
-                    {
-                        TopDownHit hit = Lollipop.td_hits_calibration.Where(h => h.file == file && h.reported_mass == Convert.ToDouble(cellStrings[16])).ToList().First();
-                        cells.ElementAt(16).CellValue = new CellValue(hit.corrected_mass.ToString());
-                        cells.ElementAt(16).DataType = new EnumValue<CellValues>(CellValues.Number);
-                        foreach (Cell cell in cells)
-                        {
-                            string cellReference = cell.CellReference.Value;
-                            cell.CellReference = new DocumentFormat.OpenXml.StringValue(cellReference.Replace(row.RowIndex.Value.ToString(), rowindex.ToString()));
-                        }
-                        row.RowIndex = rowindex;
-                        rowindex++;
-                    }
-                    //if not calibrated, remove from list
+                    //if hit's file not calibrated (not enough calibration points, remove from list
                     else
                     {
-                        row.Remove();
+                        lock (rows_to_delete) rows_to_delete.Add(row);
                     }
                 }
-                worksheet_1.Worksheet.Save();
-                spreadsheetDocument.Close();
-            }
+            });
+            foreach (IXLRow row in rows_to_delete) row.Delete(); //can't parallelize
+            workbook.Save();
         }
 
         //READ AND WRITE NEW CALIBRATED RAW EXPERIMENTAL COMPONENTS FILE

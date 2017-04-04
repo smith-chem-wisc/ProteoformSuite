@@ -14,7 +14,7 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unmodified") } } };
 
             //One accepted ET relation; should give one ProteoformFamily
             Lollipop.min_peak_count_et = 1;
@@ -48,7 +48,7 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.proteoform_community = test_community;
 
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unmodified") } } };
 
             Lollipop.min_peak_count_ee = 2;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
@@ -90,7 +90,7 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.proteoform_community = test_community;
 
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unmodified") } } };
 
             Lollipop.ee_max_mass_difference = 20;
             Lollipop.peak_width_base_ee = 0.015;
@@ -140,7 +140,7 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET_with_theoretical_pf_group()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified") } } };
+            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unmodified") } } };
 
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "name", "full_name", true, false, new List<DatabaseReference>(), new List<GoTerm>());
@@ -187,7 +187,7 @@ namespace Test
             Lollipop.proteoform_community = community;
             Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>>
             {
-                { "unmodified", new List<Modification> { new Modification("unmodified") } },
+                { "unmodified", new List<Modification> { new Modification("unmodified", "unmodified") } },
                 { "fake", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake", 19) } },
                 { "fake_zero", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake_zero", 0) } }
             };

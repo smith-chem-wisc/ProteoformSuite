@@ -81,7 +81,7 @@ namespace ProteoformSuiteInternal
             List<int> nearby_decoy_counts = new List<int>(from relation_list in decoy_relations.Values select find_nearby_decoys(relation_list).Count);
             nearby_decoy_counts.Sort();
             double median_false_peak_count;
-            if (nearby_decoy_counts.Count == 1) //is ef or 1 decoy database
+            if (nearby_decoy_counts.Count == 1) //1 decoy database
             {
                 median_false_peak_count = nearby_decoy_counts[0];
             }

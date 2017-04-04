@@ -20,18 +20,18 @@ namespace ProteoformSuiteInternal
         {
             using (ThermoDynamicData myMsDataFile = ThermoDynamicData.InitiateDynamicConnection(raw_file_path))
             {
-                foreach (IMsDataScan<ThermoSpectrum> spectrum in myMsDataFile)
+                Parallel.ForEach(myMsDataFile, spectrum =>
                 {
                     MsScan scan = new ProteoformSuiteInternal.MsScan(spectrum.MsnOrder, spectrum.OneBasedScanNumber, filename, spectrum.RetentionTime, spectrum.RetentionTime, spectrum.TotalIonCurrent, spectrum.MassSpectrum.XArray, spectrum.MassSpectrum.YArray, spectrum.MassSpectrum.GetNoises());
-                    Lollipop.Ms_scans.Add(scan);
-                }
+                    lock (Lollipop.Ms_scans) Lollipop.Ms_scans.Add(scan);
+                });
                 //set charge, mz, intensity, find MS1 numbers
-                foreach (TopDownHit hit in Lollipop.td_hits_calibration.Where(f => f.filename == filename).ToList())
+                Parallel.ForEach(Lollipop.td_hits_calibration.Where(f => f.filename == filename).ToList(), hit =>
                 {
                     double mz = (myMsDataFile.GetOneBasedScan(hit.scan) as ThermoScanWithPrecursor).IsolationMz;
                     hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)mz, 0)); //m / (m/z)  round to get charge 
                     hit.mz = hit.reported_mass.ToMz(hit.charge);
-                }
+                });
             }
         }
 
