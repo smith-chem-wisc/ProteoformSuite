@@ -97,7 +97,7 @@ namespace Test
 
             Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> {
                 { "unmodified", new List<Modification>() {
-                    new ModificationWithMass("unmodified", new Tuple<string, string>("", ""), null, ModificationSites.K, 0, new Dictionary<string, IList<string>>(), -1, new List<double>(), new List<double>(), "") }
+                    new ModificationWithMass("unmodified", new Tuple<string, string>("", ""), null, ModificationSites.K, 0, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "") }
                 }
             };
 
@@ -142,7 +142,7 @@ namespace Test
             Assert.AreEqual(3, pr2.peak_center_count);
             Assert.AreEqual(0, pr2.peak_center_deltaM);
             Assert.AreEqual("unmodified", peak.possiblePeakAssignments_string);
-            peak.possiblePeakAssignments.Add(new Modification("unmodified", "unknown"));
+            peak.possiblePeakAssignments.Add(new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }));
             Assert.AreEqual("unmodified; unmodified", peak.possiblePeakAssignments_string);
 
             //Test that the relations in the peak are added to each of the proteoforms referenced in the peak
