@@ -486,8 +486,7 @@ namespace ProteoformSuiteInternal
             psm_list.Clear();
             theoretical_proteins.Clear();
 
-            //Read the UniProt-XML and ptmlist
-            Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
+            //Read the UniProt-XML and ptmlist. note: elements loaded at instance of proteoformsuite when mods read in
             List<ModificationWithLocation> all_known_modifications = defaultMods;
             all_known_modifications.AddRange(get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList());
             all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
@@ -765,33 +764,11 @@ namespace ProteoformSuiteInternal
             Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
         }
 
-
-
-        public static double test = 0;
         public static void make_ee_relationships(ProteoformCommunity community)
         {
             Lollipop.ee_relations = Lollipop.proteoform_community.relate_ee(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ee);
             Lollipop.ef_relations = Lollipop.proteoform_community.relate_ef();
             Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\Desktop\\testingef.txt"))
-            {
-                writer.WriteLine(test);
-                for (int i = 0; i < 10; i++)
-                foreach (List<ProteoformRelation> ef in ef_relations.Values)
-                {
-                    writer.WriteLine(ef.Count);
-                }
-
-                foreach (DeltaMassPeak peak in ee_peaks)
-                {
-                    foreach (List<ProteoformRelation> ef in ef_relations.Values)
-                    {
-                        List<ProteoformRelation> relations = ef.Where(r => r.delta_mass >= peak.peak_deltaM_average - peak_width_base_ee / 2 && r.delta_mass <= peak.peak_deltaM_average + peak_width_base_ee / 2).ToList();
-                        writer.WriteLine(peak.peak_deltaM_average + "\t" + relations.Count);
-                    }
-                }
-            }
-
         }
 
         //TOPDOWN DATA

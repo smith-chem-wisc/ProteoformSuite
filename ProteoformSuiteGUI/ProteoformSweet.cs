@@ -249,27 +249,27 @@ namespace ProteoformSuiteGUI
         {
             if (current_form == rawExperimentalComponents)
             {
-                SaveExcelFile(new List<DataGridView> { rawExperimentalComponents.GetDGV() }, "raw_experimental_components_table.xlsx");
+                SaveExcelFile(new List<DataGridView> (){ rawExperimentalComponents.GetDGV() }, "raw_experimental_components_table.xlsx");
             }
             if (current_form == neuCodePairs)
             {
-                SaveExcelFile(new List<DataGridView> { neuCodePairs.GetDGV() }, "neucode_pairs_table.xlsx");
+                SaveExcelFile(new List<DataGridView>() { neuCodePairs.GetDGV() }, "neucode_pairs_table.xlsx");
             }
             if (current_form == aggregatedProteoforms)
             {
-                SaveExcelFile(new List<DataGridView> { aggregatedProteoforms.GetDGV() }, "aggregated_proteoforms_table.xlsx");
+                SaveExcelFile(new List<DataGridView>() { aggregatedProteoforms.GetDGV() } , "aggregated_proteoforms_table.xlsx");
            }
             if (current_form == theoreticalDatabase)
             {
-                SaveExcelFile(new List<DataGridView> { theoreticalDatabase.GetDGV() }, "theoretical_database_table.xlsx");
+                SaveExcelFile(new List<DataGridView>() { theoreticalDatabase.GetDGV() }, "theoretical_database_table.xlsx");
             }
             if ( current_form == experimentalTheoreticalComparison)
             {
-                SaveExcelFile(new List<DataGridView> { experimentalTheoreticalComparison.GetETPeaksDGV(), experimentalTheoreticalComparison.GetETRelationsDGV() } , "experimental_theoretical_comparison_table.xlsx");
+                SaveExcelFile(new List<DataGridView>() { experimentalTheoreticalComparison.GetETRelationsDGV(), experimentalTheoreticalComparison.GetETPeaksDGV() }, "experimental_theoretical_comparison_table.xlsx");
             }
             if ( current_form == experimentExperimentComparison)
             {
-                SaveExcelFile(new List<DataGridView>() { experimentExperimentComparison.GetEEPeaksDGV(), experimentExperimentComparison.GetEERelationDGV() }, "experiment_experiment_comparison_table.xlsx");
+                SaveExcelFile(new List<DataGridView>(){ experimentExperimentComparison.GetEERelationDGV(), experimentExperimentComparison.GetEEPeaksDGV()}, "experiment_experiment_comparison_table.xlsx");
             }
             if (current_form == proteoformFamilies)
             {

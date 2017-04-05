@@ -25,22 +25,22 @@ namespace ProteoformSuiteInternal
                     dt.Columns.Add(col.HeaderText);
 
                 }
-                Parallel.ForEach(dgv.Rows.Cast<DataGridViewRow>(), row =>
+                foreach (DataGridViewRow row in dgv.Rows)
                 {
                     DataRow new_row = dt.NewRow();
                     foreach (DataGridViewCell cell in row.Cells)
                     {
-                        if(dgv.Columns[cell.ColumnIndex].Visible) new_row[cell.ColumnIndex] = cell.Value == null ? "" : cell.Value;
+                        if (dgv.Columns[cell.ColumnIndex].Visible) new_row[cell.ColumnIndex] = (cell.Value == null || cell.Value.ToString() == "NaN") ? "" : cell.Value;
                     }
                     lock (dt) dt.Rows.Add(new_row);
-                });
-                foreach (DataGridViewColumn col in dgv.Columns) { if (!col.Visible) dt.Columns.Remove(col.HeaderText);  }
+                }
+                foreach (DataGridViewColumn col in dgv.Columns) { if (!col.Visible) dt.Columns.Remove(col.HeaderText); }
 
                 var worksheet = workbook.Worksheets.Add(dt, dgv.Name);
                 foreach (var col in worksheet.Columns())
                 {
-                    double ok;
-                    col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = Double.TryParse(worksheet.Row(2).Cell(col.ColumnNumber()).Value.ToString(), out ok) ? XLCellValues.Number : XLCellValues.Text;
+                    double is_number;
+                    col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = Double.TryParse(worksheet.Row(2).Cell(col.ColumnNumber()).Value.ToString(), out is_number) ? XLCellValues.Number : XLCellValues.Text;
                 }
 
             }

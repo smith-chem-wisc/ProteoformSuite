@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using IO.Thermo;
-using Spectra;
 using Chemistry;
-using MathNet.Numerics.Statistics;
 using Proteomics;
-using MassSpectrometry;
 using System.IO;
 using MathNet.Numerics;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml;
 using ClosedXML.Excel;
 using System.Text.RegularExpressions;
 
@@ -27,16 +20,12 @@ namespace ProteoformSuiteInternal
         //RAW LOCK MASS 
         public static void raw_lock_mass(string filename, string raw_file_path)
         {
-            UsefulProteomicsDatabases.Loaders.LoadElements("elements.dat");
             var tol = .01;
-
             var Compound1 = new Peptide("NNNNN");
-
             var regularMZ = IsotopicDistribution.GetDistribution(Compound1.GetChemicalFormula(), 0.1, 0.001).Masses.Select(b => b.ToMz(1)).ToList();
             var withAmmoniaLoss = Compound1.GetChemicalFormula();
             withAmmoniaLoss.Add(ChemicalFormula.ParseFormula("N-1H-2"));
             var withAmmoniaLossMZ = IsotopicDistribution.GetDistribution(withAmmoniaLoss, 0.1, 0.001).Masses.Select(b => b.ToMz(1)).ToList();
-
             var deamidated = Compound1.GetChemicalFormula();
             deamidated.Add(ChemicalFormula.ParseFormula("H-1N-1O"));
             var deamidatedMZ = IsotopicDistribution.GetDistribution(deamidated, 0.1, 0.001).Masses.Select(b => b.ToMz(1)).ToList();
@@ -74,9 +63,9 @@ namespace ProteoformSuiteInternal
         public static Func<double[], double> Run_TdMzCal(string filename, List<TopDownHit> identifications)
         {
             Func<double[], double> calibration_function = null;
-            if (identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList().Count >= 5)
+            if (identifications.Count(h => h.result_set == Result_Set.tight_absolute_mass) >= 5)  //need at least 5 calibration points to consider
             {
-                List<TopDownHit> identifications_tight_mass = identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList();
+                List<TopDownHit> identifications_tight_mass = identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList(); //only use tight aboslute mass modifications
                 //filter out 5% outliers
                 List<double> mass_errors = identifications_tight_mass.Select(h => (h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0)).ToList().OrderBy(m => m).ToList();
                 double percent_in_window = 1;
@@ -93,11 +82,9 @@ namespace ProteoformSuiteInternal
                     percent_in_window = (double)mass_errors.GetRange(start, count).ToList().Count / mass_errors.Count;
                 }
                 List<TopDownHit> identifications_to_use = identifications_tight_mass.OrderBy(h => ((h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0))).ToList().GetRange(start, count).ToList();
-
-                List<LabeledDataPoint> pointList = new List<LabeledDataPoint>();
-
+                
                 //get data points
-                UsefulProteomicsDatabases.Loaders.LoadElements("elements.dat");
+                List<LabeledDataPoint> pointList = new List<LabeledDataPoint>();
                 foreach (TopDownHit hit in identifications_to_use)
                 {
                     double[] inputs = new double[2] { hit.mz, hit.retention_time };
@@ -225,17 +212,6 @@ namespace ProteoformSuiteInternal
 
             if (allCorrectionFactors.Count() <= 0) return 0D;
             return allCorrectionFactors.Average();
-        }
-
-        //for deconvolution results excel file (want to ignore blank spaces)
-        public static string GetCellValue(SpreadsheetDocument document, Cell cell)
-        {
-            SharedStringTablePart stringTablePart = document.WorkbookPart.SharedStringTablePart;
-            string value = cell.CellValue.InnerXml;
-            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString && value != null)
-                return stringTablePart.SharedStringTable.ChildElements[Int32.Parse(value)].InnerText;
-            else
-                return value;
         }
     }
 }

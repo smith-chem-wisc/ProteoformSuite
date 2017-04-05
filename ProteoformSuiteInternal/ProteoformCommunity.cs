@@ -182,7 +182,6 @@ namespace ProteoformSuiteInternal
                 all_ef_relations.Shuffle();
                 ef_relations.Add(key, all_ef_relations.Take(Lollipop.ee_relations.Count).ToList());
             }
-            Lollipop.test = all_ef_relations.Count;
             count_nearby_relations(ef_relations["EF_relations_0"].OrderBy(r => r.delta_mass).ToList());
             return ef_relations;
         }
