@@ -178,7 +178,6 @@ namespace ProteoformSuiteInternal
             for (int i = 0; i < 10; i++)
             {
                 string key = "EF_relations_" + i;
-                // all_ef_relations = all_ef_relations.OrderBy(x => Guid.NewGuid()).ToList();
                 all_ef_relations.Shuffle();
                 ef_relations.Add(key, all_ef_relations.Take(Lollipop.ee_relations.Count).ToList());
             }
