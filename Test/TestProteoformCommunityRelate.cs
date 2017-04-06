@@ -25,7 +25,7 @@ namespace Test
             pa1[0] = pf1;
             pa1[1] = pf2;
             List<ProteoformRelation> prList = new List<ProteoformRelation>();
-            prList = community.relate_ee(pa1, pa1, ProteoformComparison.ee);
+            prList = community.relate(pa1, pa1, ProteoformComparison.ExperimentalExperimental);
             Assert.AreEqual(1, prList.Count);
 
             // Two proteoforms; lysine count equal; mass difference > 250 -- return 0
@@ -35,7 +35,7 @@ namespace Test
             pf2.lysine_count = 1;
             pa1[0] = pf1;
             pa1[1] = pf2;
-            prList = community.relate_ee(pa1, pa1, ProteoformComparison.ee);
+            prList = community.relate(pa1, pa1, ProteoformComparison.ExperimentalExperimental);
             Assert.AreEqual(0, prList.Count);
 
             // Two proteoforms; lysine count NOT equal; mass difference < 250 -- return 0
@@ -45,7 +45,7 @@ namespace Test
             pf2.lysine_count = 2;
             pa1[0] = pf1;
             pa1[1] = pf2;
-            prList = community.relate_ee(pa1, pa1, ProteoformComparison.ee);
+            prList = community.relate(pa1, pa1, ProteoformComparison.ExperimentalExperimental);
             Assert.AreEqual(0, prList.Count);
 
             //Three proteoforms; lysine count equal; mass difference < 250 Da -- return 3
@@ -56,7 +56,7 @@ namespace Test
             pa2[0] = pf3;
             pa2[1] = pf4;
             pa2[2] = pf5;
-            prList = community.relate_ee(pa2, pa2, ProteoformComparison.ee);
+            prList = community.relate(pa2, pa2, ProteoformComparison.ExperimentalExperimental);
             Assert.AreEqual(3, prList.Count);
 
             //Three proteoforms; lysine count equal; one mass difference < 250 Da; one mass difference > 500 -- return 1
@@ -69,7 +69,7 @@ namespace Test
             pa2[0] = pf3;
             pa2[1] = pf4;
             pa2[2] = pf5;
-            prList = community.relate_ee(pa2, pa2, ProteoformComparison.ee);
+            prList = community.relate(pa2, pa2, ProteoformComparison.ExperimentalExperimental);
             Assert.AreEqual(1, prList.Count);
 
             //Three proteoforms; lysine count NOT equal; mass difference < 250 Da -- return 0
@@ -82,7 +82,7 @@ namespace Test
             pa2[0] = pf3;
             pa2[1] = pf4;
             pa2[2] = pf5;
-            prList = community.relate_ee(pa2, pa2, ProteoformComparison.ee);
+            prList = community.relate(pa2, pa2, ProteoformComparison.ExperimentalExperimental);
             Assert.AreEqual(0, prList.Count);
 
             //Three proteoforms; lysine count equal; mass difference > 250 Da -- return 0
@@ -95,7 +95,7 @@ namespace Test
             pa2[0] = pf3;
             pa2[1] = pf4;
             pa2[2] = pf5;
-            prList = community.relate_ee(pa2, pa2, ProteoformComparison.ee);
+            prList = community.relate(pa2, pa2, ProteoformComparison.ExperimentalExperimental);
             Assert.AreEqual(0, prList.Count);
 
         }
@@ -112,7 +112,7 @@ namespace Test
             pa1[0] = pf1;
             pa1[1] = pf2;
             List<ProteoformRelation> prList = new List<ProteoformRelation>();
-            prList = community.relate_ee(pa1, pa1, ProteoformComparison.ee);
+            prList = community.relate(pa1, pa1, ProteoformComparison.ExperimentalExperimental);
             Assert.AreEqual(1, prList.Count);
 
             // Two proteoforms; mass difference > 250 -- return 0
@@ -120,7 +120,7 @@ namespace Test
             pf2.modified_mass = 2000;
             pa1[0] = pf1;
             pa1[1] = pf2;
-            prList = community.relate_ee(pa1, pa1, ProteoformComparison.ee);
+            prList = community.relate(pa1, pa1, ProteoformComparison.ExperimentalExperimental);
             Assert.AreEqual(0, prList.Count);
 
             //Three proteoforms; mass difference < 250 Da -- return 3
@@ -131,7 +131,7 @@ namespace Test
             pa2[0] = pf3;
             pa2[1] = pf4;
             pa2[2] = pf5;
-            prList = community.relate_ee(pa2, pa2, ProteoformComparison.ee);
+            prList = community.relate(pa2, pa2, ProteoformComparison.ExperimentalExperimental);
             Assert.AreEqual(3, prList.Count);
 
             //Three proteoforms; one mass difference < 250 Da -- return 1
@@ -141,7 +141,7 @@ namespace Test
             pa2[0] = pf3;
             pa2[1] = pf4;
             pa2[2] = pf5;
-            prList = community.relate_ee(pa2, pa2, ProteoformComparison.ee);
+            prList = community.relate(pa2, pa2, ProteoformComparison.ExperimentalExperimental);
             Assert.AreEqual(1, prList.Count);
 
             //Three proteoforms; mass difference > 250 Da -- return 0
@@ -151,7 +151,7 @@ namespace Test
             pa2[0] = pf3;
             pa2[1] = pf4;
             pa2[2] = pf5;
-            prList = community.relate_ee(pa2, pa2, ProteoformComparison.ee);
+            prList = community.relate(pa2, pa2, ProteoformComparison.ExperimentalExperimental);
             Assert.AreEqual(0, prList.Count);
         }
 
@@ -174,11 +174,11 @@ namespace Test
             Lollipop.ee_relations = test_community.relate_ee(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ee);
             unequal_relations = test_community.relate_ef().Values.First();
             Assert.AreNotEqual(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2]);
-            Assert.False(test_community.allowed_ee_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[0]));
+            Assert.False(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[0], ProteoformComparison.ExperimentalExperimental));
             Assert.AreNotEqual(test_community.experimental_proteoforms[0].lysine_count, test_community.experimental_proteoforms[1].lysine_count);
-            Assert.False(test_community.allowed_ee_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[1]));
-            Assert.True(test_community.allowed_ee_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2]));
-            Assert.False(test_community.allowed_ee_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[3]));
+            Assert.False(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[1], ProteoformComparison.ExperimentalExperimental));
+            Assert.True(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2], ProteoformComparison.ExperimentalExperimental));
+            Assert.False(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[3], ProteoformComparison.ExperimentalExperimental));
             Assert.AreEqual(4, unequal_relations.Count);
 
             //Two equal, two unequal lysine count. But one each has mass_difference > 250, so no relations
@@ -234,7 +234,7 @@ namespace Test
             paE[0] = pf1;
             paT[0] = pf2;
             List<ProteoformRelation> prList = new List<ProteoformRelation>();
-            prList = community.relate_et(paE, paT, ProteoformComparison.et);
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(1, prList.Count);
 
             // One experimental one theoretical proteoforms; lysine count equal; mass difference > 500 -- return 0
@@ -244,7 +244,7 @@ namespace Test
             pf2.lysine_count = 1;
             paE[0] = pf1;
             paT[0] = pf2;
-            prList = community.relate_et(paE, paT, ProteoformComparison.et);
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(0, prList.Count);
 
             // One experimental one theoretical proteoforms; lysine count NOT equal; mass difference < 500 -- return 0
@@ -254,7 +254,7 @@ namespace Test
             pf2.lysine_count = 2;
             paE[0] = pf1;
             paT[0] = pf2;
-            prList = community.relate_et(paE, paT, ProteoformComparison.et);
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(0, prList.Count);
 
             //Two experimental one theoretical proteoforms; lysine count equal; mass difference < 500 Da -- return 2
@@ -269,7 +269,7 @@ namespace Test
             paE2[0] = pf3;
             paE2[1] = pf4;
             paT[0] = pf5;
-            prList = community.relate_et(paE2, paT, ProteoformComparison.et);
+            prList = community.relate(paE2, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(2, prList.Count);
 
             //Two experimental one theoretical proteoforms; lysine count equal; one mass difference < 500 Da; one mass difference > 500 -- return 1
@@ -282,7 +282,7 @@ namespace Test
             paE2[0] = pf3;
             paE2[1] = pf4;
             paT[0] = pf5;
-            prList = community.relate_et(paE2, paT, ProteoformComparison.et);
+            prList = community.relate(paE2, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(1, prList.Count);
 
             //Two experimental one theoretical proteoforms; lysine count NOT equal; mass difference < 500 Da -- return 0
@@ -295,7 +295,7 @@ namespace Test
             paE2[0] = pf3;
             paE2[1] = pf4;
             paT[0] = pf5;
-            prList = community.relate_et(paE2, paT, ProteoformComparison.et);
+            prList = community.relate(paE2, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(0, prList.Count);
 
             //Two experimental one theoretical proteoforms; lysine count equal; mass difference > 500 Da -- return 0
@@ -308,7 +308,7 @@ namespace Test
             paE2[0] = pf3;
             paE2[1] = pf4;
             paT[0] = pf5;
-            prList = community.relate_et(paE2, paT, ProteoformComparison.et);
+            prList = community.relate(paE2, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(0, prList.Count);
 
         }
@@ -330,7 +330,7 @@ namespace Test
             paE[0] = pf1;
             paT[0] = pf2;
             List<ProteoformRelation> prList = new List<ProteoformRelation>();
-            prList = community.relate_et(paE, paT, ProteoformComparison.et);
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(1, prList.Count);
 
             // One experimental one theoretical protoeform; mass difference > 500 -- return 0
@@ -338,7 +338,7 @@ namespace Test
             pf2.modified_mass = 2000;
             paE[0] = pf1;
             paT[0] = pf2;
-            prList = community.relate_et(paE, paT, ProteoformComparison.et);
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(0, prList.Count);
 
             //Two experimental one theoretical proteoforms; mass difference < 500 Da -- return 2
@@ -353,7 +353,7 @@ namespace Test
             paE2[0] = pf3;
             paE2[1] = pf4;
             paT[0] = pf5;
-            prList = community.relate_et(paE2, paT, ProteoformComparison.et);
+            prList = community.relate(paE2, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(2, prList.Count);
 
             //Two experimental one theoretical proteoforms; one mass difference >500 Da -- return 0
@@ -363,7 +363,7 @@ namespace Test
             paE2[0] = pf3;
             paE2[1] = pf4;
             paT[0] = pf5;
-            prList = community.relate_et(paE2, paT, ProteoformComparison.et);
+            prList = community.relate(paE2, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(0, prList.Count);
 
             //Two experimental one theoretical proteoforms; mass difference > 500 Da -- return 0
@@ -373,7 +373,7 @@ namespace Test
             paE2[0] = pf3;
             paE2[1] = pf4;
             paT[0] = pf5;
-            prList = community.relate_et(paE2, paT, ProteoformComparison.et);
+            prList = community.relate(paE2, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(0, prList.Count);
         }
 

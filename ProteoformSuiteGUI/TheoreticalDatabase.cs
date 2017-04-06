@@ -47,10 +47,6 @@ namespace ProteoformSuiteGUI
                 btn_NeuCode_Lt.Checked = false;
                 btn_NaturalIsotopes.Checked = true;
             }
-            
-            ckbx_OxidMeth.Checked = Lollipop.methionine_oxidation;
-            ckbx_Carbam.Checked = Lollipop.carbamidomethylation;
-            ckbx_Meth_Cleaved.Checked = Lollipop.methionine_cleavage;
 
             nUD_MaxPTMs.Minimum = 0;
             nUD_MaxPTMs.Maximum = 5;

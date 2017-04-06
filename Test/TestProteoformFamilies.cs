@@ -14,14 +14,14 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
+            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
             //One accepted ET relation; should give one ProteoformFamily
             Lollipop.min_peak_count_et = 1;
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
             TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
             pf2.name = "T1";
-            ProteoformComparison comparison = ProteoformComparison.et;
+            ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.instanceId).ToList());
@@ -46,7 +46,7 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.proteoform_community = test_community;
 
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
+            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
             Lollipop.min_peak_count_ee = 2;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
@@ -55,9 +55,9 @@ namespace Test
             ExperimentalProteoform pf6 = ConstructorsForTesting.ExperimentalProteoform("E4");
             test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf3, pf4, pf5, pf6 };
 
-            ProteoformComparison comparison34 = ProteoformComparison.ee;
-            ProteoformComparison comparison45 = ProteoformComparison.ee;
-            ProteoformComparison comparison56 = ProteoformComparison.ee;
+            ProteoformComparison comparison34 = ProteoformComparison.ExperimentalExperimental;
+            ProteoformComparison comparison45 = ProteoformComparison.ExperimentalExperimental;
+            ProteoformComparison comparison56 = ProteoformComparison.ExperimentalExperimental;
             ConstructorsForTesting.make_relation(pf3, pf4, comparison34, 0);
             ConstructorsForTesting.make_relation(pf4, pf5, comparison45, 0);
             ConstructorsForTesting.make_relation(pf5, pf6, comparison56, 0);
@@ -88,7 +88,7 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.proteoform_community = test_community;
 
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
+            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
             Lollipop.ee_max_mass_difference = 20;
             Lollipop.peak_width_base_ee = 0.015;
@@ -100,10 +100,10 @@ namespace Test
             ExperimentalProteoform pf6 = ConstructorsForTesting.ExperimentalProteoform("E4");
             ExperimentalProteoform pf7 = ConstructorsForTesting.ExperimentalProteoform("E5");
 
-            ProteoformComparison comparison34 = ProteoformComparison.ee;
-            ProteoformComparison comparison45 = ProteoformComparison.ee;
-            ProteoformComparison comparison56 = ProteoformComparison.ee;
-            ProteoformComparison comparison67 = ProteoformComparison.ee;
+            ProteoformComparison comparison34 = ProteoformComparison.ExperimentalExperimental;
+            ProteoformComparison comparison45 = ProteoformComparison.ExperimentalExperimental;
+            ProteoformComparison comparison56 = ProteoformComparison.ExperimentalExperimental;
+            ProteoformComparison comparison67 = ProteoformComparison.ExperimentalExperimental;
             ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison34, 0);
             ProteoformRelation pr3 = new ProteoformRelation(pf4, pf5, comparison45, 19); //not accepted
             ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0);
@@ -138,7 +138,7 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET_with_theoretical_pf_group()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
+            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "name", "full_name", true, false, new List<DatabaseReference>(), new List<GoTerm>());
@@ -152,7 +152,7 @@ namespace Test
             Lollipop.min_peak_count_et = 1;
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
             TheoreticalProteoformGroup pf2 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
-            ProteoformComparison comparison = ProteoformComparison.et;
+            ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.instanceId).ToList());
@@ -182,7 +182,7 @@ namespace Test
             //Five experimental proteoforms, four relations (linear), second on not accepted into a peak, one peak; should give 2 families
             ProteoformCommunity community = new ProteoformCommunity();
             Lollipop.proteoform_community = community;
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>>
+            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>>
             {
                 { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } },
                 { "fake", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake", 19) } },
@@ -219,14 +219,14 @@ namespace Test
             pf7.agg_mass = 1253.56;
             pf8.agg_mass = 1253.56;
 
-            ProteoformComparison comparison13 = ProteoformComparison.et;
-            ProteoformComparison comparison23 = ProteoformComparison.et;
-            ProteoformComparison comparison34 = ProteoformComparison.ee;
-            ProteoformComparison comparison45 = ProteoformComparison.ee;
-            ProteoformComparison comparison56 = ProteoformComparison.ee;
-            ProteoformComparison comparison67 = ProteoformComparison.ee;
-            ProteoformComparison comparison78 = ProteoformComparison.ee;
-            ProteoformComparison comparison89 = ProteoformComparison.et;
+            ProteoformComparison comparison13 = ProteoformComparison.ExperimentalTheoretical;
+            ProteoformComparison comparison23 = ProteoformComparison.ExperimentalTheoretical;
+            ProteoformComparison comparison34 = ProteoformComparison.ExperimentalExperimental;
+            ProteoformComparison comparison45 = ProteoformComparison.ExperimentalExperimental;
+            ProteoformComparison comparison56 = ProteoformComparison.ExperimentalExperimental;
+            ProteoformComparison comparison67 = ProteoformComparison.ExperimentalExperimental;
+            ProteoformComparison comparison78 = ProteoformComparison.ExperimentalExperimental;
+            ProteoformComparison comparison89 = ProteoformComparison.ExperimentalTheoretical;
             ConstructorsForTesting.make_relation(pf3, pf1, comparison13, 0);
             ConstructorsForTesting.make_relation(pf3, pf2, comparison23, 0);
             ConstructorsForTesting.make_relation(pf3, pf4, comparison34, 0);
@@ -238,8 +238,8 @@ namespace Test
 
             List<ProteoformRelation> prs = new HashSet<ProteoformRelation>(community.experimental_proteoforms.SelectMany(p => p.relationships).Concat(community.theoretical_proteoforms.SelectMany(p => p.relationships))).ToList();
             foreach (Proteoform p in prs.SelectMany(r => r.connected_proteoforms)) Assert.IsNotNull(p);
-            List<ProteoformRelation> prs_et = prs.Where(r => r.relation_type == ProteoformComparison.et).OrderBy(r => r.delta_mass).ToList();
-            List<ProteoformRelation> prs_ee = prs.Where(r => r.relation_type == ProteoformComparison.ee).OrderBy(r => r.delta_mass).ToList();
+            List<ProteoformRelation> prs_et = prs.Where(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical).OrderBy(r => r.delta_mass).ToList();
+            List<ProteoformRelation> prs_ee = prs.Where(r => r.relation_type == ProteoformComparison.ExperimentalExperimental).OrderBy(r => r.delta_mass).ToList();
             foreach (ProteoformRelation pr in prs_et) pr.set_nearby_group(prs_et, prs_et.Select(r => r.instanceId).ToList());
             foreach (ProteoformRelation pr in prs_ee) pr.set_nearby_group(prs_ee, prs_ee.Select(r => r.instanceId).ToList());
             Assert.AreEqual(3, pf1.relationships.First().nearby_relations_count); // 2 ET relations at 0 delta mass
@@ -254,10 +254,10 @@ namespace Test
             community.accept_deltaMass_peaks(prs_ee, new List<ProteoformRelation>());
             Assert.AreEqual(3, community.delta_mass_peaks.Count);
             Assert.AreEqual(2, community.delta_mass_peaks.Where(peak => peak.peak_accepted).Count()); // 1 ET peak, 1 EE peak accepted
-            Assert.AreEqual(1, community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ee).Count());
-            Assert.AreEqual(1, community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.et).Count());
-            Assert.AreEqual(4, community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ee).First().grouped_relations.Count());
-            Assert.AreEqual(3, community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.et).First().grouped_relations.Count());
+            Assert.AreEqual(1, community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ExperimentalExperimental).Count());
+            Assert.AreEqual(1, community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ExperimentalTheoretical).Count());
+            Assert.AreEqual(4, community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ExperimentalExperimental).First().grouped_relations.Count());
+            Assert.AreEqual(3, community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ExperimentalTheoretical).First().grouped_relations.Count());
 
             community.construct_families();
 
@@ -310,8 +310,8 @@ namespace Test
             Lollipop.theoretical_proteins = new Dictionary<InputFile, Protein[]>();
             Lollipop.expanded_proteins = new ProteinWithGoTerms[0];
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
-            Lollipop.et_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.et).ToList();
-            Lollipop.ee_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ee).ToList();
+            Lollipop.et_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ExperimentalTheoretical).ToList();
+            Lollipop.ee_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ExperimentalExperimental).ToList();
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
         }
 

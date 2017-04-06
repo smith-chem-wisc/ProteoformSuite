@@ -802,13 +802,13 @@ namespace Test
             TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
             TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
-            ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.et, 0);
+            ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
             DeltaMassPeak etp = new DeltaMassPeak(et, new List<ProteoformRelation> { et });
             et.peak = etp;
             etp.peak_accepted = true;
             e.relationships.Add(et);
             t.relationships.Add(et);
-            ProteoformRelation eu = new ProteoformRelation(e, u, ProteoformComparison.et, 0);
+            ProteoformRelation eu = new ProteoformRelation(e, u, ProteoformComparison.ExperimentalTheoretical, 0);
             DeltaMassPeak eup = new DeltaMassPeak(eu, new List<ProteoformRelation> { eu });
             eu.peak = eup;
             eup.peak_accepted = true;
