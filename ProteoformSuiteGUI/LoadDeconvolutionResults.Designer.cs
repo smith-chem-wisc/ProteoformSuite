@@ -30,7 +30,6 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LoadDeconvolutionResults));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.cb_td_file = new System.Windows.Forms.CheckBox();
             this.rb_unlabeled = new System.Windows.Forms.RadioButton();
             this.rb_neucode = new System.Windows.Forms.RadioButton();
             this.btn_clearFiles1 = new System.Windows.Forms.Button();
@@ -61,7 +60,6 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
             this.rb_standardOptions = new System.Windows.Forms.RadioButton();
-            this.rb_advanced_user = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles2)).BeginInit();
@@ -73,7 +71,6 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.cb_td_file);
             this.groupBox1.Controls.Add(this.rb_unlabeled);
             this.groupBox1.Controls.Add(this.rb_neucode);
             this.groupBox1.Location = new System.Drawing.Point(13, 610);
@@ -82,19 +79,6 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Proteoform Identification Results";
-            // 
-            // cb_td_file
-            // 
-            this.cb_td_file.AutoSize = true;
-            this.cb_td_file.Enabled = false;
-            this.cb_td_file.Location = new System.Drawing.Point(23, 91);
-            this.cb_td_file.Name = "cb_td_file";
-            this.cb_td_file.Size = new System.Drawing.Size(165, 17);
-            this.cb_td_file.TabIndex = 2;
-            this.cb_td_file.Text = "Top-down Deconvolution File";
-            this.cb_td_file.UseVisualStyleBackColor = true;
-            this.cb_td_file.Visible = false;
-            this.cb_td_file.CheckedChanged += new System.EventHandler(this.cb_td_file_CheckedChanged);
             // 
             // rb_unlabeled
             // 
@@ -381,10 +365,9 @@
             // 
             this.groupBox4.Controls.Add(this.rb_chemicalCalibration);
             this.groupBox4.Controls.Add(this.rb_standardOptions);
-            this.groupBox4.Controls.Add(this.rb_advanced_user);
             this.groupBox4.Location = new System.Drawing.Point(232, 569);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(442, 43);
+            this.groupBox4.Size = new System.Drawing.Size(218, 43);
             this.groupBox4.TabIndex = 35;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Load Options";
@@ -412,18 +395,6 @@
             this.rb_standardOptions.Text = "Standard";
             this.rb_standardOptions.UseVisualStyleBackColor = true;
             this.rb_standardOptions.CheckedChanged += new System.EventHandler(this.rb_standardOptions_CheckedChanged);
-            // 
-            // rb_advanced_user
-            // 
-            this.rb_advanced_user.AutoSize = true;
-            this.rb_advanced_user.Enabled = false;
-            this.rb_advanced_user.Location = new System.Drawing.Point(216, 17);
-            this.rb_advanced_user.Name = "rb_advanced_user";
-            this.rb_advanced_user.Size = new System.Drawing.Size(179, 17);
-            this.rb_advanced_user.TabIndex = 35;
-            this.rb_advanced_user.Text = "Top Down (Under Development)";
-            this.rb_advanced_user.UseVisualStyleBackColor = true;
-            this.rb_advanced_user.CheckedChanged += new System.EventHandler(this.rb_advanced_user_CheckedChanged);
             // 
             // LoadDeconvolutionResults
             // 
@@ -491,14 +462,12 @@
         private System.Windows.Forms.Label lb_filter1;
         private System.Windows.Forms.TextBox tb_filter2;
         private System.Windows.Forms.TextBox tb_filter1;
-        private System.Windows.Forms.CheckBox cb_td_file;
         private System.Windows.Forms.ComboBox cmb_loadTable1;
         private System.Windows.Forms.ComboBox cmb_loadTable2;
         private System.Windows.Forms.ComboBox cmb_loadTable3;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.RadioButton rb_chemicalCalibration;
         private System.Windows.Forms.RadioButton rb_standardOptions;
-        private System.Windows.Forms.RadioButton rb_advanced_user;
         private System.Windows.Forms.Label lb_filter3;
         private System.Windows.Forms.TextBox tb_filter3;
     }

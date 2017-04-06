@@ -22,9 +22,7 @@ namespace ProteoformSuiteGUI
 
         public void TheoreticalDatabase_Load(object sender, EventArgs e)
         {
-            InitializeAccessionListDialog();
             InitializeSettings();
-            if (Lollipop.opened_results_originally) load_dgv();
             initial_load = false;
         }
 
@@ -50,8 +48,6 @@ namespace ProteoformSuiteGUI
                 btn_NaturalIsotopes.Checked = true;
             }
             
-            tb_interest_label.Text = "Type a label here. Ex: mitochondrial proteins";
-
             ckbx_OxidMeth.Checked = Lollipop.methionine_oxidation;
             ckbx_Carbam.Checked = Lollipop.carbamidomethylation;
             ckbx_Meth_Cleaved.Checked = Lollipop.methionine_cleavage;
@@ -87,42 +83,6 @@ namespace ProteoformSuiteGUI
                 DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
         }
 
-        // GENES OF INTEREST
-        private void InitializeAccessionListDialog()
-        {
-            this.openAccessionListDialog.Filter = "List of Proteins of Interest (*.txt)|*.txt";
-            this.openAccessionListDialog.Multiselect = false;
-            this.openAccessionListDialog.Title = "List of Proteins of Interest";
-        }
-
-        private void bt_genes_of_interest_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Please select a text file with the accession numbers of your proteins of interest, one per line.");
-            DialogResult dr = this.openAccessionListDialog.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                string accessions_path = openAccessionListDialog.FileName;
-                try
-                {
-                    tb_proteins_of_interest_path.Text = accessions_path;
-                    Lollipop.accessions_of_interest_list_filepath = accessions_path;
-                    tb_interest_label.Visible = true;
-                }
-                catch (SecurityException ex)
-                {
-                    // The user lacks appropriate permissions to read files, discover paths, etc.
-                    MessageBox.Show("Security error. Please contact your administrator for details.\n\nError message: " + ex.Message + "\n\n" +
-                        "Details (send to Support):\n\n" + ex.StackTrace);
-                }
-                catch (Exception ex)
-                {
-                    // Could not load the result file - probably related to Windows file system permissions.
-                    MessageBox.Show("Cannot display the file: " + accessions_path.Substring(accessions_path.LastIndexOf('\\'))
-                        + ". You may not have permission to read the file, or it may be corrupt.\n\nReported error: " + ex.Message);
-                }
-            }
-        }
-
         private void set_Make_Database_Button()
         {
             btn_Make_Databases.Enabled = Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() > 0;
@@ -139,6 +99,8 @@ namespace ProteoformSuiteGUI
         public void make_databases()
         {
             Lollipop.get_theoretical_proteoforms();
+            ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
+            tb_totalTheoreticalProteoforms.Text = Lollipop.proteoform_community.theoretical_proteoforms.Length.ToString();
         }
 
         public void initialize_table_bindinglist()
@@ -242,13 +204,6 @@ namespace ProteoformSuiteGUI
         {
             Lollipop.min_peptide_length = Convert.ToInt32(nUD_MinPeptideLength.Value);
         }
-
-        private void tb_interest_label_TextChanged(object sender, EventArgs e)
-        {
-            if (!initial_load)
-                Lollipop.interest_type = tb_interest_label.Text;
-        }
-
 
         // LOAD DATABASES GRID VIEW
         private void cmb_loadTable_SelectedIndexChanged(object sender, EventArgs e)

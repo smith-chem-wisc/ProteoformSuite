@@ -161,7 +161,8 @@ namespace ProteoformSuiteInternal
             }
             if (root is NeuCodePair) this.lysine_count = ((NeuCodePair)this.root).lysine_count;
             this.modified_mass = this.agg_mass;
-            this.accepted = this.aggregated_components.Count() >= Lollipop.min_agg_count;
+            try { this.accepted = this.aggregated_components.Count() >= Lollipop.min_agg_count && this.aggregated_components.Select(c => c.input_file.biological_replicate).Distinct().Count() >= Lollipop.min_num_bioreps; }
+            catch { this.accepted = this.aggregated_components.Count() >= Lollipop.min_agg_count; } //if testing, no input file for agg components
         }
 
         //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on 

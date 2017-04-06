@@ -202,6 +202,7 @@
     <Compile Include="RawExperimentalComponents.Designer.cs">
       <DependentUpon>RawExperimentalComponents.cs</DependentUpon>
     </Compile>
+    <Compile Include="RelationUtility.cs" />
     <Compile Include="ResultsSummary.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -14,18 +14,16 @@ namespace ProteoformSuiteGUI
 {
     public partial class ExperimentTheoreticalComparison : Form
     {
-        public event ETPeakAcceptabilityChangedEventHandler ETPeakAcceptabilityChanged;
-        private bool compared_et;
+        private RelationUtility relationUtility;
 
         public ExperimentTheoreticalComparison()
         {
+            this.relationUtility = new RelationUtility();
             InitializeComponent();
             this.dgv_ET_Peak_List.MouseClick += new MouseEventHandler(dgv_ET_Peak_List_CellClick);
-            this.dgv_ET_Pairs.CellMouseClick += new DataGridViewCellMouseEventHandler(dgv_ET_Pairs_CellClick);
             this.ct_ET_Histogram.MouseClick += new MouseEventHandler(ct_ET_Histogram_MouseClick);
             this.ct_ET_peakList.MouseClick += new MouseEventHandler(ct_ET_peakList_MouseClick);
             dgv_ET_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(ET_Peak_List_DirtyStateChanged); //makes the change immediate and automatic
-            ETPeakAcceptabilityChanged += ExperimentTheoreticalComparison_ETPeakAcceptabilityChanged;
             InitializeParameterSet();
         }
 
@@ -49,7 +47,6 @@ namespace ProteoformSuiteGUI
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
             this.FillTablesAndCharts();
             this.Cursor = Cursors.Default;
-            compared_et = true;
         }
 
         public void FillTablesAndCharts()
@@ -61,7 +58,7 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List, false);
             GraphETRelations();
             GraphETPeaks();
-            updateFiguresOfMerit();
+            relationUtility.updateFiguresOfMerit(Lollipop.et_peaks);
             this.dgv_ET_Peak_List.CurrentCellDirtyStateChanged += this.ET_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event 
         }
 
@@ -81,11 +78,7 @@ namespace ProteoformSuiteGUI
             Lollipop.et_peaks.Clear();
             Lollipop.ed_relations.Clear();
             Lollipop.proteoform_community.families.Clear();
-            foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.ed);
-            foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.ed);
-            foreach (Proteoform p in Lollipop.proteoform_community.decoy_proteoforms.Values.SelectMany(d => d)) p.relationships.Clear();
-            Lollipop.proteoform_community.relations_in_peaks.RemoveAll(r => r.relation_type == ProteoformComparison.et || r.relation_type == ProteoformComparison.ed);
-            Lollipop.proteoform_community.delta_mass_peaks.RemoveAll(k => k.relation_type == ProteoformComparison.et || k.relation_type == ProteoformComparison.ed);
+            relationUtility.clear_lists(new List<ProteoformComparison>() { ProteoformComparison.et, ProteoformComparison.ed });
 
             foreach (var series in ct_ET_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_ET_peakList.Series) series.Points.Clear();
@@ -94,14 +87,6 @@ namespace ProteoformSuiteGUI
             dgv_ET_Peak_List.DataSource = null;
             dgv_ET_Pairs.Rows.Clear();
             dgv_ET_Peak_List.Rows.Clear();
-        }
-
-        private void updateFiguresOfMerit()
-        {
-            List<DeltaMassPeak> big_peaks = Lollipop.et_peaks.Where(p => p.peak_accepted).ToList();
-            tb_IdentifiedProteoforms.Text = big_peaks.Select(p => p.grouped_relations.Count).Sum().ToString();
-            tb_TotalPeaks.Text = big_peaks.Count.ToString();
-            if (Lollipop.ed_relations.Count > 0 && big_peaks.Count > 0) tb_max_accepted_fdr.Text = Math.Round( big_peaks.Max(p => p.peak_group_fdr) , 3).ToString();
         }
 
         private void FillETRelationsGridView()
@@ -115,7 +100,18 @@ namespace ProteoformSuiteGUI
         private void GraphETRelations()
         {
             DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Lollipop.et_relations, "relations");
+            ct_ET_Histogram.Series["relations"].Enabled = true;
+            if (Lollipop.ed_relations.Count > 0)
+            {
+                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, Lollipop.ed_relations["DecoyDatabase_0"], "decoys");
+                ct_ET_Histogram.Series["decoys"].Enabled = false;
+                cb_view_decoy_histogram.Enabled = true;
+            }
+            else cb_view_decoy_histogram.Enabled = false;
+            cb_view_decoy_histogram.Checked = false;
 
+            DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, "Peak Count", "Median Decoy Count", Lollipop.et_relations, "Nearby Relations");
+            ct_ET_Histogram.ChartAreas[0].RecalculateAxesScale();
             ct_ET_Histogram.ChartAreas[0].RecalculateAxesScale();
         }
         private void GraphETPeaks()
@@ -123,36 +119,12 @@ namespace ProteoformSuiteGUI
             DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, Lollipop.et_peaks, "Peak Count", "Median Decoy Count", Lollipop.et_relations, "Nearby Relations");
         }
 
-        protected void ExperimentTheoreticalComparison_ETPeakAcceptabilityChanged(object sender, ETPeakAcceptabilityChangedEventArgs e)
-        {
-            foreach (ProteoformRelation pRelation in Lollipop.et_relations.Where(p => e.ETPeak.grouped_relations.Contains(p)))
-            {
-                pRelation.accepted = e.IsPeakAcceptable;
-            }
-            dgv_ET_Pairs.Refresh();
-            dgv_ET_Peak_List.Refresh();
-        }
-
-        private void dgv_ET_Pairs_CellClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            if (e.RowIndex >= 0 && Lollipop.psm_list.Count > 0)
-            {
-                dgv_psmList.Visible = true;
-                display_psm_list(e.RowIndex);
-            }
-        }
-        private void display_psm_list(int row_index)
-        {
-            ProteoformRelation selected_pf = (ProteoformRelation)this.dgv_ET_Pairs.Rows[row_index].DataBoundItem;
-            DisplayUtility.FillDataGridView(dgv_psmList, ((TheoreticalProteoform)selected_pf.connected_proteoforms[1]).psm_list);
-        }
-
         private void dgv_ET_Peak_List_CellClick(object sender, MouseEventArgs e)
         {
             int clickedRow = dgv_ET_Peak_List.HitTest(e.X, e.Y).RowIndex;
             int clickedCol = dgv_ET_Peak_List.HitTest(e.X, e.Y).ColumnIndex;
-            if (clickedRow < Lollipop.et_relations.Count && clickedRow >= 0 && clickedCol >=0 && clickedCol < dgv_ET_Peak_List.ColumnCount)
-            { 
+            if (clickedRow < Lollipop.et_relations.Count && clickedRow >= 0 && clickedCol >= 0 && clickedCol < dgv_ET_Peak_List.ColumnCount)
+            {
                 if (e.Button == MouseButtons.Left)
                 {
                     ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
@@ -178,7 +150,7 @@ namespace ProteoformSuiteGUI
                         //event menu click
                         ET_peak_List_Menu.ItemClicked += new ToolStripItemClickedEventHandler((s, ev) => ET_peak_List_Menu_ItemClicked(s, ev, selected_peak));
                     }
-                } 
+                }
             }
         }
 
@@ -216,7 +188,7 @@ namespace ProteoformSuiteGUI
                     }
                     peak.shift_experimental_masses(int_mass_shifter, Lollipop.neucode_labeled);
                 }
-                Lollipop.regroup_components(Lollipop.neucode_labeled, Lollipop.validate_proteoforms, Lollipop.input_files, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
+                Lollipop.regroup_components(Lollipop.neucode_labeled, Lollipop.validate_proteoforms, Lollipop.input_files, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_num_CS);
             }
         }
 
@@ -244,11 +216,6 @@ namespace ProteoformSuiteGUI
                     break;
             }
             dgv_ET_Peak_List.Refresh();
-        }
-
-        protected virtual void ONETAcceptibilityChanged(ETPeakAcceptabilityChangedEventArgs e)
-        {
-            if (ETPeakAcceptabilityChanged != null) ETPeakAcceptabilityChanged(this, e);
         }
 
         private void InitializeParameterSet()
@@ -345,7 +312,6 @@ namespace ProteoformSuiteGUI
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.min_peak_count_et = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
-            if (compared_et)
             {
                 Parallel.ForEach(Lollipop.et_peaks, p =>
                 {
@@ -354,11 +320,11 @@ namespace ProteoformSuiteGUI
                 });
                 dgv_ET_Pairs.Refresh();
                 dgv_ET_Peak_List.Refresh();
+                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+                StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count_et };
+                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+                relationUtility.updateFiguresOfMerit(Lollipop.et_peaks);
             }
-            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
-            StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count_et };
-            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
-            this.updateFiguresOfMerit();
         }
 
         Point? ct_ET_Histogram_prevPosition = null;
@@ -378,56 +344,16 @@ namespace ProteoformSuiteGUI
 
         private void ET_Peak_List_DirtyStateChanged(object sender, EventArgs e)
         {
-            if (dgv_ET_Peak_List.IsCurrentCellDirty)
-            {
-                dgv_ET_Peak_List.CommitEdit(DataGridViewDataErrorContexts.Commit);
+            relationUtility.peak_acceptability_change(dgv_ET_Peak_List);
+            dgv_ET_Pairs.Refresh();
+            dgv_ET_Peak_List.Refresh();
+            relationUtility.updateFiguresOfMerit(Lollipop.et_peaks);
+        }
 
-                int columnIndex = dgv_ET_Peak_List.CurrentCell.ColumnIndex;
-                int rowIndex = dgv_ET_Peak_List.CurrentCell.RowIndex;
-
-                if (columnIndex < 0) return;
-                string columnName = dgv_ET_Peak_List.Columns[columnIndex].Name;
-
-                if (columnName == "peak_accepted")
-                {
-                    bool acceptibilityStatus = Convert.ToBoolean(dgv_ET_Peak_List.Rows[rowIndex].Cells[columnIndex].Value);
-                    DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[rowIndex].DataBoundItem;
-                    ETPeakAcceptabilityChangedEventArgs ETAcceptabilityChangedEventData = new ETPeakAcceptabilityChangedEventArgs(acceptibilityStatus, selected_peak);
-                    ONETAcceptibilityChanged(ETAcceptabilityChangedEventData);
-                }
-            }
-            updateFiguresOfMerit();
+        private void cb_view_decoy_histogram_CheckedChanged(object sender, EventArgs e)
+        {
+            ct_ET_Histogram.Series["relations"].Enabled = !cb_view_decoy_histogram.Checked;
+            ct_ET_Histogram.Series["decoys"].Enabled = cb_view_decoy_histogram.Checked;
         }
     }
-
-    public class ETPeakAcceptabilityChangedEventArgs : EventArgs
-    {
-        private bool _isPeakAcceptable;
-        public bool IsPeakAcceptable
-        {
-            get
-            {
-                return this._isPeakAcceptable;
-            }
-        }
-
-        private DeltaMassPeak _ETPeak;
-        public DeltaMassPeak ETPeak
-        {
-            get
-            {
-                return this._ETPeak;
-            }
-        }
-
-        public ETPeakAcceptabilityChangedEventArgs(bool IsPeakAcceptable, DeltaMassPeak ETPeak)
-        {
-            this._isPeakAcceptable = IsPeakAcceptable; //True if peak is acceptable
-            this._ETPeak = ETPeak;
-        }
-    }
-
-    public delegate void ETPeakAcceptabilityChangedEventHandler(object sender, ETPeakAcceptabilityChangedEventArgs e);
-
 }
-
