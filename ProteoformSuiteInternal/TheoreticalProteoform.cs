@@ -26,30 +26,6 @@ namespace ProteoformSuiteInternal
         {
             get { return ptm_list_string(); }
         }
-        public List<Psm> psm_list { get; set; } = new List<Psm>();
-        //private int _psm_count_BU;
-        //public int psm_count_BU
-        //{
-        //    get
-        //    {
-        //        if (!Lollipop.opened_results_originally)
-        //            return psm_list.Where(p => p.psm_type == PsmType.BottomUp).ToList().Count;
-        //        else return _psm_count_BU;
-        //    }
-        //    set { _psm_count_BU = value; }
-        //}
-        //private int _psm_count_TD;
-        //public int psm_count_TD
-        //{
-        //    get
-        //    {
-        //        if (!Lollipop.opened_results_originally)
-        //            return psm_list.Where(p => p.psm_type == PsmType.TopDown).ToList().Count;
-        //        else return _psm_count_TD;
-        //    }
-        //    set { _psm_count_TD = value; }
-        //}
-        public string of_interest { get; set; } = "";
         public bool contaminant { get; set; }
 
         public TheoreticalProteoform(string accession, string description, IEnumerable<ProteinWithGoTerms> protein_list, bool is_metCleaved, double unmodified_mass, int lysine_count, PtmSet ptm_set, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) 
