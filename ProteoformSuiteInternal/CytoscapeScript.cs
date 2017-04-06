@@ -196,7 +196,7 @@ namespace ProteoformSuiteInternal
             {
                 string delta_mass = Math.Round(r.peak_center_deltaM, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
                 //if (edge_label == Lollipop.edge_labels[1] && r.represented_modification == null) continue;
-                bool append_ptmlist = r.represented_ptmset != null && (r.relation_type != ProteoformComparison.et || r.represented_ptmset.ptm_combination.First().modification.id != "Unmodified");
+                bool append_ptmlist = r.represented_ptmset != null && (r.relation_type != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.id != "Unmodified");
                 edge_rows += String.Join("\t", new List<string>
                 {
                     get_proteoform_shared_name(r.connected_proteoforms[0], node_label, double_rounding),

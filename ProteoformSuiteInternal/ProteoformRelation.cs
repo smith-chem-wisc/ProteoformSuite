@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using Proteomics;
+using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
     //Types of comparisons, aka ProteoformFamily edges
     public enum ProteoformComparison
     {
-        et, //Experiment-Theoretical comparisons
-        ed, //Experiment-Decoy comparisons
-        ee, //Experiment-Experiment comparisons
-        ef  //Experiment-Experiment comparisons using unequal lysine counts
+        ExperimentalTheoretical, //Experiment-Theoretical comparisons
+        ExperimentalDecoy, //Experiment-Decoy comparisons
+        ExperimentalExperimental, //Experiment-Experiment comparisons
+        ExperimentalFalse  //Experiment-Experiment comparisons using unequal lysine counts
     }
 
     //I have not used MassDifference objects in the logic, since it is better to cast the comparisons immediately as
@@ -48,6 +48,7 @@ namespace ProteoformSuiteInternal
         public List<ProteoformRelation> nearby_relations { get; set; }
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
+        public PtmSet candidate_ptmset { get; set; }
         public PtmSet represented_ptmset { get; set; }
 
         /// <summary>
@@ -59,9 +60,23 @@ namespace ProteoformSuiteInternal
         public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass) 
             : base(pf1, pf2, relation_type, delta_mass)
         {
-            if (Lollipop.neucode_labeled) this.lysine_count = pf1.lysine_count;
-            this.outside_no_mans_land = Math.Abs(delta_mass - Math.Truncate(delta_mass)) >= Lollipop.no_mans_land_upperBound ||
-                    Math.Abs(delta_mass - Math.Truncate(delta_mass)) <= Lollipop.no_mans_land_lowerBound;
+            if (Lollipop.neucode_labeled)
+            {
+                this.lysine_count = pf1.lysine_count;
+            }
+
+            if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
+            {
+                TheoreticalProteoform t = pf2 as TheoreticalProteoform;
+                double mass_tolerance = t.modified_mass / 1000000 * (double)Lollipop.mass_tolerance;
+                candidate_ptmset = t.generate_possible_added_ptmsets(nearestPTMs(delta_mass, relation_type).ToList(), delta_mass, mass_tolerance, Lollipop.all_mods_with_mass, t, t.sequence)
+                    .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - delta_mass) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
+                    .FirstOrDefault();
+            }
+
+            outside_no_mans_land = 
+                Math.Abs(delta_mass - Math.Truncate(delta_mass)) >= Lollipop.no_mans_land_upperBound || 
+                Math.Abs(delta_mass - Math.Truncate(delta_mass)) <= Lollipop.no_mans_land_lowerBound;
         }
 
         public ProteoformRelation(ProteoformRelation relation) 
@@ -113,16 +128,23 @@ namespace ProteoformSuiteInternal
                 this.connected_proteoforms[0] == r2.connected_proteoforms[0] && this.connected_proteoforms[1] == r2.connected_proteoforms[1]);
         }
 
+        public IEnumerable<PtmSet> nearestPTMs(double dMass, ProteoformComparison relation_type)
+        {
+            foreach (PtmSet set in Lollipop.all_possible_ptmsets)
+            {
+                bool valid_or_no_unmodified = set.ptm_combination.Count == 1 || !set.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0);
+                bool within_addition_tolerance = relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy ?
+                    Math.Abs(dMass - set.mass) <= 0.1 :
+                    Math.Abs(Math.Abs(dMass) - Math.Abs(set.mass)) <= 0.1; //In Daltons. This is a liberal threshold because these are filtered upon actual assignment
+                if (valid_or_no_unmodified && within_addition_tolerance)
+                    yield return set;
+            }
+        }
+
         public override int GetHashCode()
         {
             return connected_proteoforms[0].GetHashCode() ^ connected_proteoforms[1].GetHashCode();
         }
-
-        // FOR DATAGRIDVIEW DISPLAY
-        public static string et_string = "Experiment-Theoretical";
-        public static string ee_string = "Experiment-Experimental";
-        public static string ed_string = "Experiment-Decoy";
-        public static string ef_string = "Experiment-Unequal Lysine Count";
 
         public int peak_center_count
         {
@@ -134,15 +156,7 @@ namespace ProteoformSuiteInternal
         }
         public string relation_type_string
         {
-            get
-            {
-                string s = "";
-                if (this.relation_type == ProteoformComparison.et) s = et_string;
-                if (this.relation_type == ProteoformComparison.ee) s = ee_string;
-                if (this.relation_type == ProteoformComparison.ed) s = ed_string;
-                if (this.relation_type == ProteoformComparison.ef) s = ef_string;
-                return s;
-            }
+            get { return relation_type.ToString(); }
         }
 
         // For DataGridView display of proteoform1
@@ -168,10 +182,9 @@ namespace ProteoformSuiteInternal
         {
             get
             {
-                if (connected_proteoforms[1] is ExperimentalProteoform)
-                    return ((ExperimentalProteoform)connected_proteoforms[1]).agg_mass;
-                else
-                    return ((TheoreticalProteoform)connected_proteoforms[1]).modified_mass;
+                return connected_proteoforms[1] is ExperimentalProteoform ?
+                    ((ExperimentalProteoform)connected_proteoforms[1]).agg_mass:
+                    ((TheoreticalProteoform)connected_proteoforms[1]).modified_mass;
             }
         }
 

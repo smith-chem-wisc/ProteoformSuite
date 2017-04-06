@@ -8,9 +8,10 @@ namespace ProteoformSuiteInternal
 {
     public class PtmCombos
     {
+        // LOCALIZED MODIFICATION COMBINATIONS
         //Gets unique-mass (given a tolerance) ptm combinations from all the possible ones without positional redundancy
         //given a maximum number of ptms allowed on a theoretical protein
-        //Includes an empty combination with no PTMS
+        //Includes an empty combination with no PTMs
         public static List<PtmSet> get_combinations(IDictionary<int, List<Modification>> ptm_data, int num_ptms_needed)
         {
             List<Ptm> all_ptms = (
@@ -19,35 +20,24 @@ namespace ProteoformSuiteInternal
                 select new Ptm(position, modification))
             .OrderBy(p => p.position).ToList();
 
-            List<PtmSet> combinations = all_unique_positional_combinations(all_ptms, num_ptms_needed);
-            List<PtmSet> unique_mass_combinations = new List<PtmSet> { new PtmSet(new List<Ptm>()) }; //initialize with an "unmodified" ptmset
+            List<PtmSet> unique_mass_combinations = all_unique_positional_combinations(all_ptms, num_ptms_needed)
+                .OrderBy(x => x.ptm_rank_sum).DistinctBy(set => set.mass)
+                .Concat( new List<PtmSet> { new PtmSet(new List<Ptm>()) }).ToList(); //initialize with an "unmodified" ptmset
 
-            //I tried speeding this up by removing all similar masses instead; it doesn't speed it up... AC170223
-            foreach (PtmSet combination in combinations)
-            {
-                double lower_mass = combination.mass - Lollipop.ptmset_mass_tolerance;
-                double upper_mass = combination.mass + Lollipop.ptmset_mass_tolerance;
-                if (unique_mass_combinations.All(c => !(c.mass >= lower_mass && c.mass <= upper_mass)))
-                    unique_mass_combinations.Add(combination);
-            }
+            //while (combinations.Count > 0)
+            //{
+            //    PtmSet combination = combinations[0];
+            //    unique_mass_combinations.Add(combination);
+            //    double lower_mass = combination.mass - Lollipop.ptmset_mass_tolerance;
+            //    double upper_mass = combination.mass + Lollipop.ptmset_mass_tolerance;
+            //    IEnumerable<PtmSet> redundant_mass_combinations = combinations
+            //        .Where(c => c.mass >= lower_mass && c.mass <= upper_mass);
+            //    combinations = combinations.Except(redundant_mass_combinations).ToList();
+            //}
 
             return unique_mass_combinations;
         }
 
-        public static List<PtmSet> generate_all_ptmsets(int max_num_ptms, List<ModificationWithMass> mods)
-        {
-            List<PtmSet> sets = new List<PtmSet>();
-            List<Ptm> unlocalized_ptms = mods.Select(m => new Ptm(-1, m)).Concat(new Ptm[] { new Ptm() }).ToList();
-            Parallel.For(1, max_num_ptms + 1, ptm_set_length =>
-            {
-                List<PtmSet> new_ptmsets = combinations(unlocalized_ptms, ptm_set_length).ToList();
-                lock (sets) sets.AddRange(new_ptmsets);
-            });
-            return sets;
-        }
-
-
-        // LOCALIZED MODIFICATION COMBINATIONS
         //For each length up to the maximum number of ptms (or the max number of modifications in this list),
         //generate all the combinations, with the shortest combinations first, and with the modifications at the first positions first
         private static List<PtmSet> all_unique_positional_combinations(List<Ptm> all_ptms, int max_length)
@@ -99,19 +89,20 @@ namespace ProteoformSuiteInternal
 
 
         // UNLOCALIZED MODIFICATION COMBINATIONS
-        private static List<PtmSet> all_possible_combinations(List<Ptm> all_ptms, int max_length)
+        public static List<PtmSet> generate_all_ptmsets(int max_num_ptms, List<ModificationWithMass> mods, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
         {
-            max_length = Math.Min(max_length, all_ptms.Count);
-            List<PtmSet> combos = new List<PtmSet>(
-                from i in Enumerable.Range(1, max_length)
-                from combination in combinations(all_ptms, i)
-                select combination
-            );
-            return combos;
+            List<PtmSet> sets = new List<PtmSet>();
+            List<Ptm> unlocalized_ptms = mods.Select(m => new Ptm(-1, m)).Concat(new Ptm[] { new Ptm() }).ToList();
+            Parallel.For(1, max_num_ptms + 1, ptm_set_length =>
+            {
+                List<PtmSet> new_ptmsets = combinations(unlocalized_ptms, ptm_set_length, modification_ranks, added_ptm_penalization).ToList();
+                lock (sets) sets.AddRange(new_ptmsets);
+            });
+            return sets;
         }
 
         //Generates all the combinations of a certain length
-        private static IEnumerable<PtmSet> combinations(List<Ptm> all_ptms, int combination_length)
+        private static IEnumerable<PtmSet> combinations(List<Ptm> all_ptms, int combination_length, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
         {
             Ptm[] result = new Ptm[combination_length];
             Stack<int> stack = new Stack<int>();
@@ -133,7 +124,7 @@ namespace ProteoformSuiteInternal
                     {
                         Ptm[] destinationArray = new Ptm[combination_length];
                         Array.Copy(result, destinationArray, combination_length);
-                        yield return new PtmSet(destinationArray.ToList());
+                        yield return new PtmSet(destinationArray.ToList(), modification_ranks, added_ptm_penalization);
                         break;
                     }
                 }

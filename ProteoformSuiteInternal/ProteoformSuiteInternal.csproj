@@ -143,10 +143,18 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Mods\aListOfmods.txt" />
-    <Content Include="Mods\amino_acids.txt" />
-    <Content Include="Mods\intact_mods.txt" />
-    <Content Include="Mods\missing.txt" />
+    <Content Include="Mods\variable.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Mods\amino_acids.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Mods\intact_mods.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Mods\missing.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Accord.3.4.0\build\Accord.targets" Condition="Exists('..\packages\Accord.3.4.0\build\Accord.targets')" />

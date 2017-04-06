@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.Odbc;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 using System.Windows.Forms.DataVisualization.Charting;
 using ProteoformSuiteInternal;
 
@@ -74,12 +71,7 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsAndTables()
         {
-            Lollipop.ee_relations.Clear();
-            Lollipop.ee_peaks.Clear();
-            Lollipop.ef_relations.Clear();
-            Lollipop.proteoform_community.families.Clear();
-            relationUtility.clear_lists(new List<ProteoformComparison>() { ProteoformComparison.ee, ProteoformComparison.ef });
-
+            Lollipop.proteoform_community.clear_ee();
 
             foreach (var series in ct_EE_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_EE_peakList.Series) series.Points.Clear();

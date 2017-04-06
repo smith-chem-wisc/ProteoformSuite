@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -74,11 +73,7 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsAndTables()
         {
-            Lollipop.et_relations.Clear();
-            Lollipop.et_peaks.Clear();
-            Lollipop.ed_relations.Clear();
-            Lollipop.proteoform_community.families.Clear();
-            relationUtility.clear_lists(new List<ProteoformComparison>() { ProteoformComparison.et, ProteoformComparison.ed });
+            Lollipop.proteoform_community.clear_et();
 
             foreach (var series in ct_ET_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_ET_peakList.Series) series.Points.Clear();

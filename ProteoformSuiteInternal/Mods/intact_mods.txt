@@ -13,10 +13,3 @@ MM   15.994915
 MT   Unlocalized
 CF   O1
 //
-ID   Missing (Iso)leucine (I/L)
-PP   Anywhere.
-TG   L or I
-MT   Unlocalized
-MM   -113.08406397853
-CF   C-6 H-11 O-1 N-1
-//

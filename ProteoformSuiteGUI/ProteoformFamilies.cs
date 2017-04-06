@@ -94,10 +94,7 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsAndTables()
         {
-            Lollipop.proteoform_community.families.Clear();
-            foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.family = null;
-            foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.family = null;
-            foreach (Proteoform p in Lollipop.proteoform_community.decoy_proteoforms.Values.SelectMany(d => d)) p.family = null;
+            Lollipop.proteoform_community.clear_families();
             dgv_main.DataSource = null;
             dgv_main.Rows.Clear();
         }
