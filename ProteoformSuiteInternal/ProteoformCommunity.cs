@@ -23,7 +23,6 @@ namespace ProteoformSuiteInternal
         public List<ProteoformRelation> relations_in_peaks = new List<ProteoformRelation>();
         public List<DeltaMassPeak> delta_mass_peaks = new List<DeltaMassPeak>();
         public List<ProteoformFamily> families = new List<ProteoformFamily>();
-        //public static double maximum_delta_mass_peak_fdr = 25;
 
 
         //BUILDING RELATIONSHIPS
@@ -70,7 +69,8 @@ namespace ProteoformSuiteInternal
             if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
                 return (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
                     && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
-                    && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference;
+                    && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference
+                    && (pf2.ptm_set.ptm_combination.Count < 3 || pf2.ptm_set.ptm_combination.Select(ptm => ptm.modification.monoisotopicMass).All(x => x == pf2.ptm_set.ptm_combination.First().modification.monoisotopicMass));
 
             else if (relation_type == ProteoformComparison.ExperimentalExperimental || relation_type == ProteoformComparison.ExperimentalFalse)
                 return pf1.modified_mass >= pf2.modified_mass
