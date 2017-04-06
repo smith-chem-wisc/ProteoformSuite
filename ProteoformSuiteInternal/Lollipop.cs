@@ -418,7 +418,7 @@ namespace ProteoformSuiteInternal
 
 
         //THEORETICAL DATABASE
-        public static bool methionine_oxidation = false;
+        public static bool methionine_oxidation = true;
         public static bool carbamidomethylation = true;
         public static bool methionine_cleavage = true;
         public static bool natural_lysine_isotope_abundance = false;
@@ -471,7 +471,8 @@ namespace ProteoformSuiteInternal
 
             all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
             uniprotModifications = read_mods(all_known_modifications);
-            if (methionine_oxidation) variableModifications = PtmListLoader.ReadModsFromFile(Path.Combine(Path.Combine(Environment.CurrentDirectory, "Mods"), "variable.txt")).OfType<ModificationWithMass>().ToList();
+            if (methionine_oxidation)
+                variableModifications = PtmListLoader.ReadModsFromFile(Path.Combine(Path.Combine(Environment.CurrentDirectory, "Mods"), "variable.txt")).OfType<ModificationWithMass>().ToList();
             all_mods_with_mass = uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().Concat(variableModifications).ToList();
 
             modification_ranks = rank_mods(theoretical_proteins, variableModifications);
@@ -531,20 +532,16 @@ namespace ProteoformSuiteInternal
 
         public static Dictionary<double, int> rank_mods(Dictionary<InputFile, Protein[]> theoretical_proteins, IEnumerable<ModificationWithMass> variableModifications)
         {
-            Dictionary<double, int> mod_counts = new Dictionary<double, int> { { 0, int.MaxValue } }; //unmodified gets first rank
-            foreach (ModificationWithMass m in variableModifications)
-            {
-                if (!mod_counts.TryGetValue(m.monoisotopicMass, out int a)) mod_counts.Add(m.monoisotopicMass, int.MaxValue - 1);
-                else mod_counts[m.monoisotopicMass] = int.MaxValue - 1;
-            }
+            Dictionary<double, int> mod_counts = new Dictionary<double, int>(); 
+            
             foreach (ModificationWithMass m in theoretical_proteins.SelectMany(kv => kv.Value).SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList())
             {
-                if (!mod_counts.TryGetValue(m.monoisotopicMass, out int a)) mod_counts.Add(m.monoisotopicMass, 1);
-                else if (a < int.MaxValue - 1) mod_counts[m.monoisotopicMass]++;
+                if (!mod_counts.TryGetValue(m.monoisotopicMass, out int b)) mod_counts.Add(m.monoisotopicMass, 1);
+                else mod_counts[m.monoisotopicMass]++;
             }
             List<KeyValuePair<double, int>> ordered_mod_counts = mod_counts.OrderByDescending(kv => kv.Value).ToList();
 
-            int rank = 1;
+            int rank = 3;
             int last_count = 0;
             Dictionary<double, int> mod_ranks = new Dictionary<double, int>();
             foreach (KeyValuePair<double, int> mod_count in ordered_mod_counts)
@@ -553,6 +550,20 @@ namespace ProteoformSuiteInternal
                 if (mod_count.Value < last_count) rank++;
                 last_count = mod_count.Value;
             }
+
+            //Give unmodified the best rank
+            if (!mod_ranks.TryGetValue(0, out int a))
+                mod_ranks.Add(0, 0);
+            else
+                mod_ranks[0] = 0;
+
+            //Give variable mods a good score
+            foreach (ModificationWithMass m in variableModifications)
+            {
+                if (!mod_ranks.TryGetValue(m.monoisotopicMass, out int b)) mod_ranks.Add(m.monoisotopicMass, 2);
+                else mod_ranks[m.monoisotopicMass] = 2;
+            }
+
             return mod_ranks;
         }
 
@@ -680,7 +691,8 @@ namespace ProteoformSuiteInternal
                     }
                 }
             }
-            List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, max_ptms);
+
+            List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, 2, modification_ranks, rank_first_quartile / 2);
 
             //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
             int ptm_set_counter = 1;
