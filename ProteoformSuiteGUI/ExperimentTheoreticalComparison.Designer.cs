@@ -35,6 +35,7 @@
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ExperimentTheoreticalComparison));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
@@ -70,10 +71,9 @@
             this.nUD_NoManLower = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer6 = new System.Windows.Forms.SplitContainer();
-            this.dgv_ET_Pairs = new System.Windows.Forms.DataGridView();
-            this.dgv_psmList = new System.Windows.Forms.DataGridView();
             this.ct_ET_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.dgv_ET_Pairs = new System.Windows.Forms.DataGridView();
+            this.cb_view_decoy_histogram = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -110,13 +110,8 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer6)).BeginInit();
-            this.splitContainer6.Panel1.SuspendLayout();
-            this.splitContainer6.Panel2.SuspendLayout();
-            this.splitContainer6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Pairs)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_psmList)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Pairs)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -152,6 +147,7 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.Controls.Add(this.cb_view_decoy_histogram);
             this.splitContainer3.Panel2.Controls.Add(this.bt_compare_ET);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox4);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox3);
@@ -159,7 +155,7 @@
             this.splitContainer3.Panel2.Controls.Add(this.groupBox1);
             this.splitContainer3.Panel2MinSize = 125;
             this.splitContainer3.Size = new System.Drawing.Size(832, 819);
-            this.splitContainer3.SplitterDistance = 505;
+            this.splitContainer3.SplitterDistance = 504;
             this.splitContainer3.SplitterWidth = 3;
             this.splitContainer3.TabIndex = 0;
             // 
@@ -181,8 +177,8 @@
             // splitContainer4.Panel2
             // 
             this.splitContainer4.Panel2.Controls.Add(this.splitContainer5);
-            this.splitContainer4.Size = new System.Drawing.Size(832, 505);
-            this.splitContainer4.SplitterDistance = 43;
+            this.splitContainer4.Size = new System.Drawing.Size(832, 504);
+            this.splitContainer4.SplitterDistance = 42;
             this.splitContainer4.SplitterWidth = 3;
             this.splitContainer4.TabIndex = 0;
             // 
@@ -238,7 +234,7 @@
             // 
             this.splitContainer5.Panel2.Controls.Add(this.ct_ET_peakList);
             this.splitContainer5.Size = new System.Drawing.Size(832, 459);
-            this.splitContainer5.SplitterDistance = 383;
+            this.splitContainer5.SplitterDistance = 382;
             this.splitContainer5.TabIndex = 16;
             // 
             // dgv_ET_Peak_List
@@ -252,7 +248,7 @@
             this.dgv_ET_Peak_List.Margin = new System.Windows.Forms.Padding(2);
             this.dgv_ET_Peak_List.Name = "dgv_ET_Peak_List";
             this.dgv_ET_Peak_List.RowTemplate.Height = 28;
-            this.dgv_ET_Peak_List.Size = new System.Drawing.Size(383, 459);
+            this.dgv_ET_Peak_List.Size = new System.Drawing.Size(382, 459);
             this.dgv_ET_Peak_List.TabIndex = 0;
             // 
             // ct_ET_peakList
@@ -283,14 +279,14 @@
             this.ct_ET_peakList.Series.Add(series1);
             this.ct_ET_peakList.Series.Add(series2);
             this.ct_ET_peakList.Series.Add(series3);
-            this.ct_ET_peakList.Size = new System.Drawing.Size(445, 459);
+            this.ct_ET_peakList.Size = new System.Drawing.Size(446, 459);
             this.ct_ET_peakList.TabIndex = 1;
             this.ct_ET_peakList.Text = "chart1";
             // 
             // bt_compare_ET
             // 
             this.bt_compare_ET.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.bt_compare_ET.Location = new System.Drawing.Point(0, 288);
+            this.bt_compare_ET.Location = new System.Drawing.Point(0, 289);
             this.bt_compare_ET.Name = "bt_compare_ET";
             this.bt_compare_ET.Size = new System.Drawing.Size(832, 23);
             this.bt_compare_ET.TabIndex = 32;
@@ -308,7 +304,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(199, 94);
+            this.groupBox4.Location = new System.Drawing.Point(199, 96);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -402,7 +398,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(431, 112);
+            this.groupBox3.Location = new System.Drawing.Point(431, 114);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -475,7 +471,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(431, 199);
+            this.groupBox2.Location = new System.Drawing.Point(431, 201);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -563,7 +559,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(199, 199);
+            this.groupBox1.Location = new System.Drawing.Point(199, 201);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -656,7 +652,7 @@
             // 
             // splitContainer2.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.splitContainer6);
+            this.splitContainer2.Panel1.Controls.Add(this.dgv_ET_Pairs);
             // 
             // splitContainer2.Panel2
             // 
@@ -665,55 +661,6 @@
             this.splitContainer2.SplitterDistance = 508;
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 0;
-            // 
-            // splitContainer6
-            // 
-            this.splitContainer6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer6.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer6.Name = "splitContainer6";
-            this.splitContainer6.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer6.Panel1
-            // 
-            this.splitContainer6.Panel1.Controls.Add(this.dgv_ET_Pairs);
-            // 
-            // splitContainer6.Panel2
-            // 
-            this.splitContainer6.Panel2.Controls.Add(this.dgv_psmList);
-            this.splitContainer6.Size = new System.Drawing.Size(710, 508);
-            this.splitContainer6.SplitterDistance = 396;
-            this.splitContainer6.TabIndex = 1;
-            // 
-            // dgv_ET_Pairs
-            // 
-            this.dgv_ET_Pairs.AllowUserToAddRows = false;
-            this.dgv_ET_Pairs.AllowUserToDeleteRows = false;
-            this.dgv_ET_Pairs.AllowUserToOrderColumns = true;
-            this.dgv_ET_Pairs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_ET_Pairs.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_ET_Pairs.Location = new System.Drawing.Point(0, 0);
-            this.dgv_ET_Pairs.Margin = new System.Windows.Forms.Padding(2);
-            this.dgv_ET_Pairs.Name = "dgv_ET_Pairs";
-            this.dgv_ET_Pairs.ReadOnly = true;
-            this.dgv_ET_Pairs.RowTemplate.Height = 28;
-            this.dgv_ET_Pairs.Size = new System.Drawing.Size(710, 396);
-            this.dgv_ET_Pairs.TabIndex = 0;
-            // 
-            // dgv_psmList
-            // 
-            this.dgv_psmList.AllowUserToAddRows = false;
-            this.dgv_psmList.AllowUserToDeleteRows = false;
-            this.dgv_psmList.AllowUserToOrderColumns = true;
-            this.dgv_psmList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_psmList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_psmList.Location = new System.Drawing.Point(0, 0);
-            this.dgv_psmList.Margin = new System.Windows.Forms.Padding(2);
-            this.dgv_psmList.Name = "dgv_psmList";
-            this.dgv_psmList.ReadOnly = true;
-            this.dgv_psmList.RowTemplate.Height = 28;
-            this.dgv_psmList.Size = new System.Drawing.Size(710, 108);
-            this.dgv_psmList.TabIndex = 1;
-            this.dgv_psmList.Visible = false;
             // 
             // ct_ET_Histogram
             // 
@@ -727,9 +674,40 @@
             series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series4.Name = "relations";
             this.ct_ET_Histogram.Series.Add(series4);
+            series5.ChartArea = "ChartArea1";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series5.Name = "decoys";
+            this.ct_ET_Histogram.Series.Add(series5);
             this.ct_ET_Histogram.Size = new System.Drawing.Size(710, 308);
             this.ct_ET_Histogram.TabIndex = 0;
             this.ct_ET_Histogram.Text = "chart1";
+            // 
+            // dgv_ET_Pairs
+            // 
+            this.dgv_ET_Pairs.AllowUserToAddRows = false;
+            this.dgv_ET_Pairs.AllowUserToDeleteRows = false;
+            this.dgv_ET_Pairs.AllowUserToOrderColumns = true;
+            this.dgv_ET_Pairs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_ET_Pairs.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_ET_Pairs.Location = new System.Drawing.Point(0, 0);
+            this.dgv_ET_Pairs.Margin = new System.Windows.Forms.Padding(2);
+            this.dgv_ET_Pairs.Name = "dgv_ET_Pairs";
+            this.dgv_ET_Pairs.ReadOnly = true;
+            this.dgv_ET_Pairs.RowTemplate.Height = 28;
+            this.dgv_ET_Pairs.Size = new System.Drawing.Size(710, 508);
+            this.dgv_ET_Pairs.TabIndex = 0;
+            // 
+            // cb_view_decoy_histogram
+            // 
+            this.cb_view_decoy_histogram.AutoSize = true;
+            this.cb_view_decoy_histogram.Enabled = false;
+            this.cb_view_decoy_histogram.Location = new System.Drawing.Point(192, 62);
+            this.cb_view_decoy_histogram.Name = "cb_view_decoy_histogram";
+            this.cb_view_decoy_histogram.Size = new System.Drawing.Size(196, 17);
+            this.cb_view_decoy_histogram.TabIndex = 33;
+            this.cb_view_decoy_histogram.Text = "View Experimental-Decoy Histogram";
+            this.cb_view_decoy_histogram.UseVisualStyleBackColor = true;
+            this.cb_view_decoy_histogram.CheckedChanged += new System.EventHandler(this.cb_view_decoy_histogram_CheckedChanged);
             // 
             // ExperimentTheoreticalComparison
             // 
@@ -749,6 +727,7 @@
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer3.Panel1.ResumeLayout(false);
             this.splitContainer3.Panel2.ResumeLayout(false);
+            this.splitContainer3.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
             this.splitContainer4.Panel1.ResumeLayout(false);
@@ -783,13 +762,8 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            this.splitContainer6.Panel1.ResumeLayout(false);
-            this.splitContainer6.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer6)).EndInit();
-            this.splitContainer6.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Pairs)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_psmList)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Pairs)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -798,7 +772,6 @@
 
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.DataGridView dgv_ET_Pairs;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.NumericUpDown nUD_PeakCountMinThreshold;
@@ -830,9 +803,9 @@
         private System.Windows.Forms.SplitContainer splitContainer5;
         private System.Windows.Forms.DataGridView dgv_ET_Peak_List;
         private System.Windows.Forms.Button bt_compare_ET;
-        private System.Windows.Forms.SplitContainer splitContainer6;
-        private System.Windows.Forms.DataGridView dgv_psmList;
         private System.Windows.Forms.TextBox tb_max_accepted_fdr;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.DataGridView dgv_ET_Pairs;
+        private System.Windows.Forms.CheckBox cb_view_decoy_histogram;
     }
 }

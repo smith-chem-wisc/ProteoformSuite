@@ -72,6 +72,7 @@ namespace ProteoformSuiteGUI
             if (Lollipop.proteoform_community.families.Count <= 0 && Lollipop.proteoform_community.has_e_proteoforms) run_the_gamut();
         }
 
+
         public DataGridView GetDGV()
         {
             return dgv_main;
@@ -80,6 +81,7 @@ namespace ProteoformSuiteGUI
         public void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
+            Lollipop.proteoform_community.families.Clear();
             Lollipop.proteoform_community.construct_families();
             fill_proteoform_families("");
             update_figures_of_merit();

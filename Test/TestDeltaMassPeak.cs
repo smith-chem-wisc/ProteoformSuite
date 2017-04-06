@@ -100,7 +100,6 @@ namespace Test
                     new ModificationWithMass("unmodified", new Tuple<string, string>("", ""), null, ModificationSites.K, 0, new Dictionary<string, IList<string>>(), -1, new List<double>(), new List<double>(), "") }
                 }
             };
-            Lollipop.updated_theoretical = true;
 
             //Testing the acceptance of peaks. The FDR is tested above, so I'm not going to work with that here.
             //Four proteoforms, three relations (linear), middle one isn't accepted; should give 2 families
@@ -171,7 +170,6 @@ namespace Test
         [Test]
         public void artificial_deltaMPeak()
         {
-            Lollipop.opening_results = true;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
             ProteoformComparison comparison = ProteoformComparison.ee;
@@ -179,7 +177,6 @@ namespace Test
             ProteoformRelation pr3 = new ProteoformRelation(pf3, pf4, comparison, 0);
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr2, pr3 };
             Assert.AreEqual(prs, new DeltaMassPeak(pr2, prs).grouped_relations);
-            Lollipop.opening_results = false;
         }
 
         [Test]
