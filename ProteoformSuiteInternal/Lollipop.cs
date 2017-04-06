@@ -460,7 +460,7 @@ namespace ProteoformSuiteInternal
             Dictionary<string, Modification> um;
             Parallel.ForEach(get_files(Lollipop.input_files, Purpose.ProteinDatabase).ToList(), database =>
             {
-                lock (theoretical_proteins) theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, false, all_known_modifications, database.ContaminantDB, new string[] { "GO" }, mod_types_to_exclude, out um).ToArray());
+                lock (theoretical_proteins) theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, false, all_known_modifications, database.ContaminantDB, mod_types_to_exclude, out um).ToArray());
                 lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).OfType<ModificationWithLocation>().Where(m => !mod_types_to_exclude.Contains(m.modificationType)));
             });
 
@@ -475,11 +475,11 @@ namespace ProteoformSuiteInternal
             all_mods_with_mass = uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().Concat(variableModifications).ToList();
 
             modification_ranks = rank_mods(theoretical_proteins, variableModifications);
-            List<int> ranks = modification_ranks.Select(kv => kv.Value).OrderBy(x => x).ToList();
-            rank_sum_threshold = ranks.Max();
+            List<int> ranks = modification_ranks.Values.OrderBy(x => x).ToList();
             rank_first_quartile = ranks[ranks.Count / 4];
-            rank_first_quartile = ranks[2 * ranks.Count / 4];
-            rank_first_quartile = ranks[3 * ranks.Count / 4];
+            rank_second_quartile = ranks[2 * ranks.Count / 4];
+            rank_third_quartile = ranks[3 * ranks.Count / 4];
+            rank_sum_threshold = ranks.Max();
             foreach (ModificationWithMass m in all_mods_with_mass)
             {
                 if (!modification_ranks.TryGetValue(m.monoisotopicMass, out int a))
