@@ -149,7 +149,7 @@ namespace ProteoformSuiteGUI
 
         private void dgv_RawExpComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && !Lollipop.opened_results_originally)
+            if (e.RowIndex >= 0)
             {
                 ProteoformSuiteInternal.Component c = (ProteoformSuiteInternal.Component)this.dgv_RawExpComp_MI_masses.Rows[e.RowIndex].DataBoundItem;
                 DisplayUtility.FillDataGridView(dgv_RawExpComp_IndChgSts, c.charge_states);
@@ -160,7 +160,7 @@ namespace ProteoformSuiteGUI
 
         private void dgv_RawQuantComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && !Lollipop.opened_results_originally)
+            if (e.RowIndex >= 0)
             {
                 ProteoformSuiteInternal.Component c = (ProteoformSuiteInternal.Component)this.dgv_RawQuantComp_MI_masses.Rows[e.RowIndex].DataBoundItem;
                 DisplayUtility.FillDataGridView(dgv_RawQuantComp_IndChgSts, c.charge_states);

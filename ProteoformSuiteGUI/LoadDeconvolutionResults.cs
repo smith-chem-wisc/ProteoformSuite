@@ -70,31 +70,18 @@ namespace ProteoformSuiteGUI
             cmb_loadTable1.Items.Clear();
             cmb_loadTable2.Items.Clear();
             cmb_loadTable3.Items.Clear();
-            for (int i = 0; i < 3; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-            for (int i = 0; i < 3; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
-            for (int i = 0; i < 3; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 4; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 4; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
             cmb_loadTable1.SelectedIndex = 0;
             cmb_loadTable2.SelectedIndex = 1;
             cmb_loadTable3.SelectedIndex = 2;
 
             if (rb_chemicalCalibration.Checked)
             {
-                cmb_loadTable1.Items.Add(Lollipop.file_lists[3]);
-                cmb_loadTable2.Items.Add(Lollipop.file_lists[3]);
-                cmb_loadTable3.Items.Add(Lollipop.file_lists[3]);
                 cmb_loadTable1.SelectedIndex = 0;
                 cmb_loadTable2.SelectedIndex = 1;
-                cmb_loadTable3.SelectedIndex = cmb_loadTable3.Items.Count - 1;
-            }
-
-            else if (rb_advanced_user.Checked)
-            {
-                for (int i = 3; i < Lollipop.file_lists.Length; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-                for (int i = 3; i < Lollipop.file_lists.Length; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
-                for (int i = 3; i < Lollipop.file_lists.Length; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
-                cmb_loadTable1.SelectedIndex = 0;
-                cmb_loadTable2.SelectedIndex = cmb_loadTable2.Items.Count - 2;
-                cmb_loadTable3.SelectedIndex = cmb_loadTable2.Items.Count - 1;
+                cmb_loadTable3.SelectedIndex = 3;
             }
 
             lb_filter1.Text = Lollipop.file_lists[cmb_loadTable1.SelectedIndex];
@@ -287,11 +274,6 @@ namespace ProteoformSuiteGUI
                 "Above is another info-button on how to process results without using presets.\n\n"+
                 "We hope you enjoy trying Proteoform Suite! Please contact us if you have any questions. The public repository for this program is hosted on GitHub at https://github.com/smith-chem-wisc/proteoform-suite.", "How To Use Presets.", MessageBoxButtons.OK);
             ((ProteoformSweet)MdiParent).display_methodMenu();
-        }
-
-        private void cb_td_file_CheckedChanged(object sender, EventArgs e)
-        {
-            Lollipop.td_results = cb_td_file.Checked;
         }
 
         private void bt_clearResults_Click(object sender, EventArgs e)

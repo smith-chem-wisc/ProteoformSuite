@@ -19,14 +19,6 @@ namespace ProteoformSuiteInternal
         public const double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
         public const double PROTON_MASS = 1.007276474;
 
-
-        // OPENING RESULTS
-        public static bool opening_results = false; //set to true if previously saved tsv's are read into program
-        public static bool updated_theoretical = false;
-        public static bool updated_agg = false;
-        public static bool opened_results_originally = false; //stays true if results ever opened
-        public static bool opened_raw_comps = false;
-
         public static List<InputFile> input_files = new List<InputFile>();
 
         public static IEnumerable<InputFile> get_files(IEnumerable<InputFile> files, Purpose purpose)
@@ -45,8 +37,6 @@ namespace ProteoformSuiteInternal
             "Proteoform Quantification Results (.xlsx)",
             "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
             "Deconvolution Calibration Files (.txt, .tsv)",
-            "ProSight Top-Down Results (.xlsx)",
-            "Morpheus Bottom-Up Results (.tsv)"
         };
 
         public static List<string>[] acceptable_extensions = new List<string>[]
@@ -55,8 +45,6 @@ namespace ProteoformSuiteInternal
             new List<string> { ".xlsx" },
             new List<string> { ".xml", ".gz", ".fasta", ".txt" },
             new List<string> { ".txt", ".tsv" },
-            new List<string> { ".xlsx" },
-            new List<string> { ".tsv" }
         };
 
         public static string[] file_filters = new string[] 
@@ -65,8 +53,6 @@ namespace ProteoformSuiteInternal
             "Excel Files (*.xlsx) | *.xlsx",
             "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
             "Text Files (*.txt, *.tsv) | *.tsv;*.txt",
-            "Excel Files (*.xlsx) | *.xlsx",
-            "Text Files (*.tsv) | *.tsv"
         };
 
         public static List<Purpose>[] file_types = new List<Purpose>[]
@@ -75,8 +61,6 @@ namespace ProteoformSuiteInternal
             new List<Purpose> { Purpose.Quantification },
             new List<Purpose> { Purpose.ProteinDatabase, Purpose.PtmList },
             new List<Purpose> { Purpose.Calibration },
-            new List<Purpose> { Purpose.TopDown },
-            new List<Purpose> { Purpose.BottomUp }
         };
 
         public static void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, List<Purpose> purposes, List<InputFile> destination)
@@ -142,7 +126,6 @@ namespace ProteoformSuiteInternal
         public static List<Component> raw_experimental_components = new List<Component>();
         public static List<Component> raw_quantification_components = new List<Component>();
         public static bool neucode_labeled = true;
-        public static bool td_results = false;
 
         public static void process_raw_components(List<InputFile> input_files, List<Component> destination, Purpose purpose)
         {
@@ -214,8 +197,8 @@ namespace ProteoformSuiteInternal
                             List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
                             List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList<int>();
                             List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
-                            double lower_intensity = opened_raw_comps ? lower_component.intensity_sum_olcs : lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                            double higher_intensity = opened_raw_comps ? higher_component.intensity_sum_olcs : higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                            double lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                            double higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
                             bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
                             if (lower_intensity > 0 && higher_intensity > 0)
                             {
@@ -263,13 +246,13 @@ namespace ProteoformSuiteInternal
         public static decimal retention_time_tolerance = 5; //min
         public static decimal missed_monos = 3;
         public static decimal missed_lysines = 2;
-        public static double min_rel_abundance = 0;
         public static int min_agg_count = 1;
         public static int min_num_CS = 1;
+        public static int min_num_bioreps = 1;
 
-        public static List<ExperimentalProteoform> aggregate_proteoforms(bool two_pass_validation, IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, double min_rel_abundance, int min_num_CS)
+        public static List<ExperimentalProteoform> aggregate_proteoforms(bool two_pass_validation, IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS)
         {
-            List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(raw_neucode_pairs, raw_experimental_components, min_rel_abundance, min_num_CS);
+            List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(raw_neucode_pairs, raw_experimental_components, min_num_CS);
             if (two_pass_validation) vetted_proteoforms = vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms);
             else vetted_proteoforms = candidateExperimentalProteoforms;
             proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
@@ -281,14 +264,14 @@ namespace ProteoformSuiteInternal
         //If no NeuCodePairs exist, e.g. for an experiment without labeling, the raw components are used instead.
         //Uses an ordered list, so that the proteoform with max intensity is always chosen first
         //Lollipop.raw_neucode_pairs = Lollipop.raw_neucode_pairs.Where(p => p != null).ToList();
-        public static List<ExperimentalProteoform> createProteoforms(IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, double min_rel_abundance, int min_num_CS)
+        public static List<ExperimentalProteoform> createProteoforms(IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, int min_num_CS)
         {
             List<ExperimentalProteoform> candidateExperimentalProteoforms = new List<ExperimentalProteoform>();
 
             // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
             ordered_components = neucode_labeled ?
-                raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true && p.relative_abundance >= min_rel_abundance && p.num_charge_states >= min_num_CS).ToArray() :
-                raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.relative_abundance >= min_rel_abundance && p.num_charge_states >= min_num_CS).ToArray();
+                raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true && p.charge_states.Count >= min_num_CS).ToArray() :
+                raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.num_charge_states >= min_num_CS).ToArray();
             Lollipop.remaining_components = new List<Component>(ordered_components);
 
             Component root = ordered_components.FirstOrDefault();
@@ -423,14 +406,14 @@ namespace ProteoformSuiteInternal
         //Idea 1: Start with Components -- have them find the most intense nearby component. Then, go through and correct edge cases that aren't correct.
         //Idea 2: Use the assumption that proteoforms distant to the manual shift will not regroup.
         //Idea 2.1: Put the shifted proteoforms, plus some range from the min and max masses in there, and reaggregate the components with the aggregate_proteoforms algorithm.
-        public static List<ExperimentalProteoform> regroup_components(bool neucode_labeled, bool two_pass_validation, IEnumerable<InputFile> input_files, List<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, double min_rel_abundance, int min_num_CS)
+        public static List<ExperimentalProteoform> regroup_components(bool neucode_labeled, bool two_pass_validation, IEnumerable<InputFile> input_files, List<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS)
         {
             if (neucode_labeled)
             {
                 raw_neucode_pairs.Clear();
                 process_neucode_components(raw_neucode_pairs);
             }
-            return aggregate_proteoforms(two_pass_validation, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_rel_abundance, min_num_CS);
+            return aggregate_proteoforms(two_pass_validation, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_num_CS);
         }
 
 
@@ -448,22 +431,16 @@ namespace ProteoformSuiteInternal
         public static double ptmset_mass_tolerance = 0.00001;
         public static bool combine_identical_sequences = true;
         public static bool combine_theoretical_proteoforms_byMass = true;
-        public static string accessions_of_interest_list_filepath = "";
-        public static string interest_type = "Of interest"; //label for proteins of interest. can be changed 
         public static string[] mod_types_to_exclude = new string[] { "Metal", "PeptideTermMod", "TrypticProduct" };
         public static Dictionary<InputFile, Protein[]> theoretical_proteins = new Dictionary<InputFile, Protein[]>();
         public static ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
-        public static List<Psm> psm_list = new List<Psm>();
-
         public static Dictionary<string, IList<Modification>> uniprotModificationTable = new Dictionary<string, IList<Modification>>();
         static Dictionary<char, double> aaIsotopeMassList;
 
         public static void get_theoretical_proteoforms()
         {
-            updated_theoretical = true;
             //Clear out data from potential previous runs
             proteoform_community.decoy_proteoforms.Clear();
-            psm_list.Clear();
             theoretical_proteins.Clear();
 
             //Read the UniProt-XML and ptmlist
@@ -482,13 +459,6 @@ namespace ProteoformSuiteInternal
             aaIsotopeMassList = new AminoAcidMasses(methionine_oxidation, carbamidomethylation, Lollipop.natural_lysine_isotope_abundance, Lollipop.neucode_light_lysine, Lollipop.neucode_heavy_lysine).AA_Masses;
             if (combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
 
-            //Read the Morpheus BU data into PSM list
-            //foreach (InputFile file in Lollipop.get_files(Lollipop.input_files, Purpose.BottomUp))
-            //{
-            //    List<Psm> psm_from_file = Lollipop.ReadBUFile(file.directory + "\\" + file.filename + file.extension);
-            //    psm_list.AddRange(psm_from_file);
-            //}
-
             //PARALLEL PROBLEM
             process_entries(expanded_proteins);
             process_decoys(expanded_proteins);
@@ -498,11 +468,6 @@ namespace ProteoformSuiteInternal
                 Lollipop.proteoform_community.theoretical_proteoforms = group_proteoforms_byMass(Lollipop.proteoform_community.theoretical_proteoforms);
                 Lollipop.proteoform_community.decoy_proteoforms = Lollipop.proteoform_community.decoy_proteoforms.ToDictionary(kv => kv.Key, kv => (TheoreticalProteoform[])group_proteoforms_byMass(kv.Value));
             }
-
-            //if (psm_list.Count > 0)
-            //    match_psms_and_theoreticals();   //if BU data loaded in, match PSMs to theoretical accessions
-            //if (Lollipop.accessions_of_interest_list_filepath.Length > 0)
-            //    mark_accessions_of_interest();
         }
 
         public static void read_mods(List<ModificationWithLocation> all_modifications)
@@ -676,56 +641,6 @@ namespace ProteoformSuiteInternal
         }
 
 
-        //READING IN BOTTOM-UP MORPHEUS FILE
-        //public static List<Psm> ReadBUFile(string filename)
-        //{
-        //    List<Psm> psm_list = new List<Psm>();
-        //    string[] lines = File.ReadAllLines(filename);
-
-        //    int i = 1;
-        //    bool qLessThan1 = true;
-        //    //only add PSMs with q less than 1. this assumes the tsv is in increasing order of q-value! 
-        //    while (qLessThan1)
-        //    {
-        //        string[] parts = lines[i].Split('\t');
-        //        //only read in with Q-value < 1%
-        //        if (Convert.ToDouble(parts[30]) < 1)
-        //        {
-        //            if (Convert.ToBoolean(parts[26]))
-        //            {
-        //                Psm new_psm = new Psm(parts[11].ToString(), parts[0].ToString(), Convert.ToInt32(parts[14]), Convert.ToInt32(parts[15]),
-        //                    Convert.ToDouble(parts[10]), Convert.ToDouble(parts[6]), Convert.ToDouble(parts[25]), Convert.ToInt32(parts[1]),
-        //                    parts[13].ToString(), Convert.ToDouble(parts[5]), Convert.ToInt32(parts[7]), Convert.ToDouble(parts[18]), PsmType.BottomUp);
-        //                psm_list.Add(new_psm);
-        //            }
-        //            i++;
-        //        }
-        //        else qLessThan1 = false;
-        //    }
-        //    return psm_list;
-        //}
-
-        //private static void match_psms_and_theoreticals()
-        //{
-        //    Parallel.ForEach<TheoreticalProteoform>(Lollipop.proteoform_community.theoretical_proteoforms, tp =>
-        //    {
-        //        //PSMs in BU data with that protein accession
-        //        string[] accession_to_search = tp.accession.Split('_');
-        //        tp.psm_list = Lollipop.psm_list.Where(p => p.protein_description.Contains(accession_to_search[0])).ToList();
-        //    });
-        //}
-
-        //private static void mark_accessions_of_interest()
-        //{
-        //    string[] lines = File.ReadAllLines(Lollipop.accessions_of_interest_list_filepath);
-        //    Parallel.ForEach<string>(lines, accession =>
-        //    {
-        //        List<TheoreticalProteoform> theoreticals = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.accession.Contains(accession)).ToList();
-        //        foreach (TheoreticalProteoform theoretical in theoreticals) { theoretical.of_interest = Lollipop.interest_type; }
-        //    });
-        //}
-
-
         //ET,ED,EE,EF COMPARISONS
         public static double ee_max_mass_difference = 300;
         public static double ee_max_RetentionTime_difference = 2.5;
@@ -741,7 +656,7 @@ namespace ProteoformSuiteInternal
         public static List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
         public static List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
         public static Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
-        public static List<ProteoformRelation> ef_relations = new List<ProteoformRelation>();
+        public static Dictionary<string, List<ProteoformRelation>> ef_relations = new Dictionary<string, List<ProteoformRelation>>();
         public static List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
         public static List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
 
@@ -755,7 +670,7 @@ namespace ProteoformSuiteInternal
         public static void make_ee_relationships(ProteoformCommunity community)
         {
             Lollipop.ee_relations = community.relate_ee(community.experimental_proteoforms.Where(p => p.accepted).ToArray(), community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ee);
-            Lollipop.ef_relations = community.relate_unequal_ee_lysine_counts();
+            Lollipop.ef_relations = community.relate_ef();
             Lollipop.ee_peaks = community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }
 

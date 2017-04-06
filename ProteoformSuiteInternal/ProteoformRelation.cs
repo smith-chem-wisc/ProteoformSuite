@@ -69,7 +69,7 @@ namespace ProteoformSuiteInternal
         {
             this.peak = relation.peak;
             this.outside_no_mans_land = relation.outside_no_mans_land;
-            if (!Lollipop.opening_results) this.nearby_relations = relation.nearby_relations;
+            this.nearby_relations = relation.nearby_relations;
         }
 
         public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_ordered_relations, List<int> ordered_relation_ids)
@@ -100,7 +100,8 @@ namespace ProteoformSuiteInternal
         public void generate_peak()
         {
             new DeltaMassPeak(this, Lollipop.proteoform_community.remaining_relations_outside_no_mans); //setting the peak takes place elsewhere, but this constructs it
-            if (Lollipop.decoy_databases > 0) this.peak.calculate_fdr(Lollipop.ed_relations);
+            if (connected_proteoforms[1] is TheoreticalProteoform && Lollipop.ed_relations.Count > 0) this.peak.calculate_fdr(Lollipop.ed_relations);
+            else if (connected_proteoforms[1] is ExperimentalProteoform && Lollipop.ef_relations.Count > 0) this.peak.calculate_fdr(Lollipop.ef_relations);
         }
 
         public override bool Equals(object obj)
@@ -205,14 +206,6 @@ namespace ProteoformSuiteInternal
         public string ptm_list
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).ptm_descriptions; } catch { return null; } }
-        }
-        //public int psm_count_BU
-        //{
-        //    get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).psm_count_BU; } catch { return 0; }}
-        //}
-        public string of_interest
-        {
-            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).of_interest; } catch { return null; } }
         }
     }
 }
