@@ -72,18 +72,20 @@ namespace ProteoformSuiteGUI
             if (Lollipop.proteoform_community.families.Count <= 0 && (Lollipop.proteoform_community.has_e_proteoforms || Lollipop.proteoform_community.topdown_proteoforms.Length > 0)) run_the_gamut();
         }
 
-        public void run_the_gamut()
-        {
-            this.Cursor = Cursors.WaitCursor;
-            Lollipop.proteoform_community.construct_families();
-            fill_proteoform_families("");
-            update_figures_of_merit();
-            this.Cursor = Cursors.Default;
-        }
 
         public DataGridView GetDGV()
         {
             return dgv_main;
+        }
+
+        public void run_the_gamut()
+        {
+            this.Cursor = Cursors.WaitCursor;
+            Lollipop.proteoform_community.families.Clear();
+            Lollipop.proteoform_community.construct_families();
+            fill_proteoform_families("");
+            update_figures_of_merit();
+            this.Cursor = Cursors.Default;
         }
 
         public void ClearListsAndTables()

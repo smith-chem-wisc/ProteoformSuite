@@ -29,12 +29,12 @@ namespace ProteoformSuiteInternal
                 base_relation.peak = this;
             }
 
-            grouped_relations = !Lollipop.opening_results ? this.find_nearby_relations(relations_to_group) : relations_to_group.ToList();
+            grouped_relations = this.find_nearby_relations(relations_to_group);
             this.peak_accepted = grouped_relations != null && grouped_relations.Count > 0 &&
                 typeof(TheoreticalProteoform).IsAssignableFrom(grouped_relations.First().connected_proteoforms[1].GetType()) ?
                      this.peak_relation_group_count >= Lollipop.min_peak_count_et :
                      this.peak_relation_group_count >= Lollipop.min_peak_count_ee;
-            if (!Lollipop.opening_results && Lollipop.updated_theoretical) this.possiblePeakAssignments = nearestPTMs(this.peak_deltaM_average);
+            this.possiblePeakAssignments = nearestPTMs(this.peak_deltaM_average);
         }
 
 
@@ -100,10 +100,8 @@ namespace ProteoformSuiteInternal
 
         public List<ProteoformRelation> find_nearby_decoys(List<ProteoformRelation> all_relations)
         {
-            double peak_width_base = Lollipop.peak_width_base_et;
-            if (all_relations[0].relation_type == ProteoformComparison.ef) peak_width_base = Lollipop.peak_width_base_ee;
-            double lower_limit_of_peak_width = this.peak_deltaM_average - peak_width_base / 2; 
-            double upper_limit_of_peak_width = this.peak_deltaM_average + peak_width_base / 2;
+            double lower_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ed)? this.peak_deltaM_average - Lollipop.peak_width_base_et / 2 : this.peak_deltaM_average - Lollipop.peak_width_base_ee / 2;
+            double upper_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ed) ?  this.peak_deltaM_average + Lollipop.peak_width_base_et / 2 : this.peak_deltaM_average + Lollipop.peak_width_base_ee / 2;
             return all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
         }
 

@@ -72,7 +72,7 @@ namespace ProteoformSuiteGUI
             ct.ChartAreas[0].AxisY.Title = "Nearby Count";
             ct.ChartAreas[0].AxisX.LabelStyle.Format = "#";
             ct.ChartAreas[0].AxisY.LabelStyle.Format = "#";
-            ct.Series[series].Color = Color.DodgerBlue; 
+            ct.Series[series].Color = Color.DodgerBlue;
         }
 
         public static void GraphDeltaMassPeaks(Chart ct, List<DeltaMassPeak> peaks, string peak_series, string decoy_series, List<ProteoformRelation> relations, string relations_series)

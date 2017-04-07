@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace ProteoformSuiteGUI
 {
@@ -35,14 +36,9 @@ namespace ProteoformSuiteGUI
         private void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
-            Lollipop.aggregate_proteoforms(Lollipop.validate_proteoforms, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_rel_abundance, Lollipop.min_num_CS);
+            ClearListsAndTables();
+            Lollipop.aggregate_proteoforms(Lollipop.validate_proteoforms, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_num_CS);
             FillAggregatesTable();
-
-            ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
-            ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
-            ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();
-            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
-
             if (Lollipop.neucode_labeled && Lollipop.proteoform_community.theoretical_proteoforms.Length > 0)
             {
                 ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.run_the_gamut();
@@ -77,11 +73,11 @@ namespace ProteoformSuiteGUI
             nUD_Missed_Ks.Maximum = 3;
             nUD_Missed_Ks.Value = Lollipop.missed_lysines;
 
-            nUD_rel_abundance.Minimum = 0;
-            nUD_rel_abundance.Maximum = 100;
-            nUD_rel_abundance.Value = Convert.ToDecimal(Lollipop.min_rel_abundance);
+            nUD_min_num_bioreps.Minimum = 1;
+            nUD_min_num_bioreps.Maximum = 100;
+            nUD_min_num_bioreps.Value = Lollipop.min_num_bioreps;
 
-            nUD_min_agg_count.Minimum = 0;
+            nUD_min_agg_count.Minimum = 1;
             nUD_min_agg_count.Maximum = 100;
             nUD_min_agg_count.Value = Lollipop.min_agg_count;
 
@@ -102,11 +98,11 @@ namespace ProteoformSuiteGUI
 
         private void dgv_AggregatedProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0 && !Lollipop.opened_results_originally) display_light_proteoforms(e.RowIndex);
+            if (e.RowIndex >= 0) display_light_proteoforms(e.RowIndex);
         }
         private void dgv_AggregatedProteoforms_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.RowIndex >= 0 && !Lollipop.opened_results_originally) display_light_proteoforms(e.RowIndex);
+            if (e.RowIndex >= 0) display_light_proteoforms(e.RowIndex);
         }
         private void display_light_proteoforms(int row_index)
         {
@@ -165,10 +161,10 @@ namespace ProteoformSuiteGUI
 
         private void updateFiguresOfMerit()
         {
-            tb_totalAggregatedProteoforms.Text = Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToList().Count().ToString();
+            tb_totalAggregatedProteoforms.Text = Lollipop.proteoform_community.experimental_proteoforms.Count(p => p.accepted).ToString();
         }
 
-        private void ClearListsAndTables()
+        public void ClearListsAndTables()
         {
             Lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
             Lollipop.vetted_proteoforms.Clear();
@@ -177,6 +173,11 @@ namespace ProteoformSuiteGUI
             Lollipop.remaining_verification_components.Clear();
             dgv_AcceptNeuCdLtProteoforms.DataSource = null;
             dgv_AcceptNeuCdLtProteoforms.Rows.Clear();
+
+            ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
+            ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
+            ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
         }
 
         private void nUP_mass_tolerance_ValueChanged(object sender, EventArgs e)
@@ -200,16 +201,10 @@ namespace ProteoformSuiteGUI
         {
             if (Lollipop.neucode_labeled && Lollipop.raw_neucode_pairs.Count > 0 || Lollipop.raw_experimental_components.Count > 0)
             {
-                ClearListsAndTables();
                 run_the_gamut();
             }
             else if (Lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
 
-        }
-
-        private void nUD_rel_abundance_ValueChanged(object sender, EventArgs e)
-        {
-            Lollipop.min_rel_abundance = Convert.ToDouble(nUD_rel_abundance.Value);
         }
 
         private void nUD_min_agg_count_ValueChanged(object sender, EventArgs e)
@@ -235,10 +230,9 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, selected_aggregates);
             if (selected_aggregates.Count() > 0) DisplayUtility.FormatAggregatesTable(dgv_AggregatedProteoforms);
         }
-
-        private void cb_merge_RT_CheckedChanged(object sender, EventArgs e)
+        private void nUD_min_num_bioreps_ValueChanged(object sender, EventArgs e)
         {
-            Lollipop.merge_by_RT = cb_merge_RT.Checked;
+            Lollipop.min_num_bioreps = Convert.ToInt16(nUD_min_num_bioreps.Value);
         }
     }
 }

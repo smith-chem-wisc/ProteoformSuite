@@ -369,7 +369,6 @@
             // 
             this.groupBox4.Controls.Add(this.rb_chemicalCalibration);
             this.groupBox4.Controls.Add(this.rb_standardOptions);
-            this.groupBox4.Controls.Add(this.rb_advanced_user);
             this.groupBox4.Location = new System.Drawing.Point(232, 569);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(293, 43);

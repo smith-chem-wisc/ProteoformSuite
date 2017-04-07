@@ -17,11 +17,11 @@ namespace ProteoformSuiteGUI
 {
     public partial class ExperimentExperimentComparison : Form
     {
-        private RelationFormUtility relationFormUtility;
+        private RelationUtility relationUtility;
 
         public ExperimentExperimentComparison()
         {
-            this.relationFormUtility = new RelationFormUtility();
+            this.relationUtility = new RelationUtility();
             InitializeComponent();
             this.dgv_EE_Peaks.MouseClick += new MouseEventHandler(dgv_EE_Peak_List_CellClick);
             this.ct_EE_Histogram.MouseClick += new MouseEventHandler(ct_EE_Histogram_MouseClick);
@@ -48,7 +48,7 @@ namespace ProteoformSuiteGUI
         {
             if (Lollipop.notch_search_ee)
             {
-                Lollipop.notch_masses_ee = relationFormUtility.get_notch_masses(tb_notch_masses);
+                Lollipop.notch_masses_ee = relationUtility.get_notch_masses(tb_notch_masses);
                 if (Lollipop.notch_masses_ee == null) return;
             }
             this.Cursor = Cursors.WaitCursor;
@@ -67,7 +67,7 @@ namespace ProteoformSuiteGUI
                 ((ProteoformSweet)this.MdiParent).proteoformFamilies.update_figures_of_merit();
             }
             else { this.FillTablesAndCharts(); }
-            relationFormUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
+            relationUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
             this.Cursor = Cursors.Default;
         }
 
@@ -87,8 +87,8 @@ namespace ProteoformSuiteGUI
             Lollipop.ee_peaks.Clear();
             Lollipop.ef_relations.Clear();
             Lollipop.proteoform_community.families.Clear();
+            relationUtility.clear_lists(new List<ProteoformComparison>() { ProteoformComparison.ee, ProteoformComparison.ef });
 
-            relationFormUtility.clear_lists(new List<ProteoformComparison>() { ProteoformComparison.ee, ProteoformComparison.ef });
 
             foreach (var series in ct_EE_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_EE_peakList.Series) series.Points.Clear();
@@ -104,13 +104,15 @@ namespace ProteoformSuiteGUI
 
         public void FillTablesAndCharts()
         {
+            this.dgv_EE_Peaks.CurrentCellDirtyStateChanged -= this.EE_Peak_List_DirtyStateChanged;//remove event handler on form load and table refresh event
             FillEEPeakListTable();
             FillEEPairsGridView();
             DisplayUtility.FormatRelationsGridView(dgv_EE_Relations, false, true);
             DisplayUtility.FormatPeakListGridView(dgv_EE_Peaks, true);
             GraphEERelations();
             GraphEEPeaks();
-            relationFormUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
+            relationUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
+            this.dgv_EE_Peaks.CurrentCellDirtyStateChanged += this.EE_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event 
         }
 
         private void FillEEPairsGridView()
@@ -129,9 +131,10 @@ namespace ProteoformSuiteGUI
             {
                 DisplayUtility.GraphRelationsChart(ct_EE_Histogram, Lollipop.ef_relations["EF_relations_0"], "decoys");
                 ct_EE_Histogram.Series["decoys"].Enabled = false;
-                cb_view_ef.Enabled = true;
+                cb_view_decoy_histogram.Enabled = true;
             }
-            cb_view_ef.Checked = false;
+            else cb_view_decoy_histogram.Enabled = false;
+            cb_view_decoy_histogram.Checked = false;
         }
         private void GraphEEPeaks()
         {
@@ -196,18 +199,12 @@ namespace ProteoformSuiteGUI
             nUD_EE_Upper_Bound.Value = (decimal)Lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
         }
 
-        private void propagatePeakListAcceptedPeakChangeToPairsTable(object sender, DataGridViewCellEventArgs e)
-        {
-            relationFormUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
-        }
-
-
         private void EE_Peak_List_DirtyStateChanged(object sender, EventArgs e)
         {
-            relationFormUtility.peak_acceptability_change(dgv_EE_Peaks);
-            dgv_EE_Relations.Refresh();
+            relationUtility.peak_acceptability_change(dgv_EE_Peaks);
             dgv_EE_Peaks.Refresh();
-            relationFormUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
+            dgv_EE_Relations.Refresh();
+            relationUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
         }
 
         private void xMaxEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
@@ -261,9 +258,9 @@ namespace ProteoformSuiteGUI
         {
             if (Lollipop.proteoform_community.has_e_proteoforms)
             {
-                ClearListsAndTables();
-                run_the_gamut();
-                xMaxEE.Value = Convert.ToDecimal(Lollipop.ee_max_mass_difference);
+                   ClearListsAndTables();
+                    run_the_gamut();
+                    xMaxEE.Value = Convert.ToDecimal(Lollipop.ee_max_mass_difference);
             }
             else MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
@@ -292,7 +289,7 @@ namespace ProteoformSuiteGUI
             ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Lollipop.min_peak_count_ee };
             ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
-            relationFormUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
+            relationUtility.updateFiguresOfMerit(Lollipop.ee_peaks);
         }
 
         private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
@@ -316,13 +313,6 @@ namespace ProteoformSuiteGUI
             tb_notch_masses.Enabled = cb_notch_search.Checked;
             if (cb_notch_search.Checked) tb_notch_masses.Text = "Enter notches to search, separated by semi-colon.";
         }
-
-        private void cb_view_ef_CheckedChanged(object sender, EventArgs e)
-        {
-            ct_EE_Histogram.Series["relations"].Enabled = !cb_view_ef.Checked;
-            ct_EE_Histogram.Series["decoys"].Enabled = cb_view_ef.Checked;
-        }
-
         private void cb_automate_peak_acceptance_CheckedChanged(object sender, EventArgs e)
         {
             if (cb_automate_peak_acceptance.Checked)
@@ -342,6 +332,11 @@ namespace ProteoformSuiteGUI
                 }
                 dgv_EE_Peaks.Refresh();
             }
+        }
+        private void cb_view_decoy_histogram_CheckedChanged(object sender, EventArgs e)
+        {
+            ct_EE_Histogram.Series["relations"].Enabled = !cb_view_decoy_histogram.Checked;
+            ct_EE_Histogram.Series["decoys"].Enabled = cb_view_decoy_histogram.Checked;
         }
     }
 }

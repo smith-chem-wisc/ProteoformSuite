@@ -30,6 +30,10 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TheoreticalDatabase));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.label8 = new System.Windows.Forms.Label();
+            this.tb_totalTheoreticalProteoforms = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.tb_modTypesToExclude = new System.Windows.Forms.TextBox();
             this.label6 = new System.Windows.Forms.Label();
             this.tb_tableFilter = new System.Windows.Forms.TextBox();
             this.cmb_loadTable = new System.Windows.Forms.ComboBox();
@@ -37,10 +41,6 @@
             this.btn_addFiles = new System.Windows.Forms.Button();
             this.btn_clearFiles = new System.Windows.Forms.Button();
             this.ckbx_combineTheoreticalsByMass = new System.Windows.Forms.CheckBox();
-            this.tb_interest_label = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.tb_proteins_of_interest_path = new System.Windows.Forms.TextBox();
-            this.bt_proteins_of_interest = new System.Windows.Forms.Button();
             this.ckbx_combineIdenticalSequences = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
             this.nUD_MinPeptideLength = new System.Windows.Forms.NumericUpDown();
@@ -59,8 +59,6 @@
             this.ckbx_Carbam = new System.Windows.Forms.CheckBox();
             this.ckbx_OxidMeth = new System.Windows.Forms.CheckBox();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
-            this.tb_modTypesToExclude = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -83,6 +81,8 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.label8);
+            this.splitContainer1.Panel1.Controls.Add(this.tb_totalTheoreticalProteoforms);
             this.splitContainer1.Panel1.Controls.Add(this.label7);
             this.splitContainer1.Panel1.Controls.Add(this.tb_modTypesToExclude);
             this.splitContainer1.Panel1.Controls.Add(this.label6);
@@ -92,10 +92,6 @@
             this.splitContainer1.Panel1.Controls.Add(this.btn_addFiles);
             this.splitContainer1.Panel1.Controls.Add(this.btn_clearFiles);
             this.splitContainer1.Panel1.Controls.Add(this.ckbx_combineTheoreticalsByMass);
-            this.splitContainer1.Panel1.Controls.Add(this.tb_interest_label);
-            this.splitContainer1.Panel1.Controls.Add(this.label5);
-            this.splitContainer1.Panel1.Controls.Add(this.tb_proteins_of_interest_path);
-            this.splitContainer1.Panel1.Controls.Add(this.bt_proteins_of_interest);
             this.splitContainer1.Panel1.Controls.Add(this.ckbx_combineIdenticalSequences);
             this.splitContainer1.Panel1.Controls.Add(this.label4);
             this.splitContainer1.Panel1.Controls.Add(this.nUD_MinPeptideLength);
@@ -119,10 +115,47 @@
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
             // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 633);
+            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(146, 13);
+            this.label8.TabIndex = 11;
+            this.label8.Text = "Total Theoretical Proteoforms";
+            // 
+            // tb_totalTheoreticalProteoforms
+            // 
+            this.tb_totalTheoreticalProteoforms.Location = new System.Drawing.Point(156, 630);
+            this.tb_totalTheoreticalProteoforms.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_totalTheoreticalProteoforms.Name = "tb_totalTheoreticalProteoforms";
+            this.tb_totalTheoreticalProteoforms.Size = new System.Drawing.Size(108, 20);
+            this.tb_totalTheoreticalProteoforms.TabIndex = 10;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(236, 358);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(149, 13);
+            this.label7.TabIndex = 50;
+            this.label7.Text = "Modification Types to Exclude";
+            // 
+            // tb_modTypesToExclude
+            // 
+            this.tb_modTypesToExclude.Location = new System.Drawing.Point(238, 373);
+            this.tb_modTypesToExclude.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_modTypesToExclude.Name = "tb_modTypesToExclude";
+            this.tb_modTypesToExclude.Size = new System.Drawing.Size(202, 20);
+            this.tb_modTypesToExclude.TabIndex = 49;
+            this.tb_modTypesToExclude.TextChanged += new System.EventHandler(this.tb_modTypesToExclude_TextChanged);
+            // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(236, 600);
+            this.label6.Location = new System.Drawing.Point(236, 589);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(59, 13);
@@ -131,7 +164,7 @@
             // 
             // tb_tableFilter
             // 
-            this.tb_tableFilter.Location = new System.Drawing.Point(239, 616);
+            this.tb_tableFilter.Location = new System.Drawing.Point(239, 605);
             this.tb_tableFilter.Name = "tb_tableFilter";
             this.tb_tableFilter.Size = new System.Drawing.Size(202, 20);
             this.tb_tableFilter.TabIndex = 47;
@@ -181,7 +214,7 @@
             // ckbx_combineTheoreticalsByMass
             // 
             this.ckbx_combineTheoreticalsByMass.AutoSize = true;
-            this.ckbx_combineTheoreticalsByMass.Location = new System.Drawing.Point(7, 668);
+            this.ckbx_combineTheoreticalsByMass.Location = new System.Drawing.Point(7, 688);
             this.ckbx_combineTheoreticalsByMass.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_combineTheoreticalsByMass.Name = "ckbx_combineTheoreticalsByMass";
             this.ckbx_combineTheoreticalsByMass.Size = new System.Drawing.Size(225, 17);
@@ -190,52 +223,10 @@
             this.ckbx_combineTheoreticalsByMass.UseVisualStyleBackColor = true;
             this.ckbx_combineTheoreticalsByMass.CheckedChanged += new System.EventHandler(this.ckbx_combineTheoreticalsByMass_CheckedChanged);
             // 
-            // tb_interest_label
-            // 
-            this.tb_interest_label.Enabled = false;
-            this.tb_interest_label.Location = new System.Drawing.Point(239, 301);
-            this.tb_interest_label.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_interest_label.Name = "tb_interest_label";
-            this.tb_interest_label.Size = new System.Drawing.Size(202, 20);
-            this.tb_interest_label.TabIndex = 21;
-            this.tb_interest_label.Visible = false;
-            this.tb_interest_label.TextChanged += new System.EventHandler(this.tb_interest_label_TextChanged);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(155, 281);
-            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(50, 13);
-            this.label5.TabIndex = 20;
-            this.label5.Text = "(optional)";
-            // 
-            // tb_proteins_of_interest_path
-            // 
-            this.tb_proteins_of_interest_path.Enabled = false;
-            this.tb_proteins_of_interest_path.Location = new System.Drawing.Point(7, 301);
-            this.tb_proteins_of_interest_path.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_proteins_of_interest_path.Name = "tb_proteins_of_interest_path";
-            this.tb_proteins_of_interest_path.Size = new System.Drawing.Size(228, 20);
-            this.tb_proteins_of_interest_path.TabIndex = 19;
-            // 
-            // bt_proteins_of_interest
-            // 
-            this.bt_proteins_of_interest.Enabled = false;
-            this.bt_proteins_of_interest.Location = new System.Drawing.Point(7, 277);
-            this.bt_proteins_of_interest.Margin = new System.Windows.Forms.Padding(2);
-            this.bt_proteins_of_interest.Name = "bt_proteins_of_interest";
-            this.bt_proteins_of_interest.Size = new System.Drawing.Size(144, 20);
-            this.bt_proteins_of_interest.TabIndex = 18;
-            this.bt_proteins_of_interest.Text = "Get Proteins of Interest List";
-            this.bt_proteins_of_interest.UseVisualStyleBackColor = true;
-            this.bt_proteins_of_interest.Click += new System.EventHandler(this.bt_genes_of_interest_Click);
-            // 
             // ckbx_combineIdenticalSequences
             // 
             this.ckbx_combineIdenticalSequences.AutoSize = true;
-            this.ckbx_combineIdenticalSequences.Location = new System.Drawing.Point(7, 647);
+            this.ckbx_combineIdenticalSequences.Location = new System.Drawing.Point(7, 667);
             this.ckbx_combineIdenticalSequences.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_combineIdenticalSequences.Name = "ckbx_combineIdenticalSequences";
             this.ckbx_combineIdenticalSequences.Size = new System.Drawing.Size(203, 17);
@@ -265,7 +256,7 @@
             // 
             // btn_Make_Databases
             // 
-            this.btn_Make_Databases.Location = new System.Drawing.Point(7, 694);
+            this.btn_Make_Databases.Location = new System.Drawing.Point(7, 713);
             this.btn_Make_Databases.Margin = new System.Windows.Forms.Padding(2);
             this.btn_Make_Databases.Name = "btn_Make_Databases";
             this.btn_Make_Databases.Size = new System.Drawing.Size(207, 22);
@@ -277,7 +268,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 601);
+            this.label3.Location = new System.Drawing.Point(7, 590);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(102, 13);
@@ -287,7 +278,7 @@
             // cmbx_DisplayWhichDB
             // 
             this.cmbx_DisplayWhichDB.FormattingEnabled = true;
-            this.cmbx_DisplayWhichDB.Location = new System.Drawing.Point(9, 616);
+            this.cmbx_DisplayWhichDB.Location = new System.Drawing.Point(9, 605);
             this.cmbx_DisplayWhichDB.Margin = new System.Windows.Forms.Padding(2);
             this.cmbx_DisplayWhichDB.Name = "cmbx_DisplayWhichDB";
             this.cmbx_DisplayWhichDB.Size = new System.Drawing.Size(205, 21);
@@ -436,25 +427,6 @@
             this.dgv_Database.Size = new System.Drawing.Size(903, 737);
             this.dgv_Database.TabIndex = 0;
             // 
-            // tb_modTypesToExclude
-            // 
-            this.tb_modTypesToExclude.Location = new System.Drawing.Point(238, 373);
-            this.tb_modTypesToExclude.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_modTypesToExclude.Name = "tb_modTypesToExclude";
-            this.tb_modTypesToExclude.Size = new System.Drawing.Size(202, 20);
-            this.tb_modTypesToExclude.TabIndex = 49;
-            this.tb_modTypesToExclude.TextChanged += new System.EventHandler(this.tb_modTypesToExclude_TextChanged);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(236, 358);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(149, 13);
-            this.label7.TabIndex = 50;
-            this.label7.Text = "Modification Types to Exclude";
-            // 
             // TheoreticalDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -504,10 +476,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown nUD_MinPeptideLength;
         private System.Windows.Forms.CheckBox ckbx_combineIdenticalSequences;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox tb_proteins_of_interest_path;
-        private System.Windows.Forms.Button bt_proteins_of_interest;
-        private System.Windows.Forms.TextBox tb_interest_label;
         private System.Windows.Forms.CheckBox ckbx_combineTheoreticalsByMass;
         private System.Windows.Forms.DataGridView dgv_loadFiles;
         private System.Windows.Forms.Button btn_addFiles;
@@ -517,5 +485,7 @@
         private System.Windows.Forms.TextBox tb_tableFilter;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.TextBox tb_modTypesToExclude;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox tb_totalTheoreticalProteoforms;
     }
 }
