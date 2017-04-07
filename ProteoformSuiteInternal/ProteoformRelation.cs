@@ -22,27 +22,14 @@ namespace ProteoformSuiteInternal
     //DeltaMassPeak. I debated MassDifferencePeak, but I wanted to distance this class from MassDifference and draw the imagination
     //closer to the picture of the graph, in which we often say "deltaM" colloquially, whereas we tend to say "mass difference" when we're
     //referring to an individual value. 
-    public class MassDifference
+    public class ProteoformRelation
     {
         private static int instanceCounter = 0;
         public int instanceId;
         public Proteoform[] connected_proteoforms = new Proteoform[2];
         public ProteoformComparison relation_type;
-        public double delta_mass { get; set; }   
+        public double delta_mass { get; set; }
 
-        public MassDifference(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass)
-        {
-            this.connected_proteoforms[0] = pf1;
-            this.connected_proteoforms[1] = pf2;
-            this.relation_type = relation_type;
-            this.delta_mass = delta_mass;
-            instanceId = instanceCounter;
-            lock (Lollipop.proteoform_community) instanceCounter += 1; //Not thread safe
-        }
-    }
-
-    public class ProteoformRelation : MassDifference
-    {
         public DeltaMassPeak peak { get; set; }
         public List<ProteoformRelation> nearby_relations { get; set; } // count is the "running sum"
         public bool outside_no_mans_land { get; set; }
@@ -57,8 +44,14 @@ namespace ProteoformSuiteInternal
         public bool accepted { get; set; }
 
         public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass) 
-            : base(pf1, pf2, relation_type, delta_mass)
         {
+            this.connected_proteoforms[0] = pf1;
+            this.connected_proteoforms[1] = pf2;
+            this.relation_type = relation_type;
+            this.delta_mass = delta_mass;
+            instanceId = instanceCounter;
+            lock (Lollipop.proteoform_community) instanceCounter += 1; //Not thread safe
+
             if (Lollipop.neucode_labeled)
             {
                 this.lysine_count = pf1.lysine_count;
@@ -79,11 +72,16 @@ namespace ProteoformSuiteInternal
         }
 
         public ProteoformRelation(ProteoformRelation relation) 
-            : base(relation.connected_proteoforms[0], relation.connected_proteoforms[1], relation.relation_type, relation.delta_mass)
         {
-            this.peak = relation.peak;
-            this.outside_no_mans_land = relation.outside_no_mans_land;
-            this.nearby_relations = relation.nearby_relations;
+            connected_proteoforms = relation.connected_proteoforms.ToArray();
+            relation_type = relation.relation_type;
+            delta_mass = relation.delta_mass;
+            instanceId = instanceCounter;
+            lock (Lollipop.proteoform_community) instanceCounter += 1; //Not thread safe
+
+            peak = relation.peak;
+            outside_no_mans_land = relation.outside_no_mans_land;
+            nearby_relations = relation.nearby_relations;
         }
 
         public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_ordered_relations, List<int> ordered_relation_ids)
