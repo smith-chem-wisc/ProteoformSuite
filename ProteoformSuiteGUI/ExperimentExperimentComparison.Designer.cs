@@ -30,9 +30,9 @@
         {
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -68,9 +68,9 @@
             this.label5 = new System.Windows.Forms.Label();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
-            this.cb_view_ef = new System.Windows.Forms.CheckBox();
             this.tb_notch_masses = new System.Windows.Forms.TextBox();
             this.cb_notch_search = new System.Windows.Forms.CheckBox();
+            this.cb_view_decoy_histogram = new System.Windows.Forms.CheckBox();
             this.bt_compare_EE = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -369,9 +369,12 @@
             series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series1.Legend = "Legend1";
             series1.Name = "relations";
-            series5.Name = "decoys";
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series2.Legend = "Legend1";
+            series2.Name = "decoys";
             this.ct_EE_Histogram.Series.Add(series1);
-            this.ct_EE_Histogram.Series.Add(series5);
+            this.ct_EE_Histogram.Series.Add(series2);
             this.ct_EE_Histogram.Size = new System.Drawing.Size(832, 263);
             this.ct_EE_Histogram.TabIndex = 16;
             this.ct_EE_Histogram.TabStop = false;
@@ -398,23 +401,23 @@
             this.ct_EE_peakList.Legends.Add(legend1);
             this.ct_EE_peakList.Location = new System.Drawing.Point(0, 0);
             this.ct_EE_peakList.Name = "ct_EE_peakList";
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
-            series2.Legend = "Legend1";
-            series2.MarkerSize = 10;
-            series2.Name = "Peak Count";
             series3.ChartArea = "ChartArea1";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
             series3.Legend = "Legend1";
-            series3.Name = "Nearby Relations";
+            series3.MarkerSize = 10;
+            series3.Name = "Peak Count";
             series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
             series4.Legend = "Legend1";
-            series4.MarkerSize = 10;
-            series4.Name = "Decoy Count";
-            this.ct_EE_peakList.Series.Add(series2);
+            series4.Name = "Nearby Relations";
+            series5.ChartArea = "ChartArea1";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series5.Legend = "Legend1";
+            series5.MarkerSize = 10;
+            series5.Name = "Decoy Count";
             this.ct_EE_peakList.Series.Add(series3);
             this.ct_EE_peakList.Series.Add(series4);
+            this.ct_EE_peakList.Series.Add(series5);
             this.ct_EE_peakList.Size = new System.Drawing.Size(424, 303);
             this.ct_EE_peakList.TabIndex = 2;
             this.ct_EE_peakList.TabStop = false;
@@ -483,9 +486,9 @@
             // 
             // splitContainer5.Panel2
             // 
-            this.splitContainer5.Panel2.Controls.Add(this.cb_view_ef);
             this.splitContainer5.Panel2.Controls.Add(this.tb_notch_masses);
             this.splitContainer5.Panel2.Controls.Add(this.cb_notch_search);
+            this.splitContainer5.Panel2.Controls.Add(this.cb_view_decoy_histogram);
             this.splitContainer5.Panel2.Controls.Add(this.bt_compare_EE);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox4);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox3);
@@ -515,18 +518,6 @@
             this.splitContainer4.SplitterDistance = 376;
             this.splitContainer4.TabIndex = 18;
             // 
-            // cb_view_ef
-            // 
-            this.cb_view_ef.AutoSize = true;
-            this.cb_view_ef.Enabled = false;
-            this.cb_view_ef.Location = new System.Drawing.Point(12, 20);
-            this.cb_view_ef.Name = "cb_view_ef";
-            this.cb_view_ef.Size = new System.Drawing.Size(230, 17);
-            this.cb_view_ef.TabIndex = 38;
-            this.cb_view_ef.Text = "View Experimental-False relations histogram";
-            this.cb_view_ef.UseVisualStyleBackColor = true;
-            this.cb_view_ef.CheckedChanged += new System.EventHandler(this.cb_view_ef_CheckedChanged);
-            // 
             // tb_notch_masses
             // 
             this.tb_notch_masses.Enabled = false;
@@ -546,6 +537,17 @@
             this.cb_notch_search.Text = "Notch Search";
             this.cb_notch_search.UseVisualStyleBackColor = true;
             this.cb_notch_search.CheckedChanged += new System.EventHandler(this.cb_notch_search_CheckedChanged);
+            // cb_view_decoy_histogram
+            // 
+            this.cb_view_decoy_histogram.AutoSize = true;
+            this.cb_view_decoy_histogram.Enabled = false;
+            this.cb_view_decoy_histogram.Location = new System.Drawing.Point(18, 19);
+            this.cb_view_decoy_histogram.Name = "cb_view_decoy_histogram";
+            this.cb_view_decoy_histogram.Size = new System.Drawing.Size(190, 17);
+            this.cb_view_decoy_histogram.TabIndex = 32;
+            this.cb_view_decoy_histogram.Text = "View Experimental-False Histogram";
+            this.cb_view_decoy_histogram.UseVisualStyleBackColor = true;
+            this.cb_view_decoy_histogram.CheckedChanged += new System.EventHandler(this.cb_view_decoy_histogram_CheckedChanged);
             // 
             // bt_compare_EE
             // 
@@ -808,6 +810,7 @@
         private System.Windows.Forms.CheckBox cb_view_ef;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox cb_automate_peak_acceptance;
+        private System.Windows.Forms.CheckBox cb_view_decoy_histogram;
     }
 }
 

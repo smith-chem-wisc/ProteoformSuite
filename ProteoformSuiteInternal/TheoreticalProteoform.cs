@@ -28,7 +28,6 @@ namespace ProteoformSuiteInternal
         {
             get { return ptm_list_string(); }
         }
-        public string of_interest { get; set; } = "";
         public bool contaminant { get; set; }
 
         public TheoreticalProteoform(string accession, string description, IEnumerable<ProteinWithGoTerms> protein_list, bool is_metCleaved, double unmodified_mass, int lysine_count, PtmSet ptm_set, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) 

@@ -174,7 +174,7 @@ namespace ProteoformSuiteInternal
                         .ToList();
                 all_ef_relations.AddRange(ef_relation_addition);
             }
-            //take random subset equal to # EE relations, 10 times
+    //take 10 random subsets from all allowed ef relations (will use median for fdr calculations of each peak)
             for (int i = 0; i < 10; i++)
             {
                 string key = "EF_relations_" + i;

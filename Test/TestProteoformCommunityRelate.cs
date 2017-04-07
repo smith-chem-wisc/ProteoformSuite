@@ -186,11 +186,12 @@ namespace Test
             Lollipop.ee_relations.Clear();
             test_community.experimental_proteoforms = new ExperimentalProteoform[] {
                 ConstructorsForTesting. ExperimentalProteoform("A1", 1000.0, 1, true),
-                ConstructorsForTesting. ExperimentalProteoform("A2", 1000.0, 2, true),
-                ConstructorsForTesting. ExperimentalProteoform("A3", 2000.0, 1, true),
-                ConstructorsForTesting. ExperimentalProteoform("A4", 2000.0, 2, true)
+                ConstructorsForTesting. ExperimentalProteoform("A2", 2000, 2, true),
+                ConstructorsForTesting. ExperimentalProteoform("A3", 3000, 1, true),
+                ConstructorsForTesting. ExperimentalProteoform("A4", 4000, 2, true)
             };
-            unequal_relations = test_community.relate_ef()["EF_relations_0"];
+            Lollipop.ee_relations = test_community.relate_ee(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ee);
+            unequal_relations = test_community.relate_ef().Values.First();
             Assert.AreEqual(0, unequal_relations.Count);
 
             //None equal lysine count (apart from itself), four unequal lysine count. Each should create no unequal relations, so no relations total
@@ -201,6 +202,7 @@ namespace Test
                 ConstructorsForTesting. ExperimentalProteoform("A3", 1000.0, 3, true),
                 ConstructorsForTesting. ExperimentalProteoform("A4", 1000.0, 4, true)
             };
+            Lollipop.ee_relations = test_community.relate_ee(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ee);
             unequal_relations = test_community.relate_ef().Values.First();
             Assert.AreEqual(0, unequal_relations.Count);
 

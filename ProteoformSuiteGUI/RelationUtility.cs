@@ -9,35 +9,11 @@ using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
 {
-    public class RelationFormUtility
+    public class RelationUtility
     {
-        public RelationFormUtility()
+        public RelationUtility()
         {
             PeakAcceptabilityChanged += Relation_PeakAcceptabilityChanged;
-        }
-
-        public List<double> get_notch_masses(TextBox tb)
-        {
-            List<double> masses = new List<double>();
-            try
-            {
-                string[] notch_masses = tb.Text.Split(';');
-                if (notch_masses.Length == 0)
-                {
-                    MessageBox.Show("No notch masses entered.");
-                    return null;
-                }
-                foreach (string mass in notch_masses)
-                {
-                    masses.Add(Convert.ToDouble(mass));
-                }
-                return masses ;
-            }
-            catch
-            {
-                MessageBox.Show("Masses in incorrect format.");
-                return null;
-            }
         }
 
         public void clear_lists(List<ProteoformComparison> comparisons)
@@ -55,16 +31,38 @@ namespace ProteoformSuiteGUI
         public Tuple<string, string, string> updateFiguresOfMerit(List<DeltaMassPeak> peaks)
         {
             List<DeltaMassPeak> big_peaks = peaks.Where(p => p.peak_accepted).ToList();
-            string max =  (big_peaks.Count > 0)? Math.Round(big_peaks.Max(p => p.peak_group_fdr), 3).ToString() : "";
+            string max = (big_peaks.Count > 0) ? Math.Round(big_peaks.Max(p => p.peak_group_fdr), 3).ToString() : "";
             return new Tuple<string, string, string>(big_peaks.Select(p => p.grouped_relations.Count).Sum().ToString(), big_peaks.Count.ToString(), max);
         }
 
+        public List<double> get_notch_masses(TextBox tb)
+        {
+            List<double> masses = new List<double>();
+            try
+            {
+                string[] notch_masses = tb.Text.Split(';');
+                if (notch_masses.Length == 0)
+                {
+                    MessageBox.Show("No notch masses entered.");
+                    return null;
+                }
+                foreach (string mass in notch_masses)
+                {
+                    masses.Add(Convert.ToDouble(mass));
+                }
+                return masses;
+            }
+            catch
+            {
+                MessageBox.Show("Masses in incorrect format.");
+                return null;
+            }
+        }
 
         public event PeakAcceptabilityChangedEventHandler PeakAcceptabilityChanged;
 
         public void peak_acceptability_change(DataGridView dgv)
         {
-
             if (dgv.IsCurrentCellDirty)
             {
                 dgv.CommitEdit(DataGridViewDataErrorContexts.Commit);

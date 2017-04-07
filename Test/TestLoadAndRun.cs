@@ -24,7 +24,6 @@ namespace Test
             Lollipop.missed_monos = 0;
             Lollipop.mass_tolerance = 10;
             Lollipop.missed_lysines = 0;
-            Lollipop.min_rel_abundance = 8;
             Lollipop.min_num_CS = 0;
             Lollipop.min_agg_count = 2;
             Lollipop.max_ptms = 0;
@@ -41,7 +40,6 @@ namespace Test
             Lollipop.max_intensity_ratio = 6m;
             Lollipop.min_lysine_ct = 1.5m;
             Lollipop.max_lysine_ct = 26.2m;
-            Lollipop.min_rel_abundance = 0;
             Lollipop.min_num_CS = 1;
             Lollipop.min_agg_count = 1;
             Lollipop.max_ptms = 3;
@@ -61,7 +59,6 @@ namespace Test
             Assert.AreEqual(1, Lollipop.retention_time_tolerance);
             Assert.AreEqual(0, Lollipop.missed_monos);
             Assert.AreEqual(0, Lollipop.missed_lysines);
-            Assert.AreEqual(8, Lollipop.min_rel_abundance);
             Assert.AreEqual(0, Lollipop.min_num_CS);
             Assert.AreEqual(2, Lollipop.min_agg_count);
             Assert.AreEqual(0, Lollipop.max_ptms);
