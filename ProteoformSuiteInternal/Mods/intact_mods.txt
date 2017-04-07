@@ -13,3 +13,15 @@ MM   15.994915
 MT   Unlocalized
 CF   O1
 //
+ID   Missed Monoisotopic (-1)
+TG   Any
+PP   Anywhere.
+MM   -1.0023
+MT   Deconvolution Error
+//
+ID   Missed Monoisotopic (+1)
+TG   Any
+PP   Anywhere.
+MM   1.0023
+MT   Deconvolution Error
+//
