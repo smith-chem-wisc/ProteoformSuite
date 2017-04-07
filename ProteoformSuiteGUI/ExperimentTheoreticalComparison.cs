@@ -42,7 +42,9 @@ namespace ProteoformSuiteGUI
         public void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
-            Lollipop.make_et_relationships(Lollipop.proteoform_community);
+            Lollipop.et_relations = Lollipop.proteoform_community.relate(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), Lollipop.proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical);
+            Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
+            Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
             this.FillTablesAndCharts();
             this.Cursor = Cursors.Default;
@@ -53,7 +55,7 @@ namespace ProteoformSuiteGUI
             this.dgv_ET_Peak_List.CurrentCellDirtyStateChanged -= this.ET_Peak_List_DirtyStateChanged;//remove event handler on form load and table refresh event
             FillETPeakListTable();
             FillETRelationsGridView();
-            DisplayUtility.FormatRelationsGridView(dgv_ET_Pairs, true, false);
+            DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Pairs, true, false);
             DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List, false);
             GraphETRelations();
             GraphETPeaks();
@@ -86,7 +88,7 @@ namespace ProteoformSuiteGUI
 
         private void FillETRelationsGridView()
         {
-            DisplayUtility.FillDataGridView(dgv_ET_Pairs, Lollipop.et_relations);
+            DisplayUtility.FillDataGridView(dgv_ET_Pairs, Lollipop.et_relations.Select(r => new DisplayProteoformRelation(r)));
         }
         private void FillETPeakListTable()
         {

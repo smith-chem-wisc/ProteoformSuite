@@ -64,9 +64,9 @@ namespace Test
 
             List<ProteoformRelation> prs2 = new HashSet<ProteoformRelation>(test_community.experimental_proteoforms.SelectMany(p => p.relationships).Concat(test_community.theoretical_proteoforms.SelectMany(p => p.relationships))).OrderBy(r => r.delta_mass).ToList();
             foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2, prs2.Select(r => r.instanceId).ToList());
-            Assert.AreEqual(3, pf3.relationships.First().nearby_relations_count);
-            Assert.AreEqual(3, pf5.relationships.First().nearby_relations_count);
-            Assert.AreEqual(3, pf6.relationships.First().nearby_relations_count);
+            Assert.AreEqual(3, pf3.relationships.First().nearby_relations.Count);
+            Assert.AreEqual(3, pf5.relationships.First().nearby_relations.Count);
+            Assert.AreEqual(3, pf6.relationships.First().nearby_relations.Count);
 
             test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
             Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
@@ -111,10 +111,10 @@ namespace Test
 
             List<ProteoformRelation> prs2 = new List<ProteoformRelation> { pr2, pr3, pr4, pr5 }.OrderBy(r => r.delta_mass).ToList();
             foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2, prs2.Select(r => r.instanceId).ToList());
-            Assert.AreEqual(3, pr2.nearby_relations_count);
-            Assert.AreEqual(1, pr3.nearby_relations_count);
-            Assert.AreEqual(3, pr4.nearby_relations_count);
-            Assert.AreEqual(3, pr5.nearby_relations_count);
+            Assert.AreEqual(3, pr2.nearby_relations.Count);
+            Assert.AreEqual(1, pr3.nearby_relations.Count);
+            Assert.AreEqual(3, pr4.nearby_relations.Count);
+            Assert.AreEqual(3, pr5.nearby_relations.Count);
 
             test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
             Assert.AreEqual(2, test_community.delta_mass_peaks.Count);
@@ -245,13 +245,13 @@ namespace Test
             List<ProteoformRelation> prs_ee = prs.Where(r => r.relation_type == ProteoformComparison.ExperimentalExperimental).OrderBy(r => r.delta_mass).ToList();
             foreach (ProteoformRelation pr in prs_et) pr.set_nearby_group(prs_et, prs_et.Select(r => r.instanceId).ToList());
             foreach (ProteoformRelation pr in prs_ee) pr.set_nearby_group(prs_ee, prs_ee.Select(r => r.instanceId).ToList());
-            Assert.AreEqual(3, pf1.relationships.First().nearby_relations_count); // 2 ET relations at 0 delta mass
-            Assert.AreEqual(3, pf2.relationships.First().nearby_relations_count);
-            Assert.AreEqual(4, pf4.relationships.First().nearby_relations_count); // 4 EE relations at 0 delta mass
-            Assert.AreEqual(4, pf5.relationships.First().nearby_relations_count);
-            Assert.AreEqual(1, pf6.relationships.First().nearby_relations_count); // 1 EE relation at 19 delta mass
-            Assert.AreEqual(4, pf7.relationships.First().nearby_relations_count);
-            Assert.AreEqual(4, pf8.relationships.First().nearby_relations_count);
+            Assert.AreEqual(3, pf1.relationships.First().nearby_relations.Count); // 2 ET relations at 0 delta mass
+            Assert.AreEqual(3, pf2.relationships.First().nearby_relations.Count);
+            Assert.AreEqual(4, pf4.relationships.First().nearby_relations.Count); // 4 EE relations at 0 delta mass
+            Assert.AreEqual(4, pf5.relationships.First().nearby_relations.Count);
+            Assert.AreEqual(1, pf6.relationships.First().nearby_relations.Count); // 1 EE relation at 19 delta mass
+            Assert.AreEqual(4, pf7.relationships.First().nearby_relations.Count);
+            Assert.AreEqual(4, pf8.relationships.First().nearby_relations.Count);
 
             community.accept_deltaMass_peaks(prs_et, new List<ProteoformRelation>());
             community.accept_deltaMass_peaks(prs_ee, new List<ProteoformRelation>());
@@ -267,8 +267,8 @@ namespace Test
             //Testing the identification of experimentals   
             //test with a modificationwithmass that's 0 mass, and then see that it crawls around and labels them each with growing ptm sets with that modification
             //test that the relation.represented_modification gets set
-            Assert.True(community.relations_in_peaks.All(r => r.peak_center_deltaM != 0 || r.represented_ptmset.ptm_combination.First().modification.id == "Unmodified"));
-            Assert.True(community.relations_in_peaks.All(r => r.peak_center_deltaM != 19 || r.represented_ptmset == null));
+            Assert.True(community.relations_in_peaks.All(r => r.peak.peak_deltaM_average != 0 || r.represented_ptmset.ptm_combination.First().modification.id == "Unmodified"));
+            Assert.True(community.relations_in_peaks.All(r => r.peak.peak_deltaM_average != 19 || r.represented_ptmset == null));
             Assert.True(pf1 == pf3.linked_proteoform_references.First.Value || pf2 == pf3.linked_proteoform_references.First.Value);
 
             //test I don't get re-reassignments

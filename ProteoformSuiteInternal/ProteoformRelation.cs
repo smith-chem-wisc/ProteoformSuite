@@ -44,8 +44,7 @@ namespace ProteoformSuiteInternal
     public class ProteoformRelation : MassDifference
     {
         public DeltaMassPeak peak { get; set; }
-        public int nearby_relations_count { get { return this.nearby_relations.Count; } } //"running sum"
-        public List<ProteoformRelation> nearby_relations { get; set; }
+        public List<ProteoformRelation> nearby_relations { get; set; } // count is the "running sum"
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
         public PtmSet candidate_ptmset { get; set; }
@@ -144,81 +143,6 @@ namespace ProteoformSuiteInternal
         public override int GetHashCode()
         {
             return connected_proteoforms[0].GetHashCode() ^ connected_proteoforms[1].GetHashCode();
-        }
-
-        public int peak_center_count
-        {
-            get { return this.peak != null ? this.peak.peak_relation_group_count : -1000000; }
-        }
-        public double peak_center_deltaM
-        {
-            get { return this.peak != null ? peak.peak_deltaM_average : Double.NaN; }
-        }
-        public string relation_type_string
-        {
-            get { return relation_type.ToString(); }
-        }
-
-        // For DataGridView display of proteoform1
-        public double agg_intensity_1
-        {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_intensity; } catch { return Double.NaN; } }
-        }
-        public double agg_RT_1
-        {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_rt; } catch { return Double.NaN; } }
-        }
-        public int num_observations_1
-        {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).observation_count; } catch { return -1000000; } }
-        }
-        public double proteoform_mass_1
-        {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_mass; } catch { return Double.NaN; } }
-        }
-
-        // For DataGridView display of proteform2
-        public double proteoform_mass_2
-        {
-            get
-            {
-                return connected_proteoforms[1] is ExperimentalProteoform ?
-                    ((ExperimentalProteoform)connected_proteoforms[1]).agg_mass:
-                    ((TheoreticalProteoform)connected_proteoforms[1]).modified_mass;
-            }
-        }
-
-        public double agg_intensity_2
-        {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_intensity; } catch { return 0; } }
-        }
-        public double agg_RT_2
-        {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt; } catch { return 0; } }
-        }
-        public int num_observations_2
-        {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).observation_count; } catch { return 0; } }
-        }
-        public string accession_2
-        {
-            get { try { return (connected_proteoforms[1]).accession; } catch { return null; } }
-        }
-        public string accession_1
-        {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).accession; } catch { return null; } }
-        }
-        public string name
-        {
-            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).name; } catch { return null; } }
-        }
-        public string fragment
-        {
-            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).fragment; } catch { return null; } }
-        }
-        public string ptm_list
-        {
-            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).ptm_descriptions; } catch { return null; } }
         }
     }
 }

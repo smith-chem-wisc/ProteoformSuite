@@ -49,7 +49,7 @@ namespace ProteoformSuiteInternal
 
                 double mass_tolerance = this.modified_mass / 1000000 * (double)Lollipop.mass_tolerance;
                 int sign = Math.Sign(e.modified_mass - modified_mass);
-                double deltaM = Math.Sign(r.peak_center_deltaM) < 0 ? r.peak_center_deltaM : sign * r.peak_center_deltaM; // give EE relations the correct sign, but don't switch negative ET relation deltaM's
+                double deltaM = Math.Sign(r.peak.peak_deltaM_average) < 0 ? r.peak.peak_deltaM_average : sign * r.peak.peak_deltaM_average; // give EE relations the correct sign, but don't switch negative ET relation deltaM's
                 TheoreticalProteoform theoretical_base = this as TheoreticalProteoform != null ?
                     this as TheoreticalProteoform : //Theoretical starting point
                     (linked_proteoform_references.First.Value as TheoreticalProteoform != null ?
@@ -74,7 +74,7 @@ namespace ProteoformSuiteInternal
                 }
 
                 // If they're the same and someone hasn't labeled 0 difference with a "ModificationWithMass", then label it null
-                if (best_addition == null && best_loss == null && Math.Abs(r.peak_center_deltaM) <= mass_tolerance)
+                if (best_addition == null && best_loss == null && Math.Abs(r.peak.peak_deltaM_average) <= mass_tolerance)
                 {
                     lock (r) lock (e) assign_pf_identity(e, this, ptm_set, r, sign, null);
                     identified.Add(e);
@@ -104,8 +104,6 @@ namespace ProteoformSuiteInternal
             foreach (PtmSet set in possible_peak_assignments)
             {
                 List<ModificationWithMass> mods_in_set = set.ptm_combination.Select(ptm => ptm.modification).ToList();
-                //bool valid_or_no_unmodified = set.ptm_combination.Count == 1 || !mods_in_set.Any(m => m.monoisotopicMass == 0);
-                //bool within_addition_tolerance = deltaM >= set.mass - mass_tolerance && deltaM <= set.mass + mass_tolerance;
 
                 int rank_sum = 0;
                 foreach (ModificationWithMass m in mods_in_set)

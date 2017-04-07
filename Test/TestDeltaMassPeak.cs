@@ -117,8 +117,8 @@ namespace Test
             ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0);
 
             //Test display strings
-            Assert.AreEqual("E1", pr2.accession_1);
-            Assert.AreEqual("E2", pr2.accession_2);
+            Assert.AreEqual("E1", pr2.connected_proteoforms[0].accession);
+            Assert.AreEqual("E2", pr2.connected_proteoforms[1].accession);
             pr2.relation_type = ProteoformComparison.ExperimentalExperimental;
             pr2.relation_type = ProteoformComparison.ExperimentalTheoretical;
             pr2.relation_type = ProteoformComparison.ExperimentalDecoy;
@@ -127,16 +127,16 @@ namespace Test
 
             List<ProteoformRelation> prs2 = new List<ProteoformRelation> { pr2, pr3, pr4 };
             foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2, prs2.Select(r => r.instanceId).ToList());
-            Assert.AreEqual(3, pr2.nearby_relations_count);
-            Assert.AreEqual(3, pr3.nearby_relations_count);
-            Assert.AreEqual(3, pr4.nearby_relations_count);
+            Assert.AreEqual(3, pr2.nearby_relations.Count);
+            Assert.AreEqual(3, pr3.nearby_relations.Count);
+            Assert.AreEqual(3, pr4.nearby_relations.Count);
 
             test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
             Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
             DeltaMassPeak peak = test_community.delta_mass_peaks[0];
             Assert.AreEqual(3, peak.grouped_relations.Count);
-            Assert.AreEqual(3, pr2.peak_center_count);
-            Assert.AreEqual(0, pr2.peak_center_deltaM);
+            Assert.AreEqual(3, pr2.peak.peak_relation_group_count);
+            Assert.AreEqual(0, pr2.peak.peak_deltaM_average);
             Assert.AreEqual("unmodified", peak.possiblePeakAssignments_string);
             peak.possiblePeakAssignments.Add(new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }));
             Assert.AreEqual("unmodified; unmodified", peak.possiblePeakAssignments_string);
