@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -110,7 +109,7 @@ namespace ProteoformSuiteInternal
             {
                 List<ProteoformRelation> ef_relation_addition = pfs2
                         .Where(pf2 => allowed_ef_relation(pf1, pf2))
-                        .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass))
+                        .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ExperimentalFalse, pf1.modified_mass - pf2.modified_mass))
                         .OrderBy(r => r.delta_mass)
                         .ToList();
                 all_ef_relations.AddRange(ef_relation_addition);
@@ -322,7 +321,7 @@ namespace ProteoformSuiteInternal
 
             foreach (Proteoform p in Lollipop.proteoform_community.decoy_proteoforms.Values.SelectMany(d => d))
             {
-                p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical || r.relation_type == ProteoformComparison.ExperimentalDecoy)
+                p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical || r.relation_type == ProteoformComparison.ExperimentalDecoy);
             }
 
             relations_in_peaks.RemoveAll(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical || r.relation_type == ProteoformComparison.ExperimentalDecoy);

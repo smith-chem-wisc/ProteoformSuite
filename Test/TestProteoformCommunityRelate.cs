@@ -171,7 +171,7 @@ namespace Test
                 ConstructorsForTesting. ExperimentalProteoform("A3", 1000.0, 1, true),
                 ConstructorsForTesting. ExperimentalProteoform("A4", 1000.0, 2, true)
             };
-            Lollipop.ee_relations = test_community.relate_ee(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ee);
+            Lollipop.ee_relations = test_community.relate(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental);
             unequal_relations = test_community.relate_ef().Values.First();
             Assert.AreNotEqual(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2]);
             Assert.False(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[0], ProteoformComparison.ExperimentalExperimental));
@@ -189,7 +189,7 @@ namespace Test
                 ConstructorsForTesting. ExperimentalProteoform("A3", 3000, 1, true),
                 ConstructorsForTesting. ExperimentalProteoform("A4", 4000, 2, true)
             };
-            Lollipop.ee_relations = test_community.relate_ee(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ee);
+            Lollipop.ee_relations = test_community.relate(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental);
             unequal_relations = test_community.relate_ef().Values.First();
             Assert.AreEqual(0, unequal_relations.Count);
 
@@ -201,7 +201,7 @@ namespace Test
                 ConstructorsForTesting. ExperimentalProteoform("A3", 1000.0, 3, true),
                 ConstructorsForTesting. ExperimentalProteoform("A4", 1000.0, 4, true)
             };
-            Lollipop.ee_relations = test_community.relate_ee(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ee);
+            Lollipop.ee_relations = test_community.relate(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental);
             unequal_relations = test_community.relate_ef().Values.First();
             Assert.AreEqual(0, unequal_relations.Count);
 
