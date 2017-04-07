@@ -19,9 +19,30 @@ namespace ProteoformSuiteGUI
         #region Public Properties
 
         // Relation properties
-        public int PeakCenterCount { get { return peak != null ? peak.peak_relation_group_count : -1000000; } }
-        public double PeakCenterDeltaMass { get { return peak != null ? peak.peak_deltaM_average : Double.NaN; } }
-        public string RelationType { get { return relation_type.ToString(); } }
+        public int PeakCenterCount
+        {
+            get
+            {
+                return peak != null ? peak.peak_relation_group_count : -1000000;
+            }
+        }
+
+        public double PeakCenterDeltaMass
+        {
+            get
+            {
+                return peak != null ? peak.peak_deltaM_average : Double.NaN;
+            }
+        }
+
+        public string RelationType
+        {
+            get
+            {
+                return relation_type.ToString();
+            }
+        }
+
         public bool Accepted
         {
             get
@@ -33,10 +54,39 @@ namespace ProteoformSuiteGUI
                 ((ProteoformRelation)display_object).accepted = value;
             }
         }
-        public double DeltaMass { get { return ((ProteoformRelation)display_object).delta_mass; } }
-        public int LysineCount { get { return ((ProteoformRelation)display_object).lysine_count; } }
-        public int NearbyRelationCount { get { return ((ProteoformRelation)display_object).nearby_relations.Count; } }
-        public bool OutsideNoMansLand { get { return ((ProteoformRelation)display_object).outside_no_mans_land; } }
+
+        public double DeltaMass
+        {
+            get
+            {
+                return ((ProteoformRelation)display_object).delta_mass;
+            }
+        }
+
+        public int LysineCount
+        {
+            get
+            {
+                return ((ProteoformRelation)display_object).lysine_count;
+            }
+        }
+
+        public int NearbyRelationCount
+        {
+            get
+            {
+                return ((ProteoformRelation)display_object).nearby_relations.Count;
+            }
+        }
+
+        public bool OutsideNoMansLand
+        {
+            get
+            {
+                return ((ProteoformRelation)display_object).outside_no_mans_land;
+            }
+        }
+
 
         // For DataGridView display of proteoform1
         public double agg_intensity_1
@@ -47,23 +97,43 @@ namespace ProteoformSuiteGUI
                 catch { return Double.NaN; }
             }
         }
+
         public double agg_RT_1
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_rt; } catch { return Double.NaN; } }
+            get
+            {
+                try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_rt; }
+                catch { return Double.NaN; }
+            }
         }
+
         public int num_observations_1
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).observation_count; } catch { return -1000000; } }
+            get
+            {
+                try { return ((ExperimentalProteoform)connected_proteoforms[0]).observation_count; }
+                catch { return -1000000; }
+            }
         }
+
         public double proteoform_mass_1
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_mass; } catch { return Double.NaN; } }
+            get
+            {
+                try {return ((ExperimentalProteoform)connected_proteoforms[0]).agg_mass; }
+                catch { return Double.NaN; }
+            }
         }
 
         public string accession_1
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).accession; } catch { return null; } }
+            get
+            {
+                try { return ((ExperimentalProteoform)connected_proteoforms[0]).accession; }
+                catch { return null; }
+            }
         }
+
 
         // For DataGridView display of proteform2
         public double proteoform_mass_2
@@ -78,25 +148,69 @@ namespace ProteoformSuiteGUI
 
         public double agg_intensity_2
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_intensity; } catch { return 0; } }
+            get
+            {
+                try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_intensity; }
+                catch { return 0; }
+            }
         }
+
         public double agg_RT_2
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt; } catch { return 0; } }
+            get
+            {
+                try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt; }
+                catch { return 0; }
+            }
         }
+
         public int num_observations_2
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).observation_count; } catch { return 0; } }
+            get
+            {
+                try { return ((ExperimentalProteoform)connected_proteoforms[1]).observation_count; }
+                catch { return 0; }
+            }
         }
+
         public string accession_2
         {
-            get { try { return (connected_proteoforms[1]).accession; } catch { return null; } }
+            get
+            {
+                try { return (connected_proteoforms[1]).accession; }
+                catch { return null; }
+            }
         }
-        public string Name { get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).name; } catch { return null; } } }
-        public string Fragment { get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).fragment; } catch { return null; } } }
-        public string PtmDescription { get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).ptm_descriptions; } catch { return null; } } }
+
+        public string Name
+        {
+            get
+            {
+                try { return ((TheoreticalProteoform)connected_proteoforms[1]).name; }
+                catch { return null; } }
+        }
+
+        public string Fragment
+        {
+            get
+            {
+                try { return ((TheoreticalProteoform)connected_proteoforms[1]).fragment; }
+                catch { return null; }
+            }
+        }
+
+        public string PtmDescription
+        {
+            get
+            {
+                try { return ((TheoreticalProteoform)connected_proteoforms[1]).ptm_descriptions; }
+                catch { return null; }
+            }
+        }
 
         #endregion Public Properties
+
+        #region Public Constructors
 
         public DisplayProteoformRelation(ProteoformRelation r)
             : base(r)
@@ -105,6 +219,10 @@ namespace ProteoformSuiteGUI
             relation_type = r.relation_type;
             connected_proteoforms = r.connected_proteoforms;
         }
+
+        #endregion
+
+        #region Public Methods
 
         public static void FormatRelationsGridView(DataGridView dgv, bool mask_experimental, bool mask_theoretical)
         {
@@ -170,6 +288,7 @@ namespace ProteoformSuiteGUI
 
             //making these columns invisible
             dgv.Columns[nameof(LysineCount)].Visible = Lollipop.neucode_labeled;
-        }
+        } 
+        #endregion
     }
 }
