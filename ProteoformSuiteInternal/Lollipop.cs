@@ -759,19 +759,6 @@ namespace ProteoformSuiteInternal
         public static List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
         public static List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
 
-        public static void make_et_relationships(ProteoformCommunity community)
-        {
-            Lollipop.et_relations = community.relate(community.experimental_proteoforms.Where(p => p.accepted).ToArray(), community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical);
-            Lollipop.ed_relations = community.relate_ed();
-            Lollipop.et_peaks = community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
-        }
-
-        public static void make_ee_relationships(ProteoformCommunity community)
-        {
-            Lollipop.ee_relations = community.relate(community.experimental_proteoforms.Where(p => p.accepted).ToArray(), community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ExperimentalExperimental);
-            Lollipop.ef_relations = community.relate_ef();
-            Lollipop.ee_peaks = community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
-        }
 
         //PROTEOFORM FAMILIES -- see ProteoformCommunity
         public static string family_build_folder_path = "";

@@ -196,8 +196,8 @@ namespace ProteoformSuiteGUI
             {
                 if (selected_family.relation_count > 0)
                 {
-                    DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.relations);
-                    DisplayUtility.FormatRelationsGridView(dgv_proteoform_family_members, false, false);
+                    DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.relations.Select(r => new DisplayProteoformRelation(r)));
+                    DisplayProteoformRelation.FormatRelationsGridView(dgv_proteoform_family_members, false, false);
                 }
                 else dgv_proteoform_family_members.Rows.Clear();
             }

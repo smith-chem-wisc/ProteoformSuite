@@ -41,7 +41,9 @@ namespace ProteoformSuiteGUI
         public void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
-            Lollipop.make_ee_relationships(Lollipop.proteoform_community);
+            Lollipop.ee_relations = Lollipop.proteoform_community.relate(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ExperimentalExperimental);
+            Lollipop.ef_relations = Lollipop.proteoform_community.relate_ef();
+            Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
 
             Parallel.Invoke
@@ -87,7 +89,7 @@ namespace ProteoformSuiteGUI
             this.dgv_EE_Peaks.CurrentCellDirtyStateChanged -= this.EE_Peak_List_DirtyStateChanged;//remove event handler on form load and table refresh event
             FillEEPeakListTable();
             FillEEPairsGridView();
-            DisplayUtility.FormatRelationsGridView(dgv_EE_Relations, false, true);
+            DisplayProteoformRelation.FormatRelationsGridView(dgv_EE_Relations, false, true);
             DisplayUtility.FormatPeakListGridView(dgv_EE_Peaks, true);
             GraphEERelations();
             GraphEEPeaks();
@@ -97,7 +99,7 @@ namespace ProteoformSuiteGUI
 
         private void FillEEPairsGridView()
         {
-            DisplayUtility.FillDataGridView(dgv_EE_Relations, Lollipop.ee_relations);
+            DisplayUtility.FillDataGridView(dgv_EE_Relations, Lollipop.ee_relations.Select(r => new DisplayProteoformRelation(r)));
         }
         private void FillEEPeakListTable()
         {
@@ -177,7 +179,6 @@ namespace ProteoformSuiteGUI
             nUD_EE_Upper_Bound.Maximum = 500;
             if (!Lollipop.neucode_labeled) Lollipop.ee_max_mass_difference = 150;
             nUD_EE_Upper_Bound.Value = (decimal)Lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
-
         }
 
         private void EE_Peak_List_DirtyStateChanged(object sender, EventArgs e)

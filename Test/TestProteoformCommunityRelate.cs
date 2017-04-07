@@ -419,24 +419,17 @@ namespace Test
 
             Assert.IsFalse(rel.accepted);
             Assert.AreEqual("decoyProteoform1", rel.connected_proteoforms[1].accession);
-            Assert.AreEqual(0, rel.agg_intensity_1);
-            Assert.AreEqual(0, rel.agg_intensity_2);
-            Assert.AreEqual(0, rel.agg_RT_1);
-            Assert.AreEqual(0, rel.agg_RT_2);
             Assert.AreEqual(0, rel.delta_mass);
-            Assert.IsEmpty(rel.fragment);
-            Assert.AreEqual(1, rel.nearby_relations_count);  //shows that calculate_unadjusted_group_count works
+            Assert.IsEmpty(((TheoreticalProteoform)rel.connected_proteoforms[1]).fragment);
+            Assert.AreEqual(1, rel.nearby_relations.Count);  //shows that calculate_unadjusted_group_count works
             //Assert.AreEqual(1, rel.mass_difference_group.Count);  //I don't think we need this test anymore w/ way peaks are made -LVS
             Assert.AreEqual(-1, rel.lysine_count);
-            Assert.AreEqual("T2", rel.name);
-            Assert.AreEqual(0, rel.num_observations_1); //nothing aggregated with the basic constructor
-            Assert.AreEqual(0, rel.num_observations_2);
+            Assert.AreEqual("T2", ((TheoreticalProteoform)rel.connected_proteoforms[1]).name);
+            Assert.AreEqual(0, ((ExperimentalProteoform)rel.connected_proteoforms[0]).observation_count); //nothing aggregated with the basic constructor
             Assert.IsTrue(rel.outside_no_mans_land);
             Assert.IsNull(rel.peak);
-            Assert.AreEqual(0, rel.proteoform_mass_1);
-            Assert.AreEqual(0, rel.proteoform_mass_2);
-            Assert.True(string.Equals("unmodified", rel.ptm_list, StringComparison.CurrentCultureIgnoreCase));
-            Assert.AreEqual(1, rel.nearby_relations_count);
+            Assert.True(string.Equals("unmodified", ((TheoreticalProteoform)rel.connected_proteoforms[1]).ptm_descriptions, StringComparison.CurrentCultureIgnoreCase));
+            Assert.AreEqual(1, rel.nearby_relations.Count);
         }
 
         [Test]
