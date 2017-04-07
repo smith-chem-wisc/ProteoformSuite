@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Proteomics;
 using System.IO;
-using UsefulProteomicsDatabases;
 
 namespace Test
 {
@@ -95,7 +94,8 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.proteoform_community = test_community;
 
-            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> {
+            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>>
+            {
                 { "unmodified", new List<Modification>() {
                     new ModificationWithMass("unmodified", new Tuple<string, string>("", ""), null, ModificationSites.K, 0, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "") }
                 }
@@ -166,6 +166,7 @@ namespace Test
         [Test]
         public void artificial_deltaMPeak()
         {
+            Lollipop.all_possible_ptmsets = new List<PtmSet>();
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
             ProteoformComparison comparison = ProteoformComparison.ExperimentalExperimental;

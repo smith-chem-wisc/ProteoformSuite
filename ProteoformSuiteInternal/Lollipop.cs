@@ -768,7 +768,7 @@ namespace ProteoformSuiteInternal
 
         public static void make_ee_relationships(ProteoformCommunity community)
         {
-            Lollipop.ee_relations = community.relate_ee(community.experimental_proteoforms.Where(p => p.accepted).ToArray(), community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ExperimentalExperimental);
+            Lollipop.ee_relations = community.relate(community.experimental_proteoforms.Where(p => p.accepted).ToArray(), community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ExperimentalExperimental);
             Lollipop.ef_relations = community.relate_ef();
             Lollipop.ee_peaks = community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
         }

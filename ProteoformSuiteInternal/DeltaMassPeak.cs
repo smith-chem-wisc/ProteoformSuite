@@ -27,12 +27,12 @@ namespace ProteoformSuiteInternal
                 base_relation.peak = this;
             }
 
-            grouped_relations = !Lollipop.opening_results ? this.find_nearby_relations(relations_to_group) : relations_to_group.ToList();
+            grouped_relations = this.find_nearby_relations(relations_to_group);
             this.peak_accepted = grouped_relations != null && grouped_relations.Count > 0 && grouped_relations.First().relation_type == ProteoformComparison.ExperimentalTheoretical ?
                 this.peak_relation_group_count >= Lollipop.min_peak_count_et :
                 this.peak_relation_group_count >= Lollipop.min_peak_count_ee;
 
-            possiblePeakAssignments = nearestPTMs(peak_deltaM_average).ToList();
+            possiblePeakAssignments = nearestPTMs(peak_deltaM_average, relation_type).ToList();
             possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.Select(ptmset => String.Join(";", ptmset.ptm_combination.Select(m => m.modification.id)))) + "]";
        }
 
@@ -86,8 +86,8 @@ namespace ProteoformSuiteInternal
 
         public List<ProteoformRelation> find_nearby_decoys(List<ProteoformRelation> all_relations)
         {
-            double lower_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ed)? this.peak_deltaM_average - Lollipop.peak_width_base_et / 2 : this.peak_deltaM_average - Lollipop.peak_width_base_ee / 2;
-            double upper_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ed) ?  this.peak_deltaM_average + Lollipop.peak_width_base_et / 2 : this.peak_deltaM_average + Lollipop.peak_width_base_ee / 2;
+            double lower_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ExperimentalDecoy)? this.peak_deltaM_average - Lollipop.peak_width_base_et / 2 : this.peak_deltaM_average - Lollipop.peak_width_base_ee / 2;
+            double upper_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ExperimentalDecoy) ?  this.peak_deltaM_average + Lollipop.peak_width_base_et / 2 : this.peak_deltaM_average + Lollipop.peak_width_base_ee / 2;
             return all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
         }
 

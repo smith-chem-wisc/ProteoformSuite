@@ -184,9 +184,12 @@ namespace Test
             Lollipop.proteoform_community = community;
             Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>>
             {
-                { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } },
+                { "unmodified", new List<Modification> { ConstructorsForTesting.get_modWithMass("unmodified", 0) } },
                 { "fake", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake", 19) } },
             };
+
+            Lollipop.modification_ranks = new Dictionary<double, int> { { 0, 1 }, { 19, 2 } };
+            Lollipop.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, Lollipop.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList(), Lollipop.modification_ranks, 1);
 
             Lollipop.ee_max_mass_difference = 20;
             Lollipop.peak_width_base_ee = 0.015;
