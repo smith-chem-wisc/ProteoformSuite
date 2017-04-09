@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.IO;
 using System.Threading;
 
 namespace ProteoformSuiteInternal
@@ -13,6 +14,8 @@ namespace ProteoformSuiteInternal
         //Please do not list {get;set} for new fields, so they are properly recorded in save all AC161103
         public ExperimentalProteoform[] experimental_proteoforms = new ExperimentalProteoform[0];
         public TheoreticalProteoform[] theoretical_proteoforms = new TheoreticalProteoform[0];
+        public TopDownProteoform[] topdown_proteoforms = new TopDownProteoform[0];
+
         public bool has_e_proteoforms
         {
             get { return experimental_proteoforms.Length > 0; }
@@ -37,8 +40,7 @@ namespace ProteoformSuiteInternal
                 lock (pf1)
                     pf1.candidate_relatives = pfs2
                         .Where(pf2 => (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
-                            && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
-                            && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference)
+                            && allowed_mass_difference(pf1.modified_mass, pf2.modified_mass, ProteoformComparison.et))
                         .ToList();
             });
 
@@ -58,7 +60,7 @@ namespace ProteoformSuiteInternal
             return count_nearby_relations(relations.OrderBy(r => r.delta_mass).ToList());
         }
 
-        
+
         public List<ProteoformRelation> relate_ee(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2, ProteoformComparison relation_type)
         {
             Parallel.ForEach(new HashSet<ExperimentalProteoform>(pfs1.Concat(pfs2)), pf =>
@@ -80,10 +82,53 @@ namespace ProteoformSuiteInternal
             return pf1.modified_mass >= pf2.modified_mass
                 && pf1 != pf2
                 && (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
-                && pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference
-                && Math.Abs(pf1.agg_rt - pf2.agg_rt) <= Lollipop.ee_max_RetentionTime_difference;
+                && allowed_mass_difference(pf1.modified_mass, pf2.modified_mass, ProteoformComparison.ee)
+                && Math.Abs(pf1.agg_rt - pf2.agg_rt) < Lollipop.ee_max_RetentionTime_difference;
+
             //where ProteoformRelation.mass_difference_is_outside_no_mans_land(pf1.modified_mass - pf2.modified_mass)
             //putative counts include no-mans land, currently
+        }
+
+        public bool allowed_ef_relation(ExperimentalProteoform pf1, ExperimentalProteoform pf2)
+        {
+            return pf1.modified_mass >= pf2.modified_mass
+            && pf1 != pf2
+            && (!Lollipop.neucode_labeled || pf1.lysine_count != pf2.lysine_count)
+            && (Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) > Lollipop.ee_max_RetentionTime_difference * 2)
+            && allowed_mass_difference(pf1.modified_mass, pf2.modified_mass, ProteoformComparison.ef)
+            && (!Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) < Lollipop.ee_max_RetentionTime_difference);
+        }
+
+        public bool allowed_mass_difference(double pf1_mass, double pf2_mass, ProteoformComparison comparison)
+        {
+            if (comparison == ProteoformComparison.et || comparison == ProteoformComparison.ed)
+            {
+                if (Lollipop.notch_search_et)
+                {
+                    foreach (double mass in Lollipop.notch_masses_et)
+                    {
+                        if (pf1_mass - pf2_mass <= mass + Lollipop.peak_width_base_et
+                        && pf1_mass - pf2_mass >= mass - Lollipop.peak_width_base_et) return true;
+                    }
+                    return false;
+                }
+                else
+                    return (pf1_mass - pf2_mass <= Lollipop.et_high_mass_difference && pf1_mass - pf2_mass >= Lollipop.et_low_mass_difference);
+            }
+            else
+            {
+                if (Lollipop.notch_search_ee)
+                {
+                    foreach (double mass in Lollipop.notch_masses_ee)
+                    {
+                        if (pf1_mass - pf2_mass <= mass + Lollipop.peak_width_base_ee
+                        && pf1_mass - pf2_mass >= mass - Lollipop.peak_width_base_ee) return true;
+                    }
+                    return false;
+                }
+                else
+                    return (pf1_mass - pf2_mass <= Lollipop.ee_max_mass_difference);
+            }
         }
 
         private static List<ProteoformRelation> count_nearby_relations(List<ProteoformRelation> all_ordered_relations)
@@ -96,24 +141,24 @@ namespace ProteoformSuiteInternal
         public Dictionary<string, List<ProteoformRelation>> relate_ed()
         {
             Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
-            Parallel.ForEach(decoy_proteoforms, decoys =>
-            {
-                ed_relations[decoys.Key] = relate_et(experimental_proteoforms, decoys.Value, ProteoformComparison.ed);
-            });
+                Parallel.ForEach(decoy_proteoforms, decoys =>
+                {
+                    ed_relations[decoys.Key] = Lollipop.limit_TD_BU_theoreticals? relate_et(experimental_proteoforms.Where(p => p.accepted).ToArray(), decoys.Value.Where(t => t.psm_count_BU > 0).ToArray(), ProteoformComparison.ed) : relate_et(experimental_proteoforms.Where(p => p.accepted).ToArray(), decoys.Value, ProteoformComparison.ed);
+                });
             return ed_relations;
         }
+
         public Dictionary<string, List<ProteoformRelation>> relate_ef()
         {
             List<ProteoformRelation> all_ef_relations = new List<ProteoformRelation>();
             Dictionary<string, List<ProteoformRelation>> ef_relations = new Dictionary<string, List<ProteoformRelation>>();
-            ExperimentalProteoform[] pfs1 = new List<ExperimentalProteoform>(this.experimental_proteoforms).ToArray();
-            ExperimentalProteoform[] pfs2 = new List<ExperimentalProteoform>(this.experimental_proteoforms).ToArray();
-            foreach (ExperimentalProteoform pf1 in pfs1)
+            ExperimentalProteoform[] pfs1 = new List<ExperimentalProteoform>(this.experimental_proteoforms.Where(p => p.accepted)).ToArray();
+            ExperimentalProteoform[] pfs2 = new List<ExperimentalProteoform>(this.experimental_proteoforms.Where(p => p.accepted)).ToArray();
+            foreach(ExperimentalProteoform pf1 in pfs1) 
             {
                 List<ProteoformRelation> ef_relation_addition = pfs2
                         .Where(pf2 => allowed_ef_relation(pf1, pf2))
                         .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ef, pf1.modified_mass - pf2.modified_mass))
-                        .OrderBy(r => r.delta_mass)
                         .ToList();
                 all_ef_relations.AddRange(ef_relation_addition);
             }
@@ -124,21 +169,83 @@ namespace ProteoformSuiteInternal
                 all_ef_relations.Shuffle();
                 ef_relations.Add(key, all_ef_relations.Take(Lollipop.ee_relations.Count).ToList());
             }
-            count_nearby_relations(ef_relations.Values.First().OrderBy(r => r.delta_mass).ToList()); //count from first decoy database
+            count_nearby_relations(ef_relations["EF_relations_0"].OrderBy(r => r.delta_mass).ToList());
             return ef_relations;
         }
 
-        public bool allowed_ef_relation(ExperimentalProteoform pf1, ExperimentalProteoform pf2)
+        public List<ProteoformRelation> relate_td(List<ExperimentalProteoform> experimentals, List<TheoreticalProteoform> theoreticals, List<TopDownProteoform> topdowns)
         {
-            return pf1.modified_mass >= pf2.modified_mass
-            && pf1 != pf2
-            && (pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference)
-            && (!Lollipop.neucode_labeled || pf1.lysine_count != pf2.lysine_count)
-            && (Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) > Lollipop.ee_max_RetentionTime_difference * 2)
-            && (!Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) < Lollipop.ee_max_RetentionTime_difference);
+            List<ProteoformRelation> td_relations = new List<ProteoformRelation>();
+
+            int max_missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
+            List<int> missed_monoisotopics_range = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
+            foreach (TopDownProteoform topdown in topdowns)
+            {
+                double mass = topdown.monoisotopic_mass;
+
+                foreach (int m in missed_monoisotopics_range)
+                {
+                    foreach (double rt in topdown.all_RTs)
+                    {
+                        double shift = m * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                        double mass_tol = (mass + shift) / 1000000 * Convert.ToInt32(Lollipop.mass_tolerance);
+                        double low = mass + shift - mass_tol;
+                        double high = mass + shift + mass_tol;
+                        List<ExperimentalProteoform> matching_e = experimentals.Where(ep => ep.modified_mass >= low && ep.modified_mass <= high
+                        && (Math.Abs(ep.agg_rt - rt) <= Convert.ToDouble(Lollipop.retention_time_tolerance))).ToList();
+                        foreach (ExperimentalProteoform e in matching_e)
+                        {
+                            e.accepted = true;
+                            ProteoformRelation td_relation = new ProteoformRelation(topdown, e, ProteoformComparison.etd, (e.modified_mass - mass));
+                            td_relation.accepted = true;
+                            td_relation.connected_proteoforms[0].relationships.Add(td_relation);
+                            td_relation.connected_proteoforms[1].relationships.Add(td_relation);
+                            td_relations.Add(td_relation);
+                        }
+                    }
+                }
+
+                //match each td proteoform group to the closest theoretical w/ same accession and modifications. (if no match always make relationship with unmodified)
+                if (theoreticals.Count > 0)
+                {
+                    TheoreticalProteoform theo = theoreticals.Where(t => t.accession.Split('_')[0] == topdown.accession.Split('_')[0] && topdown.same_ptms(t)).FirstOrDefault();
+                    if (theo == null)
+                    { 
+                        if (topdown.ptm_set.ptm_combination.Count == 0) continue; //if can't find match to unmodified topdown, nothing to do (not in database)
+                                                                   //if modified topdown, compare with unmodified theoretical
+                        else
+                        {
+                            try
+                            {
+                                theo = theoreticals.Where(t => t.accession.Split('_')[0] == topdown.accession.Split('_')[0] && t.ptm_set.ptm_combination.Count == 0).OrderBy(
+                                t => Math.Abs(t.modified_mass - topdown.theoretical_mass)).First();
+                            }
+                            catch { continue; }
+                        }
+                    }
+                    ProteoformRelation t_td_relation = new ProteoformRelation(topdown, theo, ProteoformComparison.ttd, (topdown.theoretical_mass - theo.modified_mass));
+                    t_td_relation.accepted = true;
+                    t_td_relation.connected_proteoforms[0].relationships.Add(t_td_relation);
+                    t_td_relation.connected_proteoforms[1].relationships.Add(t_td_relation);
+                    td_relations.Add(t_td_relation);
+                }
+            }
+            return td_relations;
         }
 
+        private bool matching_RT(List<double> rt1s, List<double> rt2s, double tolerance)
+        {
+            foreach(double rt1 in rt1s)
+            {
+                foreach(double rt2 in rt2s)
+                {
+                    if (Math.Abs(rt1 - rt2) <= tolerance) return true;
+                }
+            }
+            return false;        
+        }
 
+    
         //GROUP and ANALYZE RELATIONS
         public List<ProteoformRelation> remaining_relations_outside_no_mans = new List<ProteoformRelation>();
         public List<DeltaMassPeak> accept_deltaMass_peaks(List<ProteoformRelation> relations, Dictionary<string, List<ProteoformRelation>> decoy_relations)
@@ -212,7 +319,11 @@ namespace ProteoformSuiteInternal
         public static string preferred_gene_label;
         public List<ProteoformFamily> construct_families()
         {
-            Stack<Proteoform> remaining = new Stack<Proteoform>(this.experimental_proteoforms);
+            clean_up_td_relations();
+            List<Proteoform> proteoforms = new List<Proteoform>();
+            proteoforms.AddRange(this.experimental_proteoforms.Where(e => e.accepted).ToList());
+            proteoforms.AddRange(topdown_proteoforms.Where(t => !t.targeted).ToList()); //want to include families with no E proteoforms, only topdown proteoforms. For now, only non-targeted topdown proteoforms
+            Stack<Proteoform> remaining = new Stack<Proteoform>(proteoforms);
             List<ProteoformFamily> running_families = new List<ProteoformFamily>();
             List<Proteoform> running = new List<Proteoform>();
             List<Thread> active = new List<Thread>();
@@ -258,6 +369,20 @@ namespace ProteoformSuiteInternal
             if (gene_centric_families) families = combine_gene_families(families).ToList();
             Parallel.ForEach(families, f => f.identify_experimentals());
             return families;
+        }
+
+        //if E in relation w/ T and TD of diff accesions, TD takes priority because has retention time evidence as well 
+        public void clean_up_td_relations()
+        {
+            foreach (ExperimentalProteoform e in this.experimental_proteoforms.Where(e => e.accepted && e.relationships.Where(r =>
+                r.accepted && r.relation_type == ProteoformComparison.et).Count() >= 1 && e.relationships.Where(r => r.relation_type == ProteoformComparison.etd).Count() == 1))
+            {
+                string accession = e.relationships.Where(r => r.relation_type == ProteoformComparison.etd).First().accession_1.Split('_')[0];
+                foreach (ProteoformRelation relation in e.relationships.Where(r => r.relation_type == ProteoformComparison.et && r.accession_2.Split('_')[0] != accession))
+                {
+                    relation.accepted = false;
+                }
+            }
         }
 
         public IEnumerable<ProteoformFamily> combine_gene_families(IEnumerable<ProteoformFamily> families)

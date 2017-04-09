@@ -69,7 +69,7 @@ namespace ProteoformSuiteGUI
         public void construct_families()
         {
             initialize_every_time();
-            if (Lollipop.proteoform_community.families.Count <= 0 && Lollipop.proteoform_community.has_e_proteoforms) run_the_gamut();
+            if (Lollipop.proteoform_community.families.Count <= 0 && (Lollipop.proteoform_community.has_e_proteoforms || Lollipop.proteoform_community.topdown_proteoforms.Length > 0)) run_the_gamut();
         }
 
 
@@ -279,6 +279,11 @@ namespace ProteoformSuiteGUI
         {
             Lollipop.deltaM_edge_display_rounding = Convert.ToInt32(this.nud_decimalRoundingLabels.Value);
         }
+
+        private void bt_export_families_Click(object sender, EventArgs e)
+        {
+
+            }
 
         private void btn_merge_Click(object sender, EventArgs e)
         {

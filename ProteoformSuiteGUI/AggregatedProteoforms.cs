@@ -21,7 +21,7 @@ namespace ProteoformSuiteGUI
 
         private bool ready_to_aggregate()
         {
-            return Lollipop.proteoform_community.experimental_proteoforms.Length <= 0 && (Lollipop.neucode_labeled && Lollipop.raw_neucode_pairs.Count > 0 || Lollipop.raw_experimental_components.Count > 0);
+            return Lollipop.proteoform_community.experimental_proteoforms.Length <= 0 && (Lollipop.neucode_labeled && Lollipop.raw_neucode_pairs.Count > 0) || Lollipop.raw_experimental_components.Count > 0;
         }
 
         public void aggregate_proteoforms()
@@ -30,7 +30,7 @@ namespace ProteoformSuiteGUI
             {
                 run_the_gamut();
             }
-            else if (Lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
+            else MessageBox.Show("Go back and load in deconvolution results.");
         }
 
         private void run_the_gamut()
@@ -62,7 +62,7 @@ namespace ProteoformSuiteGUI
             nUP_mass_tolerance.Value = Lollipop.mass_tolerance;
 
             nUD_RetTimeToleranace.Minimum = 0;
-            nUD_RetTimeToleranace.Maximum = 10;
+            nUD_RetTimeToleranace.Maximum = 200;
             nUD_RetTimeToleranace.Value = Lollipop.retention_time_tolerance;
 
             nUD_Missed_Monos.Minimum = 0;
@@ -174,6 +174,7 @@ namespace ProteoformSuiteGUI
             dgv_AcceptNeuCdLtProteoforms.DataSource = null;
             dgv_AcceptNeuCdLtProteoforms.Rows.Clear();
 
+            ((ProteoformSweet)MdiParent).topDown.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();
@@ -230,7 +231,6 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, selected_aggregates);
             if (selected_aggregates.Count() > 0) DisplayUtility.FormatAggregatesTable(dgv_AggregatedProteoforms);
         }
-
         private void nUD_min_num_bioreps_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.min_num_bioreps = Convert.ToInt16(nUD_min_num_bioreps.Value);

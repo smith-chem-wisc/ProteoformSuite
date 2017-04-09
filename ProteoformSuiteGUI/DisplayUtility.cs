@@ -41,7 +41,7 @@ namespace ProteoformSuiteGUI
                 {
                     if (result.ChartElementType == ChartElementType.DataPoint)
                     {
-                        DataPoint prop = result.Object as DataPoint;
+                        System.Windows.Forms.DataVisualization.Charting.DataPoint prop = result.Object as System.Windows.Forms.DataVisualization.Charting.DataPoint;
                         if (prop != null)
                         {
                             double pointXPixel = result.ChartArea.AxisX.ValueToPixelPosition(prop.XValue);
@@ -210,8 +210,8 @@ namespace ProteoformSuiteGUI
 
             //ET formatting
             dgv.Columns["fragment"].HeaderText = "Fragment";
-            dgv.Columns["ptm_list"].HeaderText = "PTM Description";
-            dgv.Columns["name"].HeaderText = "Name";
+            //dgv.Columns["ptm_list"].HeaderText = "PTM Description";
+            //dgv.Columns["name"].HeaderText = "Name";
             if (mask_experimental)
             {
                 dgv.Columns["num_observations_1"].HeaderText = "Number Experimental Observations";
@@ -240,7 +240,7 @@ namespace ProteoformSuiteGUI
                 dgv.Columns["accession_2"].HeaderText = "Light Experimental Accession";
                 dgv.Columns["proteoform_mass_1"].HeaderText = "Heavy Experimental Aggregated Mass";
                 dgv.Columns["proteoform_mass_2"].HeaderText = "Light Experimental Aggregated Mass";
-                dgv.Columns["name"].Visible = false;
+               // dgv.Columns["name"].Visible = false;
                 dgv.Columns["fragment"].Visible = false;
             }
 

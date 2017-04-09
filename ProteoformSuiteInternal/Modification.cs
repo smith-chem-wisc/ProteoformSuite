@@ -31,7 +31,6 @@ namespace ProteoformSuiteInternal
     //        this.monoisotopic_mass_shift = monoisotopicMassShift;
     //        this.average_mass_shift = averageMassShift;
     //    }
-
     //    public Modification(string description)
     //    {
     //        this.description = description;
@@ -47,7 +46,7 @@ namespace ProteoformSuiteInternal
     public class Ptm
     {
         public int position { get; private set; } = -1;
-        public ModificationWithMass modification { get; private set; } = new ModificationWithMass("Unmodified", new Tuple<string, string>("N/A", "Unmodified"), null, ModificationSites.Any, 0, null, -1, null, null, null);
+        public ModificationWithMass modification { get; private set; } = new ModificationWithMass("Unmodified", new Tuple<string, string>("N/A", "Unmodified"), null, ModificationSites.Any, 0, null, new List<double>(), null, null, null);
 
         public Ptm() // initializes an "un-Modification"
         { }

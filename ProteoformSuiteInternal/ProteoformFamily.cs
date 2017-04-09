@@ -20,12 +20,14 @@ namespace ProteoformSuiteInternal
         public int experimental_count { get { return this.experimental_proteoforms.Count; } }
         public List<TheoreticalProteoform> theoretical_proteoforms { get; private set; }
         public int theoretical_count { get { return this.theoretical_proteoforms.Count; } }
+        public List<TopDownProteoform> topdown_proteoforms { get; set; }
+        public int topdown_count { get { return this.topdown_proteoforms.Count; }}
         public List<GeneName> gene_names { get; private set; }
         public HashSet<ProteoformRelation> relations { get; private set; }
         public int relation_count { get { return this.relations.Count; } }
         public HashSet<Proteoform> proteoforms { get; private set; }
         private Proteoform seed { get; set; }
-        
+
         public ProteoformFamily(Proteoform seed)
         {
             family_counter++;
@@ -54,7 +56,8 @@ namespace ProteoformSuiteInternal
             HashSet<int> lysine_counts = new HashSet<int>(proteoforms.Select(p => p.lysine_count));
             if (lysine_counts.Count == 1) this.lysine_count = lysine_counts.FirstOrDefault();
             this.experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
-            this.relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted)));
+            this.topdown_proteoforms = proteoforms.OfType<TopDownProteoform>().ToList();
+            this.relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.accepted)));
         }
 
         public void merge_families()

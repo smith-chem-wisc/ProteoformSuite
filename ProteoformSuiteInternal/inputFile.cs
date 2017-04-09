@@ -41,6 +41,8 @@ namespace ProteoformSuiteInternal
         //For database files
         public bool ContaminantDB { get; set; } = false;
 
+        //For top-down files
+        public bool targeted_td_result { get; set; } = false;
 
         public InputFile(string complete_path, Purpose purpose)
         {
@@ -68,7 +70,11 @@ namespace ProteoformSuiteInternal
     {
         Identification,
         Quantification,
-        Calibration,
+        BottomUp,
+        TopDown,
+        RawFile,
+        CalibrationIdentification,
+        CalibrationTopDown,
         ProteinDatabase,
         PtmList
     }

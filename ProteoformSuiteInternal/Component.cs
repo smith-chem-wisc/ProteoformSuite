@@ -35,7 +35,6 @@ namespace ProteoformSuiteInternal
             }
         }
         public double neuCodeCorrection { get; set; } = 0;
-
         private int Num_charge_states { get; set; } = 0;
         public int num_charge_states
         {
@@ -83,7 +82,19 @@ namespace ProteoformSuiteInternal
                     Weighted_monoisotopic_mass = value;
             }
         } //this is computed as the weighted sum of charge state masses.
+
         public bool calculating_properties { get; set; } = false;
+        public double max_signal_to_noise { get; set; }
+        
+
+        public void attemptToSetWeightedMonoisotopic_mass(double fromFileMass)
+        {
+            if (charge_states.Select(cs => cs.charge_count).ToList().Count() > 0)
+                throw new ArgumentException("Charge state data exists that can't be overwritten with input");
+            else
+                Weighted_monoisotopic_mass = fromFileMass;
+        }
+
         public int num_detected_intervals { get; set; }
         public bool accepted { get; set; }
 
@@ -132,7 +143,6 @@ namespace ProteoformSuiteInternal
             this.charge_states = c.charge_states;
             this.intensity_sum_olcs = c.intensity_sum_olcs;
             this.accepted = c.accepted;
-
             this.num_detected_intervals = c.num_detected_intervals;
             if (c.charge_states.Count > 0) this.charge_states = c.charge_states;
             else this.num_charge_states = c.num_charge_states;
@@ -141,9 +151,9 @@ namespace ProteoformSuiteInternal
 
 
         // METHODS
-        public void add_charge_state(List<string> charge_row, double correction)
+        public void add_charge_state(List<string> charge_row)
         {
-            this.charge_states.Add(new ChargeState(charge_row, correction));
+            this.charge_states.Add(new ChargeState(charge_row));
         }
 
         public void calculate_properties()
@@ -234,14 +244,15 @@ namespace ProteoformSuiteInternal
     {
         public int charge_count { get; set; } //value from deconv 4.0
         public double intensity { get; set; } //value from deconv 4.0
-        public double mz_centroid { get; set; } //value from deconv 4.0
+        public double mz_centroid { get; set; } 
         public double calculated_mass { get; set; }  // the value reported by decon 4.0 is incorrect, so we calculate it from m/z and charge (including correction when necessary)
+        public double signal_to_noise { get; set; }  //intensity of average isotope peak / noise at that peak
 
-        public ChargeState(List<string> charge_row, double mz_correction) //the correction used is determined from measurement of lock-mass compound. It is read in at the same time the data is read in. We do not keep track of the correction because it adds confusion when charge states are combined.
+        public ChargeState(List<string> charge_row) //the correction used is determined from measurement of lock-mass compound. It is read in at the same time the data is read in. We do not keep track of the correction because it adds confusion when charge states are combined.
         {
             this.charge_count = Convert.ToInt32(charge_row[0]);
             this.intensity = Convert.ToDouble(charge_row[1]);
-            this.mz_centroid = correct_calculated_mz(Convert.ToDouble(charge_row[2]), mz_correction); //no point to keeping the uncorrected mz if there is a correction.
+            this.mz_centroid = Convert.ToDouble(charge_row[2]); //no point to keeping the uncorrected mz if there is a correction.
             this.calculated_mass = correct_calculated_mass();
         }
 
@@ -271,6 +282,7 @@ namespace ProteoformSuiteInternal
         {
             return (this.charge_count * this.mz_centroid - this.charge_count * 1.00727645D);//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
         }
+
 
         public ChargeState mergeTheseChargeStates(ChargeState csToMerge)
         {

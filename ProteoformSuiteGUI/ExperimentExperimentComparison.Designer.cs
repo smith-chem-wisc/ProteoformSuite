@@ -68,6 +68,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.tb_notch_masses = new System.Windows.Forms.TextBox();
+            this.cb_notch_search = new System.Windows.Forms.CheckBox();
             this.cb_view_decoy_histogram = new System.Windows.Forms.CheckBox();
             this.bt_compare_EE = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -79,6 +81,7 @@
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.cb_automate_peak_acceptance = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
@@ -483,6 +486,8 @@
             // 
             // splitContainer5.Panel2
             // 
+            this.splitContainer5.Panel2.Controls.Add(this.tb_notch_masses);
+            this.splitContainer5.Panel2.Controls.Add(this.cb_notch_search);
             this.splitContainer5.Panel2.Controls.Add(this.cb_view_decoy_histogram);
             this.splitContainer5.Panel2.Controls.Add(this.bt_compare_EE);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox4);
@@ -513,6 +518,25 @@
             this.splitContainer4.SplitterDistance = 376;
             this.splitContainer4.TabIndex = 18;
             // 
+            // tb_notch_masses
+            // 
+            this.tb_notch_masses.Enabled = false;
+            this.tb_notch_masses.Location = new System.Drawing.Point(109, 41);
+            this.tb_notch_masses.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_notch_masses.Name = "tb_notch_masses";
+            this.tb_notch_masses.Size = new System.Drawing.Size(314, 20);
+            this.tb_notch_masses.TabIndex = 37;
+            // 
+            // cb_notch_search
+            // 
+            this.cb_notch_search.AutoSize = true;
+            this.cb_notch_search.Location = new System.Drawing.Point(12, 43);
+            this.cb_notch_search.Name = "cb_notch_search";
+            this.cb_notch_search.Size = new System.Drawing.Size(92, 17);
+            this.cb_notch_search.TabIndex = 36;
+            this.cb_notch_search.Text = "Notch Search";
+            this.cb_notch_search.UseVisualStyleBackColor = true;
+            this.cb_notch_search.CheckedChanged += new System.EventHandler(this.cb_notch_search_CheckedChanged);
             // cb_view_decoy_histogram
             // 
             this.cb_view_decoy_histogram.AutoSize = true;
@@ -580,6 +604,7 @@
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox1.Controls.Add(this.cb_automate_peak_acceptance);
             this.groupBox1.Controls.Add(this.tb_max_accepted_fdr);
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.nUD_MaxRetTimeDifference);
@@ -665,6 +690,17 @@
             this.splitContainer3.Size = new System.Drawing.Size(836, 711);
             this.splitContainer3.SplitterDistance = 440;
             this.splitContainer3.TabIndex = 17;
+            // 
+            // cb_automate_peak_acceptance
+            // 
+            this.cb_automate_peak_acceptance.AutoSize = true;
+            this.cb_automate_peak_acceptance.Location = new System.Drawing.Point(0, 82);
+            this.cb_automate_peak_acceptance.Name = "cb_automate_peak_acceptance";
+            this.cb_automate_peak_acceptance.Size = new System.Drawing.Size(237, 17);
+            this.cb_automate_peak_acceptance.TabIndex = 30;
+            this.cb_automate_peak_acceptance.Text = "Automate peak acceptance above threshold";
+            this.cb_automate_peak_acceptance.UseVisualStyleBackColor = true;
+            this.cb_automate_peak_acceptance.CheckedChanged += new System.EventHandler(this.cb_automate_peak_acceptance_CheckedChanged);
             // 
             // ExperimentExperimentComparison
             // 
@@ -769,7 +805,11 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tb_max_accepted_fdr;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox tb_notch_masses;
+        private System.Windows.Forms.CheckBox cb_notch_search;
+        private System.Windows.Forms.CheckBox cb_view_ef;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.CheckBox cb_automate_peak_acceptance;
         private System.Windows.Forms.CheckBox cb_view_decoy_histogram;
     }
 }

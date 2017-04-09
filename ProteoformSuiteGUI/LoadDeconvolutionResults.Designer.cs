@@ -58,8 +58,12 @@
             this.cmb_loadTable2 = new System.Windows.Forms.ComboBox();
             this.cmb_loadTable3 = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.rb_advanced_user = new System.Windows.Forms.RadioButton();
             this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
             this.rb_standardOptions = new System.Windows.Forms.RadioButton();
+            this.bt_calibrate = new System.Windows.Forms.Button();
+            this.cb_lockmass = new System.Windows.Forms.CheckBox();
+            this.cb_tdhits = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles2)).BeginInit();
@@ -363,23 +367,35 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.rb_advanced_user);
             this.groupBox4.Controls.Add(this.rb_chemicalCalibration);
             this.groupBox4.Controls.Add(this.rb_standardOptions);
             this.groupBox4.Location = new System.Drawing.Point(232, 569);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(218, 43);
+            this.groupBox4.Size = new System.Drawing.Size(267, 43);
             this.groupBox4.TabIndex = 35;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Load Options";
             // 
+            // rb_advanced_user
+            // 
+            this.rb_advanced_user.AutoSize = true;
+            this.rb_advanced_user.Location = new System.Drawing.Point(82, 17);
+            this.rb_advanced_user.Name = "rb_advanced_user";
+            this.rb_advanced_user.Size = new System.Drawing.Size(75, 17);
+            this.rb_advanced_user.TabIndex = 35;
+            this.rb_advanced_user.Text = "Top Down";
+            this.rb_advanced_user.UseVisualStyleBackColor = true;
+            this.rb_advanced_user.CheckedChanged += new System.EventHandler(this.rb_advanced_user_CheckedChanged);
+            // 
             // rb_chemicalCalibration
             // 
             this.rb_chemicalCalibration.AutoSize = true;
-            this.rb_chemicalCalibration.Location = new System.Drawing.Point(90, 17);
+            this.rb_chemicalCalibration.Location = new System.Drawing.Point(165, 17);
             this.rb_chemicalCalibration.Name = "rb_chemicalCalibration";
-            this.rb_chemicalCalibration.Size = new System.Drawing.Size(120, 17);
+            this.rb_chemicalCalibration.Size = new System.Drawing.Size(102, 17);
             this.rb_chemicalCalibration.TabIndex = 37;
-            this.rb_chemicalCalibration.Text = "Chemical Calibration";
+            this.rb_chemicalCalibration.Text = "Mass Calibration";
             this.rb_chemicalCalibration.UseVisualStyleBackColor = true;
             this.rb_chemicalCalibration.CheckedChanged += new System.EventHandler(this.rb_chemicalCalibration_CheckedChanged);
             // 
@@ -396,10 +412,50 @@
             this.rb_standardOptions.UseVisualStyleBackColor = true;
             this.rb_standardOptions.CheckedChanged += new System.EventHandler(this.rb_standardOptions_CheckedChanged);
             // 
+            // bt_calibrate
+            // 
+            this.bt_calibrate.Location = new System.Drawing.Point(531, 589);
+            this.bt_calibrate.Name = "bt_calibrate";
+            this.bt_calibrate.Size = new System.Drawing.Size(264, 25);
+            this.bt_calibrate.TabIndex = 20;
+            this.bt_calibrate.Text = "Calibrate";
+            this.bt_calibrate.UseVisualStyleBackColor = true;
+            this.bt_calibrate.Visible = false;
+            this.bt_calibrate.Click += new System.EventHandler(this.bt_calibrate_Click);
+            // 
+            // cb_lockmass
+            // 
+            this.cb_lockmass.AutoSize = true;
+            this.cb_lockmass.Location = new System.Drawing.Point(531, 566);
+            this.cb_lockmass.Name = "cb_lockmass";
+            this.cb_lockmass.Size = new System.Drawing.Size(117, 17);
+            this.cb_lockmass.TabIndex = 36;
+            this.cb_lockmass.Text = "Lock Mass Peptide";
+            this.cb_lockmass.UseVisualStyleBackColor = true;
+            this.cb_lockmass.Visible = false;
+            this.cb_lockmass.CheckedChanged += new System.EventHandler(this.cb_lockmass_CheckedChanged);
+            // 
+            // cb_tdhits
+            // 
+            this.cb_tdhits.AutoSize = true;
+            this.cb_tdhits.Checked = true;
+            this.cb_tdhits.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_tdhits.Location = new System.Drawing.Point(654, 566);
+            this.cb_tdhits.Name = "cb_tdhits";
+            this.cb_tdhits.Size = new System.Drawing.Size(141, 17);
+            this.cb_tdhits.TabIndex = 37;
+            this.cb_tdhits.Text = "TopDown Identifications";
+            this.cb_tdhits.UseVisualStyleBackColor = true;
+            this.cb_tdhits.Visible = false;
+            this.cb_tdhits.CheckedChanged += new System.EventHandler(this.cb_tdhits_CheckedChanged);
+            // 
             // LoadDeconvolutionResults
             // 
             this.ClientSize = new System.Drawing.Size(1362, 736);
             this.ControlBox = false;
+            this.Controls.Add(this.cb_tdhits);
+            this.Controls.Add(this.cb_lockmass);
+            this.Controls.Add(this.bt_calibrate);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.cmb_loadTable3);
             this.Controls.Add(this.cmb_loadTable2);
@@ -468,7 +524,11 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.RadioButton rb_chemicalCalibration;
         private System.Windows.Forms.RadioButton rb_standardOptions;
+        private System.Windows.Forms.RadioButton rb_advanced_user;
         private System.Windows.Forms.Label lb_filter3;
         private System.Windows.Forms.TextBox tb_filter3;
+        private System.Windows.Forms.Button bt_calibrate;
+        private System.Windows.Forms.CheckBox cb_lockmass;
+        private System.Windows.Forms.CheckBox cb_tdhits;
     }
 }

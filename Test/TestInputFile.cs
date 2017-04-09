@@ -22,8 +22,8 @@ namespace Test
                 new InputFile("fake.txt", Purpose.PtmList),
                 new InputFile("fake.txt", Purpose.PtmList),
                 new InputFile("fake.txt", Purpose.ProteinDatabase),
-                new InputFile("fake.txt", Purpose.Calibration),
-                new InputFile("fake.txt", Purpose.Calibration),
+                new InputFile("fake.txt", Purpose.RawFile),
+                new InputFile("fake.txt", Purpose.RawFile),
                 new InputFile("fake.txt", Purpose.Quantification),
                 new InputFile("fake.txt", Purpose.Quantification),
             };
@@ -46,7 +46,7 @@ namespace Test
         [Test]
         public void matching_calibration_one_match()
         {
-            InputFile c = new InputFile("fake.txt", Purpose.Calibration);
+            InputFile c = new InputFile("fake.txt", Purpose.RawFile);
             InputFile i = new InputFile("fake.txt", Purpose.Identification);
             Assert.False(c.matchingCalibrationFile);
             Assert.False(i.matchingCalibrationFile);
@@ -61,7 +61,7 @@ namespace Test
         [Test]
         public void matching_calibration_two_match()
         {
-            InputFile c = new InputFile("fake.txt", Purpose.Calibration);
+            InputFile c = new InputFile("fake.txt", Purpose.RawFile);
             InputFile i = new InputFile("fake.txt", Purpose.Identification);
             InputFile j = new InputFile("fake.txt", Purpose.Identification);
             c.filename = "hello";
@@ -74,7 +74,7 @@ namespace Test
         [Test]
         public void matching_calibration_no_match()
         {
-            InputFile c = new InputFile("fake.txt", Purpose.Calibration);
+            InputFile c = new InputFile("fake.txt", Purpose.RawFile);
             InputFile i = new InputFile("fake.txt", Purpose.Identification);
             c.filename = "hello";
             i.filename = "hey";
@@ -87,7 +87,7 @@ namespace Test
         [Test]
         public void matching_calibration_none_possible()
         {
-            InputFile c = new InputFile("fake.txt", Purpose.Calibration);
+            InputFile c = new InputFile("fake.txt", Purpose.RawFile);
             Lollipop.input_files = new List<InputFile> { c };
             Assert.AreNotEqual("", Lollipop.match_calibration_files());
         }

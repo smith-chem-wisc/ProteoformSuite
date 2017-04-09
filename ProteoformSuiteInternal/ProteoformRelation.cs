@@ -10,7 +10,9 @@ namespace ProteoformSuiteInternal
         et, //Experiment-Theoretical comparisons
         ed, //Experiment-Decoy comparisons
         ee, //Experiment-Experiment comparisons
-        ef  //Experiment-Experiment comparisons using unequal lysine counts
+        ef,  //Experiment-Experiment comparisons using unequal lysine counts
+        etd, //Experiment-TopDown comparison (from TD data)
+        ttd, //Theoretical-TopDown comprison (from TD data)
     }
 
     //I have not used MassDifference objects in the logic, since it is better to cast the comparisons immediately as
@@ -45,7 +47,7 @@ namespace ProteoformSuiteInternal
     {
         public DeltaMassPeak peak { get; set; }
         public int nearby_relations_count { get { return this.nearby_relations.Count; } } //"running sum"
-        public List<ProteoformRelation> nearby_relations { get; set; }
+        public List<ProteoformRelation> nearby_relations { get; set; } = new List<ProteoformRelation>();
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
         public ModificationWithMass represented_modification { get; set; }
@@ -123,6 +125,10 @@ namespace ProteoformSuiteInternal
         public static string ee_string = "Experiment-Experimental";
         public static string ed_string = "Experiment-Decoy";
         public static string ef_string = "Experiment-Unequal Lysine Count";
+        public static string etd_string = "Experiment-Topdown";
+        public static string ttd_string = "Theoretical-Topdown";
+        public static string ettd_string = "Targeted-Topdown";
+           
 
         public int peak_center_count
         {
@@ -141,6 +147,8 @@ namespace ProteoformSuiteInternal
                 if (this.relation_type == ProteoformComparison.ee) s = ee_string;
                 if (this.relation_type == ProteoformComparison.ed) s = ed_string;
                 if (this.relation_type == ProteoformComparison.ef) s = ef_string;
+                if (this.relation_type == ProteoformComparison.etd) s = etd_string;
+                if (this.relation_type == ProteoformComparison.ttd) s = ttd_string;
                 return s;
             }
         }
@@ -152,7 +160,14 @@ namespace ProteoformSuiteInternal
         }
         public double agg_RT_1
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_rt; } catch { return Double.NaN; } }
+            get
+            {
+                if (connected_proteoforms[0] is ExperimentalProteoform)
+                    return ((ExperimentalProteoform)connected_proteoforms[0]).agg_rt;
+                else if (connected_proteoforms[0] is TopDownProteoform)
+                    return ((TopDownProteoform)connected_proteoforms[0]).agg_rt;
+                else { return 0; }
+            }
         }
         public int num_observations_1
         {
@@ -160,19 +175,22 @@ namespace ProteoformSuiteInternal
         }
         public double proteoform_mass_1
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_mass; } catch { return Double.NaN; } }
+            get { try { return (connected_proteoforms[0]).modified_mass; } catch { return 0; } }
+
+        }
+        public string name_1
+        {
+            get { try { return ((TopDownProteoform)connected_proteoforms[0]).name; } catch { return null; } }
+        }
+        public string ptm_list_1
+        {
+            get { try { return ((TopDownProteoform)connected_proteoforms[0]).ptm_descriptions; } catch { return null; } }
         }
 
         // For DataGridView display of proteform2
         public double proteoform_mass_2
         {
-            get
-            {
-                if (connected_proteoforms[1] is ExperimentalProteoform)
-                    return ((ExperimentalProteoform)connected_proteoforms[1]).agg_mass;
-                else
-                    return ((TheoreticalProteoform)connected_proteoforms[1]).modified_mass;
-            }
+            get { try { return (connected_proteoforms[1]).modified_mass; } catch { return 0; } }
         }
 
         public double agg_intensity_2
@@ -182,6 +200,7 @@ namespace ProteoformSuiteInternal
         public double agg_RT_2
         {
             get { try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt; } catch { return 0; } }
+
         }
         public int num_observations_2
         {
@@ -193,9 +212,9 @@ namespace ProteoformSuiteInternal
         }
         public string accession_1
         {
-            get { try { return ((ExperimentalProteoform)connected_proteoforms[0]).accession; } catch { return null; } }
+            get { try { return (connected_proteoforms[0]).accession; } catch { return null; } }
         }
-        public string name
+        public string name_2
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).name; } catch { return null; } }
         }
@@ -203,9 +222,13 @@ namespace ProteoformSuiteInternal
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).fragment; } catch { return null; } }
         }
-        public string ptm_list
+        public string ptm_list_2
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).ptm_descriptions; } catch { return null; } }
+        }
+        public int psm_count_BU
+        {
+            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).psm_count_BU; } catch { return 0; }}
         }
     }
 }

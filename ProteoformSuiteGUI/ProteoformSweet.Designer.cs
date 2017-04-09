@@ -48,6 +48,7 @@
             this.theoreticalProteoformDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.experimentTheoreticalComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.experimentExperimentComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.topdownResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.proteoformFamilyAssignmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quantificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resultsSummaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -162,6 +163,7 @@
             this.theoreticalProteoformDatabaseToolStripMenuItem,
             this.experimentTheoreticalComparisonToolStripMenuItem,
             this.experimentExperimentComparisonToolStripMenuItem,
+            this.topdownResultsToolStripMenuItem,
             this.proteoformFamilyAssignmentToolStripMenuItem,
             this.quantificationToolStripMenuItem,
             this.resultsSummaryToolStripMenuItem});
@@ -217,6 +219,13 @@
             this.experimentExperimentComparisonToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
             this.experimentExperimentComparisonToolStripMenuItem.Text = "Experiment - Experiment Comparison";
             this.experimentExperimentComparisonToolStripMenuItem.Click += new System.EventHandler(this.experimentExperimentComparisonToolStripMenuItem_Click);
+            // 
+            // topdownResultsToolStripMenuItem
+            // 
+            this.topdownResultsToolStripMenuItem.Name = "topdownResultsToolStripMenuItem";
+            this.topdownResultsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.topdownResultsToolStripMenuItem.Text = "Top-down Results";
+            this.topdownResultsToolStripMenuItem.Click += new System.EventHandler(this.topdownResultsToolStripMenuItem_Click);
             // 
             // proteoformFamilyAssignmentToolStripMenuItem
             // 
@@ -320,6 +329,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveAllToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem exportTablesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadSettingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem topdownResultsToolStripMenuItem;
     }
 }
 

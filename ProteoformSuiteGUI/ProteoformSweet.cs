@@ -16,7 +16,6 @@ namespace ProteoformSuiteGUI
 {
     public partial class ProteoformSweet : Form
     {
-        //  Initialize Forms START
         public LoadDeconvolutionResults loadDeconvolutionResults = new LoadDeconvolutionResults();
         public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
         public NeuCodePairs neuCodePairs = new NeuCodePairs();
@@ -26,6 +25,7 @@ namespace ProteoformSuiteGUI
         public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
         public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
         public Quantification quantification = new Quantification();
+        public TopDown topDown = new TopDown();
         public ResultsSummary resultsSummary = new ResultsSummary();
         List<Form> forms;
         //  Initialize Forms END
@@ -49,6 +49,7 @@ namespace ProteoformSuiteGUI
             methodFileOpen.Filter = "Method XML File (*.xml)| *.xml";
             methodFileSave.DefaultExt = ".xml";
             methodFileSave.Filter = "Method XML File (*.xml)| *.xml";
+            Lollipop.read_mods_folder();
         }
 
         public void InitializeForms()
@@ -56,7 +57,7 @@ namespace ProteoformSuiteGUI
             forms = new List<Form>(new Form[] {
                 loadDeconvolutionResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
                 theoreticalDatabase, experimentalTheoreticalComparison, experimentExperimentComparison,
-                proteoformFamilies, quantification, resultsSummary
+                proteoformFamilies, quantification, topDown, resultsSummary
             });
             foreach (Form form in forms)
             {
@@ -73,10 +74,7 @@ namespace ProteoformSuiteGUI
         
 
         // RESULTS TOOL STRIP
-        public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            showForm(loadDeconvolutionResults);
-        }
+        public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(loadDeconvolutionResults); }
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(rawExperimentalComponents);
@@ -112,6 +110,12 @@ namespace ProteoformSuiteGUI
             showForm(proteoformFamilies);
             proteoformFamilies.construct_families();
         }
+        private void topdownResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(topDown);
+            if (run_when_form_loads) topDown.load_topdown();
+        }
+
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (run_when_form_loads) quantification.perform_calculations();
@@ -123,9 +127,6 @@ namespace ProteoformSuiteGUI
             resultsSummary.create_summary();
             showForm(resultsSummary);
         }
-
-
-        // FILE TOOL STRIP
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("printToolStripMenuItem_Click");

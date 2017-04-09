@@ -22,6 +22,8 @@ namespace ProteoformSuiteInternal
         public List<GoTerm> goTerms { get; set; } = new List<GoTerm>();
         public string goTerm_IDs { get { return String.Join("; ", goTerms.Select(g => g.Id)); } }
         public double ptm_mass { get { return ptm_set.mass; } }
+        public List<Psm> psm_list { get; set; } = new List<Psm>();
+        public int psm_count_BU { get { return psm_list.Count; } }
         public string ptm_descriptions
         {
             get { return ptm_list_string(); }

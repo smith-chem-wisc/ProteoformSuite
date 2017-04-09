@@ -25,12 +25,12 @@ namespace ProteoformSuiteInternal
                     dt.Columns.Add(col.HeaderText);
 
                 }
-                foreach(DataGridViewRow row in dgv.Rows)
+                foreach (DataGridViewRow row in dgv.Rows)
                 {
                     DataRow new_row = dt.NewRow();
                     foreach (DataGridViewCell cell in row.Cells)
                     {
-                        if (dgv.Columns[cell.ColumnIndex].Visible) new_row[cell.ColumnIndex] = (cell.Value == null  || cell.Value.ToString() == "NaN")? "" : cell.Value;
+                        if (dgv.Columns[cell.ColumnIndex].Visible) new_row[cell.ColumnIndex] = (cell.Value == null || cell.Value.ToString() == "NaN") ? "" : cell.Value;
                     }
                     lock (dt) dt.Rows.Add(new_row);
                 }
@@ -48,4 +48,3 @@ namespace ProteoformSuiteInternal
         }
     }
 }
-

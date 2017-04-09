@@ -166,9 +166,6 @@
             // 
             // cb_validateProteoforms
             // 
-            this.cb_validateProteoforms.AutoSize = true;
-            this.cb_validateProteoforms.Checked = true;
-            this.cb_validateProteoforms.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_validateProteoforms.Location = new System.Drawing.Point(90, 227);
             this.cb_validateProteoforms.Name = "cb_validateProteoforms";
             this.cb_validateProteoforms.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
@@ -209,7 +206,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(38, 192);
+            this.label7.Location = new System.Drawing.Point(39, 192);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(116, 13);

@@ -12,6 +12,7 @@ namespace ProteoformSuiteGUI
 {
     public partial class LoadDeconvolutionResults : Form
     {
+
         public bool run_when_form_loads;
 
         public LoadDeconvolutionResults()
@@ -23,7 +24,7 @@ namespace ProteoformSuiteGUI
 
         public void LoadDeconvolutionResults_Load(object sender, EventArgs e)
         { }
-        
+
         private void btn_neucode_CheckedChanged(object sender, EventArgs e)
         {
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(rb_neucode.Checked);
@@ -37,7 +38,6 @@ namespace ProteoformSuiteGUI
                 if (rb_unlabeled.Checked) f.label = Labeling.Unlabeled;
             }
 
-            match_files();
         }
 
         private void match_files()
@@ -70,18 +70,31 @@ namespace ProteoformSuiteGUI
             cmb_loadTable1.Items.Clear();
             cmb_loadTable2.Items.Clear();
             cmb_loadTable3.Items.Clear();
-            for (int i = 0; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-            for (int i = 0; i < 4; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
-            for (int i = 0; i < 4; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 8; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 8; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 8; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
             cmb_loadTable1.SelectedIndex = 0;
             cmb_loadTable2.SelectedIndex = 1;
             cmb_loadTable3.SelectedIndex = 2;
+            bt_calibrate.Visible = false;
+            cb_lockmass.Visible = false;
+            cb_tdhits.Visible = false;
 
             if (rb_chemicalCalibration.Checked)
             {
+                bt_calibrate.Visible = true;
+                cb_lockmass.Visible = true;
+                cb_tdhits.Visible = true;
+                cmb_loadTable1.SelectedIndex = 3;
+                cmb_loadTable2.SelectedIndex = 4;
+                cmb_loadTable3.SelectedIndex = 5;
+            }
+
+            else if (rb_advanced_user.Checked)
+            {
                 cmb_loadTable1.SelectedIndex = 0;
-                cmb_loadTable2.SelectedIndex = 1;
-                cmb_loadTable3.SelectedIndex = 3;
+                cmb_loadTable2.SelectedIndex = 6;
+                cmb_loadTable3.SelectedIndex = 2;
             }
 
             lb_filter1.Text = Lollipop.file_lists[cmb_loadTable1.SelectedIndex];
@@ -215,7 +228,6 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]));
         }
 
-
         // CLEAR BUTTONS
         private void btn_clearFiles1_Click(object sender, EventArgs e)
         {
@@ -258,10 +270,10 @@ namespace ProteoformSuiteGUI
         private void btn_nextPane_Click(object sender, EventArgs e)
         {
             MessageBox.Show(
-                "The Results menu is what you're looking for.\n\n"+
-                "Stepping through each form will process the data one step at a time (this one is \"Load Deconvolution Results\"). "+
-                "This should help give you an idea of what this program does and what settings you would like to use.\n\nOn the other hand, you have the \"Full Run with Defaults\" button, "+
-                "which plows through each of those processing steps, after which you can view the results in those forms.\n\nBelow, there's another info-button for using presets for a full run.\n\n"+
+                "The Results menu is what you're looking for.\n\n" +
+                "Stepping through each form will process the data one step at a time (this one is \"Load Deconvolution Results\"). " +
+                "This should help give you an idea of what this program does and what settings you would like to use.\n\nOn the other hand, you have the \"Full Run with Defaults\" button, " +
+                "which plows through each of those processing steps, after which you can view the results in those forms.\n\nBelow, there's another info-button for using presets for a full run.\n\n" +
                 "We hope you enjoy trying Proteoform Suite! Please contact us if you have any questions. The public repository for this program is hosted on GitHub at https://github.com/smith-chem-wisc/proteoform-suite.", "How To Process Results", MessageBoxButtons.OK);
             ((ProteoformSweet)MdiParent).display_resultsMenu();
         }
@@ -269,13 +281,12 @@ namespace ProteoformSuiteGUI
         private void btn_fullRunWithPresets_Click(object sender, EventArgs e)
         {
             MessageBox.Show(
-                "The Method menu is what you're looking for.\n\n"+
-                "You can save your current presets (or just the defaults).\n\nYou can also \"Load & Run\" presets in a method file and run through all processing steps. If you specify files both here and in the method file, we give you the choice of which to use.\n\n"+
-                "Above is another info-button on how to process results without using presets.\n\n"+
+                "The Method menu is what you're looking for.\n\n" +
+                "You can save your current presets (or just the defaults).\n\nYou can also \"Load & Run\" presets in a method file and run through all processing steps. If you specify files both here and in the method file, we give you the choice of which to use.\n\n" +
+                "Above is another info-button on how to process results without using presets.\n\n" +
                 "We hope you enjoy trying Proteoform Suite! Please contact us if you have any questions. The public repository for this program is hosted on GitHub at https://github.com/smith-chem-wisc/proteoform-suite.", "How To Use Presets.", MessageBoxButtons.OK);
             ((ProteoformSweet)MdiParent).display_methodMenu();
         }
-
         private void bt_clearResults_Click(object sender, EventArgs e)
         {
             ((ProteoformSweet)MdiParent).clear_lists();
@@ -285,7 +296,6 @@ namespace ProteoformSuiteGUI
         {
             ProteoformSweet.run_when_form_loads = cb_run_when_load.Checked;
         }
-
 
         // FILTERS
         private void tb_filter1_TextChanged(object sender, EventArgs e)
@@ -322,6 +332,32 @@ namespace ProteoformSuiteGUI
         {
             DisplayUtility.FillDataGridView(dgv_loadFiles3, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable3.SelectedIndex]));
             lb_filter3.Text = cmb_loadTable1.SelectedItem.ToString();
+        }
+
+        private void bt_calibrate_Click(object sender, EventArgs e)
+        {
+            if (!cb_tdhits.Checked && !cb_lockmass.Checked) { MessageBox.Show("Please select at least one calibration method."); return; }
+            if (cb_tdhits.Checked)
+            {
+                if (Lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationTopDown).Count() > 0) Lollipop.read_in_calibration_td_hits();
+                else { MessageBox.Show("Please enter top-down results files to calibrate."); return; }
+            }
+            if (Lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() > 0)
+            {
+              Lollipop.calibrate_files();
+              MessageBox.Show("Successfully calibrated files.");
+            }
+            else { MessageBox.Show("Please enter raw files to calibrate."); return; }
+        }
+
+        private void cb_tdhits_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.calibrate_td_results = cb_tdhits.Checked;
+        }
+
+        private void cb_lockmass_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.calibrate_lock_mass = cb_lockmass.Checked;
         }
     }
 }

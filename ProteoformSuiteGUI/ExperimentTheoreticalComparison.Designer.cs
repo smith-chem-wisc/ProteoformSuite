@@ -47,8 +47,13 @@
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.dgv_ET_Peak_List = new System.Windows.Forms.DataGridView();
             this.ct_ET_peakList = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.tb_notch_masses = new System.Windows.Forms.TextBox();
+            this.cb_notch_search = new System.Windows.Forms.CheckBox();
+            this.cb_TDBUpsm = new System.Windows.Forms.CheckBox();
             this.bt_compare_ET = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.cb_automate_peak_acceptance = new System.Windows.Forms.CheckBox();
+            this.cb_Graph_lowerThreshold = new System.Windows.Forms.CheckBox();
             this.tb_max_accepted_fdr = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -147,6 +152,9 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.Controls.Add(this.tb_notch_masses);
+            this.splitContainer3.Panel2.Controls.Add(this.cb_notch_search);
+            this.splitContainer3.Panel2.Controls.Add(this.cb_TDBUpsm);
             this.splitContainer3.Panel2.Controls.Add(this.cb_view_decoy_histogram);
             this.splitContainer3.Panel2.Controls.Add(this.bt_compare_ET);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox4);
@@ -283,6 +291,37 @@
             this.ct_ET_peakList.TabIndex = 1;
             this.ct_ET_peakList.Text = "chart1";
             // 
+            // tb_notch_masses
+            // 
+            this.tb_notch_masses.Enabled = false;
+            this.tb_notch_masses.Location = new System.Drawing.Point(100, 44);
+            this.tb_notch_masses.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_notch_masses.Name = "tb_notch_masses";
+            this.tb_notch_masses.Size = new System.Drawing.Size(314, 20);
+            this.tb_notch_masses.TabIndex = 35;
+            // 
+            // cb_notch_search
+            // 
+            this.cb_notch_search.AutoSize = true;
+            this.cb_notch_search.Location = new System.Drawing.Point(3, 47);
+            this.cb_notch_search.Name = "cb_notch_search";
+            this.cb_notch_search.Size = new System.Drawing.Size(92, 17);
+            this.cb_notch_search.TabIndex = 34;
+            this.cb_notch_search.Text = "Notch Search";
+            this.cb_notch_search.UseVisualStyleBackColor = true;
+            this.cb_notch_search.CheckedChanged += new System.EventHandler(this.cb_notch_search_CheckedChanged);
+            // 
+            // cb_TDBUpsm
+            // 
+            this.cb_TDBUpsm.AutoSize = true;
+            this.cb_TDBUpsm.Location = new System.Drawing.Point(3, 22);
+            this.cb_TDBUpsm.Name = "cb_TDBUpsm";
+            this.cb_TDBUpsm.Size = new System.Drawing.Size(217, 17);
+            this.cb_TDBUpsm.TabIndex = 33;
+            this.cb_TDBUpsm.Text = "Limit to theoreticals with TD or BU PSMs";
+            this.cb_TDBUpsm.UseVisualStyleBackColor = true;
+            this.cb_TDBUpsm.CheckedChanged += new System.EventHandler(this.cb_TDBUpsm_CheckedChanged);
+            // 
             // bt_compare_ET
             // 
             this.bt_compare_ET.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -298,6 +337,8 @@
             // groupBox4
             // 
             this.groupBox4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.groupBox4.Controls.Add(this.cb_automate_peak_acceptance);
+            this.groupBox4.Controls.Add(this.cb_Graph_lowerThreshold);
             this.groupBox4.Controls.Add(this.tb_max_accepted_fdr);
             this.groupBox4.Controls.Add(this.label9);
             this.groupBox4.Controls.Add(this.label4);
@@ -312,6 +353,30 @@
             this.groupBox4.TabIndex = 15;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "ET Peak List Parameters";
+            // 
+            // cb_automate_peak_acceptance
+            // 
+            this.cb_automate_peak_acceptance.AutoSize = true;
+            this.cb_automate_peak_acceptance.Location = new System.Drawing.Point(0, 57);
+            this.cb_automate_peak_acceptance.Name = "cb_automate_peak_acceptance";
+            this.cb_automate_peak_acceptance.Size = new System.Drawing.Size(237, 17);
+            this.cb_automate_peak_acceptance.TabIndex = 29;
+            this.cb_automate_peak_acceptance.Text = "Automate peak acceptance above threshold";
+            this.cb_automate_peak_acceptance.UseVisualStyleBackColor = true;
+            this.cb_automate_peak_acceptance.CheckedChanged += new System.EventHandler(this.cb_automate_peak_acceptance_CheckedChanged);
+            // 
+            // cb_Graph_lowerThreshold
+            // 
+            this.cb_Graph_lowerThreshold.AutoSize = true;
+            this.cb_Graph_lowerThreshold.Checked = true;
+            this.cb_Graph_lowerThreshold.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_Graph_lowerThreshold.Location = new System.Drawing.Point(43, 34);
+            this.cb_Graph_lowerThreshold.Name = "cb_Graph_lowerThreshold";
+            this.cb_Graph_lowerThreshold.Size = new System.Drawing.Size(55, 17);
+            this.cb_Graph_lowerThreshold.TabIndex = 28;
+            this.cb_Graph_lowerThreshold.Text = "Graph";
+            this.cb_Graph_lowerThreshold.UseVisualStyleBackColor = true;
+            this.cb_Graph_lowerThreshold.CheckedChanged += new System.EventHandler(this.cb_Graph_lowerThreshold_CheckedChanged);
             // 
             // tb_max_accepted_fdr
             // 
@@ -803,8 +868,15 @@
         private System.Windows.Forms.SplitContainer splitContainer5;
         private System.Windows.Forms.DataGridView dgv_ET_Peak_List;
         private System.Windows.Forms.Button bt_compare_ET;
+        private System.Windows.Forms.SplitContainer splitContainer6;
+        private System.Windows.Forms.DataGridView dgv_psmList;
+        private System.Windows.Forms.CheckBox cb_TDBUpsm;
         private System.Windows.Forms.TextBox tb_max_accepted_fdr;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.CheckBox cb_notch_search;
+        private System.Windows.Forms.TextBox tb_notch_masses;
+        private System.Windows.Forms.CheckBox cb_Graph_lowerThreshold;
+        private System.Windows.Forms.CheckBox cb_automate_peak_acceptance;
         private System.Windows.Forms.DataGridView dgv_ET_Pairs;
         private System.Windows.Forms.CheckBox cb_view_decoy_histogram;
     }
