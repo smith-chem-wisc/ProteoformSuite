@@ -13,7 +13,6 @@ namespace ProteoformSuiteInternal
         ef,  //Experiment-Experiment comparisons using unequal lysine counts
         etd, //Experiment-TopDown comparison (from TD data)
         ttd, //Theoretical-TopDown comprison (from TD data)
-        ettd //Experiment-Targeted-Topdown comparison (see which are validated)
     }
 
     //I have not used MassDifference objects in the logic, since it is better to cast the comparisons immediately as
@@ -150,7 +149,6 @@ namespace ProteoformSuiteInternal
                 if (this.relation_type == ProteoformComparison.ef) s = ef_string;
                 if (this.relation_type == ProteoformComparison.etd) s = etd_string;
                 if (this.relation_type == ProteoformComparison.ttd) s = ttd_string;
-                if (this.relation_type == ProteoformComparison.ettd) s = ettd_string;
                 return s;
             }
         }

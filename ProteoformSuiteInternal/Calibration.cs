@@ -63,14 +63,13 @@ namespace ProteoformSuiteInternal
         public static Func<double[], double> Run_TdMzCal(string filename, List<TopDownHit> identifications)
         {
             Func<double[], double> calibration_function = null;
-            if (identifications.Count(h => h.result_set == Result_Set.tight_absolute_mass) >= 5)  //need at least 5 calibration points to consider
+            if (identifications.Count >= 5)  //need at least 5 calibration points to consider
             {
-                List<TopDownHit> identifications_tight_mass = identifications.Where(h => h.result_set == Result_Set.tight_absolute_mass).ToList(); //only use tight aboslute mass modifications
                 //filter out 5% outliers
-                List<double> mass_errors = identifications_tight_mass.Select(h => (h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0)).ToList().OrderBy(m => m).ToList();
+                List<double> mass_errors = identifications.Select(h => (h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0)).ToList().OrderBy(m => m).ToList();
                 double percent_in_window = 1;
                 int start = 0; //start index
-                int count = identifications_tight_mass.Count; //end index
+                int count = identifications.Count; //end index
                 while (percent_in_window > .95)  //decrease window until ~95% of points in it
                 {
                     List<double> mass_errors_start = mass_errors.GetRange(start + 1, count - 1);
@@ -81,7 +80,7 @@ namespace ProteoformSuiteInternal
                     count--; //either way count fewer
                     percent_in_window = (double)mass_errors.GetRange(start, count).ToList().Count / mass_errors.Count;
                 }
-                List<TopDownHit> identifications_to_use = identifications_tight_mass.OrderBy(h => ((h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0))).ToList().GetRange(start, count).ToList();
+                List<TopDownHit> identifications_to_use = identifications.OrderBy(h => ((h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0))).ToList().GetRange(start, count).ToList();
                 
                 //get data points
                 List<LabeledDataPoint> pointList = new List<LabeledDataPoint>();

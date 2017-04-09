@@ -19,49 +19,33 @@ namespace ProteoformSuiteInternal
         public List<Component> read_components_from_xlsx(InputFile file, bool remove_missed_monos_and_harmonics)
         {
             this.raw_components_in_file.Clear();
-            string absolute_path = file.directory + "\\" + file.filename + file.extension;
 
-            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(absolute_path, false))
+            Component new_component = new Component();
+            int charge_row_index = 0;
+            string scan_range = "";
+            List<List<string>> cells = ExcelReader.get_cell_strings(file, false);
+            for (int i = 0; i < cells.Count(); i++)
             {
-                // Get Data in Sheet1 of Excel file
-                IEnumerable<Sheet> sheetcollection = spreadsheetDocument.WorkbookPart.Workbook.GetFirstChild<Sheets>().Elements<Sheet>(); // Get all sheets in spread sheet document 
-                WorksheetPart worksheet_1 = (WorksheetPart)spreadsheetDocument.WorkbookPart.GetPartById(sheetcollection.First().Id.Value); // Get sheet1 Part of Spread Sheet Document
-                SheetData sheet_1 = worksheet_1.Worksheet.Elements<SheetData>().First();
-                List<Row> rowcollection = worksheet_1.Worksheet.Descendants<Row>().ToList();
-
-                Component new_component = new Component();
-                int charge_row_index = 0;
-                string scan_range = "";
-                for (int i = 0; i < rowcollection.Count(); i++)
+                if (i == 0) continue; //skip component header                        
+                List<string> cellStrings = cells[i];
+                if (cellStrings.Count > 4) //component row
                 {
-                    if (i == 0) continue; //skip component header                        
-                    IEnumerable<Cell> cells = rowcollection[i].Descendants<Cell>();
-
-                    List<string> cellStrings = new List<string>();
-
-                    for (int k = 0; k < rowcollection[i].Descendants<Cell>().Count(); k++)
-                    {
-                        cellStrings.Add(GetCellValue(spreadsheetDocument, rowcollection[i].Descendants<Cell>().ElementAt(k)));
-                    }
-                    if (cellStrings.Count > 4) //component row
-                    {
-                        if (i > 1) add_component(new_component); // here we're adding the previously read component
-                        new_component = new Component(cellStrings, file); // starting fresh here with a newly created componet.
-                        charge_row_index = 0;
-                        scan_range = cellStrings[8];
-                    }
-                    else if (cellStrings.Count == 4) //charge-state row
-                    {
-                        if (charge_row_index == 0)
-                        {
-                            charge_row_index += 1;
-                            continue; //skip charge state headers
-                        }
-                        else new_component.add_charge_state(cellStrings);
-                    }
+                    if (i > 1) add_component(new_component); // here we're adding the previously read component
+                    new_component = new Component(cellStrings, file); // starting fresh here with a newly created componet.
+                    charge_row_index = 0;
+                    scan_range = cellStrings[8];
                 }
-                add_component(new_component); //add the final component
+                else if (cellStrings.Count == 4) //charge-state row
+                {
+                    if (charge_row_index == 0)
+                    {
+                        charge_row_index += 1;
+                        continue; //skip charge state headers
+                    }
+                    else new_component.add_charge_state(cellStrings);
+                }
             }
+            add_component(new_component); //add the final component
             this.final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
             this.scan_ranges = new HashSet<string>(this.final_components.Select(c => c.scan_range).ToList());
             return final_components;
@@ -323,16 +307,6 @@ namespace ProteoformSuiteInternal
                 return stringTablePart.SharedStringTable.ChildElements[Int32.Parse(value)].InnerText;
             else
                 return value;
-        }
-
-        private bool acceptable_td_component(Component c)
-        {
-            string[] scans = c.scan_range.Split('-');
-            bool same_scan = scans[0] == scans[1];
-            bool MS1_scan = MS1_scans.Contains(Convert.ToInt16(scans[0]));
-            bool not_repeat = raw_components_in_file.Where(r => r.input_file == c.input_file && r.scan_range == c.scan_range && r.reported_monoisotopic_mass == c.reported_monoisotopic_mass).ToList().Count == 0;
-            if (same_scan && MS1_scan && not_repeat) return true;
-            else return false;
         }
     }
 }
