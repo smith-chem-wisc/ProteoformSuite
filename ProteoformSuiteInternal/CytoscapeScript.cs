@@ -175,7 +175,6 @@ namespace ProteoformSuiteInternal
         public static string piechart_header = "piechart_graphics";
         public static string significant_header = "significant_difference";
         public static string td_label = "td";
-        public static string targeted_td_label = "targeted_td";
         public static string experimental_label = "experimental";
         public static string experimental_notQuantified_label = "experimental_below_quantification_threshold";
         public static string unmodified_theoretical_label = "theoretical";

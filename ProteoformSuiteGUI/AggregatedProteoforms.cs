@@ -174,6 +174,7 @@ namespace ProteoformSuiteGUI
             dgv_AcceptNeuCdLtProteoforms.DataSource = null;
             dgv_AcceptNeuCdLtProteoforms.Rows.Clear();
 
+            ((ProteoformSweet)MdiParent).topDown.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();

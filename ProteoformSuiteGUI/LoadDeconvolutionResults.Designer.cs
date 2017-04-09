@@ -58,9 +58,9 @@
             this.cmb_loadTable2 = new System.Windows.Forms.ComboBox();
             this.cmb_loadTable3 = new System.Windows.Forms.ComboBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.rb_advanced_user = new System.Windows.Forms.RadioButton();
             this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
             this.rb_standardOptions = new System.Windows.Forms.RadioButton();
-            this.rb_advanced_user = new System.Windows.Forms.RadioButton();
             this.bt_calibrate = new System.Windows.Forms.Button();
             this.cb_lockmass = new System.Windows.Forms.CheckBox();
             this.cb_tdhits = new System.Windows.Forms.CheckBox();
@@ -367,19 +367,31 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.rb_advanced_user);
             this.groupBox4.Controls.Add(this.rb_chemicalCalibration);
             this.groupBox4.Controls.Add(this.rb_standardOptions);
             this.groupBox4.Location = new System.Drawing.Point(232, 569);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(293, 43);
+            this.groupBox4.Size = new System.Drawing.Size(267, 43);
             this.groupBox4.TabIndex = 35;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Load Options";
             // 
+            // rb_advanced_user
+            // 
+            this.rb_advanced_user.AutoSize = true;
+            this.rb_advanced_user.Location = new System.Drawing.Point(82, 17);
+            this.rb_advanced_user.Name = "rb_advanced_user";
+            this.rb_advanced_user.Size = new System.Drawing.Size(75, 17);
+            this.rb_advanced_user.TabIndex = 35;
+            this.rb_advanced_user.Text = "Top Down";
+            this.rb_advanced_user.UseVisualStyleBackColor = true;
+            this.rb_advanced_user.CheckedChanged += new System.EventHandler(this.rb_advanced_user_CheckedChanged);
+            // 
             // rb_chemicalCalibration
             // 
             this.rb_chemicalCalibration.AutoSize = true;
-            this.rb_chemicalCalibration.Location = new System.Drawing.Point(163, 19);
+            this.rb_chemicalCalibration.Location = new System.Drawing.Point(165, 17);
             this.rb_chemicalCalibration.Name = "rb_chemicalCalibration";
             this.rb_chemicalCalibration.Size = new System.Drawing.Size(102, 17);
             this.rb_chemicalCalibration.TabIndex = 37;
@@ -399,17 +411,6 @@
             this.rb_standardOptions.Text = "Standard";
             this.rb_standardOptions.UseVisualStyleBackColor = true;
             this.rb_standardOptions.CheckedChanged += new System.EventHandler(this.rb_standardOptions_CheckedChanged);
-            // 
-            // rb_advanced_user
-            // 
-            this.rb_advanced_user.AutoSize = true;
-            this.rb_advanced_user.Location = new System.Drawing.Point(82, 20);
-            this.rb_advanced_user.Name = "rb_advanced_user";
-            this.rb_advanced_user.Size = new System.Drawing.Size(75, 17);
-            this.rb_advanced_user.TabIndex = 35;
-            this.rb_advanced_user.Text = "Top Down";
-            this.rb_advanced_user.UseVisualStyleBackColor = true;
-            this.rb_advanced_user.CheckedChanged += new System.EventHandler(this.rb_advanced_user_CheckedChanged);
             // 
             // bt_calibrate
             // 

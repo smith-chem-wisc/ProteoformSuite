@@ -20,7 +20,6 @@ namespace ProteoformSuiteInternal
         public double theoretical_mass { get; set; }
         public string accession { get; set; }
         public string name { get; set; }
-        public Result_Set result_set { get; set; }
 
         public double reported_mass { get; set; } //reported in TD results file
         public double corrected_mass { get; set; } //calibrated mass
@@ -32,7 +31,7 @@ namespace ProteoformSuiteInternal
         public bool targeted { get; set; }
         public InputFile file { get; set; }
 
-        public TopDownHit(InputFile file, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, Result_Set result_set, bool targeted)
+        public TopDownHit(InputFile file, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, bool targeted)
         {
             this.file = file;
             this.accession = accession;
@@ -48,7 +47,6 @@ namespace ProteoformSuiteInternal
             this.scan = scan;
             this.retention_time = retention_time;
             this.filename = filename;
-            this.result_set = result_set;
             this.targeted = targeted;
         }
 
@@ -72,22 +70,16 @@ namespace ProteoformSuiteInternal
         }
     }
 
-    public enum Result_Set
-    {
-        tight_absolute_mass,
-        biomarker
-    }
-
     //CALIBRATION
     public class TrainingPoint 
     {
-        public DataPoint dp;
-        public double l;
+        public DataPoint datapoint;
+        public double label;
 
         public TrainingPoint(DataPoint t, double label)
         {
-            dp = t;
-            l = label;
+            datapoint = t;
+            this.label = label;
         }
     }
 
@@ -96,27 +88,10 @@ namespace ProteoformSuiteInternal
         public double mz;
         public double rt;
         public int msnOrder;
-       // public double intensity;
         public int SelectedIonGuessChargeStateGuess;
         public double IsolationMZ;
-       // public double TotalIonCurrent;
-        //public double InjectionTime;
         public double relativeMZ;
         public string filename;
-
-        //public DataPoint(double mz, double rt, int msnOrder, double intensity, double TotalIonCurrent, double InjectionTime, string filename, int SelectedIonGuessChargeStateGuess = 0, double IsolationMZ = 0, double relativeMZ = 0)
-        //{
-        //    this.mz = mz;
-        //    this.rt = rt;
-        //    this.msnOrder = msnOrder;
-        //    this.intensity = intensity;
-        //    this.SelectedIonGuessChargeStateGuess = SelectedIonGuessChargeStateGuess;
-        //    this.IsolationMZ = IsolationMZ;
-        //    this.TotalIonCurrent = TotalIonCurrent;
-        //    this.InjectionTime = InjectionTime;
-        //    this.relativeMZ = relativeMZ;
-        //    this.filename = filename;
-        //}
 
         public DataPoint(double mz, double rt, int msnOrder, string filename, int SelectedIonGuessChargeStateGuess = 0, double IsolationMZ = 0, double relativeMZ = 0)
         {
