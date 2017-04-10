@@ -13,7 +13,9 @@ namespace ProteoformSuiteInternal
     //"ExperimentalProteoform" and "TheoreticalProteoform" objects
     public class ExperimentalProteoform : Proteoform
     {
-        // PROPERTIES
+
+        #region Public Properties
+
         public Component root;
         public List<Component> aggregated_components { get; set; } = new List<Component>();
         public List<Component> lt_verification_components { get; set; } = new List<Component>();
@@ -27,12 +29,11 @@ namespace ProteoformSuiteInternal
         public double agg_intensity { get; set; } = 0;
         public double agg_rt { get; set; } = 0;
         public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once. 
-        public int observation_count { get { return aggregated_components.Count; } }
-        public int light_observation_count { get { return lt_quant_components.Count; } }
-        public int heavy_observation_count {  get { return hv_quant_components.Count; } }
 
+        #endregion Public Properties
 
-        // CONTRUCTORS
+        #region Public Constructors
+
         public ExperimentalProteoform(string accession, Component root, List<Component> candidate_observations, bool is_target) : base(accession)
         {
             quant = new quantitativeValues(this);
@@ -87,6 +88,10 @@ namespace ProteoformSuiteInternal
             quant = new quantitativeValues(this);
         }
 
+        #endregion Public Constructors
+
+        #region Private Methods
+
         private void copy_aggregate(ExperimentalProteoform e)
         {
             this.root = e.root;
@@ -99,7 +104,6 @@ namespace ProteoformSuiteInternal
             this.accepted = e.accepted;
             this.mass_shifted = e.mass_shifted;
             this.is_target = e.is_target;
-            this.is_decoy = e.is_decoy;
             this.family = e.family;
             this.aggregated_components = new List<Component>(e.aggregated_components);
             this.lt_quant_components = new List<Component>(e.lt_quant_components);
@@ -109,8 +113,10 @@ namespace ProteoformSuiteInternal
             this.biorepIntensityList = new List<BiorepIntensity>(e.biorepIntensityList);
         }
 
+        #endregion
 
-        // AGGREGATION METHODS
+        #region Aggregation Public Methods
+
         public void aggregate()
         {
             ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", this.root, new List<Component>(Lollipop.remaining_components), true); //first pass returns temporary proteoform
@@ -184,6 +190,10 @@ namespace ProteoformSuiteInternal
             return does_include;
         }
 
+        #endregion Aggregation Public Methods
+
+        #region Aggregation Private Methods
+
         private bool tolerable_rt(Component candidate, double rt_apex)
         {
             return candidate.rt_apex >= rt_apex - Convert.ToDouble(Lollipop.retention_time_tolerance) &&
@@ -214,8 +224,10 @@ namespace ProteoformSuiteInternal
             return false;
         }
 
+        #endregion Aggregation Private Methods
 
-        // QUANTITATION CLASS AND METHODS
+        #region Quantitation Public Method
+
         public List<BiorepIntensity> make_biorepIntensityList<T>(List<T> lt_quant_components, List<T> hv_quant_components, IEnumerable<string> ltConditionStrings, IEnumerable<string> hvConditionStrings)
             where T : IBiorepable
         {
@@ -242,6 +254,10 @@ namespace ProteoformSuiteInternal
             this.biorepIntensityList = biorepIntensityList;
             return biorepIntensityList;
         }
+
+        #endregion Quantitation Public Method
+
+        #region Quantitation Public Class
 
         public class quantitativeValues
         {
@@ -443,7 +459,10 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        // OTHER METHODS
+        #endregion Quantitation Public Class
+
+        #region Public Methods
+
         public void shift_masses(int shift, bool neucode_labeled)
         {
             if (neucode_labeled)
@@ -464,5 +483,7 @@ namespace ProteoformSuiteInternal
             }
             this.mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
         }
+        #endregion Public Methods
+
     }
 }

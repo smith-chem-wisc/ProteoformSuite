@@ -257,7 +257,7 @@ namespace ProteoformSuiteGUI
             if (current_form == aggregatedProteoforms)
             {
                 SaveExcelFile(new List<DataGridView>() { aggregatedProteoforms.GetDGV() } , "aggregated_proteoforms_table.xlsx");
-           }
+            }
             if (current_form == theoreticalDatabase)
             {
                 SaveExcelFile(new List<DataGridView>() { theoreticalDatabase.GetDGV() }, "theoretical_database_table.xlsx");

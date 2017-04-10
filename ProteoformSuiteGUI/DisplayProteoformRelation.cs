@@ -2,7 +2,6 @@
 using ProteoformSuiteInternal;
 using System.Windows.Forms;
 
-
 namespace ProteoformSuiteGUI
 {
     public class DisplayProteoformRelation : DisplayObject
@@ -111,7 +110,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try { return ((ExperimentalProteoform)connected_proteoforms[0]).observation_count; }
+                try { return ((ExperimentalProteoform)connected_proteoforms[0]).aggregated_components.Count; }
                 catch { return -1000000; }
             }
         }
@@ -168,7 +167,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try { return ((ExperimentalProteoform)connected_proteoforms[1]).observation_count; }
+                try { return ((ExperimentalProteoform)connected_proteoforms[1]).aggregated_components.Count; }
                 catch { return 0; }
             }
         }
@@ -203,7 +202,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try { return ((TheoreticalProteoform)connected_proteoforms[1]).ptm_descriptions; }
+                try { return connected_proteoforms[1].ptm_description; }
                 catch { return null; }
             }
         }

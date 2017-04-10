@@ -98,8 +98,8 @@ namespace Test
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 101d, 54d, 2, lysineCount));//these are for quantification
             List<Component> components = generate_neucode_components(proteoformMass, intensity, intensity/2d, lysineCount); // these are for indentification
             ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, quant_components_list, true);
-            Assert.AreEqual(2, e1.light_observation_count);
-            Assert.AreEqual(2, e1.heavy_observation_count);
+            Assert.AreEqual(2, e1.lt_quant_components.Count);
+            Assert.AreEqual(2, e1.hv_quant_components.Count);
 
             Lollipop.input_files = quant_components_list.Select(c => c.input_file).Distinct().ToList();
             Lollipop.getObservationParameters(true, Lollipop.input_files);
@@ -139,8 +139,8 @@ namespace Test
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 50d, 100d, 3, lysineCount));//these are for quantification
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 48d, 102d, 4, lysineCount));//these are for quantification
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E2", components[0], components, quant_components_list, true);
-            Assert.AreEqual(4, e2.light_observation_count);
-            Assert.AreEqual(4, e2.heavy_observation_count);
+            Assert.AreEqual(4, e2.lt_quant_components.Count);
+            Assert.AreEqual(4, e2.hv_quant_components.Count);
 
             Lollipop.input_files = quant_components_list.Select(c => c.input_file).Distinct().ToList();
             Lollipop.getObservationParameters(true, Lollipop.input_files);

@@ -144,7 +144,14 @@
     <Compile Include="AggregatedProteoforms.Designer.cs">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </Compile>
+    <Compile Include="DisplayTheoreticalProteoform.cs" />
+    <Compile Include="DisplayInputFile.cs" />
+    <Compile Include="DisplayChargeState.cs" />
+    <Compile Include="DisplayExperimentalProteoform.cs" />
     <Compile Include="DisplayObject.cs" />
+    <Compile Include="DisplayGoTermNumber.cs" />
+    <Compile Include="DisplayComponent.cs" />
+    <Compile Include="DisplayQuantitativeValues.cs" />
     <Compile Include="DisplayProteoformRelation.cs" />
     <Compile Include="PeakAcceptabilityChangedEventArgs.cs" />
     <Compile Include="DGVExcelWriter.cs" />

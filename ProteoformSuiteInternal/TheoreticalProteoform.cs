@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Threading;
-using System.Threading.Tasks;
 using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
     public class TheoreticalProteoform : Proteoform
     {
+        #region Public Properties
+
         public IEnumerable<ProteinWithGoTerms> ExpandedProteinList { get; set; } = new List<ProteinWithGoTerms>();
         public string name { get; set; }
         public string description { get; set; }
@@ -20,16 +18,34 @@ namespace ProteoformSuiteInternal
         public int end { get; set; }
         public string sequence { get; private set; }
         public double unmodified_mass { get; set; }
-        public List<GoTerm> goTerms { get; set; } = new List<GoTerm>();
-        public string goTerm_IDs { get { return String.Join("; ", goTerms.Select(g => g.Id)); } }
+        public string goTerm_IDs { get; private set; }
         public double ptm_mass { get { return ptm_set.mass; } }
-        public string ptm_descriptions
-        {
-            get { return ptm_list_string(); }
-        }
         public bool contaminant { get; set; }
+        public List<GoTerm> goTerms
+        {
+            get
+            {
+                return _goTerms;
+            }
 
-        public TheoreticalProteoform(string accession, string description, IEnumerable<ProteinWithGoTerms> expanded_protein_list, double unmodified_mass, int lysine_count, PtmSet ptm_set, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins) 
+            set
+            {
+                _goTerms = value;
+                goTerm_IDs = String.Join("; ", goTerms.Select(g => g.Id));
+            }
+        }
+
+        #endregion Public Properties
+
+        #region Private Fields
+
+        private List<GoTerm> _goTerms = new List<GoTerm>();
+
+        #endregion Private Fields
+
+        #region Public Constructor
+
+        public TheoreticalProteoform(string accession, string description, IEnumerable<ProteinWithGoTerms> expanded_protein_list, double unmodified_mass, int lysine_count, PtmSet ptm_set, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins)
             : base(accession, unmodified_mass + ptm_set.mass, lysine_count, is_target)
         {
             this.linked_proteoform_references = new LinkedList<Proteoform>();
@@ -48,6 +64,10 @@ namespace ProteoformSuiteInternal
             if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
         }
 
+        #endregion Public Constructor
+
+        #region Public Method
+
         public static double CalculateProteoformMass(string pForm, Dictionary<char, double> aaIsotopeMassList)
         {
             double proteoformMass = 18.010565; // start with water
@@ -59,13 +79,6 @@ namespace ProteoformSuiteInternal
             }
             return proteoformMass + aaMasses.Sum();
         }
-
-        public string ptm_list_string()
-        {
-            if (ptm_set.ptm_combination.Count == 0)
-                return "Unmodified";
-            else
-                return string.Join("; ", ptm_set.ptm_combination.Select(ptm => ptm.modification.id));
-        }
+        #endregion Public Method
     }
 }
