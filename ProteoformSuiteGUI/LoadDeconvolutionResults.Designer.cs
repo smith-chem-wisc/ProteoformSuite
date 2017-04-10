@@ -42,9 +42,6 @@
             this.dgv_loadFiles2 = new System.Windows.Forms.DataGridView();
             this.dgv_loadFiles3 = new System.Windows.Forms.DataGridView();
             this.btn_fullRun = new System.Windows.Forms.Button();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.btn_fullRunWithPresets = new System.Windows.Forms.Button();
-            this.btn_nextPane = new System.Windows.Forms.Button();
             this.bt_clearResults = new System.Windows.Forms.Button();
             this.cb_run_when_load = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -64,7 +61,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles3)).BeginInit();
-            this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.SuspendLayout();
@@ -212,37 +208,6 @@
             this.btn_fullRun.Text = "Full Run With Defaults";
             this.btn_fullRun.UseVisualStyleBackColor = true;
             this.btn_fullRun.Click += new System.EventHandler(this.btn_fullRun_Click);
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Controls.Add(this.btn_fullRunWithPresets);
-            this.groupBox2.Controls.Add(this.btn_nextPane);
-            this.groupBox2.Location = new System.Drawing.Point(999, 604);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(183, 114);
-            this.groupBox2.TabIndex = 2;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "First Time Users";
-            // 
-            // btn_fullRunWithPresets
-            // 
-            this.btn_fullRunWithPresets.Location = new System.Drawing.Point(35, 65);
-            this.btn_fullRunWithPresets.Name = "btn_fullRunWithPresets";
-            this.btn_fullRunWithPresets.Size = new System.Drawing.Size(122, 43);
-            this.btn_fullRunWithPresets.TabIndex = 19;
-            this.btn_fullRunWithPresets.Text = "Full Run With Preset Parameters";
-            this.btn_fullRunWithPresets.UseVisualStyleBackColor = true;
-            this.btn_fullRunWithPresets.Click += new System.EventHandler(this.btn_fullRunWithPresets_Click);
-            // 
-            // btn_nextPane
-            // 
-            this.btn_nextPane.Location = new System.Drawing.Point(35, 16);
-            this.btn_nextPane.Name = "btn_nextPane";
-            this.btn_nextPane.Size = new System.Drawing.Size(122, 36);
-            this.btn_nextPane.TabIndex = 17;
-            this.btn_nextPane.Text = "Step Through Results Processing";
-            this.btn_nextPane.UseVisualStyleBackColor = true;
-            this.btn_nextPane.Click += new System.EventHandler(this.btn_nextPane_Click);
             // 
             // bt_clearResults
             // 
@@ -407,7 +372,6 @@
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.cb_run_when_load);
             this.Controls.Add(this.bt_clearResults);
-            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btn_fullRun);
             this.Controls.Add(this.dgv_loadFiles3);
             this.Controls.Add(this.dgv_loadFiles2);
@@ -427,7 +391,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles3)).EndInit();
-            this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
@@ -452,9 +415,6 @@
         private System.Windows.Forms.DataGridView dgv_loadFiles2;
         private System.Windows.Forms.DataGridView dgv_loadFiles3;
         private System.Windows.Forms.Button btn_fullRun;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Button btn_fullRunWithPresets;
-        private System.Windows.Forms.Button btn_nextPane;
         private System.Windows.Forms.Button bt_clearResults;
         private System.Windows.Forms.CheckBox cb_run_when_load;
         private System.Windows.Forms.GroupBox groupBox3;

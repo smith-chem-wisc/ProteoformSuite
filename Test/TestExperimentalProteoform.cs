@@ -283,7 +283,6 @@ namespace Test
             Assert.AreEqual("E1", f.quant.accession);
             Assert.AreEqual(e.mass_shifted, f.mass_shifted);
             Assert.AreEqual(e.is_target, f.is_target);
-            Assert.AreEqual(e.is_decoy, f.is_decoy);
             Assert.AreEqual(e.family, f.family);
             Assert.AreNotEqual(e.aggregated_components.GetHashCode(), f.aggregated_components.GetHashCode());
             Assert.AreEqual(e.aggregated_components.Count, f.aggregated_components.Count);

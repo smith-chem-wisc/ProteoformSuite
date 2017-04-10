@@ -43,7 +43,7 @@ namespace Test
             Component createdComponent2 = new Component(component2Values, componentInputFile2);
 
             ChargeState cs1 = new ChargeState(10, 200d, 100d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
-            createdComponent2.add_charge_state(cs1);
+            createdComponent2.charge_states.Add(cs1);
             createdComponent2.calculate_properties();
             Assert.AreEqual(componentInputFile2.UniqueId + "_2", createdComponent2.id);
             Assert.AreEqual(989.9d, createdComponent2.reported_monoisotopic_mass);
@@ -69,13 +69,13 @@ namespace Test
             InputFile componentInputFile3 = new InputFile("fake.txt", Purpose.Identification);
             Component createdComponent3 = new Component(component3Values, componentInputFile3);
             ChargeState cs1 = new ChargeState(10, 200d, 100d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
-            createdComponent3.add_charge_state(cs1);
+            createdComponent3.charge_states.Add(cs1);
 
             List<string> component4Values = new List<string> { "2", "989.9", "99.9", "5", "6", "0.02", "88.8", "0.888", "10-15", "11.1-12.2", "10.55" };
             Component createdComponent4 = new Component(component3Values, componentInputFile3);
             ChargeState cs2 = new ChargeState(11, 300d, 91.0006615d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
-            createdComponent4.add_charge_state(cs1);
-            createdComponent4.add_charge_state(cs2);
+            createdComponent4.charge_states.Add(cs1);
+            createdComponent4.charge_states.Add(cs2);
 
             createdComponent3.mergeTheseComponents(createdComponent4);
 
@@ -95,14 +95,14 @@ namespace Test
             InputFile componentInputFile3 = new InputFile("fake.txt", Purpose.Identification);
             Component createdComponent3 = new Component(component3Values, componentInputFile3);
             ChargeState cs1 = new ChargeState(10, 200d, 100d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
-            createdComponent3.add_charge_state(cs1);
+            createdComponent3.charge_states.Add(cs1);
 
             List<string> component4Values = new List<string> { "2", "990.9", "99.9", "5", "6", "0.02", "88.8", "0.888", "10-15", "11.1-12.2", "10.55" };
             Component createdComponent4 = new Component(component3Values, componentInputFile3);
             ChargeState cs2 = new ChargeState(10, 300d, 100.10023d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
             ChargeState cs3 = new ChargeState(11, 500d, 91.09177968d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
-            createdComponent4.add_charge_state(cs2);
-            createdComponent4.add_charge_state(cs3);
+            createdComponent4.charge_states.Add(cs2);
+            createdComponent4.charge_states.Add(cs3);
 
             createdComponent3.mergeTheseComponents(createdComponent4);
 
@@ -120,14 +120,14 @@ namespace Test
             InputFile componentInputFile3 = new InputFile("fake.txt", Purpose.Identification);
             Component createdComponent3 = new Component(component3Values, componentInputFile3);
             ChargeState cs1 = new ChargeState(10, 200d, 100d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
-            createdComponent3.add_charge_state(cs1);
+            createdComponent3.charge_states.Add(cs1);
 
             List<string> component4Values = new List<string> { "2", "990.9", "99.9", "5", "6", "0.02", "88.8", "0.888", "10-15", "11.1-12.2", "10.55" };
             Component createdComponent4 = new Component(component3Values, componentInputFile3);
             ChargeState cs2 = new ChargeState(10, 300d, 99.89977d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
             ChargeState cs3 = new ChargeState(11, 500d, 90.90954331d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
-            createdComponent4.add_charge_state(cs2);
-            createdComponent4.add_charge_state(cs3);
+            createdComponent4.charge_states.Add(cs2);
+            createdComponent4.charge_states.Add(cs3);
 
             createdComponent3.mergeTheseComponents(createdComponent4);
 
@@ -145,12 +145,12 @@ namespace Test
             InputFile componentInputFile3 = new InputFile("fake.txt", Purpose.Identification);
             Component createdComponent3 = new Component(component3Values, componentInputFile3);
             ChargeState cs1 = new ChargeState(10, 200d, 100d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
-            createdComponent3.add_charge_state(cs1);
+            createdComponent3.charge_states.Add(cs1);
 
             List<string> component4Values = new List<string> { "2", "990.9", "99.9", "5", "6", "0.02", "88.8", "0.888", "10-15", "11.1-12.2", "10.55" };
             Component createdComponent4 = new Component(component3Values, componentInputFile3);
             ChargeState cs2 = new ChargeState(11, 500d, 91.09177968d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
-            createdComponent4.add_charge_state(cs2);
+            createdComponent4.charge_states.Add(cs2);
 
             createdComponent3.mergeTheseComponents(createdComponent4);
 
@@ -165,7 +165,7 @@ namespace Test
         public void testSetValuesWithExistingChargeStates()
         {
             ChargeState chargeState1 = new ChargeState(10, 1, 100, 0);
-            testComponent1.add_charge_state(chargeState1);
+            testComponent1.charge_states.Add(chargeState1);
             testComponent1.calculate_properties();
             Assert.AreEqual(1, testComponent1.num_charge_states);
             Assert.That(() => testComponent1.num_charge_states = 2, Throws.TypeOf<ArgumentException>()

@@ -8,17 +8,46 @@ namespace ProteoformSuiteInternal
 {
     public class Proteoform
     {
+
+        #region Public Properties
+
         public string accession { get; set; }
         public double modified_mass { get; set; }
         public int lysine_count { get; set; } = -1;
         public bool is_target { get; set; } = true;
-        public bool is_decoy { get; set; } = false;
         public List<Proteoform> candidate_relatives { get; set; }
         public List<ProteoformRelation> relationships { get; set; } = new List<ProteoformRelation>();
         public ProteoformFamily family { get; set; }
-        public PtmSet ptm_set { get; set; } = new PtmSet(new List<Ptm>());
         public LinkedList<Proteoform> linked_proteoform_references { get; set; } // TheoreticalProteoform is first, Experimental chain comes afterwards
         public GeneName gene_name { get; set; }
+        public string ptm_description { get; set; }
+        public PtmSet ptm_set
+        {
+            get
+            {
+                return _ptm_set;
+            }
+
+            set
+            {
+                _ptm_set = value;
+                ptm_description = ptm_set == null || ptm_set.ptm_combination == null ? 
+                    "Unknown" : 
+                    ptm_set.ptm_combination.Count == 0 ?
+                        "Unmodified" :
+                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => ptm.modification.id));
+            }
+        }
+
+        #endregion Public Properties
+
+        #region Private Fields
+
+        private PtmSet _ptm_set = new PtmSet(new List<Ptm>());
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public Proteoform(string accession, double modified_mass, int lysine_count, bool is_target)
         {
@@ -26,13 +55,16 @@ namespace ProteoformSuiteInternal
             this.modified_mass = modified_mass;
             this.lysine_count = lysine_count;
             this.is_target = is_target;
-            this.is_decoy = !is_target;
         }
 
         public Proteoform(string accession)
         {
             this.accession = accession;
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public List<Proteoform> get_connected_proteoforms()
         {
@@ -87,7 +119,7 @@ namespace ProteoformSuiteInternal
                     new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Where(ptm => !ptm.modification.Equals(best_loss)))) :
                     new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Concat(best_addition.ptm_combination).Where(ptm => ptm.modification.monoisotopicMass != 0).ToList()));
                 lock (r) lock (e)
-                    assign_pf_identity(e, this, with_mod_change, r, sign, best_loss != null ? new PtmSet(new List<Ptm> { new Ptm(-1, best_loss) }) : best_addition);
+                        assign_pf_identity(e, this, with_mod_change, r, sign, best_loss != null ? new PtmSet(new List<Ptm> { new Ptm(-1, best_loss) }) : best_addition);
                 identified.Add(e);
             }
             return identified;
@@ -150,6 +182,10 @@ namespace ProteoformSuiteInternal
             return possible_ptmsets;
         }
 
+        #endregion Public Methods
+
+        #region Private Methods
+
         private void assign_pf_identity(ExperimentalProteoform e, Proteoform theoretical_reference, PtmSet set, ProteoformRelation r, int sign, PtmSet change)
         {
             if (r.represented_ptmset == null)
@@ -185,5 +221,7 @@ namespace ProteoformSuiteInternal
             }
             return degraded;
         }
+        #endregion Private Methods
+
     }
 }

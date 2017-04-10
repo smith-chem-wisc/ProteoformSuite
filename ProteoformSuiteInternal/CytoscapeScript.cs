@@ -280,7 +280,7 @@ namespace ProteoformSuiteInternal
 
             foreach (TheoreticalProteoform p in theoreticals)
             {
-                string node_type = String.Equals(p.ptm_list_string(), "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
+                string node_type = String.Equals(p.ptm_description, "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity }) + Environment.NewLine;
             }
 
@@ -305,7 +305,7 @@ namespace ProteoformSuiteInternal
 
             else if (typeof(TheoreticalProteoform).IsAssignableFrom(p.GetType()))
             {
-                return p.accession + " " + ((TheoreticalProteoform)p).ptm_list_string();
+                return p.accession + " " + p.ptm_description;
             }
 
             else

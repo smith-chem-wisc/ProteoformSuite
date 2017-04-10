@@ -110,6 +110,7 @@
     <Compile Include="AminoAcidMasses.cs" />
     <Compile Include="BigRational.cs" />
     <Compile Include="BiorepIntensity.cs" />
+    <Compile Include="ChargeState.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Correction.cs" />
     <Compile Include="CytoscapeScript.cs" />
