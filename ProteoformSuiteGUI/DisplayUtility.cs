@@ -129,30 +129,31 @@ namespace ProteoformSuiteGUI
         {
             if (dgv.Columns.Count <= 0) return;
 
+            dgv.AllowUserToAddRows = false;
+
             //making all columns invisible first - faster
             foreach (DataGridViewColumn column in dgv.Columns) { column.Visible = false; }
             if (!mask_mass_shifter)
             {
-                dgv.Columns["mass_shifter"].Visible = true;
-                dgv.Columns["mass_shifter"].ReadOnly = false; //user can say how much they want to change monoisotopic by for each
+                dgv.Columns[nameof(DeltaMassPeak.mass_shifter)].Visible = true;
+                dgv.Columns[nameof(DeltaMassPeak.mass_shifter)].ReadOnly = false; //user can say how much they want to change monoisotopic by for each
             }
-            dgv.Columns["peak_deltaM_average"].DefaultCellStyle.Format = "0.####";
-            dgv.Columns["peak_group_fdr"].DefaultCellStyle.Format = "0.##";
+            dgv.Columns[nameof(DeltaMassPeak.peak_deltaM_average)].DefaultCellStyle.Format = "0.####";
+            dgv.Columns[nameof(DeltaMassPeak.peak_group_fdr)].DefaultCellStyle.Format = "0.##";
 
-            dgv.Columns["peak_relation_group_count"].HeaderText = "Peak Center Count";
-            dgv.Columns["decoy_relation_count"].HeaderText = "Decoy Count under Peak";
-            dgv.Columns["peak_deltaM_average"].HeaderText = "Peak Center Delta Mass";
-            dgv.Columns["peak_group_fdr"].HeaderText = "Peak FDR";
-            dgv.Columns["peak_accepted"].HeaderText = "Peak Accepted";
-            dgv.Columns["possiblePeakAssignments_string"].HeaderText = "Peak Assignment";
+            dgv.Columns[nameof(DeltaMassPeak.peak_relation_group_count)].HeaderText = "Peak Center Count";
+            dgv.Columns[nameof(DeltaMassPeak.decoy_relation_count)].HeaderText = "Decoy Count under Peak";
+            dgv.Columns[nameof(DeltaMassPeak.peak_deltaM_average)].HeaderText = "Peak Center Delta Mass";
+            dgv.Columns[nameof(DeltaMassPeak.peak_group_fdr)].HeaderText = "Peak FDR";
+            dgv.Columns[nameof(DeltaMassPeak.peak_accepted)].HeaderText = "Peak Accepted";
+            dgv.Columns[nameof(DeltaMassPeak.possiblePeakAssignments_string)].HeaderText = "Peak Assignment";
 
-            dgv.Columns["peak_relation_group_count"].Visible = true;
-            //dgv.Columns["decoy_relation_count"].Visible = true;
-            dgv.Columns["peak_deltaM_average"].Visible = true;
-            dgv.Columns["peak_group_fdr"].Visible = true;
-            dgv.Columns["peak_accepted"].Visible = true;
-            dgv.Columns["possiblePeakAssignments_string"].Visible = true;
-            dgv.AllowUserToAddRows = false;
+            dgv.Columns[nameof(DeltaMassPeak.peak_relation_group_count)].Visible = true;
+            //dgv.Columns[nameof(DeltaMassPeak.decoy_relation_count)].Visible = true;
+            dgv.Columns[nameof(DeltaMassPeak.peak_deltaM_average)].Visible = true;
+            dgv.Columns[nameof(DeltaMassPeak.peak_group_fdr)].Visible = true;
+            dgv.Columns[nameof(DeltaMassPeak.peak_accepted)].Visible = true;
+            dgv.Columns[nameof(DeltaMassPeak.possiblePeakAssignments_string)].Visible = true;
         }
 
         public static object[] get_selected_objects(DataGridView dgv)

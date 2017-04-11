@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace ProteoformSuiteGUI
 {
@@ -123,7 +124,7 @@ namespace ProteoformSuiteGUI
 
         public void make_databases()
         {
-            Lollipop.get_theoretical_proteoforms();
+            Lollipop.get_theoretical_proteoforms(Path.Combine(Environment.CurrentDirectory, "Mods"));
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
             tb_totalTheoreticalProteoforms.Text = Lollipop.proteoform_community.theoretical_proteoforms.Length.ToString();
         }

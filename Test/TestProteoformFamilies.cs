@@ -189,7 +189,9 @@ namespace Test
             };
 
             Lollipop.modification_ranks = new Dictionary<double, int> { { 0, 1 }, { 19, 2 } };
+            Lollipop.rank_sum_threshold = 2;
             Lollipop.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, Lollipop.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList(), Lollipop.modification_ranks, 1);
+            Lollipop.all_mods_with_mass = Lollipop.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
 
             Lollipop.ee_max_mass_difference = 20;
             Lollipop.peak_width_base_ee = 0.015;
@@ -267,8 +269,8 @@ namespace Test
             //Testing the identification of experimentals   
             //test with a modificationwithmass that's 0 mass, and then see that it crawls around and labels them each with growing ptm sets with that modification
             //test that the relation.represented_modification gets set
-            Assert.True(community.relations_in_peaks.All(r => r.peak.peak_deltaM_average != 0 || r.represented_ptmset.ptm_combination.First().modification.id == "Unmodified"));
             Assert.True(community.relations_in_peaks.All(r => r.peak.peak_deltaM_average != 19 || r.represented_ptmset == null));
+            Assert.True(community.relations_in_peaks.All(r => r.peak.peak_deltaM_average != 0 || r.represented_ptmset.ptm_combination.First().modification.id == "unmodified"));
             Assert.True(pf1 == pf3.linked_proteoform_references.First.Value || pf2 == pf3.linked_proteoform_references.First.Value);
 
             //test I don't get re-reassignments
@@ -279,6 +281,7 @@ namespace Test
             Assert.AreEqual((pf3.linked_proteoform_references.First.Value as TheoreticalProteoform).accession, (pf5.linked_proteoform_references.First.Value as TheoreticalProteoform).accession); //test that the accession gets carried all the way through the depth of connections
             Assert.AreEqual((pf3.linked_proteoform_references.First.Value as TheoreticalProteoform).fragment, (pf5.linked_proteoform_references.First.Value as TheoreticalProteoform).fragment);
             Assert.AreEqual(pf9, pf8.linked_proteoform_references.Last.Value);
+
             return community;
         }
 
