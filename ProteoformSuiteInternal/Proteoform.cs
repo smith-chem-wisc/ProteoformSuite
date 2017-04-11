@@ -71,7 +71,7 @@ namespace ProteoformSuiteInternal
             return relationships.Where(r => r.peak.peak_accepted).SelectMany(r => r.connected_proteoforms).ToList();
         }
 
-        public List<ExperimentalProteoform> identify_connected_experimentals(List<PtmSet> all_possible_ptmsets)
+        public List<ExperimentalProteoform> identify_connected_experimentals(List<PtmSet> all_possible_ptmsets, List<ModificationWithMass> all_mods_with_mass)
         {
             List<ExperimentalProteoform> identified = new List<ExperimentalProteoform>();
             foreach (ProteoformRelation r in relationships.Where(r => r.peak.peak_accepted).Distinct().ToList())
@@ -89,12 +89,12 @@ namespace ProteoformSuiteInternal
                         null); //Experimental without theoretical reference
                 string theoretical_base_sequence = theoretical_base != null ? theoretical_base.sequence : "";
 
-                PtmSet best_addition = generate_possible_added_ptmsets(r.peak.possiblePeakAssignments, deltaM, mass_tolerance, Lollipop.all_mods_with_mass, theoretical_base, theoretical_base_sequence, Lollipop.rank_first_quartile / 2)
+                PtmSet best_addition = generate_possible_added_ptmsets(r.peak.possiblePeakAssignments, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, theoretical_base_sequence, Lollipop.rank_first_quartile / 2)
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
 
                 ModificationWithMass best_loss = null;
-                foreach (ModificationWithMass m in Lollipop.all_mods_with_mass)
+                foreach (ModificationWithMass m in all_mods_with_mass)
                 {
                     bool within_loss_tolerance = deltaM >= -m.monoisotopicMass - mass_tolerance && deltaM <= -m.monoisotopicMass + mass_tolerance;
                     bool can_be_removed = this.ptm_set.ptm_combination.Select(ptm => ptm.modification).Contains(m);

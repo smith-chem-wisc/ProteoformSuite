@@ -225,6 +225,8 @@ namespace Test
             // One experimental one theoretical proteoforms; lysine count equal; mass difference < 500 -- return 1
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, 1, true);
             TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
+            Lollipop.all_possible_ptmsets = new List<PtmSet> { pf2.ptm_set };
+            Lollipop.rank_sum_threshold = 2;
             pf2.modified_mass = 1010.0;
             pf2.lysine_count = 1;
             pf2.is_target = true;
@@ -234,6 +236,10 @@ namespace Test
             paE[0] = pf1;
             paT[0] = pf2;
             List<ProteoformRelation> prList = new List<ProteoformRelation>();
+            prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical);
+            Assert.AreEqual(0, prList.Count);
+            Lollipop.all_mods_with_mass = new List<ModificationWithMass> { ConstructorsForTesting.get_modWithMass("fake", -10)};
+            Lollipop.modification_ranks = new Dictionary<double, int> { { 0, 1 }, { -10, 2 } };
             prList = community.relate(paE, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(1, prList.Count);
 

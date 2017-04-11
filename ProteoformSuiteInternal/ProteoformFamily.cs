@@ -74,7 +74,7 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(theoretical_proteoforms, t =>
             {
                 lock (identified_experimentals)
-                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(Lollipop.all_possible_ptmsets))
+                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(Lollipop.all_possible_ptmsets, Lollipop.all_mods_with_mass))
                     {
                         identified_experimentals.Add(e);
                     }
@@ -90,7 +90,7 @@ namespace ProteoformSuiteInternal
                 Parallel.ForEach(newly_identified_experimentals, id_experimental =>
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
-                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Lollipop.all_possible_ptmsets))
+                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Lollipop.all_possible_ptmsets, Lollipop.all_mods_with_mass))
                             {
                                 identified_experimentals.Add(new_e);
                                 tmp_new_experimentals.Add(new_e);

@@ -60,7 +60,7 @@ namespace Test
             Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Lollipop.input_files);
 
             Lollipop.theoretical_proteins.Clear();
-            Lollipop.get_theoretical_proteoforms();
+            Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods"));
             Assert.AreEqual(54, Lollipop.theoretical_proteins.SelectMany(kv => kv.Value).Sum(p => p.DatabaseReferences.Where(dbRef => dbRef.Type == "GO").Count()));
             Assert.AreEqual(20, Lollipop.proteoform_community.theoretical_proteoforms.SelectMany(t => t.goTerms.Select(go => go.Id)).Distinct().Count());
 
@@ -97,7 +97,7 @@ namespace Test
             Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Lollipop.input_files);
 
             Lollipop.theoretical_proteins.Clear();
-            Lollipop.get_theoretical_proteoforms();
+            Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods"));
 
             List<TheoreticalProteoform> peptides = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "peptide").ToList();
             List<TheoreticalProteoform> chains = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "chain").ToList();

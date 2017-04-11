@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace ProteoformSuiteGUI
 {
@@ -42,7 +43,7 @@ namespace ProteoformSuiteGUI
                         if (Lollipop.raw_quantification_components.Count <= 0)
                             Lollipop.process_raw_components(Lollipop.input_files, Lollipop.raw_quantification_components, Purpose.Quantification);
                     },
-                    () => { if (Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() > 0 && Lollipop.proteoform_community.theoretical_proteoforms.Length <= 0) Lollipop.get_theoretical_proteoforms(); }
+                    () => { if (Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() > 0 && Lollipop.proteoform_community.theoretical_proteoforms.Length <= 0) Lollipop.get_theoretical_proteoforms(Path.Combine(Path.Combine(Environment.CurrentDirectory, "Mods"))); }
                 );
 
                 this.FillRawExpComponentsTable();

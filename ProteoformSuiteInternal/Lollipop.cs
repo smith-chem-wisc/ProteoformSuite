@@ -446,7 +446,7 @@ namespace ProteoformSuiteInternal
         public static List<PtmSet> acceptable_ptm_sets = new List<PtmSet>();
         static Dictionary<char, double> aaIsotopeMassList;
 
-        public static void get_theoretical_proteoforms()
+        public static void get_theoretical_proteoforms(string mods_directory_path)
         {
             //Clear out data from potential previous runs
             proteoform_community.decoy_proteoforms.Clear();
@@ -464,7 +464,7 @@ namespace ProteoformSuiteInternal
                 lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).OfType<ModificationWithLocation>().Where(m => !mod_types_to_exclude.Contains(m.modificationType)));
             });
 
-            foreach (string filename in Directory.GetFiles(Path.Combine(Path.Combine(Environment.CurrentDirectory, "Mods"))))
+            foreach (string filename in Directory.GetFiles(mods_directory_path))
             {
                 all_known_modifications.AddRange(PtmListLoader.ReadModsFromFile(filename));
             }
