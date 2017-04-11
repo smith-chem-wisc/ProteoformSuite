@@ -35,8 +35,8 @@ namespace Test
             Assert.AreEqual("E1", test_community.families.First().experimentals_list);
             Assert.AreEqual(1, test_community.families.Count);
             Assert.AreEqual(2, test_community.families[0].proteoforms.Count);
-            Assert.AreEqual(1, test_community.families.First().experimental_count);
-            Assert.AreEqual(1, test_community.families.First().theoretical_count);
+            Assert.AreEqual(1, test_community.families.First().experimental_proteoforms.Count);
+            Assert.AreEqual(1, test_community.families.First().theoretical_proteoforms.Count);
         }
 
         [Test]
@@ -77,8 +77,8 @@ namespace Test
             Assert.AreEqual(1, test_community.families.Count);
             Assert.AreEqual("", test_community.families.First().accession_list);
             Assert.AreEqual(4, test_community.families.First().proteoforms.Count);
-            Assert.AreEqual(4, test_community.families.First().experimental_count);
-            Assert.AreEqual(0, test_community.families.First().theoretical_count);
+            Assert.AreEqual(4, test_community.families.First().experimental_proteoforms.Count);
+            Assert.AreEqual(0, test_community.families.First().theoretical_proteoforms.Count);
         }    
        
         [Test]
@@ -126,12 +126,12 @@ namespace Test
             Assert.AreEqual(2, test_community.families.Count);
             Assert.AreEqual("", test_community.families.FirstOrDefault(f => f.proteoforms.Contains(pf3)).accession_list);
             Assert.AreEqual(2, test_community.families.FirstOrDefault(f => f.proteoforms.Contains(pf3)).proteoforms.Count);
-            Assert.AreEqual(2, test_community.families.FirstOrDefault(f => f.proteoforms.Contains(pf3)).experimental_count);
-            Assert.AreEqual(0, test_community.families.FirstOrDefault(f => f.proteoforms.Contains(pf3)).theoretical_count);
+            Assert.AreEqual(2, test_community.families.FirstOrDefault(f => f.proteoforms.Contains(pf3)).experimental_proteoforms.Count);
+            Assert.AreEqual(0, test_community.families.FirstOrDefault(f => f.proteoforms.Contains(pf3)).theoretical_proteoforms.Count);
             Assert.AreEqual("", test_community.families.FirstOrDefault(f => f.proteoforms.Contains(pf5)).accession_list);
             Assert.AreEqual(3, test_community.families.FirstOrDefault(f => f.proteoforms.Contains(pf5)).proteoforms.Count);
-            Assert.AreEqual(3, test_community.families.FirstOrDefault(f => f.proteoforms.Contains(pf5)).experimental_count);
-            Assert.AreEqual(0, test_community.families.FirstOrDefault(f => f.proteoforms.Contains(pf5)).theoretical_count);
+            Assert.AreEqual(3, test_community.families.FirstOrDefault(f => f.proteoforms.Contains(pf5)).experimental_proteoforms.Count);
+            Assert.AreEqual(0, test_community.families.FirstOrDefault(f => f.proteoforms.Contains(pf5)).theoretical_proteoforms.Count);
         }
 
         [Test]
@@ -163,8 +163,8 @@ namespace Test
             test_community.construct_families();
             Assert.AreEqual(1, test_community.families.Count);
             Assert.AreEqual(2, test_community.families[0].proteoforms.Count);
-            Assert.AreEqual(1, test_community.families.First().experimental_count);
-            Assert.AreEqual(1, test_community.families.First().theoretical_count);
+            Assert.AreEqual(1, test_community.families.First().experimental_proteoforms.Count);
+            Assert.AreEqual(1, test_community.families.First().theoretical_proteoforms.Count);
             Assert.AreEqual("E1", test_community.families.First().experimentals_list);
             Assert.AreEqual(p1.Name, test_community.families.First().name_list);
             Assert.AreEqual(pf2.accession, test_community.families.First().accession_list);
@@ -293,8 +293,8 @@ namespace Test
             Assert.AreEqual(9, community.families.SelectMany(f => f.proteoforms).Count());
             Assert.AreEqual(5, community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E1")).proteoforms.Count);
             Assert.AreEqual(4, community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E6")).proteoforms.Count);
-            Assert.AreEqual(3, community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E1")).experimental_count);
-            Assert.AreEqual(2, community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E1")).theoretical_count);
+            Assert.AreEqual(3, community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E1")).experimental_proteoforms.Count);
+            Assert.AreEqual(2, community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E1")).theoretical_proteoforms.Count);
             Assert.AreEqual("" + "; " + "GENE", community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E1")).gene_list); //both would give null preferred gene names, since that field isn't set up
             Assert.True(String.Join("", community.families.Select(f => f.experimentals_list)).Contains("E1"));
             Assert.True(String.Join("", community.families.Select(f => f.name_list)).Contains(p1_name));

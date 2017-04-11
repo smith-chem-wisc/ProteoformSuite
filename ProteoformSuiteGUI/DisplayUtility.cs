@@ -175,24 +175,5 @@ namespace ProteoformSuiteGUI
                 display_objects.Select(d => d.display_object).ToArray() :
                 items.ToArray();
         }
-
-        public static void format_families_dgv(DataGridView dgv)
-        {
-            if (dgv.Columns.Count <= 0) return;
-
-            //set column header
-            dgv.Columns["family_id"].HeaderText = "Family ID";
-            dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
-            dgv.Columns["experimental_count"].HeaderText = "Experimental Proteoforms";
-            dgv.Columns["theoretical_count"].HeaderText = "Theoretical Proteoforms";
-            dgv.Columns["relation_count"].HeaderText = "Relation Count";
-            dgv.Columns["accession_list"].HeaderText = "Theoretical Accessions";
-            dgv.Columns["name_list"].HeaderText = "Theoretical Names";
-            dgv.Columns["gene_list"].HeaderText = "Gene Names";
-            dgv.Columns["experimentals_list"].HeaderText = "Experimental Accessions";
-            dgv.Columns["agg_mass_list"].HeaderText = "Experimental Aggregated Masses";
-            dgv.Columns["relations"].Visible = false;
-            dgv.Columns["proteoforms"].Visible = false;
-        }
     }
 }

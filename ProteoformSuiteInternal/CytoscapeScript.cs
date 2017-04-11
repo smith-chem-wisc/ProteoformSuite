@@ -104,7 +104,7 @@ namespace ProteoformSuiteInternal
             if (folder_path == "" || !Directory.Exists(folder_path))
                 return "Please choose a folder in which the families will be built, so you can load them into Cytoscape.";
 
-            if (families.Any(f => f.experimental_count == 0))
+            if (families.Any(f => f.experimental_proteoforms.Count == 0))
                 return "Error: there is a family with zero experimental proteoforms.";
 
             string nodes_path = Path.Combine(folder_path, file_prefix + node_file_prefix + time_stamp + node_file_extension);
@@ -123,7 +123,7 @@ namespace ProteoformSuiteInternal
             //        else gene_dict.Add(preferred, t.gene_name);
             //    }
 
-            string script = get_script(families.Sum(f => f.proteoforms.Count() + f.relation_count), quantitative, 
+            string script = get_script(families.Sum(f => f.proteoforms.Count() + f.relations.Count), quantitative, 
                 edges_path, nodes_path, styles_path, style_name);
             string node_table = get_cytoscape_nodes_tsv(families, quantitative, color_scheme, node_label, node_label_position, double_rounding, theoreticals, gene_centric_families, preferred_gene_label);
             string edge_table = get_cytoscape_edges_tsv(families, edge_label, node_label, double_rounding, theoreticals, gene_centric_families, preferred_gene_label);
