@@ -22,14 +22,7 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Public Constructor
-
-        #region Private Methods
-
-        private void RawExperimentalComponents_Load(object sender, EventArgs e)
-        { }
-
-        #endregion Private Methods
-
+        
         #region Public Methods
 
         public void load_raw_components()
@@ -104,7 +97,7 @@ namespace ProteoformSuiteGUI
             {
                 Component c = ((Component)((DisplayComponent)this.dgv_RawQuantComp_MI_masses.Rows[e.RowIndex].DataBoundItem).display_object);
                 DisplayUtility.FillDataGridView(dgv_RawQuantComp_IndChgSts, c.charge_states.Select(cs => new DisplayChargeState(cs)));
-                DisplayChargeState.FormatChargeStateTable(dgv_RawExpComp_IndChgSts, false);
+                DisplayChargeState.FormatChargeStateTable(dgv_RawQuantComp_IndChgSts, true);
             }
         }
         #endregion Private Methods

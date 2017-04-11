@@ -3,13 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 using System.Threading.Tasks;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
     public class ProteoformFamily
     {
+
+        #region Private Field
+
         private static int family_counter = 0;
+
+        #endregion Private Field
+
+        #region Private Property
+
+        private Proteoform seed { get; set; }
+
+        #endregion Private Property
+
+        #region Public Property
+
         public int family_id { get; set; }
         public string name_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.name)); } }
         public string accession_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.accession)); } }
@@ -25,8 +38,11 @@ namespace ProteoformSuiteInternal
         public HashSet<ProteoformRelation> relations { get; private set; }
         public int relation_count { get { return this.relations.Count; } }
         public HashSet<Proteoform> proteoforms { get; private set; }
-        private Proteoform seed { get; set; }
-        
+
+        #endregion Public Property
+
+        #region Public Constructor
+
         public ProteoformFamily(Proteoform seed)
         {
             family_counter++;
@@ -34,28 +50,14 @@ namespace ProteoformSuiteInternal
             this.seed = seed;
         }
 
+        #endregion Public Constructor
+
+        #region Public Methods
+
         public void construct_family()
         {
             this.proteoforms = new HashSet<Proteoform>(construct_family(new List<Proteoform> { seed }));
             separate_proteoforms();
-        }
-
-        private List<Proteoform> construct_family(List<Proteoform> seed)
-        {
-            List<Proteoform> seed_expansion = seed.SelectMany(p => p.get_connected_proteoforms()).Except(seed).ToList();
-            if (seed_expansion.Count == 0) return seed;
-            seed.AddRange(seed_expansion);
-            return construct_family(seed);
-        }
-
-        private void separate_proteoforms()
-        {
-            this.theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
-            this.gene_names = theoretical_proteoforms.Select(t => t.gene_name).ToList();
-            HashSet<int> lysine_counts = new HashSet<int>(proteoforms.Select(p => p.lysine_count));
-            if (lysine_counts.Count == 1) this.lysine_count = lysine_counts.FirstOrDefault();
-            this.experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
-            this.relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted)));
         }
 
         public void merge_families()
@@ -88,17 +90,42 @@ namespace ProteoformSuiteInternal
             {
                 last_identified_count = identified_experimentals.Count;
                 HashSet<ExperimentalProteoform> tmp_new_experimentals = new HashSet<ExperimentalProteoform>();
-                Parallel.ForEach(newly_identified_experimentals, id_experimental => 
+                Parallel.ForEach(newly_identified_experimentals, id_experimental =>
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
-                        foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Lollipop.all_possible_ptmsets))
-                        {
-                            identified_experimentals.Add(new_e);
-                            tmp_new_experimentals.Add(new_e);
-                        }
+                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Lollipop.all_possible_ptmsets))
+                            {
+                                identified_experimentals.Add(new_e);
+                                tmp_new_experimentals.Add(new_e);
+                            }
                 });
                 newly_identified_experimentals = new List<ExperimentalProteoform>(tmp_new_experimentals);
             }
         }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
+        private List<Proteoform> construct_family(List<Proteoform> seed)
+        {
+            List<Proteoform> seed_expansion = seed.SelectMany(p => p.get_connected_proteoforms()).Except(seed).ToList();
+            if (seed_expansion.Count == 0) return seed;
+            seed.AddRange(seed_expansion);
+            return construct_family(seed);
+        }
+
+        private void separate_proteoforms()
+        {
+            this.theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
+            this.gene_names = theoretical_proteoforms.Select(t => t.gene_name).ToList();
+            HashSet<int> lysine_counts = new HashSet<int>(proteoforms.Select(p => p.lysine_count));
+            if (lysine_counts.Count == 1) this.lysine_count = lysine_counts.FirstOrDefault();
+            this.experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
+            this.relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted)));
+        }
+
+        #endregion Private Methods
+
     }
 }

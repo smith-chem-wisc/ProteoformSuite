@@ -21,9 +21,6 @@ namespace ProteoformSuiteGUI
 
         #region Private Methods
 
-        private void AggregatedProteoforms_Load(object sender, EventArgs e)
-        { }
-
         private void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;

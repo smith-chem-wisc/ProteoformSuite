@@ -1,7 +1,5 @@
-﻿using System;
-using ProteoformSuiteInternal;
+﻿using ProteoformSuiteInternal;
 using System.Windows.Forms;
-
 
 namespace ProteoformSuiteGUI
 {
@@ -82,7 +80,12 @@ namespace ProteoformSuiteGUI
 
         public string gene_name
         {
-            get { return e.gene_name.get_prefered_name(ProteoformCommunity.preferred_gene_label); }
+            get
+            {
+                return e.gene_name != null ?
+                    e.gene_name.get_prefered_name(ProteoformCommunity.preferred_gene_label) :
+                    "";
+            }
         }
         
         #endregion Public Properties

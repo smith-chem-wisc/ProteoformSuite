@@ -21,13 +21,6 @@ namespace ProteoformSuiteGUI
 
         #endregion
 
-        #region Private Methods
-
-        private void ProteoformFamilies_Load(object sender, EventArgs e)
-        { }
-
-        #endregion Private Methods
-
         #region Public Methods
 
         public void initialize_every_time()

@@ -26,9 +26,6 @@ namespace ProteoformSuiteGUI
             InitializeParameterSet();
         }
 
-        public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
-        { }
-
         public void compare_et()
         {
             if (Lollipop.et_relations.Count == 0 && Lollipop.proteoform_community.has_e_and_t_proteoforms)
