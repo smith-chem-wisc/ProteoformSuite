@@ -40,8 +40,6 @@
             this.cmbx_edgeLabel = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
             this.tb_tableFilter = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.tb_labelExample = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -147,8 +145,6 @@
             this.splitContainer2.Panel2.Controls.Add(this.cmbx_edgeLabel);
             this.splitContainer2.Panel2.Controls.Add(this.label6);
             this.splitContainer2.Panel2.Controls.Add(this.tb_tableFilter);
-            this.splitContainer2.Panel2.Controls.Add(this.label5);
-            this.splitContainer2.Panel2.Controls.Add(this.tb_labelExample);
             this.splitContainer2.Panel2.Controls.Add(this.label4);
             this.splitContainer2.Panel2.Controls.Add(this.label3);
             this.splitContainer2.Panel2.Controls.Add(this.label2);
@@ -250,25 +246,6 @@
             this.tb_tableFilter.Size = new System.Drawing.Size(121, 20);
             this.tb_tableFilter.TabIndex = 45;
             this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
-            // 
-            // label5
-            // 
-            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label5.AutoSize = true;
-            this.label5.BackColor = System.Drawing.SystemColors.Control;
-            this.label5.Location = new System.Drawing.Point(134, 204);
-            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(105, 13);
-            this.label5.TabIndex = 43;
-            this.label5.Text = "Node Label Example";
-            // 
-            // tb_labelExample
-            // 
-            this.tb_labelExample.Location = new System.Drawing.Point(7, 271);
-            this.tb_labelExample.Name = "tb_labelExample";
-            this.tb_labelExample.Size = new System.Drawing.Size(121, 20);
-            this.tb_labelExample.TabIndex = 42;
             // 
             // label4
             // 
@@ -753,7 +730,6 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ProteoformFamilies";
             this.Text = "Proteoform Families";
-            this.Load += new System.EventHandler(this.ProteoformFamilies_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -811,8 +787,6 @@
         private System.Windows.Forms.Button btn_merge;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox tb_tableFilter;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox tb_labelExample;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;

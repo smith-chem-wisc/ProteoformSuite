@@ -178,9 +178,6 @@ namespace ProteoformSuiteGUI
 
         #region Quantification Private Methods
 
-        private void Quantification_Load(object sender, EventArgs e) //I would rather that load event code be here than somewhere else. it makes it very hard to know what is being called on form load.....
-        { }
-
         private void btn_refreshCalculation_Click(object sender, EventArgs e)
         {
             this.Cursor = Cursors.WaitCursor;

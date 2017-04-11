@@ -41,7 +41,12 @@ namespace ProteoformSuiteGUI
 
         public string gene_name
         {
-            get { return t.gene_name.get_prefered_name(ProteoformCommunity.preferred_gene_label); }
+            get
+            {
+                return t.gene_name != null ?
+                    t.gene_name.get_prefered_name(ProteoformCommunity.preferred_gene_label) :
+                    "";
+            }
         }
 
         public string Fragment

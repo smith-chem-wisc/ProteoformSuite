@@ -61,7 +61,7 @@ namespace ProteoformSuiteGUI
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(2);
             this.splitContainer1.Name = "splitContainer1";
             this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -81,7 +81,7 @@ namespace ProteoformSuiteGUI
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer2.Margin = new System.Windows.Forms.Padding(2);
             this.splitContainer2.Name = "splitContainer2";
             // 
             // splitContainer2.Panel1
@@ -104,7 +104,7 @@ namespace ProteoformSuiteGUI
             this.dgv_RawExpComp_MI_masses.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_RawExpComp_MI_masses.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_RawExpComp_MI_masses.Location = new System.Drawing.Point(0, 0);
-            this.dgv_RawExpComp_MI_masses.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgv_RawExpComp_MI_masses.Margin = new System.Windows.Forms.Padding(2);
             this.dgv_RawExpComp_MI_masses.Name = "dgv_RawExpComp_MI_masses";
             this.dgv_RawExpComp_MI_masses.RowTemplate.Height = 28;
             this.dgv_RawExpComp_MI_masses.Size = new System.Drawing.Size(264, 160);
@@ -116,7 +116,7 @@ namespace ProteoformSuiteGUI
             this.dgv_RawQuantComp_MI_masses.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_RawQuantComp_MI_masses.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_RawQuantComp_MI_masses.Location = new System.Drawing.Point(0, 0);
-            this.dgv_RawQuantComp_MI_masses.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgv_RawQuantComp_MI_masses.Margin = new System.Windows.Forms.Padding(2);
             this.dgv_RawQuantComp_MI_masses.Name = "dgv_RawQuantComp_MI_masses";
             this.dgv_RawQuantComp_MI_masses.RowTemplate.Height = 28;
             this.dgv_RawQuantComp_MI_masses.Size = new System.Drawing.Size(529, 160);
@@ -127,7 +127,7 @@ namespace ProteoformSuiteGUI
             // 
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer3.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.splitContainer3.Margin = new System.Windows.Forms.Padding(2);
             this.splitContainer3.Name = "splitContainer3";
             // 
             // splitContainer3.Panel1
@@ -148,7 +148,7 @@ namespace ProteoformSuiteGUI
             this.dgv_RawExpComp_IndChgSts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_RawExpComp_IndChgSts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_RawExpComp_IndChgSts.Location = new System.Drawing.Point(0, 0);
-            this.dgv_RawExpComp_IndChgSts.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgv_RawExpComp_IndChgSts.Margin = new System.Windows.Forms.Padding(2);
             this.dgv_RawExpComp_IndChgSts.Name = "dgv_RawExpComp_IndChgSts";
             this.dgv_RawExpComp_IndChgSts.RowTemplate.Height = 28;
             this.dgv_RawExpComp_IndChgSts.Size = new System.Drawing.Size(264, 264);
@@ -159,7 +159,7 @@ namespace ProteoformSuiteGUI
             this.dgv_RawQuantComp_IndChgSts.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_RawQuantComp_IndChgSts.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_RawQuantComp_IndChgSts.Location = new System.Drawing.Point(0, 0);
-            this.dgv_RawQuantComp_IndChgSts.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dgv_RawQuantComp_IndChgSts.Margin = new System.Windows.Forms.Padding(2);
             this.dgv_RawQuantComp_IndChgSts.Name = "dgv_RawQuantComp_IndChgSts";
             this.dgv_RawQuantComp_IndChgSts.RowTemplate.Height = 28;
             this.dgv_RawQuantComp_IndChgSts.Size = new System.Drawing.Size(529, 264);
@@ -173,10 +173,9 @@ namespace ProteoformSuiteGUI
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "RawExperimentalComponents";
             this.Text = "Raw Experimental Components";
-            this.Load += new System.EventHandler(this.RawExperimentalComponents_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();

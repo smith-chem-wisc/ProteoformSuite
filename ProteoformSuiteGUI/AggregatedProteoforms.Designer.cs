@@ -414,7 +414,6 @@
             this.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.Name = "AggregatedProteoforms";
             this.Text = "AggregatedProteoforms";
-            this.Load += new System.EventHandler(this.AggregatedProteoforms_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AggregatedProteoforms)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);

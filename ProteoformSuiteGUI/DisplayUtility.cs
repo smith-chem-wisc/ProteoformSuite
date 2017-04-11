@@ -11,6 +11,7 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayUtility
     {
+
         public static void FillDataGridView(DataGridView dgv, IEnumerable<object> someList)
         {
             SortableBindingList<object> sbl = new SortableBindingList<object>(someList);
@@ -154,35 +155,8 @@ namespace ProteoformSuiteGUI
             dgv.AllowUserToAddRows = false;
         }
 
-        public static void formatDataFileInputGridView(DataGridView dgv, IEnumerable<object> someObject)
-        {
-            SortableBindingList<object> sbl = new SortableBindingList<object>(someObject);
-            
-            dgv.ReadOnly = false;
-            dgv.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-
-
-
-            //making all columns invisible first - faster
-            //foreach (DataGridViewColumn column in dgv.Columns) { column.Visible = false; }
-
-            //dgv.Columns["matchingCalibrationFile"].HeaderText = "Calibrate";
-            //dgv.Columns["filename"].HeaderText = "Filename";
-            //dgv.Columns["label"].HeaderText = "NeuCode/Unlabelled";
-            //dgv.Columns["sampleCategory.biorep"].HeaderText = "Biorep";
-            //dgv.Columns["sampleCategory.techrep"].HeaderText = "Techrep";
-            //dgv.Columns["sampleCategory.condition"].HeaderText = "Condition";
-
-            dgv.DataSource = sbl;
-        }
-
         public static object[] get_selected_objects(DataGridView dgv)
         {
-            //Check if there are any rows selected
-            //int selected_row_sum = 0;
-            //for (int i = 0; i < dgv.SelectedCells.Count; i++) selected_row_sum += dgv.SelectedCells[i].RowIndex;
-
             List<object> items = new List<object>();
             if (dgv.SelectedRows.Count > 0)
                 for (int i = 0; i < dgv.SelectedRows.Count; i++)
@@ -195,10 +169,6 @@ namespace ProteoformSuiteGUI
                 foreach (int row_index in rows)
                     items.Add(dgv.Rows[row_index].DataBoundItem);
             }
-            //else
-            //    for (int i = 0; i < dgv.SelectedCells.Count; i++)
-            //        if (dgv.SelectedCells[i].RowIndex != 0)
-            //            items.Add(dgv.Rows[dgv.SelectedCells[i].RowIndex].DataBoundItem);
 
             List<DisplayObject> display_objects = items.OfType<DisplayObject>().ToList();
             return display_objects.Count > 0 ?
@@ -211,13 +181,14 @@ namespace ProteoformSuiteGUI
             if (dgv.Columns.Count <= 0) return;
 
             //set column header
-            //dgv_proteoform_families.Columns["family_id"].HeaderText = "Light Monoisotopic Mass";
+            dgv.Columns["family_id"].HeaderText = "Family ID";
             dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
             dgv.Columns["experimental_count"].HeaderText = "Experimental Proteoforms";
             dgv.Columns["theoretical_count"].HeaderText = "Theoretical Proteoforms";
             dgv.Columns["relation_count"].HeaderText = "Relation Count";
             dgv.Columns["accession_list"].HeaderText = "Theoretical Accessions";
             dgv.Columns["name_list"].HeaderText = "Theoretical Names";
+            dgv.Columns["gene_list"].HeaderText = "Gene Names";
             dgv.Columns["experimentals_list"].HeaderText = "Experimental Accessions";
             dgv.Columns["agg_mass_list"].HeaderText = "Experimental Aggregated Masses";
             dgv.Columns["relations"].Visible = false;

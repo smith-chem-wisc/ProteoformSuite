@@ -14,9 +14,6 @@ namespace ProteoformSuiteGUI
             InitializeComponent();
         }
 
-        private void ResultsSummary_Load(object sender, EventArgs e)
-        { }
-
         public void create_summary()
         {
             rtb_summary.Text = ResultsSummaryGenerator.generate_full_report();
