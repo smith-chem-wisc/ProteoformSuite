@@ -25,30 +25,36 @@ namespace ProteoformSuiteInternal
 
 
         //BUILDING RELATIONSHIPS
-        public List<ProteoformRelation> relate(Proteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type)
+        public List<ProteoformRelation> relate(ExperimentalProteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type, bool accepted_only)
         {
-            Parallel.ForEach(new HashSet<Proteoform>(pfs1), pf =>
-            {
-                lock (pf)
-                {
-                    if (pf.GetType().IsAssignableFrom(typeof(ExperimentalProteoform)))
-                    {
-                        pf.ptm_set = null;
-                        pf.linked_proteoform_references = null;
-                        pf.gene_name = null;
-                    }
+            if (accepted_only)
+                pfs1 = pfs1.Where(pf1 => pf1.accepted).ToArray();
 
-                    pf.candidate_relatives = pfs2.Where(pf2 => allowed_relation(pf, pf2, relation_type)).ToList();
+            if (accepted_only && (relation_type == ProteoformComparison.ExperimentalExperimental || relation_type == ProteoformComparison.ExperimentalFalse))
+                pfs2 = pfs2.OfType<ExperimentalProteoform>().Where(pf2 => pf2.accepted).ToArray();
+
+            Parallel.ForEach(pfs1, pf1 =>
+            {
+                lock (pf1)
+                {
+                    pf1.candidate_relatives = pfs2.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList();
+
+                    if (relation_type == ProteoformComparison.ExperimentalExperimental)
+                    {
+                        pf1.ptm_set = null;
+                        pf1.linked_proteoform_references = null;
+                        pf1.gene_name = null;
+                    }
 
                     if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
                     {
-                        ProteoformRelation best_relation = pf.candidate_relatives
-                            .Select(pf2 => new ProteoformRelation(pf, pf2, relation_type, pf.modified_mass - pf2.modified_mass))
+                        ProteoformRelation best_relation = pf1.candidate_relatives
+                            .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass))
                             .Where(r => r.candidate_ptmset != null) // don't consider unassignable relations for ET
                             .OrderBy(r => r.candidate_ptmset.ptm_rank_sum) // get the best explanation for the experimental observation
                             .FirstOrDefault();
 
-                        pf.candidate_relatives = best_relation != null ?
+                        pf1.candidate_relatives = best_relation != null ?
                             new List<Proteoform> { best_relation.connected_proteoforms[1] } : 
                             new List<Proteoform>();
                     }
@@ -102,30 +108,17 @@ namespace ProteoformSuiteInternal
             Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
             Parallel.ForEach(decoy_proteoforms, decoys =>
             {
-                ed_relations[decoys.Key] = relate(experimental_proteoforms.Where(e => e.accepted).ToArray(), decoys.Value, ProteoformComparison.ExperimentalDecoy);
+                ed_relations[decoys.Key] = relate(experimental_proteoforms, decoys.Value, ProteoformComparison.ExperimentalDecoy, true);
             });
             return ed_relations;
         }
 
-        public Dictionary<string, List<ProteoformRelation>> relate_ef()
+        public Dictionary<string, List<ProteoformRelation>> relate_ef(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2)
         {
-            List<ProteoformRelation> all_ef_relations = new List<ProteoformRelation>();
-            Dictionary<string, List<ProteoformRelation>> ef_relations = new Dictionary<string, List<ProteoformRelation>>();
-            IEnumerable<ExperimentalProteoform> accepted_pfs = experimental_proteoforms.Where(e => e.accepted);
-            ExperimentalProteoform[] pfs1 = new List<ExperimentalProteoform>(accepted_pfs).ToArray();
-            ExperimentalProteoform[] pfs2 = new List<ExperimentalProteoform>(accepted_pfs).ToArray();
-
-            Parallel.ForEach(pfs1, pf1 =>
-            {
-                List<ProteoformRelation> ef_relation_addition = pfs2
-                        .Where(pf2 => allowed_relation(pf1, pf2, ProteoformComparison.ExperimentalFalse))
-                        .Select(pf2 => new ProteoformRelation(pf1, pf2, ProteoformComparison.ExperimentalFalse, pf1.modified_mass - pf2.modified_mass))
-                        .OrderBy(r => r.delta_mass)
-                        .ToList();
-                lock (all_ef_relations) all_ef_relations.AddRange(ef_relation_addition);
-            });
+            List<ProteoformRelation> all_ef_relations = relate(pfs1, pfs2, ProteoformComparison.ExperimentalFalse, true);
 
             //take 10 random subsets from all allowed ef relations (will use median for fdr calculations of each peak)
+            Dictionary<string, List<ProteoformRelation>> ef_relations = new Dictionary<string, List<ProteoformRelation>>();
             Parallel.For(0, 10, i =>
             {
                 string key = "EF_relations_" + i;

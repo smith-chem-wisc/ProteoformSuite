@@ -96,9 +96,7 @@ namespace Test
 
             Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>>
             {
-                { "unmodified", new List<Modification>() {
-                    new ModificationWithMass("unmodified", new Tuple<string, string>("", ""), null, ModificationSites.K, 0, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "") }
-                }
+                { "unmodified", new List<Modification>() { ConstructorsForTesting.get_modWithMass("unmodified", 0) } }
             };
 
             //Testing the acceptance of peaks. The FDR is tested above, so I'm not going to work with that here.
@@ -131,15 +129,14 @@ namespace Test
             Assert.AreEqual(3, pr3.nearby_relations.Count);
             Assert.AreEqual(3, pr4.nearby_relations.Count);
 
+            Lollipop.all_possible_ptmsets = new List<PtmSet> { new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }) };
             test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
             Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
             DeltaMassPeak peak = test_community.delta_mass_peaks[0];
             Assert.AreEqual(3, peak.grouped_relations.Count);
             Assert.AreEqual(3, pr2.peak.peak_relation_group_count);
             Assert.AreEqual(0, pr2.peak.peak_deltaM_average);
-            Assert.AreEqual("unmodified", peak.possiblePeakAssignments_string);
-            peak.possiblePeakAssignments.Add(new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }));
-            Assert.AreEqual("unmodified; unmodified", peak.possiblePeakAssignments_string);
+            Assert.AreEqual("[unmodified]", peak.possiblePeakAssignments_string);
 
             //Test that the relations in the peak are added to each of the proteoforms referenced in the peak
             Assert.True(pf3.relationships.Contains(pr2));

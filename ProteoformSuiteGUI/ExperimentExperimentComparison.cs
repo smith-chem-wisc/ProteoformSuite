@@ -38,8 +38,8 @@ namespace ProteoformSuiteGUI
         public void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
-            Lollipop.ee_relations = Lollipop.proteoform_community.relate(Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), Lollipop.proteoform_community.experimental_proteoforms.Where(p => p.accepted).ToArray(), ProteoformComparison.ExperimentalExperimental);
-            Lollipop.ef_relations = Lollipop.proteoform_community.relate_ef();
+            Lollipop.ee_relations = Lollipop.proteoform_community.relate(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
+            Lollipop.ef_relations = Lollipop.proteoform_community.relate_ef(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.proteoform_community.experimental_proteoforms);
             Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
 

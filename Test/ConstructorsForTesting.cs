@@ -91,6 +91,7 @@ namespace Test
             ExperimentalProteoform e = new ExperimentalProteoform(accession, new Component(), is_target);
             e.modified_mass = modified_mass;
             e.lysine_count = lysine_count;
+            e.accepted = true;
             return e;
         }
 
