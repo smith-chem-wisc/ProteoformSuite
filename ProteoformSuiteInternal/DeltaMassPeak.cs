@@ -18,7 +18,8 @@ namespace ProteoformSuiteInternal
         public List<PtmSet> possiblePeakAssignments { get; set; }
         public string possiblePeakAssignments_string { get; set; }
 
-        public DeltaMassPeak(ProteoformRelation base_relation, List<ProteoformRelation> relations_to_group) : base(base_relation)
+        public DeltaMassPeak(ProteoformRelation base_relation, List<ProteoformRelation> relations_to_group) 
+            : base(base_relation)
         {
             this.peak = this;
             lock (base_relation)
