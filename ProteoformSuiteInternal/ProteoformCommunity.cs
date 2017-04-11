@@ -98,7 +98,7 @@ namespace ProteoformSuiteInternal
             Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
             Parallel.ForEach(decoy_proteoforms, decoys =>
             {
-                ed_relations[decoys.Key] = relate_et(experimental_proteoforms, decoys.Value, ProteoformComparison.ed);
+                ed_relations[decoys.Key] = relate_et(experimental_proteoforms.Where(e => e.accepted).ToArray(), decoys.Value, ProteoformComparison.ed);
             });
             return ed_relations;
         }
@@ -106,8 +106,8 @@ namespace ProteoformSuiteInternal
         {
             List<ProteoformRelation> all_ef_relations = new List<ProteoformRelation>();
             Dictionary<string, List<ProteoformRelation>> ef_relations = new Dictionary<string, List<ProteoformRelation>>();
-            ExperimentalProteoform[] pfs1 = new List<ExperimentalProteoform>(this.experimental_proteoforms).ToArray();
-            ExperimentalProteoform[] pfs2 = new List<ExperimentalProteoform>(this.experimental_proteoforms).ToArray();
+            ExperimentalProteoform[] pfs1 = new List<ExperimentalProteoform>(this.experimental_proteoforms.Where(e => e.accepted)).ToArray();
+            ExperimentalProteoform[] pfs2 = new List<ExperimentalProteoform>(this.experimental_proteoforms.Where(e => e.accepted)).ToArray();
             foreach (ExperimentalProteoform pf1 in pfs1)
             {
                 List<ProteoformRelation> ef_relation_addition = pfs2
@@ -212,7 +212,7 @@ namespace ProteoformSuiteInternal
         public static string preferred_gene_label;
         public List<ProteoformFamily> construct_families()
         {
-            Stack<Proteoform> remaining = new Stack<Proteoform>(this.experimental_proteoforms);
+            Stack<Proteoform> remaining = new Stack<Proteoform>(this.experimental_proteoforms.Where(e => e.accepted).ToArray());
             List<ProteoformFamily> running_families = new List<ProteoformFamily>();
             List<Proteoform> running = new List<Proteoform>();
             List<Thread> active = new List<Thread>();
