@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using ProteoformSuiteInternal;
 using System.Windows.Forms;
 
-
 namespace ProteoformSuiteGUI
 {
     public class RelationUtility

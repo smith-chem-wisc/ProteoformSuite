@@ -310,7 +310,6 @@ namespace Test
             paT[0] = pf5;
             prList = community.relate(paE2, paT, ProteoformComparison.ExperimentalTheoretical);
             Assert.AreEqual(0, prList.Count);
-
         }
 
         [Test]

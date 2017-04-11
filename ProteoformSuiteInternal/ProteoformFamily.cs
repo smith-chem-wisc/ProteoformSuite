@@ -31,12 +31,9 @@ namespace ProteoformSuiteInternal
         public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, Lollipop.deltaM_edge_display_rounding))); } }
         public int lysine_count { get; set; } = -1;
         public List<ExperimentalProteoform> experimental_proteoforms { get; private set; }
-        public int experimental_count { get { return this.experimental_proteoforms.Count; } }
         public List<TheoreticalProteoform> theoretical_proteoforms { get; private set; }
-        public int theoretical_count { get { return this.theoretical_proteoforms.Count; } }
         public List<GeneName> gene_names { get; private set; }
         public HashSet<ProteoformRelation> relations { get; private set; }
-        public int relation_count { get { return this.relations.Count; } }
         public HashSet<Proteoform> proteoforms { get; private set; }
 
         #endregion Public Property

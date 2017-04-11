@@ -966,10 +966,10 @@ namespace Test
 
             List<ProteoformFamily> fams = Lollipop.getInterestingFamilies(exps, 10, 0.5m, 1);
             Assert.AreEqual(2, fams.Count);
-            Assert.AreEqual(1, fams.Where(x => x.theoretical_count == 0).Count());
-            Assert.AreEqual(1, fams.Where(x => x.theoretical_count == 1).Count());
-            Assert.AreEqual(0, fams.Where(x => x.theoretical_count == 2).Count());
-            Assert.AreEqual(1, fams.Where(x => x.experimental_count == 2).Count());
+            Assert.AreEqual(1, fams.Where(x => x.theoretical_proteoforms.Count == 0).Count());
+            Assert.AreEqual(1, fams.Where(x => x.theoretical_proteoforms.Count == 1).Count());
+            Assert.AreEqual(0, fams.Where(x => x.theoretical_proteoforms.Count == 2).Count());
+            Assert.AreEqual(1, fams.Where(x => x.experimental_proteoforms.Count == 2).Count());
         }
     }
 }
