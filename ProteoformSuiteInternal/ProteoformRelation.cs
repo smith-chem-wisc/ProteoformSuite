@@ -230,5 +230,9 @@ namespace ProteoformSuiteInternal
         {
             get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).psm_count_BU; } catch { return 0; }}
         }
+        public int TD_relations
+        {
+            get { try { return ((TheoreticalProteoform)connected_proteoforms[1]).TD_proteoforms; } catch { return 0; } }
+        }
     }
 }

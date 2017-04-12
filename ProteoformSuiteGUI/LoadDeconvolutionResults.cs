@@ -79,12 +79,14 @@ namespace ProteoformSuiteGUI
             bt_calibrate.Visible = false;
             cb_lockmass.Visible = false;
             cb_tdhits.Visible = false;
+            cb_td_hits_diff_file.Visible = false;
 
             if (rb_chemicalCalibration.Checked)
             {
                 bt_calibrate.Visible = true;
                 cb_lockmass.Visible = true;
                 cb_tdhits.Visible = true;
+                cb_td_hits_diff_file.Visible = true;
                 cmb_loadTable1.SelectedIndex = 3;
                 cmb_loadTable2.SelectedIndex = 4;
                 cmb_loadTable3.SelectedIndex = 5;
@@ -336,8 +338,8 @@ namespace ProteoformSuiteGUI
 
         private void bt_calibrate_Click(object sender, EventArgs e)
         {
-            if (!cb_tdhits.Checked && !cb_lockmass.Checked) { MessageBox.Show("Please select at least one calibration method."); return; }
-            if (cb_tdhits.Checked)
+            if (!cb_tdhits.Checked && !cb_lockmass.Checked && !cb_td_hits_diff_file.Checked) { MessageBox.Show("Please select at least one calibration method."); return; }
+            if (cb_tdhits.Checked || cb_td_hits_diff_file.Checked)
             {
                 if (Lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationTopDown).Count() > 0) Lollipop.read_in_calibration_td_hits();
                 else { MessageBox.Show("Please enter top-down results files to calibrate."); return; }
@@ -353,11 +355,18 @@ namespace ProteoformSuiteGUI
         private void cb_tdhits_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.calibrate_td_results = cb_tdhits.Checked;
+            if (cb_tdhits.Checked) cb_td_hits_diff_file.Checked = false;
         }
 
         private void cb_lockmass_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.calibrate_lock_mass = cb_lockmass.Checked;
+        }
+
+        private void cb_td_hits_diff_file_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.calibrate_intact_with_td_ids = cb_td_hits_diff_file.Checked;
+            if (cb_td_hits_diff_file.Checked) cb_tdhits.Checked = false;
         }
     }
 }

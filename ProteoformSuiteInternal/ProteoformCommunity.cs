@@ -143,7 +143,9 @@ namespace ProteoformSuiteInternal
             Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
                 Parallel.ForEach(decoy_proteoforms, decoys =>
                 {
-                    ed_relations[decoys.Key] = Lollipop.limit_TD_BU_theoreticals? relate_et(experimental_proteoforms.Where(p => p.accepted).ToArray(), decoys.Value.Where(t => t.psm_count_BU > 0).ToArray(), ProteoformComparison.ed) : relate_et(experimental_proteoforms.Where(p => p.accepted).ToArray(), decoys.Value, ProteoformComparison.ed);
+                    ed_relations[decoys.Key] = Lollipop.limit_TD_BU_theoreticals? 
+                        relate_et(experimental_proteoforms.Where(p => p.accepted).ToArray(), decoys.Value.Where(t => t.psm_count_BU > 0).ToArray(), ProteoformComparison.ed) : 
+                        relate_et(experimental_proteoforms.Where(p => p.accepted).ToArray(), decoys.Value, ProteoformComparison.ed);
                 });
             return ed_relations;
         }

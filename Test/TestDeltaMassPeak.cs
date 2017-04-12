@@ -97,7 +97,7 @@ namespace Test
 
             Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> {
                 { "unmodified", new List<Modification>() {
-                    new ModificationWithMass("unmodified", new Tuple<string, string>("", ""), null, ModificationSites.K, 0, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), new List<double>(), "") }
+                    new ModificationWithMass("unmodified", new Tuple<string, string>("", ""), null, ModificationSites.K, 0, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "") }
                 }
             };
 

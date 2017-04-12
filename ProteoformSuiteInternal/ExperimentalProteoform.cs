@@ -173,7 +173,7 @@ namespace ProteoformSuiteInternal
         //impact of this difference as of 160812. -AC
         public bool includes(Component candidate, Component root)
         {
-            bool does_include = tolerable_rt(candidate, root.rt_apex) && tolerable_mass(candidate, root.weighted_monoisotopic_mass);
+            bool does_include = tolerable_rt(candidate, root.rt_apex) && tolerable_mass(candidate.weighted_monoisotopic_mass, root.weighted_monoisotopic_mass);
             if (candidate is NeuCodePair) does_include = does_include && tolerable_lysCt((NeuCodePair)candidate, ((NeuCodePair)root).lysine_count);
             return does_include;
         }
@@ -182,7 +182,7 @@ namespace ProteoformSuiteInternal
         {
             double corrected_mass = light ? root.agg_mass :
                 root.agg_mass + root.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
-            bool does_include = tolerable_rt(candidate, root.agg_rt) && tolerable_mass(candidate, corrected_mass);
+            bool does_include = tolerable_rt(candidate, root.agg_rt) && tolerable_mass(candidate.weighted_monoisotopic_mass, corrected_mass);
             return does_include;
         }
 
@@ -199,7 +199,7 @@ namespace ProteoformSuiteInternal
             return acceptable_lysineCts.Contains(candidate.lysine_count);
         }
 
-        private bool tolerable_mass(Component candidate, double corrected_mass)
+        public bool tolerable_mass(double candidate_mass, double corrected_mass)
         {
             int max_missed_monoisotopics = Convert.ToInt32(Lollipop.missed_monos);
             List<int> missed_monoisotopics_range = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
@@ -210,7 +210,7 @@ namespace ProteoformSuiteInternal
                 double mass_tolerance = shifted_mass / 1000000 * (double)Lollipop.mass_tolerance;
                 double low = shifted_mass - mass_tolerance;
                 double high = shifted_mass + mass_tolerance;
-                bool tolerable_mass = candidate.weighted_monoisotopic_mass >= low && candidate.weighted_monoisotopic_mass <= high;
+                bool tolerable_mass = candidate_mass >= low && candidate_mass <= high;
                 if (tolerable_mass) return true; //Return a true result immediately; acts as an OR between these conditions
             }
             return false;

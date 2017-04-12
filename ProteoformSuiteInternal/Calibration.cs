@@ -60,7 +60,7 @@ namespace ProteoformSuiteInternal
 
 
         //CALIBRATION WITH TD HITS
-        public static Func<double[], double> Run_TdMzCal(string filename, List<TopDownHit> identifications)
+        public static Func<double[], double> Run_TdMzCal(string filename, List<TopDownHit> identifications, bool td_file)
         {
             Func<double[], double> calibration_function = null;
             if (identifications.Count >= 5)  //need at least 5 calibration points to consider
@@ -81,15 +81,38 @@ namespace ProteoformSuiteInternal
                     percent_in_window = (double)mass_errors.GetRange(start, count).ToList().Count / mass_errors.Count;
                 }
                 List<TopDownHit> identifications_to_use = identifications.OrderBy(h => ((h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0))).ToList().GetRange(start, count).ToList();
-                
+
                 //get data points
                 List<LabeledDataPoint> pointList = new List<LabeledDataPoint>();
+
+                //if calibrating td file intact masses, can use hits themselves as calibration points
+                //otherwise, find intact masses that are within .05 Da and 3 minutes - use to calibrate. 
                 foreach (TopDownHit hit in identifications_to_use)
                 {
-                    double[] inputs = new double[2] { hit.mz, hit.retention_time };
-                    var a = new LabeledDataPoint(inputs, (hit.reported_mass - hit.theoretical_mass - Math.Round(hit.reported_mass - hit.theoretical_mass, 0)) / hit.charge);
-                    pointList.Add(a);
+                    if (td_file)
+                    {
+                        double[] inputs = new double[2] { hit.mz, hit.retention_time };
+                        var a = new LabeledDataPoint(inputs, (hit.reported_mass - hit.theoretical_mass - Math.Round(hit.reported_mass - hit.theoretical_mass, 0)) / hit.charge);
+                        pointList.Add(a);
+                    }
+                    else
+                    {
+                        List<Component> intact_masses = Lollipop.calibration_components.Where(c => c.input_file.filename == filename && Math.Abs(c.weighted_monoisotopic_mass - hit.reported_mass) < c.weighted_monoisotopic_mass / 1000000 * (double)Lollipop.mass_tolerance && Math.Abs(Convert.ToDouble(c.rt_range.Split('-')[0]) - hit.retention_time) < (double)Lollipop.retention_time_tolerance).ToList();
+                        {
+                            foreach (Component c in intact_masses)
+                            {
+                                foreach (ChargeState cs in c.charge_states)
+                                {
+                                    double[] inputs = new double[] { cs.mz_centroid, Convert.ToDouble(c.rt_range.Split('-')[0]) };
+                                    var a = new LabeledDataPoint(inputs, (c.weighted_monoisotopic_mass - hit.theoretical_mass - Math.Round(c.weighted_monoisotopic_mass - hit.theoretical_mass, 0)) / cs.charge_count);
+                                    pointList.Add(a);
+                                }
+                            }
+                        }
+                    }
                 }
+
+                if (pointList.Count < 5) return null;
 
                 ////if lock mass, add lock mass peptide to training points
                 if (Lollipop.calibrate_lock_mass)
@@ -163,7 +186,7 @@ namespace ProteoformSuiteInternal
         //READ AND WRITE NEW CALIBRATED RAW EXPERIMENTAL COMPONENTS FILE
         public static void calibrate_components_in_xlsx(InputFile file)
         {
-            if (!Lollipop.calibrate_td_results || Lollipop.td_calibration_functions.ContainsKey(file.filename))
+            if ((!Lollipop.calibrate_td_results && !Lollipop.calibrate_intact_with_td_ids) || Lollipop.td_calibration_functions.ContainsKey(file.filename))
             {
                 //Copy file to new worksheet
                 string old_absolute_path = file.complete_path;

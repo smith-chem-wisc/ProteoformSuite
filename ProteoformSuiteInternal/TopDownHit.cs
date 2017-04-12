@@ -29,11 +29,13 @@ namespace ProteoformSuiteInternal
         public double mz { get; set; }
         public double intensity { get; set; } //precursor ion intensity
         public bool targeted { get; set; }
+        public TopDownResultType tdResultType { get; set; }
         public InputFile file { get; set; }
 
-        public TopDownHit(InputFile file, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, bool targeted)
+        public TopDownHit(InputFile file, TopDownResultType tdResultType, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, bool targeted)
         {
             this.file = file;
+            this.tdResultType = tdResultType;
             this.accession = accession;
             this.uniprot_id = uniprot_id;
             this.name = name;
@@ -68,6 +70,12 @@ namespace ProteoformSuiteInternal
         {
             return (observed - theoretical_mass) - Math.Round(observed - theoretical, 0);
         }
+    }
+
+    public enum TopDownResultType
+    {
+        Biomarker,
+        TightAbsoluteMass
     }
 
     //CALIBRATION

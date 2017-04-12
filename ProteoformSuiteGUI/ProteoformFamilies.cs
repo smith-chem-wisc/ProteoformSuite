@@ -86,6 +86,17 @@ namespace ProteoformSuiteGUI
             fill_proteoform_families("");
             update_figures_of_merit();
             this.Cursor = Cursors.Default;
+
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\families_rt_spread.tsv"))
+            {
+                foreach(ProteoformFamily family in Lollipop.proteoform_community.families)
+                {
+                    foreach(ExperimentalProteoform e in family.experimental_proteoforms)
+                    {
+                        writer.WriteLine(family.family_id + "\t" + e.agg_rt);
+                    }
+                }
+            }
         }
 
         public void ClearListsAndTables()
@@ -346,6 +357,47 @@ namespace ProteoformSuiteGUI
         private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
         {
             ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
+        }
+
+        private void bt_agg_within_fam_Click(object sender, EventArgs e)
+        {
+            Parallel.ForEach(Lollipop.proteoform_community.families, family =>
+            {
+                List<ExperimentalProteoform> exp1 = family.experimental_proteoforms.OrderByDescending(p => p.agg_intensity).ToList();
+                   foreach(ExperimentalProteoform exp2 in family.experimental_proteoforms.OrderBy(p => p.agg_intensity).ToList())
+                    {
+                        ExperimentalProteoform e_to_add_to = exp1.Where(p => p != exp2 && p.tolerable_mass(p.agg_mass, exp2.agg_mass)).FirstOrDefault();
+
+                        if (e_to_add_to != null)
+                        {
+                         e_to_add_to.aggregated_components.AddRange(exp2.aggregated_components);
+                        //NEED TO TAKE CARE OF RELATIONS OF EXP2!!!!!
+                            
+                        lock (Lollipop.proteoform_community.experimental_proteoforms) Lollipop.proteoform_community.experimental_proteoforms = Lollipop.proteoform_community.experimental_proteoforms.Where(p => p != exp2).ToArray();
+                    }
+                }
+            });
+            run_the_gamut();
+            
+        }
+
+        private void bt_merge_orphans_by_RT_Click(object sender, EventArgs e)
+        {
+            List<ExperimentalProteoform> exp_in_families = Lollipop.proteoform_community.families.Where(f => f.relation_count > 0).SelectMany(f => f.experimental_proteoforms).OrderByDescending(f => f.agg_intensity).ToList();
+            Parallel.ForEach(Lollipop.proteoform_community.families.Where(f => f.relation_count == 0 && f.experimental_count > 0), orphan_family =>
+            {
+                foreach (ExperimentalProteoform orphan in orphan_family.experimental_proteoforms)
+                {
+                    ExperimentalProteoform e_to_add = exp_in_families.Where(p => orphan.tolerable_mass(p.agg_mass, orphan.agg_mass)).FirstOrDefault();
+                    if (e_to_add != null)
+                    {
+                        lock (e_to_add) e_to_add.aggregated_components.AddRange(orphan.aggregated_components);
+                        lock (Lollipop.proteoform_community.experimental_proteoforms) Lollipop.proteoform_community.experimental_proteoforms = Lollipop.proteoform_community.experimental_proteoforms.Where(p => p != orphan).ToArray();
+                        //) Lollipop.proteoform_community.experimental_proteoforms.ToList().Remove(orphan);
+                    }
+                }
+            });
+            run_the_gamut();
         }
     }
 }
