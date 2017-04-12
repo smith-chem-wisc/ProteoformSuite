@@ -14,6 +14,7 @@ namespace ProteoformSuiteInternal
 {
     public class Lollipop
     {
+
         #region Constants
 
         public const double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
@@ -583,7 +584,7 @@ namespace ProteoformSuiteInternal
             return mod_ranks;
         }
 
-        private static ProteinWithGoTerms[] expand_protein_entries(Protein[] proteins)
+        public static ProteinWithGoTerms[] expand_protein_entries(Protein[] proteins)
         {
             List<ProteinWithGoTerms> expanded_prots = new List<ProteinWithGoTerms>();
             foreach (Protein p in proteins)
@@ -621,7 +622,7 @@ namespace ProteoformSuiteInternal
                     bool feature_is_just_met_cleavage = methionine_cleavage && feature_begin == begin + 1 && feature_end == end;
                     string subsequence = p.BaseSequence.Substring(feature_begin - 1, feature_end - feature_begin + 1);
                     Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= feature_begin && kv.Key <= feature_end).ToDictionary(kv => kv.Key, kv => kv.Value);
-                    if (!feature_is_just_met_cleavage && subsequence.Length != p.BaseSequence.Length && subsequence.Length >= Lollipop.min_peptide_length)
+                    if (!feature_is_just_met_cleavage && subsequence.Length != p.BaseSequence.Length && subsequence.Length >= min_peptide_length)
                         new_prots.Add(new ProteinWithGoTerms(
                             subsequence,
                             p.Accession + "_" + feature_begin.ToString() + "frag" + feature_end.ToString(),
@@ -1159,5 +1160,6 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion GO-TERMS AND GO-TERM SIGNIFICANCE
+
     }
 }
