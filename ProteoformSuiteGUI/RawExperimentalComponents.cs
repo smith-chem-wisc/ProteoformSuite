@@ -1,25 +1,30 @@
 ﻿using ProteoformSuiteInternal;
 using System;
-using System.ComponentModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace ProteoformSuiteGUI
 {
     public partial class RawExperimentalComponents : Form
     {
+        #region Public Fields
+
         public bool preloaded = false;
-        public ProteoformSweet parent;
+
+        #endregion Public Fields
+
+        #region Public Constructor
 
         public RawExperimentalComponents()
         {
             InitializeComponent();
         }
 
-        public void RawExperimentalComponents_Load(object sender, EventArgs e)
-        { }
+        #endregion Public Constructor
+        
+        #region Public Methods
 
         public void load_raw_components()
         {
@@ -30,17 +35,27 @@ namespace ProteoformSuiteGUI
 
                 Parallel.Invoke
                 (
-                    () => { if (Lollipop.raw_experimental_components.Count <= 0)
-                                Lollipop.process_raw_components(Lollipop.input_files, Lollipop.raw_experimental_components, Purpose.Identification); }, //Includes reading correction factors if present,
-                    () => { if (Lollipop.raw_quantification_components.Count <= 0)
-                                Lollipop.process_raw_components(Lollipop.input_files, Lollipop.raw_quantification_components, Purpose.Quantification); },
-                    () => { if (Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() > 0 && Lollipop.proteoform_community.theoretical_proteoforms.Length <= 0) Lollipop.get_theoretical_proteoforms(); }
+                () => 
+                    {
+                        if (Lollipop.raw_experimental_components.Count <= 0)
+                            Lollipop.process_raw_components(Lollipop.input_files, Lollipop.raw_experimental_components, Purpose.Identification);
+                    }, //Includes reading correction factors if present,
+                () => 
+                    {
+                        if (Lollipop.raw_quantification_components.Count <= 0)
+                            Lollipop.process_raw_components(Lollipop.input_files, Lollipop.raw_quantification_components, Purpose.Quantification);
+                    },
+                () => 
+                    {
+                        if (Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() > 0 && Lollipop.proteoform_community.theoretical_proteoforms.Length <= 0)
+                            Lollipop.get_theoretical_proteoforms(Path.Combine(Path.Combine(Environment.CurrentDirectory)));
+                    }
                 );
 
-                this.FillRawExpComponentsTable();
-                this.FillRawQuantificationComponentsTable();
-                if (Lollipop.neucode_labeled) ((ProteoformSweet)this.MdiParent).neuCodePairs.display_neucode_pairs();
-                ((ProteoformSweet)this.MdiParent).theoreticalDatabase.FillDataBaseTable("Target");
+                FillRawExpComponentsTable();
+                FillRawQuantificationComponentsTable();
+                if (Lollipop.neucode_labeled) (MdiParent as ProteoformSweet).neuCodePairs.display_neucode_pairs();
+                    (MdiParent as ProteoformSweet).theoreticalDatabase.FillDataBaseTable("Target");
             }
             preloaded = false;
         }
@@ -54,8 +69,8 @@ namespace ProteoformSuiteGUI
         {
             if (Lollipop.raw_experimental_components.Count > 0)
             {
-                DisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, Lollipop.raw_experimental_components);
-                this.FormatRawExpComponentsTable();
+                DisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, Lollipop.raw_experimental_components.Select(c => new DisplayComponent(c)));
+                DisplayComponent.FormatComponentsTable(dgv_RawExpComp_MI_masses, false);
             }
         }
 
@@ -63,97 +78,22 @@ namespace ProteoformSuiteGUI
         {
             if (Lollipop.raw_quantification_components.Count > 0)
             {
-                DisplayUtility.FillDataGridView(dgv_RawQuantComp_MI_masses, Lollipop.raw_quantification_components);
-                this.FormatRawQuantificationComponentsTable();
-            }           
-        }
-
-        private void FormatRawExpComponentsTable()
-        {
-            if (dgv_RawExpComp_MI_masses.Columns.Count <= 0) return;
-
-            //round table values
-            dgv_RawExpComp_MI_masses.Columns["reported_monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpComp_MI_masses.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpComp_MI_masses.Columns["weighted_monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpComp_MI_masses.Columns["corrected_mass"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpComp_MI_masses.Columns["rt_apex"].DefaultCellStyle.Format = "0.##";
-            dgv_RawExpComp_MI_masses.Columns["relative_abundance"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpComp_MI_masses.Columns["fract_abundance"].DefaultCellStyle.Format = "0.####";
-            dgv_RawExpComp_MI_masses.Columns["intensity_sum"].DefaultCellStyle.Format = "0.####";
-
-            //set column header
-            dgv_RawExpComp_MI_masses.Columns["reported_monoisotopic_mass"].HeaderText = "Monoisotopic Mass";
-            dgv_RawExpComp_MI_masses.Columns["delta_mass"].HeaderText = "Delta Mass";
-            dgv_RawExpComp_MI_masses.Columns["weighted_monoisotopic_mass"].HeaderText = "Weighted Monoisotopic Mass";
-            dgv_RawExpComp_MI_masses.Columns["rt_apex"].HeaderText = "Apex RT";
-            dgv_RawExpComp_MI_masses.Columns["relative_abundance"].HeaderText = "Relative Abundance";
-            dgv_RawExpComp_MI_masses.Columns["fract_abundance"].HeaderText = "Fractional Abundance";
-            dgv_RawExpComp_MI_masses.Columns["intensity_sum"].HeaderText = "Intensity Sum";
-            dgv_RawExpComp_MI_masses.Columns["intensity_sum_olcs"].HeaderText = "Intensity Sum for Overlapping Charge States";
-
-
-            //dgv_RawExpComp_MI_masses.Columns["file_origin"].HeaderText = "Filename";
-
-            dgv_RawExpComp_MI_masses.Columns["id"].HeaderText = "ID";
-            dgv_RawExpComp_MI_masses.Columns["scan_range"].HeaderText = "Scan Range";
-            dgv_RawExpComp_MI_masses.Columns["rt_range"].HeaderText = "RT Range";
-            dgv_RawExpComp_MI_masses.Columns["num_charge_states"].HeaderText = "No. Charge States";
-            dgv_RawExpComp_MI_masses.Columns["accepted"].HeaderText = "Accepted";
-            dgv_RawExpComp_MI_masses.Columns["manual_mass_shift"].HeaderText = "Manual Mass Shift";
-
-            dgv_RawExpComp_MI_masses.AllowUserToAddRows = false;
-            //dgv_RawExpComp_MI_masses.Columns["corrected_mass"].Visible = false;
-            if (!Lollipop.neucode_labeled)
-            {
-                dgv_RawExpComp_MI_masses.Columns["intensity_sum_olcs"].Visible = false;
+                DisplayUtility.FillDataGridView(dgv_RawQuantComp_MI_masses, Lollipop.raw_quantification_components.Select(c => new DisplayComponent(c)));
+                DisplayComponent.FormatComponentsTable(dgv_RawQuantComp_MI_masses, true);
             }
-            dgv_RawExpComp_MI_masses.Columns["manual_mass_shift"].Visible = false;
         }
 
-        private void FormatRawQuantificationComponentsTable()
-        {
-            ////round table values
-            //dgv_RawQuantComp_MI_masses.Columns["reported_monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawQuantComp_MI_masses.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawQuantComp_MI_masses.Columns["weighted_monoisotopic_mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawQuantComp_MI_masses.Columns["corrected_mass"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawQuantComp_MI_masses.Columns["rt_apex"].DefaultCellStyle.Format = "0.##";
-            //dgv_RawQuantComp_MI_masses.Columns["relative_abundance"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawQuantComp_MI_masses.Columns["fract_abundance"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawQuantComp_MI_masses.Columns["intensity_sum"].DefaultCellStyle.Format = "0.####";
+        #endregion Public Methods
 
-            ////set column header
-            //dgv_RawQuantComp_MI_masses.Columns["reported_monoisotopic_mass"].HeaderText = "Monoisotopic Mass";
-            //dgv_RawQuantComp_MI_masses.Columns["delta_mass"].HeaderText = "Delta Mass";
-            //dgv_RawQuantComp_MI_masses.Columns["weighted_monoisotopic_mass"].HeaderText = "Weighted Monoisotopic Mass";
-            //dgv_RawQuantComp_MI_masses.Columns["rt_apex"].HeaderText = "Apex RT";
-            //dgv_RawQuantComp_MI_masses.Columns["relative_abundance"].HeaderText = "Relative Abundance";
-            //dgv_RawQuantComp_MI_masses.Columns["fract_abundance"].HeaderText = "Fractional Abundance";
-            //dgv_RawQuantComp_MI_masses.Columns["intensity_sum"].HeaderText = "Intensity Sum";
-
-            ////dgv_RawQuantComp_MI_masses.Columns["file_origin"].HeaderText = "Filename";
-
-            //dgv_RawQuantComp_MI_masses.Columns["id"].HeaderText = "ID";
-            //dgv_RawQuantComp_MI_masses.Columns["scan_range"].HeaderText = "Scan Range";
-            //dgv_RawQuantComp_MI_masses.Columns["rt_range"].HeaderText = "RT Range";
-            //dgv_RawQuantComp_MI_masses.Columns["num_charge_states"].HeaderText = "No. Charge States";
-            //dgv_RawQuantComp_MI_masses.Columns["accepted"].HeaderText = "Accepted";
-            //dgv_RawQuantComp_MI_masses.Columns["manual_mass_shift"].HeaderText = "Manual Mass Shift";
-
-            //dgv_RawQuantComp_MI_masses.AllowUserToAddRows = false;
-            //dgv_RawQuantComp_MI_masses.Columns["corrected_mass"].Visible = false;
-            //dgv_RawQuantComp_MI_masses.Columns["intensity_sum_olcs"].Visible = false;
-            ////dgv_RawQuantComp_MI_masses.Columns["_manual_mass_shift"].Visible = false;
-        }
+        #region Private Methods
 
         private void dgv_RawExpComp_MI_masses_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
             {
-                ProteoformSuiteInternal.Component c = (ProteoformSuiteInternal.Component)this.dgv_RawExpComp_MI_masses.Rows[e.RowIndex].DataBoundItem;
-                DisplayUtility.FillDataGridView(dgv_RawExpComp_IndChgSts, c.charge_states);
-                Format_RawIndChgSts();
+                Component c = ((Component)((DisplayComponent)this.dgv_RawExpComp_MI_masses.Rows[e.RowIndex].DataBoundItem).display_object);
+                DisplayUtility.FillDataGridView(dgv_RawExpComp_IndChgSts, c.charge_states.Select(cs => new DisplayChargeState(cs)));
+                DisplayChargeState.FormatChargeStateTable(dgv_RawExpComp_IndChgSts, false);
             }
         }
 
@@ -162,48 +102,11 @@ namespace ProteoformSuiteGUI
         {
             if (e.RowIndex >= 0)
             {
-                ProteoformSuiteInternal.Component c = (ProteoformSuiteInternal.Component)this.dgv_RawQuantComp_MI_masses.Rows[e.RowIndex].DataBoundItem;
-                DisplayUtility.FillDataGridView(dgv_RawQuantComp_IndChgSts, c.charge_states);
-                Format_QuantIndChgSts();
+                Component c = ((Component)((DisplayComponent)this.dgv_RawQuantComp_MI_masses.Rows[e.RowIndex].DataBoundItem).display_object);
+                DisplayUtility.FillDataGridView(dgv_RawQuantComp_IndChgSts, c.charge_states.Select(cs => new DisplayChargeState(cs)));
+                DisplayChargeState.FormatChargeStateTable(dgv_RawQuantComp_IndChgSts, true);
             }
         }
-
-
-        private void Format_RawIndChgSts()
-        {
-            ////round table values
-            //dgv_RawExpComp_IndChgSts.Columns["intensity"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpComp_IndChgSts.Columns["mz_centroid"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawExpComp_IndChgSts.Columns["calculated_mass"].DefaultCellStyle.Format = "0.####";
-
-            ////set column header
-            //dgv_RawExpComp_IndChgSts.Columns["intensity"].HeaderText = "Intensity";
-            //dgv_RawExpComp_IndChgSts.Columns["mz_centroid"].HeaderText = "Centroid m/z";
-            //dgv_RawExpComp_IndChgSts.Columns["mz_correction"].HeaderText = "Lock-Mass Correction (m/z)";
-            //dgv_RawExpComp_IndChgSts.Columns["calculated_mass"].HeaderText = "Calculated Mass";
-            //dgv_RawExpComp_IndChgSts.Columns["charge_count"].HeaderText = "Charge Count";
-
-            //if (Lollipop.get_files(Purpose.Calibration).Count() == 0) dgv_RawExpComp_IndChgSts.Columns["mz_correction"].Visible = false;
-            //dgv_RawExpComp_IndChgSts.AllowUserToAddRows = false;
-        }
-
-        private void Format_QuantIndChgSts()
-        {
-            //round table values
-            //dgv_RawQuantComp_IndChgSts.Columns["intensity"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawQuantComp_IndChgSts.Columns["mz_centroid"].DefaultCellStyle.Format = "0.####";
-            //dgv_RawQuantComp_IndChgSts.Columns["calculated_mass"].DefaultCellStyle.Format = "0.####";
-
-            ////set column header
-            //dgv_RawQuantComp_IndChgSts.Columns["intensity"].HeaderText = "Intensity";
-            //dgv_RawQuantComp_IndChgSts.Columns["mz_centroid"].HeaderText = "Centroid m/z";
-            //dgv_RawQuantComp_IndChgSts.Columns["mz_correction"].HeaderText = "Lock-Mass Correction (m/z)";
-            //dgv_RawQuantComp_IndChgSts.Columns["calculated_mass"].HeaderText = "Calculated Mass";
-            //dgv_RawQuantComp_IndChgSts.Columns["charge_count"].HeaderText = "Charge Count";
-
-            //if (Lollipop.get_files(Purpose.Calibration).Count() == 0) dgv_RawQuantComp_IndChgSts.Columns["mz_correction"].Visible = false;
-            //dgv_RawQuantComp_IndChgSts.AllowUserToAddRows = false;
-        }
-
+        #endregion Private Methods
     }
 }

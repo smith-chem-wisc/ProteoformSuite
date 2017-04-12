@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Data.Odbc;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.IO;
 using System.Windows.Forms.DataVisualization.Charting;
 using ProteoformSuiteInternal;
 
@@ -29,9 +26,6 @@ namespace ProteoformSuiteGUI
             InitializeParameterSet();
         }
 
-        public void ExperimentExperimentComparison_Load(object sender, EventArgs e)
-        { }
-
         public void compare_ee()
         {
             if (Lollipop.ee_relations.Count == 0 && Lollipop.proteoform_community.has_e_proteoforms)
@@ -44,7 +38,9 @@ namespace ProteoformSuiteGUI
         public void run_the_gamut()
         {
             this.Cursor = Cursors.WaitCursor;
-            Lollipop.make_ee_relationships(Lollipop.proteoform_community);
+            Lollipop.ee_relations = Lollipop.proteoform_community.relate(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
+            Lollipop.ef_relations = Lollipop.proteoform_community.relate_ef(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.proteoform_community.experimental_proteoforms);
+            Lollipop.ee_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.ee_relations, Lollipop.ef_relations);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
 
             Parallel.Invoke
@@ -74,12 +70,7 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsAndTables()
         {
-            Lollipop.ee_relations.Clear();
-            Lollipop.ee_peaks.Clear();
-            Lollipop.ef_relations.Clear();
-            Lollipop.proteoform_community.families.Clear();
-            relationUtility.clear_lists(new List<ProteoformComparison>() { ProteoformComparison.ee, ProteoformComparison.ef });
-
+            Lollipop.proteoform_community.clear_ee();
 
             foreach (var series in ct_EE_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_EE_peakList.Series) series.Points.Clear();
@@ -95,7 +86,7 @@ namespace ProteoformSuiteGUI
             this.dgv_EE_Peaks.CurrentCellDirtyStateChanged -= this.EE_Peak_List_DirtyStateChanged;//remove event handler on form load and table refresh event
             FillEEPeakListTable();
             FillEEPairsGridView();
-            DisplayUtility.FormatRelationsGridView(dgv_EE_Relations, false, true);
+            DisplayProteoformRelation.FormatRelationsGridView(dgv_EE_Relations, false, true);
             DisplayUtility.FormatPeakListGridView(dgv_EE_Peaks, true);
             GraphEERelations();
             GraphEEPeaks();
@@ -105,7 +96,7 @@ namespace ProteoformSuiteGUI
 
         private void FillEEPairsGridView()
         {
-            DisplayUtility.FillDataGridView(dgv_EE_Relations, Lollipop.ee_relations);
+            DisplayUtility.FillDataGridView(dgv_EE_Relations, Lollipop.ee_relations.Select(r => new DisplayProteoformRelation(r)));
         }
         private void FillEEPeakListTable()
         {
@@ -185,7 +176,6 @@ namespace ProteoformSuiteGUI
             nUD_EE_Upper_Bound.Maximum = 500;
             if (!Lollipop.neucode_labeled) Lollipop.ee_max_mass_difference = 150;
             nUD_EE_Upper_Bound.Value = (decimal)Lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
-
         }
 
         private void EE_Peak_List_DirtyStateChanged(object sender, EventArgs e)

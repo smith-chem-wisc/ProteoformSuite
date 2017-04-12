@@ -158,7 +158,6 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ResultsSummary";
             this.Text = "Results Summary";
-            this.Load += new System.EventHandler(this.ResultsSummary_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
