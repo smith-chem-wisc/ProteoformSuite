@@ -17,6 +17,7 @@ namespace ProteoformSuiteInternal
             //get ptms on proteoform
             foreach (List<string> cellStrings in cells)
             {
+                TopDownResultType tdResultType = (cellStrings[15] == "BioMarker") ? TopDownResultType.Biomarker : TopDownResultType.TightAbsoluteMass;
                 List<Ptm> ptm_list = new List<Ptm>();
                 //N-term modifications
                 if (cellStrings[10].Length > 0)
@@ -32,7 +33,7 @@ namespace ProteoformSuiteInternal
                         //found one case where PTM not in ptmlist.txt (acetylasparagine)
                         else
                         {
-                            ptm_list.Add(new Ptm(position, new ModificationWithMass("N-acetylation", null, null, ModificationSites.NTerminus, 0, null, new List<double>(), null, null, null)));
+                            ptm_list.Add(new Ptm(position, new ModificationWithMass("N-acetylation", null, null, ModificationSites.NTerminus, 0, null, new List<double>(), new List<double>(), null)));
                         }
                     }
                 }
@@ -52,7 +53,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
                 //convert into new td hit
-                TopDownHit td_hit = new TopDownHit(file, cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
+                TopDownHit td_hit = new TopDownHit(file, tdResultType, cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
                 Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]), ptm_list, Convert.ToDouble(cellStrings[16]), Convert.ToDouble(cellStrings[12]),
                 Convert.ToInt16(cellStrings[17]), Convert.ToDouble(cellStrings[18]), cellStrings[14].Split('.')[0], file.targeted_td_result);
                 td_hits.Add(td_hit);

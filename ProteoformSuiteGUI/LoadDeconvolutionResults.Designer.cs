@@ -64,6 +64,7 @@
             this.bt_calibrate = new System.Windows.Forms.Button();
             this.cb_lockmass = new System.Windows.Forms.CheckBox();
             this.cb_tdhits = new System.Windows.Forms.CheckBox();
+            this.cb_td_hits_diff_file = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles2)).BeginInit();
@@ -414,9 +415,9 @@
             // 
             // bt_calibrate
             // 
-            this.bt_calibrate.Location = new System.Drawing.Point(531, 589);
+            this.bt_calibrate.Location = new System.Drawing.Point(534, 564);
             this.bt_calibrate.Name = "bt_calibrate";
-            this.bt_calibrate.Size = new System.Drawing.Size(264, 25);
+            this.bt_calibrate.Size = new System.Drawing.Size(120, 54);
             this.bt_calibrate.TabIndex = 20;
             this.bt_calibrate.Text = "Calibrate";
             this.bt_calibrate.UseVisualStyleBackColor = true;
@@ -426,7 +427,7 @@
             // cb_lockmass
             // 
             this.cb_lockmass.AutoSize = true;
-            this.cb_lockmass.Location = new System.Drawing.Point(531, 566);
+            this.cb_lockmass.Location = new System.Drawing.Point(664, 561);
             this.cb_lockmass.Name = "cb_lockmass";
             this.cb_lockmass.Size = new System.Drawing.Size(117, 17);
             this.cb_lockmass.TabIndex = 36;
@@ -440,19 +441,32 @@
             this.cb_tdhits.AutoSize = true;
             this.cb_tdhits.Checked = true;
             this.cb_tdhits.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_tdhits.Location = new System.Drawing.Point(654, 566);
+            this.cb_tdhits.Location = new System.Drawing.Point(665, 584);
             this.cb_tdhits.Name = "cb_tdhits";
-            this.cb_tdhits.Size = new System.Drawing.Size(141, 17);
+            this.cb_tdhits.Size = new System.Drawing.Size(191, 17);
             this.cb_tdhits.TabIndex = 37;
-            this.cb_tdhits.Text = "TopDown Identifications";
+            this.cb_tdhits.Text = "TopDown Identifications (same file)";
             this.cb_tdhits.UseVisualStyleBackColor = true;
             this.cb_tdhits.Visible = false;
             this.cb_tdhits.CheckedChanged += new System.EventHandler(this.cb_tdhits_CheckedChanged);
+            // 
+            // cb_td_hits_diff_file
+            // 
+            this.cb_td_hits_diff_file.AutoSize = true;
+            this.cb_td_hits_diff_file.Location = new System.Drawing.Point(664, 607);
+            this.cb_td_hits_diff_file.Name = "cb_td_hits_diff_file";
+            this.cb_td_hits_diff_file.Size = new System.Drawing.Size(204, 17);
+            this.cb_td_hits_diff_file.TabIndex = 38;
+            this.cb_td_hits_diff_file.Text = "TopDown Identifications (different file)";
+            this.cb_td_hits_diff_file.UseVisualStyleBackColor = true;
+            this.cb_td_hits_diff_file.Visible = false;
+            this.cb_td_hits_diff_file.CheckedChanged += new System.EventHandler(this.cb_td_hits_diff_file_CheckedChanged);
             // 
             // LoadDeconvolutionResults
             // 
             this.ClientSize = new System.Drawing.Size(1362, 736);
             this.ControlBox = false;
+            this.Controls.Add(this.cb_td_hits_diff_file);
             this.Controls.Add(this.cb_tdhits);
             this.Controls.Add(this.cb_lockmass);
             this.Controls.Add(this.bt_calibrate);
@@ -530,5 +544,6 @@
         private System.Windows.Forms.Button bt_calibrate;
         private System.Windows.Forms.CheckBox cb_lockmass;
         private System.Windows.Forms.CheckBox cb_tdhits;
+        private System.Windows.Forms.CheckBox cb_td_hits_diff_file;
     }
 }

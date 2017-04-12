@@ -27,6 +27,7 @@ namespace ProteoformSuiteInternal
         public int relation_count { get { return this.relations.Count; } }
         public HashSet<Proteoform> proteoforms { get; private set; }
         private Proteoform seed { get; set; }
+        public double range_RT_in_family { get { try { return (experimental_proteoforms.Max(e => e.agg_rt) - experimental_proteoforms.Min(e => e.agg_rt)); } catch { return 0; } } }
 
         public ProteoformFamily(Proteoform seed)
         {

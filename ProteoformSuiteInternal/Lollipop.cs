@@ -476,7 +476,7 @@ namespace ProteoformSuiteInternal
             Dictionary<string, Modification> um;
             Parallel.ForEach(get_files(Lollipop.input_files, Purpose.ProteinDatabase).ToList(), database =>
             {
-                lock (theoretical_proteins) theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, false, all_known_modifications, database.ContaminantDB, new string[] { "GO" }, mod_types_to_exclude, out um).ToArray());
+                lock (theoretical_proteins) theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, false, all_known_modifications, database.ContaminantDB, mod_types_to_exclude, out um).ToArray());
                 lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).OfType<ModificationWithLocation>());
             });
             all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
@@ -805,6 +805,7 @@ namespace ProteoformSuiteInternal
         //CALIBRATION
         public static bool calibrate_lock_mass = false;
         public static bool calibrate_td_results = true;
+        public static bool calibrate_intact_with_td_ids = false;
         public static List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
         public static List<MsScan> Ms_scans = new List<MsScan>();
         public static Dictionary<string, Func<double[], double>> td_calibration_functions = new Dictionary<string, Func<double[], double>>();
@@ -830,9 +831,10 @@ namespace ProteoformSuiteInternal
             //get calibration points and calibrate deconvolution files
             foreach (string filename in filenames.Distinct())
             {
+                process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.filename == filename).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
                 get_calibration_points(filename);
                 calibrate_td_hits(filename);
-                determine_component_shift(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.filename == filename).ToList());
+                determine_component_shift();
                 InputFile file = input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.filename == filename).FirstOrDefault();
                 if (file != null) Calibration.calibrate_components_in_xlsx(file);
             }
@@ -846,7 +848,7 @@ namespace ProteoformSuiteInternal
         public static void get_calibration_points(string filename)
         {
             List<InputFile> raw_files = Lollipop.input_files.Where(f => f.purpose == Purpose.RawFile && f.filename == filename).ToList();
-            if (raw_files.Count == 1)
+            if (raw_files.Count > 0)
             {
                 //get calibration points
                 InputFile raw_file = raw_files.First();
@@ -858,29 +860,33 @@ namespace ProteoformSuiteInternal
                     correctionFactors.AddRange(Correction.CorrectionFactorInterpolation(Ms_scans.Where(s => s.filename == filename).Select(s => (new Correction(s.filename, s.scan_number, s.lock_mass_shift)))));
                 }
 
-                if (Lollipop.calibrate_td_results)
+                if (Lollipop.calibrate_td_results || Lollipop.calibrate_intact_with_td_ids)
                 {
-                    Func<double[], double> bestCf = Calibration.Run_TdMzCal(filename, td_hits_calibration.Where(h => h.filename == filename).ToList());
-                    if (bestCf != null)
+                    Func<double[], double> bestCf = Calibration.Run_TdMzCal(filename, td_hits_calibration.Where(h => h.filename == filename && h.tdResultType == TopDownResultType.TightAbsoluteMass).ToList(), true);
+                    if (bestCf != null)  td_calibration_functions.Add(filename, bestCf);
+                    if (Lollipop.calibrate_intact_with_td_ids)
                     {
-                        lock (td_calibration_functions) td_calibration_functions.Add(filename, bestCf);
+                        bestCf = Calibration.Run_TdMzCal(filename, td_hits_calibration.Where(h => h.tdResultType == TopDownResultType.TightAbsoluteMass).ToList(), false);
+                        if (bestCf != null) td_calibration_functions.Add(filename, bestCf);
                     }
                 }
             }
         }
 
-        public static void determine_component_shift(List<InputFile> input_files)
+        public static void determine_component_shift()
         {
-            process_raw_components(input_files, calibration_components, Purpose.CalibrationIdentification, false);
             Parallel.ForEach(calibration_components, c =>
             {
-                if (!calibrate_td_results || td_calibration_functions.ContainsKey(c.input_file.filename))
+                if ((!calibrate_td_results && !calibrate_intact_with_td_ids) || td_calibration_functions.ContainsKey(c.input_file.filename))
                 {
                     foreach (ChargeState cs in c.charge_states)
                     {
-                        double corrected_mz = cs.mz_centroid + (Lollipop.calibrate_td_results ? -1 * td_calibration_functions[c.input_file.filename](new double[] { cs.mz_centroid, Convert.ToDouble(c.rt_range.Split('-')[0]) }) : -1 * Calibration.get_correction_factor(c.input_file.filename, c.scan_range));
+                        double corrected_mz = (Lollipop.calibrate_td_results || Lollipop.calibrate_intact_with_td_ids) ? cs.mz_centroid - td_calibration_functions[c.input_file.filename](new double[] { cs.mz_centroid, Convert.ToDouble(c.rt_range.Split('-')[0]) }) : cs.mz_centroid - Calibration.get_correction_factor(c.input_file.filename, c.scan_range);
                         var key = new Tuple<string, double, double>(c.input_file.filename, Math.Round(cs.mz_centroid, 0), Math.Round(cs.intensity, 0));
-                        lock (file_mz_correction) if (!file_mz_correction.ContainsKey(key)) file_mz_correction.Add(key, corrected_mz);
+                        if (!file_mz_correction.ContainsKey(key))
+                        {
+                            lock(file_mz_correction)file_mz_correction.Add(key, corrected_mz);
+                        }
                     }
                 }
             });
@@ -888,7 +894,7 @@ namespace ProteoformSuiteInternal
 
         public static void calibrate_td_hits(string filename)
         {
-            if (Lollipop.calibrate_td_results && Lollipop.td_calibration_functions.ContainsKey(filename))
+            if (Lollipop.calibrate_td_results || Lollipop.calibrate_intact_with_td_ids && Lollipop.td_calibration_functions.ContainsKey(filename))
             {
                 Func<double[], double> bestCf = Lollipop.td_calibration_functions[filename];
                 //need to calibrate all the others

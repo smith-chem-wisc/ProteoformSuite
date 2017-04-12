@@ -24,6 +24,7 @@ namespace ProteoformSuiteInternal
         public double ptm_mass { get { return ptm_set.mass; } }
         public List<Psm> psm_list { get; set; } = new List<Psm>();
         public int psm_count_BU { get { return psm_list.Count; } }
+        public int TD_proteoforms { get { return relationships.Count(r => r.relation_type == ProteoformComparison.ttd); } }
         public string ptm_descriptions
         {
             get { return ptm_list_string(); }
