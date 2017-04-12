@@ -98,8 +98,8 @@ namespace Test
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 101d, 54d, 2, lysineCount));//these are for quantification
             List<Component> components = generate_neucode_components(proteoformMass, intensity, intensity/2d, lysineCount); // these are for indentification
             ExperimentalProteoform e1 = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, quant_components_list, true);
-            Assert.AreEqual(2, e1.light_observation_count);
-            Assert.AreEqual(2, e1.heavy_observation_count);
+            Assert.AreEqual(2, e1.lt_quant_components.Count);
+            Assert.AreEqual(2, e1.hv_quant_components.Count);
 
             Lollipop.input_files = quant_components_list.Select(c => c.input_file).Distinct().ToList();
             Lollipop.getObservationParameters(true, Lollipop.input_files);
@@ -139,8 +139,8 @@ namespace Test
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 50d, 100d, 3, lysineCount));//these are for quantification
             quant_components_list.AddRange(generate_neucode_quantitative_components(proteoformMass, 48d, 102d, 4, lysineCount));//these are for quantification
             ExperimentalProteoform e2 = ConstructorsForTesting.ExperimentalProteoform("E2", components[0], components, quant_components_list, true);
-            Assert.AreEqual(4, e2.light_observation_count);
-            Assert.AreEqual(4, e2.heavy_observation_count);
+            Assert.AreEqual(4, e2.lt_quant_components.Count);
+            Assert.AreEqual(4, e2.hv_quant_components.Count);
 
             Lollipop.input_files = quant_components_list.Select(c => c.input_file).Distinct().ToList();
             Lollipop.getObservationParameters(true, Lollipop.input_files);
@@ -802,13 +802,13 @@ namespace Test
             TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
             TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
-            ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.et, 0);
+            ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
             DeltaMassPeak etp = new DeltaMassPeak(et, new List<ProteoformRelation> { et });
             et.peak = etp;
             etp.peak_accepted = true;
             e.relationships.Add(et);
             t.relationships.Add(et);
-            ProteoformRelation eu = new ProteoformRelation(e, u, ProteoformComparison.et, 0);
+            ProteoformRelation eu = new ProteoformRelation(e, u, ProteoformComparison.ExperimentalTheoretical, 0);
             DeltaMassPeak eup = new DeltaMassPeak(eu, new List<ProteoformRelation> { eu });
             eu.peak = eup;
             eup.peak_accepted = true;
@@ -966,10 +966,10 @@ namespace Test
 
             List<ProteoformFamily> fams = Lollipop.getInterestingFamilies(exps, 10, 0.5m, 1);
             Assert.AreEqual(2, fams.Count);
-            Assert.AreEqual(1, fams.Where(x => x.theoretical_count == 0).Count());
-            Assert.AreEqual(1, fams.Where(x => x.theoretical_count == 1).Count());
-            Assert.AreEqual(0, fams.Where(x => x.theoretical_count == 2).Count());
-            Assert.AreEqual(1, fams.Where(x => x.experimental_count == 2).Count());
+            Assert.AreEqual(1, fams.Where(x => x.theoretical_proteoforms.Count == 0).Count());
+            Assert.AreEqual(1, fams.Where(x => x.theoretical_proteoforms.Count == 1).Count());
+            Assert.AreEqual(0, fams.Where(x => x.theoretical_proteoforms.Count == 2).Count());
+            Assert.AreEqual(1, fams.Where(x => x.experimental_proteoforms.Count == 2).Count());
         }
     }
 }

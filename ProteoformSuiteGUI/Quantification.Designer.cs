@@ -71,6 +71,8 @@
             this.rb_allTheoreticalProteins = new System.Windows.Forms.RadioButton();
             this.rb_allSampleGOTerms = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.cmbx_nodeLabel = new System.Windows.Forms.ComboBox();
             this.cb_geneCentric = new System.Windows.Forms.CheckBox();
             this.label14 = new System.Windows.Forms.Label();
             this.btn_buildFamiliesWithSignificantChange = new System.Windows.Forms.Button();
@@ -104,8 +106,6 @@
             this.nud_Offset = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.nud_sKnot_minFoldChange = new System.Windows.Forms.NumericUpDown();
-            this.label7 = new System.Windows.Forms.Label();
-            this.cmbx_nodeLabel = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantification_results)).BeginInit();
             this.gb_quantDataDisplaySelection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).BeginInit();
@@ -586,6 +586,25 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Quantified Family Display with Cytoscape";
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.BackColor = System.Drawing.SystemColors.Control;
+            this.label7.Location = new System.Drawing.Point(347, 107);
+            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(117, 13);
+            this.label7.TabIndex = 64;
+            this.label7.Text = "Node Label Information";
+            // 
+            // cmbx_nodeLabel
+            // 
+            this.cmbx_nodeLabel.FormattingEnabled = true;
+            this.cmbx_nodeLabel.Location = new System.Drawing.Point(267, 101);
+            this.cmbx_nodeLabel.Name = "cmbx_nodeLabel";
+            this.cmbx_nodeLabel.Size = new System.Drawing.Size(75, 21);
+            this.cmbx_nodeLabel.TabIndex = 63;
+            // 
             // cb_geneCentric
             // 
             this.cb_geneCentric.AutoSize = true;
@@ -945,25 +964,6 @@
             this.nud_sKnot_minFoldChange.TabIndex = 0;
             this.nud_sKnot_minFoldChange.ValueChanged += new System.EventHandler(this.nud_sKnot_minFoldChange_ValueChanged);
             // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.BackColor = System.Drawing.SystemColors.Control;
-            this.label7.Location = new System.Drawing.Point(347, 107);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(117, 13);
-            this.label7.TabIndex = 64;
-            this.label7.Text = "Node Label Information";
-            // 
-            // cmbx_nodeLabel
-            // 
-            this.cmbx_nodeLabel.FormattingEnabled = true;
-            this.cmbx_nodeLabel.Location = new System.Drawing.Point(267, 101);
-            this.cmbx_nodeLabel.Name = "cmbx_nodeLabel";
-            this.cmbx_nodeLabel.Size = new System.Drawing.Size(75, 21);
-            this.cmbx_nodeLabel.TabIndex = 63;
-            // 
             // Quantification
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -987,7 +987,6 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Quantification";
             this.Text = "Quantification";
-            this.Load += new System.EventHandler(this.Quantification_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantification_results)).EndInit();
             this.gb_quantDataDisplaySelection.ResumeLayout(false);
             this.gb_quantDataDisplaySelection.PerformLayout();

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Data;
 
 namespace ProteoformSuiteInternal
 {
     public class NeuCodePair : Component
     {
+        #region Public Properties
+
         public Component neuCodeLight { get; set; }
         public Component neuCodeHeavy { get; set; }
         public List<int> overlapping_charge_states { get; set; }
@@ -15,8 +15,10 @@ namespace ProteoformSuiteInternal
         public string id_heavy { get; set; }
         public double intensity_ratio { get; set; }
         public int lysine_count { get; set; }
-        //public bool accepted { get; set; } //moved this to Component
-       
+
+        #endregion Public Properties
+
+        #region Public Constructors
 
         public NeuCodePair(Component neuCodeLight, Component neuCodeHeavy, double mass_difference, List<int> overlapping_charge_states, bool light_is_lower) : base(neuCodeLight)
         {
@@ -26,13 +28,12 @@ namespace ProteoformSuiteInternal
             this.id_light = neuCodeLight.id;
             this.id_heavy = neuCodeHeavy.id;
 
-            int diff_integer = Convert.ToInt32(Math.Round(mass_difference / Lollipop.MONOISOTOPIC_UNIT_MASS - 0.5, 0, MidpointRounding.AwayFromZero)); 
+            int diff_integer = Convert.ToInt32(Math.Round(mass_difference / Lollipop.MONOISOTOPIC_UNIT_MASS - 0.5, 0, MidpointRounding.AwayFromZero));
             double firstCorrection;
 
-            if (light_is_lower)
-                firstCorrection = neuCodeLight.weighted_monoisotopic_mass + diff_integer * Lollipop.MONOISOTOPIC_UNIT_MASS; 
-            else
-                firstCorrection = neuCodeLight.weighted_monoisotopic_mass - (diff_integer + 1) * Lollipop.MONOISOTOPIC_UNIT_MASS; 
+            firstCorrection = light_is_lower ?
+                neuCodeLight.weighted_monoisotopic_mass + diff_integer * Lollipop.MONOISOTOPIC_UNIT_MASS :
+                firstCorrection = neuCodeLight.weighted_monoisotopic_mass - (diff_integer + 1) * Lollipop.MONOISOTOPIC_UNIT_MASS;
 
             this.lysine_count = Math.Abs(Convert.ToInt32(Math.Round((neuCodeHeavy.weighted_monoisotopic_mass - firstCorrection) / Lollipop.NEUCODE_LYSINE_MASS_SHIFT, 0, MidpointRounding.AwayFromZero)));
             this.intensity_ratio = neuCodeLight.intensity_sum_olcs / neuCodeHeavy.intensity_sum_olcs; //ratio of overlapping charge states
@@ -41,17 +42,6 @@ namespace ProteoformSuiteInternal
             //marking pair as accepted or not when it's created
             set_accepted();
             this.calculate_properties();
-        }
-
-        public void set_accepted()
-        {
-            if (this.lysine_count >= Lollipop.min_lysine_ct 
-             && this.lysine_count <= Lollipop.max_lysine_ct
-             && this.intensity_ratio >= Convert.ToDouble(Lollipop.min_intensity_ratio) 
-             && this.intensity_ratio <= Convert.ToDouble(Lollipop.max_intensity_ratio))
-                this.accepted = true; 
-            else
-                this.accepted = false;
         }
 
         public NeuCodePair(Component neucodeLight, Component neucodeHeavy) : base(neucodeLight) //need this to open and read in tsv files
@@ -64,5 +54,18 @@ namespace ProteoformSuiteInternal
 
         public NeuCodePair()
         { }
+
+        #endregion Public Constructors
+
+        #region Public Methods
+
+        public void set_accepted()
+        {
+            accepted = lysine_count >= Lollipop.min_lysine_ct && lysine_count <= Lollipop.max_lysine_ct
+                && intensity_ratio >= Convert.ToDouble(Lollipop.min_intensity_ratio) && intensity_ratio <= Convert.ToDouble(Lollipop.max_intensity_ratio);
+        }
+
+        #endregion Public Methods
+
     }
 }

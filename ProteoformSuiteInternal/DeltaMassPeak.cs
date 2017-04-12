@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -16,11 +14,12 @@ namespace ProteoformSuiteInternal
         public double peak_group_fdr { get; set; }
         public bool peak_accepted { get; set; } = false;
         public string mass_shifter { get; set; } = "0";
-        public List<Modification> possiblePeakAssignments { get; set; }
-        public string possiblePeakAssignments_string { get { return String.Join("; ", possiblePeakAssignments.Select(m => m.id).ToArray()); } }
         public ProteoformRelation base_relation { get; set; }
+        public List<PtmSet> possiblePeakAssignments { get; set; }
+        public string possiblePeakAssignments_string { get; set; }
 
-        public DeltaMassPeak(ProteoformRelation base_relation, List<ProteoformRelation> relations_to_group) : base(base_relation)
+        public DeltaMassPeak(ProteoformRelation base_relation, List<ProteoformRelation> relations_to_group) 
+            : base(base_relation)
         {
             this.peak = this;
             lock (base_relation)
@@ -30,12 +29,14 @@ namespace ProteoformSuiteInternal
             }
 
             grouped_relations = this.find_nearby_relations(relations_to_group);
-            this.peak_accepted = grouped_relations != null && grouped_relations.Count > 0 &&
-                typeof(TheoreticalProteoform).IsAssignableFrom(grouped_relations.First().connected_proteoforms[1].GetType()) ?
-                     this.peak_relation_group_count >= Lollipop.min_peak_count_et :
-                     this.peak_relation_group_count >= Lollipop.min_peak_count_ee;
-            this.possiblePeakAssignments = nearestPTMs(this.peak_deltaM_average);
-        }
+            this.peak_accepted = grouped_relations != null && grouped_relations.Count > 0 && grouped_relations.First().relation_type == ProteoformComparison.ExperimentalTheoretical ?
+                this.peak_relation_group_count >= Lollipop.min_peak_count_et :
+                this.peak_relation_group_count >= Lollipop.min_peak_count_ee;
+
+            possiblePeakAssignments = nearestPTMs(peak_deltaM_average, relation_type).ToList();
+            possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.Select(ptmset => String.Join(";", ptmset.ptm_combination.Select(m => m.modification.id)))) + "]";
+       }
+
 
         /*(this needs to be done at the actual time of forming peaks or else the average is wrong so the peak can be formed out
             of incorrect relations (average shouldn't include relations already grouped into peaks)*/
@@ -66,13 +67,6 @@ namespace ProteoformSuiteInternal
             return this.grouped_relations;
         }
 
-        private List<Modification> nearestPTMs(double dMass)
-        {
-            List<ModificationWithMass> all_modifications = Lollipop.uniprotModificationTable.SelectMany(i => i.Value).OfType<ModificationWithMass>().ToList();
-            List<Modification> possiblePTMs = all_modifications.Where(m => Math.Abs(dMass - m.monoisotopicMass) <= Lollipop.peak_width_base_et / 2).ToList<Modification>();
-            return possiblePTMs;
-        }
-
         public void calculate_fdr(Dictionary<string, List<ProteoformRelation>> decoy_relations)
         {
             List<int> nearby_decoy_counts = new List<int>(from relation_list in decoy_relations.Values select find_nearby_decoys(relation_list).Count);
@@ -93,14 +87,14 @@ namespace ProteoformSuiteInternal
 
         public List<ProteoformRelation> find_nearby_decoys(List<ProteoformRelation> all_relations)
         {
-            double lower_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ed)? this.peak_deltaM_average - Lollipop.peak_width_base_et / 2 : this.peak_deltaM_average - Lollipop.peak_width_base_ee / 2;
-            double upper_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ed) ?  this.peak_deltaM_average + Lollipop.peak_width_base_et / 2 : this.peak_deltaM_average + Lollipop.peak_width_base_ee / 2;
+            double lower_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ExperimentalDecoy)? this.peak_deltaM_average - Lollipop.peak_width_base_et / 2 : this.peak_deltaM_average - Lollipop.peak_width_base_ee / 2;
+            double upper_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ExperimentalDecoy) ?  this.peak_deltaM_average + Lollipop.peak_width_base_et / 2 : this.peak_deltaM_average + Lollipop.peak_width_base_ee / 2;
             return all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
         }
 
         public bool shift_experimental_masses(int shift, bool neucode_labeled)
         {
-            if (this.relation_type != ProteoformComparison.et)
+            if (this.relation_type != ProteoformComparison.ExperimentalTheoretical)
                 return false; //Not currently intended for ee relations
 
             foreach (ProteoformRelation r in this.grouped_relations)

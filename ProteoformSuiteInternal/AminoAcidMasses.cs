@@ -6,7 +6,7 @@ namespace ProteoformSuiteInternal
     {
         public Dictionary<char, double> AA_Masses { get; set; }
 
-        public AminoAcidMasses(bool mOx, bool cBn, bool natural_lysine_isotope_abundance, bool neucode_light_lysine, bool neucode_heavy_lysine)
+        public AminoAcidMasses(bool cBn, bool natural_lysine_isotope_abundance, bool neucode_light_lysine, bool neucode_heavy_lysine)
         {
             string kI = WhichLysineIsotopeComposition(natural_lysine_isotope_abundance, neucode_light_lysine, neucode_heavy_lysine);
             var aaMasses = new Dictionary<char, double>();
@@ -40,14 +40,7 @@ namespace ProteoformSuiteInternal
                     aaMasses.Add('K', 136.1451772);
                     break;
             }
-            if (mOx)
-            {
-                aaMasses.Add('M', 147.0353996);
-            }
-            else
-            {
-                aaMasses.Add('M', 131.040485);
-            }
+            aaMasses.Add('M', 131.040485);
             aaMasses.Add('F', 147.068414);
             aaMasses.Add('P', 97.052764);
             aaMasses.Add('S', 87.032028);

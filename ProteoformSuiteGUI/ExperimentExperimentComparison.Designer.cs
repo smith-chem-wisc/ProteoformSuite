@@ -676,7 +676,6 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "ExperimentExperimentComparison";
             this.Text = "ExperimentExperimentComparison";
-            this.Load += new System.EventHandler(this.ExperimentExperimentComparison_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).EndInit();

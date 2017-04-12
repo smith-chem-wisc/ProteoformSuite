@@ -2,40 +2,38 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Security;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace ProteoformSuiteGUI
 {
     public partial class TheoreticalDatabase : Form
     {
-        OpenFileDialog openAccessionListDialog = new OpenFileDialog();
-        bool initial_load = true;
+
+        #region Public Constructor
 
         public TheoreticalDatabase()
         {
             InitializeComponent();
         }
 
-        public void TheoreticalDatabase_Load(object sender, EventArgs e)
+        #endregion Public Constructor
+
+        #region Private Fields
+
+        OpenFileDialog openAccessionListDialog = new OpenFileDialog();
+        bool initial_load = true;
+
+        #endregion Private Fields
+
+        #region Private Methods
+
+        private void TheoreticalDatabase_Load(object sender, EventArgs e)
         {
             InitializeSettings();
             initial_load = false;
-        }
-
-        public void load_dgv()
-        {
-            DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
-            this.initialize_table_bindinglist();
-            DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
-        }
-
-        public DataGridView GetDGV()
-        {
-            return dgv_Database;
         }
 
         private void InitializeSettings()
@@ -47,10 +45,6 @@ namespace ProteoformSuiteGUI
                 btn_NeuCode_Lt.Checked = false;
                 btn_NaturalIsotopes.Checked = true;
             }
-            
-            ckbx_OxidMeth.Checked = Lollipop.methionine_oxidation;
-            ckbx_Carbam.Checked = Lollipop.carbamidomethylation;
-            ckbx_Meth_Cleaved.Checked = Lollipop.methionine_cleavage;
 
             nUD_MaxPTMs.Minimum = 0;
             nUD_MaxPTMs.Maximum = 5;
@@ -74,15 +68,6 @@ namespace ProteoformSuiteGUI
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
         }
 
-
-        public void FillDataBaseTable(string table)
-        {
-            if (table == "Target")
-                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
-            else if (Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(table))
-                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
-        }
-
         private void set_Make_Database_Button()
         {
             btn_Make_Databases.Enabled = Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() > 0;
@@ -90,15 +75,56 @@ namespace ProteoformSuiteGUI
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)
         {
-            make_databases(); 
-            DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
+            this.Cursor = Cursors.WaitCursor;
+            make_databases();
+            DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
             this.initialize_table_bindinglist();
-            DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
+            DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
+            this.Cursor = Cursors.Default;
+        }
+
+        private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (!initial_load)
+            {
+                string table = cmbx_DisplayWhichDB.SelectedItem.ToString();
+                if (table == "Target")
+                    DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
+                else
+                    DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table].Select(t => new DisplayTheoreticalProteoform(t)));
+            }
+            DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
+        }
+
+        #endregion Private Methods
+
+        #region Public Methods
+
+        public void load_dgv()
+        {
+            DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
+            this.initialize_table_bindinglist();
+            DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
+        }
+
+        public DataGridView GetDGV()
+        {
+            return dgv_Database;
+        }
+
+        public void FillDataBaseTable(string table)
+        {
+            if (table == "Target")
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
+            else if (Lollipop.proteoform_community.decoy_proteoforms.ContainsKey(table))
+                DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table].Select(t => new DisplayTheoreticalProteoform(t)));
+            DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
+
         }
 
         public void make_databases()
         {
-            Lollipop.get_theoretical_proteoforms();
+            Lollipop.get_theoretical_proteoforms(Environment.CurrentDirectory);
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
             tb_totalTheoreticalProteoforms.Text = Lollipop.proteoform_community.theoretical_proteoforms.Length.ToString();
         }
@@ -112,44 +138,10 @@ namespace ProteoformSuiteGUI
             cmbx_DisplayWhichDB.DataSource = new BindingList<string>(databases.ToList());
         }
 
-        private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (!initial_load)
-            {
-                string table = cmbx_DisplayWhichDB.SelectedItem.ToString();
-                if (table == "Target")
-                    DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.theoretical_proteoforms);
-                else
-                    DisplayUtility.FillDataGridView(dgv_Database, Lollipop.proteoform_community.decoy_proteoforms[table]);
-            }
-        }
+        #endregion Public Methods
 
+        #region CHECKBOXES Private Methods
 
-        // ADD AND CLEAR
-        private void btn_addFiles_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Title = cmb_loadTable.SelectedItem.ToString();
-            openFileDialog.Filter = Lollipop.file_filters[cmb_loadTable.SelectedIndex];
-            openFileDialog.Multiselect = true;
-
-            DialogResult dr = openFileDialog.ShowDialog();
-            if (dr == DialogResult.OK)
-                Lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb_loadTable.SelectedIndex], Lollipop.file_types[cmb_loadTable.SelectedIndex], Lollipop.input_files);
-
-            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]));
-            set_Make_Database_Button();
-        }
-
-        private void btn_clearFiles_Click(object sender, EventArgs e)
-        {
-            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex])).ToList();
-            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]));
-            set_Make_Database_Button();
-        }
-
-
-        // CHECKBOXES
         private void ckbx_combineIdenticalSequences_CheckedChanged(object sender, EventArgs e)
         {
             Lollipop.combine_identical_sequences = ckbx_combineIdenticalSequences.Checked;
@@ -205,7 +197,10 @@ namespace ProteoformSuiteGUI
             Lollipop.min_peptide_length = Convert.ToInt32(nUD_MinPeptideLength.Value);
         }
 
-        // LOAD DATABASES GRID VIEW
+        #endregion CHECKBOXES Private Methods
+
+        #region LOAD DATABASES GRID VIEW Private Methods
+
         private void cmb_loadTable_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmb_loadTable.SelectedIndex != 2) MessageBox.Show("Use the Load Deconvolution Results page to load data.");
@@ -221,7 +216,8 @@ namespace ProteoformSuiteGUI
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
             Lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Lollipop.input_files);
-            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
         }
 
         public void reload_database_list()
@@ -229,7 +225,8 @@ namespace ProteoformSuiteGUI
             cmb_loadTable.Items.Clear();
             cmb_loadTable.Items.AddRange(Lollipop.file_lists);
             cmb_loadTable.SelectedIndex = 2;
-            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]));
+            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
             set_Make_Database_Button();
         }
 
@@ -238,8 +235,8 @@ namespace ProteoformSuiteGUI
             IEnumerable<object> selected_theoreticals = tb_tableFilter.Text == "" ?
                 Lollipop.proteoform_community.theoretical_proteoforms :
                 ExtensionMethods.filter(Lollipop.proteoform_community.theoretical_proteoforms, tb_tableFilter.Text);
-            DisplayUtility.FillDataGridView(dgv_Database, selected_theoreticals);
-            if (selected_theoreticals.Count() > 0) DisplayUtility.FormatTheoreticalProteoformTable(dgv_Database);
+            DisplayUtility.FillDataGridView(dgv_Database, selected_theoreticals.OfType<TheoreticalProteoform>().Select(t => new DisplayTheoreticalProteoform(t)));
+            DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
         Regex substituteWhitespace = new Regex(@"\s+");
@@ -247,5 +244,36 @@ namespace ProteoformSuiteGUI
         {
             Lollipop.mod_types_to_exclude = substituteWhitespace.Replace(tb_modTypesToExclude.Text, "").Split(',');
         }
+
+        #endregion LOAD DATABASES GRID VIEW Private Methods
+
+        #region ADD/CLEAR Private Methods
+
+        private void btn_addFiles_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = cmb_loadTable.SelectedItem.ToString();
+            openFileDialog.Filter = Lollipop.file_filters[cmb_loadTable.SelectedIndex];
+            openFileDialog.Multiselect = true;
+
+            DialogResult dr = openFileDialog.ShowDialog();
+            if (dr == DialogResult.OK)
+                Lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb_loadTable.SelectedIndex], Lollipop.file_types[cmb_loadTable.SelectedIndex], Lollipop.input_files);
+
+            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
+            set_Make_Database_Button();
+        }
+
+        private void btn_clearFiles_Click(object sender, EventArgs e)
+        {
+            Lollipop.input_files = Lollipop.input_files.Except(Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex])).ToList();
+            DisplayUtility.FillDataGridView(dgv_loadFiles, Lollipop.get_files(Lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
+            set_Make_Database_Button();
+        }
+
+        #endregion ADD/CLEAR Private Methods
+
     }
 }
