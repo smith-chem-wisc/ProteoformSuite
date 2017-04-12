@@ -1,4 +1,5 @@
 ﻿using System;
+using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using Proteomics;
@@ -134,7 +135,7 @@ namespace Test
 
         public static Dictionary<string, IList<Modification>> read_mods()
         {
-            Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
+            Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "elements.dat"));
             List<ModificationWithLocation> all_modifications = Lollipop.get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
             return Lollipop.read_mods(all_modifications);
         }
