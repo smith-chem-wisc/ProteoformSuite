@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
@@ -49,6 +47,32 @@ namespace ProteoformSuiteInternal
             //We ran out of real estate. Let's do something with any remaining undefined corrections.
             foreach (Correction c in undefined_corrections) c.correction = recent_correction;
             return correction_factors;
+        }
+
+        public static double GetCorrectionFactor(string filename, string scan_range, IEnumerable<Correction> correctionFactors)
+        {
+            if (correctionFactors == null || correctionFactors.Count() <= 0) return 0D;
+
+            int[] scans = new int[2] { 0, 0 };
+            try
+            {
+                scans = Array.ConvertAll<string, int>(scan_range.Split('-').ToArray(), int.Parse);
+            }
+            catch
+            { }
+
+            if (scans[0] <= 0 || scans[1] <= 0) return 0D;
+
+            IEnumerable<double> allCorrectionFactors =
+                (from s in correctionFactors
+                 where s.file_name == filename
+                    && s.scan_number >= scans[0]
+                    && s.scan_number <= scans[1]
+                 select s.correction).ToList();
+
+            if (allCorrectionFactors.Count() <= 0) return 0D;
+
+            return allCorrectionFactors.Average();
         }
     }
 }

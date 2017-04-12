@@ -1,5 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <uniprot xmlns="http://uniprot.org/uniprot" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://uniprot.org/uniprot http://www.uniprot.org/support/docs/uniprot.xsd">
+<modification>ID   Oxidation of K
+TG   Lysine
+PP   Anywhere.
+MM   15.994915
+MT   Fake Mod
+CF   O1
+//</modification>
 <entry dataset="Swiss-Prot" created="1986-07-21" modified="2016-11-30" version="165">
 <accession>P62805</accession>
 <accession>A2VCL0</accession>
@@ -236,6 +243,11 @@
 <position position="92" />
 </location>
 </feature>
+  <feature type="modified residue" description="Oxidation of K" evidence="16">
+    <location>
+      <position position="92" />
+    </location>
+  </feature>
 <sequence length="105" mass="11367" checksum="A9E5DFD3F8B97598" modified="2007-01-23" version="2">
 MSGRGKGGKGLGKGGAKRHRKVLRDNIQGITKPAIRRLARRGGVKRISGLIYEETRGVLKVFLENVIRDAVTYTEHAKRKTVTAMDVVYALKRQGRTLYGFGGMM
 </sequence>

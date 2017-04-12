@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.IO;
 using Proteomics;
 using System.Linq;
-using UsefulProteomicsDatabases;
 
 namespace Test
 {
@@ -134,6 +133,7 @@ namespace Test
             Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
             Assert.AreEqual(1, Lollipop.proteoform_community.theoretical_proteoforms.Length); //only one methionine to oxidize, but no PTMs allowed
+            Assert.Less(Lollipop.modification_ranks[0], Lollipop.modification_ranks[Lollipop.variableModifications[0].monoisotopicMass] - 1); // unmodified gets a lower score than variable oxidation, even with the prioritization (minus one rank)
 
             Lollipop.max_ptms = 1;
             Lollipop.theoretical_proteins.Clear();
@@ -172,6 +172,7 @@ namespace Test
             Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
             Assert.AreEqual(4, Lollipop.proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
+            Assert.AreEqual(1, new HashSet<ModificationWithMass>(Lollipop.proteoform_community.theoretical_proteoforms.SelectMany(t => t.ptm_set.ptm_combination.Select(ptm => ptm.modification))).Count); //Only the variable modification is in there; no sign of the fake oxidation of K I added
         }
     }
 }
