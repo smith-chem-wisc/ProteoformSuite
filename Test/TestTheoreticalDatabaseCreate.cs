@@ -2,9 +2,11 @@
 using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.IO;
 using Proteomics;
 using System.Linq;
+using UsefulProteomicsDatabases;
 
 namespace Test
 {
@@ -60,7 +62,7 @@ namespace Test
             Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Lollipop.input_files);
 
             Lollipop.theoretical_proteins.Clear();
-            Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods"));
+            Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
             Assert.AreEqual(54, Lollipop.theoretical_proteins.SelectMany(kv => kv.Value).Sum(p => p.DatabaseReferences.Where(dbRef => dbRef.Type == "GO").Count()));
             Assert.AreEqual(20, Lollipop.proteoform_community.theoretical_proteoforms.SelectMany(t => t.goTerms.Select(go => go.Id)).Distinct().Count());
 
@@ -97,7 +99,7 @@ namespace Test
             Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Lollipop.input_files);
 
             Lollipop.theoretical_proteins.Clear();
-            Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods"));
+            Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
 
             List<TheoreticalProteoform> peptides = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "peptide").ToList();
             List<TheoreticalProteoform> chains = Lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "chain").ToList();
@@ -112,6 +114,64 @@ namespace Test
             Assert.AreEqual(3, signalpeps.Count);
 
             Assert.AreEqual(25, Lollipop.proteoform_community.theoretical_proteoforms.Length);
+        }
+
+        [Test]
+        public void testTheoreticalWithAndWithoutVariableMethionineOx()
+        {
+            Lollipop.methionine_oxidation = false;
+            Lollipop.methionine_cleavage = true;
+            Lollipop.max_ptms = 0;
+            Lollipop.input_files.Clear();
+            Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "stripped.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Lollipop.input_files);
+            Lollipop.theoretical_proteins.Clear();
+            Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
+            Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            Assert.AreEqual(1, Lollipop.proteoform_community.theoretical_proteoforms.Length); //no methionine oxidation
+
+            Lollipop.methionine_oxidation = true;
+            Lollipop.theoretical_proteins.Clear();
+            Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
+            Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            Assert.AreEqual(1, Lollipop.proteoform_community.theoretical_proteoforms.Length); //only one methionine to oxidize, but no PTMs allowed
+
+            Lollipop.max_ptms = 1;
+            Lollipop.theoretical_proteins.Clear();
+            Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
+            Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            Assert.AreEqual(2, Lollipop.proteoform_community.theoretical_proteoforms.Length); //only one methionine to oxidize
+        }
+
+        [Test]
+        public void testTheoreticalWithMoreMethionineOx()
+        {
+            Lollipop.methionine_oxidation = true;
+            Lollipop.methionine_cleavage = true;
+            Lollipop.max_ptms = 0;
+            Lollipop.input_files.Clear();
+            Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "stripped_plus2M.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Lollipop.input_files);
+            Lollipop.theoretical_proteins.Clear();
+            Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
+            Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            Assert.AreEqual(1, Lollipop.proteoform_community.theoretical_proteoforms.Length); //3 methionines for variable
+
+            Lollipop.max_ptms = 1;
+            Lollipop.theoretical_proteins.Clear();
+            Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
+            Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            Assert.AreEqual(2, Lollipop.proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
+
+            Lollipop.max_ptms = 2;
+            Lollipop.theoretical_proteins.Clear();
+            Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
+            Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            Assert.AreEqual(3, Lollipop.proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
+
+            Lollipop.max_ptms = 3;
+            Lollipop.theoretical_proteins.Clear();
+            Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
+            Lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            Assert.AreEqual(4, Lollipop.proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
         }
     }
 }

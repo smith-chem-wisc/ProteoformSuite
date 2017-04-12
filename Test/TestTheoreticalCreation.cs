@@ -2,7 +2,6 @@
 using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Proteomics;
 using System.Linq;
 

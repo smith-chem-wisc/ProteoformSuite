@@ -66,38 +66,43 @@ namespace ProteoformSuiteInternal
                  from pf2 in pf1.candidate_relatives
                  select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass));
 
-            return count_nearby_relations(relations.OrderBy(r => r.delta_mass).ToList());  //putative counts include no-mans land
+            return count_nearby_relations(relations.ToList());  //putative counts include no-mans land
         }
 
         public bool allowed_relation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type)
         {
-            if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
-                return (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
-                    && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
-                    && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference
-                    && (pf2.ptm_set.ptm_combination.Count < 3 || pf2.ptm_set.ptm_combination.Select(ptm => ptm.modification.monoisotopicMass).All(x => x == pf2.ptm_set.ptm_combination.First().modification.monoisotopicMass));
+            switch (relation_type)
+            {
+                case (ProteoformComparison.ExperimentalTheoretical):
+                case (ProteoformComparison.ExperimentalDecoy):
+                    return (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
+                        && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
+                        && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference
+                        && (pf2.ptm_set.ptm_combination.Count < 3 || pf2.ptm_set.ptm_combination.Select(ptm => ptm.modification.monoisotopicMass).All(x => x == pf2.ptm_set.ptm_combination.First().modification.monoisotopicMass));
 
-            else if (relation_type == ProteoformComparison.ExperimentalExperimental)
-                return pf1.modified_mass >= pf2.modified_mass
-                    && pf1 != pf2
-                    && (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
-                    && pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference
-                    && Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) <= Lollipop.ee_max_RetentionTime_difference;
+                case (ProteoformComparison.ExperimentalExperimental):
+                    return pf1.modified_mass >= pf2.modified_mass
+                        && pf1 != pf2
+                        && (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
+                        && pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference
+                        && Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) <= Lollipop.ee_max_RetentionTime_difference;
 
-            else if (relation_type == ProteoformComparison.ExperimentalFalse)
-                return pf1.modified_mass >= pf2.modified_mass
-                    && pf1 != pf2
-                    && (pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference)
-                    && (!Lollipop.neucode_labeled || pf1.lysine_count != pf2.lysine_count)
-                    && (Lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) > Lollipop.ee_max_RetentionTime_difference * 2)
-                    && (!Lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) < Lollipop.ee_max_RetentionTime_difference);
+                case (ProteoformComparison.ExperimentalFalse):
+                    return pf1.modified_mass >= pf2.modified_mass
+                        && pf1 != pf2
+                        && (pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference)
+                        && (!Lollipop.neucode_labeled || pf1.lysine_count != pf2.lysine_count)
+                        && (Lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) > Lollipop.ee_max_RetentionTime_difference * 2)
+                        && (!Lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) < Lollipop.ee_max_RetentionTime_difference);
 
-            else
-                return false;
+                default:
+                    return false;
+            }
         }
 
-        private static List<ProteoformRelation> count_nearby_relations(List<ProteoformRelation> all_ordered_relations)
+        private static List<ProteoformRelation> count_nearby_relations(List<ProteoformRelation> all_relations)
         {
+            List<ProteoformRelation> all_ordered_relations = all_relations.OrderBy(x => x.delta_mass).ToList();
             List<int> ordered_relation_ids = all_ordered_relations.Select(r => r.instanceId).ToList();
             Parallel.ForEach(all_ordered_relations, relation => relation.set_nearby_group(all_ordered_relations, ordered_relation_ids));
             return all_ordered_relations;
@@ -127,7 +132,7 @@ namespace ProteoformSuiteInternal
                 lock (ef_relations) ef_relations.Add(key, all_ef_relations.Take(Lollipop.ee_relations.Count).ToList());
             });
 
-            count_nearby_relations(ef_relations.Values.First().OrderBy(r => r.delta_mass).ToList()); //count from first decoy database
+            count_nearby_relations(ef_relations.Values.First()); //count from first decoy database
             return ef_relations;
         }
 
