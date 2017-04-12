@@ -18,7 +18,11 @@ namespace ProteoformSuiteInternal
         public List<Proteoform> candidate_relatives { get; set; }
         public List<ProteoformRelation> relationships { get; set; } = new List<ProteoformRelation>();
         public ProteoformFamily family { get; set; }
-        public LinkedList<Proteoform> linked_proteoform_references { get; set; } // TheoreticalProteoform is first, Experimental chain comes afterwards
+
+        /// <summary>
+        /// Contains a list of proteoforms traced before arriving at this one. The first is a TheoreticalProteoform starting point in the family.
+        /// </summary>
+        public LinkedList<Proteoform> linked_proteoform_references { get; set; }
         public GeneName gene_name { get; set; }
         public string ptm_description { get; set; }
         public PtmSet ptm_set
@@ -162,7 +166,7 @@ namespace ProteoformSuiteInternal
                     bool likely_cleavage_site = could_be_n_term_degradation && Lollipop.likely_cleavages.Contains(theoretical_base_sequence[n_terminal_degraded_aas].ToString())
                         || could_be_c_term_degradation && Lollipop.likely_cleavages.Contains(theoretical_base_sequence[theoretical_base_sequence.Length - c_terminal_degraded_aas - 1].ToString());
 
-                    rank_sum -= Convert.ToInt32(Lollipop.variableModifications.Contains(m)); // favor variable modifications over regular
+                    rank_sum -= Convert.ToInt32(Lollipop.variableModifications.Contains(m)); // favor variable modifications over regular modifications of the same mass
 
                     if (likely_cleavage_site || m.modificationType == "FattyAcid" || m.modificationType == "Unlocalized")
                         rank_sum += Lollipop.rank_first_quartile;
