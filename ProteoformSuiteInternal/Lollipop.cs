@@ -14,10 +14,15 @@ namespace ProteoformSuiteInternal
 {
     public class Lollipop
     {
-        // CONSTANTS
+        #region Constants
+
         public const double MONOISOTOPIC_UNIT_MASS = 1.0023; // updated 161007
         public const double NEUCODE_LYSINE_MASS_SHIFT = 0.036015372;
         public const double PROTON_MASS = 1.007276474;
+
+        #endregion Constants
+        
+        #region Input Files
 
         public static List<InputFile> input_files = new List<InputFile>();
 
@@ -31,7 +36,7 @@ namespace ProteoformSuiteInternal
             return files.Where(f => purposes.Contains(f.purpose));
         }
 
-        public static string[] file_lists = new string[] 
+        public static string[] file_lists = new string[]
         {
             "Proteoform Identification Results (.xlsx)",
             "Proteoform Quantification Results (.xlsx)",
@@ -47,7 +52,7 @@ namespace ProteoformSuiteInternal
             new List<string> { ".txt", ".tsv" },
         };
 
-        public static string[] file_filters = new string[] 
+        public static string[] file_filters = new string[]
         {
             "Excel Files (*.xlsx) | *.xlsx",
             "Excel Files (*.xlsx) | *.xlsx",
@@ -120,8 +125,10 @@ namespace ProteoformSuiteInternal
             return return_message;
         }
 
+        #endregion Input Files
 
-        //RAW EXPERIMENTAL COMPONENTS
+        #region RAW EXPERIMENTAL COMPONENTS
+
         public static List<Correction> correctionFactors = null;
         public static List<Component> raw_experimental_components = new List<Component>();
         public static List<Component> raw_quantification_components = new List<Component>();
@@ -171,8 +178,10 @@ namespace ProteoformSuiteInternal
             }
         }
 
+        #endregion RAW EXPERIMENTAL COMPONENTS
 
-        //NEUCODE PAIRS
+        #region NEUCODE PAIRS
+
         public static List<NeuCodePair> raw_neucode_pairs = new List<NeuCodePair>();
         public static decimal max_intensity_ratio = 6m;
         public static decimal min_intensity_ratio = 1.4m;
@@ -190,26 +199,26 @@ namespace ProteoformSuiteInternal
                 foreach (Component higher_component in higher_mass_components)
                 {
                     lock (lower_component) lock (higher_component) // Turns out the LINQ queries in here, especially for overlapping_charge_states, aren't thread safe
-                    {
-                        double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
-                        if (mass_difference < 6)
                         {
-                            List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
-                            List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList<int>();
-                            List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
-                            double lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                            double higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                            bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
-                            if (lower_intensity > 0 && higher_intensity > 0)
+                            double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
+                            if (mass_difference < 6)
                             {
-                                NeuCodePair pair = lower_intensity > higher_intensity ?
-                                    new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
-                                    new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
+                                List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
+                                List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList<int>();
+                                List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
+                                double lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                                double higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                                bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
+                                if (lower_intensity > 0 && higher_intensity > 0)
+                                {
+                                    NeuCodePair pair = lower_intensity > higher_intensity ?
+                                        new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
+                                        new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
 
-                                lock (pairsInScanRange) pairsInScanRange.Add(pair);
+                                    lock (pairsInScanRange) pairsInScanRange.Add(pair);
+                                }
                             }
                         }
-                    }
                 }
             });
 
@@ -234,7 +243,10 @@ namespace ProteoformSuiteInternal
             return pairsInScanRange;
         }
 
-        //AGGREGATED PROTEOFORMS
+        #endregion NEUCODE PAIRS
+
+        #region AGGREGATED PROTEOFORMS
+
         public static ProteoformCommunity proteoform_community = new ProteoformCommunity();
         public static List<ExperimentalProteoform> vetted_proteoforms = new List<ExperimentalProteoform>();
         public static Component[] ordered_components = new Component[0];
@@ -315,7 +327,7 @@ namespace ProteoformSuiteInternal
                 running.All(d =>
                     c.weighted_monoisotopic_mass < d.root.weighted_monoisotopic_mass - 20 || c.weighted_monoisotopic_mass > d.root.weighted_monoisotopic_mass + 20));
         }
-        
+
         public static ExperimentalProteoform find_next_root(List<ExperimentalProteoform> ordered, List<ExperimentalProteoform> running)
         {
             return ordered.FirstOrDefault(e =>
@@ -351,7 +363,7 @@ namespace ProteoformSuiteInternal
                 {
                     if (e.lt_verification_components.Count > 0 || neucode_labeled && e.lt_verification_components.Count > 0 && e.hv_verification_components.Count > 0)
                     {
-                       // e.accepted = true; this is set based on the e properties
+                        // e.accepted = true; this is set based on the e properties
                         vetted_proteoforms.Add(e);
                     }
                     Lollipop.remaining_verification_components = Lollipop.remaining_verification_components.Except(e.lt_verification_components.Concat(e.hv_verification_components)).ToList();
@@ -416,8 +428,10 @@ namespace ProteoformSuiteInternal
             return aggregate_proteoforms(two_pass_validation, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_num_CS);
         }
 
+        #endregion AGGREGATED PROTEOFORMS
 
-        //THEORETICAL DATABASE
+        #region THEORETICAL DATABASE
+
         public static bool methionine_oxidation = true;
         public static bool carbamidomethylation = true;
         public static bool methionine_cleavage = true;
@@ -446,25 +460,25 @@ namespace ProteoformSuiteInternal
         public static List<PtmSet> acceptable_ptm_sets = new List<PtmSet>();
         static Dictionary<char, double> aaIsotopeMassList;
 
-        public static void get_theoretical_proteoforms(string mods_directory_path)
+        public static void get_theoretical_proteoforms(string current_directory)
         {
             //Clear out data from potential previous runs
             proteoform_community.decoy_proteoforms.Clear();
             theoretical_proteins.Clear();
 
             //Read the UniProt-XML and ptmlist
-            Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
-            List<ModificationWithLocation> all_known_modifications = get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
+            Loaders.LoadElements(Path.Combine(current_directory, "elements.dat"));
+            List<ModificationWithLocation> all_known_modifications = get_files(input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
             uniprotModifications = read_mods(all_known_modifications);
 
             Dictionary<string, Modification> um;
-            Parallel.ForEach(get_files(Lollipop.input_files, Purpose.ProteinDatabase).ToList(), database =>
+            Parallel.ForEach(get_files(input_files, Purpose.ProteinDatabase).ToList(), database =>
             {
                 lock (theoretical_proteins) theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, false, all_known_modifications, database.ContaminantDB, mod_types_to_exclude, out um).ToArray());
                 lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).OfType<ModificationWithLocation>().Where(m => !mod_types_to_exclude.Contains(m.modificationType)));
             });
 
-            foreach (string filename in Directory.GetFiles(mods_directory_path))
+            foreach (string filename in Directory.GetFiles(Path.Combine(current_directory, "Mods")))
             {
                 all_known_modifications.AddRange(PtmListLoader.ReadModsFromFile(filename));
             }
@@ -472,15 +486,11 @@ namespace ProteoformSuiteInternal
             all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
             uniprotModifications = read_mods(all_known_modifications);
             if (methionine_oxidation)
-                variableModifications = PtmListLoader.ReadModsFromFile(Path.Combine(Path.Combine(Environment.CurrentDirectory, "Mods"), "variable.txt")).OfType<ModificationWithMass>().ToList();
+                variableModifications = PtmListLoader.ReadModsFromFile(Path.Combine(new string[] { current_directory, "Mods", "variable.txt" })).OfType<ModificationWithMass>().ToList();
             all_mods_with_mass = uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().Concat(variableModifications).ToList();
 
             modification_ranks = rank_mods(theoretical_proteins, variableModifications);
-            List<int> ranks = modification_ranks.Values.OrderBy(x => x).ToList();
-            rank_first_quartile = ranks[ranks.Count / 4];
-            rank_second_quartile = ranks[2 * ranks.Count / 4];
-            rank_third_quartile = ranks[3 * ranks.Count / 4];
-            rank_sum_threshold = ranks.Max();
+            
             foreach (ModificationWithMass m in all_mods_with_mass)
             {
                 if (!modification_ranks.TryGetValue(m.monoisotopicMass, out int a))
@@ -501,7 +511,7 @@ namespace ProteoformSuiteInternal
             }
 
             expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
-            aaIsotopeMassList = new AminoAcidMasses(carbamidomethylation, Lollipop.natural_lysine_isotope_abundance, Lollipop.neucode_light_lysine, Lollipop.neucode_heavy_lysine).AA_Masses;
+            aaIsotopeMassList = new AminoAcidMasses(carbamidomethylation, natural_lysine_isotope_abundance, neucode_light_lysine, neucode_heavy_lysine).AA_Masses;
             if (combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
 
             //PARALLEL PROBLEM
@@ -511,8 +521,8 @@ namespace ProteoformSuiteInternal
 
             if (combine_theoretical_proteoforms_byMass)
             {
-                Lollipop.proteoform_community.theoretical_proteoforms = group_proteoforms_byMass(Lollipop.proteoform_community.theoretical_proteoforms);
-                Lollipop.proteoform_community.decoy_proteoforms = Lollipop.proteoform_community.decoy_proteoforms.ToDictionary(kv => kv.Key, kv => (TheoreticalProteoform[])group_proteoforms_byMass(kv.Value));
+                proteoform_community.theoretical_proteoforms = group_proteoforms_by_mass(proteoform_community.theoretical_proteoforms);
+                proteoform_community.decoy_proteoforms = proteoform_community.decoy_proteoforms.ToDictionary(kv => kv.Key, kv => group_proteoforms_by_mass(kv.Value) as TheoreticalProteoform[]);
             }
         }
 
@@ -532,8 +542,8 @@ namespace ProteoformSuiteInternal
 
         public static Dictionary<double, int> rank_mods(Dictionary<InputFile, Protein[]> theoretical_proteins, IEnumerable<ModificationWithMass> variableModifications)
         {
-            Dictionary<double, int> mod_counts = new Dictionary<double, int>(); 
-            
+            Dictionary<double, int> mod_counts = new Dictionary<double, int>();
+
             foreach (ModificationWithMass m in theoretical_proteins.SelectMany(kv => kv.Value).SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList())
             {
                 if (!mod_counts.TryGetValue(m.monoisotopicMass, out int b)) mod_counts.Add(m.monoisotopicMass, 1);
@@ -564,6 +574,12 @@ namespace ProteoformSuiteInternal
                 else mod_ranks[m.monoisotopicMass] = 2;
             }
 
+            List<int> ranks = mod_ranks.Values.OrderBy(x => x).ToList();
+            rank_first_quartile = ranks[ranks.Count / 4];
+            rank_second_quartile = ranks[2 * ranks.Count / 4];
+            rank_third_quartile = ranks[3 * ranks.Count / 4];
+            rank_sum_threshold = ranks.Max();
+
             return mod_ranks;
         }
 
@@ -580,13 +596,13 @@ namespace ProteoformSuiteInternal
                 List<GoTerm> goTerms = p.DatabaseReferences.Where(reference => reference.Type == "GO").Select(reference => new GoTerm(reference)).ToList();
                 int startPosAfterCleavage = Convert.ToInt32(methionine_cleavage && p.BaseSequence.StartsWith("M"));
                 new_prots.Add(new ProteinWithGoTerms(
-                    p.BaseSequence.Substring(begin + startPosAfterCleavage - 1, end - (begin + startPosAfterCleavage) + 1), 
-                    p.Accession + "_" + (begin + startPosAfterCleavage).ToString() + "full" + end.ToString(), 
-                    p.GeneNames, 
-                    p.OneBasedPossibleLocalizedModifications, 
-                    new int?[] { begin + startPosAfterCleavage }, 
-                    new int?[] { end }, 
-                    new string[] { methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full" }, 
+                    p.BaseSequence.Substring(begin + startPosAfterCleavage - 1, end - (begin + startPosAfterCleavage) + 1),
+                    p.Accession + "_" + (begin + startPosAfterCleavage).ToString() + "full" + end.ToString(),
+                    p.GeneNames,
+                    p.OneBasedPossibleLocalizedModifications,
+                    new int?[] { begin + startPosAfterCleavage },
+                    new int?[] { end },
+                    new string[] { methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full" },
                     p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
 
                 //Add fragments
@@ -594,8 +610,9 @@ namespace ProteoformSuiteInternal
                 foreach (ProteolysisProduct product in p.ProteolysisProducts)
                 {
                     string feature_type = product.Type.Replace(' ', '-');
-                    if (!(feature_type == "peptide" || feature_type == "propeptide" || feature_type == "chain" || feature_type == "signal-peptide") ||
-                            !product.OneBasedBeginPosition.HasValue || !product.OneBasedEndPosition.HasValue)
+                    if (!(feature_type == "peptide" || feature_type == "propeptide" || feature_type == "chain" || feature_type == "signal-peptide") 
+                            || !product.OneBasedBeginPosition.HasValue 
+                            || !product.OneBasedEndPosition.HasValue)
                         continue;
                     int feature_begin = (int)product.OneBasedBeginPosition;
                     int feature_end = (int)product.OneBasedEndPosition;
@@ -606,13 +623,13 @@ namespace ProteoformSuiteInternal
                     Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= feature_begin && kv.Key <= feature_end).ToDictionary(kv => kv.Key, kv => kv.Value);
                     if (!feature_is_just_met_cleavage && subsequence.Length != p.BaseSequence.Length && subsequence.Length >= Lollipop.min_peptide_length)
                         new_prots.Add(new ProteinWithGoTerms(
-                            subsequence, 
-                            p.Accession + "_" + feature_begin.ToString() + "frag" + feature_end.ToString(), 
-                            p.GeneNames, 
-                            segmented_ptms, 
-                            new int?[] { feature_begin }, 
+                            subsequence,
+                            p.Accession + "_" + feature_begin.ToString() + "frag" + feature_end.ToString(),
+                            p.GeneNames,
+                            segmented_ptms,
+                            new int?[] { feature_begin },
                             new int?[] { feature_end },
-                            new string[] { feature_type }, 
+                            new string[] { feature_type },
                             p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
                 }
                 expanded_prots.AddRange(new_prots);
@@ -620,7 +637,7 @@ namespace ProteoformSuiteInternal
             return expanded_prots.ToArray();
         }
 
-        private static ProteinSequenceGroup[] group_proteins_by_sequence(ProteinWithGoTerms[] proteins)
+        private static ProteinSequenceGroup[] group_proteins_by_sequence(IEnumerable<ProteinWithGoTerms> proteins)
         {
             Dictionary<string, List<ProteinWithGoTerms>> sequence_groupings = new Dictionary<string, List<ProteinWithGoTerms>>();
             foreach (ProteinWithGoTerms p in proteins)
@@ -631,7 +648,7 @@ namespace ProteoformSuiteInternal
             return sequence_groupings.Select(kv => new ProteinSequenceGroup(kv.Value.OrderByDescending(p => p.IsContaminant ? 1 : 0))).ToArray();
         }
 
-        private static TheoreticalProteoformGroup[] group_proteoforms_byMass(IEnumerable<TheoreticalProteoform> theoreticals)
+        private static TheoreticalProteoformGroup[] group_proteoforms_by_mass(IEnumerable<TheoreticalProteoform> theoreticals)
         {
             Dictionary<double, List<TheoreticalProteoform>> mass_groupings = new Dictionary<double, List<TheoreticalProteoform>>();
             foreach (TheoreticalProteoform t in theoreticals)
@@ -645,13 +662,13 @@ namespace ProteoformSuiteInternal
         private static void process_entries(IEnumerable<ProteinWithGoTerms> expanded_proteins, IEnumerable<ModificationWithMass> variableModifications)
         {
             List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
-            Parallel.ForEach<ProteinWithGoTerms>(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.Accession, theoretical_proteoforms, -100, variableModifications));
-            Lollipop.proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
+            Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.Accession, theoretical_proteoforms, -100, variableModifications));
+            proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
         }
 
         private static void process_decoys(ProteinWithGoTerms[] expanded_proteins, IEnumerable<ModificationWithMass> variableModifications)
         {
-            for (int decoyNumber = 0; decoyNumber < Lollipop.decoy_databases; decoyNumber++)
+            for (int decoyNumber = 0; decoyNumber < decoy_databases; decoyNumber++)
             {
                 List<TheoreticalProteoform> decoy_proteoforms = new List<TheoreticalProteoform>();
                 string giantProtein = GetOneGiantProtein(expanded_proteins, methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
@@ -661,13 +678,14 @@ namespace ProteoformSuiteInternal
                 new Random().Shuffle(shuffled_proteins); //randomize order of protein array
 
                 int prevLength = 0;
-                Parallel.ForEach<ProteinWithGoTerms>(shuffled_proteins, p =>
+                Parallel.ForEach(shuffled_proteins, p =>
                 {
                     string hunk = giantProtein.Substring(prevLength, p.BaseSequence.Length);
                     prevLength += p.BaseSequence.Length;
                     EnterTheoreticalProteformFamily(hunk, p, p.Accession + "_DECOY_" + decoyNumber, decoy_proteoforms, decoyNumber, variableModifications);
                 });
-                Lollipop.proteoform_community.decoy_proteoforms.Add(decoy_database_name, decoy_proteoforms.ToArray());
+
+                proteoform_community.decoy_proteoforms.Add(decoy_database_name, decoy_proteoforms.ToArray());
             }
         }
 
@@ -684,7 +702,7 @@ namespace ProteoformSuiteInternal
             {
                 for (int i = 1; i <= prot.BaseSequence.Length; i++)
                 {
-                    if (prot.BaseSequence[i-1].ToString() == m.motif.Motif)
+                    if (prot.BaseSequence[i - 1].ToString() == m.motif.Motif)
                     {
                         if (!possibleLocalizedMods.TryGetValue(i, out List<Modification> a)) possibleLocalizedMods.Add(i, new List<Modification> { m });
                         else a.Add(m);
@@ -692,7 +710,7 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, 2, modification_ranks, rank_first_quartile / 2);
+            List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, max_ptms, modification_ranks, rank_first_quartile / 2);
 
             //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
             int ptm_set_counter = 1;
@@ -700,18 +718,18 @@ namespace ProteoformSuiteInternal
             {
                 lock (theoretical_proteoforms) theoretical_proteoforms.Add(
                     new TheoreticalProteoform(
-                        accession + "_P" + ptm_set_counter.ToString(), 
-                        prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()), 
-                        new ProteinWithGoTerms[] { prot }, 
-                        unmodified_mass, 
-                        lysine_count, 
-                        ptm_set, 
-                        decoy_number < 0, 
-                        check_contaminants, 
+                        accession + "_P" + ptm_set_counter.ToString(),
+                        prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
+                        new ProteinWithGoTerms[] { prot },
+                        unmodified_mass,
+                        lysine_count,
+                        ptm_set,
+                        decoy_number < 0,
+                        check_contaminants,
                         theoretical_proteins)
                     );
                 ptm_set_counter++;
-            } 
+            }
         }
 
         private static string GetOneGiantProtein(IEnumerable<Protein> proteins, bool methionine_cleavage)
@@ -739,8 +757,10 @@ namespace ProteoformSuiteInternal
             return giantProtein.ToString();
         }
 
+        #endregion THEORETICAL DATABASE
 
-        //ET,ED,EE,EF COMPARISONS
+        #region ET,ED,EE,EF COMPARISONS -- see ProteoformCommunity
+
         public static double ee_max_mass_difference = 300;
         public static double ee_max_RetentionTime_difference = 2.5;
         public static double et_low_mass_difference = -300;
@@ -759,8 +779,10 @@ namespace ProteoformSuiteInternal
         public static List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
         public static List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
 
+        #endregion ET,ED,EE,EF COMPARISONS -- see ProteoformCommunity
 
-        //PROTEOFORM FAMILIES -- see ProteoformCommunity
+        #region PROTEOFORM FAMILIES -- see ProteoformCommunity
+
         public static string family_build_folder_path = "";
         public static int deltaM_edge_display_rounding = 2;
         public static string[] node_positioning = new string[] { "Arbitrary Circle", "Mass X-Axis", "Circle by Mass" };
@@ -769,8 +791,10 @@ namespace ProteoformSuiteInternal
         public static List<string> gene_name_labels = new List<string> { "Primary, e.g. HOG1", "Ordered Locus, e.g. YLR113W" };
         public static string[] likely_cleavages = new string[] { "I", "L", "A" };
 
+        #endregion PROTEOFORM FAMILIES -- see ProteoformCommunity
 
-        //QUANTIFICATION SETUP
+        #region QUANTIFICATION SETUP
+
         public static int countOfBioRepsInOneCondition; //need this in quantification to select which proteoforms to perform calculations on.
         public static int condition_count;
         public static Dictionary<string, List<int>> ltConditionsBioReps = new Dictionary<string, List<int>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
@@ -797,8 +821,8 @@ namespace ProteoformSuiteInternal
         {
             if (!input_files.Any(f => f.purpose == Purpose.Quantification)) return;
             List<string> ltConditions = get_files(input_files, Purpose.Quantification).Select(f => f.lt_condition).Distinct().ToList();
-            List<string> hvConditions = neucode_labeled ? 
-                get_files(input_files, Purpose.Quantification).Select(f => f.hv_condition).Distinct().ToList() : 
+            List<string> hvConditions = neucode_labeled ?
+                get_files(input_files, Purpose.Quantification).Select(f => f.hv_condition).Distinct().ToList() :
                 new List<string>();
             ltConditionsBioReps.Clear();
             hvConditionsBioReps.Clear();
@@ -833,8 +857,10 @@ namespace ProteoformSuiteInternal
             minBiorepsWithObservations = countOfBioRepsInOneCondition > 0 ? countOfBioRepsInOneCondition : 1;
         }
 
+        #endregion QUANTIFICATION SETUP
 
-        //QUANTIFICATION
+        #region QUANTIFICATION
+
         public static string numerator_condition = "";
         public static string denominator_condition = "";
         public static SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>();
@@ -919,7 +945,7 @@ namespace ProteoformSuiteInternal
         public static void defineSelectObservedIntensityDistribution(IEnumerable<ExperimentalProteoform> satisfactory_proteoforms, SortedDictionary<decimal, int> logSelectIntensityHistogram)
         {
             IEnumerable<decimal> allRoundedIntensities = define_intensity_distribution(satisfactory_proteoforms, logSelectIntensityHistogram).Where(i => i > 1); //these are log2 values
-            selectAverageIntensity = allRoundedIntensities.Average(); 
+            selectAverageIntensity = allRoundedIntensities.Average();
             selectStDev = (decimal)Math.Sqrt(allRoundedIntensities.Average(v => Math.Pow((double)(v - selectAverageIntensity), 2))); //population stdev calculation, rather than sample
             selectGaussianArea = get_gaussian_area(logSelectIntensityHistogram);
             selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)selectStDev, 2));
@@ -1071,8 +1097,10 @@ namespace ProteoformSuiteInternal
                 && p.quant.intensitySum > minProteoformIntensity);
         }
 
+        #endregion QUANTIFICATION
 
-        // GO TERMS AND GO TERM SIGNIFICANCE
+        #region GO-TERMS AND GO-TERM SIGNIFICANCE
+
         public static List<GoTermNumber> goTermNumbers = new List<GoTermNumber>();//these are the count and enrichment values
         public static bool allTheoreticalProteins = false; // this sets the group used for background. True if all Proteins in the theoretical database are used. False if only proteins observed in the study are used.
         public static string backgroundProteinsList = "";
@@ -1097,12 +1125,12 @@ namespace ProteoformSuiteInternal
         {
             Dictionary<string, int> goSignificantCounts = fillGoDictionary(inducedOrRepressedProteins);
             Dictionary<string, int> goBackgroundCounts = fillGoDictionary(backgroundProteinSet);
-            return inducedOrRepressedProteins.SelectMany(p => p.GoTerms).DistinctBy(g => g.Id).Select(g => 
+            return inducedOrRepressedProteins.SelectMany(p => p.GoTerms).DistinctBy(g => g.Id).Select(g =>
                 new GoTermNumber(
-                    g, 
-                    goSignificantCounts.ContainsKey(g.Id) ? goSignificantCounts[g.Id] : 0, 
-                    inducedOrRepressedProteins.Count, 
-                    goBackgroundCounts.ContainsKey(g.Id) ? goBackgroundCounts[g.Id] : 0, 
+                    g,
+                    goSignificantCounts.ContainsKey(g.Id) ? goSignificantCounts[g.Id] : 0,
+                    inducedOrRepressedProteins.Count,
+                    goBackgroundCounts.ContainsKey(g.Id) ? goBackgroundCounts[g.Id] : 0,
                     backgroundProteinSet.Count
                 )).ToList();
         }
@@ -1127,7 +1155,9 @@ namespace ProteoformSuiteInternal
         {
             List<double> pvals = gtns.Select(g => g.p_value).ToList();
             pvals.Sort();
-            Parallel.ForEach<GoTermNumber>(gtns, g => g.by = GoTermNumber.benjaminiYekutieli(gtns.Count, pvals, g.p_value)); 
+            Parallel.ForEach<GoTermNumber>(gtns, g => g.by = GoTermNumber.benjaminiYekutieli(gtns.Count, pvals, g.p_value));
         }
+
+        #endregion GO-TERMS AND GO-TERM SIGNIFICANCE
     }
 }
