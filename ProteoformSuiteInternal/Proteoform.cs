@@ -168,7 +168,7 @@ namespace ProteoformSuiteInternal
 
                     rank_sum -= Convert.ToInt32(Lollipop.variableModifications.Contains(m)); // favor variable modifications over regular modifications of the same mass
 
-                    // In list of priority:
+                    // In order of likelihood:
                     // 1. First, we observe I/L/A cleavage to be the most common, 
                     // 1. "Fatty Acid" is a list of modifications prevalent in yeast or bacterial analysis, 
                     // 1. and unlocalized modifications are a subset of modifications in the intact_mods.txt list that should be included in intact analysis
