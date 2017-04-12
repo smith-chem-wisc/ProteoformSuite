@@ -168,7 +168,13 @@ namespace ProteoformSuiteInternal
 
                     rank_sum -= Convert.ToInt32(Lollipop.variableModifications.Contains(m)); // favor variable modifications over regular modifications of the same mass
 
-                    if (likely_cleavage_site || m.modificationType == "FattyAcid" || m.modificationType == "Unlocalized")
+                    // In list of priority:
+                    // 1. First, we observe I/L/A cleavage to be the most common, 
+                    // 1. "Fatty Acid" is a list of modifications prevalent in yeast or bacterial analysis, 
+                    // 1. and unlocalized modifications are a subset of modifications in the intact_mods.txt list that should be included in intact analysis
+                    // 2. Second, other degradations and methionine cleavage are weighted mid-level
+                    // 3. Missed monoisotopic errors are considered, but weighted towards the bottom. This should allow missed monoisotopics with common modifications like oxidation, but not rare ones.
+                    if (likely_cleavage_site || m.modificationType == "FattyAcid" || m.modificationType == "Unlocalized")  
                         rank_sum += Lollipop.rank_first_quartile;
                     else if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation)
                         rank_sum += Lollipop.rank_second_quartile;
