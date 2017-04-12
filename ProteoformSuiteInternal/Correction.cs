@@ -58,8 +58,7 @@ namespace ProteoformSuiteInternal
             {
                 scans = Array.ConvertAll<string, int>(scan_range.Split('-').ToArray(), int.Parse);
             }
-            catch
-            { }
+            catch { }
 
             if (scans[0] <= 0 || scans[1] <= 0) return 0D;
 
