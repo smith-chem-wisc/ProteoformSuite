@@ -190,6 +190,7 @@
             this.dgv_loadFiles.Size = new System.Drawing.Size(430, 186);
             this.dgv_loadFiles.TabIndex = 25;
             this.dgv_loadFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.dgv_loadFiles_DragDrop);
+            this.dgv_loadFiles.DragEnter += new System.Windows.Forms.DragEventHandler(this.dgv_loadFiles_DragEnter);
             // 
             // btn_addFiles
             // 
