@@ -61,7 +61,7 @@ namespace ProteoformSuiteInternal
             {
                 TheoreticalProteoform t = pf2 as TheoreticalProteoform;
                 double mass_tolerance = t.modified_mass / 1000000 * (double)Lollipop.mass_tolerance;
-                candidate_ptmset = t.generate_possible_added_ptmsets(nearestPTMs(delta_mass, relation_type).ToList(), delta_mass, mass_tolerance, Lollipop.all_mods_with_mass, t, t.sequence, Lollipop.rank_first_quartile)
+                candidate_ptmset = t.generate_possible_added_ptmsets(nearestPTMs(delta_mass, relation_type).ToList(), delta_mass, mass_tolerance, Lollipop.all_mods_with_mass, t, t.sequence, Lollipop.rank_first_quartile) //This is a harsher "additional penalty" than usual to favor smaller PTM sets over larger ones, which tend to crowd out better explanations for proteoforms
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(delta_mass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
             }
