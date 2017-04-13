@@ -9,7 +9,11 @@
 
 Description: Controlled vocabulary of posttranslational modifications (PTM)
 Name:        ptmlist.txt
+<<<<<<< HEAD
 Release:     2017_02 of 15-Feb-2017
+=======
+Release:     2017_03 of 15-Mar-2017
+>>>>>>> 510389744ba7efd6dc450972c0426a811f0261b4
 
 ---------------------------------------------------------------------------
 
@@ -3867,7 +3871,11 @@ DR   RESID; AA0619.
 DR   PSI-MOD; 01982.
 //
 ID   N,N,N-trimethylmethionine
+<<<<<<< HEAD
 AC   PTM-503
+=======
+AC   PTM-0503
+>>>>>>> 510389744ba7efd6dc450972c0426a811f0261b4
 FT   MOD_RES
 TG   Methionine.
 PA   Amino acid backbone.
@@ -3876,8 +3884,12 @@ CF   C3 H7
 MM   43.054227
 MA   43.09
 LC   Intracellular localisation.
+<<<<<<< HEAD
 TR   Bacteria; taxId:1224 (Proteobacteria).
 TR   Deinococcus-Thermus; taxId:188787 (Deinococci).
+=======
+TR   Bacteria; taxId:1224 (Proteobacteria), taxId:1297 (Deinococcus-Thermus).
+>>>>>>> 510389744ba7efd6dc450972c0426a811f0261b4
 KW   Methylation.
 DR   RESID; AA0456.
 DR   PSI-MOD; 01382.

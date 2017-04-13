@@ -11,9 +11,9 @@ namespace ProteoformSuiteInternal
     public class BottomUpReader
     {
         //READING IN BOTTOM-UP MORPHEUS FILE
-        public static List<Psm> ReadBUFile(string filename)
+        public static List<BottomUpPSM> ReadBUFile(string filename)
         {
-            List<Psm> psm_list = new List<Psm>();
+            List<BottomUpPSM> psm_list = new List<BottomUpPSM>();
             var identifications = new MzidIdentifications(filename);
             for (int i = 0; i < identifications.Count; i++)
             {
@@ -22,11 +22,12 @@ namespace ProteoformSuiteInternal
                 List<Ptm> modifications = new List<Ptm>();
                 for (int p = 0; p < identifications.NumModifications(i); p++)
                 {
-                    ModificationWithMass mod = Lollipop.uniprotModificationTable.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
+                    ModificationWithMass mod = Lollipop.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
+                    if (mod == null)  mod = Lollipop.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
                     if (mod != null) modifications.Add(new Ptm(identifications.ModificationLocation(i, p), mod));
                     else modifications.Add(new Ptm(identifications.ModificationLocation(i, p), new ModificationWithMass(identifications.ModificationAcession(i, p), null, null, ModificationSites.Any, 0, null, null, null, null)));
                 }
-                psm_list.Add(new Psm(identifications.PeptideSequenceWithoutModifications(i), identifications.StartResidueInProtein(i), identifications.EndResidueInProtein(i), modifications, identifications.Ms2SpectrumID(i), identifications.ProteinAccession(i), identifications.ProteinFullName(i), identifications.ExperimentalMassToCharge(i), identifications.ChargeState(i), (identifications.ExperimentalMassToCharge(i) - identifications.CalculatedMassToCharge(i))));
+                psm_list.Add(new BottomUpPSM(identifications.PeptideSequenceWithoutModifications(i), identifications.StartResidueInProtein(i), identifications.EndResidueInProtein(i), modifications, identifications.Ms2SpectrumID(i), identifications.ProteinAccession(i), identifications.ProteinFullName(i), identifications.ExperimentalMassToCharge(i), identifications.ChargeState(i), (identifications.ExperimentalMassToCharge(i) - identifications.CalculatedMassToCharge(i))));
             }
             return psm_list;
         }

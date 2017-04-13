@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
-    public class Psm
+    public class BottomUpPSM
     {
         public string base_sequence { get; set; }
         public string sequence_with_modifications
@@ -27,7 +27,7 @@ namespace ProteoformSuiteInternal
         public double precursor_mass_error { get; set; }
         public List<Ptm> modifications = new List<Ptm>();
 
-        public Psm(string sequence, int start_residue, int stop_residue, List<Ptm> modifications,  string spectrum, string protein_accession, string protein_description, double precursor_mz, int precursor_charge, double precursor_mass_error)
+        public BottomUpPSM(string sequence, int start_residue, int stop_residue, List<Ptm> modifications,  string spectrum, string protein_accession, string protein_description, double precursor_mz, int precursor_charge, double precursor_mass_error)
         {
             this.base_sequence = sequence;
             this.start_residue = start_residue;

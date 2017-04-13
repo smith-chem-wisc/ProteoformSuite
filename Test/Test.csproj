@@ -113,7 +113,6 @@
     <Compile Include="TestProteoformCommunityRelate.cs" />
     <Compile Include="TestCytoscapeScript.cs" />
     <Compile Include="TestProteoformFamilies.cs" />
-    <Compile Include="TestTheoreticalCreation.cs" />
     <Compile Include="TestTheoreticalDatabaseCreate.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -130,9 +129,6 @@
     <None Include="test_directory\two.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="UnitTestFiles\noisy.xlsx">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ProteoformSuiteInternal\ProteoformSuiteInternal.csproj">
@@ -144,7 +140,13 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="amino_acids_duplicates.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="ptmlist.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="stripped_plus2M.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="test_directory\three.txt">
@@ -156,11 +158,8 @@
     <Content Include="uniprot_yeast_test_12entries.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="UnitTestFiles\ptmlist.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="UnitTestFiles\uniprot_yeast_test_12entries.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="stripped.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup />

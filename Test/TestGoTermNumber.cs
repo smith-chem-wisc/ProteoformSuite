@@ -94,9 +94,9 @@ namespace Test
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
             TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
             TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
-            t.proteinList = new List<ProteinWithGoTerms> { p1 };
-            u.proteinList = new List<ProteinWithGoTerms> { p2 };
-            v.proteinList = new List<ProteinWithGoTerms> { p3 };
+            t.ExpandedProteinList = new List<ProteinWithGoTerms> { p1 };
+            u.ExpandedProteinList = new List<ProteinWithGoTerms> { p2 };
+            v.ExpandedProteinList = new List<ProteinWithGoTerms> { p3 };
             make_relation(e1, t);
             make_relation(e1, v);
             make_relation(e2, u);
@@ -151,9 +151,9 @@ namespace Test
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
             TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
             TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
-            t.proteinList = new List<ProteinWithGoTerms> { p1 };
-            u.proteinList = new List<ProteinWithGoTerms> { p2 };
-            v.proteinList = new List<ProteinWithGoTerms> { p3 };
+            t.ExpandedProteinList = new List<ProteinWithGoTerms> { p1 };
+            u.ExpandedProteinList = new List<ProteinWithGoTerms> { p2 };
+            v.ExpandedProteinList = new List<ProteinWithGoTerms> { p3 };
             make_relation(e1, t);
             make_relation(e1, v);
             make_relation(e2, u);
@@ -183,7 +183,7 @@ namespace Test
 
         public void make_relation(Proteoform p1, Proteoform p2)
         {
-            ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ee, 0);
+            ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ExperimentalExperimental, 0);
             DeltaMassPeak ppp = new DeltaMassPeak(pp, new List<ProteoformRelation> { pp });
             pp.accepted = true;
             pp.peak = ppp;
@@ -220,9 +220,9 @@ namespace Test
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical("T1_T1_asdf", p1, dict);
             TheoreticalProteoform u = ConstructorsForTesting.make_a_theoretical("T2_T1_asdf_asdf", p2, dict);
             TheoreticalProteoform v = ConstructorsForTesting.make_a_theoretical("T3_T1_asdf_Asdf_Asdf", p3, dict);
-            t.proteinList = new List<ProteinWithGoTerms> { p1 };
-            u.proteinList = new List<ProteinWithGoTerms> { p2 };
-            v.proteinList = new List<ProteinWithGoTerms> { p3 };
+            t.ExpandedProteinList = new List<ProteinWithGoTerms> { p1 };
+            u.ExpandedProteinList = new List<ProteinWithGoTerms> { p2 };
+            v.ExpandedProteinList = new List<ProteinWithGoTerms> { p3 };
             make_relation(e1, t);
             make_relation(e1, v);
             make_relation(e2, u);

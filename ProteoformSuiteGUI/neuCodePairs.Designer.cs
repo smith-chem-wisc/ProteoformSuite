@@ -517,7 +517,6 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "NeuCodePairs";
             this.Text = "NeuCode Pairs";
-            this.Load += new System.EventHandler(this.NeuCodePairs_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
