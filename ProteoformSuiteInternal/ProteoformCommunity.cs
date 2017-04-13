@@ -129,7 +129,7 @@ namespace ProteoformSuiteInternal
                 string key = "EF_relations_" + i;
                 ProteoformRelation[] to_shuffle = new List<ProteoformRelation>(all_ef_relations).ToArray();
                 to_shuffle.Shuffle();
-                lock (ef_relations) ef_relations.Add(key, all_ef_relations.Take(Lollipop.ee_relations.Count).ToList());
+                lock (ef_relations) ef_relations.Add(key, to_shuffle.Take(Lollipop.ee_relations.Count).ToList());
             });
 
             count_nearby_relations(ef_relations.Values.First()); //count from first decoy database
