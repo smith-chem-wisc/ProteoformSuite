@@ -50,6 +50,7 @@
             this.tb_notch_masses = new System.Windows.Forms.TextBox();
             this.cb_notch_search = new System.Windows.Forms.CheckBox();
             this.cb_TDBUpsm = new System.Windows.Forms.CheckBox();
+            this.cb_view_decoy_histogram = new System.Windows.Forms.CheckBox();
             this.bt_compare_ET = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.cb_automate_peak_acceptance = new System.Windows.Forms.CheckBox();
@@ -76,9 +77,8 @@
             this.nUD_NoManLower = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.ct_ET_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.dgv_ET_Pairs = new System.Windows.Forms.DataGridView();
-            this.cb_view_decoy_histogram = new System.Windows.Forms.CheckBox();
+            this.ct_ET_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -115,8 +115,8 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Pairs)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -321,6 +321,17 @@
             this.cb_TDBUpsm.Text = "Limit to theoreticals with TD or BU PSMs";
             this.cb_TDBUpsm.UseVisualStyleBackColor = true;
             this.cb_TDBUpsm.CheckedChanged += new System.EventHandler(this.cb_TDBUpsm_CheckedChanged);
+            // cb_view_decoy_histogram
+            // 
+            this.cb_view_decoy_histogram.AutoSize = true;
+            this.cb_view_decoy_histogram.Enabled = false;
+            this.cb_view_decoy_histogram.Location = new System.Drawing.Point(192, 62);
+            this.cb_view_decoy_histogram.Name = "cb_view_decoy_histogram";
+            this.cb_view_decoy_histogram.Size = new System.Drawing.Size(196, 17);
+            this.cb_view_decoy_histogram.TabIndex = 33;
+            this.cb_view_decoy_histogram.Text = "View Experimental-Decoy Histogram";
+            this.cb_view_decoy_histogram.UseVisualStyleBackColor = true;
+            this.cb_view_decoy_histogram.CheckedChanged += new System.EventHandler(this.cb_view_decoy_histogram_CheckedChanged);
             // 
             // bt_compare_ET
             // 
@@ -345,7 +356,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(199, 96);
+            this.groupBox4.Location = new System.Drawing.Point(199, 97);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -463,7 +474,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(431, 114);
+            this.groupBox3.Location = new System.Drawing.Point(431, 115);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -536,7 +547,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(431, 201);
+            this.groupBox2.Location = new System.Drawing.Point(431, 202);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -624,7 +635,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(199, 201);
+            this.groupBox1.Location = new System.Drawing.Point(199, 202);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -727,26 +738,6 @@
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 0;
             // 
-            // ct_ET_Histogram
-            // 
-            chartArea2.Name = "ChartArea1";
-            this.ct_ET_Histogram.ChartAreas.Add(chartArea2);
-            this.ct_ET_Histogram.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ct_ET_Histogram.Location = new System.Drawing.Point(0, 0);
-            this.ct_ET_Histogram.Margin = new System.Windows.Forms.Padding(2);
-            this.ct_ET_Histogram.Name = "ct_ET_Histogram";
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series4.Name = "relations";
-            this.ct_ET_Histogram.Series.Add(series4);
-            series5.ChartArea = "ChartArea1";
-            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series5.Name = "decoys";
-            this.ct_ET_Histogram.Series.Add(series5);
-            this.ct_ET_Histogram.Size = new System.Drawing.Size(710, 308);
-            this.ct_ET_Histogram.TabIndex = 0;
-            this.ct_ET_Histogram.Text = "chart1";
-            // 
             // dgv_ET_Pairs
             // 
             this.dgv_ET_Pairs.AllowUserToAddRows = false;
@@ -762,17 +753,25 @@
             this.dgv_ET_Pairs.Size = new System.Drawing.Size(710, 508);
             this.dgv_ET_Pairs.TabIndex = 0;
             // 
-            // cb_view_decoy_histogram
+            // ct_ET_Histogram
             // 
-            this.cb_view_decoy_histogram.AutoSize = true;
-            this.cb_view_decoy_histogram.Enabled = false;
-            this.cb_view_decoy_histogram.Location = new System.Drawing.Point(192, 62);
-            this.cb_view_decoy_histogram.Name = "cb_view_decoy_histogram";
-            this.cb_view_decoy_histogram.Size = new System.Drawing.Size(196, 17);
-            this.cb_view_decoy_histogram.TabIndex = 33;
-            this.cb_view_decoy_histogram.Text = "View Experimental-Decoy Histogram";
-            this.cb_view_decoy_histogram.UseVisualStyleBackColor = true;
-            this.cb_view_decoy_histogram.CheckedChanged += new System.EventHandler(this.cb_view_decoy_histogram_CheckedChanged);
+            chartArea2.Name = "ChartArea1";
+            this.ct_ET_Histogram.ChartAreas.Add(chartArea2);
+            this.ct_ET_Histogram.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ct_ET_Histogram.Location = new System.Drawing.Point(0, 0);
+            this.ct_ET_Histogram.Margin = new System.Windows.Forms.Padding(2);
+            this.ct_ET_Histogram.Name = "ct_ET_Histogram";
+            series4.ChartArea = "ChartArea1";
+            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series4.Name = "relations";
+            series5.ChartArea = "ChartArea1";
+            series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series5.Name = "decoys";
+            this.ct_ET_Histogram.Series.Add(series4);
+            this.ct_ET_Histogram.Series.Add(series5);
+            this.ct_ET_Histogram.Size = new System.Drawing.Size(710, 308);
+            this.ct_ET_Histogram.TabIndex = 0;
+            this.ct_ET_Histogram.Text = "chart1";
             // 
             // ExperimentTheoreticalComparison
             // 
@@ -785,7 +784,6 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "ExperimentTheoreticalComparison";
             this.Text = "ExperimentTheoreticalComparison";
-            this.Load += new System.EventHandler(this.ExperimentTheoreticalComparison_Load);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -827,8 +825,8 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Pairs)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).EndInit();
             this.ResumeLayout(false);
 
         }

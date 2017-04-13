@@ -25,7 +25,7 @@ namespace ProteoformSuiteInternal
                     int position = 0;
                     if (cellStrings[10].Split(':')[1] == "1458")
                     {
-                        ModificationWithMass mod = Lollipop.uniprotModificationTable.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id.Contains("acetyl") && m.motif.Motif == cellStrings[4][0].ToString()).FirstOrDefault();
+                        ModificationWithMass mod = Lollipop.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id.Contains("acetyl") && m.motif.Motif == cellStrings[4][0].ToString()).FirstOrDefault();
                         if (mod != null)
                         {
                             ptm_list.Add(new Ptm(position, mod));
@@ -48,7 +48,7 @@ namespace ProteoformSuiteInternal
                         while (resid.Length < 4) resid = "0" + resid;
                         resid = "AA" + resid;
                         int position = Convert.ToInt16(new_ptm.Split(':')[1].Split('@')[1]);
-                        ModificationWithMass mod = Lollipop.uniprotModificationTable.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("RESID")).Where(m => m.linksToOtherDbs["RESID"].Contains(resid)).FirstOrDefault();
+                        ModificationWithMass mod = Lollipop.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("RESID")).Where(m => m.linksToOtherDbs["RESID"].Contains(resid)).FirstOrDefault();
                         if (mod != null) ptm_list.Add(new Ptm(position, mod));
                     }
                 }

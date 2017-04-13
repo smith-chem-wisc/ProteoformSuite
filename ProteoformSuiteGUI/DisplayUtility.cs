@@ -1,12 +1,9 @@
 ﻿using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -14,14 +11,16 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayUtility
     {
+
         public static void FillDataGridView(DataGridView dgv, IEnumerable<object> someList)
         {
             SortableBindingList<object> sbl = new SortableBindingList<object>(someList);
             dgv.DataSource = sbl;
             dgv.ReadOnly = false;
+            dgv.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableAlwaysIncludeHeaderText;
             dgv.AllowUserToAddRows = false;
-            dgv.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
+            dgv.DefaultCellStyle.BackColor = Color.LightGray;
+            dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.DarkGray;
             foreach (DataGridViewColumn col in dgv.Columns) col.SortMode = DataGridViewColumnSortMode.Automatic; 
         }
 
@@ -66,7 +65,7 @@ namespace ProteoformSuiteGUI
             List<ProteoformRelation> relations_ordered = relations.OrderByDescending(r => r.delta_mass).ToList();
             foreach (ProteoformRelation relation in relations_ordered)
             {
-                ct.Series[series].Points.AddXY(relation.delta_mass, relation.nearby_relations_count);
+                ct.Series[series].Points.AddXY(relation.delta_mass, relation.nearby_relations.Count);
             }
             ct.ChartAreas[0].AxisX.Title = "Delta Mass (Da)";
             ct.ChartAreas[0].AxisY.Title = "Nearby Count";
@@ -94,7 +93,7 @@ namespace ProteoformSuiteGUI
             List<ProteoformRelation> relations_ordered = relations.OrderBy(r => r.delta_mass).ToList();
             foreach (ProteoformRelation relation in relations_ordered)
             {
-                ct.Series[relations_series].Points.AddXY(relation.delta_mass, relation.nearby_relations_count);
+                ct.Series[relations_series].Points.AddXY(relation.delta_mass, relation.nearby_relations.Count);
             }
             ct.ChartAreas[0].AxisX.LabelStyle.Format = "{0:0.00}";
             if (peaks_ordered.Count > 0) GraphSelectedDeltaMassPeak(ct, peaks_ordered[0], relations);
@@ -119,200 +118,45 @@ namespace ProteoformSuiteGUI
             ct.ChartAreas[0].AxisY.Maximum = 1 + Math.Max(
                 Convert.ToInt32(peak.peak_relation_group_count * 1.2),
                 Convert.ToInt32(relations.Where(r => r.delta_mass >= peak.peak_deltaM_average - peak_width_base 
-                    && r.delta_mass <= peak.peak_deltaM_average + peak_width_base).Select(r => r.nearby_relations_count).Max())
+                    && r.delta_mass <= peak.peak_deltaM_average + peak_width_base).Select(r => r.nearby_relations.Count).Max())
             ); //this automatically scales the vertical axis to the peak height plus 20%, also accounting for the nearby trace of unadjusted relation group counts
 
             ct.ChartAreas[0].AxisX.Title = "Delta Mass (Da)";
             ct.ChartAreas[0].AxisY.Title = "Count";
         }
 
-        public static void FormatAggregatesTable(DataGridView dgv)
-        {
-            if (dgv.Columns.Count <= 0) return;
-
-            //round table values
-            dgv.Columns["agg_mass"].DefaultCellStyle.Format = "0.####";
-            dgv.Columns["agg_intensity"].DefaultCellStyle.Format = "0.####";
-            dgv.Columns["agg_rt"].DefaultCellStyle.Format = "0.##";
-            dgv.Columns["modified_mass"].DefaultCellStyle.Format = "0.####";
-
-            //set column header
-            dgv.Columns["agg_mass"].HeaderText = "Aggregated Mass";
-            dgv.Columns["agg_intensity"].HeaderText = "Aggregated Intensity";
-            dgv.Columns["agg_rt"].HeaderText = "Aggregated RT";
-            dgv.Columns["observation_count"].HeaderText = "Observation Count";
-            dgv.Columns["accession"].HeaderText = "Experimental Proteoform ID";
-            dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
-
-            //making these columns invisible. (irrelevent for agg proteoforms)
-            dgv.Columns["is_target"].Visible = false;
-            dgv.Columns["is_decoy"].Visible = false;
-            dgv.Columns["modified_mass"].Visible = false;
-            if (!Lollipop.neucode_labeled) { dgv.Columns["lysine_count"].Visible = false; }
-            dgv.AllowUserToAddRows = false;
-        }
-
-        public static void FormatTheoreticalProteoformTable(DataGridView dgv)
-        {
-            if (dgv.Columns.Count <= 0) return;
-
-            //round table values
-            dgv.Columns["unmodified_mass"].DefaultCellStyle.Format = "0.####";
-            dgv.Columns["ptm_mass"].DefaultCellStyle.Format = "0.####";
-            dgv.Columns["modified_mass"].DefaultCellStyle.Format = "0.####";
-
-            //set column header
-            dgv.Columns["name"].HeaderText = "Name";
-            dgv.Columns["fragment"].HeaderText = "Fragment";
-            dgv.Columns["begin"].HeaderText = "Begin";
-            dgv.Columns["end"].HeaderText = "End";
-            dgv.Columns["unmodified_mass"].HeaderText = "Unmodified Mass";
-            dgv.Columns["ptm_mass"].HeaderText = "PTM Mass";
-            dgv.Columns["ptm_descriptions"].HeaderText = "PTM Description";
-            dgv.Columns["accession"].HeaderText = "Accession";
-            dgv.Columns["description"].HeaderText = "Description";
-            dgv.Columns["modified_mass"].HeaderText = "Modified Mass";
-            dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
-
-            //making these columns invisible.
-            dgv.Columns["is_target"].Visible = false;
-            dgv.Columns["is_decoy"].Visible = false;
-            dgv.Columns["ptm_set"].Visible = false;
-            dgv.Columns["family"].Visible = false;
-
-            dgv.AllowUserToAddRows = false;
-        }
-
-        public static void FormatRelationsGridView(DataGridView dgv, bool mask_experimental, bool mask_theoretical)
-
-        {
-            if (dgv.Columns.Count <= 0) return;
-
-            //round table values
-            dgv.Columns["delta_mass"].DefaultCellStyle.Format = "0.####";
-            dgv.Columns["peak_center_deltaM"].DefaultCellStyle.Format = "0.####";
-            dgv.Columns["proteoform_mass_1"].DefaultCellStyle.Format = "0.####";
-            dgv.Columns["proteoform_mass_2"].DefaultCellStyle.Format = "0.####";
-            dgv.Columns["agg_intensity_1"].DefaultCellStyle.Format = "0.##";
-            dgv.Columns["agg_intensity_2"].DefaultCellStyle.Format = "0.##";
-            dgv.Columns["agg_RT_1"].DefaultCellStyle.Format = "0.##";
-            dgv.Columns["agg_RT_2"].DefaultCellStyle.Format = "0.##";
-
-
-            //set column header
-            dgv.Columns["delta_mass"].HeaderText = "Delta Mass";
-            dgv.Columns["nearby_relations_count"].HeaderText = "Nearby Relation Count";
-            dgv.Columns["accepted"].HeaderText = "Accepted";
-            dgv.Columns["peak_center_deltaM"].HeaderText = "Peak Center Delta Mass";
-            dgv.Columns["peak_center_count"].HeaderText = "Peak Center Count";
-            dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
-            dgv.Columns["outside_no_mans_land"].HeaderText = "Outside No Man's Land";
-
-            //ET formatting
-            dgv.Columns["fragment"].HeaderText = "Fragment";
-            //dgv.Columns["ptm_list"].HeaderText = "PTM Description";
-            //dgv.Columns["name"].HeaderText = "Name";
-            if (mask_experimental)
-            {
-                dgv.Columns["num_observations_1"].HeaderText = "Number Experimental Observations";
-                dgv.Columns["accession_1"].HeaderText = "Experimental Accession";
-                dgv.Columns["accession_2"].HeaderText = "Theoretical Accession";
-                dgv.Columns["proteoform_mass_2"].HeaderText = "Theoretical Proteoform Mass";
-                dgv.Columns["proteoform_mass_1"].HeaderText = "Experimental Aggregated Proteoform Mass";
-                dgv.Columns["agg_intensity_1"].HeaderText = "Experimental Aggregated Intensity";
-                dgv.Columns["agg_RT_1"].HeaderText = "Experimental Aggregated RT";
-                dgv.Columns["agg_intensity_2"].Visible = false;
-                dgv.Columns["agg_RT_2"].Visible = false;
-                dgv.Columns["num_observations_2"].Visible = false;
-                dgv.Columns["relation_type_string"].Visible = false;
-            }
-
-            //EE formatting
-            if (mask_theoretical)
-            {
-                dgv.Columns["num_observations_2"].HeaderText = "Number Light Experimental Observations";
-                dgv.Columns["num_observations_1"].HeaderText = "Number Heavy Experimental Observations";
-                dgv.Columns["agg_intensity_2"].HeaderText = "Light Experimental Aggregated Intensity";
-                dgv.Columns["agg_intensity_1"].HeaderText = "Heavy Experimental Aggregated Intensity";
-                dgv.Columns["agg_RT_1"].HeaderText = "Aggregated RT Heavy";
-                dgv.Columns["agg_RT_2"].HeaderText = "Aggregated RT Light";
-                dgv.Columns["accession_1"].HeaderText = "Heavy Experimental Accession";
-                dgv.Columns["accession_2"].HeaderText = "Light Experimental Accession";
-                dgv.Columns["proteoform_mass_1"].HeaderText = "Heavy Experimental Aggregated Mass";
-                dgv.Columns["proteoform_mass_2"].HeaderText = "Light Experimental Aggregated Mass";
-               // dgv.Columns["name"].Visible = false;
-                dgv.Columns["fragment"].Visible = false;
-            }
-
-            //ProteoformFamilies formatting
-            dgv.Columns["relation_type_string"].HeaderText = "Relation Type";
-
-            //making these columns invisible
-            dgv.Columns["peak"].Visible = false;
-            if (!Lollipop.neucode_labeled) { dgv.Columns["lysine_count"].Visible = false; }
-
-            dgv.AllowUserToAddRows = false;
-        }
-
         public static void FormatPeakListGridView(DataGridView dgv, bool mask_mass_shifter)
         {
             if (dgv.Columns.Count <= 0) return;
+            dgv.AllowUserToAddRows = false;
 
             //making all columns invisible first - faster
             foreach (DataGridViewColumn column in dgv.Columns) { column.Visible = false; }
             if (!mask_mass_shifter)
             {
-                dgv.Columns["mass_shifter"].Visible = true;
-                dgv.Columns["mass_shifter"].ReadOnly = false; //user can say how much they want to change monoisotopic by for each
-                dgv.Columns["possiblePeakAssignments_string"].Visible = true;
+                dgv.Columns[nameof(DeltaMassPeak.mass_shifter)].Visible = true;
+                dgv.Columns[nameof(DeltaMassPeak.mass_shifter)].ReadOnly = false; //user can say how much they want to change monoisotopic by for each
             }
-            dgv.Columns["peak_deltaM_average"].DefaultCellStyle.Format = "0.####";
-            dgv.Columns["peak_group_fdr"].DefaultCellStyle.Format = "0.##";
+            dgv.Columns[nameof(DeltaMassPeak.peak_deltaM_average)].DefaultCellStyle.Format = "0.####";
+            dgv.Columns[nameof(DeltaMassPeak.peak_group_fdr)].DefaultCellStyle.Format = "0.##";
 
-            dgv.Columns["peak_relation_group_count"].HeaderText = "Peak Center Count";
-            dgv.Columns["decoy_relation_count"].HeaderText = "Decoy Count under Peak";
-            dgv.Columns["peak_deltaM_average"].HeaderText = "Peak Center Delta Mass";
-            dgv.Columns["peak_group_fdr"].HeaderText = "Peak FDR";
-            dgv.Columns["peak_accepted"].HeaderText = "Peak Accepted";
-            dgv.Columns["possiblePeakAssignments_string"].HeaderText = "Peak Assignment";
+            dgv.Columns[nameof(DeltaMassPeak.peak_relation_group_count)].HeaderText = "Peak Center Count";
+            dgv.Columns[nameof(DeltaMassPeak.decoy_relation_count)].HeaderText = "Decoy Count under Peak";
+            dgv.Columns[nameof(DeltaMassPeak.peak_deltaM_average)].HeaderText = "Peak Center Delta Mass";
+            dgv.Columns[nameof(DeltaMassPeak.peak_group_fdr)].HeaderText = "Peak FDR";
+            dgv.Columns[nameof(DeltaMassPeak.peak_accepted)].HeaderText = "Peak Accepted";
+            dgv.Columns[nameof(DeltaMassPeak.possiblePeakAssignments_string)].HeaderText = "Peak Assignment";
 
-            dgv.Columns["peak_relation_group_count"].Visible = true;
-            //dgv.Columns["decoy_relation_count"].Visible = true;
-            dgv.Columns["peak_deltaM_average"].Visible = true;
-            dgv.Columns["peak_group_fdr"].Visible = true;
-            dgv.Columns["peak_accepted"].Visible = true;
-            dgv.AllowUserToAddRows = false;
-        }
-
-        public static void formatDataFileInputGridView(DataGridView dgv, IEnumerable<object> someObject)
-        {
-            SortableBindingList<object> sbl = new SortableBindingList<object>(someObject);
-            
-            dgv.ReadOnly = false;
-            dgv.DefaultCellStyle.BackColor = System.Drawing.Color.LightGray;
-            dgv.AlternatingRowsDefaultCellStyle.BackColor = System.Drawing.Color.DarkGray;
-
-
-
-            //making all columns invisible first - faster
-            //foreach (DataGridViewColumn column in dgv.Columns) { column.Visible = false; }
-
-            //dgv.Columns["matchingCalibrationFile"].HeaderText = "Calibrate";
-            //dgv.Columns["filename"].HeaderText = "Filename";
-            //dgv.Columns["label"].HeaderText = "NeuCode/Unlabelled";
-            //dgv.Columns["sampleCategory.biorep"].HeaderText = "Biorep";
-            //dgv.Columns["sampleCategory.techrep"].HeaderText = "Techrep";
-            //dgv.Columns["sampleCategory.condition"].HeaderText = "Condition";
-
-            dgv.DataSource = sbl;
+            dgv.Columns[nameof(DeltaMassPeak.peak_relation_group_count)].Visible = true;
+            //dgv.Columns[nameof(DeltaMassPeak.decoy_relation_count)].Visible = true;
+            dgv.Columns[nameof(DeltaMassPeak.peak_deltaM_average)].Visible = true;
+            dgv.Columns[nameof(DeltaMassPeak.peak_group_fdr)].Visible = true;
+            dgv.Columns[nameof(DeltaMassPeak.peak_accepted)].Visible = true;
+            dgv.Columns[nameof(DeltaMassPeak.possiblePeakAssignments_string)].Visible = true;
         }
 
         public static object[] get_selected_objects(DataGridView dgv)
         {
-            //Check if there are any rows selected
-            //int selected_row_sum = 0;
-            //for (int i = 0; i < dgv.SelectedCells.Count; i++) selected_row_sum += dgv.SelectedCells[i].RowIndex;
-
             List<object> items = new List<object>();
             if (dgv.SelectedRows.Count > 0)
                 for (int i = 0; i < dgv.SelectedRows.Count; i++)
@@ -325,30 +169,11 @@ namespace ProteoformSuiteGUI
                 foreach (int row_index in rows)
                     items.Add(dgv.Rows[row_index].DataBoundItem);
             }
-            //else
-            //    for (int i = 0; i < dgv.SelectedCells.Count; i++)
-            //        if (dgv.SelectedCells[i].RowIndex != 0)
-            //            items.Add(dgv.Rows[dgv.SelectedCells[i].RowIndex].DataBoundItem);
 
-            return items.ToArray();
-        }
-
-        public static void format_families_dgv(DataGridView dgv)
-        {
-            if (dgv.Columns.Count <= 0) return;
-
-            //set column header
-            //dgv_proteoform_families.Columns["family_id"].HeaderText = "Light Monoisotopic Mass";
-            dgv.Columns["lysine_count"].HeaderText = "Lysine Count";
-            dgv.Columns["experimental_count"].HeaderText = "Experimental Proteoforms";
-            dgv.Columns["theoretical_count"].HeaderText = "Theoretical Proteoforms";
-            dgv.Columns["relation_count"].HeaderText = "Relation Count";
-            dgv.Columns["accession_list"].HeaderText = "Theoretical Accessions";
-            dgv.Columns["name_list"].HeaderText = "Theoretical Names";
-            dgv.Columns["experimentals_list"].HeaderText = "Experimental Accessions";
-            dgv.Columns["agg_mass_list"].HeaderText = "Experimental Aggregated Masses";
-            dgv.Columns["relations"].Visible = false;
-            dgv.Columns["proteoforms"].Visible = false;
+            List<DisplayObject> display_objects = items.OfType<DisplayObject>().ToList();
+            return display_objects.Count > 0 ?
+                display_objects.Select(d => d.display_object).ToArray() :
+                items.ToArray();
         }
     }
 }

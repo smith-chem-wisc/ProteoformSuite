@@ -52,7 +52,11 @@ namespace Test
             string intensity = "1001.1";
             string mz_centroid = "123.2";
             string reported_mass = "125.0";
+<<<<<<< HEAD
             c.add_charge_state(new List<string> { charge_count, intensity, mz_centroid, reported_mass });
+=======
+            c.add_charge_state(new List<string> { charge_count, intensity, mz_centroid, reported_mass }, Correction.GetCorrectionFactor(filename, scan_range, corrections));
+>>>>>>> 510389744ba7efd6dc450972c0426a811f0261b4
         }
 
         //[Test]

@@ -62,7 +62,7 @@ namespace ProteoformSuiteInternal
         {
             return from f in all_families
                    from t in f.theoretical_proteoforms
-                   from p in t.proteinList
+                   from p in t.ExpandedProteinList
                    from g in p.GoTerms
                    where go_terms.Contains(g)
                    select f;
@@ -72,7 +72,7 @@ namespace ProteoformSuiteInternal
         {
             return from f in all_families
                    from t in f.theoretical_proteoforms
-                   from p in t.proteinList
+                   from p in t.ExpandedProteinList
                    from g in p.GoTerms
                    where go_terms.Any(selected => selected.Id == g.Id && selected.Description == g.Description && selected.Aspect == g.Aspect)
                    select f;
@@ -104,7 +104,7 @@ namespace ProteoformSuiteInternal
             if (folder_path == "" || !Directory.Exists(folder_path))
                 return "Please choose a folder in which the families will be built, so you can load them into Cytoscape.";
 
-            if (families.Any(f => f.experimental_count == 0 && f.topdown_count == 0))
+            if (families.Any(f => f.experimental_proteoforms.Count == 0 && f.topdown_proteoforms.Count == 0))
                 return "Error: there is a family with zero experimental or top-down proteoforms.";
 
             string nodes_path = Path.Combine(folder_path, file_prefix + node_file_prefix + time_stamp + node_file_extension);
@@ -123,7 +123,7 @@ namespace ProteoformSuiteInternal
             //        else gene_dict.Add(preferred, t.gene_name);
             //    }
 
-            string script = get_script(families.Sum(f => f.proteoforms.Count() + f.relation_count), quantitative, 
+            string script = get_script(families.Sum(f => f.proteoforms.Count() + f.relations.Count), quantitative, 
                 edges_path, nodes_path, styles_path, style_name);
             string node_table = get_cytoscape_nodes_tsv(families, quantitative, color_scheme, node_label, node_label_position, double_rounding, theoreticals, gene_centric_families, preferred_gene_label);
             string edge_table = get_cytoscape_edges_tsv(families, edge_label, node_label, double_rounding, theoreticals, gene_centric_families, preferred_gene_label);
@@ -156,12 +156,18 @@ namespace ProteoformSuiteInternal
 
                 //Load Settings
                 "vizmap load file file=\"" + styles_path + "\"",
-                "command sleep duration=0.5",
-                "vizmap apply styles=\"" + style_name + "\"",
                 "command sleep duration=" + (1.0 + Math.Round((1.0 * sleep_factor), 2)).ToString(),
                 "layout degree-circle",
-                "command sleep duration=" + (1.0 + Math.Round((0.5 * sleep_factor), 2)).ToString(),
-                "view fit content"
+                "command sleep duration=" + (0.5 + Math.Round((0.5 * sleep_factor), 2)).ToString(),
+                "view fit content",
+
+                //Mash applying the style because it flakes out
+                "command sleep duration=1",
+                "vizmap apply styles=\"" + style_name + "\"",
+                "command sleep duration=1",
+                "vizmap apply styles=\"" + style_name + "\"",
+                "command sleep duration=1",
+                "vizmap apply styles=\"" + style_name + "\"",
             });
         }
 
@@ -189,17 +195,20 @@ namespace ProteoformSuiteInternal
             string edge_rows = "";
             foreach (ProteoformRelation r in families.SelectMany(f => f.relations).Distinct())
             {
-                double mass_label = r.peak_center_deltaM;
-                if (r.relation_type == ProteoformComparison.etd || r.relation_type == ProteoformComparison.ttd) mass_label = r.delta_mass;
+                double mass_label = (r.relation_type == ProteoformComparison.ExperimentalTopDown || r.relation_type == ProteoformComparison.TheoreticalTopDown)? r.delta_mass : r.peak.peak_deltaM_average;
                 string delta_mass = Math.Round(mass_label, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
+
                 //if (edge_label == Lollipop.edge_labels[1] && r.represented_modification == null) continue;
+                bool append_ptmlist = r.represented_ptmset != null && (r.relation_type != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.id != "Unmodified");
                 edge_rows += String.Join("\t", new List<string>
                 {
                     get_proteoform_shared_name(r.connected_proteoforms[0], node_label, double_rounding),
                     r.lysine_count.ToString(),
                     get_proteoform_shared_name(r.connected_proteoforms[1], node_label, double_rounding),
                     delta_mass,
-                    edge_label == Lollipop.edge_labels[1] ? (r.represented_modification != null ? delta_mass + " " + r.represented_modification.id : delta_mass) : delta_mass
+                    edge_label == Lollipop.edge_labels[1] && append_ptmlist ?
+                        delta_mass + " " + String.Join("; ", r.represented_ptmset.ptm_combination.Select(ptm => ptm.modification.id)) :
+                        delta_mass
                 });
                 edge_rows += Environment.NewLine;
             }
@@ -274,7 +283,7 @@ namespace ProteoformSuiteInternal
 
             foreach (TheoreticalProteoform p in theoreticals)
             {
-                string node_type = String.Equals(p.ptm_list_string(), "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
+                string node_type = String.Equals(p.ptm_description, "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity }) + Environment.NewLine;
             }
             foreach (TopDownProteoform p in families.SelectMany(f => f.topdown_proteoforms.ToList()))
@@ -296,13 +305,13 @@ namespace ProteoformSuiteInternal
             {
                 ExperimentalProteoform e = (ExperimentalProteoform)p;
                 string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + e.accession;
-                if (node_label == Lollipop.node_labels[1] && e.theoretical_reference != null) name += " " + e.theoretical_reference_accession + " " + (e.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => ptm.modification.id)));
+                if (node_label == Lollipop.node_labels[1] && e.linked_proteoform_references != null && e.linked_proteoform_references.Count > 0) name += " " + (e.linked_proteoform_references.First.Value as TheoreticalProteoform).accession + " " + (e.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => ptm.modification.id)));
                 return name;
             }
 
             else if (typeof(TheoreticalProteoform).IsAssignableFrom(p.GetType()))
             {
-                return p.accession + " " + ((TheoreticalProteoform)p).ptm_list_string();
+                return p.accession + " " + p.ptm_description;
             }
 
             else if (typeof(TopDownProteoform).IsAssignableFrom(p.GetType()))

@@ -1,31 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using ProteoformSuiteInternal;
 using System.Windows.Forms;
-
 
 namespace ProteoformSuiteGUI
 {
     public class RelationUtility
     {
+        public event PeakAcceptabilityChangedEventHandler PeakAcceptabilityChanged;
+
+        public delegate void PeakAcceptabilityChangedEventHandler(object sender, PeakAcceptabilityChangedEventArgs e);
+
         public RelationUtility()
         {
             PeakAcceptabilityChanged += Relation_PeakAcceptabilityChanged;
-        }
-
-        public void clear_lists(List<ProteoformComparison> comparisons)
-        {
-            foreach (ProteoformComparison comparison in comparisons)
-            {
-                foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.relation_type == comparison);
-                foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.relation_type == comparison);
-                Lollipop.proteoform_community.relations_in_peaks.RemoveAll(r => r.relation_type == comparison);
-                Lollipop.proteoform_community.delta_mass_peaks.RemoveAll(k => k.relation_type == comparison);
-                foreach (Proteoform p in Lollipop.proteoform_community.decoy_proteoforms.Values.SelectMany(d => d)) p.relationships.RemoveAll(r => r.relation_type == comparison);
-            }
         }
 
         public Tuple<string, string, string> updateFiguresOfMerit(List<DeltaMassPeak> peaks)
@@ -59,7 +49,6 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        public event PeakAcceptabilityChangedEventHandler PeakAcceptabilityChanged;
 
         public void peak_acceptability_change(DataGridView dgv)
         {
@@ -94,33 +83,4 @@ namespace ProteoformSuiteGUI
             Parallel.ForEach(Lollipop.ee_relations.Where(p => e.Peak.grouped_relations.Contains(p)), pRelation => pRelation.accepted = e.IsPeakAcceptable);
         }
     }
-
-    public class PeakAcceptabilityChangedEventArgs : EventArgs
-    {
-        private bool _isPeakAcceptable;
-        public bool IsPeakAcceptable
-        {
-            get
-            {
-                return this._isPeakAcceptable;
-            }
-        }
-
-        private DeltaMassPeak _Peak;
-        public DeltaMassPeak Peak
-        {
-            get
-            {
-                return this._Peak;
-            }
-        }
-
-        public PeakAcceptabilityChangedEventArgs(bool IsPeakAcceptable, DeltaMassPeak Peak)
-        {
-            this._isPeakAcceptable = IsPeakAcceptable; //True if peak is acceptable
-            this._Peak = Peak;
-        }
-    }
-
-    public delegate void PeakAcceptabilityChangedEventHandler(object sender, PeakAcceptabilityChangedEventArgs e);
 }

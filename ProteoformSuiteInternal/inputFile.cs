@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 
 namespace ProteoformSuiteInternal
 {
     public class InputFile
     {
+
+        #region Private Fields
+
         private static int instanceCounter;
-        //private readonly int instanceId;
+
         private int instanceId;
+
+        #endregion Private Fields
+
+        #region Public Properties
 
         public int UniqueId
         {
@@ -19,17 +21,20 @@ namespace ProteoformSuiteInternal
             set { this.instanceId = value; }
         }
 
+
+        //For all files
         public string complete_path { get; set; }
         public string directory { get; set; }
         public string filename { get; set; }
         public string extension { get; set; }
-        public Purpose purpose { get; set; } //ID, Quant, Calib, Bottom-Up or Top-Down
+        public Purpose purpose { get; set; }
 
 
         //For identification files
         public ComponentReader reader = new ComponentReader();
         public bool matchingCalibrationFile { get; set; } = false;
         public Labeling label { get; set; }
+
 
         // For quantitation files
         public int biological_replicate { get; set; } = 1;
@@ -38,11 +43,16 @@ namespace ProteoformSuiteInternal
         public string lt_condition { get; set; } = "lt_condition";
         public string hv_condition { get; set; } = "hv_condition";
 
+
         //For database files
         public bool ContaminantDB { get; set; } = false;
 
         //For top-down files
         public bool targeted_td_result { get; set; } = false;
+
+        #endregion Public Properties
+
+        #region Public Constructors
 
         public InputFile(string complete_path, Purpose purpose)
         {
@@ -64,6 +74,8 @@ namespace ProteoformSuiteInternal
             this.purpose = purpose;
             this.instanceId = ++instanceCounter;
         }
+
+        #endregion Public Constructors
     }
 
     public enum Purpose
@@ -83,5 +95,5 @@ namespace ProteoformSuiteInternal
     {
         NeuCode,
         Unlabeled
-    }
+    } 
 }

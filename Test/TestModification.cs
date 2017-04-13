@@ -33,20 +33,22 @@ namespace Test
             ptm_data.Add(1, listForPosition1);
             ptm_data.Add(2, listForPosition2);
 
-            PtmCombos ptmCombos = new PtmCombos(ptm_data);
-
-            Assert.AreEqual(4, ptmCombos.all_ptms.Count);
-            Assert.AreEqual(6, ptmCombos.all_ptms.Sum(b => b.position));
+            Dictionary<double, int> fake_ranks = new Dictionary<double, int>
+            {
+                { 1, 1 },
+                { 2, 2 },
+                { 3, 3 },
+                { 4, 4 },
+            };
 
             // With masses 1, 2, 3, 4
-            Assert.AreEqual(1 + 4, ptmCombos.get_combinations(1).Count());
+            Assert.AreEqual(1 + 4, PtmCombos.get_combinations(ptm_data, 1, fake_ranks, 1).Count());
             // With masses 1, 2, 3, 4, 5, 6
-            Assert.AreEqual(1 + 6, ptmCombos.get_combinations(2).Count());
+            Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1).Count());
             // With masses 1, 2, 3, 4, 5, 6
-            Assert.AreEqual(1 + 6, ptmCombos.get_combinations(3).Count());
+            Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1).Count());
             // With masses 1, 2, 3, 4, 5, 6
-            Assert.AreEqual(1 + 6, ptmCombos.get_combinations(4).Count());
-
+            Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 4, fake_ranks, 1).Count());
         }
 
 
@@ -70,15 +72,23 @@ namespace Test
             ptm_data.Add(1, listForPosition1);
             ptm_data.Add(2, listForPosition2);
 
-            PtmCombos ptmCombos = new PtmCombos(ptm_data);
+            //PtmCombos ptmCombos = new PtmCombos(ptm_data);
 
-            Assert.AreEqual(4, ptmCombos.all_ptms.Count);
-            Assert.AreEqual(6, ptmCombos.all_ptms.Select(b => b.position).Sum());
+            //Assert.AreEqual(4, ptmCombos.all_ptms.Count);
+            //Assert.AreEqual(6, ptmCombos.all_ptms.Select(b => b.position).Sum());
 
-            Assert.AreEqual(1 + 4, ptmCombos.get_combinations(1).Count());
-            Assert.AreEqual(1 + 8, ptmCombos.get_combinations(2).Count());
-            Assert.AreEqual(1 + 8, ptmCombos.get_combinations(3).Count());
-            Assert.AreEqual(1 + 8, ptmCombos.get_combinations(4).Count());
+            Dictionary<double, int> fake_ranks = new Dictionary<double, int>
+            {
+                { 1.1, 1 },
+                { 2.01, 2 },
+                { 3.001, 3 },
+                { 4.0001, 4 },
+            };
+
+            Assert.AreEqual(1 + 4, PtmCombos.get_combinations(ptm_data, 1, fake_ranks, 1).Count());
+            Assert.AreEqual(1 + 8, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1).Count());
+            Assert.AreEqual(1 + 8, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1).Count());
+            Assert.AreEqual(1 + 8, PtmCombos.get_combinations(ptm_data, 4, fake_ranks, 1).Count());
 
         }
 
@@ -107,11 +117,19 @@ namespace Test
             ptm_data.Add(4, listForPosition4);
             ptm_data.Add(5, listForPosition5);
 
-            PtmCombos ptmCombos = new PtmCombos(ptm_data);
+            //PtmCombos ptmCombos = new PtmCombos(ptm_data);
 
-            Assert.AreEqual(1 + 2, ptmCombos.get_combinations(1).Count);
-            Assert.AreEqual(1 + 4, ptmCombos.get_combinations(2).Count);
-            Assert.AreEqual(1 + 6, ptmCombos.get_combinations(3).Count);
+            Dictionary<double, int> fake_ranks = new Dictionary<double, int>
+            {
+                { 1, 1 },
+                { 100, 2 },
+                { 3, 3 },
+                { 4, 4 },
+            };
+
+            Assert.AreEqual(1 + 2, PtmCombos.get_combinations(ptm_data, 1, fake_ranks, 1).Count);
+            Assert.AreEqual(1 + 4, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1).Count);
+            Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1).Count);
 
         }
 
@@ -141,14 +159,22 @@ namespace Test
             ptm_data.Add(4, listForPosition4);
             ptm_data.Add(5, listForPosition5);
 
-            PtmCombos ptmCombos = new PtmCombos(ptm_data);
+            //PtmCombos ptmCombos = new PtmCombos(ptm_data);
 
-            Assert.AreEqual(1, ptmCombos.get_combinations(0).Count());
-            Assert.AreEqual(0, ptmCombos.get_combinations(0)[0].mass);
-            Assert.AreEqual(0, ptmCombos.get_combinations(0)[0].ptm_combination.Count());
-            Assert.AreEqual(1 + 3, ptmCombos.get_combinations(1).Count());
-            Assert.AreEqual(1 + 3 + 3, ptmCombos.get_combinations(2).Count());
-            Assert.AreEqual(1 + 3 + 3 + 3, ptmCombos.get_combinations(3).Count());
+            Dictionary<double, int> fake_ranks = new Dictionary<double, int>
+            {
+                { 1, 1 },
+                { 100, 2 },
+                { 200, 3 },
+                { 4, 4 },
+            };
+
+            Assert.AreEqual(1, PtmCombos.get_combinations(ptm_data, 0, fake_ranks, 1).Count());
+            Assert.AreEqual(0, PtmCombos.get_combinations(ptm_data, 0, fake_ranks, 1)[0].mass);
+            Assert.AreEqual(0, PtmCombos.get_combinations(ptm_data, 0, fake_ranks, 1)[0].ptm_combination.Count());
+            Assert.AreEqual(1 + 3, PtmCombos.get_combinations(ptm_data, 1, fake_ranks, 1).Count());
+            Assert.AreEqual(1 + 3 + 3, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1).Count());
+            Assert.AreEqual(1 + 3 + 3 + 3, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1).Count());
         }
     }
 }

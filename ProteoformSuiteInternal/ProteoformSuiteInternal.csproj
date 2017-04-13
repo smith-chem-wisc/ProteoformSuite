@@ -114,6 +114,7 @@
     <Compile Include="BigRational.cs" />
     <Compile Include="BiorepIntensity.cs" />
     <Compile Include="BottomUpReader.cs" />
+    <Compile Include="ChargeState.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Correction.cs" />
     <Compile Include="CytoscapeScript.cs" />
@@ -127,7 +128,6 @@
     <Compile Include="IBiorepable.cs" />
     <Compile Include="InputFile.cs" />
     <Compile Include="Lollipop.cs" />
-    <Compile Include="Modification.cs" />
     <Compile Include="MsScan.cs" />
     <Compile Include="NeuCodePair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -138,7 +138,10 @@
     <Compile Include="ProteoformFamily.cs" />
     <Compile Include="ProteoformRelation.cs" />
     <Compile Include="ProteomeDatabaseReader.cs" />
-    <Compile Include="Psm.cs" />
+    <Compile Include="BottomUpPSM.cs" />
+    <Compile Include="Ptm.cs" />
+    <Compile Include="PtmCombos.cs" />
+    <Compile Include="PtmSet.cs" />
     <Compile Include="RawFileReader.cs" />
     <Compile Include="TopDownReader.cs" />
     <Compile Include="Calibration.cs" />
@@ -156,19 +159,13 @@
     <Content Include="Mods\amino_acids.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Mods\f.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Mods\fattyacids.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Mods\intact_mods.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Mods\missing.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Mods\ptmlist.txt">
+    <Content Include="Mods\variable.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

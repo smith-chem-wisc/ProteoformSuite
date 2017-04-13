@@ -24,8 +24,8 @@ namespace ProteoformSuiteInternal
         }
         public TopDownHit root;
         public List<TopDownHit> topdown_hits;
-        public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.etd).ToList().Count; } }
-        public int ttd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ttd).ToList().Count; } }
+        public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ExperimentalTopDown).ToList().Count; } }
+        public int ttd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.TheoreticalTopDown).ToList().Count; } }
         public bool targeted { get; set; } = false;
         public int observations { get { return topdown_hits.Count; } }
         public int bottom_up_PSMs
@@ -34,7 +34,7 @@ namespace ProteoformSuiteInternal
             {
                 try
                 {
-                    return relationships.Where(r => r.connected_proteoforms.OfType<TheoreticalProteoform>().Count() > 0).Sum(r => r.psm_count_BU);
+                    return relationships.Sum(r => r.connected_proteoforms.OfType<TheoreticalProteoform>().Sum(t => t.psm_list.Count));
                 }
                 catch { return 0; }
             }

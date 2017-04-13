@@ -100,8 +100,8 @@ namespace Test
         public void results_dataframe_with_something()
         {
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
-            e.theoretical_reference = ConstructorsForTesting.make_a_theoretical();
-            e.ptm_set = e.theoretical_reference.ptm_set;
+            e.linked_proteoform_references = new LinkedList<Proteoform>(new List<Proteoform> { ConstructorsForTesting.make_a_theoretical() });
+            e.ptm_set = e.linked_proteoform_references.Last.Value.ptm_set;
             ProteoformFamily f = new ProteoformFamily(e);
             f.construct_family();
             Lollipop.proteoform_community.families = new List<ProteoformFamily> { f };

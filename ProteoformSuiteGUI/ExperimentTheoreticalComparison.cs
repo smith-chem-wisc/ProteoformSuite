@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -28,10 +27,6 @@ namespace ProteoformSuiteGUI
             InitializeParameterSet();
         }
 
-        public void ExperimentTheoreticalComparison_Load(object sender, EventArgs e)
-        {
-        }
-
         public void compare_et()
         {
             if (Lollipop.et_relations.Count == 0 && Lollipop.proteoform_community.has_e_and_t_proteoforms)
@@ -53,7 +48,9 @@ namespace ProteoformSuiteGUI
             }
             ClearListsAndTables();
             this.Cursor = Cursors.WaitCursor;
-            Lollipop.make_et_relationships(Lollipop.proteoform_community);
+            Lollipop.et_relations = Lollipop.proteoform_community.relate(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true);
+            Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
+            Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
             this.FillTablesAndCharts();
             this.Cursor = Cursors.Default;
@@ -64,7 +61,7 @@ namespace ProteoformSuiteGUI
             this.dgv_ET_Peak_List.CurrentCellDirtyStateChanged -= this.ET_Peak_List_DirtyStateChanged;//remove event handler on form load and table refresh event
             FillETPeakListTable();
             FillETRelationsGridView();
-            DisplayUtility.FormatRelationsGridView(dgv_ET_Pairs, true, false);
+            DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Pairs, true, false);
             DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List, false);
             GraphETRelations();
             GraphETPeaks();
@@ -84,12 +81,8 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsAndTables()
         {
-            cb_automate_peak_acceptance.Checked = false;
-            Lollipop.et_relations.Clear();
-            Lollipop.et_peaks.Clear();
-            Lollipop.ed_relations.Clear();
-            Lollipop.proteoform_community.families.Clear();
-            relationUtility.clear_lists(new List<ProteoformComparison>() { ProteoformComparison.et, ProteoformComparison.ed });
+            Lollipop.proteoform_community.clear_et();
+
             foreach (var series in ct_ET_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_ET_peakList.Series) series.Points.Clear();
             dgv_ET_Pairs.DataSource = null;
@@ -100,7 +93,7 @@ namespace ProteoformSuiteGUI
 
         private void FillETRelationsGridView()
         {
-            DisplayUtility.FillDataGridView(dgv_ET_Pairs, Lollipop.et_relations);
+            DisplayUtility.FillDataGridView(dgv_ET_Pairs, Lollipop.et_relations.Select(r => new DisplayProteoformRelation(r)));
         }
         private void FillETPeakListTable()
         {
@@ -410,13 +403,13 @@ namespace ProteoformSuiteGUI
                     for (int i = -1; i <= 1; i++)
                     {
                         //unmodified
-                        if (Math.Abs(peak.peak_center_deltaM + i * Lollipop.MONOISOTOPIC_UNIT_MASS) <= Lollipop.peak_width_base_et / 2)
+                        if (Math.Abs(peak.peak_deltaM_average + i * Lollipop.MONOISOTOPIC_UNIT_MASS) <= Lollipop.peak_width_base_et / 2)
                         {
                             peak.peak_accepted = true;
                             i = 10;
                         }
                         //PTM
-                        else if (Lollipop.uniprotModificationTable.SelectMany(m => m.Value).OfType<ModificationWithMass>().Where(m => Math.Abs(m.monoisotopicMass - (peak.peak_deltaM_average + i * Lollipop.MONOISOTOPIC_UNIT_MASS)) <= Lollipop.peak_width_base_et / 2).Count() > 0)
+                        else if (Lollipop.uniprotModifications.SelectMany(m => m.Value).OfType<ModificationWithMass>().Where(m => Math.Abs(m.monoisotopicMass - (peak.peak_deltaM_average + i * Lollipop.MONOISOTOPIC_UNIT_MASS)) <= Lollipop.peak_width_base_et / 2).Count() > 0)
                         {
                             peak.peak_accepted = true;
                             i = 10;
