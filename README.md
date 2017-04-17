@@ -8,7 +8,7 @@ The software is currently released under the [GNU GPLv3](http://www.gnu.org/lice
 
 Copyright 2016
 # ProteoformSuite
-A integrated proteoform identification, quantification and GO analyis software.
+Software for proteoform identification, quantification and GO analyis.
 
 ## Functionality
 * Proteoform Identification: Proteoform are identified from measurements of intact mass and lysine count.
