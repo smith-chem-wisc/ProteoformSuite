@@ -8,13 +8,14 @@ The software is currently released under the [GNU GPLv3](http://www.gnu.org/lice
 
 Copyright 2016
 # ProteoformSuite
-Software for proteoform identification, quantification and GO analyis.
+Software for proteoform identification, quantification, GO analyis, and facilitation of proteoform family visualization.
 
 ## Functionality
 * Proteoform Identification: Proteoform are identified from measurements of intact mass and lysine count.
 * Custom Database: PTMs archived and UniProt and discovered using [G-PTM-D](https://github.com/smith-chem-wisc/gptmd) or [MetaMopheus](https://github.com/smith-chem-wisc/MetaMorpheus) are used in the construction of theoretical proteoforms.
-* Quantification: NeuCode labeled proteoform intensity ratios are calculated from separate analysis files following proteoform identification.
-* Gene Ontology Analysis: occurs automatically based on experimental proteoforms that are significantly induced or repressed. GO terms are obtained from the UniProt XML database of theoretical proteins.
+* Quantification: NeuCode-labeled proteoform intensity ratios are calculated from separate analysis files following proteoform identification.
+* Gene Ontology Analysis: Performed alongside quantification based on proteoforms that are significantly induced or repressed. GO terms are obtained from UniProt protein annotations.
+* Visualization: ProteoformSuite facilitates the visualization of the relationships between proteoforms by creating scripts to load in the network visualization program Cytoscape. 
 
 ### Requirements
 
@@ -32,12 +33,15 @@ The following files must be obtained and installed:
 
 ### System Requirements and Usage for Release Version
 - 16 GB of RAM is recommended
+- For visualization of proteoform families: Need to have [Cytoscape 3.5.0](http://cytoscape.org/).
+- For visualization of quantitative proteoform families: Need to install enhancedGraphics in Cytoscape using the App Manager under the Tools menu. 
 - For thermo .RAW files: Need to have [Thermo MSFileReader 3.1 SP2](https://thermo.flexnetoperations.com/control/thmo/search?query=MSFileReader) installed.
 
 ### System Requirements for Editing Solution
 - Visual Studio 2017 Version 15.1
 - Microsoft .NET Framework Version 4.6
 - 16 GB of RAM is recommended
+- For visualization of quantitative proteoform families: Need to install enhancedGraphics in Cytoscape using the App Manager under the Tools menu. 
 - For thermo .RAW files: Need to have [Thermo MSFileReader 3.1 SP2](https://thermo.flexnetoperations.com/control/thmo/search?query=MSFileReader) installed.
 
 ### References
