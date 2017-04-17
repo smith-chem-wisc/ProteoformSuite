@@ -53,7 +53,6 @@
             this.cb_view_decoy_histogram = new System.Windows.Forms.CheckBox();
             this.bt_compare_ET = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.cb_automate_peak_acceptance = new System.Windows.Forms.CheckBox();
             this.cb_Graph_lowerThreshold = new System.Windows.Forms.CheckBox();
             this.tb_max_accepted_fdr = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
@@ -321,6 +320,7 @@
             this.cb_TDBUpsm.Text = "Limit to theoreticals with TD or BU PSMs";
             this.cb_TDBUpsm.UseVisualStyleBackColor = true;
             this.cb_TDBUpsm.CheckedChanged += new System.EventHandler(this.cb_TDBUpsm_CheckedChanged);
+            // 
             // cb_view_decoy_histogram
             // 
             this.cb_view_decoy_histogram.AutoSize = true;
@@ -348,7 +348,6 @@
             // groupBox4
             // 
             this.groupBox4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.groupBox4.Controls.Add(this.cb_automate_peak_acceptance);
             this.groupBox4.Controls.Add(this.cb_Graph_lowerThreshold);
             this.groupBox4.Controls.Add(this.tb_max_accepted_fdr);
             this.groupBox4.Controls.Add(this.label9);
@@ -356,7 +355,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(199, 97);
+            this.groupBox4.Location = new System.Drawing.Point(199, 99);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -364,17 +363,6 @@
             this.groupBox4.TabIndex = 15;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "ET Peak List Parameters";
-            // 
-            // cb_automate_peak_acceptance
-            // 
-            this.cb_automate_peak_acceptance.AutoSize = true;
-            this.cb_automate_peak_acceptance.Location = new System.Drawing.Point(0, 57);
-            this.cb_automate_peak_acceptance.Name = "cb_automate_peak_acceptance";
-            this.cb_automate_peak_acceptance.Size = new System.Drawing.Size(237, 17);
-            this.cb_automate_peak_acceptance.TabIndex = 29;
-            this.cb_automate_peak_acceptance.Text = "Automate peak acceptance above threshold";
-            this.cb_automate_peak_acceptance.UseVisualStyleBackColor = true;
-            this.cb_automate_peak_acceptance.CheckedChanged += new System.EventHandler(this.cb_automate_peak_acceptance_CheckedChanged);
             // 
             // cb_Graph_lowerThreshold
             // 
@@ -474,7 +462,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(431, 115);
+            this.groupBox3.Location = new System.Drawing.Point(431, 117);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -547,7 +535,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(431, 202);
+            this.groupBox2.Location = new System.Drawing.Point(431, 204);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -635,7 +623,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(199, 202);
+            this.groupBox1.Location = new System.Drawing.Point(199, 204);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -874,7 +862,6 @@
         private System.Windows.Forms.CheckBox cb_notch_search;
         private System.Windows.Forms.TextBox tb_notch_masses;
         private System.Windows.Forms.CheckBox cb_Graph_lowerThreshold;
-        private System.Windows.Forms.CheckBox cb_automate_peak_acceptance;
         private System.Windows.Forms.DataGridView dgv_ET_Pairs;
         private System.Windows.Forms.CheckBox cb_view_decoy_histogram;
     }

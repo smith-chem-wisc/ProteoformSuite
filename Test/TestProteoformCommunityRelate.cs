@@ -484,24 +484,12 @@ namespace Test
             Assert.AreEqual(1, rel.nearby_relations.Count);  //shows that calculate_unadjusted_group_count works
             //Assert.AreEqual(1, rel.mass_difference_group.Count);  //I don't think we need this test anymore w/ way peaks are made -LVS
             Assert.AreEqual(-1, rel.lysine_count);
-<<<<<<< HEAD
-            Assert.AreEqual("T2", rel.name_2);
-            Assert.AreEqual(0, rel.num_observations_1); //nothing aggregated with the basic constructor
-            Assert.AreEqual(0, rel.num_observations_2);
-            Assert.IsTrue(rel.outside_no_mans_land);
-            Assert.IsNull(rel.peak);
-            Assert.AreEqual(0, rel.proteoform_mass_1);
-            Assert.AreEqual(0, rel.proteoform_mass_2);
-            Assert.True(string.Equals("unmodified", rel.ptm_list_2, StringComparison.CurrentCultureIgnoreCase));
-            Assert.AreEqual(1, rel.nearby_relations_count);
-=======
             Assert.AreEqual("T2", ((TheoreticalProteoform)rel.connected_proteoforms[1]).name);
             Assert.AreEqual(0, ((ExperimentalProteoform)rel.connected_proteoforms[0]).aggregated_components.Count); //nothing aggregated with the basic constructor
             Assert.IsTrue(rel.outside_no_mans_land);
             Assert.IsNull(rel.peak);
             Assert.True(string.Equals("unmodified", ((TheoreticalProteoform)rel.connected_proteoforms[1]).ptm_description, StringComparison.CurrentCultureIgnoreCase));
             Assert.AreEqual(1, rel.nearby_relations.Count);
->>>>>>> 510389744ba7efd6dc450972c0426a811f0261b4
         }
 
         [Test]

@@ -48,7 +48,7 @@ namespace ProteoformSuiteGUI
             }
             ClearListsAndTables();
             this.Cursor = Cursors.WaitCursor;
-            Lollipop.et_relations = Lollipop.proteoform_community.relate(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true);
+            Lollipop.et_relations = Lollipop.proteoform_community.relate(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.limit_theoreticals_to_BU_or_TD_observed? Lollipop.proteoform_community.theoretical_proteoforms.Where(t => t.psm_list.Count > 0 || t.relationships.Count(r => r.relation_type == ProteoformComparison.TheoreticalTopDown) > 0).ToArray() : Lollipop.proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true);
             Lollipop.ed_relations = Lollipop.proteoform_community.relate_ed();
             Lollipop.et_peaks = Lollipop.proteoform_community.accept_deltaMass_peaks(Lollipop.et_relations, Lollipop.ed_relations);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
@@ -325,7 +325,6 @@ namespace ProteoformSuiteGUI
         // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
         {
-            cb_automate_peak_acceptance.Checked = false;
             Lollipop.min_peak_count_et = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
             {
                 Parallel.ForEach(Lollipop.et_peaks, p =>
@@ -350,11 +349,6 @@ namespace ProteoformSuiteGUI
         {
             if (e.Button == MouseButtons.Left)
                 DisplayUtility.tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_Histogram, ct_ET_Histogram_prevPosition);
-        }
-
-        private void cb_TDBUpsm_CheckedChanged(object sender, EventArgs e)
-        {
-            Lollipop.limit_TD_BU_theoreticals = cb_TDBUpsm.Checked;
         }
 
         private void ct_ET_peakList_MouseClick(object sender, MouseEventArgs e)
@@ -394,42 +388,15 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        private void cb_automate_peak_acceptance_CheckedChanged(object sender, EventArgs e)
-        {
-           if (cb_automate_peak_acceptance.Checked)
-            {
-                foreach(DeltaMassPeak peak in Lollipop.et_peaks.Where(p => p.peak_relation_group_count >= Lollipop.min_peak_count_et))
-                {
-                    for (int i = -1; i <= 1; i++)
-                    {
-                        //unmodified
-                        if (Math.Abs(peak.peak_deltaM_average + i * Lollipop.MONOISOTOPIC_UNIT_MASS) <= Lollipop.peak_width_base_et / 2)
-                        {
-                            peak.peak_accepted = true;
-                            i = 10;
-                        }
-                        //PTM
-                        else if (Lollipop.uniprotModifications.SelectMany(m => m.Value).OfType<ModificationWithMass>().Where(m => Math.Abs(m.monoisotopicMass - (peak.peak_deltaM_average + i * Lollipop.MONOISOTOPIC_UNIT_MASS)) <= Lollipop.peak_width_base_et / 2).Count() > 0)
-                        {
-                            peak.peak_accepted = true;
-                            i = 10;
-                        }
-                        else peak.peak_accepted = false;
-                    }
-                        Parallel.ForEach(peak.grouped_relations, r => r.accepted = peak.peak_accepted);
-                }
-                dgv_ET_Peak_List.Refresh();
-            }
-            relationUtility.peak_acceptability_change(dgv_ET_Peak_List);
-            dgv_ET_Pairs.Refresh();
-            dgv_ET_Peak_List.Refresh();
-            relationUtility.updateFiguresOfMerit(Lollipop.et_peaks);
-        }
-
         private void cb_view_decoy_histogram_CheckedChanged(object sender, EventArgs e)
         {
             ct_ET_Histogram.Series["relations"].Enabled = !cb_view_decoy_histogram.Checked;
             ct_ET_Histogram.Series["decoys"].Enabled = cb_view_decoy_histogram.Checked;
+        }
+
+        private void cb_TDBUpsm_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.limit_theoreticals_to_BU_or_TD_observed = cb_TDBUpsm.Checked;
         }
     }
 }

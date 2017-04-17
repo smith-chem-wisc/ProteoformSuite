@@ -72,59 +72,21 @@ namespace ProteoformSuiteInternal
             return count_nearby_relations(relations.ToList());  //putative counts include no-mans land
         }
 
-        //public bool allowed_relation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type)
-        //{
-        //    return pf1.modified_mass >= pf2.modified_mass
-        //        && pf1 != pf2
-        //        && (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
-        //        && allowed_mass_difference(pf1.modified_mass, pf2.modified_mass, ProteoformComparison.ee)
-        //        && Math.Abs(pf1.agg_rt - pf2.agg_rt) < Lollipop.ee_max_RetentionTime_difference;
-
-        //    //where ProteoformRelation.mass_difference_is_outside_no_mans_land(pf1.modified_mass - pf2.modified_mass)
-        //    //putative counts include no-mans land, currently
-        //}
-
-        //public bool allowed_ef_relation(ExperimentalProteoform pf1, ExperimentalProteoform pf2)
-        //{
-        //    return pf1.modified_mass >= pf2.modified_mass
-        //    && pf1 != pf2
-        //    && (!Lollipop.neucode_labeled || pf1.lysine_count != pf2.lysine_count)
-        //    && (Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) > Lollipop.ee_max_RetentionTime_difference * 2)
-        //    && allowed_mass_difference(pf1.modified_mass, pf2.modified_mass, ProteoformComparison.ef)
-        //    && (!Lollipop.neucode_labeled || Math.Abs(pf1.agg_rt - pf2.agg_rt) < Lollipop.ee_max_RetentionTime_difference);
-        //}
-
-        //public bool allowed_mass_difference(double pf1_mass, double pf2_mass, ProteoformComparison comparison)
-        //{
-        //    if (comparison == ProteoformComparison.et || comparison == ProteoformComparison.ed)
-        //    {
-        //        if (Lollipop.notch_search_et)
-        //        {
-        //            foreach (double mass in Lollipop.notch_masses_et)
-        //            {
-        //                if (pf1_mass - pf2_mass <= mass + Lollipop.peak_width_base_et
-        //                && pf1_mass - pf2_mass >= mass - Lollipop.peak_width_base_et) return true;
-        //            }
-        //            return false;
-        //        }
-        //        else
-        //            return (pf1_mass - pf2_mass <= Lollipop.et_high_mass_difference && pf1_mass - pf2_mass >= Lollipop.et_low_mass_difference);
-        //    }
-        //    else
-        //    {
-        //        if (Lollipop.notch_search_ee)
-        //        {
-        //            foreach (double mass in Lollipop.notch_masses_ee)
-        //            {
-        //                if (pf1_mass - pf2_mass <= mass + Lollipop.peak_width_base_ee
-        //                && pf1_mass - pf2_mass >= mass - Lollipop.peak_width_base_ee) return true;
-        //            }
-        //            return false;
-        //        }
-        //        else
-        //            return (pf1_mass - pf2_mass <= Lollipop.ee_max_mass_difference);
-        //    }
-        //}
+        public bool allowed_mass_difference(double pf1_mass, double pf2_mass, ProteoformComparison comparison)
+        {
+            if (((comparison == ProteoformComparison.ExperimentalTheoretical || comparison == ProteoformComparison.ExperimentalDecoy) && Lollipop.notch_search_et)
+                || ((comparison == ProteoformComparison.ExperimentalExperimental || comparison == ProteoformComparison.ExperimentalFalse) && Lollipop.notch_search_ee))
+            {
+                foreach (double mass in (comparison == ProteoformComparison.ExperimentalTheoretical || comparison == ProteoformComparison.ExperimentalDecoy) ? Lollipop.notch_masses_et : Lollipop.notch_masses_ee)
+                {
+                    if (mass - ((comparison == ProteoformComparison.ExperimentalTheoretical || comparison == ProteoformComparison.ExperimentalDecoy) ? Lollipop.peak_width_base_et : Lollipop.peak_width_base_ee) <= pf1_mass - pf2_mass
+                    && mass + ((comparison == ProteoformComparison.ExperimentalTheoretical || comparison == ProteoformComparison.ExperimentalDecoy) ? Lollipop.peak_width_base_et : Lollipop.peak_width_base_ee) >= pf1_mass - pf2_mass) return true;
+                }
+                return false;
+            }
+            else return (pf1_mass - pf2_mass <= ((comparison == ProteoformComparison.ExperimentalTheoretical || comparison == ProteoformComparison.ExperimentalDecoy) ? Lollipop.et_high_mass_difference : Lollipop.ee_max_mass_difference)
+                    && pf1_mass - pf2_mass >= ((comparison == ProteoformComparison.ExperimentalTheoretical || comparison == ProteoformComparison.ExperimentalDecoy) ? Lollipop.et_low_mass_difference : 0));
+        }
 
         public bool allowed_relation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type)
         {
@@ -133,22 +95,20 @@ namespace ProteoformSuiteInternal
                 case (ProteoformComparison.ExperimentalTheoretical):
                 case (ProteoformComparison.ExperimentalDecoy):
                     return (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
-                      //  && (!Lollipop.notch_mass_et || 
-                        && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
-                        && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference
+                        && allowed_mass_difference(pf1.modified_mass, pf2.modified_mass, relation_type)
                         && (pf2.ptm_set.ptm_combination.Count < 3 || pf2.ptm_set.ptm_combination.Select(ptm => ptm.modification.monoisotopicMass).All(x => x == pf2.ptm_set.ptm_combination.First().modification.monoisotopicMass));
 
                 case (ProteoformComparison.ExperimentalExperimental):
                     return pf1.modified_mass >= pf2.modified_mass
                         && pf1 != pf2
                         && (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
-                        && pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference
+                        && allowed_mass_difference(pf1.modified_mass, pf2.modified_mass, relation_type)
                         && Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) <= Lollipop.ee_max_RetentionTime_difference;
 
                 case (ProteoformComparison.ExperimentalFalse):
                     return pf1.modified_mass >= pf2.modified_mass
                         && pf1 != pf2
-                        && (pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference)
+                        && allowed_mass_difference(pf1.modified_mass, pf2.modified_mass, relation_type)
                         && (!Lollipop.neucode_labeled || pf1.lysine_count != pf2.lysine_count)
                         && (Lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) > Lollipop.ee_max_RetentionTime_difference * 2)
                         && (!Lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) < Lollipop.ee_max_RetentionTime_difference);
@@ -171,7 +131,7 @@ namespace ProteoformSuiteInternal
             Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
             Parallel.ForEach(decoy_proteoforms, decoys =>
             {
-                ed_relations[decoys.Key] = relate(experimental_proteoforms, decoys.Value, ProteoformComparison.ExperimentalDecoy, true);
+                ed_relations[decoys.Key] = relate(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.limit_theoreticals_to_BU_or_TD_observed ? decoys.Value.Where(t => t.psm_list.Count > 0 || t.relationships.Count(r => r.relation_type == ProteoformComparison.TheoreticalTopDown) > 0).ToArray() : decoys.Value, ProteoformComparison.ExperimentalDecoy, true);
             });
             return ed_relations;
         }
@@ -252,18 +212,6 @@ namespace ProteoformSuiteInternal
             }
             return td_relations;
         }
-
-    //private bool matching_RT(List<double> rt1s, List<double> rt2s, double tolerance)
-    //{
-    //    foreach (double rt1 in rt1s)
-    //    {
-    //        foreach (double rt2 in rt2s)
-    //        {
-    //            if (Math.Abs(rt1 - rt2) <= tolerance) return true;
-    //        }
-    //    }
-    //    return false;
-    //}
 
 
     //GROUP and ANALYZE RELATIONS

@@ -246,12 +246,13 @@ namespace ProteoformSuiteGUI
 
         private void bt_compare_EE_Click(object sender, EventArgs e)
         {
-            if (Lollipop.proteoform_community.has_e_proteoforms)
+            if (Lollipop.proteoform_community.has_e_proteoforms && Lollipop.all_possible_ptmsets != null)
             {
-                   ClearListsAndTables();
-                    run_the_gamut();
-                    xMaxEE.Value = Convert.ToDecimal(Lollipop.ee_max_mass_difference);
+                ClearListsAndTables();
+                run_the_gamut();
+                xMaxEE.Value = Convert.ToDecimal(Lollipop.ee_max_mass_difference);
             }
+            else if (Lollipop.all_possible_ptmsets == null) MessageBox.Show("Go back and load in theoretical proteoforms (Need a ptm list).");
             else MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
@@ -309,15 +310,11 @@ namespace ProteoformSuiteGUI
             {
                 foreach (DeltaMassPeak peak in Lollipop.ee_peaks.Where(p => p.peak_relation_group_count >= Lollipop.min_peak_count_ee))
                 {
-                    for (int i = -1; i <= 1; i++)
-                    {
-                        if (Lollipop.uniprotModifications.SelectMany(m => m.Value).OfType<ModificationWithMass>().Where(m => Math.Abs(m.monoisotopicMass - (peak.peak_deltaM_average + i * Lollipop.MONOISOTOPIC_UNIT_MASS)) <= Lollipop.peak_width_base_ee / 2).Count() > 0)
+                        if (Lollipop.all_possible_ptmsets.Where(s => s.ptm_combination.Count == 1 || !s.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0)).Where(m => Math.Abs(m.mass - (peak.peak_deltaM_average)) <= Lollipop.peak_width_base_ee / 2).Count() > 0)
                         {
                             peak.peak_accepted = true;
-                            i = 10;
                         }
                         else peak.peak_accepted = false;
-                    }
                     Parallel.ForEach(peak.grouped_relations, r => r.accepted = peak.peak_accepted);
                 }
                 dgv_EE_Peaks.Refresh();
