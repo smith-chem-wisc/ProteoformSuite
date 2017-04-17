@@ -141,7 +141,8 @@ namespace ProteoformSuiteInternal
             {
                 List<ModificationWithMass> mods_in_set = set.ptm_combination.Select(ptm => ptm.modification).ToList();
 
-                int rank_sum = 0;
+                int rank_sum = additional_ptm_penalty * (set.ptm_combination.Count - 1); // penalize additional PTMs
+
                 foreach (ModificationWithMass m in mods_in_set)
                 {
                     if (m.monoisotopicMass == 0)
@@ -185,9 +186,13 @@ namespace ProteoformSuiteInternal
                             Lollipop.modification_ranks[m.monoisotopicMass] :
                             Lollipop.modification_ranks[m.monoisotopicMass] + Lollipop.rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
                 }
-                set.ptm_rank_sum = rank_sum + additional_ptm_penalty * (set.ptm_combination.Count - 1); // penalize additional PTMs
+
                 if (rank_sum <= Lollipop.rank_sum_threshold)
-                    possible_ptmsets.Add(set);
+                {
+                    PtmSet adjusted_ranksum = new PtmSet(set.ptm_combination);
+                    adjusted_ranksum.ptm_rank_sum = rank_sum;
+                    possible_ptmsets.Add(adjusted_ranksum);
+                }
             }
             return possible_ptmsets;
         }

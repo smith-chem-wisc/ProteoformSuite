@@ -231,7 +231,7 @@ namespace Test
                 Lollipop.all_possible_ptmsets.Add(new PtmSet(new List<Ptm> { new Ptm(-1, m) }));
                 Lollipop.modification_ranks.Add(delta_m, 2);
             }
-            Lollipop.make_ptmset_dictionary();
+            Lollipop.possible_ptmset_dictionary = Lollipop.make_ptmset_dictionary();
 
             if (!Lollipop.modification_ranks.TryGetValue(0, out int a))
                 Lollipop.modification_ranks.Add(0, 1);
