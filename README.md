@@ -30,8 +30,14 @@ The following files must be obtained and installed:
 
 * for thermo .RAW files: [Thermo MSFileReader](https://thermo.flexnetoperations.com/control/thmo/search?query=MSFileReader)
 
-### System Requirements and Usage
+### System Requirements and Usage for Release Version
 - X GB of RAM is recommended
+- For thermo .RAW files: Need to have [Thermo MSFileReader 3.1 SP2](https://thermo.flexnetoperations.com/control/thmo/search?query=MSFileReader) installed.
+
+### System Requirements for Editing Solution
+- Visual Studio 2017 Version 15.1
+- Microsoft .NET Framework Version 4.6
+- For thermo .RAW files: Need to have [Thermo MSFileReader 3.1 SP2](https://thermo.flexnetoperations.com/control/thmo/search?query=MSFileReader) installed.
 
 ### References
 
