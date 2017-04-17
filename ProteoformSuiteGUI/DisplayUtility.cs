@@ -79,7 +79,7 @@ namespace ProteoformSuiteGUI
             ct.Series[peak_series].Points.Clear();
             ct.Series[decoy_series].Points.Clear();
             ct.Series[relations_series].Points.Clear();
-
+            if (relations.Count == 0) return;
             double peak_threshold;
             if (typeof(TheoreticalProteoform).IsAssignableFrom(relations[0].connected_proteoforms[1].GetType())) peak_threshold = Lollipop.min_peak_count_et;
             else peak_threshold = Lollipop.min_peak_count_ee;

@@ -844,7 +844,6 @@ namespace ProteoformSuiteInternal
         public static double min_peak_count_ee = 10;
         public static double min_peak_count_et = 10;
         public static int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
-        public static bool limit_TD_BU_theoreticals = false;
         public static List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
         public static List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
         public static Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
@@ -856,6 +855,7 @@ namespace ProteoformSuiteInternal
         public static bool notch_search_ee = false;
         public static List<double> notch_masses_et = new List<double>();
         public static List<double> notch_masses_ee = new List<double>();
+        public static bool limit_theoreticals_to_BU_or_TD_observed = false;
 
         #endregion ET,ED,EE,EF COMPARISONS -- see ProteoformCommunity
 
