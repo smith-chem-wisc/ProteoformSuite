@@ -574,6 +574,16 @@ namespace ProteoformSuiteInternal
                 match_psms_and_theoreticals();   //if BU data loaded in, match PSMs to theoretical accessions
         }
 
+        //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
+        public static void make_ptmset_dictionary()
+        {
+            foreach (PtmSet set in all_possible_ptmsets.Where(s => s.ptm_combination.Count == 1 || !s.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0)))
+            {
+                if (all_possible_ptmset_dictionary.ContainsKey(Convert.ToInt32(set.mass))) all_possible_ptmset_dictionary[Convert.ToInt32(set.mass)].Add(set);
+                else all_possible_ptmset_dictionary.Add(Convert.ToInt32(set.mass), new List<PtmSet> { set });
+            }
+        }
+
         private static void match_psms_and_theoreticals()
         {
             Parallel.ForEach<TheoreticalProteoform>(Lollipop.proteoform_community.theoretical_proteoforms, tp =>

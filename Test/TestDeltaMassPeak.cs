@@ -94,16 +94,10 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.proteoform_community = test_community;
 
-<<<<<<< HEAD
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> {
-                { "unmodified", new List<Modification>() {
-                    new ModificationWithMass("unmodified", new Tuple<string, string>("", ""), null, ModificationSites.K, 0, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "") }
-                }
-=======
+
             Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>>
             {
                 { "unmodified", new List<Modification>() { ConstructorsForTesting.get_modWithMass("unmodified", 0) } }
->>>>>>> 510389744ba7efd6dc450972c0426a811f0261b4
             };
 
             //Testing the acceptance of peaks. The FDR is tested above, so I'm not going to work with that here.
@@ -141,17 +135,9 @@ namespace Test
             Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
             DeltaMassPeak peak = test_community.delta_mass_peaks[0];
             Assert.AreEqual(3, peak.grouped_relations.Count);
-<<<<<<< HEAD
-            Assert.AreEqual(3, pr2.peak_center_count);
-            Assert.AreEqual(0, pr2.peak_center_deltaM);
-            Assert.AreEqual("unmodified", peak.possiblePeakAssignments_string);
-            peak.possiblePeakAssignments.Add(new Modification("unmodified", "unmodified"));
-            Assert.AreEqual("unmodified; unmodified", peak.possiblePeakAssignments_string);
-=======
             Assert.AreEqual(3, pr2.peak.peak_relation_group_count);
             Assert.AreEqual(0, pr2.peak.peak_deltaM_average);
             Assert.AreEqual("[unmodified]", peak.possiblePeakAssignments_string);
->>>>>>> 510389744ba7efd6dc450972c0426a811f0261b4
 
             //Test that the relations in the peak are added to each of the proteoforms referenced in the peak
             Assert.True(pf3.relationships.Contains(pr2));
