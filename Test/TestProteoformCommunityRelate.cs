@@ -229,9 +229,9 @@ namespace Test
                 ModificationWithMass m = ConstructorsForTesting.get_modWithMass("fake" + delta_m.ToString(), delta_m);
                 Lollipop.all_mods_with_mass.Add(m);
                 Lollipop.all_possible_ptmsets.Add(new PtmSet(new List<Ptm> { new Ptm(-1, m) }));
-                Lollipop.make_ptmset_dictionary();
                 Lollipop.modification_ranks.Add(delta_m, 2);
             }
+            Lollipop.make_ptmset_dictionary();
 
             if (!Lollipop.modification_ranks.TryGetValue(0, out int a))
                 Lollipop.modification_ranks.Add(0, 1);
