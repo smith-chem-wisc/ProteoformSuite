@@ -59,18 +59,18 @@ namespace ProteoformSuiteInternal
                 this.lysine_count = pf1.lysine_count;
             }
 
-            outside_no_mans_land =
-            Math.Abs(delta_mass - Math.Truncate(delta_mass)) >= Lollipop.no_mans_land_upperBound ||
-            Math.Abs(delta_mass - Math.Truncate(delta_mass)) <= Lollipop.no_mans_land_lowerBound;
-
-            if (outside_no_mans_land && Lollipop.all_possible_ptmset_dictionary.ContainsKey(Convert.ToInt32(delta_mass)) && (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy))
+            if ((relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy) && Lollipop.all_possible_ptmset_dictionary.ContainsKey(Convert.ToInt32(delta_mass)))
             {
                 TheoreticalProteoform t = pf2 as TheoreticalProteoform;
                 double mass_tolerance = t.modified_mass / 1000000 * (double)Lollipop.mass_tolerance;
-                candidate_ptmset = t.generate_possible_added_ptmsets(Lollipop.all_possible_ptmset_dictionary[Convert.ToInt32(delta_mass)], delta_mass, mass_tolerance, Lollipop.all_mods_with_mass, t, t.sequence, Lollipop.rank_first_quartile)
+                candidate_ptmset = t.generate_possible_added_ptmsets(Lollipop.all_possible_ptmset_dictionary[Convert.ToInt32(delta_mass)].Where(s => Math.Abs(s.mass - delta_mass) < 0.1).ToList(), delta_mass, mass_tolerance, Lollipop.all_mods_with_mass, t, t.sequence, Lollipop.rank_first_quartile)
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(delta_mass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
             }
+
+            outside_no_mans_land =
+                Math.Abs(delta_mass - Math.Truncate(delta_mass)) >= Lollipop.no_mans_land_upperBound ||
+                Math.Abs(delta_mass - Math.Truncate(delta_mass)) <= Lollipop.no_mans_land_lowerBound;
         }
 
 

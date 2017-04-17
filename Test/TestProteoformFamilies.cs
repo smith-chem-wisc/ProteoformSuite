@@ -14,11 +14,8 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-<<<<<<< HEAD
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unmodified") } } };
-=======
+
             Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
->>>>>>> 510389744ba7efd6dc450972c0426a811f0261b4
 
             //One accepted ET relation; should give one ProteoformFamily
             Lollipop.min_peak_count_et = 1;
@@ -52,11 +49,8 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.proteoform_community = test_community;
 
-<<<<<<< HEAD
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unmodified") } } };
-=======
+
             Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
->>>>>>> 510389744ba7efd6dc450972c0426a811f0261b4
 
             Lollipop.min_peak_count_ee = 2;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
@@ -98,11 +92,7 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             Lollipop.proteoform_community = test_community;
 
-<<<<<<< HEAD
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unmodified") } } };
-=======
             Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
->>>>>>> 510389744ba7efd6dc450972c0426a811f0261b4
 
             Lollipop.ee_max_mass_difference = 20;
             Lollipop.peak_width_base_ee = 0.015;
@@ -152,11 +142,7 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET_with_theoretical_pf_group()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-<<<<<<< HEAD
-            Lollipop.uniprotModificationTable = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unmodified") } } };
-=======
             Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
->>>>>>> 510389744ba7efd6dc450972c0426a811f0261b4
 
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "name", "full_name", true, false, new List<DatabaseReference>(), new List<GoTerm>());
@@ -203,17 +189,14 @@ namespace Test
             Lollipop.proteoform_community = community;
             Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>>
             {
-<<<<<<< HEAD
-                { "unmodified", new List<Modification> { new Modification("unmodified", "unmodified") } },
-=======
                 { "unmodified", new List<Modification> { ConstructorsForTesting.get_modWithMass("unmodified", 0) } },
->>>>>>> 510389744ba7efd6dc450972c0426a811f0261b4
                 { "fake", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake", 19) } },
             };
 
             Lollipop.modification_ranks = new Dictionary<double, int> { { 0, 1 }, { 19, 2 } };
             Lollipop.rank_sum_threshold = 2;
             Lollipop.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, Lollipop.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList(), Lollipop.modification_ranks, 1);
+            Lollipop.make_ptmset_dictionary();
             Lollipop.all_mods_with_mass = Lollipop.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
 
             Lollipop.ee_max_mass_difference = 20;

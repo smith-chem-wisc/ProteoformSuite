@@ -36,33 +36,33 @@ namespace ProteoformSuiteInternal
             if (accepted_only && (relation_type == ProteoformComparison.ExperimentalExperimental || relation_type == ProteoformComparison.ExperimentalFalse))
                 pfs2 = pfs2.OfType<ExperimentalProteoform>().Where(pf2 => pf2.accepted).ToArray();
 
-            Parallel.ForEach(pfs1, pf1 =>
-            {
-                lock (pf1)
+                Parallel.ForEach(pfs1, pf1 =>
                 {
-                    pf1.candidate_relatives = pfs2.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList();
-
-                    if (relation_type == ProteoformComparison.ExperimentalExperimental)
+                    lock (pf1)
                     {
-                        pf1.ptm_set = null;
-                        pf1.linked_proteoform_references = null;
-                        pf1.gene_name = null;
-                    }
+                        pf1.candidate_relatives = pfs2.Where(pf2 => allowed_relation(pf1, pf2, relation_type)).ToList();
 
-                    if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
-                    {
-                        ProteoformRelation best_relation = pf1.candidate_relatives
-                            .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass))
-                            .Where(r => r.candidate_ptmset != null) // don't consider unassignable relations for ET
-                            .OrderBy(r => r.candidate_ptmset.ptm_rank_sum) // get the best explanation for the experimental observation
-                            .FirstOrDefault();
+                        if (relation_type == ProteoformComparison.ExperimentalExperimental)
+                        {
+                            pf1.ptm_set = null;
+                            pf1.linked_proteoform_references = null;
+                            pf1.gene_name = null;
+                        }
 
-                        pf1.candidate_relatives = best_relation != null ?
-                            new List<Proteoform> { best_relation.connected_proteoforms[1] } : 
-                            new List<Proteoform>();
+                        if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
+                        {
+                            ProteoformRelation best_relation = pf1.candidate_relatives
+                                .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass))
+                                .Where(r => r.candidate_ptmset != null) // don't consider unassignable relations for ET
+                                .OrderBy(r => r.candidate_ptmset.ptm_rank_sum) // get the best explanation for the experimental observation
+                                .FirstOrDefault();
+
+                            pf1.candidate_relatives = best_relation != null ?
+                                new List<Proteoform> { best_relation.connected_proteoforms[1] } :
+                                new List<Proteoform>();
+                        }
                     }
-                }
-            });
+                });
 
             IEnumerable<ProteoformRelation> relations =
                 (from pf1 in pfs1
@@ -131,7 +131,7 @@ namespace ProteoformSuiteInternal
             Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
             Parallel.ForEach(decoy_proteoforms, decoys =>
             {
-                ed_relations[decoys.Key] = relate(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.limit_theoreticals_to_BU_or_TD_observed ? decoys.Value.Where(t => t.psm_list.Count > 0 || t.relationships.Count(r => r.relation_type == ProteoformComparison.TheoreticalTopDown) > 0).ToArray() : decoys.Value, ProteoformComparison.ExperimentalDecoy, true);
+                ed_relations[decoys.Key] = relate(experimental_proteoforms, Lollipop.limit_theoreticals_to_BU_or_TD_observed ? decoys.Value.Where(t => t.psm_list.Count > 0 || t.relationships.Count(r => r.relation_type == ProteoformComparison.TheoreticalTopDown) > 0).ToArray() : decoys.Value, ProteoformComparison.ExperimentalDecoy, true);
             });
             return ed_relations;
         }

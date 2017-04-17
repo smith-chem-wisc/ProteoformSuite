@@ -233,6 +233,8 @@ namespace Test
                 Lollipop.modification_ranks.Add(delta_m, 2);
             }
 
+            Lollipop.make_ptmset_dictionary();
+
             if (!Lollipop.modification_ranks.TryGetValue(0, out int a))
                 Lollipop.modification_ranks.Add(0, 1);
 
@@ -466,7 +468,6 @@ namespace Test
 
             Assert.IsEmpty(testProteoformCommunity.experimental_proteoforms);
             testProteoformCommunity.experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
-
             prepare_for_et(new List<double> { pf1.modified_mass - pf2.modified_mass });
             edDictionary = testProteoformCommunity.relate_ed();
 
