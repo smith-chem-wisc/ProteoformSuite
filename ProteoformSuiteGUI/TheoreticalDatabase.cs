@@ -210,6 +210,12 @@ namespace ProteoformSuiteGUI
         private void dgv_loadFiles_DragDrop(object sender, DragEventArgs e)
         {
             drag_drop(e, cmb_loadTable, dgv_loadFiles);
+            set_Make_Database_Button();
+        }
+
+        private void dgv_loadFiles_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.All;
         }
 
         private void drag_drop(DragEventArgs e, ComboBox cmb, DataGridView dgv)
