@@ -482,13 +482,15 @@ namespace ProteoformSuiteInternal
 
             foreach (string filename in Directory.GetFiles(Path.Combine(current_directory, "Mods")))
             {
-                all_known_modifications.AddRange(PtmListLoader.ReadModsFromFile(filename));
+                IEnumerable<ModificationWithLocation> new_mods = !filename.EndsWith("variable.txt") || methionine_oxidation ?
+                    PtmListLoader.ReadModsFromFile(filename) :
+                    new List<ModificationWithLocation>(); // Empty variable modifications if not selected
+                if (filename.EndsWith("variable.txt")) variableModifications = new_mods.OfType<ModificationWithMass>().ToList();
+                all_known_modifications.AddRange(new_mods);
             }
 
             all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
             uniprotModifications = read_mods(all_known_modifications);
-            if (methionine_oxidation)
-                variableModifications = PtmListLoader.ReadModsFromFile(Path.Combine(new string[] { current_directory, "Mods", "variable.txt" })).OfType<ModificationWithMass>().ToList();
             all_mods_with_mass = uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().Concat(variableModifications).ToList();
 
             modification_ranks = rank_mods(theoretical_proteins, variableModifications);
