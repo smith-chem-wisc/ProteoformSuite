@@ -182,7 +182,9 @@ namespace ProteoformSuiteGUI
                     }
                     peak.shift_experimental_masses(int_mass_shifter, Lollipop.neucode_labeled);
                 }
+                ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsAndTables();
                 Lollipop.regroup_components(Lollipop.neucode_labeled, Lollipop.validate_proteoforms, Lollipop.input_files, Lollipop.raw_neucode_pairs, Lollipop.raw_experimental_components, Lollipop.raw_quantification_components, Lollipop.min_num_CS);
+
             }
         }
 
