@@ -452,6 +452,7 @@ namespace ProteoformSuiteInternal
         public static Dictionary<string, IList<Modification>> uniprotModifications = new Dictionary<string, IList<Modification>>();
         public static List<ModificationWithMass> variableModifications = new List<ModificationWithMass>();
         public static List<PtmSet> all_possible_ptmsets;
+        public static Dictionary<int, List<PtmSet>> all_possible_ptmset_dictionary = new Dictionary<int, List<PtmSet>>();
         public static List<ModificationWithMass> all_mods_with_mass = new List<ModificationWithMass>();
         public static Dictionary<double, int> modification_ranks = new Dictionary<double, int>();
         public static int rank_sum_threshold = 0; // set to the maximum rank of any single modification
@@ -513,6 +514,10 @@ namespace ProteoformSuiteInternal
                     }, modification_ranks, rank_first_quartile / 2)));
             }
 
+            //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
+            if (all_possible_ptmset_dictionary.Count == 0) make_ptmset_dictionary();
+
+
             expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
             aaIsotopeMassList = new AminoAcidMasses(carbamidomethylation, natural_lysine_isotope_abundance, neucode_light_lysine, neucode_heavy_lysine).AA_Masses;
             if (combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
@@ -526,6 +531,16 @@ namespace ProteoformSuiteInternal
             {
                 proteoform_community.theoretical_proteoforms = group_proteoforms_by_mass(proteoform_community.theoretical_proteoforms);
                 proteoform_community.decoy_proteoforms = proteoform_community.decoy_proteoforms.ToDictionary(kv => kv.Key, kv => group_proteoforms_by_mass(kv.Value) as TheoreticalProteoform[]);
+            }
+        }
+
+        //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
+        public static void make_ptmset_dictionary()
+        {
+            foreach (PtmSet set in all_possible_ptmsets.Where(s => s.ptm_combination.Count == 1 || !s.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0)))
+            {
+                if (all_possible_ptmset_dictionary.ContainsKey(Convert.ToInt32(set.mass))) all_possible_ptmset_dictionary[Convert.ToInt32(set.mass)].Add(set);
+                else all_possible_ptmset_dictionary.Add(Convert.ToInt32(set.mass), new List<PtmSet> { set });
             }
         }
 
