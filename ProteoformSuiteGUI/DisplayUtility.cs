@@ -149,7 +149,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(DeltaMassPeak.peak_deltaM_average)].HeaderText = "Peak Center Delta Mass";
             dgv.Columns[nameof(DeltaMassPeak.peak_group_fdr)].HeaderText = "Peak FDR";
             dgv.Columns[nameof(DeltaMassPeak.peak_accepted)].HeaderText = "Peak Accepted";
-            dgv.Columns[nameof(DeltaMassPeak.possiblePeakAssignments_string)].HeaderText = "Peak Assignment";
+            dgv.Columns[nameof(DeltaMassPeak.possiblePeakAssignments_string)].HeaderText = "Peak Assignment Possibilites";
 
             dgv.Columns[nameof(DeltaMassPeak.peak_relation_group_count)].Visible = true;
             //dgv.Columns[nameof(DeltaMassPeak.decoy_relation_count)].Visible = true;
