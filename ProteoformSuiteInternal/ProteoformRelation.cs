@@ -24,12 +24,19 @@ namespace ProteoformSuiteInternal
     //referring to an individual value. 
     public class ProteoformRelation
     {
+
+        #region Fields
+
         private static int instanceCounter = 0;
         public int instanceId;
         public Proteoform[] connected_proteoforms = new Proteoform[2];
         public ProteoformComparison relation_type;
-        public double delta_mass { get; set; }
 
+        #endregion Fields
+
+        #region Public Properties
+
+        public double delta_mass { get; set; }
         public DeltaMassPeak peak { get; set; }
         public List<ProteoformRelation> nearby_relations { get; set; } // count is the "running sum"
         public bool outside_no_mans_land { get; set; }
@@ -43,7 +50,11 @@ namespace ProteoformSuiteInternal
         /// </summary>
         public bool accepted { get; set; }
 
-        public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass) 
+        #endregion Public Properties
+
+        #region Public Constructors
+
+        public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass)
         {
             this.connected_proteoforms[0] = pf1;
             this.connected_proteoforms[1] = pf2;
@@ -54,24 +65,26 @@ namespace ProteoformSuiteInternal
 
             if (Lollipop.neucode_labeled)
             {
-                this.lysine_count = pf1.lysine_count;
+                lysine_count = pf1.lysine_count;
             }
 
-            if ((relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy) && Lollipop.possible_ptmset_dictionary.ContainsKey(Math.Round(delta_mass, 1)))
+            if ((relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy) 
+                && Lollipop.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out List<PtmSet> candidate_sets))
             {
                 TheoreticalProteoform t = pf2 as TheoreticalProteoform;
                 double mass_tolerance = t.modified_mass / 1000000 * (double)Lollipop.mass_tolerance;
-                candidate_ptmset = t.generate_possible_added_ptmsets(Lollipop.possible_ptmset_dictionary[Math.Round(delta_mass, 1)].Where(s => Math.Abs(s.mass - delta_mass) < 0.1).ToList(), delta_mass, mass_tolerance, Lollipop.all_mods_with_mass, t, t.sequence, Lollipop.rank_first_quartile)
+                List<PtmSet> narrower_range_of_candidates = candidate_sets.Where(s => Math.Abs(s.mass - delta_mass) < 0.1).ToList();
+                candidate_ptmset = t.generate_possible_added_ptmsets(narrower_range_of_candidates, delta_mass, mass_tolerance, Lollipop.all_mods_with_mass, t, t.sequence, Lollipop.rank_first_quartile)
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(delta_mass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
             }
 
-            outside_no_mans_land = 
-                Math.Abs(delta_mass - Math.Truncate(delta_mass)) >= Lollipop.no_mans_land_upperBound || 
+            outside_no_mans_land =
+                Math.Abs(delta_mass - Math.Truncate(delta_mass)) >= Lollipop.no_mans_land_upperBound ||
                 Math.Abs(delta_mass - Math.Truncate(delta_mass)) <= Lollipop.no_mans_land_lowerBound;
         }
 
-        public ProteoformRelation(ProteoformRelation relation) 
+        public ProteoformRelation(ProteoformRelation relation)
         {
             connected_proteoforms = relation.connected_proteoforms.ToArray();
             relation_type = relation.relation_type;
@@ -84,14 +97,18 @@ namespace ProteoformSuiteInternal
             nearby_relations = relation.nearby_relations;
         }
 
+        #endregion Public Constructors
+
+        #region Public Methods
+
         public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_ordered_relations, List<int> ordered_relation_ids)
         {
-            double peak_width_base = typeof(TheoreticalProteoform).IsAssignableFrom(all_ordered_relations[0].connected_proteoforms[1].GetType()) ? 
+            double peak_width_base = typeof(TheoreticalProteoform).IsAssignableFrom(all_ordered_relations[0].connected_proteoforms[1].GetType()) ?
                 Lollipop.peak_width_base_et :
                 Lollipop.peak_width_base_ee;
-            double lower_limit_of_peak_width = this.delta_mass - peak_width_base / 2;
-            double upper_limit_of_peak_width = this.delta_mass + peak_width_base / 2;
-            int idx = ordered_relation_ids.IndexOf(this.instanceId);
+            double lower_limit_of_peak_width = delta_mass - peak_width_base / 2;
+            double upper_limit_of_peak_width = delta_mass + peak_width_base / 2;
+            int idx = ordered_relation_ids.IndexOf(instanceId);
             List<ProteoformRelation> within_range = new List<ProteoformRelation> { this };
             int curr_idx = idx - 1;
             while (curr_idx >= 0 && lower_limit_of_peak_width <= all_ordered_relations[curr_idx].delta_mass)
@@ -106,23 +123,16 @@ namespace ProteoformSuiteInternal
                 curr_idx++;
             }
             lock (this) nearby_relations = within_range;
-            return this.nearby_relations;
+            return nearby_relations;
         }
 
         public void generate_peak()
         {
             new DeltaMassPeak(this, Lollipop.proteoform_community.remaining_relations_outside_no_mans); //setting the peak takes place elsewhere, but this constructs it
-            if (connected_proteoforms[1] is TheoreticalProteoform && Lollipop.ed_relations.Count > 0) this.peak.calculate_fdr(Lollipop.ed_relations);
-            else if (connected_proteoforms[1] is ExperimentalProteoform && Lollipop.ef_relations.Count > 0) this.peak.calculate_fdr(Lollipop.ef_relations);
-        }
-
-        public override bool Equals(object obj)
-        {
-            ProteoformRelation r2 = obj as ProteoformRelation; 
-            return r2 != null && 
-                (this.instanceId == r2.instanceId ||
-                this.connected_proteoforms[0] == r2.connected_proteoforms[1] && this.connected_proteoforms[1] == r2.connected_proteoforms[0] ||
-                this.connected_proteoforms[0] == r2.connected_proteoforms[0] && this.connected_proteoforms[1] == r2.connected_proteoforms[1]);
+            if (connected_proteoforms[1] as TheoreticalProteoform != null && Lollipop.ed_relations.Count > 0)
+                peak.calculate_fdr(Lollipop.ed_relations);
+            else if (connected_proteoforms[1] as ExperimentalProteoform != null && Lollipop.ef_relations.Count > 0)
+                peak.calculate_fdr(Lollipop.ef_relations);
         }
 
         public IEnumerable<PtmSet> nearestPTMs(double dMass, ProteoformComparison relation_type)
@@ -138,9 +148,21 @@ namespace ProteoformSuiteInternal
             }
         }
 
+        public override bool Equals(object obj)
+        {
+            ProteoformRelation r2 = obj as ProteoformRelation;
+            return r2 != null &&
+                (instanceId == r2.instanceId ||
+                connected_proteoforms[0] == r2.connected_proteoforms[1] && connected_proteoforms[1] == r2.connected_proteoforms[0] ||
+                connected_proteoforms[0] == r2.connected_proteoforms[0] && connected_proteoforms[1] == r2.connected_proteoforms[1]);
+        }
+
         public override int GetHashCode()
         {
             return connected_proteoforms[0].GetHashCode() ^ connected_proteoforms[1].GetHashCode();
         }
+
+        #endregion Public Methods
+
     }
 }
