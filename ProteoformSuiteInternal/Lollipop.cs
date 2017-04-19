@@ -471,7 +471,7 @@ namespace ProteoformSuiteInternal
             //Read the UniProt-XML and ptmlist
             Loaders.LoadElements(Path.Combine(current_directory, "elements.dat"));
             List<ModificationWithLocation> all_known_modifications = get_files(input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
-            uniprotModifications = read_mods(all_known_modifications);
+            uniprotModifications = make_modification_dictionary(all_known_modifications);
 
             Dictionary<string, Modification> um;
             Parallel.ForEach(get_files(input_files, Purpose.ProteinDatabase).ToList(), database =>
@@ -490,39 +490,29 @@ namespace ProteoformSuiteInternal
             }
 
             all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
-            uniprotModifications = read_mods(all_known_modifications);
+            uniprotModifications = make_modification_dictionary(all_known_modifications);
             all_mods_with_mass = uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().Concat(variableModifications).ToList();
 
-            modification_ranks = rank_mods(theoretical_proteins, variableModifications);
+            modification_ranks = rank_mods(theoretical_proteins, variableModifications, all_mods_with_mass);
             
-            foreach (ModificationWithMass m in all_mods_with_mass)
-            {
-                if (!modification_ranks.TryGetValue(m.monoisotopicMass, out int a))
-                    modification_ranks.Add(m.monoisotopicMass, rank_sum_threshold);
-            }
-
             // Generate all ptm sets if not done already
             if (all_possible_ptmsets == null)
             {
-                //Generate all two-member sets and all three-member sets of the same modification (three-member combinitorics gets out of hand for assignment)
-                all_possible_ptmsets = PtmCombos.generate_all_ptmsets(2, all_mods_with_mass, modification_ranks, rank_first_quartile / 2).ToList();
-                all_possible_ptmsets.AddRange(all_mods_with_mass.Select(m =>
-                    new PtmSet(new List<Ptm> {
-                        new Ptm(-1, m),
-                        new Ptm(-1, m),
-                        new Ptm(-1, m)
-                    }, modification_ranks, rank_first_quartile / 2)));
+                //Generate all two-member sets and all three-member (or greater) sets of the same modification (three-member combinitorics gets out of hand for assignment)
+                all_possible_ptmsets = PtmCombos.generate_all_ptmsets(Math.Min(2, max_ptms), all_mods_with_mass, modification_ranks, rank_first_quartile / 2).ToList();
+                for (int i = 3; i < max_ptms + 1; i++)
+                {
+                    all_possible_ptmsets.AddRange(all_mods_with_mass.Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), modification_ranks, rank_first_quartile / 2)));
+                }
             }
 
             //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
-            if (possible_ptmset_dictionary.Count == 0) make_ptmset_dictionary();
-
+            if (possible_ptmset_dictionary.Count == 0) possible_ptmset_dictionary = make_ptmset_dictionary();
 
             expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
             aaIsotopeMassList = new AminoAcidMasses(carbamidomethylation, natural_lysine_isotope_abundance, neucode_light_lysine, neucode_heavy_lysine).AA_Masses;
             if (combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
 
-            //PARALLEL PROBLEM
             expanded_proteins = expanded_proteins.OrderBy(x => x.OneBasedPossibleLocalizedModifications.Count).ToArray(); // Take on harder problems first to use parallelization more effectively
             process_entries(expanded_proteins, variableModifications);
             process_decoys(expanded_proteins, variableModifications);
@@ -535,34 +525,33 @@ namespace ProteoformSuiteInternal
         }
 
         //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
-        public static void make_ptmset_dictionary()
+        public static Dictionary<double, List<PtmSet>> make_ptmset_dictionary()
         {
-            foreach (PtmSet set in all_possible_ptmsets.Where(s => s.ptm_combination.Count == 1 || !s.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0)))
+            Dictionary<double, List<PtmSet>> possible_ptmsets = new Dictionary<double, List<PtmSet>>();
+            foreach (PtmSet set in all_possible_ptmsets.Where(s => s.ptm_combination.Count == 1 || !s.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0)).ToList())
             {
                 for (int i = 0; i < 10; i++)
                 {
                     double midpoint = Math.Round(set.mass, 1) - 0.5 + i * 0.1;
-                    if (possible_ptmset_dictionary.ContainsKey(midpoint)) possible_ptmset_dictionary[midpoint].Add(set);
-                    else possible_ptmset_dictionary.Add(midpoint, new List<PtmSet> { set });
+                    if (possible_ptmsets.TryGetValue(midpoint, out List<PtmSet> a)) a.Add(set);
+                    else possible_ptmsets.Add(midpoint, new List<PtmSet> { set });
                 }
             }
+            return possible_ptmsets;
         }
 
-        public static Dictionary<string, IList<Modification>> read_mods(IEnumerable<ModificationWithLocation> all_modifications)
+        public static Dictionary<string, IList<Modification>> make_modification_dictionary(IEnumerable<ModificationWithLocation> all_modifications)
         {
             Dictionary<string, IList<Modification>> mod_dict = new Dictionary<string, IList<Modification>>();
             foreach (var nice in all_modifications)
             {
-                IList<Modification> val;
-                if (mod_dict.TryGetValue(nice.id, out val))
-                    val.Add(nice);
-                else
-                    mod_dict.Add(nice.id, new List<Modification> { nice });
+                if (mod_dict.TryGetValue(nice.id, out IList<Modification> val)) val.Add(nice);
+                else mod_dict.Add(nice.id, new List<Modification> { nice });
             }
             return mod_dict;
         }
 
-        public static Dictionary<double, int> rank_mods(Dictionary<InputFile, Protein[]> theoretical_proteins, IEnumerable<ModificationWithMass> variableModifications)
+        public static Dictionary<double, int> rank_mods(Dictionary<InputFile, Protein[]> theoretical_proteins, IEnumerable<ModificationWithMass> variable_modifications, IEnumerable<ModificationWithMass> all_mods_with_mass)
         {
             Dictionary<double, int> mod_counts = new Dictionary<double, int>();
 
@@ -584,13 +573,11 @@ namespace ProteoformSuiteInternal
             }
 
             //Give unmodified the best rank
-            if (!mod_ranks.TryGetValue(0, out int a))
-                mod_ranks.Add(0, 0);
-            else
-                mod_ranks[0] = 0;
+            if (!mod_ranks.TryGetValue(0, out int a)) mod_ranks.Add(0, 0);
+            else mod_ranks[0] = 0;
 
             //Give variable mods a good score
-            foreach (ModificationWithMass m in variableModifications)
+            foreach (ModificationWithMass m in variable_modifications)
             {
                 if (!mod_ranks.TryGetValue(m.monoisotopicMass, out int b)) mod_ranks.Add(m.monoisotopicMass, 2);
                 else mod_ranks[m.monoisotopicMass] = 2;
@@ -601,6 +588,13 @@ namespace ProteoformSuiteInternal
             rank_second_quartile = ranks[2 * ranks.Count / 4];
             rank_third_quartile = ranks[3 * ranks.Count / 4];
             rank_sum_threshold = ranks.Max();
+
+            //Give the remaining mods the threshold value
+            foreach (ModificationWithMass m in all_mods_with_mass)
+            {
+                if (!mod_ranks.TryGetValue(m.monoisotopicMass, out int lkj))
+                    mod_ranks.Add(m.monoisotopicMass, rank_sum_threshold);
+            }
 
             return mod_ranks;
         }

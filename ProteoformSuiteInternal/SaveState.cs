@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using System.Reflection;
@@ -13,9 +11,9 @@ namespace ProteoformSuiteInternal
 {
     public class SaveState
     {
-        public static Lollipop default_settings = new Lollipop();
 
-        //BASICS FOR XML WRITING
+        #region BASICS FOR XML WRITING
+
         public static XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
         {
             Indent = true,
@@ -47,7 +45,10 @@ namespace ProteoformSuiteInternal
             return attribute == null ? "" : attribute.Value;
         }
 
-        //METHOD SAVE/LOAD
+        #endregion BASICS FOR XML WRITING
+
+        #region METHOD SAVE/LOAD
+
         public static StringBuilder save_method(StringBuilder builder)
         {
             using (XmlWriter writer = XmlWriter.Create(builder, xmlWriterSettings))
@@ -67,6 +68,9 @@ namespace ProteoformSuiteInternal
         {
             //Gather field type, name, values that are not constants, which are literal, i.e. set at compile time
             //Note that fields do not have {get;set;} methods, where Properties do.
+
+            Lollipop default_settings = new Lollipop();
+
             foreach (FieldInfo field in typeof(Lollipop).GetFields().Where(f => !f.IsLiteral))
             {
                 if (field.FieldType == typeof(int) ||
@@ -111,9 +115,13 @@ namespace ProteoformSuiteInternal
                 lollipop_fields.FirstOrDefault(p => p.Name == name).SetValue(null, Convert.ChangeType(value, type));
             }
         }
+
         public static void open_method(string[] lines)
         {
             open_method(String.Join(Environment.NewLine, lines));
         }
+
+        #endregion METHOD SAVE/LOAD
+
     }
 }
