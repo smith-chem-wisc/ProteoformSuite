@@ -231,6 +231,8 @@ namespace ProteoformSuiteInternal
         public List<BiorepIntensity> make_biorepIntensityList<T>(List<T> lt_quant_components, List<T> hv_quant_components, IEnumerable<string> ltConditionStrings, IEnumerable<string> hvConditionStrings)
             where T : IBiorepable
         {
+            quant = new quantitativeValues(this); //Reset quantitation if starting over from biorep requirements
+
             List<BiorepIntensity> biorepIntensityList = new List<BiorepIntensity>();
             //foreach (string condition in Lollipop.ltConditionsBioReps.Keys)
             foreach (string condition in ltConditionStrings)
