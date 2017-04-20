@@ -6,6 +6,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Reflection;
 using System.IO;
+using NetSerializer;
 
 namespace ProteoformSuiteInternal
 {
@@ -59,6 +60,7 @@ namespace ProteoformSuiteInternal
             }
             return builder;
         }
+
         public static StringBuilder save_method()
         {
             return save_method(new StringBuilder());
@@ -68,8 +70,6 @@ namespace ProteoformSuiteInternal
         {
             //Gather field type, name, values that are not constants, which are literal, i.e. set at compile time
             //Note that fields do not have {get;set;} methods, where Properties do.
-
-            Lollipop default_settings = new Lollipop();
 
             foreach (FieldInfo field in typeof(Lollipop).GetFields().Where(f => !f.IsLiteral))
             {
@@ -82,7 +82,6 @@ namespace ProteoformSuiteInternal
                     writer.WriteStartElement("setting");
                     writer.WriteAttributeString("field_type", field.FieldType.FullName);
                     writer.WriteAttributeString("field_name", field.Name);
-                    writer.WriteAttributeString("field_default", field.GetValue(default_settings).ToString());
                     writer.WriteAttributeString("field_value", field.GetValue(null).ToString());
                     writer.WriteEndElement();
                 }
