@@ -32,11 +32,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openCurrentPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveCurrentPageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAllToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exportTablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -86,69 +82,38 @@
             // 
             // openToolStripMenuItem
             // 
-            this.openToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.openCurrentPageToolStripMenuItem,
-            this.openAllToolStripMenuItem});
             this.openToolStripMenuItem.Enabled = false;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.openToolStripMenuItem.Text = "Open";
-            // 
-            // openCurrentPageToolStripMenuItem
-            // 
-            this.openCurrentPageToolStripMenuItem.Enabled = false;
-            this.openCurrentPageToolStripMenuItem.Name = "openCurrentPageToolStripMenuItem";
-            this.openCurrentPageToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.openCurrentPageToolStripMenuItem.Text = "Open Current Page";
-            // 
-            // openAllToolStripMenuItem
-            // 
-            this.openAllToolStripMenuItem.Enabled = false;
-            this.openAllToolStripMenuItem.Name = "openAllToolStripMenuItem";
-            this.openAllToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
-            this.openAllToolStripMenuItem.Text = "Open All";
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
             // 
-            this.saveToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveCurrentPageToolStripMenuItem,
-            this.saveAllToolStripMenuItem1});
+            this.saveToolStripMenuItem.Enabled = false;
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.saveToolStripMenuItem.Text = "Save";
-            // 
-            // saveCurrentPageToolStripMenuItem
-            // 
-            this.saveCurrentPageToolStripMenuItem.Enabled = false;
-            this.saveCurrentPageToolStripMenuItem.Name = "saveCurrentPageToolStripMenuItem";
-            this.saveCurrentPageToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
-            this.saveCurrentPageToolStripMenuItem.Text = "Save Current Page";
-            // 
-            // saveAllToolStripMenuItem1
-            // 
-            this.saveAllToolStripMenuItem1.Enabled = false;
-            this.saveAllToolStripMenuItem1.Name = "saveAllToolStripMenuItem1";
-            this.saveAllToolStripMenuItem1.Size = new System.Drawing.Size(170, 22);
-            this.saveAllToolStripMenuItem1.Text = "Save All";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // exportTablesToolStripMenuItem
             // 
             this.exportTablesToolStripMenuItem.Name = "exportTablesToolStripMenuItem";
-            this.exportTablesToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.exportTablesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.exportTablesToolStripMenuItem.Text = "Export Table";
             this.exportTablesToolStripMenuItem.Click += new System.EventHandler(this.exportTablesToolStripMenuItem_Click);
             // 
             // printToolStripMenuItem
             // 
             this.printToolStripMenuItem.Name = "printToolStripMenuItem";
-            this.printToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.printToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.printToolStripMenuItem.Text = "Print";
             this.printToolStripMenuItem.Click += new System.EventHandler(this.printToolStripMenuItem_Click);
             // 
             // closeToolStripMenuItem
             // 
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
@@ -314,10 +279,6 @@
         private System.Windows.Forms.ToolStripMenuItem saveMethodToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem resultsSummaryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem quantificationToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openCurrentPageToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem openAllToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveCurrentPageToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem saveAllToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem exportTablesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadSettingsToolStripMenuItem;
     }

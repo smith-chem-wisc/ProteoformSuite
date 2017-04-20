@@ -53,6 +53,14 @@ namespace ProteoformSuiteGUI
             Lollipop.quantifiedProteins.Clear();
             Lollipop.inducedOrRepressedProteins.Clear();
             Lollipop.goTermNumbers.Clear();
+
+            foreach (var series in ct_proteoformIntensities.Series) series.Points.Clear();
+            foreach (var series in ct_relativeDifference.Series) series.Points.Clear();
+            foreach (var series in ct_volcano_logFold_logP.Series) series.Points.Clear();
+            dgv_goAnalysis.DataSource = null;
+            dgv_quantification_results.DataSource = null;
+            dgv_goAnalysis.Rows.Clear();
+            dgv_quantification_results.Rows.Clear();
         }
 
         public void fillGuiTablesAndGraphs()
@@ -295,15 +303,15 @@ namespace ProteoformSuiteGUI
         private void nud_bkgdShift_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.backgroundShift = nud_bkgdShift.Value;
-            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
-            Lollipop.defineBackgroundIntensityDistribution(Lollipop.neucode_labeled, Lollipop.quantBioFracCombos, Lollipop.satisfactoryProteoforms, Lollipop.backgroundShift, Lollipop.backgroundWidth);
+            if (Lollipop.qVals.Count > 0) Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
+            if (Lollipop.qVals.Count > 0) Lollipop.defineBackgroundIntensityDistribution(Lollipop.neucode_labeled, Lollipop.quantBioFracCombos, Lollipop.satisfactoryProteoforms, Lollipop.backgroundShift, Lollipop.backgroundWidth);
         }
 
         private void nud_bkgdWidth_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.backgroundWidth = nud_bkgdWidth.Value;
-            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
-            Lollipop.defineBackgroundIntensityDistribution(Lollipop.neucode_labeled, Lollipop.quantBioFracCombos, Lollipop.satisfactoryProteoforms, Lollipop.backgroundShift, Lollipop.backgroundWidth);
+            if (Lollipop.qVals.Count > 0) Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
+            if (Lollipop.qVals.Count > 0) Lollipop.defineBackgroundIntensityDistribution(Lollipop.neucode_labeled, Lollipop.quantBioFracCombos, Lollipop.satisfactoryProteoforms, Lollipop.backgroundShift, Lollipop.backgroundWidth);
         }
 
         private void cmbx_observationsTypeRequired_SelectedIndexChanged(object sender, EventArgs e)
