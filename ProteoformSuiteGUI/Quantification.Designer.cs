@@ -69,7 +69,7 @@
             this.tb_goTermCustomBackground = new System.Windows.Forms.TextBox();
             this.rb_customBackgroundSet = new System.Windows.Forms.RadioButton();
             this.rb_allTheoreticalProteins = new System.Windows.Forms.RadioButton();
-            this.rb_allSampleGOTerms = new System.Windows.Forms.RadioButton();
+            this.rb_quantifiedSampleSet = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.label7 = new System.Windows.Forms.Label();
             this.cmbx_nodeLabel = new System.Windows.Forms.ComboBox();
@@ -106,6 +106,7 @@
             this.nud_Offset = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.nud_sKnot_minFoldChange = new System.Windows.Forms.NumericUpDown();
+            this.rb_detectedSampleSet = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantification_results)).BeginInit();
             this.gb_quantDataDisplaySelection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).BeginInit();
@@ -287,7 +288,7 @@
             this.gb_goThresholds.Margin = new System.Windows.Forms.Padding(2);
             this.gb_goThresholds.Name = "gb_goThresholds";
             this.gb_goThresholds.Padding = new System.Windows.Forms.Padding(2);
-            this.gb_goThresholds.Size = new System.Drawing.Size(160, 104);
+            this.gb_goThresholds.Size = new System.Drawing.Size(160, 149);
             this.gb_goThresholds.TabIndex = 10;
             this.gb_goThresholds.TabStop = false;
             this.gb_goThresholds.Text = "GO Term Thresholds";
@@ -486,14 +487,15 @@
             // 
             // gb_backgroundGoTerms
             // 
+            this.gb_backgroundGoTerms.Controls.Add(this.rb_detectedSampleSet);
             this.gb_backgroundGoTerms.Controls.Add(this.btn_customBackgroundBrowse);
             this.gb_backgroundGoTerms.Controls.Add(this.tb_goTermCustomBackground);
             this.gb_backgroundGoTerms.Controls.Add(this.rb_customBackgroundSet);
             this.gb_backgroundGoTerms.Controls.Add(this.rb_allTheoreticalProteins);
-            this.gb_backgroundGoTerms.Controls.Add(this.rb_allSampleGOTerms);
+            this.gb_backgroundGoTerms.Controls.Add(this.rb_quantifiedSampleSet);
             this.gb_backgroundGoTerms.Location = new System.Drawing.Point(1186, 364);
             this.gb_backgroundGoTerms.Name = "gb_backgroundGoTerms";
-            this.gb_backgroundGoTerms.Size = new System.Drawing.Size(297, 104);
+            this.gb_backgroundGoTerms.Size = new System.Drawing.Size(297, 146);
             this.gb_backgroundGoTerms.TabIndex = 14;
             this.gb_backgroundGoTerms.TabStop = false;
             this.gb_backgroundGoTerms.Text = "Background GO Terms";
@@ -532,7 +534,7 @@
             // rb_allTheoreticalProteins
             // 
             this.rb_allTheoreticalProteins.AutoSize = true;
-            this.rb_allTheoreticalProteins.Location = new System.Drawing.Point(23, 39);
+            this.rb_allTheoreticalProteins.Location = new System.Drawing.Point(23, 98);
             this.rb_allTheoreticalProteins.Name = "rb_allTheoreticalProteins";
             this.rb_allTheoreticalProteins.Size = new System.Drawing.Size(97, 17);
             this.rb_allTheoreticalProteins.TabIndex = 1;
@@ -543,15 +545,15 @@
             // 
             // rb_allSampleGOTerms
             // 
-            this.rb_allSampleGOTerms.AutoSize = true;
-            this.rb_allSampleGOTerms.Location = new System.Drawing.Point(23, 19);
-            this.rb_allSampleGOTerms.Name = "rb_allSampleGOTerms";
-            this.rb_allSampleGOTerms.Size = new System.Drawing.Size(79, 17);
-            this.rb_allSampleGOTerms.TabIndex = 0;
-            this.rb_allSampleGOTerms.TabStop = true;
-            this.rb_allSampleGOTerms.Text = "Sample Set";
-            this.rb_allSampleGOTerms.UseVisualStyleBackColor = true;
-            this.rb_allSampleGOTerms.CheckedChanged += new System.EventHandler(this.rb_allSampleGOTerms_CheckedChanged);
+            this.rb_quantifiedSampleSet.AutoSize = true;
+            this.rb_quantifiedSampleSet.Location = new System.Drawing.Point(23, 19);
+            this.rb_quantifiedSampleSet.Name = "rb_allSampleGOTerms";
+            this.rb_quantifiedSampleSet.Size = new System.Drawing.Size(130, 17);
+            this.rb_quantifiedSampleSet.TabIndex = 0;
+            this.rb_quantifiedSampleSet.TabStop = true;
+            this.rb_quantifiedSampleSet.Text = "Quantified Sample Set";
+            this.rb_quantifiedSampleSet.UseVisualStyleBackColor = true;
+            this.rb_quantifiedSampleSet.CheckedChanged += new System.EventHandler(this.rb_quantifiedSampleSet_CheckedChanged);
             // 
             // groupBox4
             // 
@@ -964,6 +966,18 @@
             this.nud_sKnot_minFoldChange.TabIndex = 0;
             this.nud_sKnot_minFoldChange.ValueChanged += new System.EventHandler(this.nud_sKnot_minFoldChange_ValueChanged);
             // 
+            // rb_detectedSampleSet
+            // 
+            this.rb_detectedSampleSet.AutoSize = true;
+            this.rb_detectedSampleSet.Location = new System.Drawing.Point(23, 38);
+            this.rb_detectedSampleSet.Name = "rb_detectedSampleSet";
+            this.rb_detectedSampleSet.Size = new System.Drawing.Size(126, 17);
+            this.rb_detectedSampleSet.TabIndex = 19;
+            this.rb_detectedSampleSet.TabStop = true;
+            this.rb_detectedSampleSet.Text = "Detected Sample Set";
+            this.rb_detectedSampleSet.UseVisualStyleBackColor = true;
+            this.rb_detectedSampleSet.CheckedChanged += new System.EventHandler(this.rb_detectedSampleSet_CheckedChanged);
+            // 
             // Quantification
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1048,7 +1062,7 @@
         private System.Windows.Forms.ComboBox cmbx_ratioNumerator;
         private System.Windows.Forms.GroupBox gb_backgroundGoTerms;
         private System.Windows.Forms.RadioButton rb_allTheoreticalProteins;
-        private System.Windows.Forms.RadioButton rb_allSampleGOTerms;
+        private System.Windows.Forms.RadioButton rb_quantifiedSampleSet;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Label lb_timeStamp;
         private System.Windows.Forms.TextBox tb_recentTimeStamp;
@@ -1088,5 +1102,6 @@
         private System.Windows.Forms.CheckBox cb_geneCentric;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox cmbx_nodeLabel;
+        private System.Windows.Forms.RadioButton rb_detectedSampleSet;
     }
 }
