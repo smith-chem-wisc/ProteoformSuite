@@ -121,7 +121,9 @@ namespace ProteoformSuiteInternal
 
 
                 if (Lollipop.neucode_labeled && raw_components.FirstOrDefault().input_file.purpose == Purpose.Identification) //before we compress harmonics, we have to determine if they are neucode labeled and lysine count 14. these have special considerations
+                {
                     ncPairsInScan = Lollipop.find_neucode_pairs(scanComps.Except(removeThese), neucodePairs_in_file); // these are not the final neucode pairs, just a temp list
+                }
 
                 List<string> lysFourteenComponents = new List<string>();
                 foreach (NeuCodePair ncp in ncPairsInScan)
