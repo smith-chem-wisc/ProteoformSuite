@@ -250,7 +250,9 @@ namespace Test
             List<ProteoformRelation> prs = new HashSet<ProteoformRelation>(community.experimental_proteoforms.SelectMany(p => p.relationships).Concat(community.theoretical_proteoforms.SelectMany(p => p.relationships))).ToList();
             foreach (Proteoform p in prs.SelectMany(r => r.connected_proteoforms)) Assert.IsNotNull(p);
             List<ProteoformRelation> prs_et = prs.Where(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical).OrderBy(r => r.delta_mass).ToList();
+            Lollipop.et_relations = prs_et;
             List<ProteoformRelation> prs_ee = prs.Where(r => r.relation_type == ProteoformComparison.ExperimentalExperimental).OrderBy(r => r.delta_mass).ToList();
+            Lollipop.ee_relations = prs_ee;
             foreach (ProteoformRelation pr in prs_et) pr.set_nearby_group(prs_et, prs_et.Select(r => r.instanceId).ToList());
             foreach (ProteoformRelation pr in prs_ee) pr.set_nearby_group(prs_ee, prs_ee.Select(r => r.instanceId).ToList());
             Assert.AreEqual(3, pf1.relationships.First().nearby_relations.Count); // 2 ET relations at 0 delta mass
@@ -338,6 +340,71 @@ namespace Test
 
             //Only the distinct gene names are kept in list
             Assert.AreEqual(String.Join("; ", new string[] { "", "GENE", "GENE" }.Distinct()), community.families.FirstOrDefault(f => f.proteoforms.Select(p => p.accession).Contains("E1")).gene_list); //both would give null preferred gene names, since that field isn't set up
+        }
+
+        [Test]
+        public void community_clear_et()
+        {
+            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
+            Assert.IsNotEmpty(Lollipop.et_relations);
+            Assert.IsNotEmpty(Lollipop.ee_relations);
+            Assert.IsNotEmpty(community.families);
+            Assert.True(community.relations_in_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
+            Assert.True(community.delta_mass_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
+            Assert.IsNotNull(community.experimental_proteoforms.First().family);
+            Assert.IsNotNull(community.experimental_proteoforms.First().gene_name);
+            Assert.IsNotNull(community.experimental_proteoforms.First().linked_proteoform_references);
+            Assert.IsNotEmpty(community.experimental_proteoforms.First().ptm_set.ptm_combination);
+            Assert.True(community.experimental_proteoforms.First().relationships.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
+            community.clear_et();
+            Assert.IsEmpty(Lollipop.et_relations);
+            Assert.IsNotEmpty(Lollipop.ee_relations);
+            Assert.IsEmpty(community.families);
+            Assert.False(community.relations_in_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
+            Assert.False(community.delta_mass_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
+            Assert.Null(community.experimental_proteoforms.First().family);
+            Assert.Null(community.experimental_proteoforms.First().gene_name);
+            Assert.Null(community.experimental_proteoforms.First().linked_proteoform_references);
+            Assert.IsEmpty(community.experimental_proteoforms.First().ptm_set.ptm_combination);
+            Assert.False(community.experimental_proteoforms.First().relationships.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
+        }
+
+        [Test]
+        public void community_clear_ee()
+        {
+            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
+            Assert.IsNotEmpty(Lollipop.et_relations);
+            Assert.IsNotEmpty(Lollipop.ee_relations);
+            Assert.IsNotEmpty(community.families);
+            Assert.True(community.relations_in_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
+            Assert.True(community.delta_mass_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
+            Assert.IsNotNull(community.experimental_proteoforms.First().family);
+            Assert.IsNotNull(community.experimental_proteoforms.First().gene_name);
+            Assert.IsNotNull(community.experimental_proteoforms.First().linked_proteoform_references);
+            Assert.IsNotEmpty(community.experimental_proteoforms.First().ptm_set.ptm_combination);
+            Assert.True(community.experimental_proteoforms.First().relationships.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
+            community.clear_ee();
+            Assert.IsNotEmpty(Lollipop.et_relations);
+            Assert.IsEmpty(Lollipop.ee_relations);
+            Assert.IsEmpty(community.families);
+            Assert.False(community.relations_in_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalExperimental));
+            Assert.False(community.delta_mass_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalExperimental));
+            Assert.Null(community.experimental_proteoforms.First().family);
+            Assert.Null(community.experimental_proteoforms.First().gene_name);
+            Assert.Null(community.experimental_proteoforms.First().linked_proteoform_references);
+            Assert.IsEmpty(community.experimental_proteoforms.First().ptm_set.ptm_combination);
+            Assert.False(community.experimental_proteoforms.First().relationships.Any(r => r.relation_type == ProteoformComparison.ExperimentalExperimental));
+        }
+
+        [Test]
+        public void community_clear_families()
+        {
+            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
+            Assert.IsNotEmpty(community.families);
+            Assert.True(community.experimental_proteoforms.Any(p => p.family != null));
+            community.clear_families();
+            Assert.IsEmpty(community.families);
+            Assert.True(community.experimental_proteoforms.All(p => p.family == null));
         }
     }
 }
