@@ -232,6 +232,7 @@ namespace Test
                 Lollipop.all_possible_ptmsets.Add(new PtmSet(new List<Ptm> { new Ptm(-1, m) }));
                 Lollipop.modification_ranks.Add(delta_m, 2);
             }
+            Lollipop.possible_ptmset_dictionary = Lollipop.make_ptmset_dictionary();
 
             Lollipop.make_ptmset_dictionary();
 

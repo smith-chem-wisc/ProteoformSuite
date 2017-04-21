@@ -34,18 +34,29 @@ namespace ProteoformSuiteGUI
             if (ready_for_top_down())
             {
                 run_the_gamut();
+                cmbx_td_or_e_proteoforms.DataSource = new BindingList<string>() { "TopDown Proteoforms", "Experimental Proteoforms" };
+                cmbx_td_or_e_proteoforms.SelectedIndex = 0;
             }
-            else
-            {
-                MessageBox.Show("Go back and load in top-down results.");
-            }
-            cmbx_td_or_e_proteoforms.DataSource = new BindingList<string>() { "TopDown Proteoforms", "Experimental Proteoforms" };
-            cmbx_td_or_e_proteoforms.SelectedIndex = 0;
         }
 
         private bool ready_for_top_down()
         {
-            return (Lollipop.top_down_hits.Count == 0 && Lollipop.input_files.Any(f => f.purpose == Purpose.TopDown));
+            if (!Lollipop.input_files.Any(f => f.purpose == Purpose.TopDown))
+            {
+                MessageBox.Show("Go back and load in top-down results.");
+                return false;
+            }
+            if (Lollipop.proteoform_community.experimental_proteoforms.Length == 0)
+            {
+                MessageBox.Show("Go back and aggregate experimental proteoforms.");
+                return false;
+            }
+            if (Lollipop.proteoform_community.theoretical_proteoforms.Length == 0)
+            {
+                MessageBox.Show("Go back and create a theoretical proteoform database.");
+                return false;
+            }
+            return true;
         }
 
         private void run_the_gamut()
@@ -59,26 +70,13 @@ namespace ProteoformSuiteGUI
 
         private void aggregate_td_hits()
         {
-            if (Lollipop.top_down_hits.Count == 0) read_in_topdown();
+            if (Lollipop.top_down_hits.Count == 0) Lollipop.read_in_td_hits();
             if (Lollipop.top_down_hits.Count > 0)
             {
                 Lollipop.aggregate_td_hits();
                 if (Lollipop.proteoform_community.topdown_proteoforms.Where(p => p.targeted).Count() > 0) bt_targeted_td_relations.Enabled = true;
                 else bt_targeted_td_relations.Enabled = false;
                 tb_tdProteoforms.Text = Lollipop.proteoform_community.topdown_proteoforms.Count(p => !p.targeted).ToString();
-            }
-        }
-
-        private void read_in_topdown()
-        {
-            if (ready_for_top_down())
-            {
-                 Lollipop.read_in_td_hits();
-            }
-            else
-            {
-                MessageBox.Show("Go back to Load Results and load in top-down results.");
-                return;
             }
         }
 
@@ -98,13 +96,9 @@ namespace ProteoformSuiteGUI
 
         private void bt_td_relations_Click(object sender, EventArgs e)
         {
-            if (Lollipop.proteoform_community.experimental_proteoforms.Length > 0)
+            if (ready_for_top_down())
             {
                 run_the_gamut();
-            }
-            else
-            {
-                MessageBox.Show("Go back and aggregate experimental proteoforms.");
             }
         }
 

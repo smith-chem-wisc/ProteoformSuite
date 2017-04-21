@@ -252,7 +252,7 @@ namespace ProteoformSuiteGUI
                 run_the_gamut();
                 xMaxEE.Value = Convert.ToDecimal(Lollipop.ee_max_mass_difference);
             }
-            else if (Lollipop.all_possible_ptmsets == null) MessageBox.Show("Go back and load in theoretical proteoforms (Need a ptm list).");
+            else if (Lollipop.all_possible_ptmsets == null) MessageBox.Show("Go back and load in a theoretical database.");
             else MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
