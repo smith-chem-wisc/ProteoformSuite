@@ -73,7 +73,7 @@ namespace ProteoformSuiteInternal
             {
                 TheoreticalProteoform t = pf2 as TheoreticalProteoform;
                 double mass_tolerance = t.modified_mass / 1000000 * (double)Lollipop.mass_tolerance;
-                List<PtmSet> narrower_range_of_candidates = candidate_sets.Where(s => Math.Abs(s.mass - delta_mass) < 0.1).ToList();
+                List<PtmSet> narrower_range_of_candidates = candidate_sets.Where(s => Math.Abs(s.mass - delta_mass) < 0.05).ToList();
                 candidate_ptmset = t.generate_possible_added_ptmsets(narrower_range_of_candidates, delta_mass, mass_tolerance, Lollipop.all_mods_with_mass, t, t.sequence, Lollipop.rank_first_quartile)
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(delta_mass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
@@ -141,8 +141,8 @@ namespace ProteoformSuiteInternal
             {
                 bool valid_or_no_unmodified = set.ptm_combination.Count == 1 || !set.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0);
                 bool within_addition_tolerance = relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy ?
-                    Math.Abs(dMass - set.mass) <= 0.1 :
-                    Math.Abs(Math.Abs(dMass) - Math.Abs(set.mass)) <= 0.1; //In Daltons. This is a liberal threshold because these are filtered upon actual assignment
+                    Math.Abs(dMass - set.mass) <= 0.05 :
+                    Math.Abs(Math.Abs(dMass) - Math.Abs(set.mass)) <= 0.05; //In Daltons. This is a liberal threshold because these are filtered upon actual assignment
                 if (valid_or_no_unmodified && within_addition_tolerance)
                     yield return set;
             }

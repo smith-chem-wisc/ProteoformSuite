@@ -819,7 +819,7 @@ namespace Test
             e.family = f;
             t.family = f;
             u.family = f;
-            List<ProteinWithGoTerms> prots = Lollipop.getObservedProteins(new List<ExperimentalProteoform> { e });
+            List<ProteinWithGoTerms> prots = Lollipop.getProteins(new List<ExperimentalProteoform> { e });
             Assert.AreEqual(2, prots.Count);
             Assert.True(prots.Select(p => p.Accession).Contains("T1"));
             Assert.True(prots.Select(p => p.Accession).Contains("T2"));
