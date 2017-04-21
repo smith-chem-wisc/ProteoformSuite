@@ -6,7 +6,6 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Reflection;
 using System.IO;
-using NetSerializer;
 
 namespace ProteoformSuiteInternal
 {
