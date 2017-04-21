@@ -204,8 +204,8 @@ namespace ProteoformSuiteInternal
                             double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
                             if (mass_difference < 6)
                             {
-                                List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
-                                List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList<int>();
+                                List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList();
+                                List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList();
                                 List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
                                 double lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
                                 double higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
