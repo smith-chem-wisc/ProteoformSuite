@@ -51,7 +51,7 @@ namespace ProteoformSuiteGUI
         }
 
 
-        // For quantification files
+        // For identification and quantification files
         public int biological_replicate
         {
             get { return file.biological_replicate; }
@@ -132,7 +132,7 @@ namespace ProteoformSuiteGUI
             //VISIBILITY
             dgv.Columns[nameof(matchingCalibrationFile)].Visible = dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(Labeling)].Visible = dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(biological_replicate)].Visible = dgv_purposes.Contains(Purpose.Quantification);
+            dgv.Columns[nameof(biological_replicate)].Visible = dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(Fraction)].Visible = dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(lt_condition)].Visible = dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(hv_condition)].Visible = dgv_purposes.Contains(Purpose.Quantification);
