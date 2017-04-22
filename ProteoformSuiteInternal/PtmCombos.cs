@@ -1,12 +1,12 @@
-﻿using System;
+﻿using Proteomics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
-    public class PtmCombos
+    public static class PtmCombos
     {
         // LOCALIZED MODIFICATION COMBINATIONS
         //Gets unique-mass (given a tolerance) ptm combinations from all the possible ones without positional redundancy

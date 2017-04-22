@@ -5,6 +5,7 @@ using System.Linq;
 namespace ProteoformSuiteInternal
 {
     //Please see ProteoformRelation class for notes on naming this one.
+    [Serializable]
     public class DeltaMassPeak : ProteoformRelation
     {
         #region Public Properties
@@ -36,8 +37,8 @@ namespace ProteoformSuiteInternal
 
             grouped_relations = find_nearby_relations(relations_to_group);
             peak_accepted = grouped_relations != null && grouped_relations.Count > 0 && grouped_relations.First().relation_type == ProteoformComparison.ExperimentalTheoretical ?
-                peak_relation_group_count >= Lollipop.min_peak_count_et :
-                peak_relation_group_count >= Lollipop.min_peak_count_ee;
+                peak_relation_group_count >= SaveState.lollipop.min_peak_count_et :
+                peak_relation_group_count >= SaveState.lollipop.min_peak_count_ee;
 
             possiblePeakAssignments = nearestPTMs(peak_deltaM_average, relation_type).ToList();
             possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.Select(ptmset => String.Join(";", ptmset.ptm_combination.Select(m => m.modification.id)))) + "]";
@@ -57,12 +58,12 @@ namespace ProteoformSuiteInternal
                 return grouped_relations;
             }
 
-            for (int i = 0; i < Lollipop.relation_group_centering_iterations; i++)
+            for (int i = 0; i < SaveState.lollipop.relation_group_centering_iterations; i++)
             {
                 double center_deltaM = i > 0 ? peak_deltaM_average : this.delta_mass;
                 double peak_width_base = ungrouped_relations.First().connected_proteoforms[1] as TheoreticalProteoform != null ?
-                    Lollipop.peak_width_base_et :
-                    Lollipop.peak_width_base_ee;
+                    SaveState.lollipop.peak_width_base_et :
+                    SaveState.lollipop.peak_width_base_ee;
                 double lower_limit_of_peak_width = center_deltaM - peak_width_base / 2;
                 double upper_limit_of_peak_width = center_deltaM + peak_width_base / 2;
                 grouped_relations = ungrouped_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
@@ -78,8 +79,8 @@ namespace ProteoformSuiteInternal
 
         private List<ProteoformRelation> find_nearby_decoys(List<ProteoformRelation> all_relations)
         {
-            double lower_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ExperimentalDecoy) ? peak_deltaM_average - Lollipop.peak_width_base_et / 2 : peak_deltaM_average - Lollipop.peak_width_base_ee / 2;
-            double upper_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ExperimentalDecoy) ? peak_deltaM_average + Lollipop.peak_width_base_et / 2 : peak_deltaM_average + Lollipop.peak_width_base_ee / 2;
+            double lower_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ExperimentalDecoy) ? peak_deltaM_average - SaveState.lollipop.peak_width_base_et / 2 : peak_deltaM_average - SaveState.lollipop.peak_width_base_ee / 2;
+            double upper_limit_of_peak_width = (all_relations[0].relation_type == ProteoformComparison.ExperimentalDecoy) ? peak_deltaM_average + SaveState.lollipop.peak_width_base_et / 2 : peak_deltaM_average + SaveState.lollipop.peak_width_base_ee / 2;
             return all_relations.Where(relation => relation.delta_mass >= lower_limit_of_peak_width && relation.delta_mass <= upper_limit_of_peak_width).ToList();
         }
 
@@ -113,7 +114,7 @@ namespace ProteoformSuiteInternal
             foreach (ProteoformRelation r in this.grouped_relations)
             {
                 Proteoform p = r.connected_proteoforms[0];
-                if (p is ExperimentalProteoform && ((ExperimentalProteoform)p).mass_shifted == false && Lollipop.proteoform_community.experimental_proteoforms.Contains(p))
+                if (p is ExperimentalProteoform && ((ExperimentalProteoform)p).mass_shifted == false && SaveState.lollipop.proteoform_community.experimental_proteoforms.Contains(p))
                     ((ExperimentalProteoform)p).shift_masses(shift, neucode_labeled);
             }
 

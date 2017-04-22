@@ -1,13 +1,15 @@
-﻿using System;
+﻿using Proteomics;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
+    [Serializable]
     public class TheoreticalProteoform : Proteoform
     {
+
         #region Public Properties
 
         public IEnumerable<ProteinWithGoTerms> ExpandedProteinList { get; set; } = new List<ProteinWithGoTerms>();
@@ -80,5 +82,6 @@ namespace ProteoformSuiteInternal
             return proteoformMass + aaMasses.Sum();
         }
         #endregion Public Method
+
     }
 }

@@ -3,8 +3,8 @@ using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
+using System.Text;
 
 namespace Test
 {
@@ -21,17 +21,17 @@ namespace Test
         //public void save_and_load_grouped_components()
         //{
         //    //reading in test excel file, process raw components before testing neucode pairs.
-        //    Lollipop.correctionFactors = null;
-        //    Lollipop.raw_experimental_components.Clear();
-        //    Func<InputFile, IEnumerable<Component>> componentReader = c => new ExcelReader().read_components_from_xlsx(c, Lollipop.correctionFactors);
-        //    Lollipop.input_files.Add(new InputFile("UnitTestFiles\\noisy.xlsx", Labeling.NeuCode, Purpose.Identification));
+        //    SaveState.lol.correctionFactors = null;
+        //    SaveState.lol.raw_experimental_components.Clear();
+        //    Func<InputFile, IEnumerable<Component>> componentReader = c => new ExcelReader().read_components_from_xlsx(c, SaveState.lol.correctionFactors);
+        //    SaveState.lol.input_files.Add(new InputFile("UnitTestFiles\\noisy.xlsx", Labeling.NeuCode, Purpose.Identification));
 
-        //    string inFileId = Lollipop.input_files[0].UniqueId.ToString();
+        //    string inFileId = SaveState.lol.input_files[0].UniqueId.ToString();
 
-        //    Lollipop.neucode_labeled = true;
-        //    Lollipop.process_raw_components();
-        //    Assert.AreEqual(224, Lollipop.raw_experimental_components.Count);
-        //    Lollipop.raw_experimental_components.Clear();
+        //    SaveState.lol.neucode_labeled = true;
+        //    SaveState.lol.process_raw_components();
+        //    Assert.AreEqual(224, SaveState.lol.raw_experimental_components.Count);
+        //    SaveState.lol.raw_experimental_components.Clear();
 
         //    StringBuilder builder = SaveState.save_all();
         //    SaveState.open_all(builder.ToString().Split(new string[] { Environment.NewLine }, StringSplitOptions.None));
@@ -104,7 +104,7 @@ namespace Test
             e.ptm_set = e.linked_proteoform_references.Last.Value.ptm_set;
             ProteoformFamily f = new ProteoformFamily(e);
             f.construct_family();
-            Lollipop.proteoform_community.families = new List<ProteoformFamily> { f };
+            SaveState.lollipop.proteoform_community.families = new List<ProteoformFamily> { f };
             string[] lines = ResultsSummaryGenerator.results_dataframe().Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.True(lines.Count() == 3);
             Assert.True(lines.Any(a => a.Contains("E1")));

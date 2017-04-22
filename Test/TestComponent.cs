@@ -1,10 +1,8 @@
-﻿using ProteoformSuiteInternal;
+﻿using NUnit.Framework;
+using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NUnit.Framework;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Test
 {

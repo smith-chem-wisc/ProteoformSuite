@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
 using ProteoformSuiteInternal;
+using Proteomics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Proteomics;
 using System.IO;
+using System.Linq;
 
 namespace Test
 {
@@ -21,12 +21,12 @@ namespace Test
         [Test]
         public void TestDeltaMassPeakConstructor()
         {
-            Lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Lollipop.input_files);
+            SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
             ConstructorsForTesting.read_mods();
-            Lollipop.et_high_mass_difference = 250;
-            Lollipop.et_low_mass_difference = -250;
-            Lollipop.peak_width_base_ee = 0.015;
-            Lollipop.peak_width_base_et = 0.015;
+            SaveState.lollipop.et_high_mass_difference = 250;
+            SaveState.lollipop.et_low_mass_difference = -250;
+            SaveState.lollipop.peak_width_base_ee = 0.015;
+            SaveState.lollipop.peak_width_base_et = 0.015;
 
 
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("acession1");
@@ -92,16 +92,16 @@ namespace Test
         public void TestAcceptDeltaMassPeaks()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.proteoform_community = test_community;
+            SaveState.lollipop.proteoform_community = test_community;
 
-            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>>
+            SaveState.lollipop.uniprotModifications = new Dictionary<string, IList<Modification>>
             {
                 { "unmodified", new List<Modification>() { ConstructorsForTesting.get_modWithMass("unmodified", 0) } }
             };
 
             //Testing the acceptance of peaks. The FDR is tested above, so I'm not going to work with that here.
             //Four proteoforms, three relations (linear), middle one isn't accepted; should give 2 families
-            Lollipop.min_peak_count_ee = 2;
+            SaveState.lollipop.min_peak_count_ee = 2;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
             ExperimentalProteoform pf5 = ConstructorsForTesting.ExperimentalProteoform("E3");
@@ -129,7 +129,7 @@ namespace Test
             Assert.AreEqual(3, pr3.nearby_relations.Count);
             Assert.AreEqual(3, pr4.nearby_relations.Count);
 
-            Lollipop.all_possible_ptmsets = new List<PtmSet> { new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }) };
+            SaveState.lollipop.all_possible_ptmsets = new List<PtmSet> { new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }) };
             test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
             Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
             DeltaMassPeak peak = test_community.delta_mass_peaks[0];
@@ -148,7 +148,7 @@ namespace Test
         public void wrong_relation_shifting()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.proteoform_community = test_community;
+            SaveState.lollipop.proteoform_community = test_community;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
             ProteoformComparison wrong_comparison = ProteoformComparison.ExperimentalExperimental;
@@ -163,7 +163,7 @@ namespace Test
         [Test]
         public void artificial_deltaMPeak()
         {
-            Lollipop.all_possible_ptmsets = new List<PtmSet>();
+            SaveState.lollipop.all_possible_ptmsets = new List<PtmSet>();
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
             ProteoformComparison comparison = ProteoformComparison.ExperimentalExperimental;
@@ -177,7 +177,7 @@ namespace Test
         public void shift_et_peak_neucode()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.proteoform_community = test_community;
+            SaveState.lollipop.proteoform_community = test_community;
 
             //Make a few experimental proteoforms
             List<Component> n1 = TestExperimentalProteoform.generate_neucode_components(100);
@@ -193,7 +193,7 @@ namespace Test
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4");
             pf4.aggregated_components = n4;
 
-            Lollipop.proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
+            SaveState.lollipop.proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
 
             //Connect them to theoreticals to form two peaks
             ProteoformComparison comparison14 = ProteoformComparison.ExperimentalTheoretical;
@@ -242,7 +242,7 @@ namespace Test
         public void shift_et_peak_unlabeled()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.proteoform_community = test_community;
+            SaveState.lollipop.proteoform_community = test_community;
 
             //Make a few experimental proteoforms
             List<Component> n1 = TestExperimentalProteoform.generate_neucode_components(100);
@@ -258,7 +258,7 @@ namespace Test
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4");
             pf4.aggregated_components = n4;
 
-            Lollipop.proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
+            SaveState.lollipop.proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
 
             //Connect them to theoreticals to form two peaks
             ProteoformComparison comparison14 = ProteoformComparison.ExperimentalTheoretical;

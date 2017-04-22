@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
 using ProteoformSuiteInternal;
-using System.Collections.Generic;
-using System.Linq;
 using Proteomics;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Test
 {

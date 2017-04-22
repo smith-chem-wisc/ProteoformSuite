@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using ProteoformSuiteInternal;
 using Proteomics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Test
 {
@@ -14,10 +14,10 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
+            SaveState.lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
             //One accepted ET relation; should give one ProteoformFamily
-            Lollipop.min_peak_count_et = 1;
+            SaveState.lollipop.min_peak_count_et = 1;
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
             TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
             pf2.name = "T1";
@@ -44,11 +44,11 @@ namespace Test
         {
             //Four experimental proteoforms, three relations (linear), all accepted; should give 1 bundled family
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.proteoform_community = test_community;
+            SaveState.lollipop.proteoform_community = test_community;
 
-            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
+            SaveState.lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
-            Lollipop.min_peak_count_ee = 2;
+            SaveState.lollipop.min_peak_count_ee = 2;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
             ExperimentalProteoform pf5 = ConstructorsForTesting.ExperimentalProteoform("E3");
@@ -86,13 +86,13 @@ namespace Test
         {
             //Five experimental proteoforms, four relations (linear), second on not accepted into a peak, one peak; should give 2 families
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.proteoform_community = test_community;
+            SaveState.lollipop.proteoform_community = test_community;
 
-            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
+            SaveState.lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
-            Lollipop.ee_max_mass_difference = 20;
-            Lollipop.peak_width_base_ee = 0.015;
-            Lollipop.min_peak_count_ee = 3; //needs to be high so that 0 peak accepted, other peak isn't.... 
+            SaveState.lollipop.ee_max_mass_difference = 20;
+            SaveState.lollipop.peak_width_base_ee = 0.015;
+            SaveState.lollipop.min_peak_count_ee = 3; //needs to be high so that 0 peak accepted, other peak isn't.... 
 
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
@@ -138,7 +138,7 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET_with_theoretical_pf_group()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
+            SaveState.lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
 
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "name", "full_name", true, false, new List<DatabaseReference>(), new List<GoTerm>());
@@ -149,7 +149,7 @@ namespace Test
             
 
             //One accepted ET relation; should give one ProteoformFamily
-            Lollipop.min_peak_count_et = 1;
+            SaveState.lollipop.min_peak_count_et = 1;
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
             TheoreticalProteoformGroup pf2 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
             ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
@@ -181,22 +181,22 @@ namespace Test
         {
             //Five experimental proteoforms, four relations (linear), second on not accepted into a peak, one peak; should give 2 families
             ProteoformCommunity community = new ProteoformCommunity();
-            Lollipop.proteoform_community = community;
-            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>>
+            SaveState.lollipop.proteoform_community = community;
+            SaveState.lollipop.uniprotModifications = new Dictionary<string, IList<Modification>>
             {
                 { "unmodified", new List<Modification> { ConstructorsForTesting.get_modWithMass("unmodified", 0) } },
                 { "fake", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake", 19) } },
             };
 
-            Lollipop.modification_ranks = new Dictionary<double, int> { { 0, 1 }, { 19, 2 } };
-            Lollipop.rank_sum_threshold = 2;
-            Lollipop.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, Lollipop.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList(), Lollipop.modification_ranks, 1);
-            Lollipop.all_mods_with_mass = Lollipop.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
+            SaveState.lollipop.modification_ranks = new Dictionary<double, int> { { 0, 1 }, { 19, 2 } };
+            SaveState.lollipop.rank_sum_threshold = 2;
+            SaveState.lollipop.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, SaveState.lollipop.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList(), SaveState.lollipop.modification_ranks, 1);
+            SaveState.lollipop.all_mods_with_mass = SaveState.lollipop.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
 
-            Lollipop.ee_max_mass_difference = 20;
-            Lollipop.peak_width_base_ee = 0.015;
-            Lollipop.min_peak_count_ee = 3; //needs to be high so that 0 peak accepted, other peak isn't.... 
-            Lollipop.min_peak_count_et = 2; //needs to be lower so the 2 ET relations are accepted 
+            SaveState.lollipop.ee_max_mass_difference = 20;
+            SaveState.lollipop.peak_width_base_ee = 0.015;
+            SaveState.lollipop.min_peak_count_ee = 3; //needs to be high so that 0 peak accepted, other peak isn't.... 
+            SaveState.lollipop.min_peak_count_et = 2; //needs to be lower so the 2 ET relations are accepted 
 
             //TheoreticalProteoformGroup
             InputFile f = new InputFile("fake.txt", Purpose.ProteinDatabase);
@@ -244,9 +244,9 @@ namespace Test
             List<ProteoformRelation> prs = new HashSet<ProteoformRelation>(community.experimental_proteoforms.SelectMany(p => p.relationships).Concat(community.theoretical_proteoforms.SelectMany(p => p.relationships))).ToList();
             foreach (Proteoform p in prs.SelectMany(r => r.connected_proteoforms)) Assert.IsNotNull(p);
             List<ProteoformRelation> prs_et = prs.Where(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical).OrderBy(r => r.delta_mass).ToList();
-            Lollipop.et_relations = prs_et;
+            SaveState.lollipop.et_relations = prs_et;
             List<ProteoformRelation> prs_ee = prs.Where(r => r.relation_type == ProteoformComparison.ExperimentalExperimental).OrderBy(r => r.delta_mass).ToList();
-            Lollipop.ee_relations = prs_ee;
+            SaveState.lollipop.ee_relations = prs_ee;
             foreach (ProteoformRelation pr in prs_et) pr.set_nearby_group(prs_et, prs_et.Select(r => r.instanceId).ToList());
             foreach (ProteoformRelation pr in prs_ee) pr.set_nearby_group(prs_ee, prs_ee.Select(r => r.instanceId).ToList());
             Assert.AreEqual(3, pf1.relationships.First().nearby_relations.Count); // 2 ET relations at 0 delta mass
@@ -292,7 +292,7 @@ namespace Test
         {
             ProteoformCommunity.gene_centric_families = false;
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
-            Lollipop.proteoform_community = community;
+            SaveState.lollipop.proteoform_community = community;
 
             Assert.AreEqual(2, community.families.Count);
             Assert.AreEqual(9, community.families.SelectMany(f => f.proteoforms).Count());
@@ -315,11 +315,11 @@ namespace Test
         [Test]
         public void test_results_summary_with_peaks()
         {
-            Lollipop.theoretical_proteins = new Dictionary<InputFile, Protein[]>();
-            Lollipop.expanded_proteins = new ProteinWithGoTerms[0];
+            SaveState.lollipop.theoretical_proteins = new Dictionary<InputFile, Protein[]>();
+            SaveState.lollipop.expanded_proteins = new ProteinWithGoTerms[0];
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
-            Lollipop.et_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ExperimentalTheoretical).ToList();
-            Lollipop.ee_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ExperimentalExperimental).ToList();
+            SaveState.lollipop.et_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ExperimentalTheoretical).ToList();
+            SaveState.lollipop.ee_peaks = community.delta_mass_peaks.Where(peak => peak.peak_accepted && peak.relation_type == ProteoformComparison.ExperimentalExperimental).ToList();
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
         }
 
@@ -340,8 +340,8 @@ namespace Test
         public void community_clear_et()
         {
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
-            Assert.IsNotEmpty(Lollipop.et_relations);
-            Assert.IsNotEmpty(Lollipop.ee_relations);
+            Assert.IsNotEmpty(SaveState.lollipop.et_relations);
+            Assert.IsNotEmpty(SaveState.lollipop.ee_relations);
             Assert.IsNotEmpty(community.families);
             Assert.True(community.relations_in_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
             Assert.True(community.delta_mass_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
@@ -351,8 +351,8 @@ namespace Test
             Assert.IsNotEmpty(community.experimental_proteoforms.First().ptm_set.ptm_combination);
             Assert.True(community.experimental_proteoforms.First().relationships.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
             community.clear_et();
-            Assert.IsEmpty(Lollipop.et_relations);
-            Assert.IsNotEmpty(Lollipop.ee_relations);
+            Assert.IsEmpty(SaveState.lollipop.et_relations);
+            Assert.IsNotEmpty(SaveState.lollipop.ee_relations);
             Assert.IsEmpty(community.families);
             Assert.False(community.relations_in_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
             Assert.False(community.delta_mass_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
@@ -367,8 +367,8 @@ namespace Test
         public void community_clear_ee()
         {
             ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
-            Assert.IsNotEmpty(Lollipop.et_relations);
-            Assert.IsNotEmpty(Lollipop.ee_relations);
+            Assert.IsNotEmpty(SaveState.lollipop.et_relations);
+            Assert.IsNotEmpty(SaveState.lollipop.ee_relations);
             Assert.IsNotEmpty(community.families);
             Assert.True(community.relations_in_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
             Assert.True(community.delta_mass_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
@@ -378,8 +378,8 @@ namespace Test
             Assert.IsNotEmpty(community.experimental_proteoforms.First().ptm_set.ptm_combination);
             Assert.True(community.experimental_proteoforms.First().relationships.Any(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical));
             community.clear_ee();
-            Assert.IsNotEmpty(Lollipop.et_relations);
-            Assert.IsEmpty(Lollipop.ee_relations);
+            Assert.IsNotEmpty(SaveState.lollipop.et_relations);
+            Assert.IsEmpty(SaveState.lollipop.ee_relations);
             Assert.IsEmpty(community.families);
             Assert.False(community.relations_in_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalExperimental));
             Assert.False(community.delta_mass_peaks.Any(r => r.relation_type == ProteoformComparison.ExperimentalExperimental));

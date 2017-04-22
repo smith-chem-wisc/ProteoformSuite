@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Proteomics;
+using System;
 using System.Collections.Generic;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
+    [Serializable]
     public class ProteinWithGoTerms : Protein
     {
         public List<string> AccessionList { get; set; }

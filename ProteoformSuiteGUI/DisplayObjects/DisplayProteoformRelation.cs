@@ -1,5 +1,5 @@
-﻿using System;
-using ProteoformSuiteInternal;
+﻿using ProteoformSuiteInternal;
+using System;
 using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
@@ -286,7 +286,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(RelationType)].HeaderText = "Relation Type";
 
             //making these columns invisible
-            dgv.Columns[nameof(LysineCount)].Visible = Lollipop.neucode_labeled;
+            dgv.Columns[nameof(LysineCount)].Visible = SaveState.lollipop.neucode_labeled;
         } 
         #endregion
     }

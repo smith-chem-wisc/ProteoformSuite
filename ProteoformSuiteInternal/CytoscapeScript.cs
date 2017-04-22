@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using Proteomics;
 using System.IO;
+using System.Linq;
+using System.Xml;
 
 namespace ProteoformSuiteInternal
 {
@@ -236,7 +233,7 @@ namespace ProteoformSuiteInternal
             IEnumerable<TheoreticalProteoform> theoreticals, bool gene_centric_families, string preferred_gene_label)
         {
             string tsv_header = "accession\t" + proteoform_type_header + "\t" + size_header + "\t" + tooltip_header;
-            if (quantitative) tsv_header += "\t" + Lollipop.numerator_condition + "\t" + Lollipop.denominator_condition + "\t" + significant_header + "\t" + piechart_header;
+            if (quantitative) tsv_header += "\t" + SaveState.lollipop.numerator_condition + "\t" + SaveState.lollipop.denominator_condition + "\t" + significant_header + "\t" + piechart_header;
 
             string node_rows = "";
             foreach (ExperimentalProteoform p in families.SelectMany(f => f.experimental_proteoforms))
@@ -259,7 +256,7 @@ namespace ProteoformSuiteInternal
                     "Total Intensity = " + total_intensity.ToString(),
                     "Aggregated Component Count = " + p.aggregated_components.Count.ToString(),
                 });
-                if (Lollipop.neucode_labeled) node_rows += "; Lysine Count = " + p.lysine_count;
+                if (SaveState.lollipop.neucode_labeled) node_rows += "; Lysine Count = " + p.lysine_count;
                 if (quantitative && p.quant.intensitySum > 0)
                 {
                     node_rows += "\\n\\nQuantitation Results:";
@@ -268,8 +265,8 @@ namespace ProteoformSuiteInternal
                         "Log2FC = " + p.quant.logFoldChange.ToString(),
                         "Variance = " + p.quant.variance.ToString(),
                         "Significant = " + p.quant.significant.ToString(),
-                        Lollipop.numerator_condition + " Quantitative Component Count = " + p.lt_quant_components.ToString(),
-                        Lollipop.denominator_condition + " Quantitative Component Count = " + p.hv_quant_components.ToString(),
+                        SaveState.lollipop.numerator_condition + " Quantitative Component Count = " + p.lt_quant_components.ToString(),
+                        SaveState.lollipop.denominator_condition + " Quantitative Component Count = " + p.hv_quant_components.ToString(),
                     });
                 }
 
@@ -316,7 +313,7 @@ namespace ProteoformSuiteInternal
 
         private static string get_piechart_string(string color_scheme)
         {
-            return "piechart: attributelist = \"" + Lollipop.numerator_condition + "," + Lollipop.denominator_condition +
+            return "piechart: attributelist = \"" + SaveState.lollipop.numerator_condition + "," + SaveState.lollipop.denominator_condition +
                 "\" colorlist = \"" + color_schemes[color_scheme][0] + "," + color_schemes[color_scheme][3] +
                 "\" labellist = \",\"";
         }

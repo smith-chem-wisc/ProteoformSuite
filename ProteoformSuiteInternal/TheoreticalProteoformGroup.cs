@@ -1,13 +1,21 @@
-﻿using System;
+﻿using Proteomics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
+    [Serializable]
     public class TheoreticalProteoformGroup : TheoreticalProteoform
     {
+
+        #region Public Property
+
         public List<string> accessionList { get; set; } // this is the list of accession numbers for all proteoforms that share the same modified mass. the list gets alphabetical order
+
+        #endregion Public Property
+
+        #region Public Constructor
 
         public TheoreticalProteoformGroup(IEnumerable<TheoreticalProteoform> theoreticals_with_contaminants_first)
             : base(theoreticals_with_contaminants_first.FirstOrDefault().accession + "_" + theoreticals_with_contaminants_first.Count() + "T",
@@ -26,5 +34,8 @@ namespace ProteoformSuiteInternal
             this.accessionList = theoreticals_with_contaminants_first.Select(p => p.accession).ToList();
             this.contaminant = theoreticals_with_contaminants_first.FirstOrDefault().contaminant;
         }
+
+        #endregion Public Constructor
+
     }
 }
