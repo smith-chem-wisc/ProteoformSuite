@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace ProteoformSuiteInternal
 {
+    [Serializable]
     public class NeuCodePair : Component
     {
         #region Public Properties
@@ -61,8 +62,8 @@ namespace ProteoformSuiteInternal
 
         public void set_accepted()
         {
-            accepted = lysine_count >= Lollipop.min_lysine_ct && lysine_count <= Lollipop.max_lysine_ct
-                && intensity_ratio >= Convert.ToDouble(Lollipop.min_intensity_ratio) && intensity_ratio <= Convert.ToDouble(Lollipop.max_intensity_ratio);
+            accepted = lysine_count >= SaveState.lollipop.min_lysine_ct && lysine_count <= SaveState.lollipop.max_lysine_ct
+                && intensity_ratio >= Convert.ToDouble(SaveState.lollipop.min_intensity_ratio) && intensity_ratio <= Convert.ToDouble(SaveState.lollipop.max_intensity_ratio);
         }
 
         #endregion Public Methods

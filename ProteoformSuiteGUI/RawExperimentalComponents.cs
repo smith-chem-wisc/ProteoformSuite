@@ -30,31 +30,31 @@ namespace ProteoformSuiteGUI
         {
             if (!preloaded)
             {
-                Lollipop.getBiorepsFractionsList(Lollipop.input_files); // list of bioreps with a list of fractions for each biorep
-                Lollipop.getObservationParameters(Lollipop.neucode_labeled, Lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+                SaveState.lollipop.getBiorepsFractionsList(SaveState.lollipop.input_files); // list of bioreps with a list of fractions for each biorep
+                SaveState.lollipop.getObservationParameters(SaveState.lollipop.neucode_labeled, SaveState.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
 
                 Parallel.Invoke
                 (
                 () => 
                     {
-                        if (Lollipop.raw_experimental_components.Count <= 0)
-                            Lollipop.process_raw_components(Lollipop.input_files, Lollipop.raw_experimental_components, Purpose.Identification);
+                        if (SaveState.lollipop.raw_experimental_components.Count <= 0)
+                            SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_experimental_components, Purpose.Identification);
                     }, //Includes reading correction factors if present,
                 () => 
                     {
-                        if (Lollipop.raw_quantification_components.Count <= 0)
-                            Lollipop.process_raw_components(Lollipop.input_files, Lollipop.raw_quantification_components, Purpose.Quantification);
+                        if (SaveState.lollipop.raw_quantification_components.Count <= 0)
+                            SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_quantification_components, Purpose.Quantification);
                     },
                 () => 
                     {
-                        if (Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() > 0 && Lollipop.proteoform_community.theoretical_proteoforms.Length <= 0)
-                            Lollipop.get_theoretical_proteoforms(Path.Combine(Path.Combine(Environment.CurrentDirectory)));
+                        if (SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0 && SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length <= 0)
+                            SaveState.lollipop.get_theoretical_proteoforms(Path.Combine(Path.Combine(Environment.CurrentDirectory)));
                     }
                 );
 
                 FillRawExpComponentsTable();
                 FillRawQuantificationComponentsTable();
-                if (Lollipop.neucode_labeled) (MdiParent as ProteoformSweet).neuCodePairs.display_neucode_pairs();
+                if (SaveState.lollipop.neucode_labeled) (MdiParent as ProteoformSweet).neuCodePairs.display_neucode_pairs();
                     (MdiParent as ProteoformSweet).theoreticalDatabase.FillDataBaseTable("Target");
             }
             preloaded = false;
@@ -67,18 +67,18 @@ namespace ProteoformSuiteGUI
 
         public void FillRawExpComponentsTable()
         {
-            if (Lollipop.raw_experimental_components.Count > 0)
+            if (SaveState.lollipop.raw_experimental_components.Count > 0)
             {
-                DisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, Lollipop.raw_experimental_components.Select(c => new DisplayComponent(c)));
+                DisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, SaveState.lollipop.raw_experimental_components.Select(c => new DisplayComponent(c)));
                 DisplayComponent.FormatComponentsTable(dgv_RawExpComp_MI_masses, false);
             }
         }
 
         public void FillRawQuantificationComponentsTable()
         {
-            if (Lollipop.raw_quantification_components.Count > 0)
+            if (SaveState.lollipop.raw_quantification_components.Count > 0)
             {
-                DisplayUtility.FillDataGridView(dgv_RawQuantComp_MI_masses, Lollipop.raw_quantification_components.Select(c => new DisplayComponent(c)));
+                DisplayUtility.FillDataGridView(dgv_RawQuantComp_MI_masses, SaveState.lollipop.raw_quantification_components.Select(c => new DisplayComponent(c)));
                 DisplayComponent.FormatComponentsTable(dgv_RawQuantComp_MI_masses, true);
             }
         }

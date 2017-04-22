@@ -164,14 +164,14 @@ namespace ProteoformSuiteGUI
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //if (openResults.ShowDialog() == DialogResult.OK)
-            //    SaveState.load_all_results(openResults.FileName);
+            if (openResults.ShowDialog() == DialogResult.OK)
+                SaveState.load_all_resuls(openResults.FileName);
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //if (saveResults.ShowDialog() == DialogResult.OK)
-            //    SaveState.save_all_results(saveResults.FileName);
+            if (saveResults.ShowDialog() == DialogResult.OK)
+                SaveState.save_all_results(saveResults.FileName);
         }
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
@@ -219,7 +219,7 @@ namespace ProteoformSuiteGUI
 
         private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Lollipop.input_files.Count == 0)
+            if (SaveState.lollipop.input_files.Count == 0)
             {
                 MessageBox.Show("Please load in deconvolution result files in order to use load and run.");
                 return;
@@ -237,7 +237,7 @@ namespace ProteoformSuiteGUI
         public bool full_run()
         {
             clear_lists();
-            if (Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
+            if (SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
             {
                 MessageBox.Show("Please list at least one protein database and at least one PTM list.");
                 return false;
@@ -248,7 +248,7 @@ namespace ProteoformSuiteGUI
             rawExperimentalComponents.preloaded = true;
             neuCodePairs.preloaded = true;
             aggregatedProteoforms.aggregate_proteoforms();
-            this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
+            this.enable_neuCodeProteoformPairsToolStripMenuItem(SaveState.lollipop.neucode_labeled);
             this.Cursor = Cursors.Default;
             return true;
         }
@@ -324,13 +324,13 @@ namespace ProteoformSuiteGUI
 
         public void save_all_plots(string folder, string timestamp)
         {
-            if (Lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_IntensityRatio, folder, "NeuCode_IntensityRatios_", timestamp);
-            if (Lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_LysineCount, folder, "NeuCode_LysineCounts_", timestamp);
-            if (Lollipop.et_relations.Count > 0) save_as_png(experimentalTheoreticalComparison.ct_ET_Histogram, folder, "ExperimentalTheoretical_MassDifferences_", timestamp);
-            if (Lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
-            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_proteoformIntensities, folder, "QuantifiedProteoform_Intensities_", timestamp);
-            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_relativeDifference, folder, "QuantifiedProteoform_Tusher2001Plot_", timestamp);
-            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_volcano_logFold_logP, folder, "QuantifiedProteoform_VolcanoPlot_", timestamp);
+            if (SaveState.lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_IntensityRatio, folder, "NeuCode_IntensityRatios_", timestamp);
+            if (SaveState.lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_LysineCount, folder, "NeuCode_LysineCounts_", timestamp);
+            if (SaveState.lollipop.et_relations.Count > 0) save_as_png(experimentalTheoreticalComparison.ct_ET_Histogram, folder, "ExperimentalTheoretical_MassDifferences_", timestamp);
+            if (SaveState.lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
+            if (SaveState.lollipop.qVals.Count > 0) save_as_png(quantification.ct_proteoformIntensities, folder, "QuantifiedProteoform_Intensities_", timestamp);
+            if (SaveState.lollipop.qVals.Count > 0) save_as_png(quantification.ct_relativeDifference, folder, "QuantifiedProteoform_Tusher2001Plot_", timestamp);
+            if (SaveState.lollipop.qVals.Count > 0) save_as_png(quantification.ct_volcano_logFold_logP, folder, "QuantifiedProteoform_VolcanoPlot_", timestamp);
         }
 
         private void save_as_png(Chart ct, string folder, string prefix, string timestamp)
@@ -344,20 +344,20 @@ namespace ProteoformSuiteGUI
 
         public void clear_lists()
         {
-            Lollipop.raw_experimental_components.Clear();
-            Lollipop.raw_neucode_pairs.Clear();
-            Lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
-            Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
-            Lollipop.et_relations.Clear();
-            Lollipop.et_peaks.Clear();
-            Lollipop.ee_relations.Clear();
-            Lollipop.ee_peaks.Clear();
-            Lollipop.proteoform_community.families.Clear();
-            Lollipop.ed_relations.Clear();
-            Lollipop.proteoform_community.relations_in_peaks.Clear();
-            Lollipop.proteoform_community.delta_mass_peaks.Clear();
-            Lollipop.ef_relations.Clear();
-            Lollipop.proteoform_community.decoy_proteoforms.Clear();
+            SaveState.lollipop.raw_experimental_components.Clear();
+            SaveState.lollipop.raw_neucode_pairs.Clear();
+            SaveState.lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
+            SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
+            SaveState.lollipop.et_relations.Clear();
+            SaveState.lollipop.et_peaks.Clear();
+            SaveState.lollipop.ee_relations.Clear();
+            SaveState.lollipop.ee_peaks.Clear();
+            SaveState.lollipop.proteoform_community.families.Clear();
+            SaveState.lollipop.ed_relations.Clear();
+            SaveState.lollipop.proteoform_community.relations_in_peaks.Clear();
+            SaveState.lollipop.proteoform_community.delta_mass_peaks.Clear();
+            SaveState.lollipop.ef_relations.Clear();
+            SaveState.lollipop.proteoform_community.decoy_proteoforms.Clear();
         }
 
         #endregion Public Method

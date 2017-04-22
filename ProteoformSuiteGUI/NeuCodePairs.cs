@@ -34,7 +34,7 @@ namespace ProteoformSuiteGUI
 
         public void display_neucode_pairs()
         {
-            if (Lollipop.raw_neucode_pairs.Count > 0 && !preloaded)
+            if (SaveState.lollipop.raw_neucode_pairs.Count > 0 && !preloaded)
             {
                 GraphNeuCodePairs();
                 FillNeuCodePairsDGV();
@@ -60,17 +60,17 @@ namespace ProteoformSuiteGUI
 
         private void FillNeuCodePairsDGV()
         {
-            DisplayUtility.FillDataGridView(dgv_RawExpNeuCodePairs, Lollipop.raw_neucode_pairs.Select(n => new DisplayNeuCodePair(n)));
+            DisplayUtility.FillDataGridView(dgv_RawExpNeuCodePairs, SaveState.lollipop.raw_neucode_pairs.Select(n => new DisplayNeuCodePair(n)));
             DisplayNeuCodePair.FormatNeuCodeTable(dgv_RawExpNeuCodePairs);
         }
 
         private void InitializeParameterSet()
         {
-            IRatMaxAcceptable.Minimum = -20; IRatMaxAcceptable.Maximum = 20; IRatMaxAcceptable.Value = Lollipop.max_intensity_ratio;
-            IRatMinAcceptable.Minimum = -20; IRatMinAcceptable.Maximum = 20; IRatMinAcceptable.Value = Lollipop.min_intensity_ratio;
+            IRatMaxAcceptable.Minimum = -20; IRatMaxAcceptable.Maximum = 20; IRatMaxAcceptable.Value = SaveState.lollipop.max_intensity_ratio;
+            IRatMinAcceptable.Minimum = -20; IRatMinAcceptable.Maximum = 20; IRatMinAcceptable.Value = SaveState.lollipop.min_intensity_ratio;
 
-            KMaxAcceptable.Minimum = -28; KMaxAcceptable.Maximum = 28; KMaxAcceptable.Value = Lollipop.max_lysine_ct;
-            KMinAcceptable.Minimum = -28; KMinAcceptable.Maximum = 28; KMinAcceptable.Value = Lollipop.min_lysine_ct;
+            KMaxAcceptable.Minimum = -28; KMaxAcceptable.Maximum = 28; KMaxAcceptable.Value = SaveState.lollipop.max_lysine_ct;
+            KMinAcceptable.Minimum = -28; KMinAcceptable.Maximum = 28; KMinAcceptable.Value = SaveState.lollipop.min_lysine_ct;
         }
 
         private void GraphIntensityRatio()
@@ -82,7 +82,7 @@ namespace ProteoformSuiteGUI
             int ymax = 0;
             for (double i = 0; i <= 20; i = i + 0.05)
             {
-                List<NeuCodePair> proteoforms_by_intensityRatio = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio >= i - 0.025 && p.intensity_ratio < i + 0.025).ToList();
+                List<NeuCodePair> proteoforms_by_intensityRatio = SaveState.lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio >= i - 0.025 && p.intensity_ratio < i + 0.025).ToList();
                 if (proteoforms_by_intensityRatio.Count > ymax)
                     ymax = proteoforms_by_intensityRatio.Count;
                 intensityRatioHistogram.Rows.Add(i, proteoforms_by_intensityRatio.Count);
@@ -111,7 +111,7 @@ namespace ProteoformSuiteGUI
             int ymax = 0;
             for (int i = 0; i <= 28; i++)
             {
-                List<NeuCodePair> pf_by_lysCt = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count == i).ToList();
+                List<NeuCodePair> pf_by_lysCt = SaveState.lollipop.raw_neucode_pairs.Where(p => p.lysine_count == i).ToList();
                 if (pf_by_lysCt.Count > ymax)
                     ymax = pf_by_lysCt.Count;
                 lysCtHistogram.Rows.Add(i, pf_by_lysCt.Count);
@@ -177,8 +177,8 @@ namespace ProteoformSuiteGUI
         {
             if (!initial_load)
             {
-                Lollipop.min_lysine_ct = KMinAcceptable.Value;
-                Parallel.ForEach(Lollipop.raw_neucode_pairs, p => p.set_accepted());
+                SaveState.lollipop.min_lysine_ct = KMinAcceptable.Value;
+                Parallel.ForEach(SaveState.lollipop.raw_neucode_pairs, p => p.set_accepted());
                 dgv_RawExpNeuCodePairs.Refresh();
                 ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsAndTables();
             }
@@ -188,8 +188,8 @@ namespace ProteoformSuiteGUI
         {
             if (!initial_load)
             {
-                Lollipop.max_lysine_ct = KMaxAcceptable.Value;
-                Parallel.ForEach(Lollipop.raw_neucode_pairs, p => p.set_accepted());
+                SaveState.lollipop.max_lysine_ct = KMaxAcceptable.Value;
+                Parallel.ForEach(SaveState.lollipop.raw_neucode_pairs, p => p.set_accepted());
                 dgv_RawExpNeuCodePairs.Refresh();
                 ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsAndTables();
             }
@@ -199,8 +199,8 @@ namespace ProteoformSuiteGUI
         {
             if (!initial_load)
             {
-                Lollipop.min_intensity_ratio = IRatMinAcceptable.Value;
-                Parallel.ForEach(Lollipop.raw_neucode_pairs, p => p.set_accepted());
+                SaveState.lollipop.min_intensity_ratio = IRatMinAcceptable.Value;
+                Parallel.ForEach(SaveState.lollipop.raw_neucode_pairs, p => p.set_accepted());
                 dgv_RawExpNeuCodePairs.Refresh();
                 ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsAndTables();
             }
@@ -210,8 +210,8 @@ namespace ProteoformSuiteGUI
         {
             if (!initial_load)
             {
-                Lollipop.max_intensity_ratio = IRatMaxAcceptable.Value;
-                Parallel.ForEach(Lollipop.raw_neucode_pairs, p => p.set_accepted());
+                SaveState.lollipop.max_intensity_ratio = IRatMaxAcceptable.Value;
+                Parallel.ForEach(SaveState.lollipop.raw_neucode_pairs, p => p.set_accepted());
                 dgv_RawExpNeuCodePairs.Refresh();
                 ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsAndTables();
             }

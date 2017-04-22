@@ -1,8 +1,7 @@
-﻿using System.Linq;
+﻿using ProteoformSuiteInternal;
 using System.Collections.Generic;
-using ProteoformSuiteInternal;
+using System.Linq;
 using System.Windows.Forms;
-
 
 namespace ProteoformSuiteGUI
 {

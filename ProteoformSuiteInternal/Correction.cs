@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
+    [Serializable]
     public class Correction
     {
         public string file_name { get; set; }

@@ -1,12 +1,11 @@
-﻿using System;
-using ProteoformSuiteInternal;
+﻿using ProteoformSuiteInternal;
 using System.Windows.Forms;
-
 
 namespace ProteoformSuiteGUI
 {
     public class DisplayQuantitativeValues : DisplayObject
     {
+
         #region Public Constructors
 
         public DisplayQuantitativeValues(ExperimentalProteoform.quantitativeValues q)
@@ -112,5 +111,6 @@ namespace ProteoformSuiteGUI
         } 
 
         #endregion
+
     }
 }

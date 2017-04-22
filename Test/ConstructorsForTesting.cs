@@ -29,7 +29,7 @@ namespace Test
             p2.relationships.Add(pp);
         }
 
-
+        
         //MAKE THEORETICAL
         public static TheoreticalProteoform make_a_theoretical(string a, ProteinWithGoTerms p, Dictionary<InputFile, Protein[]> dict)
         {
@@ -104,7 +104,7 @@ namespace Test
             if (quantitative_observations.Count > 0)
             {
                 e.lt_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, true)));
-                if (Lollipop.neucode_labeled) e.hv_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, false)));
+                if (SaveState.lollipop.neucode_labeled) e.hv_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, false)));
             }
             e.root = e.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
             return e;
@@ -136,8 +136,8 @@ namespace Test
         public static Dictionary<string, IList<Modification>> read_mods()
         {
             Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "elements.dat"));
-            List<ModificationWithLocation> all_modifications = Lollipop.get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
-            return Lollipop.make_modification_dictionary(all_modifications);
+            List<ModificationWithLocation> all_modifications = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
+            return SaveState.lollipop.make_modification_dictionary(all_modifications);
         }
     }
 }

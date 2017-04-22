@@ -1,7 +1,7 @@
 ﻿using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ProteoformSuiteInternal
@@ -102,7 +102,7 @@ namespace ProteoformSuiteInternal
 
                     foreach (double missedMonoMass in possibleMissedMonoisotopicsList)
                     {
-                        double massTolerance = missedMonoMass / 1000000d * (double)Lollipop.mass_tolerance;
+                        double massTolerance = missedMonoMass / 1000000d * (double)SaveState.lollipop.mass_tolerance;
                         List<Component> missedMonoisotopics = scanComps.Except(removeThese).Where(cp => cp.weighted_monoisotopic_mass >= (missedMonoMass - massTolerance) && cp.weighted_monoisotopic_mass <= (missedMonoMass + massTolerance)).ToList(); // this is a list of harmonics to hc
 
                         foreach (Component c in missedMonoisotopics.Where(m => m.id != sc.id).ToList())
@@ -114,9 +114,9 @@ namespace ProteoformSuiteInternal
                 }
 
 
-                if (Lollipop.neucode_labeled && raw_components.FirstOrDefault().input_file.purpose == Purpose.Identification) //before we compress harmonics, we have to determine if they are neucode labeled and lysine count 14. these have special considerations
+                if (SaveState.lollipop.neucode_labeled && raw_components.FirstOrDefault().input_file.purpose == Purpose.Identification) //before we compress harmonics, we have to determine if they are neucode labeled and lysine count 14. these have special considerations
                 {
-                    ncPairsInScan = Lollipop.find_neucode_pairs(scanComps.Except(removeThese), neucodePairs_in_file); // these are not the final neucode pairs, just a temp list
+                    ncPairsInScan = SaveState.lollipop.find_neucode_pairs(scanComps.Except(removeThese), neucodePairs_in_file); // these are not the final neucode pairs, just a temp list
                 }
 
                 List<string> lysFourteenComponents = new List<string>();
@@ -141,7 +141,7 @@ namespace ProteoformSuiteInternal
 
                     foreach (double harmonicMass in possibleHarmonicList)
                     {
-                        double massTolerance = harmonicMass / 1000000d * (double)Lollipop.mass_tolerance;
+                        double massTolerance = harmonicMass / 1000000d * (double)SaveState.lollipop.mass_tolerance;
                         List<Component> harmonics = scanComps.Except(removeThese).Where(cp => cp.weighted_monoisotopic_mass >= (harmonicMass - massTolerance) && cp.weighted_monoisotopic_mass <= (harmonicMass + massTolerance)).ToList(); // this is a list of harmonics to hc
                         List<Component> someHarmonics = harmonics.Where(harmonicComponent => harmonicComponent.id != hc.id).ToList();
                         foreach (Component h in someHarmonics) // now that we have a list of harmonics to hc, we have to figure out what to do with them

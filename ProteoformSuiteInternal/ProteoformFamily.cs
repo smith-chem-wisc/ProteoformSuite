@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
+    [Serializable]
     public class ProteoformFamily
     {
 
@@ -28,7 +29,7 @@ namespace ProteoformSuiteInternal
         public string accession_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.accession)); } }
         public string gene_list { get { return String.Join("; ", gene_names.Select(p => p.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Where(n => n != null).Distinct()); } }
         public string experimentals_list { get { return String.Join("; ", experimental_proteoforms.Select(p => p.accession)); } }
-        public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, Lollipop.deltaM_edge_display_rounding))); } }
+        public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, SaveState.lollipop.deltaM_edge_display_rounding))); } }
         public int lysine_count { get; set; } = -1;
         public List<ExperimentalProteoform> experimental_proteoforms { get; private set; }
         public List<TheoreticalProteoform> theoretical_proteoforms { get; private set; }
@@ -60,7 +61,7 @@ namespace ProteoformSuiteInternal
         public void merge_families()
         {
             IEnumerable<ProteoformFamily> gene_family =
-                    from f in Lollipop.proteoform_community.families
+                    from f in SaveState.lollipop.proteoform_community.families
                     from n in this.gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Distinct()
                     where f.gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Contains(n)
                     select f;
@@ -74,7 +75,7 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(theoretical_proteoforms, t =>
             {
                 lock (identified_experimentals)
-                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(Lollipop.all_possible_ptmsets, Lollipop.all_mods_with_mass))
+                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(SaveState.lollipop.all_possible_ptmsets, SaveState.lollipop.all_mods_with_mass))
                     {
                         identified_experimentals.Add(e);
                     }
@@ -90,7 +91,7 @@ namespace ProteoformSuiteInternal
                 Parallel.ForEach(newly_identified_experimentals, id_experimental =>
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
-                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Lollipop.all_possible_ptmsets, Lollipop.all_mods_with_mass))
+                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(SaveState.lollipop.all_possible_ptmsets, SaveState.lollipop.all_mods_with_mass))
                             {
                                 identified_experimentals.Add(new_e);
                                 tmp_new_experimentals.Add(new_e);

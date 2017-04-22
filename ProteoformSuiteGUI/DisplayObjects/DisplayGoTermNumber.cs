@@ -1,7 +1,6 @@
 ﻿using ProteoformSuiteInternal;
 using System.Windows.Forms;
 
-
 namespace ProteoformSuiteGUI
 {
     public class DisplayGoTermNumber : DisplayObject

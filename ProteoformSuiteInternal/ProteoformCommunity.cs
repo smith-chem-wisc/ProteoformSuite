@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
+    [Serializable]
     public class ProteoformCommunity
     {
 
@@ -86,25 +87,25 @@ namespace ProteoformSuiteInternal
             {
                 case (ProteoformComparison.ExperimentalTheoretical):
                 case (ProteoformComparison.ExperimentalDecoy):
-                    return (!Lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
-                        && (pf1.modified_mass - pf2.modified_mass) >= Lollipop.et_low_mass_difference
-                        && (pf1.modified_mass - pf2.modified_mass) <= Lollipop.et_high_mass_difference
+                    return (!SaveState.lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
+                        && (pf1.modified_mass - pf2.modified_mass) >= SaveState.lollipop.et_low_mass_difference
+                        && (pf1.modified_mass - pf2.modified_mass) <= SaveState.lollipop.et_high_mass_difference
                         && (pf2.ptm_set.ptm_combination.Count < 3 || pf2.ptm_set.ptm_combination.Select(ptm => ptm.modification.monoisotopicMass).All(x => x == pf2.ptm_set.ptm_combination.First().modification.monoisotopicMass));
 
                 case (ProteoformComparison.ExperimentalExperimental):
                     return pf1.modified_mass >= pf2.modified_mass
                         && pf1 != pf2
-                        && (!Lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
-                        && pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference
-                        && Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) <= Lollipop.ee_max_RetentionTime_difference;
+                        && (!SaveState.lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
+                        && pf1.modified_mass - pf2.modified_mass <= SaveState.lollipop.ee_max_mass_difference
+                        && Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) <= SaveState.lollipop.ee_max_RetentionTime_difference;
 
                 case (ProteoformComparison.ExperimentalFalse):
                     return pf1.modified_mass >= pf2.modified_mass
                         && pf1 != pf2
-                        && (pf1.modified_mass - pf2.modified_mass <= Lollipop.ee_max_mass_difference)
-                        && (!Lollipop.neucode_labeled || pf1.lysine_count != pf2.lysine_count)
-                        && (Lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) > Lollipop.ee_max_RetentionTime_difference * 2)
-                        && (!Lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) < Lollipop.ee_max_RetentionTime_difference);
+                        && (pf1.modified_mass - pf2.modified_mass <= SaveState.lollipop.ee_max_mass_difference)
+                        && (!SaveState.lollipop.neucode_labeled || pf1.lysine_count != pf2.lysine_count)
+                        && (SaveState.lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) > SaveState.lollipop.ee_max_RetentionTime_difference * 2)
+                        && (!SaveState.lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) < SaveState.lollipop.ee_max_RetentionTime_difference);
 
                 default:
                     return false;
@@ -140,7 +141,7 @@ namespace ProteoformSuiteInternal
                 string key = "EF_relations_" + i;
                 ProteoformRelation[] to_shuffle = new List<ProteoformRelation>(all_ef_relations).ToArray();
                 to_shuffle.Shuffle();
-                lock (ef_relations) ef_relations.Add(key, to_shuffle.Take(Lollipop.ee_relations.Count).ToList());
+                lock (ef_relations) ef_relations.Add(key, to_shuffle.Take(SaveState.lollipop.ee_relations.Count).ToList());
             });
 
             count_nearby_relations(ef_relations.Values.First()); //count from first decoy database
@@ -317,10 +318,10 @@ namespace ProteoformSuiteInternal
 
         public void clear_et()
         {
-            Lollipop.et_relations.Clear();
-            Lollipop.et_peaks.Clear();
-            Lollipop.ed_relations.Clear();
-            Lollipop.proteoform_community.families.Clear();
+            SaveState.lollipop.et_relations.Clear();
+            SaveState.lollipop.et_peaks.Clear();
+            SaveState.lollipop.ed_relations.Clear();
+            SaveState.lollipop.proteoform_community.families.Clear();
 
             foreach (Proteoform p in experimental_proteoforms)
             {
@@ -337,7 +338,7 @@ namespace ProteoformSuiteInternal
                 p.family = null;
             }
 
-            foreach (Proteoform p in Lollipop.proteoform_community.decoy_proteoforms.Values.SelectMany(d => d))
+            foreach (Proteoform p in SaveState.lollipop.proteoform_community.decoy_proteoforms.Values.SelectMany(d => d))
             {
                 p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ExperimentalTheoretical || r.relation_type == ProteoformComparison.ExperimentalDecoy);
             }
@@ -348,12 +349,12 @@ namespace ProteoformSuiteInternal
 
         public void clear_ee()
         {
-            Lollipop.ee_relations.Clear();
-            Lollipop.ee_peaks.Clear();
-            Lollipop.ef_relations.Clear();
-            Lollipop.proteoform_community.families.Clear();
+            SaveState.lollipop.ee_relations.Clear();
+            SaveState.lollipop.ee_peaks.Clear();
+            SaveState.lollipop.ef_relations.Clear();
+            SaveState.lollipop.proteoform_community.families.Clear();
 
-            foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms)
+            foreach (Proteoform p in SaveState.lollipop.proteoform_community.experimental_proteoforms)
             {
                 p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ExperimentalExperimental || r.relation_type == ProteoformComparison.ExperimentalFalse);
                 p.family = null;

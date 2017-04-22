@@ -1,8 +1,8 @@
-﻿using System;
+﻿using ProteoformSuiteInternal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ProteoformSuiteInternal;
 using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
@@ -54,8 +54,8 @@ namespace ProteoformSuiteGUI
 
         protected void Relation_PeakAcceptabilityChanged(object sender, PeakAcceptabilityChangedEventArgs e)
         {
-            Parallel.ForEach(Lollipop.et_relations.Where(p => e.Peak.grouped_relations.Contains(p)), pRelation => pRelation.accepted = e.IsPeakAcceptable);
-            Parallel.ForEach(Lollipop.ee_relations.Where(p => e.Peak.grouped_relations.Contains(p)), pRelation => pRelation.accepted = e.IsPeakAcceptable);
+            Parallel.ForEach(SaveState.lollipop.et_relations.Where(p => e.Peak.grouped_relations.Contains(p)), pRelation => pRelation.accepted = e.IsPeakAcceptable);
+            Parallel.ForEach(SaveState.lollipop.ee_relations.Where(p => e.Peak.grouped_relations.Contains(p)), pRelation => pRelation.accepted = e.IsPeakAcceptable);
         }
     }
 }
