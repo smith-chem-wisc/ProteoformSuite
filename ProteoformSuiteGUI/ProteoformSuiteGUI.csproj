@@ -7,7 +7,7 @@
     <ProjectGuid>{90952C10-9060-4E42-AA1C-DC4BBE6A2FFF}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ProteoformSuite</RootNamespace>
+    <RootNamespace>ProteoformSuiteGUI</RootNamespace>
     <AssemblyName>ProteoformSuite</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
