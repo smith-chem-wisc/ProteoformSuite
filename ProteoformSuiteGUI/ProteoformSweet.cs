@@ -106,7 +106,7 @@ namespace ProteoformSuiteGUI
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(rawExperimentalComponents);
-            rawExperimentalComponents.load_raw_components();
+            rawExperimentalComponents.initialize_every_time();
         }
 
         private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -166,6 +166,13 @@ namespace ProteoformSuiteGUI
         {
             if (openResults.ShowDialog() == DialogResult.OK)
                 SaveState.load_all_resuls(openResults.FileName);
+
+            loadDeconvolutionResults.InitializeSettings();
+
+            rawExperimentalComponents.FillComponentsTable();
+
+            aggregatedProteoforms.InitializeSettings();
+            aggregatedProteoforms.FillAggregatesTable();
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -245,7 +252,6 @@ namespace ProteoformSuiteGUI
 
             this.Cursor = Cursors.WaitCursor;
             rawExperimentalComponents.load_raw_components(); //also loads the theoretical database, now
-            rawExperimentalComponents.preloaded = true;
             neuCodePairs.preloaded = true;
             aggregatedProteoforms.aggregate_proteoforms();
             this.enable_neuCodeProteoformPairsToolStripMenuItem(SaveState.lollipop.neucode_labeled);

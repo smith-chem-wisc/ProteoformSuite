@@ -81,6 +81,10 @@ namespace ProteoformSuiteGUI
             cb_geneCentric.Checked = ProteoformCommunity.gene_centric_families;
         }
 
+        #endregion Public Methods
+
+        #region Private Methods
+
         private void initialize()
         {
             //Initialize conditions
@@ -184,7 +188,7 @@ namespace ProteoformSuiteGUI
             rb_allTheoreticalProteins.CheckedChanged += new EventHandler(goTermBackgroundChanged);
         }
 
-        #endregion Public Methods
+        #endregion Private Methods
 
         #region Quantification Private Methods
 

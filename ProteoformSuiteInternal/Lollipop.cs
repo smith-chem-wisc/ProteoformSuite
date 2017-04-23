@@ -40,7 +40,7 @@ namespace ProteoformSuiteInternal
             return files.Where(f => f.purpose == purpose);
         }
 
-        public IEnumerable<InputFile> get_files(List<InputFile> files, List<Purpose> purposes)
+        public IEnumerable<InputFile> get_files(List<InputFile> files, IEnumerable<Purpose> purposes)
         {
             return files.Where(f => purposes.Contains(f.purpose));
         }
@@ -136,12 +136,16 @@ namespace ProteoformSuiteInternal
 
         #endregion Input Files
 
-        #region RAW EXPERIMENTAL COMPONENTS
+        #region RAW EXPERIMENTAL COMPONENTS Public Fields
 
         public List<Correction> correctionFactors = null;
         public List<Component> raw_experimental_components = new List<Component>();
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = true;
+
+        #endregion RAW EXPERIMENTAL COMPONENTS Public Fields
+
+        #region RAW EXPERIMENTAL COMPONENTS
 
         public void process_raw_components(List<InputFile> input_files, List<Component> destination, Purpose purpose)
         {
@@ -189,13 +193,17 @@ namespace ProteoformSuiteInternal
 
         #endregion RAW EXPERIMENTAL COMPONENTS
 
-        #region NEUCODE PAIRS
+        #region NEUCODE PAIRS Public Fields
 
         public List<NeuCodePair> raw_neucode_pairs = new List<NeuCodePair>();
         public decimal max_intensity_ratio = 6m;
         public decimal min_intensity_ratio = 1.4m;
         public decimal max_lysine_ct = 26.2m;
         public decimal min_lysine_ct = 1.5m;
+
+        #endregion NEUCODE PAIRS Public Fields
+
+        #region NEUCODE PAIRS
 
         public List<NeuCodePair> find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange, List<NeuCodePair> destination)
         {
@@ -254,10 +262,14 @@ namespace ProteoformSuiteInternal
 
         #endregion NEUCODE PAIRS
 
-        #region AGGREGATED PROTEOFORMS
+        #region AGGREGATED PROTEOFORMS Public Fields
 
+        [NonSerialized]
         public ProteoformCommunity proteoform_community = new ProteoformCommunity();
+
+        [NonSerialized]
         public List<ExperimentalProteoform> vetted_proteoforms = new List<ExperimentalProteoform>();
+
         public Component[] ordered_components = new Component[0];
         public List<Component> remaining_components = new List<Component>();
         public List<Component> remaining_verification_components = new List<Component>();
@@ -270,6 +282,10 @@ namespace ProteoformSuiteInternal
         public int min_agg_count = 1;
         public int min_num_CS = 1;
         public int min_num_bioreps = 1;
+
+        #endregion AGGREGATED PROTEOFORMS Public Fields
+
+        #region AGGREGATED PROTEOFORMS
 
         public List<ExperimentalProteoform> aggregate_proteoforms(bool two_pass_validation, IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS)
         {
@@ -439,7 +455,7 @@ namespace ProteoformSuiteInternal
 
         #endregion AGGREGATED PROTEOFORMS
 
-        #region THEORETICAL DATABASE
+        #region THEORETICAL DATABASE Public Fields
 
         public bool methionine_oxidation = true;
         public bool carbamidomethylation = true;
@@ -455,20 +471,41 @@ namespace ProteoformSuiteInternal
         public bool combine_identical_sequences = true;
         public bool combine_theoretical_proteoforms_byMass = true;
         public string[] mod_types_to_exclude = new string[] { "Metal", "PeptideTermMod", "TrypticProduct" };
+
+        [NonSerialized]
         public Dictionary<InputFile, Protein[]> theoretical_proteins = new Dictionary<InputFile, Protein[]>();
+
+        [NonSerialized]
         public ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
+
+        [NonSerialized]
         public Dictionary<string, IList<Modification>> uniprotModifications = new Dictionary<string, IList<Modification>>();
+
+        [NonSerialized]
         public List<ModificationWithMass> variableModifications = new List<ModificationWithMass>();
+
+        [NonSerialized]
         public List<PtmSet> all_possible_ptmsets;
+
+        [NonSerialized]
         public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>();
+
+        [NonSerialized]
         public List<ModificationWithMass> all_mods_with_mass = new List<ModificationWithMass>();
+
         public Dictionary<double, int> modification_ranks = new Dictionary<double, int>();
         public int rank_sum_threshold = 0; // set to the maximum rank of any single modification
         public int rank_first_quartile = 0; // approximate quartiles used for heuristics with unranked modifications
         public int rank_second_quartile = 0;
         public int rank_third_quartile = 0;
+
+        [NonSerialized]
         public List<PtmSet> acceptable_ptm_sets = new List<PtmSet>();
         Dictionary<char, double> aaIsotopeMassList;
+
+        #endregion THEORETICAL DATABASE Public Fields
+
+        #region THEORETICAL DATABASE
 
         public void get_theoretical_proteoforms(string current_directory)
         {
@@ -785,7 +822,7 @@ namespace ProteoformSuiteInternal
 
         #endregion THEORETICAL DATABASE
 
-        #region ET,ED,EE,EF COMPARISONS -- see ProteoformCommunity
+        #region ET,ED,EE,EF COMPARISONS Public Fields
 
         public double ee_max_mass_difference = 300;
         public double ee_max_RetentionTime_difference = 2.5;
@@ -798,16 +835,28 @@ namespace ProteoformSuiteInternal
         public double min_peak_count_et = 5;
         public double min_peak_count_ee = 10;
         public int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
+
+        [NonSerialized]
         public List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
+
+        [NonSerialized]
         public List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
+
+        [NonSerialized]
         public Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
+
+        [NonSerialized]
         public Dictionary<string, List<ProteoformRelation>> ef_relations = new Dictionary<string, List<ProteoformRelation>>();
+
+        [NonSerialized]
         public List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
+
+        [NonSerialized]
         public List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
 
-        #endregion ET,ED,EE,EF COMPARISONS -- see ProteoformCommunity
+        #endregion ET,ED,EE,EF COMPARISONS Public Fields
 
-        #region PROTEOFORM FAMILIES -- see ProteoformCommunity
+        #region PROTEOFORM FAMILIES Public Fields
 
         public string family_build_folder_path = "";
         public int deltaM_edge_display_rounding = 2;
@@ -817,9 +866,9 @@ namespace ProteoformSuiteInternal
         public static List<string> gene_name_labels = new List<string> { "Primary, e.g. HOG1", "Ordered Locus, e.g. YLR113W" };
         public string[] likely_cleavages = new string[] { "I", "L", "A" };
 
-        #endregion PROTEOFORM FAMILIES -- see ProteoformCommunity
+        #endregion PROTEOFORM FAMILIES Public Fields
 
-        #region QUANTIFICATION SETUP
+        #region QUANTIFICATION SETUP Public Fields
 
         public int countOfBioRepsInOneCondition; //need this in quantification to select which proteoforms to perform calculations on.
         public int condition_count;
@@ -827,6 +876,10 @@ namespace ProteoformSuiteInternal
         public Dictionary<string, List<int>> hvConditionsBioReps = new Dictionary<string, List<int>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
         public Dictionary<int, List<int>> quantBioFracCombos; //this dictionary has an integer list of bioreps with an integer list of observed fractions. this way we can be missing reps and fractions.
         public List<Tuple<int, int, double>> normalizationFactors;
+
+        #endregion QUANTIFICATION SETUP Public Fields
+
+        #region QUANTIFICATION SETUP
 
         public void getBiorepsFractionsList(List<InputFile> input_files)  //this should be moved to the appropriate location. somewhere at the start of raw component/end of load component.
         {
@@ -885,11 +938,15 @@ namespace ProteoformSuiteInternal
 
         #endregion QUANTIFICATION SETUP
 
-        #region QUANTIFICATION
+        #region QUANTIFICATION Public Fields
 
         public string numerator_condition = "";
         public string denominator_condition = "";
+
+        [NonSerialized]
         public SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>();
+
+        [NonSerialized]
         public SortedDictionary<decimal, int> logSelectIntensityHistogram = new SortedDictionary<decimal, int>();
         public decimal observedAverageIntensity; //log base 2
         public decimal selectAverageIntensity; //log base 2
@@ -903,12 +960,16 @@ namespace ProteoformSuiteInternal
         public decimal bkgdGaussianHeight;
         public decimal backgroundShift;
         public decimal backgroundWidth;
+
+        [NonSerialized]
         public List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>(); // these are proteoforms meeting the required number of observations.
         public IEnumerable<decimal> permutedTestStatistics;
         public static string[] observation_requirement_possibilities = new string[] { "Minimum Bioreps with Observations From Any Single Condition", "Minimum Bioreps with Observations From Any Condition", "Minimum Bioreps with Observations From Each Condition" };
         public string observation_requirement = observation_requirement_possibilities[0];
         public int minBiorepsWithObservations = 1;
         public decimal selectGaussianHeight;
+
+        [NonSerialized]
         public List<ExperimentalProteoform.quantitativeValues> qVals = new List<ExperimentalProteoform.quantitativeValues>();
         public decimal sKnot_minFoldChange = 1m;
         public List<decimal> sortedProteoformTestStatistics = new List<decimal>();
@@ -917,12 +978,21 @@ namespace ProteoformSuiteInternal
         //public decimal negativeOffsetTestStatistics = -1m;
         public decimal offsetFDR;
 
+        [NonSerialized]
         public List<ProteinWithGoTerms> observedProteins = new List<ProteinWithGoTerms>(); //This is the complete list of observed proteins
+
+        [NonSerialized]
         public List<ProteinWithGoTerms> quantifiedProteins = new List<ProteinWithGoTerms>(); //This is the complete list of proteins that were quantified and included in any accepted proteoform family
+
+        [NonSerialized]
         public List<ProteinWithGoTerms> inducedOrRepressedProteins = new List<ProteinWithGoTerms>(); //This is the list of proteins from proteoforms that underwent significant induction or repression
         public decimal minProteoformIntensity = 500000m;
         public decimal minProteoformFoldChange = 1m;
         public decimal minProteoformFDR = 0.05m;
+
+        #endregion QUANTIFICATION Public Fields
+
+        #region QUANTIFICATION
 
         public void quantify()
         {
@@ -1127,12 +1197,16 @@ namespace ProteoformSuiteInternal
 
         #endregion QUANTIFICATION
 
-        #region GO-TERMS AND GO-TERM SIGNIFICANCE
+        #region GO-TERMS AND GO-TERM SIGNIFICANCE Public Fields
 
         public List<GoTermNumber> goTermNumbers = new List<GoTermNumber>();//these are the count and enrichment values
         public bool allTheoreticalProteins = false; // this sets the group used for background. True if all Proteins in the theoretical database are used. False if only proteins observed in the study are used.
         public bool allDetectedProteins = false; // this sets the group used for background. True if all Proteins in the theoretical database are used. False if only proteins observed in the study are used.
         public string backgroundProteinsList = "";
+
+        #endregion GO-TERMS AND GO-TERM SIGNIFICANCE Public Fields
+
+        #region GO-TERMS AND GO-TERM SIGNIFICANCE
 
         public void GO_analysis()
         {

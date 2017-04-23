@@ -22,6 +22,16 @@ namespace ProteoformSuiteGUI
 
         #endregion Public Constructor
 
+        #region Public Methods
+
+        public void InitializeSettings()
+        {
+            rb_neucode.Checked = SaveState.lollipop.neucode_labeled;
+            populate_file_lists();
+        }
+
+        #endregion Public Methods
+
         #region GENERAL TABLE OPTIONS Private Methods
 
         private void btn_neucode_CheckedChanged(object sender, EventArgs e)
@@ -318,5 +328,6 @@ namespace ProteoformSuiteGUI
             lb_filter3.Text = cmb_loadTable1.SelectedItem.ToString();
         }
         #endregion CHANGED TABLE SELECTION Private Methods
+
     }
 }

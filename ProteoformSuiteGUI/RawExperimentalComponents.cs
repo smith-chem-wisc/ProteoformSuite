@@ -9,11 +9,6 @@ namespace ProteoformSuiteGUI
 {
     public partial class RawExperimentalComponents : Form
     {
-        #region Public Fields
-
-        public bool preloaded = false;
-
-        #endregion Public Fields
 
         #region Public Constructor
 
@@ -28,59 +23,47 @@ namespace ProteoformSuiteGUI
 
         public void load_raw_components()
         {
-            if (!preloaded)
-            {
-                SaveState.lollipop.getBiorepsFractionsList(SaveState.lollipop.input_files); // list of bioreps with a list of fractions for each biorep
-                SaveState.lollipop.getObservationParameters(SaveState.lollipop.neucode_labeled, SaveState.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+            SaveState.lollipop.getBiorepsFractionsList(SaveState.lollipop.input_files); // list of bioreps with a list of fractions for each biorep
+            SaveState.lollipop.getObservationParameters(SaveState.lollipop.neucode_labeled, SaveState.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
 
-                Parallel.Invoke
-                (
+            Parallel.Invoke
+            (
+                () => SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_experimental_components, Purpose.Identification),
+                () => SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_quantification_components, Purpose.Quantification),
                 () => 
-                    {
-                        if (SaveState.lollipop.raw_experimental_components.Count <= 0)
-                            SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_experimental_components, Purpose.Identification);
-                    }, //Includes reading correction factors if present,
-                () => 
-                    {
-                        if (SaveState.lollipop.raw_quantification_components.Count <= 0)
-                            SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_quantification_components, Purpose.Quantification);
-                    },
-                () => 
-                    {
-                        if (SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0 && SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length <= 0)
-                            SaveState.lollipop.get_theoretical_proteoforms(Path.Combine(Path.Combine(Environment.CurrentDirectory)));
-                    }
-                );
+                {
+                    if (SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0 && SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length <= 0)
+                        SaveState.lollipop.get_theoretical_proteoforms(Path.Combine(Path.Combine(Environment.CurrentDirectory)));
+                }
+            );
 
-                FillRawExpComponentsTable();
-                FillRawQuantificationComponentsTable();
-                if (SaveState.lollipop.neucode_labeled) (MdiParent as ProteoformSweet).neuCodePairs.display_neucode_pairs();
-                    (MdiParent as ProteoformSweet).theoreticalDatabase.FillDataBaseTable("Target");
-            }
-            preloaded = false;
+            FillComponentsTable();
+            if (SaveState.lollipop.neucode_labeled) (MdiParent as ProteoformSweet).neuCodePairs.display_neucode_pairs();
+                (MdiParent as ProteoformSweet).theoreticalDatabase.FillDataBaseTable("Target");
         }
 
         public DataGridView GetDGV()
         {
-            return dgv_RawExpComp_MI_masses;
+            return dgv_rawComponents;
         }
 
-        public void FillRawExpComponentsTable()
+        public void FillComponentsTable()
         {
-            if (SaveState.lollipop.raw_experimental_components.Count > 0)
-            {
-                DisplayUtility.FillDataGridView(dgv_RawExpComp_MI_masses, SaveState.lollipop.raw_experimental_components.Select(c => new DisplayComponent(c)));
-                DisplayComponent.FormatComponentsTable(dgv_RawExpComp_MI_masses, false);
-            }
+            if (rb_displayIdentificationComponents.Checked && SaveState.lollipop.raw_experimental_components.Count > 0)
+                DisplayUtility.FillDataGridView(dgv_rawComponents, SaveState.lollipop.raw_experimental_components.Select(c => new DisplayComponent(c)));
+
+            if (rb_displayQuantificationComponents.Checked && SaveState.lollipop.raw_quantification_components.Count > 0)
+                DisplayUtility.FillDataGridView(dgv_rawComponents, SaveState.lollipop.raw_quantification_components.Select(c => new DisplayComponent(c)));
+
+            DisplayComponent.FormatComponentsTable(dgv_rawComponents, true);
         }
 
-        public void FillRawQuantificationComponentsTable()
+        public void initialize_every_time()
         {
-            if (SaveState.lollipop.raw_quantification_components.Count > 0)
-            {
-                DisplayUtility.FillDataGridView(dgv_RawQuantComp_MI_masses, SaveState.lollipop.raw_quantification_components.Select(c => new DisplayComponent(c)));
-                DisplayComponent.FormatComponentsTable(dgv_RawQuantComp_MI_masses, true);
-            }
+            rb_displayQuantificationComponents.Enabled = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.Quantification).Count() > 0;
+            DisplayUtility.FillDataGridView(dgv_fileList, SaveState.lollipop.get_files(SaveState.lollipop.input_files, new Purpose[] { Purpose.Identification, Purpose.Quantification }).Select(c => new DisplayInputFile(c)));
+            DisplayInputFile.FormatInputFileTable(dgv_fileList, new Purpose[] { Purpose.Identification, Purpose.Quantification });
+            dgv_fileList.ReadOnly = true;
         }
 
         #endregion Public Methods
@@ -91,9 +74,9 @@ namespace ProteoformSuiteGUI
         {
             if (e.RowIndex >= 0)
             {
-                Component c = ((Component)((DisplayComponent)this.dgv_RawExpComp_MI_masses.Rows[e.RowIndex].DataBoundItem).display_object);
-                DisplayUtility.FillDataGridView(dgv_RawExpComp_IndChgSts, c.charge_states.Select(cs => new DisplayChargeState(cs)));
-                DisplayChargeState.FormatChargeStateTable(dgv_RawExpComp_IndChgSts, false);
+                Component c = ((Component)((DisplayComponent)this.dgv_rawComponents.Rows[e.RowIndex].DataBoundItem).display_object);
+                DisplayUtility.FillDataGridView(dgv_chargeStates, c.charge_states.Select(cs => new DisplayChargeState(cs)));
+                DisplayChargeState.FormatChargeStateTable(dgv_chargeStates, false);
             }
         }
 
@@ -102,11 +85,23 @@ namespace ProteoformSuiteGUI
         {
             if (e.RowIndex >= 0)
             {
-                Component c = ((Component)((DisplayComponent)this.dgv_RawQuantComp_MI_masses.Rows[e.RowIndex].DataBoundItem).display_object);
-                DisplayUtility.FillDataGridView(dgv_RawQuantComp_IndChgSts, c.charge_states.Select(cs => new DisplayChargeState(cs)));
-                DisplayChargeState.FormatChargeStateTable(dgv_RawQuantComp_IndChgSts, true);
+                Component c = ((Component)((DisplayComponent)this.dgv_rawComponents.Rows[e.RowIndex].DataBoundItem).display_object);
+                DisplayUtility.FillDataGridView(dgv_chargeStates, c.charge_states.Select(cs => new DisplayChargeState(cs)));
+                DisplayChargeState.FormatChargeStateTable(dgv_chargeStates, true);
             }
         }
+
+        private void rb_displayIdentificationComponents_CheckedChanged(object sender, EventArgs e)
+        {
+            FillComponentsTable();
+            dgv_chargeStates.DataSource = null;
+        }
+
+        private void bt_recalculate_Click(object sender, EventArgs e)
+        {
+            load_raw_components();
+        }
+
         #endregion Private Methods
     }
 }

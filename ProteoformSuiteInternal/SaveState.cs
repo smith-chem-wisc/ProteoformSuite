@@ -136,8 +136,15 @@ namespace ProteoformSuiteInternal
         public static void load_all_resuls(string filename)
         {
             Serializer ser = new Serializer(new Type[] { typeof(Lollipop) });
-            using (var file = File.Create(filename))
+            using (var file = File.OpenRead(filename))
                 lollipop = (Lollipop) ser.Deserialize(file);
+
+            //Set nonserialized values to defaults instead of null
+            Lollipop lol = new Lollipop();
+            foreach (FieldInfo field in typeof(Lollipop).GetFields())
+            {
+                if (field.GetValue(lollipop) == null) field.SetValue(lollipop, field.GetValue(lol));
+            }
         }
 
         #endregion Save and Load Results
