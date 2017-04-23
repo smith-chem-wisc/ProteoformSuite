@@ -71,7 +71,7 @@ namespace ProteoformSuiteGUI
 
         private void set_Make_Database_Button()
         {
-            btn_Make_Databases.Enabled = SaveState.lollipop.theoretical_database.ready_to_make_database();
+            btn_Make_Databases.Enabled = SaveState.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory);
         }
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)

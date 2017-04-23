@@ -250,7 +250,7 @@ namespace ProteoformSuiteGUI
         public bool full_run()
         {
             clear_lists();
-            if (!SaveState.lollipop.theoretical_database.ready_to_make_database())
+            if (!SaveState.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory))
             {
                 MessageBox.Show("Please list at least one protein database. Also, please make sure it has modifications listed (mzLibXml format) or to include and at least one PTM list.");
                 return false;
