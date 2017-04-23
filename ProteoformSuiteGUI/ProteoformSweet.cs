@@ -164,8 +164,10 @@ namespace ProteoformSuiteGUI
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Cursor = Cursors.WaitCursor;
+
             if (openResults.ShowDialog() == DialogResult.OK)
-                SaveState.load_all_resuls(openResults.FileName);
+                SaveState.load_all_results(openResults.FileName);
 
             loadDeconvolutionResults.InitializeSettings();
 
@@ -173,12 +175,16 @@ namespace ProteoformSuiteGUI
 
             aggregatedProteoforms.InitializeSettings();
             aggregatedProteoforms.FillAggregatesTable();
+
+            Cursor = Cursors.Default;
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Cursor = Cursors.WaitCursor;
             if (saveResults.ShowDialog() == DialogResult.OK)
                 SaveState.save_all_results(saveResults.FileName);
+            Cursor = Cursors.Default;
         }
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
@@ -244,9 +250,9 @@ namespace ProteoformSuiteGUI
         public bool full_run()
         {
             clear_lists();
-            if (SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
+            if (!SaveState.lollipop.theoretical_database.ready_to_make_database())
             {
-                MessageBox.Show("Please list at least one protein database and at least one PTM list.");
+                MessageBox.Show("Please list at least one protein database. Also, please make sure it has modifications listed (mzLibXml format) or to include and at least one PTM list.");
                 return false;
             }
 

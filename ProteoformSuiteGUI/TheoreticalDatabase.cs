@@ -2,10 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Windows.Forms;
-using System.Text.RegularExpressions;
 using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using UsefulProteomicsDatabases;
 
 namespace ProteoformSuiteGUI
 {
@@ -70,7 +71,7 @@ namespace ProteoformSuiteGUI
 
         private void set_Make_Database_Button()
         {
-            btn_Make_Databases.Enabled = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0;
+            btn_Make_Databases.Enabled = SaveState.lollipop.theoretical_database.ready_to_make_database();
         }
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)

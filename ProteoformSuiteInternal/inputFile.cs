@@ -86,6 +86,7 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Public Constructors
+
     }
 
     public enum Purpose
