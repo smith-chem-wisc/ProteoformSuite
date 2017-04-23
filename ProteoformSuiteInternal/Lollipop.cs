@@ -13,7 +13,7 @@ using UsefulProteomicsDatabases;
 namespace ProteoformSuiteInternal
 {
     [Serializable]
-    public class Lollipop //: ISerializable
+    public class Lollipop
     {
 
         #region Public Default Constructor
@@ -1262,30 +1262,9 @@ namespace ProteoformSuiteInternal
         {
             List<double> pvals = gtns.Select(g => g.p_value).ToList();
             pvals.Sort();
-            Parallel.ForEach<GoTermNumber>(gtns, g => g.by = GoTermNumber.benjaminiYekutieli(gtns.Count, pvals, g.p_value));
+            Parallel.ForEach(gtns, g => g.by = GoTermNumber.benjaminiYekutieli(gtns.Count, pvals, g.p_value));
         }
 
         #endregion GO-TERMS AND GO-TERM SIGNIFICANCE
-
-        //#region Serialization for Save and Load
-
-        //public void GetObjectData(SerializationInfo info, StreamingContext context)
-        //{
-        //    foreach (FieldInfo field in typeof(Lollipop).GetFields())
-        //    {
-        //        info.AddValue(field.Name, field.GetValue(null), field.FieldType);
-        //    }
-        //}
-
-        //public Lollipop(SerializationInfo info, StreamingContext context)
-        //{
-        //    foreach (FieldInfo field in typeof(Lollipop).GetFields())
-        //    {
-        //        field.SetValue(null, info.GetValue(field.Name, field.FieldType));
-        //    }
-        //}
-
-        //#endregion Serialization for Save and Load
-
     }
 }
