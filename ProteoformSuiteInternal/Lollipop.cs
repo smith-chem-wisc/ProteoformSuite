@@ -469,10 +469,10 @@ namespace ProteoformSuiteInternal
         public bool combine_theoretical_proteoforms_byMass = true;
         public string[] mod_types_to_exclude = new string[] { "Metal", "PeptideTermMod", "TrypticProduct" };
         public Dictionary<double, int> modification_ranks = new Dictionary<double, int>();
-        public int rank_sum_threshold = 0; // set to the maximum rank of any single modification
-        public int rank_first_quartile = 0; // approximate quartiles used for heuristics with unranked modifications
-        public int rank_second_quartile = 0;
-        public int rank_third_quartile = 0;
+        public int mod_rank_sum_threshold = 0; // set to the maximum rank of any single modification
+        public int mod_rank_first_quartile = 0; // approximate quartiles used for heuristics with unranked modifications
+        public int mod_rank_second_quartile = 0;
+        public int mod_rank_third_quartile = 0;
 
         [NonSerialized]
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();

@@ -236,7 +236,7 @@ namespace Test
             if (!SaveState.lollipop.modification_ranks.TryGetValue(0, out int a))
                 SaveState.lollipop.modification_ranks.Add(0, 1);
 
-            SaveState.lollipop.rank_sum_threshold = 2;
+            SaveState.lollipop.mod_rank_sum_threshold = 2;
         }
 
         [Test]
