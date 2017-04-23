@@ -169,7 +169,7 @@ namespace Test
             e2.family = h;
             SaveState.lollipop.inducedOrRepressedProteins = SaveState.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
             SaveState.lollipop.allTheoreticalProteins = true;
-            SaveState.lollipop.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
+            SaveState.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
             SaveState.lollipop.GO_analysis();
             Assert.AreEqual(2, SaveState.lollipop.inducedOrRepressedProteins.Count);
             Assert.AreEqual(1, SaveState.lollipop.goTermNumbers.Count);
@@ -237,7 +237,7 @@ namespace Test
             e2.family = h;
             SaveState.lollipop.inducedOrRepressedProteins = SaveState.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
             SaveState.lollipop.allTheoreticalProteins = true;
-            SaveState.lollipop.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
+            SaveState.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
             SaveState.lollipop.backgroundProteinsList = Path.Combine(TestContext.CurrentContext.TestDirectory, "test_protein_list.txt");
             SaveState.lollipop.GO_analysis();
             Assert.AreEqual(2, SaveState.lollipop.inducedOrRepressedProteins.Count);

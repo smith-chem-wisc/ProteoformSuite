@@ -124,7 +124,7 @@ namespace ProteoformSuiteGUI
 
         public void make_databases()
         {
-            SaveState.lollipop.get_theoretical_proteoforms(Environment.CurrentDirectory);
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
             tb_totalTheoreticalProteoforms.Text = SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length.ToString();
         }

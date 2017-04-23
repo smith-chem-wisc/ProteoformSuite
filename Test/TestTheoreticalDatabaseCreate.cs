@@ -59,9 +59,9 @@ namespace Test
             SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
             SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
 
-            SaveState.lollipop.theoretical_proteins.Clear();
-            SaveState.lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
-            Assert.AreEqual(54, SaveState.lollipop.theoretical_proteins.SelectMany(kv => kv.Value).Sum(p => p.DatabaseReferences.Where(dbRef => dbRef.Type == "GO").Count()));
+            SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            Assert.AreEqual(54, SaveState.lollipop.theoretical_database.theoretical_proteins.SelectMany(kv => kv.Value).Sum(p => p.DatabaseReferences.Where(dbRef => dbRef.Type == "GO").Count()));
             Assert.AreEqual(20, SaveState.lollipop.proteoform_community.theoretical_proteoforms.SelectMany(t => t.goTerms.Select(go => go.Id)).Distinct().Count());
 
             List<TheoreticalProteoform> peptides = SaveState.lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "peptide").ToList();
@@ -96,8 +96,8 @@ namespace Test
             SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
             SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
 
-            SaveState.lollipop.theoretical_proteins.Clear();
-            SaveState.lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
 
             List<TheoreticalProteoform> peptides = SaveState.lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "peptide").ToList();
             List<TheoreticalProteoform> chains = SaveState.lollipop.proteoform_community.theoretical_proteoforms.Where(p => p.fragment == "chain").ToList();
@@ -122,22 +122,22 @@ namespace Test
             SaveState.lollipop.max_ptms = 0;
             SaveState.lollipop.input_files.Clear();
             SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "stripped.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
-            SaveState.lollipop.theoretical_proteins.Clear();
+            SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
             SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
-            SaveState.lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
             Assert.AreEqual(1, SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length); //no methionine oxidation
 
             SaveState.lollipop.methionine_oxidation = true;
-            SaveState.lollipop.theoretical_proteins.Clear();
+            SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
             SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
-            SaveState.lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
             Assert.AreEqual(1, SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length); //only one methionine to oxidize, but no PTMs allowed
-            Assert.Less(SaveState.lollipop.modification_ranks[0], SaveState.lollipop.modification_ranks[SaveState.lollipop.variableModifications[0].monoisotopicMass] - 1); // unmodified gets a lower score than variable oxidation, even with the prioritization (minus one rank)
+            Assert.Less(SaveState.lollipop.modification_ranks[0], SaveState.lollipop.modification_ranks[SaveState.lollipop.theoretical_database.variableModifications[0].monoisotopicMass] - 1); // unmodified gets a lower score than variable oxidation, even with the prioritization (minus one rank)
 
             SaveState.lollipop.max_ptms = 1;
-            SaveState.lollipop.theoretical_proteins.Clear();
+            SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
             SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
-            SaveState.lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
             Assert.AreEqual(2, SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length); //only one methionine to oxidize
         }
 
@@ -149,27 +149,27 @@ namespace Test
             SaveState.lollipop.max_ptms = 0;
             SaveState.lollipop.input_files.Clear();
             SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "stripped_plus2M.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
-            SaveState.lollipop.theoretical_proteins.Clear();
+            SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
             SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
-            SaveState.lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
             Assert.AreEqual(1, SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length); //3 methionines for variable
 
             SaveState.lollipop.max_ptms = 1;
-            SaveState.lollipop.theoretical_proteins.Clear();
+            SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
             SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
-            SaveState.lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
             Assert.AreEqual(2, SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
 
             SaveState.lollipop.max_ptms = 2;
-            SaveState.lollipop.theoretical_proteins.Clear();
+            SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
             SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
-            SaveState.lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
             Assert.AreEqual(3, SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
 
             SaveState.lollipop.max_ptms = 3;
-            SaveState.lollipop.theoretical_proteins.Clear();
+            SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
             SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
-            SaveState.lollipop.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
             Assert.AreEqual(4, SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length); //three methionine sites to oxidize, but all three are equivalent, so just one more added
             Assert.AreEqual(1, new HashSet<ModificationWithMass>(SaveState.lollipop.proteoform_community.theoretical_proteoforms.SelectMany(t => t.ptm_set.ptm_combination.Select(ptm => ptm.modification))).Count); //Only the variable modification is in there; no sign of the fake oxidation of K I added
         }
@@ -207,7 +207,7 @@ namespace Test
             Assert.False(psg.IsContaminant);
 
             p3 = new ProteinWithGoTerms("MCSSSSSSSSSS", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference> { d3 }, new List<GoTerm> { g3 });
-            ProteinSequenceGroup[] psgs = SaveState.lollipop.group_proteins_by_sequence(new List<ProteinWithGoTerms> { p1, p2, p3 });
+            ProteinSequenceGroup[] psgs = SaveState.lollipop.theoretical_database.group_proteins_by_sequence(new List<ProteinWithGoTerms> { p1, p2, p3 });
             Assert.AreEqual(2, psgs.Length);
         }
 

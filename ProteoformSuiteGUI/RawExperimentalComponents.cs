@@ -33,7 +33,7 @@ namespace ProteoformSuiteGUI
                 () => 
                 {
                     if (SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.ProteinDatabase).Count() > 0 && SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length <= 0)
-                        SaveState.lollipop.get_theoretical_proteoforms(Path.Combine(Path.Combine(Environment.CurrentDirectory)));
+                        SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(Path.Combine(Environment.CurrentDirectory)));
                 }
             );
 

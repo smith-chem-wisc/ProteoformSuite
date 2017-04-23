@@ -94,7 +94,7 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             SaveState.lollipop.proteoform_community = test_community;
 
-            SaveState.lollipop.uniprotModifications = new Dictionary<string, IList<Modification>>
+            SaveState.lollipop.theoretical_database.uniprotModifications = new Dictionary<string, IList<Modification>>
             {
                 { "unmodified", new List<Modification>() { ConstructorsForTesting.get_modWithMass("unmodified", 0) } }
             };
@@ -129,7 +129,7 @@ namespace Test
             Assert.AreEqual(3, pr3.nearby_relations.Count);
             Assert.AreEqual(3, pr4.nearby_relations.Count);
 
-            SaveState.lollipop.all_possible_ptmsets = new List<PtmSet> { new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }) };
+            SaveState.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet> { new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }) };
             test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
             Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
             DeltaMassPeak peak = test_community.delta_mass_peaks[0];
@@ -163,7 +163,7 @@ namespace Test
         [Test]
         public void artificial_deltaMPeak()
         {
-            SaveState.lollipop.all_possible_ptmsets = new List<PtmSet>();
+            SaveState.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet>();
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
             ProteoformComparison comparison = ProteoformComparison.ExperimentalExperimental;

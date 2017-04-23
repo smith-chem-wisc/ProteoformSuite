@@ -1,14 +1,11 @@
 ﻿using Accord.Math;
-using Proteomics;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using UsefulProteomicsDatabases;
 
 namespace ProteoformSuiteInternal
 {
@@ -463,36 +460,14 @@ namespace ProteoformSuiteInternal
         public bool natural_lysine_isotope_abundance = false;
         public bool neucode_light_lysine = true;
         public bool neucode_heavy_lysine = false;
-        public int max_ptms = 3;
-        public int decoy_databases = 0;
+        public int max_ptms = 4;
+        public int decoy_databases = 5;
         public string decoy_database_name_prefix = "DecoyDatabase_";
         public int min_peptide_length = 7;
         public double ptmset_mass_tolerance = 0.00001;
         public bool combine_identical_sequences = true;
         public bool combine_theoretical_proteoforms_byMass = true;
         public string[] mod_types_to_exclude = new string[] { "Metal", "PeptideTermMod", "TrypticProduct" };
-
-        [NonSerialized]
-        public Dictionary<InputFile, Protein[]> theoretical_proteins = new Dictionary<InputFile, Protein[]>();
-
-        [NonSerialized]
-        public ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
-
-        [NonSerialized]
-        public Dictionary<string, IList<Modification>> uniprotModifications = new Dictionary<string, IList<Modification>>();
-
-        [NonSerialized]
-        public List<ModificationWithMass> variableModifications = new List<ModificationWithMass>();
-
-        [NonSerialized]
-        public List<PtmSet> all_possible_ptmsets;
-
-        [NonSerialized]
-        public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>();
-
-        [NonSerialized]
-        public List<ModificationWithMass> all_mods_with_mass = new List<ModificationWithMass>();
-
         public Dictionary<double, int> modification_ranks = new Dictionary<double, int>();
         public int rank_sum_threshold = 0; // set to the maximum rank of any single modification
         public int rank_first_quartile = 0; // approximate quartiles used for heuristics with unranked modifications
@@ -500,334 +475,16 @@ namespace ProteoformSuiteInternal
         public int rank_third_quartile = 0;
 
         [NonSerialized]
-        public List<PtmSet> acceptable_ptm_sets = new List<PtmSet>();
-        Dictionary<char, double> aaIsotopeMassList;
+        public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
 
         #endregion THEORETICAL DATABASE Public Fields
 
-        #region THEORETICAL DATABASE
-
-        public void get_theoretical_proteoforms(string current_directory)
-        {
-            //Clear out data from potential previous runs
-            proteoform_community.decoy_proteoforms.Clear();
-            theoretical_proteins.Clear();
-
-            //Read the UniProt-XML and ptmlist
-            Loaders.LoadElements(Path.Combine(current_directory, "elements.dat"));
-            List<ModificationWithLocation> all_known_modifications = get_files(input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
-            uniprotModifications = make_modification_dictionary(all_known_modifications);
-
-            Dictionary<string, Modification> um;
-            Parallel.ForEach(get_files(input_files, Purpose.ProteinDatabase).ToList(), database =>
-            {
-                lock (theoretical_proteins) theoretical_proteins.Add(database, ProteinDbLoader.LoadProteinXML(database.complete_path, false, all_known_modifications, database.ContaminantDB, mod_types_to_exclude, out um).ToArray());
-                lock (all_known_modifications) all_known_modifications.AddRange(ProteinDbLoader.GetPtmListFromProteinXml(database.complete_path).OfType<ModificationWithLocation>().Where(m => !mod_types_to_exclude.Contains(m.modificationType)));
-            });
-
-            foreach (string filename in Directory.GetFiles(Path.Combine(current_directory, "Mods")))
-            {
-                IEnumerable<ModificationWithLocation> new_mods = !filename.EndsWith("variable.txt") || methionine_oxidation ?
-                    PtmListLoader.ReadModsFromFile(filename) :
-                    new List<ModificationWithLocation>(); // Empty variable modifications if not selected
-                if (filename.EndsWith("variable.txt")) variableModifications = new_mods.OfType<ModificationWithMass>().ToList();
-                all_known_modifications.AddRange(new_mods);
-            }
-
-            all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
-            uniprotModifications = make_modification_dictionary(all_known_modifications);
-            all_mods_with_mass = uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().Concat(variableModifications).ToList();
-
-            modification_ranks = rank_mods(theoretical_proteins, variableModifications, all_mods_with_mass);
-            
-            // Generate all ptm sets if not done already
-            if (all_possible_ptmsets == null)
-            {
-                //Generate all two-member sets and all three-member (or greater) sets of the same modification (three-member combinitorics gets out of hand for assignment)
-                all_possible_ptmsets = PtmCombos.generate_all_ptmsets(Math.Min(2, max_ptms), all_mods_with_mass, modification_ranks, rank_first_quartile / 2).ToList();
-                for (int i = 3; i < max_ptms + 1; i++)
-                {
-                    all_possible_ptmsets.AddRange(all_mods_with_mass.Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), modification_ranks, rank_first_quartile / 2)));
-                }
-            }
-
-            //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
-            if (possible_ptmset_dictionary.Count == 0)
-                possible_ptmset_dictionary = make_ptmset_dictionary();
-
-            expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
-            aaIsotopeMassList = new AminoAcidMasses(carbamidomethylation, natural_lysine_isotope_abundance, neucode_light_lysine, neucode_heavy_lysine).AA_Masses;
-            if (combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
-
-            expanded_proteins = expanded_proteins.OrderBy(x => x.OneBasedPossibleLocalizedModifications.Count).ToArray(); // Take on harder problems first to use parallelization more effectively
-            process_entries(expanded_proteins, variableModifications);
-            process_decoys(expanded_proteins, variableModifications);
-
-            if (combine_theoretical_proteoforms_byMass)
-            {
-                proteoform_community.theoretical_proteoforms = group_proteoforms_by_mass(proteoform_community.theoretical_proteoforms);
-                proteoform_community.decoy_proteoforms = proteoform_community.decoy_proteoforms.ToDictionary(kv => kv.Key, kv => group_proteoforms_by_mass(kv.Value) as TheoreticalProteoform[]);
-            }
-        }
-
-        //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
-        public Dictionary<double, List<PtmSet>> make_ptmset_dictionary()
-        {
-            Dictionary<double, List<PtmSet>> possible_ptmsets = new Dictionary<double, List<PtmSet>>();
-            foreach (PtmSet set in all_possible_ptmsets.Where(s => s.ptm_combination.Count == 1 || !s.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0)).ToList())
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    double midpoint = Math.Round(set.mass, 1) - 0.5 + i * 0.1;
-                    if (possible_ptmsets.TryGetValue(midpoint, out List<PtmSet> a)) a.Add(set);
-                    else possible_ptmsets.Add(midpoint, new List<PtmSet> { set });
-                }
-            }
-            return possible_ptmsets;
-        }
-
-        public Dictionary<string, IList<Modification>> make_modification_dictionary(IEnumerable<ModificationWithLocation> all_modifications)
-        {
-            Dictionary<string, IList<Modification>> mod_dict = new Dictionary<string, IList<Modification>>();
-            foreach (var nice in all_modifications)
-            {
-                if (mod_dict.TryGetValue(nice.id, out IList<Modification> val)) val.Add(nice);
-                else mod_dict.Add(nice.id, new List<Modification> { nice });
-            }
-            return mod_dict;
-        }
-
-        public Dictionary<double, int> rank_mods(Dictionary<InputFile, Protein[]> theoretical_proteins, IEnumerable<ModificationWithMass> variable_modifications, IEnumerable<ModificationWithMass> all_mods_with_mass)
-        {
-            Dictionary<double, int> mod_counts = new Dictionary<double, int>();
-
-            foreach (ModificationWithMass m in theoretical_proteins.SelectMany(kv => kv.Value).SelectMany(p => p.OneBasedPossibleLocalizedModifications).SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList())
-            {
-                if (!mod_counts.TryGetValue(m.monoisotopicMass, out int b)) mod_counts.Add(m.monoisotopicMass, 1);
-                else mod_counts[m.monoisotopicMass]++;
-            }
-            List<KeyValuePair<double, int>> ordered_mod_counts = mod_counts.OrderByDescending(kv => kv.Value).ToList();
-
-            int rank = 3;
-            int last_count = 0;
-            Dictionary<double, int> mod_ranks = new Dictionary<double, int>();
-            foreach (KeyValuePair<double, int> mod_count in ordered_mod_counts)
-            {
-                mod_ranks.Add(mod_count.Key, rank);
-                if (mod_count.Value < last_count) rank++;
-                last_count = mod_count.Value;
-            }
-
-            //Give unmodified the best rank
-            if (!mod_ranks.TryGetValue(0, out int a)) mod_ranks.Add(0, 0);
-            else mod_ranks[0] = 0;
-
-            //Give variable mods a good score
-            foreach (ModificationWithMass m in variable_modifications)
-            {
-                if (!mod_ranks.TryGetValue(m.monoisotopicMass, out int b)) mod_ranks.Add(m.monoisotopicMass, 2);
-                else mod_ranks[m.monoisotopicMass] = 2;
-            }
-
-            List<int> ranks = mod_ranks.Values.OrderBy(x => x).ToList();
-            rank_first_quartile = ranks[ranks.Count / 4];
-            rank_second_quartile = ranks[2 * ranks.Count / 4];
-            rank_third_quartile = ranks[3 * ranks.Count / 4];
-            rank_sum_threshold = ranks.Max();
-
-            //Give the remaining mods the threshold value
-            foreach (ModificationWithMass m in all_mods_with_mass)
-            {
-                if (!mod_ranks.TryGetValue(m.monoisotopicMass, out int lkj))
-                    mod_ranks.Add(m.monoisotopicMass, rank_sum_threshold);
-            }
-
-            return mod_ranks;
-        }
-
-        public ProteinWithGoTerms[] expand_protein_entries(Protein[] proteins)
-        {
-            List<ProteinWithGoTerms> expanded_prots = new List<ProteinWithGoTerms>();
-            foreach (Protein p in proteins)
-            {
-                List<ProteinWithGoTerms> new_prots = new List<ProteinWithGoTerms>();
-
-                //Add full length product
-                int begin = 1;
-                int end = p.BaseSequence.Length;
-                List<GoTerm> goTerms = p.DatabaseReferences.Where(reference => reference.Type == "GO").Select(reference => new GoTerm(reference)).ToList();
-                int startPosAfterCleavage = Convert.ToInt32(methionine_cleavage && p.BaseSequence.StartsWith("M"));
-                new_prots.Add(new ProteinWithGoTerms(
-                    p.BaseSequence.Substring(begin + startPosAfterCleavage - 1, end - (begin + startPosAfterCleavage) + 1),
-                    p.Accession + "_" + (begin + startPosAfterCleavage).ToString() + "full" + end.ToString(),
-                    p.GeneNames,
-                    p.OneBasedPossibleLocalizedModifications,
-                    new int?[] { begin + startPosAfterCleavage },
-                    new int?[] { end },
-                    new string[] { methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full" },
-                    p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
-
-                //Add fragments
-                List<ProteolysisProduct> products = p.ProteolysisProducts.ToList();
-                foreach (ProteolysisProduct product in p.ProteolysisProducts)
-                {
-                    string feature_type = product.Type.Replace(' ', '-');
-                    if (!(feature_type == "peptide" || feature_type == "propeptide" || feature_type == "chain" || feature_type == "signal-peptide") 
-                            || !product.OneBasedBeginPosition.HasValue 
-                            || !product.OneBasedEndPosition.HasValue)
-                        continue;
-                    int feature_begin = (int)product.OneBasedBeginPosition;
-                    int feature_end = (int)product.OneBasedEndPosition;
-                    if (feature_begin < 1 || feature_end < 1)
-                        continue;
-                    bool feature_is_just_met_cleavage = methionine_cleavage && feature_begin == begin + 1 && feature_end == end;
-                    string subsequence = p.BaseSequence.Substring(feature_begin - 1, feature_end - feature_begin + 1);
-                    Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= feature_begin && kv.Key <= feature_end).ToDictionary(kv => kv.Key, kv => kv.Value);
-                    if (!feature_is_just_met_cleavage && subsequence.Length != p.BaseSequence.Length && subsequence.Length >= min_peptide_length)
-                        new_prots.Add(new ProteinWithGoTerms(
-                            subsequence,
-                            p.Accession + "_" + feature_begin.ToString() + "frag" + feature_end.ToString(),
-                            p.GeneNames,
-                            segmented_ptms,
-                            new int?[] { feature_begin },
-                            new int?[] { feature_end },
-                            new string[] { feature_type },
-                            p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
-                }
-                expanded_prots.AddRange(new_prots);
-            }
-            return expanded_prots.ToArray();
-        }
-
-        public ProteinSequenceGroup[] group_proteins_by_sequence(IEnumerable<ProteinWithGoTerms> proteins)
-        {
-            Dictionary<string, List<ProteinWithGoTerms>> sequence_groupings = new Dictionary<string, List<ProteinWithGoTerms>>();
-            foreach (ProteinWithGoTerms p in proteins)
-            {
-                if (sequence_groupings.ContainsKey(p.BaseSequence)) sequence_groupings[p.BaseSequence].Add(p);
-                else sequence_groupings.Add(p.BaseSequence, new List<ProteinWithGoTerms> { p });
-            }
-            return sequence_groupings.Select(kv => new ProteinSequenceGroup(kv.Value.OrderByDescending(p => p.IsContaminant ? 1 : 0))).ToArray();
-        }
-
-        public TheoreticalProteoformGroup[] group_proteoforms_by_mass(IEnumerable<TheoreticalProteoform> theoreticals)
-        {
-            Dictionary<double, List<TheoreticalProteoform>> mass_groupings = new Dictionary<double, List<TheoreticalProteoform>>();
-            foreach (TheoreticalProteoform t in theoreticals)
-            {
-                if (mass_groupings.ContainsKey(t.modified_mass)) mass_groupings[t.modified_mass].Add(t);
-                else mass_groupings.Add(t.modified_mass, new List<TheoreticalProteoform> { t });
-            }
-            return mass_groupings.Select(kv => new TheoreticalProteoformGroup(kv.Value.OrderByDescending(t => t.contaminant ? 1 : 0))).ToArray();
-        }
-
-        private void process_entries(IEnumerable<ProteinWithGoTerms> expanded_proteins, IEnumerable<ModificationWithMass> variableModifications)
-        {
-            List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
-            Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.Accession, theoretical_proteoforms, -100, variableModifications));
-            proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
-        }
-
-        private void process_decoys(ProteinWithGoTerms[] expanded_proteins, IEnumerable<ModificationWithMass> variableModifications)
-        {
-            Parallel.For(0, decoy_databases, decoyNumber =>
-            {
-                List<TheoreticalProteoform> decoy_proteoforms = new List<TheoreticalProteoform>();
-                string giantProtein = GetOneGiantProtein(expanded_proteins, methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
-                string decoy_database_name = decoy_database_name_prefix + decoyNumber;
-                ProteinWithGoTerms[] shuffled_proteins = new ProteinWithGoTerms[expanded_proteins.Length];
-                Array.Copy(expanded_proteins, shuffled_proteins, expanded_proteins.Length);
-                new Random().Shuffle(shuffled_proteins); //randomize order of protein array
-
-                int prevLength = 0;
-                Parallel.ForEach(shuffled_proteins, p =>
-                {
-                    string hunk = giantProtein.Substring(prevLength, p.BaseSequence.Length);
-                    prevLength += p.BaseSequence.Length;
-                    EnterTheoreticalProteformFamily(hunk, p, p.Accession + "_DECOY_" + decoyNumber, decoy_proteoforms, decoyNumber, variableModifications);
-                });
-
-                lock (proteoform_community)
-                    proteoform_community.decoy_proteoforms.Add(decoy_database_name, decoy_proteoforms.ToArray());
-            });
-        }
-
-        private void EnterTheoreticalProteformFamily(string seq, ProteinWithGoTerms prot, string accession, List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number, IEnumerable<ModificationWithMass> variableModifications)
-        {
-            //Calculate the properties of this sequence
-            double unmodified_mass = TheoreticalProteoform.CalculateProteoformMass(seq, aaIsotopeMassList);
-            int lysine_count = seq.Split('K').Length - 1;
-            bool check_contaminants = theoretical_proteins.Any(item => item.Key.ContaminantDB);
-
-            //Figure out the possible ptm sets
-            Dictionary<int, List<Modification>> possibleLocalizedMods = new Dictionary<int, List<Modification>>(prot.OneBasedPossibleLocalizedModifications);
-            foreach (ModificationWithMass m in variableModifications)
-            {
-                for (int i = 1; i <= prot.BaseSequence.Length; i++)
-                {
-                    if (prot.BaseSequence[i - 1].ToString() == m.motif.Motif)
-                    {
-                        if (!possibleLocalizedMods.TryGetValue(i, out List<Modification> a)) possibleLocalizedMods.Add(i, new List<Modification> { m });
-                        else a.Add(m);
-                    }
-                }
-            }
-
-            List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, max_ptms, modification_ranks, rank_first_quartile / 2);
-
-            //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
-            int ptm_set_counter = 1;
-            foreach (PtmSet ptm_set in unique_ptm_groups)
-            {
-                lock (theoretical_proteoforms) theoretical_proteoforms.Add(
-                    new TheoreticalProteoform(
-                        accession + "_P" + ptm_set_counter.ToString(),
-                        prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
-                        new ProteinWithGoTerms[] { prot },
-                        unmodified_mass,
-                        lysine_count,
-                        ptm_set,
-                        decoy_number < 0,
-                        check_contaminants,
-                        theoretical_proteins)
-                    );
-                ptm_set_counter++;
-            }
-        }
-
-        private string GetOneGiantProtein(IEnumerable<Protein> proteins, bool methionine_cleavage)
-        {
-            StringBuilder giantProtein = new StringBuilder(5000000); // this set-aside is autoincremented to larger values when necessary.
-            foreach (Protein protein in proteins)
-            {
-                string sequence = protein.BaseSequence;
-                bool isMetCleaved = methionine_cleavage && (sequence.Substring(0, 1) == "M");
-                int startPosAfterMetCleavage = Convert.ToInt32(isMetCleaved);
-                switch (protein.ProteolysisProducts.Select(p => p.Type).FirstOrDefault())
-                {
-                    case "chain":
-                    case "signal peptide":
-                    case "propeptide":
-                    case "peptide":
-                        giantProtein.Append(".");
-                        break;
-                    default:
-                        giantProtein.Append("-");
-                        break;
-                }
-                giantProtein.Append(sequence.Substring(startPosAfterMetCleavage));
-            }
-            return giantProtein.ToString();
-        }
-
-        #endregion THEORETICAL DATABASE
-
         #region ET,ED,EE,EF COMPARISONS Public Fields
 
-        public double ee_max_mass_difference = 300;
+        public double ee_max_mass_difference = 350;
         public double ee_max_RetentionTime_difference = 2.5;
         public double et_low_mass_difference = -300;
-        public double et_high_mass_difference = 300;
+        public double et_high_mass_difference = 350;
         public double no_mans_land_lowerBound = 0.22;
         public double no_mans_land_upperBound = 0.88;
         public double peak_width_base_et = 0.03; //need to be separate so you can change one and not other. 
@@ -1214,12 +871,12 @@ namespace ProteoformSuiteInternal
             if (backgroundProteinsList != null && backgroundProteinsList != "")
             {
                 string[] protein_accessions = File.ReadAllLines(backgroundProteinsList).Select(acc => acc.Trim()).ToArray();
-                backgroundProteinsForGoAnalysis = expanded_proteins.Where(p => p.AccessionList.Any(acc => protein_accessions.Contains(acc.Split('_')[0]))).DistinctBy(pwg => pwg.Accession.Split('_')[0]).ToList();
+                backgroundProteinsForGoAnalysis = theoretical_database.expanded_proteins.Where(p => p.AccessionList.Any(acc => protein_accessions.Contains(acc.Split('_')[0]))).DistinctBy(pwg => pwg.Accession.Split('_')[0]).ToList();
             }
             else
             {
-                backgroundProteinsForGoAnalysis = allTheoreticalProteins ? 
-                    expanded_proteins.DistinctBy(pwg => pwg.Accession.Split('_')[0]).ToList() : 
+                backgroundProteinsForGoAnalysis = allTheoreticalProteins ?
+                    theoretical_database.expanded_proteins.DistinctBy(pwg => pwg.Accession.Split('_')[0]).ToList() : 
                     allDetectedProteins ?  
                         observedProteins :
                         quantifiedProteins;
@@ -1266,5 +923,6 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion GO-TERMS AND GO-TERM SIGNIFICANCE
+
     }
 }
