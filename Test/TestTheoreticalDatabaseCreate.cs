@@ -118,10 +118,11 @@ namespace Test
         public void testTheoreticalWithAndWithoutVariableMethionineOx()
         {
             SaveState.lollipop.methionine_oxidation = false;
+            SaveState.lollipop.mod_types_to_exclude = SaveState.lollipop.mod_types_to_exclude.Concat(new string[] { "Uniprot" }).ToArray();
             SaveState.lollipop.methionine_cleavage = true;
             SaveState.lollipop.max_ptms = 0;
             SaveState.lollipop.input_files.Clear();
-            SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "stripped.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
+            SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "stripped.xml"), Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
             SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
             SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
