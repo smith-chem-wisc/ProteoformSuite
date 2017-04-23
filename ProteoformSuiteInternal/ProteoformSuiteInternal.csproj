@@ -140,6 +140,7 @@
     <Compile Include="ResultsSummaryGenerator.cs" />
     <Compile Include="SaveState.cs" />
     <Compile Include="TheoreticalProteoform.cs" />
+    <Compile Include="TheoreticalProteoformDatabase.cs" />
     <Compile Include="TheoreticalProteoformGroup.cs" />
   </ItemGroup>
   <ItemGroup>

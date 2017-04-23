@@ -219,19 +219,19 @@ namespace Test
 
         private void prepare_for_et(List<double> delta_masses)
         {
-            SaveState.lollipop.all_mods_with_mass = new List<ModificationWithMass>();
-            SaveState.lollipop.all_possible_ptmsets = new List<PtmSet>();
+            SaveState.lollipop.theoretical_database.all_mods_with_mass = new List<ModificationWithMass>();
+            SaveState.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet>();
             SaveState.lollipop.modification_ranks = new Dictionary<double, int>();
 
             //Prepare for making ET relation
             foreach (double delta_m in new HashSet<double>(delta_masses))
             {
                 ModificationWithMass m = ConstructorsForTesting.get_modWithMass("fake" + delta_m.ToString(), delta_m);
-                SaveState.lollipop.all_mods_with_mass.Add(m);
-                SaveState.lollipop.all_possible_ptmsets.Add(new PtmSet(new List<Ptm> { new Ptm(-1, m) }));
+                SaveState.lollipop.theoretical_database.all_mods_with_mass.Add(m);
+                SaveState.lollipop.theoretical_database.all_possible_ptmsets.Add(new PtmSet(new List<Ptm> { new Ptm(-1, m) }));
                 SaveState.lollipop.modification_ranks.Add(delta_m, 2);
             }
-            SaveState.lollipop.possible_ptmset_dictionary = SaveState.lollipop.make_ptmset_dictionary();
+            SaveState.lollipop.theoretical_database.possible_ptmset_dictionary = SaveState.lollipop.theoretical_database.make_ptmset_dictionary();
 
             if (!SaveState.lollipop.modification_ranks.TryGetValue(0, out int a))
                 SaveState.lollipop.modification_ranks.Add(0, 1);

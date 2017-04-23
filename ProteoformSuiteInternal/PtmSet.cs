@@ -40,7 +40,7 @@ namespace ProteoformSuiteInternal
         {
             ptm_rank_sum = ptm_combination.Sum(ptm => mod_ranks[ptm.modification.monoisotopicMass])
                 + additional_ptm_penalization_factor * (ptm_combination.Count - 1) // penalize additional PTMs
-                - ptm_combination.Count(ptm => SaveState.lollipop.variableModifications.Contains(ptm.modification)); // favor variable modifications over regular
+                - ptm_combination.Count(ptm => SaveState.lollipop.theoretical_database.variableModifications.Contains(ptm.modification)); // favor variable modifications over regular
         }
 
         #endregion Public Method

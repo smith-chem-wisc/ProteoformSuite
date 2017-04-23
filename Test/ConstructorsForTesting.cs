@@ -137,7 +137,7 @@ namespace Test
         {
             Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "elements.dat"));
             List<ModificationWithLocation> all_modifications = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
-            return SaveState.lollipop.make_modification_dictionary(all_modifications);
+            return SaveState.lollipop.theoretical_database.make_modification_dictionary(all_modifications);
         }
     }
 }

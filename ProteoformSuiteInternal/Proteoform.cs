@@ -168,7 +168,7 @@ namespace ProteoformSuiteInternal
                     bool likely_cleavage_site = could_be_n_term_degradation && SaveState.lollipop.likely_cleavages.Contains(theoretical_base_sequence[n_terminal_degraded_aas].ToString())
                         || could_be_c_term_degradation && SaveState.lollipop.likely_cleavages.Contains(theoretical_base_sequence[theoretical_base_sequence.Length - c_terminal_degraded_aas - 1].ToString());
 
-                    rank_sum -= Convert.ToInt32(SaveState.lollipop.variableModifications.Contains(m)); // favor variable modifications over regular modifications of the same mass
+                    rank_sum -= Convert.ToInt32(SaveState.lollipop.theoretical_database.variableModifications.Contains(m)); // favor variable modifications over regular modifications of the same mass
 
                     // In order of likelihood:
                     // 1. First, we observe I/L/A cleavage to be the most common, 
@@ -183,7 +183,7 @@ namespace ProteoformSuiteInternal
                     else if (m.modificationType == "Deconvolution Error")
                         rank_sum += SaveState.lollipop.rank_third_quartile;
                     else
-                        rank_sum += known_mods.Concat(SaveState.lollipop.variableModifications).Contains(m) ?
+                        rank_sum += known_mods.Concat(SaveState.lollipop.theoretical_database.variableModifications).Contains(m) ?
                             SaveState.lollipop.modification_ranks[m.monoisotopicMass] :
                             SaveState.lollipop.modification_ranks[m.monoisotopicMass] + SaveState.lollipop.rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
                 }
