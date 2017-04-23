@@ -133,7 +133,7 @@ namespace ProteoformSuiteInternal
                 ser.Serialize(file, lollipop);
         }
 
-        public static void load_all_resuls(string filename)
+        public static void load_all_results(string filename)
         {
             Serializer ser = new Serializer(new Type[] { typeof(Lollipop) });
             using (var file = File.OpenRead(filename))

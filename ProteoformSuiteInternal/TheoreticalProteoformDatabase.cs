@@ -42,12 +42,14 @@ namespace ProteoformSuiteInternal
 
         public void get_theoretical_proteoforms(string current_directory)
         {
+            if (!ready_to_make_database())
+                return;
+
             //Clear out data from potential previous runs
             SaveState.lollipop.proteoform_community.decoy_proteoforms.Clear();
             theoretical_proteins.Clear();
 
             //Read the UniProt-XML and ptmlist
-            Loaders.LoadElements(Path.Combine(current_directory, "elements.dat"));
             List<ModificationWithLocation> all_known_modifications = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
             uniprotModifications = make_modification_dictionary(all_known_modifications);
 
@@ -252,6 +254,19 @@ namespace ProteoformSuiteInternal
                 else mass_groupings.Add(t.modified_mass, new List<TheoreticalProteoform> { t });
             }
             return mass_groupings.Select(kv => new TheoreticalProteoformGroup(kv.Value.OrderByDescending(t => t.contaminant ? 1 : 0))).ToArray();
+        }
+
+        /// <summary>
+        /// Requires at least one ProteinDatabase input file and one input file listing modifications.
+        /// </summary>
+        /// <returns></returns>
+        public bool ready_to_make_database()
+        {
+            Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
+            List<InputFile> proteinDbs = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.ProteinDatabase).ToList();
+            return proteinDbs.Count > 0
+                && (proteinDbs.Any(file => ProteinDbLoader.GetPtmListFromProteinXml(file.complete_path).Count > 0) 
+                || SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.PtmList).Count() > 0);
         }
 
         #endregion Public Methods
