@@ -189,7 +189,7 @@ namespace Test
             };
 
             SaveState.lollipop.modification_ranks = new Dictionary<double, int> { { 0, 1 }, { 19, 2 } };
-            SaveState.lollipop.rank_sum_threshold = 2;
+            SaveState.lollipop.mod_rank_sum_threshold = 2;
             SaveState.lollipop.theoretical_database.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, SaveState.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList(), SaveState.lollipop.modification_ranks, 1);
             SaveState.lollipop.theoretical_database.all_mods_with_mass = SaveState.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
 

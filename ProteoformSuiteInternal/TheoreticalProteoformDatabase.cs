@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Proteomics;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Proteomics;
 using UsefulProteomicsDatabases;
-using System.IO;
 
 namespace ProteoformSuiteInternal
 {
@@ -15,12 +15,19 @@ namespace ProteoformSuiteInternal
         #region Public Fields
 
         public Dictionary<InputFile, Protein[]> theoretical_proteins = new Dictionary<InputFile, Protein[]>();
+
         public ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
+
         public Dictionary<string, IList<Modification>> uniprotModifications = new Dictionary<string, IList<Modification>>();
+
         public List<ModificationWithMass> variableModifications = new List<ModificationWithMass>();
+
         public List<PtmSet> all_possible_ptmsets;
+
         public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>();
+
         public List<ModificationWithMass> all_mods_with_mass = new List<ModificationWithMass>();
+
         public List<PtmSet> acceptable_ptm_sets = new List<PtmSet>();
 
         #endregion Public Fields
@@ -70,10 +77,10 @@ namespace ProteoformSuiteInternal
             if (all_possible_ptmsets == null)
             {
                 //Generate all two-member sets and all three-member (or greater) sets of the same modification (three-member combinitorics gets out of hand for assignment)
-                all_possible_ptmsets = PtmCombos.generate_all_ptmsets(Math.Min(2, SaveState.lollipop.max_ptms), all_mods_with_mass, SaveState.lollipop.modification_ranks, SaveState.lollipop.rank_first_quartile / 2).ToList();
+                all_possible_ptmsets = PtmCombos.generate_all_ptmsets(Math.Min(2, SaveState.lollipop.max_ptms), all_mods_with_mass, SaveState.lollipop.modification_ranks, SaveState.lollipop.mod_rank_first_quartile / 2).ToList();
                 for (int i = 3; i < SaveState.lollipop.max_ptms + 1; i++)
                 {
-                    all_possible_ptmsets.AddRange(all_mods_with_mass.Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), SaveState.lollipop.modification_ranks, SaveState.lollipop.rank_first_quartile / 2)));
+                    all_possible_ptmsets.AddRange(all_mods_with_mass.Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), SaveState.lollipop.modification_ranks, SaveState.lollipop.mod_rank_first_quartile / 2)));
                 }
             }
 
@@ -156,16 +163,16 @@ namespace ProteoformSuiteInternal
             }
 
             List<int> ranks = mod_ranks.Values.OrderBy(x => x).ToList();
-            SaveState.lollipop.rank_first_quartile = ranks[ranks.Count / 4];
-            SaveState.lollipop.rank_second_quartile = ranks[2 * ranks.Count / 4];
-            SaveState.lollipop.rank_third_quartile = ranks[3 * ranks.Count / 4];
-            SaveState.lollipop.rank_sum_threshold = ranks.Max();
+            SaveState.lollipop.mod_rank_first_quartile = ranks[ranks.Count / 4];
+            SaveState.lollipop.mod_rank_second_quartile = ranks[2 * ranks.Count / 4];
+            SaveState.lollipop.mod_rank_third_quartile = ranks[3 * ranks.Count / 4];
+            SaveState.lollipop.mod_rank_sum_threshold = ranks.Max();
 
             //Give the remaining mods the threshold value
             foreach (ModificationWithMass m in all_mods_with_mass)
             {
                 if (!mod_ranks.TryGetValue(m.monoisotopicMass, out int lkj))
-                    mod_ranks.Add(m.monoisotopicMass, SaveState.lollipop.rank_sum_threshold);
+                    mod_ranks.Add(m.monoisotopicMass, SaveState.lollipop.mod_rank_sum_threshold);
             }
 
             return mod_ranks;
@@ -303,7 +310,7 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, SaveState.lollipop.max_ptms, SaveState.lollipop.modification_ranks, SaveState.lollipop.rank_first_quartile / 2);
+            List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, SaveState.lollipop.max_ptms, SaveState.lollipop.modification_ranks, SaveState.lollipop.mod_rank_first_quartile / 2);
 
             //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
             int ptm_set_counter = 1;
