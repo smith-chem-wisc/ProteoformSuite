@@ -42,7 +42,7 @@ namespace ProteoformSuiteInternal
 
         public void get_theoretical_proteoforms(string current_directory)
         {
-            if (!ready_to_make_database())
+            if (!ready_to_make_database(current_directory))
                 return;
 
             //Clear out data from potential previous runs
@@ -260,9 +260,9 @@ namespace ProteoformSuiteInternal
         /// Requires at least one ProteinDatabase input file and one input file listing modifications.
         /// </summary>
         /// <returns></returns>
-        public bool ready_to_make_database()
+        public bool ready_to_make_database(string current_directory)
         {
-            Loaders.LoadElements(Path.Combine(Environment.CurrentDirectory, "elements.dat"));
+            Loaders.LoadElements(Path.Combine(current_directory, "elements.dat"));
             List<InputFile> proteinDbs = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.ProteinDatabase).ToList();
             return proteinDbs.Count > 0
                 && (proteinDbs.Any(file => ProteinDbLoader.GetPtmListFromProteinXml(file.complete_path).Count > 0) 
