@@ -273,16 +273,16 @@ namespace Test
             //test that the relation.represented_modification gets set
             Assert.True(community.relations_in_peaks.All(r => r.peak.peak_deltaM_average != 19 || r.represented_ptmset == null));
             Assert.True(community.relations_in_peaks.All(r => r.peak.peak_deltaM_average != 0 || r.represented_ptmset.ptm_combination.First().modification.id == "unmodified"));
-            Assert.True(pf1 == pf3.linked_proteoform_references.First.Value || pf2 == pf3.linked_proteoform_references.First.Value);
+            Assert.True(pf1 == pf3.linked_proteoform_references.First() || pf2 == pf3.linked_proteoform_references.First());
 
             //test I don't get re-reassignments
-            Assert.AreEqual(pf3, pf4.linked_proteoform_references.Last.Value); //test that the proteoform.theoretical_reference gets set to each successive PF base
-            Assert.AreEqual((pf3.linked_proteoform_references.First.Value as TheoreticalProteoform).accession, (pf4.linked_proteoform_references.First.Value as TheoreticalProteoform).accession);
-            Assert.AreEqual((pf3.linked_proteoform_references.First.Value as TheoreticalProteoform).fragment, (pf4.linked_proteoform_references.First.Value as TheoreticalProteoform).fragment);
-            Assert.AreEqual(pf4, pf5.linked_proteoform_references.Last.Value);
-            Assert.AreEqual((pf3.linked_proteoform_references.First.Value as TheoreticalProteoform).accession, (pf5.linked_proteoform_references.First.Value as TheoreticalProteoform).accession); //test that the accession gets carried all the way through the depth of connections
-            Assert.AreEqual((pf3.linked_proteoform_references.First.Value as TheoreticalProteoform).fragment, (pf5.linked_proteoform_references.First.Value as TheoreticalProteoform).fragment);
-            Assert.AreEqual(pf9, pf8.linked_proteoform_references.Last.Value);
+            Assert.AreEqual(pf3, pf4.linked_proteoform_references.Last()); //test that the proteoform.theoretical_reference gets set to each successive PF base
+            Assert.AreEqual((pf3.linked_proteoform_references.First() as TheoreticalProteoform).accession, (pf4.linked_proteoform_references.First() as TheoreticalProteoform).accession);
+            Assert.AreEqual((pf3.linked_proteoform_references.First() as TheoreticalProteoform).fragment, (pf4.linked_proteoform_references.First() as TheoreticalProteoform).fragment);
+            Assert.AreEqual(pf4, pf5.linked_proteoform_references.Last());
+            Assert.AreEqual((pf3.linked_proteoform_references.First() as TheoreticalProteoform).accession, (pf5.linked_proteoform_references.First() as TheoreticalProteoform).accession); //test that the accession gets carried all the way through the depth of connections
+            Assert.AreEqual((pf3.linked_proteoform_references.First() as TheoreticalProteoform).fragment, (pf5.linked_proteoform_references.First() as TheoreticalProteoform).fragment);
+            Assert.AreEqual(pf9, pf8.linked_proteoform_references.Last());
 
             return community;
         }

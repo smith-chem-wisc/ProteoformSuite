@@ -30,12 +30,11 @@ namespace ProteoformSuiteInternal
         public string gene_list { get { return String.Join("; ", gene_names.Select(p => p.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Where(n => n != null).Distinct()); } }
         public string experimentals_list { get { return String.Join("; ", experimental_proteoforms.Select(p => p.accession)); } }
         public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, SaveState.lollipop.deltaM_edge_display_rounding))); } }
-        public int lysine_count { get; set; } = -1;
         public List<ExperimentalProteoform> experimental_proteoforms { get; private set; }
         public List<TheoreticalProteoform> theoretical_proteoforms { get; private set; }
         public List<GeneName> gene_names { get; private set; }
-        public HashSet<ProteoformRelation> relations { get; private set; }
-        public HashSet<Proteoform> proteoforms { get; private set; }
+        public List<ProteoformRelation> relations { get; private set; }
+        public List<Proteoform> proteoforms { get; private set; }
 
         #endregion Public Property
 
@@ -54,7 +53,7 @@ namespace ProteoformSuiteInternal
 
         public void construct_family()
         {
-            this.proteoforms = new HashSet<Proteoform>(construct_family(new List<Proteoform> { seed }));
+            proteoforms = new HashSet<Proteoform>(construct_family(new List<Proteoform> { seed })).ToList();
             separate_proteoforms();
         }
 
@@ -65,7 +64,7 @@ namespace ProteoformSuiteInternal
                     from n in this.gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Distinct()
                     where f.gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Contains(n)
                     select f;
-            proteoforms = new HashSet<Proteoform>(proteoforms.Concat(gene_family.SelectMany(f => f.proteoforms)));
+            proteoforms = new HashSet<Proteoform>(proteoforms.Concat(gene_family.SelectMany(f => f.proteoforms))).ToList();
             separate_proteoforms();
         }
 
@@ -115,12 +114,10 @@ namespace ProteoformSuiteInternal
 
         private void separate_proteoforms()
         {
-            this.theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
-            this.gene_names = theoretical_proteoforms.Select(t => t.gene_name).ToList();
-            HashSet<int> lysine_counts = new HashSet<int>(proteoforms.Select(p => p.lysine_count));
-            if (lysine_counts.Count == 1) this.lysine_count = lysine_counts.FirstOrDefault();
-            this.experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
-            this.relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted)));
+            theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
+            gene_names = theoretical_proteoforms.Select(t => t.gene_name).ToList();
+            experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
+            relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted))).ToList();
         }
 
         #endregion Private Methods

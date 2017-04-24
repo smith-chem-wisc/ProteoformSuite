@@ -2,11 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using UsefulProteomicsDatabases;
 
 namespace ProteoformSuiteGUI
 {
@@ -35,38 +33,6 @@ namespace ProteoformSuiteGUI
         {
             InitializeSettings();
             initial_load = false;
-        }
-
-        private void InitializeSettings()
-        {
-            if (SaveState.lollipop.neucode_labeled)
-                btn_NeuCode_Lt.Checked = true;
-            else
-            {
-                btn_NeuCode_Lt.Checked = false;
-                btn_NaturalIsotopes.Checked = true;
-            }
-
-            nUD_MaxPTMs.Minimum = 0;
-            nUD_MaxPTMs.Maximum = 5;
-            nUD_MaxPTMs.Value = SaveState.lollipop.max_ptms;
-
-            nUD_NumDecoyDBs.Minimum = 0;
-            nUD_NumDecoyDBs.Maximum = 50;
-            nUD_NumDecoyDBs.Value = SaveState.lollipop.decoy_databases;
-
-            nUD_MinPeptideLength.Minimum = 0;
-            nUD_MinPeptideLength.Maximum = 20;
-            nUD_MinPeptideLength.Value = SaveState.lollipop.min_peptide_length;
-
-            ckbx_combineIdenticalSequences.Checked = SaveState.lollipop.combine_identical_sequences;
-            ckbx_combineTheoreticalsByMass.Checked = SaveState.lollipop.combine_theoretical_proteoforms_byMass;
-
-            tb_modTypesToExclude.Text = String.Join(",", SaveState.lollipop.mod_types_to_exclude);
-
-            tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
-            tb_tableFilter.Text = "";
-            tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
         }
 
         private void set_Make_Database_Button()
@@ -139,6 +105,38 @@ namespace ProteoformSuiteGUI
             cmbx_DisplayWhichDB.DataSource = new BindingList<string>(databases.ToList());
         }
 
+        public void InitializeSettings()
+        {
+            if (SaveState.lollipop.neucode_labeled)
+                btn_NeuCode_Lt.Checked = true;
+            else
+            {
+                btn_NeuCode_Lt.Checked = false;
+                btn_NaturalIsotopes.Checked = true;
+            }
+
+            nUD_MaxPTMs.Minimum = 0;
+            nUD_MaxPTMs.Maximum = 5;
+            nUD_MaxPTMs.Value = SaveState.lollipop.max_ptms;
+
+            nUD_NumDecoyDBs.Minimum = 0;
+            nUD_NumDecoyDBs.Maximum = 50;
+            nUD_NumDecoyDBs.Value = SaveState.lollipop.decoy_databases;
+
+            nUD_MinPeptideLength.Minimum = 0;
+            nUD_MinPeptideLength.Maximum = 20;
+            nUD_MinPeptideLength.Value = SaveState.lollipop.min_peptide_length;
+
+            ckbx_combineIdenticalSequences.Checked = SaveState.lollipop.combine_identical_sequences;
+            ckbx_combineTheoreticalsByMass.Checked = SaveState.lollipop.combine_theoretical_proteoforms_byMass;
+
+            tb_modTypesToExclude.Text = String.Join(",", SaveState.lollipop.mod_types_to_exclude);
+
+            tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
+            tb_tableFilter.Text = "";
+            tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
+        }
+
         #endregion Public Methods
 
         #region CHECKBOXES Private Methods
@@ -196,6 +194,11 @@ namespace ProteoformSuiteGUI
         private void nUD_MinPeptideLength_ValueChanged(object sender, EventArgs e)
         {
             SaveState.lollipop.min_peptide_length = Convert.ToInt32(nUD_MinPeptideLength.Value);
+        }
+
+        private void cb_limitLargePtmSets_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveState.lollipop.theoretical_database.limit_triples_and_greater = cb_limitLargePtmSets.Checked;
         }
 
         #endregion CHECKBOXES Private Methods

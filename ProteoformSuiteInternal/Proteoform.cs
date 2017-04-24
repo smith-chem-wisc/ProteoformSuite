@@ -23,7 +23,7 @@ namespace ProteoformSuiteInternal
         /// <summary>
         /// Contains a list of proteoforms traced before arriving at this one. The first is a TheoreticalProteoform starting point in the family.
         /// </summary>
-        public LinkedList<Proteoform> linked_proteoform_references { get; set; }
+        public List<Proteoform> linked_proteoform_references { get; set; }
         public GeneName gene_name { get; set; }
         public string ptm_description { get; set; }
         public PtmSet ptm_set
@@ -89,8 +89,8 @@ namespace ProteoformSuiteInternal
                 double deltaM = Math.Sign(r.peak.peak_deltaM_average) < 0 ? r.peak.peak_deltaM_average : sign * r.peak.peak_deltaM_average; // give EE relations the correct sign, but don't switch negative ET relation deltaM's
                 TheoreticalProteoform theoretical_base = this as TheoreticalProteoform != null ?
                     this as TheoreticalProteoform : //Theoretical starting point
-                    (linked_proteoform_references.First.Value as TheoreticalProteoform != null ?
-                        linked_proteoform_references.First.Value as TheoreticalProteoform : //Experimental with theoretical reference
+                    (linked_proteoform_references.First() as TheoreticalProteoform != null ?
+                        linked_proteoform_references.First() as TheoreticalProteoform : //Experimental with theoretical reference
                         null); //Experimental without theoretical reference
                 string theoretical_base_sequence = theoretical_base != null ? theoretical_base.sequence : "";
 
@@ -211,8 +211,8 @@ namespace ProteoformSuiteInternal
             }
             if (e.linked_proteoform_references == null)
             {
-                e.linked_proteoform_references = new LinkedList<Proteoform>(this.linked_proteoform_references);
-                e.linked_proteoform_references.AddLast(this);
+                e.linked_proteoform_references = new List<Proteoform>(this.linked_proteoform_references);
+                e.linked_proteoform_references.Add(this);
                 e.ptm_set = set;
             }
 

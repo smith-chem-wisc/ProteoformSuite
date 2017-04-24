@@ -9,6 +9,7 @@ using UsefulProteomicsDatabases;
 
 namespace ProteoformSuiteInternal
 {
+    [Serializable]
     public class TheoreticalProteoformDatabase
     {
 
@@ -29,6 +30,8 @@ namespace ProteoformSuiteInternal
         public List<ModificationWithMass> all_mods_with_mass = new List<ModificationWithMass>();
 
         public List<PtmSet> acceptable_ptm_sets = new List<PtmSet>();
+
+        public bool limit_triples_and_greater = true;
 
         #endregion Public Fields
 
@@ -299,7 +302,7 @@ namespace ProteoformSuiteInternal
                     EnterTheoreticalProteformFamily(hunk, p, p.Accession + "_DECOY_" + decoyNumber, decoy_proteoforms, decoyNumber, variableModifications);
                 });
 
-                lock (SaveState.lollipop.proteoform_community)
+                lock (SaveState.lollipop)
                     SaveState.lollipop.proteoform_community.decoy_proteoforms.Add(decoy_database_name, decoy_proteoforms.ToArray());
             });
         }
@@ -325,7 +328,7 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, SaveState.lollipop.max_ptms, SaveState.lollipop.modification_ranks, SaveState.lollipop.mod_rank_first_quartile / 2);
+            List<PtmSet> unique_ptm_groups = PtmCombos.get_combinations(possibleLocalizedMods, SaveState.lollipop.max_ptms, SaveState.lollipop.modification_ranks, SaveState.lollipop.mod_rank_first_quartile / 2, limit_triples_and_greater);
 
             //Enumerate the ptm combinations with _P# to distinguish from the counts in ProteinSequenceGroups (_#G) and TheoreticalPfGps (_#T)
             int ptm_set_counter = 1;
