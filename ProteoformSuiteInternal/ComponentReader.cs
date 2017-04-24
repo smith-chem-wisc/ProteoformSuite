@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using IO.Thermo;
 
 namespace ProteoformSuiteInternal
 {
@@ -64,11 +63,10 @@ namespace ProteoformSuiteInternal
 
         private void add_component(Component c)
         {
-           c.calculate_properties();
-           this.raw_components_in_file.Add(c);
+            c.calculate_properties();
+            raw_components_in_file.Add(c);
         }
 
-        //public List<Component> scanComps = new List<Component>();
         private List<Component> remove_monoisotopic_duplicates_harmonics_from_same_scan(List<Component> raw_components)
         {
             List<string> scans = raw_components.Select(c => c.scan_range).Distinct().ToList();
@@ -76,8 +74,7 @@ namespace ProteoformSuiteInternal
             List<NeuCodePair> ncPairsInScan = new List<NeuCodePair>();
 
             foreach (string scan in scans)
-            { // here
-
+            {
                 List<Component> scanComps = raw_components.Where(c => c.scan_range == scan).OrderByDescending(i => i.intensity_sum).ToList();
                 foreach (Component sc in scanComps) // this loop compresses missed monoisotopics into a single component. components are sorted by mass. in one scan, there should only be one missed mono per 
                 {
@@ -90,10 +87,7 @@ namespace ProteoformSuiteInternal
                     foreach (double missedMonoMass in possibleMissedMonoisotopicsList)
                     {
                         double massTolerance = missedMonoMass / 1000000d * (double)Lollipop.mass_tolerance;
-                        List<Component> missedMonoisotopics = scanComps.Except(removeThese).Where(
-                            cp => cp.weighted_monoisotopic_mass >= (missedMonoMass - massTolerance)
-                            && cp.weighted_monoisotopic_mass <= (missedMonoMass + massTolerance)
-                            ).ToList(); // this is a list of harmonics to hc
+                        List<Component> missedMonoisotopics = scanComps.Except(removeThese).Where(cp => cp.weighted_monoisotopic_mass >= (missedMonoMass - massTolerance) && cp.weighted_monoisotopic_mass <= (missedMonoMass + massTolerance)).ToList(); // this is a list of harmonics to hc
 
                         foreach (Component c in missedMonoisotopics.Where(m => m.id != sc.id).ToList())
                         {
@@ -105,7 +99,10 @@ namespace ProteoformSuiteInternal
 
 
                 if (Lollipop.neucode_labeled && raw_components.FirstOrDefault().input_file.purpose == Purpose.Identification) //before we compress harmonics, we have to determine if they are neucode labeled and lysine count 14. these have special considerations
-                    ncPairsInScan = ComponentReader.find_neucode_pairs(scanComps.Except(removeThese)).ToList(); // these are not the final neucode pairs, just a temp list
+                {
+                    ncPairsInScan = Lollipop.find_neucode_pairs(scanComps.Except(removeThese), neucodePairs_in_file); // these are not the final neucode pairs, just a temp list
+                }
+
                 List<string> lysFourteenComponents = new List<string>();
                 foreach (NeuCodePair ncp in ncPairsInScan)
                 {
@@ -119,7 +116,8 @@ namespace ProteoformSuiteInternal
                 List<Component> someComponents = scanComps.OrderByDescending(w => w.weighted_monoisotopic_mass).ToList();
                 foreach (Component hc in someComponents)
                 {
-                    if (removeThese.Contains(hc)) continue;
+                    if (removeThese.Contains(hc))
+                        continue;
 
                     List<double> possibleHarmonicList = // 2 missed on the top means up to 4 missed monos on the 2nd harmonic and 6 missed monos on the 3rd harmonic
                         Enumerable.Range(-4, 9).Select(x => (hc.weighted_monoisotopic_mass + ((double)x) * Lollipop.MONOISOTOPIC_UNIT_MASS) / 2d).Concat(
@@ -128,16 +126,15 @@ namespace ProteoformSuiteInternal
                     foreach (double harmonicMass in possibleHarmonicList)
                     {
                         double massTolerance = harmonicMass / 1000000d * (double)Lollipop.mass_tolerance;
-                        List<Component> harmonics = scanComps.Except(removeThese).Where(
-                            cp => cp.weighted_monoisotopic_mass >= (harmonicMass - massTolerance)
-                            && cp.weighted_monoisotopic_mass <= (harmonicMass + massTolerance)
-                            ).ToList(); // this is a list of harmonics to hc
+                        List<Component> harmonics = scanComps.Except(removeThese).Where(cp => cp.weighted_monoisotopic_mass >= (harmonicMass - massTolerance) && cp.weighted_monoisotopic_mass <= (harmonicMass + massTolerance)).ToList(); // this is a list of harmonics to hc
                         List<Component> someHarmonics = harmonics.Where(harmonicComponent => harmonicComponent.id != hc.id).ToList();
                         foreach (Component h in someHarmonics) // now that we have a list of harmonics to hc, we have to figure out what to do with them
                         {
-                            if (removeThese.Contains(h) || removeThese.Contains(hc)) continue;
-                            int parCsCount = hc.charge_states.Count();
-                            int cldCsCount = h.charge_states.Count();
+                            if (removeThese.Contains(h) || removeThese.Contains(hc))
+                                continue;
+
+                            int parCsCount = hc.charge_states.Count;
+                            int cldCsCount = h.charge_states.Count;
                             double parMass = hc.weighted_monoisotopic_mass;
                             double cldMass = h.weighted_monoisotopic_mass;
                             bool fourteen = lysFourteenComponents.Contains(h.id);
@@ -147,6 +144,7 @@ namespace ProteoformSuiteInternal
                                 h.mergeTheseComponents(hc);
                                 removeThese.Add(hc);
                             }
+
                             else
                             {
                                 if (hc.charge_states.Count >= 4 && h.charge_states.Count >= 4)
@@ -166,9 +164,10 @@ namespace ProteoformSuiteInternal
                                         removeThese.Add(hc);
                                     }
                                 }
+
                                 else
                                 {
-                                    if (hc.charge_states.Count() > h.charge_states.Count())
+                                    if (hc.charge_states.Count > h.charge_states.Count)
                                     {
                                         hc.mergeTheseComponents(h);
                                         removeThese.Add(h);
@@ -187,48 +186,8 @@ namespace ProteoformSuiteInternal
             return raw_components.Except(removeThese).ToList();
         }
 
-        private static List<NeuCodePair> find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange)
-        {
-            List<NeuCodePair> pairsInScanRange = new List<NeuCodePair>();
-            //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
-            List<Component> components = components_in_file_scanrange.OrderBy(c => c.weighted_monoisotopic_mass).ToList();
 
-            Parallel.ForEach(components, lower_component =>
-            {
-                IEnumerable<Component> higher_mass_components = components.Where(higher_component => higher_component != lower_component && higher_component.weighted_monoisotopic_mass > lower_component.weighted_monoisotopic_mass);
-                foreach (Component higher_component in higher_mass_components)
-                {
-                    lock (lower_component) lock (higher_component) // two locks for thread-unsafe linq queries
-                        {
-                            double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
-                            if (mass_difference < 6)
-                            {
-                                List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList<int>();
-                                List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList<int>();
-                                List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
-                                double lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                                double higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                                bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
-                                if (lower_intensity > 0 && higher_intensity > 0)
-                                {
-                                    NeuCodePair pair = lower_intensity > higher_intensity ?
-                                        new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
-                                        new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
-
-                                    lock (pairsInScanRange)
-                                        if ((pair.weighted_monoisotopic_mass <= (pair.neuCodeHeavy.weighted_monoisotopic_mass + Lollipop.MONOISOTOPIC_UNIT_MASS)) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
-                                            && !neucodePairs_in_file.Any(p => p.id_heavy == pair.id_light && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity is probably correct and that that component should not get reuused as a light.
-                                            pairsInScanRange.Add(pair);
-                                }
-                            }
-                        }
-                }
-            });
-
-            return pairsInScanRange;
-        }
-
-        public static string GetCellValue(SpreadsheetDocument document, Cell cell)
+        private static string GetCellValue(SpreadsheetDocument document, Cell cell)
         {
             SharedStringTablePart stringTablePart = document.WorkbookPart.SharedStringTablePart;
             string value = cell.CellValue.InnerXml;

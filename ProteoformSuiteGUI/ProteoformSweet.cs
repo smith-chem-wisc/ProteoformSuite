@@ -11,6 +11,9 @@ namespace ProteoformSuiteGUI
 {
     public partial class ProteoformSweet : Form
     {
+
+        #region Public Fields
+
         public LoadDeconvolutionResults loadDeconvolutionResults = new LoadDeconvolutionResults();
         public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
         public NeuCodePairs neuCodePairs = new NeuCodePairs();
@@ -22,17 +25,24 @@ namespace ProteoformSuiteGUI
         public Quantification quantification = new Quantification();
         public TopDown topDown = new TopDown();
         public ResultsSummary resultsSummary = new ResultsSummary();
-        List<Form> forms;
-        //  Initialize Forms END
+        public static bool run_when_form_loads;
+
+        #endregion Public Fields
+
+        #region Private Fields
 
         FolderBrowserDialog resultsFolderOpen = new FolderBrowserDialog();
         OpenFileDialog methodFileOpen = new OpenFileDialog();
         SaveFileDialog methodFileSave = new SaveFileDialog();
-        SaveFileDialog saveDialog = new SaveFileDialog();
-
+        OpenFileDialog openResults = new OpenFileDialog();
+        SaveFileDialog saveResults = new SaveFileDialog();
+        SaveFileDialog saveExcelDialog = new SaveFileDialog();
+        List<Form> forms;
         Form current_form;
 
-        public static bool run_when_form_loads;
+        #endregion Private Fields
+
+        #region Public Constructor
 
         public ProteoformSweet()
         {
@@ -44,15 +54,25 @@ namespace ProteoformSuiteGUI
             methodFileOpen.Filter = "Method XML File (*.xml)| *.xml";
             methodFileSave.DefaultExt = ".xml";
             methodFileSave.Filter = "Method XML File (*.xml)| *.xml";
+            saveExcelDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
+            saveExcelDialog.DefaultExt = ".xlsx";
+            openResults.Filter = "Proteoform Suite Save State (*.sweet)| *.sweet";
+            saveResults.Filter = "Proteoform Suite Save State (*.sweet)| *.sweet";
+            saveResults.DefaultExt = ".sweet";
         }
 
-        public void InitializeForms()
+        #endregion Public Constructor
+
+        #region Private Setup Methods
+
+        private void InitializeForms()
         {
             forms = new List<Form>(new Form[] {
                 loadDeconvolutionResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
                 theoreticalDatabase, experimentalTheoreticalComparison, experimentExperimentComparison,
                 proteoformFamilies, quantification, topDown, resultsSummary
             });
+
             foreach (Form form in forms)
             {
                 form.MdiParent = this;
@@ -65,40 +85,61 @@ namespace ProteoformSuiteGUI
             form.WindowState = FormWindowState.Maximized;
             current_form = form;
         }
-        
 
-        // RESULTS TOOL STRIP
-        public void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e) { showForm(loadDeconvolutionResults); }
+        #endregion Private Setup Methods
+
+        #region RESULTS TOOL STRIP Public Method
+
+        public void enable_neuCodeProteoformPairsToolStripMenuItem(bool setting)
+        {
+            neuCodeProteoformPairsToolStripMenuItem.Enabled = setting;
+        }
+
+        #endregion RESULTS TOOL STRIP Public Method
+
+        #region RESULTS TOOL STRIP Private Methods
+
+        private void loadDeconvolutionResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(loadDeconvolutionResults);
+        }
+
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(rawExperimentalComponents);
             rawExperimentalComponents.load_raw_components();
         }
+
         private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(neuCodePairs);
             neuCodePairs.display_neucode_pairs();
         }
+
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(aggregatedProteoforms);
             if (run_when_form_loads) aggregatedProteoforms.aggregate_proteoforms();
         }
+
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
         {
             theoreticalDatabase.reload_database_list();
             showForm(theoreticalDatabase);
         }
+
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentalTheoreticalComparison);
             if (run_when_form_loads) experimentalTheoreticalComparison.compare_et();
         }
+
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentExperimentComparison);
             if (run_when_form_loads) experimentExperimentComparison.compare_ee();
         }
+
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(proteoformFamilies);
@@ -110,17 +151,36 @@ namespace ProteoformSuiteGUI
             if (run_when_form_loads) topDown.load_topdown();
         }
 
+
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (run_when_form_loads) quantification.perform_calculations();
             quantification.initialize_every_time();
             showForm(quantification);
         }
+
         private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
         {
             resultsSummary.create_summary();
             showForm(resultsSummary);
         }
+
+        #endregion RESULTS TOOL STRIP Private Methods
+
+        #region FILE TOOL STRIP Private Methods
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //if (openResults.ShowDialog() == DialogResult.OK)
+            //    SaveState.load_all_results(openResults.FileName);
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //if (saveResults.ShowDialog() == DialogResult.OK)
+            //    SaveState.save_all_results(saveResults.FileName);
+        }
+
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show("printToolStripMenuItem_Click");
@@ -131,12 +191,13 @@ namespace ProteoformSuiteGUI
             Close();
         }
 
+        #endregion FILE TOOL STRIP Private Methods
 
-        // METHOD TOOL STRIP
+        #region METHOD TOOL STRIP Private Methods
+
         private void saveMethodToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            DialogResult dr = this.methodFileSave.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
+            if (methodFileSave.ShowDialog() == DialogResult.OK)
                 saveMethod(methodFileSave.FileName);
         }
 
@@ -153,8 +214,8 @@ namespace ProteoformSuiteGUI
 
         private bool load_method()
         {
-            DialogResult dr = this.methodFileOpen.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
+            DialogResult dr = methodFileOpen.ShowDialog();
+            if (dr == DialogResult.OK)
             {
                 string method_filename = methodFileOpen.FileName;
                 SaveState.open_method(File.ReadAllLines(method_filename));
@@ -178,7 +239,7 @@ namespace ProteoformSuiteGUI
 
             if (full_run()) MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.");
             else MessageBox.Show("Method did not successfully run.");
-         }
+        }
 
         public bool full_run()
         {
@@ -198,9 +259,96 @@ namespace ProteoformSuiteGUI
             this.Cursor = Cursors.Default;
             return true;
         }
-    
 
-        // MISCELLANEOUS
+        #endregion METHOD TOOL STRIP Private Methods
+
+        #region Export Table as Excel File -- Private Methods
+
+        private void exportTablesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            export_table();
+        }
+
+        private void export_table()
+        {
+            if (current_form == rawExperimentalComponents)
+            {
+                SaveExcelFile(new List<DataGridView>() { rawExperimentalComponents.GetDGV() }, "raw_experimental_components_table.xlsx");
+            }
+
+            if (current_form == neuCodePairs)
+            {
+                SaveExcelFile(new List<DataGridView>() { neuCodePairs.GetDGV() }, "neucode_pairs_table.xlsx");
+            }
+
+            if (current_form == aggregatedProteoforms)
+            {
+                SaveExcelFile(new List<DataGridView>() { aggregatedProteoforms.GetDGV() }, "aggregated_proteoforms_table.xlsx");
+            }
+
+            if (current_form == theoreticalDatabase)
+            {
+                SaveExcelFile(new List<DataGridView>() { theoreticalDatabase.GetDGV() }, "theoretical_database_table.xlsx");
+            }
+
+            if (current_form == experimentalTheoreticalComparison)
+            {
+                SaveExcelFile(new List<DataGridView>() { experimentalTheoreticalComparison.GetETRelationsDGV(), experimentalTheoreticalComparison.GetETPeaksDGV() }, "experimental_theoretical_comparison_table.xlsx");
+            }
+
+            if (current_form == experimentExperimentComparison)
+            {
+                SaveExcelFile(new List<DataGridView>() { experimentExperimentComparison.GetEERelationDGV(), experimentExperimentComparison.GetEEPeaksDGV() }, "experiment_experiment_comparison_table.xlsx");
+            }
+
+            if (current_form == proteoformFamilies)
+            {
+                SaveExcelFile(new List<DataGridView>() { proteoformFamilies.GetDGV() }, "proteoform_families_table.xlsx");
+            }
+
+            if (current_form == quantification)
+            {
+                SaveExcelFile(new List<DataGridView>() { quantification.Get_GoTerms_DGV(), quantification.Get_quant_results_DGV() }, "quantification_table.xlsx");
+            }
+        }
+
+        private void SaveExcelFile(List<DataGridView> dgvs, string filename)
+        {
+            saveExcelDialog.FileName = filename;
+            DialogResult dr = this.saveExcelDialog.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                DGVExcelWriter writer = new DGVExcelWriter();
+                writer.ExportToExcel(dgvs, saveExcelDialog.FileName);
+                MessageBox.Show("Successfully exported table.");
+            }
+            else return;
+        }
+
+        #endregion Export Table as Excel File -- Private Methods
+
+        #region Results Summary Methods
+
+        public void save_all_plots(string folder, string timestamp)
+        {
+            if (Lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_IntensityRatio, folder, "NeuCode_IntensityRatios_", timestamp);
+            if (Lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_LysineCount, folder, "NeuCode_LysineCounts_", timestamp);
+            if (Lollipop.et_relations.Count > 0) save_as_png(experimentalTheoreticalComparison.ct_ET_Histogram, folder, "ExperimentalTheoretical_MassDifferences_", timestamp);
+            if (Lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
+            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_proteoformIntensities, folder, "QuantifiedProteoform_Intensities_", timestamp);
+            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_relativeDifference, folder, "QuantifiedProteoform_Tusher2001Plot_", timestamp);
+            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_volcano_logFold_logP, folder, "QuantifiedProteoform_VolcanoPlot_", timestamp);
+        }
+
+        private void save_as_png(Chart ct, string folder, string prefix, string timestamp)
+        {
+            ct.SaveImage(Path.Combine(folder, prefix + timestamp + ".png"), ChartImageFormat.Png);
+        }
+
+        #endregion Results Summary Methods
+
+        #region Public Method
+
         public void clear_lists()
         {
             Lollipop.raw_experimental_components.Clear();
@@ -219,90 +367,8 @@ namespace ProteoformSuiteGUI
             Lollipop.proteoform_community.decoy_proteoforms.Clear();
         }
 
-        public void enable_neuCodeProteoformPairsToolStripMenuItem(bool setting)
-        {
-            neuCodeProteoformPairsToolStripMenuItem.Enabled = setting;
-        }
+        #endregion Public Method
 
-        public void display_resultsMenu()
-        {
-            resultsToolStripMenuItem.ShowDropDown();
-        }
 
-        public void display_methodMenu()
-        {
-            runMethodToolStripMenuItem.ShowDropDown();
-        }
-
-        private void exportTablesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            export_table();
-        }
-
-        private void export_table()
-        {
-            if (current_form == rawExperimentalComponents)
-            {
-                SaveExcelFile(new List<DataGridView> (){ rawExperimentalComponents.GetDGV() }, "raw_experimental_components_table.xlsx");
-            }
-            if (current_form == neuCodePairs)
-            {
-                SaveExcelFile(new List<DataGridView>() { neuCodePairs.GetDGV() }, "neucode_pairs_table.xlsx");
-            }
-            if (current_form == aggregatedProteoforms)
-            {
-                SaveExcelFile(new List<DataGridView>() { aggregatedProteoforms.GetDGV() } , "aggregated_proteoforms_table.xlsx");
-            }
-            if (current_form == theoreticalDatabase)
-            {
-                SaveExcelFile(new List<DataGridView>() { theoreticalDatabase.GetDGV() }, "theoretical_database_table.xlsx");
-            }
-            if ( current_form == experimentalTheoreticalComparison)
-            {
-                SaveExcelFile(new List<DataGridView>() { experimentalTheoreticalComparison.GetETRelationsDGV(), experimentalTheoreticalComparison.GetETPeaksDGV() }, "experimental_theoretical_comparison_table.xlsx");
-            }
-            if ( current_form == experimentExperimentComparison)
-            {
-                SaveExcelFile(new List<DataGridView>(){ experimentExperimentComparison.GetEERelationDGV(), experimentExperimentComparison.GetEEPeaksDGV()}, "experiment_experiment_comparison_table.xlsx");
-            }
-            if (current_form == proteoformFamilies)
-            {
-                SaveExcelFile(new List<DataGridView>() { proteoformFamilies.GetDGV() }, "proteoform_families_table.xlsx");
-            }
-            if (current_form == quantification)
-            {
-                SaveExcelFile(new List<DataGridView>() { quantification.Get_GoTerms_DGV(), quantification.Get_quant_results_DGV() }, "quantification_table.xlsx");
-            }
-        }
-
-        public void SaveExcelFile(List<DataGridView> dgvs, string filename)
-        {
-            saveDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
-            saveDialog.FileName = filename;
-            DialogResult dr = this.saveDialog.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                DGVExcelWriter writer = new DGVExcelWriter();
-                writer.ExportToExcel(dgvs, saveDialog.FileName);
-                MessageBox.Show("Successfully exported table.");
-            }
-            else return; 
-        }
-
-        public void save_all_plots(string folder, string timestamp)
-        {
-            if (Lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_IntensityRatio, folder, "NeuCode_IntensityRatios_", timestamp);
-            if (Lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_LysineCount, folder, "NeuCode_LysineCounts_", timestamp);
-            if (Lollipop.et_relations.Count > 0) save_as_png(experimentalTheoreticalComparison.ct_ET_Histogram, folder, "ExperimentalTheoretical_MassDifferences_", timestamp);
-            if (Lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
-            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_proteoformIntensities, folder, "QuantifiedProteoform_Intensities_", timestamp);
-            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_relativeDifference, folder, "QuantifiedProteoform_Tusher2001Plot_", timestamp);
-            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_volcano_logFold_logP, folder, "QuantifiedProteoform_VolcanoPlot_", timestamp);
-        }
-
-        private void save_as_png(Chart ct, string folder, string prefix, string timestamp)
-        {
-            ct.SaveImage(Path.Combine(folder, prefix + timestamp + ".png"), ChartImageFormat.Png);
-        }
     }
 }

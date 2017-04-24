@@ -72,10 +72,19 @@ namespace ProteoformSuiteInternal
         public void identify_experimentals()
         {
             HashSet<ExperimentalProteoform> identified_experimentals = new HashSet<ExperimentalProteoform>();
+            Parallel.ForEach(topdown_proteoforms, t =>
+            {
+                lock (identified_experimentals)
+                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(Lollipop.all_possible_ptmsets, Lollipop.all_mods_with_mass, true))
+                    {
+                        identified_experimentals.Add(e);
+                    }
+            });
+
             Parallel.ForEach(theoretical_proteoforms, t =>
             {
                 lock (identified_experimentals)
-                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(Lollipop.all_possible_ptmsets, Lollipop.all_mods_with_mass))
+                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(Lollipop.all_possible_ptmsets, Lollipop.all_mods_with_mass, false))
                     {
                         identified_experimentals.Add(e);
                     }
@@ -91,7 +100,7 @@ namespace ProteoformSuiteInternal
                 Parallel.ForEach(newly_identified_experimentals, id_experimental =>
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
-                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Lollipop.all_possible_ptmsets, Lollipop.all_mods_with_mass))
+                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Lollipop.all_possible_ptmsets, Lollipop.all_mods_with_mass, false))
                             {
                                 identified_experimentals.Add(new_e);
                                 tmp_new_experimentals.Add(new_e);
