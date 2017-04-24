@@ -50,9 +50,17 @@ namespace ProteoformSuiteGUI
             Lollipop.logSelectIntensityHistogram.Clear();
             Lollipop.satisfactoryProteoforms.Clear();
             Lollipop.qVals.Clear();
-            Lollipop.observedProteins.Clear();
+            Lollipop.quantifiedProteins.Clear();
             Lollipop.inducedOrRepressedProteins.Clear();
             Lollipop.goTermNumbers.Clear();
+
+            foreach (var series in ct_proteoformIntensities.Series) series.Points.Clear();
+            foreach (var series in ct_relativeDifference.Series) series.Points.Clear();
+            foreach (var series in ct_volcano_logFold_logP.Series) series.Points.Clear();
+            dgv_goAnalysis.DataSource = null;
+            dgv_quantification_results.DataSource = null;
+            dgv_goAnalysis.Rows.Clear();
+            dgv_quantification_results.Rows.Clear();
         }
 
         public void fillGuiTablesAndGraphs()
@@ -67,9 +75,10 @@ namespace ProteoformSuiteGUI
 
         public void initialize_every_time()
         {
-            this.tb_familyBuildFolder.Text = Lollipop.family_build_folder_path;
-            if (cmbx_geneLabel.Items.Count > 0) this.cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(ProteoformCommunity.preferred_gene_label);
-            this.cb_geneCentric.Checked = ProteoformCommunity.gene_centric_families;
+            tb_familyBuildFolder.Text = Lollipop.family_build_folder_path;
+            if (cmbx_geneLabel.Items.Count > 0)
+                cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(ProteoformCommunity.preferred_gene_label);
+            cb_geneCentric.Checked = ProteoformCommunity.gene_centric_families;
         }
 
         private void initialize()
@@ -161,17 +170,18 @@ namespace ProteoformSuiteGUI
             cmbx_goAspect.SelectedIndex = 0;
             cmbx_goAspect.SelectedIndexChanged += cmbx_goAspect_SelectedIndexChanged;
 
-            rb_allSampleGOTerms.Enabled = false;
-            rb_allSampleGOTerms.Checked = !Lollipop.allTheoreticalProteins; //initiallizes the background for GO analysis to the set of observed proteins. not the set of theoretical proteins.
-            rb_allSampleGOTerms.Enabled = true;
+            rb_quantifiedSampleSet.Enabled = false;
+            rb_quantifiedSampleSet.Checked = !Lollipop.allTheoreticalProteins; //initiallizes the background for GO analysis to the set of observed proteins. not the set of theoretical proteins.
+            rb_quantifiedSampleSet.Enabled = true;
 
             rb_allTheoreticalProteins.Enabled = false;
             rb_allTheoreticalProteins.Checked = Lollipop.allTheoreticalProteins; //initiallizes the background for GO analysis to the set of observed proteins. not the set of theoretical proteins.
             rb_allTheoreticalProteins.Enabled = true;
 
-            rb_allSampleGOTerms.CheckedChanged += new EventHandler(goTermBackgroundChanged);
-            rb_allTheoreticalProteins.CheckedChanged += new EventHandler(goTermBackgroundChanged);
+            rb_quantifiedSampleSet.CheckedChanged += new EventHandler(goTermBackgroundChanged);
+            rb_detectedSampleSet.CheckedChanged += new EventHandler(goTermBackgroundChanged);
             rb_customBackgroundSet.CheckedChanged += new EventHandler(goTermBackgroundChanged);
+            rb_allTheoreticalProteins.CheckedChanged += new EventHandler(goTermBackgroundChanged);
         }
 
         #endregion Public Methods
@@ -293,15 +303,15 @@ namespace ProteoformSuiteGUI
         private void nud_bkgdShift_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.backgroundShift = nud_bkgdShift.Value;
-            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
-            Lollipop.defineBackgroundIntensityDistribution(Lollipop.neucode_labeled, Lollipop.quantBioFracCombos, Lollipop.satisfactoryProteoforms, Lollipop.backgroundShift, Lollipop.backgroundWidth);
+            if (Lollipop.qVals.Count > 0) Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
+            if (Lollipop.qVals.Count > 0) Lollipop.defineBackgroundIntensityDistribution(Lollipop.neucode_labeled, Lollipop.quantBioFracCombos, Lollipop.satisfactoryProteoforms, Lollipop.backgroundShift, Lollipop.backgroundWidth);
         }
 
         private void nud_bkgdWidth_ValueChanged(object sender, EventArgs e)
         {
             Lollipop.backgroundWidth = nud_bkgdWidth.Value;
-            Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
-            Lollipop.defineBackgroundIntensityDistribution(Lollipop.neucode_labeled, Lollipop.quantBioFracCombos, Lollipop.satisfactoryProteoforms, Lollipop.backgroundShift, Lollipop.backgroundWidth);
+            if (Lollipop.qVals.Count > 0) Lollipop.defineAllObservedIntensityDistribution(Lollipop.proteoform_community.experimental_proteoforms, Lollipop.logIntensityHistogram);
+            if (Lollipop.qVals.Count > 0) Lollipop.defineBackgroundIntensityDistribution(Lollipop.neucode_labeled, Lollipop.quantBioFracCombos, Lollipop.satisfactoryProteoforms, Lollipop.backgroundShift, Lollipop.backgroundWidth);
         }
 
         private void cmbx_observationsTypeRequired_SelectedIndexChanged(object sender, EventArgs e)
@@ -377,9 +387,27 @@ namespace ProteoformSuiteGUI
             backgroundUpdated = true;
         }
 
-        private void rb_allSampleGOTerms_CheckedChanged(object sender, EventArgs e)
+        private void rb_quantifiedSampleSet_CheckedChanged(object sender, EventArgs e)
         {
-            if (rb_customBackgroundSet.Checked)
+            if (rb_quantifiedSampleSet.Checked)
+            {
+                Lollipop.backgroundProteinsList = "";
+                tb_goTermCustomBackground.Text = "";
+                backgroundUpdated = false;
+            }
+        }
+
+        private void rb_customBackgroundSet_CheckedChanged(object sender, EventArgs e)
+        {
+            tb_goTermCustomBackground.Enabled = rb_customBackgroundSet.Checked;
+            btn_customBackgroundBrowse.Enabled = rb_customBackgroundSet.Checked;
+            if (rb_customBackgroundSet.Checked) btn_customBackgroundBrowse_Click(new object(), new EventArgs());
+        }
+
+        private void rb_detectedSampleSet_CheckedChanged(object sender, EventArgs e)
+        {
+            Lollipop.allDetectedProteins = rb_detectedSampleSet.Checked;
+            if (rb_detectedSampleSet.Checked)
             {
                 Lollipop.backgroundProteinsList = "";
                 tb_goTermCustomBackground.Text = "";
@@ -396,13 +424,6 @@ namespace ProteoformSuiteGUI
                 tb_goTermCustomBackground.Text = "";
                 backgroundUpdated = false;
             }
-        }
-
-        private void rb_customBackgroundSet_CheckedChanged(object sender, EventArgs e)
-        {
-            tb_goTermCustomBackground.Enabled = rb_customBackgroundSet.Checked;
-            btn_customBackgroundBrowse.Enabled = rb_customBackgroundSet.Checked;
-            if (rb_customBackgroundSet.Checked) btn_customBackgroundBrowse_Click(new object(), new EventArgs());
         }
 
         OpenFileDialog fileOpen = new OpenFileDialog();
@@ -534,5 +555,6 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Cytoscape Visualization Private Methods
+
     }
 }

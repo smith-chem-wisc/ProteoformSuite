@@ -42,6 +42,7 @@ namespace ProteoformSuiteInternal
 
         public TopDownProteoform(string accession, TopDownHit root, List<TopDownHit> candidate_hits) : base(accession)
         {
+            this.linked_proteoform_references = new LinkedList<Proteoform>();
             this.root = root;
             this.name = root.name;
             this.ptm_set = new PtmSet( root.ptm_list);

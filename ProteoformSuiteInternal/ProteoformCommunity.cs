@@ -171,6 +171,7 @@ namespace ProteoformSuiteInternal
             List<int> missed_monoisotopics_range = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
             foreach (TopDownProteoform topdown in topdowns)
             {
+                List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
                 double mass = topdown.monoisotopic_mass;
 
                 foreach (int m in missed_monoisotopics_range)
@@ -190,10 +191,12 @@ namespace ProteoformSuiteInternal
                             td_relation.accepted = true;
                             td_relation.connected_proteoforms[0].relationships.Add(td_relation);
                             td_relation.connected_proteoforms[1].relationships.Add(td_relation);
-                            td_relations.Add(td_relation);
+                            all_td_relations.Add(td_relation);
                         }
                     }
                 }
+                //add the best td relation
+                if (all_td_relations.Count > 0) td_relations.Add(all_td_relations.OrderBy(r => Math.Abs(r.delta_mass) - Math.Round(Math.Abs(r.delta_mass), 0)).First());
 
                 //match each td proteoform group to the closest theoretical w/ same accession and modifications. (if no match always make relationship with unmodified)
                 if (theoreticals.Count > 0)
