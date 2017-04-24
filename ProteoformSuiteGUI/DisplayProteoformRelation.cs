@@ -74,7 +74,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return ((ProteoformRelation)display_object).nearby_relations.Count;
+                return ((ProteoformRelation)display_object).nearby_relations != null ? ((ProteoformRelation)display_object).nearby_relations.Count : 0;
             }
         }
 

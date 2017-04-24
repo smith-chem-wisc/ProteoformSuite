@@ -180,7 +180,9 @@ namespace ProteoformSuiteInternal
                     else if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation)
                         rank_sum += Lollipop.rank_second_quartile;
                     else if (m.modificationType == "Deconvolution Error")
-                        rank_sum += Lollipop.rank_third_quartile;
+                        rank_sum += Lollipop.neucode_labeled ? 
+                            Lollipop.rank_third_quartile :   //in neucode-labeled data, fewer missed monoisotopics - don't prioritize
+                            Lollipop.rank_first_quartile ; //in label-free, more missed monoisotoipcs, should prioritize
                     else
                         rank_sum += known_mods.Concat(Lollipop.variableModifications).Contains(m) ?
                             Lollipop.modification_ranks[m.monoisotopicMass] :
