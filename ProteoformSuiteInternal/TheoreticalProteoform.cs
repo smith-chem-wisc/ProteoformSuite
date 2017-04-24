@@ -23,27 +23,9 @@ namespace ProteoformSuiteInternal
         public string goTerm_IDs { get; private set; }
         public double ptm_mass { get { return ptm_set.mass; } }
         public bool contaminant { get; set; }
-        public List<GoTerm> goTerms
-        {
-            get
-            {
-                return _goTerms;
-            }
-
-            set
-            {
-                _goTerms = value;
-                goTerm_IDs = String.Join("; ", goTerms.Select(g => g.Id));
-            }
-        }
+        public List<GoTerm> goTerms { get; private set; }
 
         #endregion Public Properties
-
-        #region Private Fields
-
-        private List<GoTerm> _goTerms = new List<GoTerm>();
-
-        #endregion Private Fields
 
         #region Public Constructor
 
@@ -60,6 +42,7 @@ namespace ProteoformSuiteInternal
             this.end = (int)expanded_protein_list.FirstOrDefault().ProteolysisProducts.FirstOrDefault().OneBasedEndPosition;
             this.sequence = expanded_protein_list.First().BaseSequence;
             this.goTerms = expanded_protein_list.SelectMany(p => p.GoTerms).ToList();
+            goTerm_IDs = String.Join("; ", goTerms.Select(g => g.Id));
             this.gene_name = new GeneName(expanded_protein_list.SelectMany(t => t.GeneNames));
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
