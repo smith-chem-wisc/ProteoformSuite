@@ -263,7 +263,6 @@ namespace ProteoformSuiteInternal
 
         [NonSerialized] //Nested objects in ProteoformRelation and ProteoformCommunity are throwing this for a loop
         public ProteoformCommunity proteoform_community = new ProteoformCommunity();
-
         public List<ExperimentalProteoform> vetted_proteoforms = new List<ExperimentalProteoform>();
         public Component[] ordered_components = new Component[0];
         public List<Component> remaining_components = new List<Component>();
