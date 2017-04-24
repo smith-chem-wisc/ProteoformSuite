@@ -46,11 +46,6 @@ namespace ProteoformSuiteGUI
                 MessageBox.Show("Go back and load in top-down results.");
                 return false;
             }
-            if (Lollipop.proteoform_community.experimental_proteoforms.Length == 0)
-            {
-                MessageBox.Show("Go back and aggregate experimental proteoforms.");
-                return false;
-            }
             if (Lollipop.proteoform_community.theoretical_proteoforms.Length == 0)
             {
                 MessageBox.Show("Go back and create a theoretical proteoform database.");
