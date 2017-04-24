@@ -86,63 +86,54 @@ namespace ProteoformSuiteInternal
                 double mass_tolerance = this.modified_mass / 1000000 * (double)Lollipop.mass_tolerance;
                 int sign = Math.Sign(e.modified_mass - modified_mass);
 
-                //if topdown relation, experimental proteoform is identified as the topdown proteoform. 
-                if (topdown_proteoform_relation) 
+                double deltaM = r.peak == null? r.delta_mass : Math.Sign(r.peak.peak_deltaM_average) < 0 ? r.peak.peak_deltaM_average : sign * r.peak.peak_deltaM_average; // give EE relations the correct sign, but don't switch negative ET relation deltaM's
+                Proteoform theoretical_base = (this as TheoreticalProteoform != null || this as TopDownProteoform != null) ?
+                    this : //Theoetical starting point
+                    ((linked_proteoform_references.First.Value as TheoreticalProteoform != null || linked_proteoform_references.First.Value != null) ?
+                        linked_proteoform_references.First.Value : //Experimental with theoretical reference
+                        null); //Experimental without theoretical reference
+                string theoretical_base_sequence = theoretical_base == null ? "" : (theoretical_base is TopDownProteoform) ? ((TopDownProteoform)theoretical_base).sequence : ((TheoreticalProteoform)theoretical_base).sequence;
+
+                PtmSet best_addition = generate_possible_added_ptmsets(r.peak == null? new List<PtmSet> { r.candidate_ptmset } : r.peak.possiblePeakAssignments, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, theoretical_base_sequence, Lollipop.rank_first_quartile / 2)
+                    .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
+                    .FirstOrDefault();
+
+                ModificationWithMass best_loss = null;
+                foreach (ModificationWithMass m in all_mods_with_mass)
+                {
+                    bool within_loss_tolerance = deltaM >= -m.monoisotopicMass - mass_tolerance && deltaM <= -m.monoisotopicMass + mass_tolerance;
+                    bool can_be_removed = this.ptm_set.ptm_combination.Select(ptm => ptm.modification).Contains(m);
+                    bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-m.monoisotopicMass)) < Math.Abs(deltaM - (-best_loss.monoisotopicMass)); 
+                    if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
+                    {
+                        best_loss = m;
+                    }
+                }
+
+                // If they're the same and someone hasn't labeled 0 difference with a "ModificationWithMass", then label it null
+                if (best_addition == null && best_loss == null && Math.Abs(r.peak == null? r.delta_mass : r.peak.peak_deltaM_average) <= mass_tolerance)
                 {
                     lock (r) lock (e) assign_pf_identity(e, this, ptm_set, r, sign, null);
                     identified.Add(e);
                 }
-                else
-                {
-                    double deltaM = Math.Sign(r.peak.peak_deltaM_average) < 0 ? r.peak.peak_deltaM_average : sign * r.peak.peak_deltaM_average; // give EE relations the correct sign, but don't switch negative ET relation deltaM's
-                    TheoreticalProteoform theoretical_base = this as TheoreticalProteoform != null ?
-                        this as TheoreticalProteoform : //Theoretical starting point
-                        (linked_proteoform_references.First.Value as TheoreticalProteoform != null ?
-                            linked_proteoform_references.First.Value as TheoreticalProteoform : //Experimental with theoretical reference
-                            null); //Experimental without theoretical reference
-                    string theoretical_base_sequence = theoretical_base != null ? theoretical_base.sequence : "";
 
-                    PtmSet best_addition = generate_possible_added_ptmsets(r.peak.possiblePeakAssignments, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, theoretical_base_sequence, Lollipop.rank_first_quartile / 2)
-                        .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
-                        .FirstOrDefault();
+                if (best_addition == null && best_loss == null)
+                    continue;
 
-                    ModificationWithMass best_loss = null;
-                    foreach (ModificationWithMass m in all_mods_with_mass)
-                    {
-                        bool within_loss_tolerance = deltaM >= -m.monoisotopicMass - mass_tolerance && deltaM <= -m.monoisotopicMass + mass_tolerance;
-                        bool can_be_removed = this.ptm_set.ptm_combination.Select(ptm => ptm.modification).Contains(m);
-                        bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-m.monoisotopicMass)) < Math.Abs(deltaM - (-best_loss.monoisotopicMass));
-                        if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
-                        {
-                            best_loss = m;
-                        }
-                    }
-
-                    // If they're the same and someone hasn't labeled 0 difference with a "ModificationWithMass", then label it null
-                    if (best_addition == null && best_loss == null && Math.Abs(r.peak.peak_deltaM_average) <= mass_tolerance)
-                    {
-                        lock (r) lock (e) assign_pf_identity(e, this, ptm_set, r, sign, null);
-                        identified.Add(e);
-                    }
-
-                    if (best_addition == null && best_loss == null)
-                        continue;
-
-                    PtmSet with_mod_change = best_loss != null ?
-                        new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Where(ptm => !ptm.modification.Equals(best_loss)))) :
-                        new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Concat(best_addition.ptm_combination).Where(ptm => ptm.modification.monoisotopicMass != 0).ToList()));
-                    lock (r) lock (e)
-                            assign_pf_identity(e, this, with_mod_change, r, sign, best_loss != null ? new PtmSet(new List<Ptm> { new Ptm(-1, best_loss) }) : best_addition);
-                    identified.Add(e);
-                }
+                PtmSet with_mod_change = best_loss != null ?
+                    new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Where(ptm => !ptm.modification.Equals(best_loss)))) :
+                    new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Concat(best_addition.ptm_combination).Where(ptm => ptm.modification.monoisotopicMass != 0).ToList()));
+                lock (r) lock (e)
+                        assign_pf_identity(e, this, with_mod_change, r, sign, best_loss != null ? new PtmSet(new List<Ptm> { new Ptm(-1, best_loss) }) : best_addition);
+                identified.Add(e);
             }
             return identified;
         }
 
         public List<PtmSet> generate_possible_added_ptmsets(List<PtmSet> possible_peak_assignments, double deltaM, double mass_tolerance, List<ModificationWithMass> all_mods_with_mass,
-            TheoreticalProteoform theoretical_base, string theoretical_base_sequence, int additional_ptm_penalty)
+            Proteoform theoretical_base, string theoretical_base_sequence, int additional_ptm_penalty)
         {
-            List<ModificationWithMass> known_mods = theoretical_base.ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications.ToList()).SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
+            List<ModificationWithMass> known_mods = theoretical_base is TopDownProteoform? theoretical_base.ptm_set.ptm_combination.Select(m => m.modification).ToList() : ((TheoreticalProteoform)theoretical_base).ExpandedProteinList.SelectMany(p => p.OneBasedPossibleLocalizedModifications.ToList()).SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
             List<PtmSet> possible_ptmsets = new List<PtmSet>();
 
             int n_terminal_degraded_aas = degraded_aas_count(theoretical_base_sequence, ptm_set, true);
@@ -160,8 +151,9 @@ namespace ProteoformSuiteInternal
                         rank_sum += Lollipop.modification_ranks[m.monoisotopicMass];
                         continue;
                     }
+                    int begin = theoretical_base is TopDownProteoform ? ((TopDownProteoform)theoretical_base).start_index : ((TheoreticalProteoform)theoretical_base).begin;
 
-                    bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.Motif == "M" && theoretical_base.begin == 2 && !mods_in_set.Contains(m);
+                    bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.Motif == "M" && begin == 2 && !mods_in_set.Contains(m);
                     bool motif_matches_n_terminus = n_terminal_degraded_aas < theoretical_base_sequence.Length && m.motif.Motif == theoretical_base_sequence[n_terminal_degraded_aas].ToString();
                     bool motif_matches_c_terminus = c_terminal_degraded_aas < theoretical_base_sequence.Length && m.motif.Motif == theoretical_base_sequence[theoretical_base_sequence.Length - c_terminal_degraded_aas - 1].ToString();
                     bool cannot_be_degradation = !motif_matches_n_terminus && !motif_matches_c_terminus;
@@ -220,6 +212,8 @@ namespace ProteoformSuiteInternal
                 r.represented_ptmset = change;
                 if (r.relation_type == ProteoformComparison.ExperimentalExperimental) r.delta_mass *= sign;
             }
+
+
             if (e.linked_proteoform_references == null)
             {
                 e.linked_proteoform_references = new LinkedList<Proteoform>(this.linked_proteoform_references);
@@ -227,9 +221,11 @@ namespace ProteoformSuiteInternal
                 e.ptm_set = set;
             }
 
+            if (theoretical_reference is TheoreticalProteoform && e.linked_proteoform_references.First.Value is TopDownProteoform) return;
+
             if (e.gene_name == null)
                 e.gene_name = this.gene_name;
-            else
+            else  
                 e.gene_name.gene_names.Concat(this.gene_name.gene_names);
         }
 

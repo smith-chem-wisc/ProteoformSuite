@@ -178,6 +178,7 @@ namespace ProteoformSuiteGUI
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();
+            ((ProteoformSweet)MdiParent).topDown.ClearListsAndTables();
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
         }
 
