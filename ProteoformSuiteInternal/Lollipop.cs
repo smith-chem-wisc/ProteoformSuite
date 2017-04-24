@@ -898,13 +898,13 @@ namespace ProteoformSuiteInternal
                 topdown_proteoforms.Remove(p);
                 List<TopDownProteoform> p_diff_RT = topdown_proteoforms.Where(t => t != p && t.accession == p.accession && p.sequence == t.sequence && p.topdown_hits[0].same_ptm_hits(t.topdown_hits[0])).ToList();
                 p.all_RTs.AddRange(p_diff_RT.Select(t => t.agg_rt));
-                //foreach(ExperimentalProteoform exp in e_same_mass) 
                 p.topdown_hits.AddRange(p_diff_RT.SelectMany(t => t.topdown_hits));
                 topdown_proteoforms = topdown_proteoforms.Except(p_diff_RT).ToList();
                 if (refined_topdown_proteoforms.Select(t => t.accession).Contains(p.accession))
                 {
                     string[] old_accession = p.accession.Split('_');
-                    p.accession = old_accession[0] + "_" + old_accession[1] + "_" + (Convert.ToInt16(old_accession[2]) + 1);
+                    int num = Convert.ToInt16(old_accession[1].ElementAt(2).ToString()) + 1;
+                    p.accession = old_accession[0] + "_TD" + num +  "_" + old_accession[2] + old_accession[3] + "_" + old_accession[4];
                 }
                 refined_topdown_proteoforms.Add(p);
             }

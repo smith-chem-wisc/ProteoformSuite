@@ -316,7 +316,7 @@ namespace ProteoformSuiteInternal
 
             else if (typeof(TopDownProteoform).IsAssignableFrom(p.GetType()))
             {
-                return p.accession + "_" + Math.Round(((TopDownProteoform)p).agg_rt, 0) +  " " + ((TopDownProteoform)p).ptm_list_string();
+                return p.accession + " " + ((TopDownProteoform)p).ptm_list_string();
             }
 
             else
