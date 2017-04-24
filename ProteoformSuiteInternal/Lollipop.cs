@@ -261,12 +261,10 @@ namespace ProteoformSuiteInternal
 
         #region AGGREGATED PROTEOFORMS Public Fields
 
-        [NonSerialized]
+        [NonSerialized] //Nested objects in ProteoformRelation and ProteoformCommunity are throwing this for a loop
         public ProteoformCommunity proteoform_community = new ProteoformCommunity();
 
-        [NonSerialized]
         public List<ExperimentalProteoform> vetted_proteoforms = new List<ExperimentalProteoform>();
-
         public Component[] ordered_components = new Component[0];
         public List<Component> remaining_components = new List<Component>();
         public List<Component> remaining_verification_components = new List<Component>();
@@ -461,7 +459,7 @@ namespace ProteoformSuiteInternal
         public bool neucode_light_lysine = true;
         public bool neucode_heavy_lysine = false;
         public int max_ptms = 4;
-        public int decoy_databases = 5;
+        public int decoy_databases = 1;
         public string decoy_database_name_prefix = "DecoyDatabase_";
         public int min_peptide_length = 7;
         public double ptmset_mass_tolerance = 0.00001;
@@ -474,7 +472,7 @@ namespace ProteoformSuiteInternal
         public int mod_rank_second_quartile = 0;
         public int mod_rank_third_quartile = 0;
 
-        [NonSerialized]
+        [NonSerialized] //Nested objects in TheoreticalDatabase are throwing this for a loop (StackOverflowException)
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
 
         #endregion THEORETICAL DATABASE Public Fields
@@ -501,14 +499,11 @@ namespace ProteoformSuiteInternal
 
         [NonSerialized]
         public Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
-
+        
         [NonSerialized]
         public Dictionary<string, List<ProteoformRelation>> ef_relations = new Dictionary<string, List<ProteoformRelation>>();
 
-        [NonSerialized]
         public List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
-
-        [NonSerialized]
         public List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
 
         #endregion ET,ED,EE,EF COMPARISONS Public Fields
@@ -597,14 +592,14 @@ namespace ProteoformSuiteInternal
 
         #region QUANTIFICATION Public Fields
 
-        public string numerator_condition = "";
-        public string denominator_condition = "";
-
         [NonSerialized]
         public SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>();
 
         [NonSerialized]
         public SortedDictionary<decimal, int> logSelectIntensityHistogram = new SortedDictionary<decimal, int>();
+
+        public string numerator_condition = "";
+        public string denominator_condition = "";
         public decimal observedAverageIntensity; //log base 2
         public decimal selectAverageIntensity; //log base 2
         public decimal observedStDev;
@@ -617,16 +612,12 @@ namespace ProteoformSuiteInternal
         public decimal bkgdGaussianHeight;
         public decimal backgroundShift;
         public decimal backgroundWidth;
-
-        [NonSerialized]
         public List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>(); // these are proteoforms meeting the required number of observations.
         public IEnumerable<decimal> permutedTestStatistics;
         public static string[] observation_requirement_possibilities = new string[] { "Minimum Bioreps with Observations From Any Single Condition", "Minimum Bioreps with Observations From Any Condition", "Minimum Bioreps with Observations From Each Condition" };
         public string observation_requirement = observation_requirement_possibilities[0];
         public int minBiorepsWithObservations = 1;
         public decimal selectGaussianHeight;
-
-        [NonSerialized]
         public List<ExperimentalProteoform.quantitativeValues> qVals = new List<ExperimentalProteoform.quantitativeValues>();
         public decimal sKnot_minFoldChange = 1m;
         public List<decimal> sortedProteoformTestStatistics = new List<decimal>();
@@ -634,14 +625,8 @@ namespace ProteoformSuiteInternal
         public decimal offsetTestStatistics = 1m;
         //public decimal negativeOffsetTestStatistics = -1m;
         public decimal offsetFDR;
-
-        [NonSerialized]
         public List<ProteinWithGoTerms> observedProteins = new List<ProteinWithGoTerms>(); //This is the complete list of observed proteins
-
-        [NonSerialized]
         public List<ProteinWithGoTerms> quantifiedProteins = new List<ProteinWithGoTerms>(); //This is the complete list of proteins that were quantified and included in any accepted proteoform family
-
-        [NonSerialized]
         public List<ProteinWithGoTerms> inducedOrRepressedProteins = new List<ProteinWithGoTerms>(); //This is the list of proteins from proteoforms that underwent significant induction or repression
         public decimal minProteoformIntensity = 500000m;
         public decimal minProteoformFoldChange = 1m;

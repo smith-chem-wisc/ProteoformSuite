@@ -2,6 +2,7 @@
 using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -100,14 +101,43 @@ namespace Test
         public void results_dataframe_with_something()
         {
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
-            e.linked_proteoform_references = new LinkedList<Proteoform>(new List<Proteoform> { ConstructorsForTesting.make_a_theoretical() });
-            e.ptm_set = e.linked_proteoform_references.Last.Value.ptm_set;
+            e.linked_proteoform_references = new List<Proteoform>(new List<Proteoform> { ConstructorsForTesting.make_a_theoretical() });
+            e.ptm_set = e.linked_proteoform_references.Last().ptm_set;
             ProteoformFamily f = new ProteoformFamily(e);
             f.construct_family();
             SaveState.lollipop.proteoform_community.families = new List<ProteoformFamily> { f };
             string[] lines = ResultsSummaryGenerator.results_dataframe().Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.True(lines.Count() == 3);
             Assert.True(lines.Any(a => a.Contains("E1")));
+        }
+
+        [Test]
+        public void basic_serialization()
+        {
+            SaveState.lollipop = new Lollipop();
+            SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+        }
+
+        [Test]
+        public void intermediate_serialization() //Nested objects in ProteoformRelation and ProteoformCommunity are throwing this for a loop
+        {
+            //SaveState.lollipop = new Lollipop();
+            //TestProteoformFamilies.construct_two_families_with_potentially_colliding_theoreticals();
+            //SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            //SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+        }
+
+        [Test]
+        public void db_serialization() // Here, too
+        {
+            //SaveState.lollipop = new Lollipop();
+            //SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
+            //SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
+            //SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
+            //SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            //SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            //SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
         }
     }
 }

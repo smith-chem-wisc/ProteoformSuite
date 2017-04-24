@@ -50,7 +50,7 @@ namespace ProteoformSuiteInternal
         public TheoreticalProteoform(string accession, string description, IEnumerable<ProteinWithGoTerms> expanded_protein_list, double unmodified_mass, int lysine_count, PtmSet ptm_set, bool is_target, bool check_contaminants, Dictionary<InputFile, Protein[]> theoretical_proteins)
             : base(accession, unmodified_mass + ptm_set.mass, lysine_count, is_target)
         {
-            this.linked_proteoform_references = new LinkedList<Proteoform>();
+            this.linked_proteoform_references = new List<Proteoform>();
             this.ExpandedProteinList = expanded_protein_list;
             this.accession = accession;
             this.description = description;

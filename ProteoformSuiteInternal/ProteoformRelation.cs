@@ -33,6 +33,12 @@ namespace ProteoformSuiteInternal
         public Proteoform[] connected_proteoforms = new Proteoform[2];
         public ProteoformComparison relation_type;
 
+        [NonSerialized]
+        public PtmSet candidate_ptmset = null;
+        
+        [NonSerialized]
+        public PtmSet represented_ptmset = null;
+
         #endregion Fields
 
         #region Public Properties
@@ -42,8 +48,6 @@ namespace ProteoformSuiteInternal
         public List<ProteoformRelation> nearby_relations { get; set; } // count is the "running sum"
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
-        public PtmSet candidate_ptmset { get; set; }
-        public PtmSet represented_ptmset { get; set; }
 
         /// <summary>
         /// Is this relation in an accepted peak?
@@ -62,7 +66,7 @@ namespace ProteoformSuiteInternal
             this.relation_type = relation_type;
             this.delta_mass = delta_mass;
             instanceId = instanceCounter;
-            lock (SaveState.lollipop.proteoform_community) instanceCounter += 1; //Not thread safe
+            lock (SaveState.lollipop) instanceCounter += 1; //Not thread safe
 
             if (SaveState.lollipop.neucode_labeled)
             {
@@ -91,7 +95,7 @@ namespace ProteoformSuiteInternal
             relation_type = relation.relation_type;
             delta_mass = relation.delta_mass;
             instanceId = instanceCounter;
-            lock (SaveState.lollipop.proteoform_community) instanceCounter += 1; //Not thread safe
+            lock (SaveState.lollipop) instanceCounter += 1; //Not thread safe
 
             peak = relation.peak;
             outside_no_mans_land = relation.outside_no_mans_land;

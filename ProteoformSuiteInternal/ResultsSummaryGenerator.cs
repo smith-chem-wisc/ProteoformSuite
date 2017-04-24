@@ -106,18 +106,18 @@ namespace ProteoformSuiteInternal
             foreach (ExperimentalProteoform e in SaveState.lollipop.proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
                 .Where(e => e.linked_proteoform_references != null)
                 .OrderByDescending(e => e.quant.significant ? 1 : 0)
-                .ThenBy(e => (e.linked_proteoform_references.First.Value as TheoreticalProteoform).accession)
+                .ThenBy(e => (e.linked_proteoform_references.First() as TheoreticalProteoform).accession)
                 .ThenBy(e => e.ptm_set.ptm_combination.Count))
             {
 
                 results.Rows.Add(
-                    (e.linked_proteoform_references.First.Value as TheoreticalProteoform).accession,
+                    (e.linked_proteoform_references.First() as TheoreticalProteoform).accession,
                     e.accession,
-                    e.linked_proteoform_references.Last.Value.gene_name.ordered_locus,
-                    e.linked_proteoform_references.Last.Value.gene_name.primary,
-                    (e.linked_proteoform_references.First.Value as TheoreticalProteoform).fragment,
+                    e.linked_proteoform_references.Last().gene_name.ordered_locus,
+                    e.linked_proteoform_references.Last().gene_name.primary,
+                    (e.linked_proteoform_references.First() as TheoreticalProteoform).fragment,
                     String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => ptm.modification.id)),
-                    e.modified_mass - e.linked_proteoform_references.Last.Value.modified_mass,
+                    e.modified_mass - e.linked_proteoform_references.Last().modified_mass,
                     e.agg_rt,
                     e.agg_intensity,
                     e.quant.lightIntensitySum,

@@ -1,4 +1,5 @@
 ﻿using NetSerializer;
+using Proteomics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +15,26 @@ namespace ProteoformSuiteInternal
     {
 
         public static Lollipop lollipop = new Lollipop();
+
+        #region Private Field
+
+        private static Serializer ser = new Serializer(new Type[]
+        {
+            typeof(Lollipop),
+            typeof(Protein),
+            typeof(ModificationWithLocation),
+            typeof(ModificationWithMass),
+            typeof(ModificationWithMassAndCf),
+            typeof(List<DatabaseReference>),
+            typeof(List<Tuple<string,string>>),
+            typeof(Dictionary<int, List<Modification>>),
+            typeof(Dictionary<string, IList<string>>),
+            typeof(List<ProteolysisProduct>),
+            typeof(ChemicalFormulaTerminus),
+            typeof(List<double>)
+        });
+
+        #endregion Private Field
 
         #region BASICS FOR XML WRITING
 
@@ -128,14 +149,12 @@ namespace ProteoformSuiteInternal
 
         public static void save_all_results(string filename)
         {
-            Serializer ser = new Serializer(new Type[] { typeof(Lollipop) });
             using (var file = File.Create(filename))
                 ser.Serialize(file, lollipop);
         }
 
         public static void load_all_results(string filename)
         {
-            Serializer ser = new Serializer(new Type[] { typeof(Lollipop) });
             using (var file = File.OpenRead(filename))
                 lollipop = (Lollipop) ser.Deserialize(file);
 

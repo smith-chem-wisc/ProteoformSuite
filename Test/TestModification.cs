@@ -42,13 +42,13 @@ namespace Test
             };
 
             // With masses 1, 2, 3, 4
-            Assert.AreEqual(1 + 4, PtmCombos.get_combinations(ptm_data, 1, fake_ranks, 1).Count());
+            Assert.AreEqual(1 + 4, PtmCombos.get_combinations(ptm_data, 1, fake_ranks, 1, false).Count());
             // With masses 1, 2, 3, 4, 5, 6
-            Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1).Count());
+            Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1, false).Count());
             // With masses 1, 2, 3, 4, 5, 6
-            Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1).Count());
+            Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1, false).Count());
             // With masses 1, 2, 3, 4, 5, 6
-            Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 4, fake_ranks, 1).Count());
+            Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 4, fake_ranks, 1, false).Count());
         }
 
 
@@ -85,10 +85,10 @@ namespace Test
                 { 4.0001, 4 },
             };
 
-            Assert.AreEqual(1 + 4, PtmCombos.get_combinations(ptm_data, 1, fake_ranks, 1).Count());
-            Assert.AreEqual(1 + 8, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1).Count());
-            Assert.AreEqual(1 + 8, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1).Count());
-            Assert.AreEqual(1 + 8, PtmCombos.get_combinations(ptm_data, 4, fake_ranks, 1).Count());
+            Assert.AreEqual(1 + 4, PtmCombos.get_combinations(ptm_data, 1, fake_ranks, 1, false).Count());
+            Assert.AreEqual(1 + 8, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1, false).Count());
+            Assert.AreEqual(1 + 8, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1, false).Count());
+            Assert.AreEqual(1 + 8, PtmCombos.get_combinations(ptm_data, 4, fake_ranks, 1, false).Count());
 
         }
 
@@ -127,9 +127,9 @@ namespace Test
                 { 4, 4 },
             };
 
-            Assert.AreEqual(1 + 2, PtmCombos.get_combinations(ptm_data, 1, fake_ranks, 1).Count);
-            Assert.AreEqual(1 + 4, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1).Count);
-            Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1).Count);
+            Assert.AreEqual(1 + 2, PtmCombos.get_combinations(ptm_data, 1, fake_ranks, 1, false).Count);
+            Assert.AreEqual(1 + 4, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1, false).Count);
+            Assert.AreEqual(1 + 6, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1, false).Count);
 
         }
 
@@ -169,12 +169,12 @@ namespace Test
                 { 4, 4 },
             };
 
-            Assert.AreEqual(1, PtmCombos.get_combinations(ptm_data, 0, fake_ranks, 1).Count());
-            Assert.AreEqual(0, PtmCombos.get_combinations(ptm_data, 0, fake_ranks, 1)[0].mass);
-            Assert.AreEqual(0, PtmCombos.get_combinations(ptm_data, 0, fake_ranks, 1)[0].ptm_combination.Count());
-            Assert.AreEqual(1 + 3, PtmCombos.get_combinations(ptm_data, 1, fake_ranks, 1).Count());
-            Assert.AreEqual(1 + 3 + 3, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1).Count());
-            Assert.AreEqual(1 + 3 + 3 + 3, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1).Count());
+            Assert.AreEqual(1, PtmCombos.get_combinations(ptm_data, 0, fake_ranks, 1, false).Count());
+            Assert.AreEqual(0, PtmCombos.get_combinations(ptm_data, 0, fake_ranks, 1, false)[0].mass);
+            Assert.AreEqual(0, PtmCombos.get_combinations(ptm_data, 0, fake_ranks, 1, false)[0].ptm_combination.Count());
+            Assert.AreEqual(1 + 3, PtmCombos.get_combinations(ptm_data, 1, fake_ranks, 1, false).Count());
+            Assert.AreEqual(1 + 3 + 3, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1, false).Count());
+            Assert.AreEqual(1 + 3 + 3 + 3, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1, false).Count());
         }
     }
 }
