@@ -121,7 +121,7 @@ namespace ProteoformSuiteInternal
             if (lysine_counts.Count == 1) this.lysine_count = lysine_counts.FirstOrDefault();
             this.experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
             this.topdown_proteoforms = proteoforms.OfType<TopDownProteoform>().ToList();
-            this.relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted)));
+            this.relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.accepted)));
         }
 
         #endregion Private Methods
