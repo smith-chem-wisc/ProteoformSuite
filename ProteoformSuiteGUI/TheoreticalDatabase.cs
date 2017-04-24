@@ -126,6 +126,8 @@ namespace ProteoformSuiteGUI
         {
             Lollipop.get_theoretical_proteoforms(Environment.CurrentDirectory);
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
+            ((ProteoformSweet)MdiParent).topDown.ClearListsAndTables();
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
             tb_totalTheoreticalProteoforms.Text = Lollipop.proteoform_community.theoretical_proteoforms.Length.ToString();
         }
 

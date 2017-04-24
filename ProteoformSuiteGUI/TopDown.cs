@@ -88,6 +88,7 @@ namespace ProteoformSuiteGUI
             foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.TheoreticalTopDown);
             foreach (Proteoform p in Lollipop.proteoform_community.topdown_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ExperimentalTopDown);
             foreach (Proteoform p in Lollipop.proteoform_community.topdown_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.TheoreticalTopDown);
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
             dgv_TD_proteoforms.DataSource = null;
             dgv_TD_proteoforms.Rows.Clear();
             tb_exp_proteoforms.Text = "";

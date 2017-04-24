@@ -89,7 +89,7 @@ namespace ProteoformSuiteGUI
             this.Cursor = Cursors.Default;
 
             using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\families_rt_spread.tsv"))
-            {
+             {
                 foreach(ProteoformFamily family in Lollipop.proteoform_community.families)
                 {
                     foreach(ExperimentalProteoform e in family.experimental_proteoforms)

@@ -186,26 +186,46 @@ namespace ProteoformSuiteInternal
                         && (Math.Abs(ep.agg_rt - rt) <= Convert.ToDouble(Lollipop.retention_time_tolerance))).ToList();
                         foreach (ExperimentalProteoform e in matching_e)
                         {
-                            e.accepted = true;
-                            ProteoformRelation td_relation = new ProteoformRelation(topdown, e, ProteoformComparison.ExperimentalTopDown, (e.modified_mass - mass));
-                            td_relation.accepted = true;
-                            td_relation.connected_proteoforms[0].relationships.Add(td_relation);
-                            td_relation.connected_proteoforms[1].relationships.Add(td_relation);
-                            all_td_relations.Add(td_relation);
+                            all_td_relations.Add(new ProteoformRelation(topdown, e, ProteoformComparison.ExperimentalTopDown, (e.modified_mass - mass)));
                         }
                     }
                 }
                 //add the best td relation
-                if (all_td_relations.Count > 0) td_relations.Add(all_td_relations.OrderBy(r => Math.Abs(r.delta_mass) - Math.Round(Math.Abs(r.delta_mass), 0)).First());
+                foreach(ProteoformRelation relation in all_td_relations)
+                {
+                    if (Lollipop.possible_ptmset_dictionary.TryGetValue(Math.Round(relation.delta_mass, 1), out List<PtmSet> candidate_sets))
+                    {
+                        double mass_tolerance = topdown.modified_mass / 1000000 * (double)Lollipop.mass_tolerance;
+                        relation.candidate_ptmset = topdown.generate_possible_added_ptmsets(candidate_sets, relation.delta_mass, mass_tolerance, Lollipop.all_mods_with_mass, topdown, topdown.sequence, Lollipop.rank_first_quartile)
+                        .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(relation.delta_mass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
+                        .FirstOrDefault();
+                    }
+                }
+
+                ProteoformRelation best_relation = all_td_relations.Where(r => r.candidate_ptmset != null).OrderBy(r => r.candidate_ptmset.ptm_rank_sum).FirstOrDefault();
+                if (best_relation != null)
+                {
+                    best_relation.connected_proteoforms[0].relationships.Add(best_relation);
+                    best_relation.connected_proteoforms[1].relationships.Add(best_relation);
+                    ((ExperimentalProteoform)best_relation.connected_proteoforms[1]).accepted = true;
+                    best_relation.accepted = true;
+                    td_relations.Add(best_relation);
+                }
+
 
                 //match each td proteoform group to the closest theoretical w/ same accession and modifications. (if no match always make relationship with unmodified)
                 if (theoreticals.Count > 0)
                 {
                     TheoreticalProteoform theo = theoreticals.Where(t => t.accession.Split('_')[0] == topdown.accession.Split('_')[0] && topdown.same_ptms(t)).FirstOrDefault();
                     if (theo == null)
-                    { 
-                        if (topdown.ptm_set.ptm_combination.Count == 0) continue; //if can't find match to unmodified topdown, nothing to do (not in database)
-                                                                   //if modified topdown, compare with unmodified theoretical
+                    {
+                        if (topdown.ptm_set.ptm_combination.Count == 0)
+                        {
+                            topdown.relationships.Clear();
+                             td_relations.RemoveAll(p => p.connected_proteoforms.Contains(topdown));
+                            continue;
+                        } //if can't find match to unmodified topdown, nothing to do (not in database)
+                          //if modified topdown, compare with unmodified theoretical
                         else
                         {
                             try
@@ -213,11 +233,15 @@ namespace ProteoformSuiteInternal
                                 theo = theoreticals.Where(t => t.accession.Split('_')[0] == topdown.accession.Split('_')[0] && t.ptm_set.ptm_combination.Count == 0).OrderBy(
                                 t => Math.Abs(t.modified_mass - topdown.theoretical_mass)).First();
                             }
-                            catch { continue; }
+                            catch
+                            {
+                                td_relations.RemoveAll(p => p.connected_proteoforms.Contains(topdown));
+                                continue; }
                         }
                     }
                     ProteoformRelation t_td_relation = new ProteoformRelation(topdown, theo, ProteoformComparison.TheoreticalTopDown, (topdown.theoretical_mass - theo.modified_mass));
                     t_td_relation.accepted = true;
+                    topdown.gene_name = theo.gene_name;
                     t_td_relation.connected_proteoforms[0].relationships.Add(t_td_relation);
                     t_td_relation.connected_proteoforms[1].relationships.Add(t_td_relation);
                     td_relations.Add(t_td_relation);
