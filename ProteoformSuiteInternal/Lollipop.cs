@@ -617,7 +617,7 @@ namespace ProteoformSuiteInternal
         public decimal backgroundShift;
         public decimal backgroundWidth;
         public List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>(); // these are proteoforms meeting the required number of observations.
-        public IEnumerable<decimal> permutedTestStatistics;
+        public List<decimal> permutedTestStatistics;
         public static string[] observation_requirement_possibilities = new string[] { "Minimum Bioreps with Observations From Any Single Condition", "Minimum Bioreps with Observations From Any Condition", "Minimum Bioreps with Observations From Each Condition" };
         public string observation_requirement = observation_requirement_possibilities[0];
         public int minBiorepsWithObservations = 1;
@@ -760,7 +760,7 @@ namespace ProteoformSuiteInternal
                 eP.quant.determine_biorep_intensities_and_test_statistics(neucode_labeled, eP.biorepIntensityList, bkgdAverageIntensity, bkgdStDev, numerator_condition, denominator_condition, sKnot_minFoldChange);
             }
             qVals = satisfactoryProteoforms.Where(eP => eP.accepted == true).Select(e => e.quant).ToList();
-            permutedTestStatistics = satisfactoryProteoforms.SelectMany(eP => eP.quant.permutedTestStatistics);
+            permutedTestStatistics = satisfactoryProteoforms.SelectMany(eP => eP.quant.permutedTestStatistics).ToList();
         }
 
         public void computeSortedTestStatistics(List<ExperimentalProteoform> satisfactoryProteoforms)

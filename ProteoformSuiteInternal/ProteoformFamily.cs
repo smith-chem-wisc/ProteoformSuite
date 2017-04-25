@@ -18,9 +18,7 @@ namespace ProteoformSuiteInternal
 
         #region Private Property
 
-        [NonSerialized]
-        private Proteoform _seed;
-        private Proteoform seed { get { return _seed; } set { _seed = value; } }
+        private Proteoform seed { get; set; }
 
         #endregion Private Property
 

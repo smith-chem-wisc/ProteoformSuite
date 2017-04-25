@@ -6,17 +6,23 @@ using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
+    [Serializable]
     public class ComponentReader
     {
 
-        #region Fields
+        #region Private Fields
 
         private List<Component> raw_components_in_file = new List<Component>();
         private static List<NeuCodePair> neucodePairs_in_file = new List<NeuCodePair>();
-        public List<Component> final_components = new List<Component>();
-        public HashSet<string> scan_ranges = new HashSet<string>();
 
-        #endregion Fields
+        #endregion
+
+        #region Public Fields
+
+        public List<Component> final_components = new List<Component>();
+        public List<string> scan_ranges = new List<string>();
+
+        #endregion Public Fields
 
         #region Public Method
 
@@ -69,7 +75,7 @@ namespace ProteoformSuiteInternal
                 add_component(new_component); //add the final component
             }
             final_components = remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file);
-            scan_ranges = new HashSet<string>(this.final_components.Select(c => c.scan_range).ToList());
+            scan_ranges = new HashSet<string>(final_components.Select(c => c.scan_range).ToList()).ToList();
             return final_components;
         }
 

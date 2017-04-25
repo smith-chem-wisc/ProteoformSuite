@@ -156,13 +156,13 @@ namespace ProteoformSuiteGUI
 
         private void bt_compare_EE_Click(object sender, EventArgs e)
         {
-            if (SaveState.lollipop.proteoform_community.has_e_proteoforms && SaveState.lollipop.theoretical_database.all_possible_ptmsets != null)
+            if (SaveState.lollipop.proteoform_community.has_e_proteoforms && SaveState.lollipop.theoretical_database.all_possible_ptmsets.Count > 0)
             {
                 ClearListsTablesFigures();
                 RunTheGamut();
                 xMaxEE.Value = Convert.ToDecimal(SaveState.lollipop.ee_max_mass_difference);
             }
-            else if (SaveState.lollipop.theoretical_database.all_possible_ptmsets == null) MessageBox.Show("Go back and load in a theoretical database.");
+            else if (SaveState.lollipop.theoretical_database.all_possible_ptmsets.Count == 0) MessageBox.Show("Go back and load in a theoretical database.");
             else MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 

@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
+using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
@@ -21,6 +22,7 @@ namespace ProteoformSuiteInternal
         private static Serializer ser = new Serializer(new Type[]
         {
             typeof(Lollipop),
+            typeof(ComponentReader), // not serialized currently because InputFile -> ComponentReader -> Component -> InputFile messes things up, and it's only used in loading components
             typeof(ProteinSequenceGroup),
             typeof(TheoreticalProteoformGroup),
             typeof(Protein),
@@ -172,6 +174,37 @@ namespace ProteoformSuiteInternal
             {
                 property.SetValue(lollipop, property.GetValue(lollipop));
             }
+
+            //Recreate the connections that were broken
+            lollipop.theoretical_database.possible_ptmset_dictionary = lollipop.theoretical_database.make_ptmset_dictionary();
+            Parallel.ForEach(lollipop.proteoform_community.delta_mass_peaks, peak =>
+            {
+                foreach (ProteoformRelation relation in peak.grouped_relations)
+                {
+                    lock (relation) relation.peak = peak;
+                    foreach (Proteoform p in relation.connected_proteoforms)
+                    {
+                        lock (p)
+                        {
+                            if (p.relationships == null) p.relationships = new List<ProteoformRelation> { relation };
+                            else p.relationships.Add(relation);
+                        }
+                    }
+                }
+            });
+
+            Parallel.ForEach(lollipop.proteoform_community.experimental_proteoforms, pf =>
+            {
+                lock (pf.quant) pf.quant.proteoform = pf;
+            });
+
+            Parallel.ForEach(lollipop.proteoform_community.families, fam =>
+            {
+                foreach (Proteoform pf in fam.proteoforms)
+                {
+                    lock (pf) pf.family = fam;
+                }
+            });
         }
 
         #endregion Save and Load Results

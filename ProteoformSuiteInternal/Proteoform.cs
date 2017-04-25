@@ -16,43 +16,7 @@ namespace ProteoformSuiteInternal
         public double modified_mass { get; set; }
         public int lysine_count { get; set; } = -1;
         public bool is_target { get; set; } = true;
-
-        [NonSerialized]
-        private List<Proteoform> _candidate_relatives;
-        public List<Proteoform> candidate_relatives { get { return _candidate_relatives; } set { _candidate_relatives = value; } }
-
-        [NonSerialized]
-        private ProteoformFamily _family = null;
-        public ProteoformFamily family { get { return _family; } set { _family = value; } }
-
-        [NonSerialized]
-        private List<ProteoformRelation> _relationships = new List<ProteoformRelation>();
-        public List<ProteoformRelation> relationships { get { return _relationships; } set { _relationships = value; } }
-
-        /// <summary>
-        /// Contains a list of proteoforms traced before arriving at this one. The first is a TheoreticalProteoform starting point in the family.
-        /// </summary>
-        public List<Proteoform> linked_proteoform_references { get; set; }
-        //{
-        //    get { return _linked_proteoform_references; }
-        //    set { _linked_proteoform_references = value; }
-        //}
-        //public List<string> linked_proteoform_accessions // Used to reconstruct connections upon loading results
-        //{
-        //    get
-        //    {
-        //        return linked_proteoform_references != null ?
-        //            linked_proteoform_references.Select(p => p.accession).ToList() :
-        //            _linked_proteoform_accessions;
-        //    }
-
-        //    set
-        //    {
-        //        _linked_proteoform_accessions = value;
-        //    }
-        //} 
-
-
+        public List<Proteoform> candidate_relatives { get; set; } // Cleared after use
         public GeneName gene_name { get; set; }
         public string ptm_description { get; set; }
         public PtmSet ptm_set
@@ -73,15 +37,24 @@ namespace ProteoformSuiteInternal
             }
         }
 
+        [NonSerialized]
+        private ProteoformFamily _family = null;
+        public ProteoformFamily family { get { return _family; } set { _family = value; } }
+
+        [NonSerialized]
+        private List<ProteoformRelation> _relationships = new List<ProteoformRelation>();
+        public List<ProteoformRelation> relationships { get { return _relationships; } set { _relationships = value; } }
+
+        /// <summary>
+        /// Contains a list of proteoforms traced before arriving at this one. The first is a TheoreticalProteoform starting point in the family.
+        /// </summary>
+        public List<Proteoform> linked_proteoform_references { get; set; }
+
         #endregion Public Properties
 
         #region Private Fields
 
         private PtmSet _ptm_set = new PtmSet(new List<Ptm>());
-        //private List<string> _linked_proteoform_accessions;
-
-        //[NonSerialized]
-        //private List<Proteoform> _linked_proteoform_references = null;
 
         #endregion Private Fields
 
