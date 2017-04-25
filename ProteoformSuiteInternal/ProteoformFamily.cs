@@ -18,7 +18,9 @@ namespace ProteoformSuiteInternal
 
         #region Private Property
 
-        private Proteoform seed { get; set; }
+        [NonSerialized]
+        private Proteoform _seed;
+        private Proteoform seed { get { return _seed; } set { _seed = value; } }
 
         #endregion Private Property
 
@@ -61,7 +63,7 @@ namespace ProteoformSuiteInternal
         {
             IEnumerable<ProteoformFamily> gene_family =
                     from f in SaveState.lollipop.proteoform_community.families
-                    from n in this.gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Distinct()
+                    from n in gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Distinct()
                     where f.gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Contains(n)
                     select f;
             proteoforms = new HashSet<Proteoform>(proteoforms.Concat(gene_family.SelectMany(f => f.proteoforms))).ToList();
@@ -117,7 +119,7 @@ namespace ProteoformSuiteInternal
             theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
             gene_names = theoretical_proteoforms.Select(t => t.gene_name).ToList();
             experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
-            relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted))).ToList();
+            relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.Accepted))).ToList();
         }
 
         #endregion Private Methods

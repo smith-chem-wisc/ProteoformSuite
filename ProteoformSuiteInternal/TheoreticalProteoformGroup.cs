@@ -28,11 +28,11 @@ namespace ProteoformSuiteInternal
                 false,
                 new Dictionary<InputFile, Protein[]>())
         {
-            this.description = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.description));
-            this.name = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.name));
-            this.fragment = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.fragment));
-            this.accessionList = theoreticals_with_contaminants_first.Select(p => p.accession).ToList();
-            this.contaminant = theoreticals_with_contaminants_first.FirstOrDefault().contaminant;
+            description = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.description));
+            name = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.name));
+            fragment = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.fragment));
+            accessionList = theoreticals_with_contaminants_first.Select(p => p.accession).ToList();
+            contaminant = theoreticals_with_contaminants_first.FirstOrDefault().contaminant;
         }
 
         #endregion Public Constructor

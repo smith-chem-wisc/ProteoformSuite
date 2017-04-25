@@ -45,14 +45,14 @@ namespace ProteoformSuiteInternal
 
             report += SaveState.lollipop.et_peaks.Count.ToString() + "\tExperimental-Theoretical Peaks" + Environment.NewLine;
             report += SaveState.lollipop.et_relations.Count.ToString() + "\tExperimental-Theoretical Pairs" + Environment.NewLine;
-            report += SaveState.lollipop.et_peaks.Count(p => p.peak_accepted).ToString() + "\tAccepted Experimental-Theoretical Peaks" + Environment.NewLine;
-            report += SaveState.lollipop.et_relations.Count(r => r.accepted).ToString() + "\tAccepted Experimental-Theoretical Pairs" + Environment.NewLine;
+            report += SaveState.lollipop.et_peaks.Count(p => p.Accepted).ToString() + "\tAccepted Experimental-Theoretical Peaks" + Environment.NewLine;
+            report += SaveState.lollipop.et_relations.Count(r => r.Accepted).ToString() + "\tAccepted Experimental-Theoretical Pairs" + Environment.NewLine;
             report += SaveState.lollipop.ed_relations.Count <= 0 ? Environment.NewLine : SaveState.lollipop.ed_relations.Average(d => d.Value.Count).ToString() + "\tAverage Experimental-Decoy Pairs" + Environment.NewLine + Environment.NewLine;
 
             report += SaveState.lollipop.ee_peaks.Count.ToString() + "\tExperimental-Experimental Peaks" + Environment.NewLine;
             report += SaveState.lollipop.ee_relations.Count.ToString() + "\tExperimental-Experimental Pairs" + Environment.NewLine;
-            report += SaveState.lollipop.ee_peaks.Count(p => p.peak_accepted).ToString() + "\tAccepted Experimental-Experimental Peaks" + Environment.NewLine;
-            report += SaveState.lollipop.ee_relations.Count(r => r.accepted).ToString() + "\tAccepted Experimental-Experimental Pairs" + Environment.NewLine;
+            report += SaveState.lollipop.ee_peaks.Count(p => p.Accepted).ToString() + "\tAccepted Experimental-Experimental Peaks" + Environment.NewLine;
+            report += SaveState.lollipop.ee_relations.Count(r => r.Accepted).ToString() + "\tAccepted Experimental-Experimental Pairs" + Environment.NewLine;
             report += SaveState.lollipop.ef_relations.Count <= 0 ? Environment.NewLine : SaveState.lollipop.ef_relations.Average(d => d.Value.Count).ToString() + "\tAverage Experimental-False Pairs" + Environment.NewLine + Environment.NewLine;
 
             report += SaveState.lollipop.proteoform_community.families.Count.ToString() + "\tProteoform Families" + Environment.NewLine;

@@ -8,7 +8,7 @@ namespace ProteoformSuiteGUI
 
         #region Public Constructors
 
-        public DisplayQuantitativeValues(ExperimentalProteoform.quantitativeValues q)
+        public DisplayQuantitativeValues(QuantitativeProteoformValues q)
             : base(q)
         {
             proteoform = q.proteoform;
@@ -20,7 +20,7 @@ namespace ProteoformSuiteGUI
         #region Private Fields
 
         private Proteoform proteoform;
-        private ExperimentalProteoform.quantitativeValues qval;
+        private QuantitativeProteoformValues qval;
 
         #endregion
 

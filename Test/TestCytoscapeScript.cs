@@ -114,7 +114,7 @@ namespace Test
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
             ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
             et.peak = new DeltaMassPeak(et, new List<ProteoformRelation> { et });
-            et.peak.peak_accepted = true;
+            et.peak.Accepted = true;
             e.relationships.Add(et);
             t.relationships.Add(et);
             e.agg_intensity = 999.99;

@@ -7,17 +7,50 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuiteGUI
 {
-    public partial class ResultsSummary : Form
+    public partial class ResultsSummary : Form, ISweetForm
     {
+
+        #region Public Constructor
+
         public ResultsSummary()
         {
             InitializeComponent();
         }
 
+        #endregion Public Constructor
+
+        #region Public Methods
+
         public void create_summary()
         {
             rtb_summary.Text = ResultsSummaryGenerator.generate_full_report();
         }
+
+        public bool ReadyToRunTheGamut()
+        {
+            return true;
+        }
+
+        public void RunTheGamut()
+        {
+            create_summary();
+        }
+
+        public void InitializeParameterSet()
+        { }
+
+        public void ClearListsTablesFigures()
+        {
+            rtb_summary.Text = "";
+            tb_summarySaveFolder.Text = "";
+        }
+
+        public void FillTablesAndCharts()
+        {
+            create_summary();
+        }
+
+        #endregion Public Methods
 
         FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
         private void btn_browseSummarySaveFolder_Click(object sender, EventArgs e)

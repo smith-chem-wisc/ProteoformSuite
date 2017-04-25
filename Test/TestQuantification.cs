@@ -446,7 +446,7 @@ namespace Test
 
             for (int i = 0; i < 10000; i++)
             {
-                briList.Add(ExperimentalProteoform.quantitativeValues.add_biorep_intensity((decimal)Math.Log((double)100, 2), (decimal)Math.Log((double)5, 2), 1, "key", true));
+                briList.Add(QuantitativeProteoformValues.add_biorep_intensity((decimal)Math.Log((double)100, 2), (decimal)Math.Log((double)5, 2), 1, "key", true));
             }
 
             List<double> allIntensity = briList.Select(b => b.intensity).ToList();
@@ -464,7 +464,7 @@ namespace Test
             Dictionary<string, List<int>> observedConditions = new Dictionary<string, List<int>>();
             observedConditions.Add("light", new List<int> { 0, 1, 2 });
             List<BiorepIntensity> briList = new List<BiorepIntensity>();
-            briList.AddRange(ExperimentalProteoform.quantitativeValues.imputedIntensities(true,briList,(decimal)Math.Log(100d,2), (decimal)Math.Log(5d, 2),observedConditions));
+            briList.AddRange(QuantitativeProteoformValues.imputedIntensities(true,briList,(decimal)Math.Log(100d,2), (decimal)Math.Log(5d, 2),observedConditions));
             Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 3);//we started with no real observations but there were three observed bioreps in the experiment. Therefore we need 3 imputed bioreps
             Assert.AreEqual(briList[0].condition, "light");
             Assert.AreEqual(briList[0].light, true);
@@ -474,7 +474,7 @@ namespace Test
 
             briList.Clear();
             briList.Add(new BiorepIntensity(true, false, 0, "light", 1000d));
-            briList.AddRange(ExperimentalProteoform.quantitativeValues.imputedIntensities(true, briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), observedConditions));
+            briList.AddRange(QuantitativeProteoformValues.imputedIntensities(true, briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), observedConditions));
 
             Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 2);//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
             Assert.AreEqual(briList.Where(b => b.imputed == false).ToList().Count(), 1);//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
@@ -489,7 +489,7 @@ namespace Test
             briList.Add(new BiorepIntensity(true, false, 0, "light", 1000d));
             briList.Add(new BiorepIntensity(true, false, 1, "light", 2000d));
             briList.Add(new BiorepIntensity(true, false, 2, "light", 3000d));
-            briList.AddRange(ExperimentalProteoform.quantitativeValues.imputedIntensities(true, briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), observedConditions));
+            briList.AddRange(QuantitativeProteoformValues.imputedIntensities(true, briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), observedConditions));
 
             Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 0);//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
             Assert.AreEqual(briList.Where(b => b.imputed == false).ToList().Count(), 3);//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
@@ -781,7 +781,7 @@ namespace Test
                 }
                 permutedTestStatistics.Add(pts);
             }
-            Assert.AreEqual(0.4m, ExperimentalProteoform.quantitativeValues.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics, satisfactoryProteoformsCount, sortedProteoformTestStatistics));
+            Assert.AreEqual(0.4m, QuantitativeProteoformValues.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics, satisfactoryProteoformsCount, sortedProteoformTestStatistics));
             satisfactoryProteoformsCount++;
         }
 
@@ -803,13 +803,13 @@ namespace Test
             ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
             DeltaMassPeak etp = new DeltaMassPeak(et, new List<ProteoformRelation> { et });
             et.peak = etp;
-            etp.peak_accepted = true;
+            etp.Accepted = true;
             e.relationships.Add(et);
             t.relationships.Add(et);
             ProteoformRelation eu = new ProteoformRelation(e, u, ProteoformComparison.ExperimentalTheoretical, 0);
             DeltaMassPeak eup = new DeltaMassPeak(eu, new List<ProteoformRelation> { eu });
             eu.peak = eup;
-            eup.peak_accepted = true;
+            eup.Accepted = true;
             e.relationships.Add(eu);
             u.relationships.Add(eu);
             ProteoformFamily f = new ProteoformFamily(e);

@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
 {
-    public partial class LoadDeconvolutionResults : Form
+    public partial class LoadDeconvolutionResults : Form, ISweetForm
     {
 
         #region Public Constructor
@@ -24,9 +24,27 @@ namespace ProteoformSuiteGUI
 
         #region Public Methods
 
-        public void InitializeSettings()
+        public void InitializeParameterSet()
         {
             rb_neucode.Checked = SaveState.lollipop.neucode_labeled;
+            populate_file_lists();
+        }
+
+        public void ClearListsTablesFigures()
+        { }
+
+        public bool ReadyToRunTheGamut()
+        {
+            return true;
+        }
+
+        public void RunTheGamut()
+        {
+            populate_file_lists();
+        }
+
+        public void FillTablesAndCharts()
+        {
             populate_file_lists();
         }
 

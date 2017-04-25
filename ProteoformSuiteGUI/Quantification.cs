@@ -9,7 +9,7 @@ using System.IO;
 
 namespace ProteoformSuiteGUI
 {
-    public partial class Quantification : Form
+    public partial class Quantification : Form, ISweetForm
     {
 
         #region Constructor
@@ -35,16 +35,18 @@ namespace ProteoformSuiteGUI
 
         public void perform_calculations() //this is the first thing that gets run on form load
         {
-            if (SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.Quantification).Count() > 0 && SaveState.lollipop.proteoform_community.experimental_proteoforms.Length > 0 && SaveState.lollipop.qVals.Count <= 0)
-            {
-                initialize();
-                SaveState.lollipop.quantify();
-                SaveState.lollipop.GO_analysis();
-                fillGuiTablesAndGraphs();
-            }
+            InitializeParameterSet();
+            RunTheGamut();
         }
 
-        public void ClearListsAndTables()
+        public void RunTheGamut()
+        {
+            SaveState.lollipop.quantify();
+            SaveState.lollipop.GO_analysis();
+            FillTablesAndCharts();
+        }
+
+        public void ClearListsTablesFigures()
         {
             SaveState.lollipop.logIntensityHistogram.Clear();
             SaveState.lollipop.logSelectIntensityHistogram.Clear();
@@ -63,7 +65,12 @@ namespace ProteoformSuiteGUI
             dgv_quantification_results.Rows.Clear();
         }
 
-        public void fillGuiTablesAndGraphs()
+        public bool ReadyToRunTheGamut()
+        {
+            return SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.Quantification).Count() > 0 && SaveState.lollipop.proteoform_community.experimental_proteoforms.Length > 0 && SaveState.lollipop.qVals.Count <= 0;
+        }
+
+        public void FillTablesAndCharts()
         {
             plotObservedVsExpectedRelativeDifference();
             DisplayUtility.FillDataGridView(dgv_quantification_results, SaveState.lollipop.qVals.Select(q => new DisplayQuantitativeValues(q)));
@@ -81,11 +88,7 @@ namespace ProteoformSuiteGUI
             cb_geneCentric.Checked = ProteoformCommunity.gene_centric_families;
         }
 
-        #endregion Public Methods
-
-        #region Private Methods
-
-        private void initialize()
+        public void InitializeParameterSet()
         {
             //Initialize conditions
             List<string> conditions = SaveState.lollipop.ltConditionsBioReps.Keys.ToList();
@@ -188,7 +191,7 @@ namespace ProteoformSuiteGUI
             rb_allTheoreticalProteins.CheckedChanged += new EventHandler(goTermBackgroundChanged);
         }
 
-        #endregion Private Methods
+        #endregion Public Methods
 
         #region Quantification Private Methods
 
@@ -196,7 +199,7 @@ namespace ProteoformSuiteGUI
         {
             this.Cursor = Cursors.WaitCursor;
             SaveState.lollipop.quantify();
-            fillGuiTablesAndGraphs();
+            FillTablesAndCharts();
             this.Cursor = Cursors.Default;
         }
 
@@ -288,7 +291,7 @@ namespace ProteoformSuiteGUI
             ct_proteoformIntensities.ChartAreas[0].AxisX.Title = "log (base 2) fold change (light/heavy)";
             ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "log (base 10) pValue";
 
-            foreach (ExperimentalProteoform.quantitativeValues qValue in SaveState.lollipop.qVals)
+            foreach (QuantitativeProteoformValues qValue in SaveState.lollipop.qVals)
             {
                 ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10((double)qValue.pValue));
             }

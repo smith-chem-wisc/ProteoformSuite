@@ -7,7 +7,7 @@ using System.IO;
 
 namespace ProteoformSuiteGUI
 {
-    public partial class RawExperimentalComponents : Form
+    public partial class RawExperimentalComponents : Form, ISweetForm
     {
 
         #region Public Constructor
@@ -37,9 +37,11 @@ namespace ProteoformSuiteGUI
                 }
             );
 
-            FillComponentsTable();
-            if (SaveState.lollipop.neucode_labeled) (MdiParent as ProteoformSweet).neuCodePairs.display_neucode_pairs();
-                (MdiParent as ProteoformSweet).theoreticalDatabase.FillDataBaseTable("Target");
+            FillTablesAndCharts();
+            NeuCodePairs pairs_form = (MdiParent as ProteoformSweet).neuCodePairs;
+            if (SaveState.lollipop.neucode_labeled && pairs_form.ReadyToRunTheGamut())
+                pairs_form.RunTheGamut();
+            (MdiParent as ProteoformSweet).theoreticalDatabase.FillDataBaseTable("Target");
         }
 
         public DataGridView GetDGV()
@@ -47,7 +49,7 @@ namespace ProteoformSuiteGUI
             return dgv_rawComponents;
         }
 
-        public void FillComponentsTable()
+        public void FillTablesAndCharts()
         {
             if (rb_displayIdentificationComponents.Checked && SaveState.lollipop.raw_experimental_components.Count > 0)
                 DisplayUtility.FillDataGridView(dgv_rawComponents, SaveState.lollipop.raw_experimental_components.Select(c => new DisplayComponent(c)));
@@ -64,6 +66,31 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_fileList, SaveState.lollipop.get_files(SaveState.lollipop.input_files, new Purpose[] { Purpose.Identification, Purpose.Quantification }).Select(c => new DisplayInputFile(c)));
             DisplayInputFile.FormatInputFileTable(dgv_fileList, new Purpose[] { Purpose.Identification, Purpose.Quantification });
             dgv_fileList.ReadOnly = true;
+        }
+
+        public bool ReadyToRunTheGamut()
+        {
+            return true;
+        }
+
+        public void RunTheGamut()
+        {
+            load_raw_components();
+        }
+
+        public void InitializeParameterSet()
+        {
+            initialize_every_time();
+        }
+
+        public void ClearListsTablesFigures()
+        {
+            dgv_fileList.DataSource = null;
+            dgv_fileList.Rows.Clear();
+            dgv_rawComponents.DataSource = null;
+            dgv_rawComponents.Rows.Clear();
+            dgv_chargeStates.DataSource = null;
+            dgv_chargeStates.Rows.Clear();
         }
 
         #endregion Public Methods
@@ -93,13 +120,13 @@ namespace ProteoformSuiteGUI
 
         private void rb_displayIdentificationComponents_CheckedChanged(object sender, EventArgs e)
         {
-            FillComponentsTable();
+            FillTablesAndCharts();
             dgv_chargeStates.DataSource = null;
         }
 
         private void bt_recalculate_Click(object sender, EventArgs e)
         {
-            load_raw_components();
+            RunTheGamut();
         }
 
         #endregion Private Methods

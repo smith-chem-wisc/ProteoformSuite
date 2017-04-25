@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
 {
-    public partial class AggregatedProteoforms : Form
+    public partial class AggregatedProteoforms : Form, ISweetForm
     {
 
         #region Public Constructor
@@ -14,19 +14,12 @@ namespace ProteoformSuiteGUI
         public AggregatedProteoforms()
         {
             InitializeComponent();
-            InitializeSettings();
+            InitializeParameterSet();
         }
 
         #endregion
 
         #region Private Methods
-
-        private bool ready_to_aggregate()
-        {
-            return SaveState.lollipop.proteoform_community.experimental_proteoforms.Length <= 0 && (SaveState.lollipop.neucode_labeled && SaveState.lollipop.raw_neucode_pairs.Count > 0 || SaveState.lollipop.raw_experimental_components.Count > 0);
-        }
-
-
 
         private void dgv_AggregatedProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -115,30 +108,27 @@ namespace ProteoformSuiteGUI
 
         #region Public Methods
 
+        public bool ReadyToRunTheGamut()
+        {
+            return SaveState.lollipop.proteoform_community.experimental_proteoforms.Length <= 0
+                && (SaveState.lollipop.neucode_labeled && SaveState.lollipop.raw_neucode_pairs.Count > 0 || SaveState.lollipop.raw_experimental_components.Count > 0);
+        }
+
         public void RunTheGamut()
         {
-            this.Cursor = Cursors.WaitCursor;
-            ClearListsAndTables();
+            Cursor = Cursors.WaitCursor;
+            ClearListsTablesFigures();
             SaveState.lollipop.aggregate_proteoforms(SaveState.lollipop.validate_proteoforms, SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, SaveState.lollipop.min_num_CS);
-            FillAggregatesTable();
+            FillTablesAndCharts();
             if (SaveState.lollipop.neucode_labeled && SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length > 0)
             {
-                ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.run_the_gamut();
-                ((ProteoformSweet)MdiParent).experimentExperimentComparison.run_the_gamut();
-                ((ProteoformSweet)MdiParent).quantification.perform_calculations();
+                ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.RunTheGamut();
+                ((ProteoformSweet)MdiParent).experimentExperimentComparison.RunTheGamut();
+                if (((ProteoformSweet)MdiParent).quantification.ReadyToRunTheGamut()) ((ProteoformSweet)MdiParent).quantification.perform_calculations();
             }
 
             updateFiguresOfMerit();
-            this.Cursor = Cursors.Default;
-        }
-
-        public void aggregate_proteoforms()
-        {
-            if (ready_to_aggregate())
-            {
-                RunTheGamut();
-            }
-            else if (SaveState.lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
+            Cursor = Cursors.Default;
         }
 
         public DataGridView GetDGV()
@@ -146,13 +136,13 @@ namespace ProteoformSuiteGUI
             return dgv_AggregatedProteoforms;
         }
 
-        public void FillAggregatesTable()
+        public void FillTablesAndCharts()
         {
             DisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, SaveState.lollipop.proteoform_community.experimental_proteoforms.Select(e => new DisplayExperimentalProteoform(e)));
             DisplayExperimentalProteoform.FormatAggregatesTable(dgv_AggregatedProteoforms);
         }
 
-        public void InitializeSettings()
+        public void InitializeParameterSet()
         {
             //Min and Max set from designer
             nUP_mass_tolerance.Value = SaveState.lollipop.mass_tolerance;
@@ -168,20 +158,16 @@ namespace ProteoformSuiteGUI
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
         }
 
-        public void ClearListsAndTables()
+        public void ClearListsTablesFigures()
         {
-            SaveState.lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
-            SaveState.lollipop.vetted_proteoforms.Clear();
-            SaveState.lollipop.ordered_components = new Component[0];
-            SaveState.lollipop.remaining_components.Clear();
-            SaveState.lollipop.remaining_verification_components.Clear();
+            SaveState.lollipop.clear_aggregation();
             dgv_AcceptNeuCdLtProteoforms.DataSource = null;
             dgv_AcceptNeuCdLtProteoforms.Rows.Clear();
 
-            ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsAndTables();
-            ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
-            ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsAndTables();
-            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
+            ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).quantification.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
         }
 
         #endregion Public Methods

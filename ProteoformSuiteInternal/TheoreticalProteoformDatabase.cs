@@ -19,7 +19,14 @@ namespace ProteoformSuiteInternal
 
         public ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
 
-        public Dictionary<string, IList<Modification>> uniprotModifications = new Dictionary<string, IList<Modification>>();
+        //[NonSerialized]
+        //private Dictionary<string, List<Modification>> _uniprotModifications = new Dictionary<string, List<Modification>>();
+        public Dictionary<string, List<Modification>> uniprotModifications = new Dictionary<string, List<Modification>>();
+        //public Dictionary<string, List<Modification>> uniprotModifications
+        //{
+        //    get { return _uniprotModifications; }
+        //    set { _uniprotModifications = value; }
+        //}
 
         public List<ModificationWithMass> variableModifications = new List<ModificationWithMass>();
 
@@ -37,7 +44,7 @@ namespace ProteoformSuiteInternal
 
         #region Private Fields
 
-        Dictionary<char, double> aaIsotopeMassList;
+        private Dictionary<char, double> aaIsotopeMassList;
 
         #endregion Private Fields
 
@@ -124,12 +131,12 @@ namespace ProteoformSuiteInternal
             return possible_ptmsets;
         }
 
-        public Dictionary<string, IList<Modification>> make_modification_dictionary(IEnumerable<ModificationWithLocation> all_modifications)
+        public Dictionary<string, List<Modification>> make_modification_dictionary(IEnumerable<ModificationWithLocation> all_modifications)
         {
-            Dictionary<string, IList<Modification>> mod_dict = new Dictionary<string, IList<Modification>>();
+            Dictionary<string, List<Modification>> mod_dict = new Dictionary<string, List<Modification>>();
             foreach (var nice in all_modifications)
             {
-                if (mod_dict.TryGetValue(nice.id, out IList<Modification> val)) val.Add(nice);
+                if (mod_dict.TryGetValue(nice.id, out List<Modification> val)) val.Add(nice);
                 else mod_dict.Add(nice.id, new List<Modification> { nice });
             }
             return mod_dict;
@@ -183,7 +190,7 @@ namespace ProteoformSuiteInternal
             return mod_ranks;
         }
 
-        public ProteinWithGoTerms[] expand_protein_entries(Protein[] proteins)
+        public static ProteinWithGoTerms[] expand_protein_entries(Protein[] proteins)
         {
             List<ProteinWithGoTerms> expanded_prots = new List<ProteinWithGoTerms>();
             foreach (Protein p in proteins)
@@ -198,7 +205,7 @@ namespace ProteoformSuiteInternal
                 new_prots.Add(new ProteinWithGoTerms(
                     p.BaseSequence.Substring(begin + startPosAfterCleavage - 1, end - (begin + startPosAfterCleavage) + 1),
                     p.Accession + "_" + (begin + startPosAfterCleavage).ToString() + "full" + end.ToString(),
-                    p.GeneNames,
+                    p.GeneNames.ToList(),
                     p.OneBasedPossibleLocalizedModifications,
                     new int?[] { begin + startPosAfterCleavage },
                     new int?[] { end },
@@ -225,7 +232,7 @@ namespace ProteoformSuiteInternal
                         new_prots.Add(new ProteinWithGoTerms(
                             subsequence,
                             p.Accession + "_" + feature_begin.ToString() + "frag" + feature_end.ToString(),
-                            p.GeneNames,
+                            p.GeneNames.ToList(),
                             segmented_ptms,
                             new int?[] { feature_begin },
                             new int?[] { feature_end },

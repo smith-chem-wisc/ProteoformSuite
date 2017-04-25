@@ -21,6 +21,8 @@ namespace ProteoformSuiteInternal
         private static Serializer ser = new Serializer(new Type[]
         {
             typeof(Lollipop),
+            typeof(ProteinSequenceGroup),
+            typeof(TheoreticalProteoformGroup),
             typeof(Protein),
             typeof(ModificationWithLocation),
             typeof(ModificationWithMass),
@@ -159,10 +161,16 @@ namespace ProteoformSuiteInternal
                 lollipop = (Lollipop) ser.Deserialize(file);
 
             //Set nonserialized values to defaults instead of null
-            Lollipop lol = new Lollipop();
+            Lollipop defaults = new Lollipop();
             foreach (FieldInfo field in typeof(Lollipop).GetFields())
             {
-                if (field.GetValue(lollipop) == null) field.SetValue(lollipop, field.GetValue(lol));
+                if (field.GetValue(lollipop) == null) field.SetValue(lollipop, field.GetValue(defaults));
+            }
+
+            //Use setting methods to ensure properties are carried to nested objects
+            foreach (PropertyInfo property in typeof(Lollipop).GetProperties())
+            {
+                property.SetValue(lollipop, property.GetValue(lollipop));
             }
         }
 

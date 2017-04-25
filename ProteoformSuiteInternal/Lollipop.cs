@@ -261,10 +261,7 @@ namespace ProteoformSuiteInternal
 
         #region AGGREGATED PROTEOFORMS Public Fields
 
-        [NonSerialized] //Nested objects in ProteoformRelation and ProteoformCommunity are throwing this for a loop
         public ProteoformCommunity proteoform_community = new ProteoformCommunity();
-        public List<ExperimentalProteoform> vetted_proteoforms = new List<ExperimentalProteoform>();
-        public Component[] ordered_components = new Component[0];
         public List<Component> remaining_components = new List<Component>();
         public List<Component> remaining_verification_components = new List<Component>();
         public List<Component> remaining_quantification_components = new List<Component>();
@@ -278,6 +275,16 @@ namespace ProteoformSuiteInternal
         public int min_num_bioreps = 1;
 
         #endregion AGGREGATED PROTEOFORMS Public Fields
+
+        #region AGGREGATED PROTEOFORMS Private Fields
+
+        [NonSerialized]
+        private List<ExperimentalProteoform> vetted_proteoforms = new List<ExperimentalProteoform>();
+
+        [NonSerialized]
+        private Component[] ordered_components = new Component[0];
+
+        #endregion AGGREGATED PROTEOFORMS Private Fields
 
         #region AGGREGATED PROTEOFORMS
 
@@ -447,6 +454,15 @@ namespace ProteoformSuiteInternal
             return aggregate_proteoforms(two_pass_validation, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_num_CS);
         }
 
+        public void clear_aggregation()
+        {
+            SaveState.lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
+            SaveState.lollipop.vetted_proteoforms.Clear();
+            SaveState.lollipop.ordered_components = new Component[0];
+            SaveState.lollipop.remaining_components.Clear();
+            SaveState.lollipop.remaining_verification_components.Clear();
+        }
+
         #endregion AGGREGATED PROTEOFORMS
 
         #region THEORETICAL DATABASE Public Fields
@@ -470,8 +486,6 @@ namespace ProteoformSuiteInternal
         public int mod_rank_first_quartile = 0; // approximate quartiles used for heuristics with unranked modifications
         public int mod_rank_second_quartile = 0;
         public int mod_rank_third_quartile = 0;
-
-        [NonSerialized] //Nested objects in TheoreticalDatabase are throwing this for a loop (StackOverflowException)
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
 
         #endregion THEORETICAL DATABASE Public Fields
@@ -489,19 +503,10 @@ namespace ProteoformSuiteInternal
         public double min_peak_count_et = 5;
         public double min_peak_count_ee = 10;
         public int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
-
-        [NonSerialized]
         public List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
-
-        [NonSerialized]
         public List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
-
-        [NonSerialized]
         public Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
-        
-        [NonSerialized]
         public Dictionary<string, List<ProteoformRelation>> ef_relations = new Dictionary<string, List<ProteoformRelation>>();
-
         public List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
         public List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
 
@@ -617,7 +622,7 @@ namespace ProteoformSuiteInternal
         public string observation_requirement = observation_requirement_possibilities[0];
         public int minBiorepsWithObservations = 1;
         public decimal selectGaussianHeight;
-        public List<ExperimentalProteoform.quantitativeValues> qVals = new List<ExperimentalProteoform.quantitativeValues>();
+        public List<QuantitativeProteoformValues> qVals = new List<QuantitativeProteoformValues>();
         public decimal sKnot_minFoldChange = 1m;
         public List<decimal> sortedProteoformTestStatistics = new List<decimal>();
         public List<decimal> sortedAvgPermutationTestStatistics = new List<decimal>();
@@ -784,7 +789,7 @@ namespace ProteoformSuiteInternal
             List<List<decimal>> permutedTestStatistics = satisfactoryProteoforms.Select(eP => eP.quant.permutedTestStatistics).ToList();
             Parallel.ForEach(satisfactoryProteoforms, eP =>
             {
-                eP.quant.FDR = ExperimentalProteoform.quantitativeValues.computeExperimentalProteoformFDR(eP.quant.testStatistic, permutedTestStatistics, satisfactoryProteoforms.Count, sortedProteoformTestStatistics);
+                eP.quant.FDR = QuantitativeProteoformValues.computeExperimentalProteoformFDR(eP.quant.testStatistic, permutedTestStatistics, satisfactoryProteoforms.Count, sortedProteoformTestStatistics);
                 eP.quant.significant = Math.Abs(eP.quant.logFoldChange) > minProteoformFoldChange && eP.quant.FDR < minProteoformFDR && eP.quant.intensitySum > minProteoformIntensity;
             });
         }

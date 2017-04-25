@@ -16,14 +16,43 @@ namespace ProteoformSuiteInternal
         public double modified_mass { get; set; }
         public int lysine_count { get; set; } = -1;
         public bool is_target { get; set; } = true;
-        public List<Proteoform> candidate_relatives { get; set; }
-        public List<ProteoformRelation> relationships { get; set; } = new List<ProteoformRelation>();
-        public ProteoformFamily family { get; set; }
+
+        [NonSerialized]
+        private List<Proteoform> _candidate_relatives;
+        public List<Proteoform> candidate_relatives { get { return _candidate_relatives; } set { _candidate_relatives = value; } }
+
+        [NonSerialized]
+        private ProteoformFamily _family = null;
+        public ProteoformFamily family { get { return _family; } set { _family = value; } }
+
+        [NonSerialized]
+        private List<ProteoformRelation> _relationships = new List<ProteoformRelation>();
+        public List<ProteoformRelation> relationships { get { return _relationships; } set { _relationships = value; } }
 
         /// <summary>
         /// Contains a list of proteoforms traced before arriving at this one. The first is a TheoreticalProteoform starting point in the family.
         /// </summary>
         public List<Proteoform> linked_proteoform_references { get; set; }
+        //{
+        //    get { return _linked_proteoform_references; }
+        //    set { _linked_proteoform_references = value; }
+        //}
+        //public List<string> linked_proteoform_accessions // Used to reconstruct connections upon loading results
+        //{
+        //    get
+        //    {
+        //        return linked_proteoform_references != null ?
+        //            linked_proteoform_references.Select(p => p.accession).ToList() :
+        //            _linked_proteoform_accessions;
+        //    }
+
+        //    set
+        //    {
+        //        _linked_proteoform_accessions = value;
+        //    }
+        //} 
+
+
         public GeneName gene_name { get; set; }
         public string ptm_description { get; set; }
         public PtmSet ptm_set
@@ -49,6 +78,10 @@ namespace ProteoformSuiteInternal
         #region Private Fields
 
         private PtmSet _ptm_set = new PtmSet(new List<Ptm>());
+        //private List<string> _linked_proteoform_accessions;
+
+        //[NonSerialized]
+        //private List<Proteoform> _linked_proteoform_references = null;
 
         #endregion Private Fields
 
@@ -73,20 +106,20 @@ namespace ProteoformSuiteInternal
 
         public List<Proteoform> get_connected_proteoforms()
         {
-            return relationships.Where(r => r.peak.peak_accepted).SelectMany(r => r.connected_proteoforms).ToList();
+            return relationships.Where(r => r.peak.Accepted).SelectMany(r => r.connected_proteoforms).ToList();
         }
 
         public List<ExperimentalProteoform> identify_connected_experimentals(List<PtmSet> all_possible_ptmsets, List<ModificationWithMass> all_mods_with_mass)
         {
             List<ExperimentalProteoform> identified = new List<ExperimentalProteoform>();
-            foreach (ProteoformRelation r in relationships.Where(r => r.peak.peak_accepted).Distinct().ToList())
+            foreach (ProteoformRelation r in relationships.Where(r => r.peak.Accepted).Distinct().ToList())
             {
                 ExperimentalProteoform e = r.connected_proteoforms.OfType<ExperimentalProteoform>().FirstOrDefault(p => p != this);
                 if (e == null) continue; // Looking at an ET pair, expecting an EE pair
 
                 double mass_tolerance = modified_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
                 int sign = Math.Sign(e.modified_mass - modified_mass);
-                double deltaM = Math.Sign(r.peak.peak_deltaM_average) < 0 ? r.peak.peak_deltaM_average : sign * r.peak.peak_deltaM_average; // give EE relations the correct sign, but don't switch negative ET relation deltaM's
+                double deltaM = Math.Sign(r.peak.DeltaMass) < 0 ? r.peak.DeltaMass : sign * r.peak.DeltaMass; // give EE relations the correct sign, but don't switch negative ET relation deltaM's
                 TheoreticalProteoform theoretical_base = this as TheoreticalProteoform != null ?
                     this as TheoreticalProteoform : //Theoretical starting point
                     (linked_proteoform_references.First() as TheoreticalProteoform != null ?
@@ -111,7 +144,7 @@ namespace ProteoformSuiteInternal
                 }
 
                 // If they're the same and someone hasn't labeled 0 difference with a "ModificationWithMass", then label it null
-                if (best_addition == null && best_loss == null && Math.Abs(r.peak.peak_deltaM_average) <= mass_tolerance)
+                if (best_addition == null && best_loss == null && Math.Abs(r.peak.DeltaMass) <= mass_tolerance)
                 {
                     lock (r) lock (e) assign_pf_identity(e, this, ptm_set, r, sign, null);
                     identified.Add(e);
@@ -207,7 +240,7 @@ namespace ProteoformSuiteInternal
             if (r.represented_ptmset == null)
             {
                 r.represented_ptmset = change;
-                if (r.relation_type == ProteoformComparison.ExperimentalExperimental) r.delta_mass *= sign;
+                if (r.RelationType == ProteoformComparison.ExperimentalExperimental) r.DeltaMass *= sign;
             }
             if (e.linked_proteoform_references == null)
             {
