@@ -19,23 +19,7 @@ namespace ProteoformSuiteInternal
         public ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
         public Dictionary<string, List<Modification>> uniprotModifications = new Dictionary<string, List<Modification>>();
         public List<ModificationWithMass> variableModifications = new List<ModificationWithMass>();
-
-        [NonSerialized]
-        private List<PtmSet> _all_possible_ptmsets = new List<PtmSet>();
-        public List<PtmSet> all_possible_ptmsets
-        {
-            get
-            {
-                if (_all_possible_ptmsets.Count == 0)
-                    _all_possible_ptmsets = PtmCombos.generate_all_ptmsets(Math.Min(2, SaveState.lollipop.max_ptms), all_mods_with_mass, SaveState.lollipop.modification_ranks, SaveState.lollipop.mod_rank_first_quartile / 2).ToList();
-                return _all_possible_ptmsets;
-            }
-
-            set
-            {
-                _all_possible_ptmsets = value;
-            }
-        }
+        public List<PtmSet> all_possible_ptmsets = new List<PtmSet>();
 
         [NonSerialized] //regenerated upon load
         public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>();
