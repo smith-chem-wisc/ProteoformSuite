@@ -916,12 +916,6 @@ namespace ProteoformSuiteInternal
             Lollipop.proteoform_community.topdown_proteoforms = refined_topdown_proteoforms.ToArray();
         }
 
-        public static void make_td_relationships()
-        {
-            Lollipop.td_relations.Clear();
-            //all experimental proteoforms - mark accepted if not already and in match
-            Lollipop.td_relations = Lollipop.proteoform_community.relate_td(Lollipop.proteoform_community.experimental_proteoforms.ToList(), Lollipop.proteoform_community.theoretical_proteoforms.ToList(), Lollipop.proteoform_community.topdown_proteoforms.Where(p => !p.targeted).ToList());
-        }
         #endregion TOPDOWN 
 
         #region CALIBRATION

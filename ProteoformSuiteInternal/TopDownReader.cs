@@ -8,6 +8,7 @@ namespace ProteoformSuiteInternal
 {
     public class TopDownReader
     {
+        public static List<Ptm> topdown_ptms = new List<Ptm>(); //PTMs not in theoretical database... 
         //Reading in Top-down excel
         public static List<TopDownHit> ReadTDFile(InputFile file)
         {
@@ -30,6 +31,20 @@ namespace ProteoformSuiteInternal
                         {
                             ptm_list.Add(new Ptm(position, mod));
                         }
+                        else
+                        {
+                            ModificationMotif motif;
+                            ModificationMotif.TryGetMotif(cellStrings[4][0].ToString(), out motif);
+                            Ptm new_ptm = topdown_ptms.Where(m => m.modification.motif.Motif == motif.Motif && m.modification.id == cellStrings[8].Split(',')[0]).FirstOrDefault();
+                            if (new_ptm != null)
+                            {
+                                ptm_list.Add(new_ptm);
+                            }
+                            else
+                            {
+                                topdown_ptms.Add(new Ptm(position, new ModificationWithMass(cellStrings[8].Split(',')[0], null, motif , ModificationSites.NTerminus, 0, null, new List<double>(), new List<double>(), null)));
+                            }
+                        }
                     }
                 }
                 //don't have example of c-term modification to write code
@@ -37,14 +52,28 @@ namespace ProteoformSuiteInternal
                 if (cellStrings[9].Length > 0)
                 {
                     string[] res_ids = cellStrings[9].Split('|');
-                    foreach (string new_ptm in res_ids)
+                    foreach (string ptm in res_ids)
                     {
-                        string resid = new_ptm.Split(':')[1].Split('@')[0];
+                        string resid = ptm.Split(':')[1].Split('@')[0];
                         while (resid.Length < 4) resid = "0" + resid;
                         resid = "AA" + resid;
-                        int position = Convert.ToInt16(new_ptm.Split(':')[1].Split('@')[1]);
+                        int position = Convert.ToInt16(ptm.Split(':')[1].Split('@')[1]);
                         ModificationWithMass mod = Lollipop.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("RESID")).Where(m => m.linksToOtherDbs["RESID"].Contains(resid)).FirstOrDefault();
                         if (mod != null) ptm_list.Add(new Ptm(position, mod));
+                        else
+                        {
+                            ModificationMotif motif;
+                            ModificationMotif.TryGetMotif(cellStrings[4][position - 1].ToString(), out motif);
+                            Ptm new_ptm = topdown_ptms.Where(m => m.modification.motif.Motif == motif.Motif && m.modification.id == resid).FirstOrDefault();
+                            if (new_ptm != null)
+                            {
+                                ptm_list.Add(new_ptm);
+                            }
+                            else
+                            {
+                                topdown_ptms.Add(new Ptm(position, new ModificationWithMass(resid, null, motif, ModificationSites.NTerminus, 0, null, new List<double>(), new List<double>(), null)));
+                            }
+                        }
                     }
                 }
                 //convert into new td hit
