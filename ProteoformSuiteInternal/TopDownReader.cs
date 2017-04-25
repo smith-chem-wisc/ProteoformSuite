@@ -30,11 +30,6 @@ namespace ProteoformSuiteInternal
                         {
                             ptm_list.Add(new Ptm(position, mod));
                         }
-                        //found one case where PTM not in ptmlist.txt (acetylasparagine)
-                        else
-                        {
-                            ptm_list.Add(new Ptm(position, new ModificationWithMass("N-acetylation", null, null, ModificationSites.NTerminus, 0, null, new List<double>(), new List<double>(), null)));
-                        }
                     }
                 }
                 //don't have example of c-term modification to write code
