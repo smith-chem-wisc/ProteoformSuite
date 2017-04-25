@@ -64,7 +64,7 @@ namespace ProteoformSuiteInternal
                         ProteoformRelation best_relation = pf1.candidate_relatives
                             .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass))
                             .Where(r => r.candidate_ptmset != null) // don't consider unassignable relations for ET
-                            .OrderBy(r => r.candidate_ptmset.ptm_rank_sum) // get the best explanation for the experimental observation
+                            .OrderBy(r => r.candidate_ptmset.ptm_rank_sum + Math.Abs(Math.Abs(r.candidate_ptmset.mass) - Math.Abs(r.delta_mass)) * 10E-6) // get the best explanation for the experimental observation, tie breaker is delta mass
                             .FirstOrDefault();
 
                         pf1.candidate_relatives = best_relation != null ?
@@ -89,8 +89,8 @@ namespace ProteoformSuiteInternal
             {
                 foreach (double mass in (comparison == ProteoformComparison.ExperimentalTheoretical || comparison == ProteoformComparison.ExperimentalDecoy) ? Lollipop.notch_masses_et : Lollipop.notch_masses_ee)
                 {
-                    if (mass - ((comparison == ProteoformComparison.ExperimentalTheoretical || comparison == ProteoformComparison.ExperimentalDecoy) ? Lollipop.peak_width_base_et : Lollipop.peak_width_base_ee) <= pf1_mass - pf2_mass
-                    && mass + ((comparison == ProteoformComparison.ExperimentalTheoretical || comparison == ProteoformComparison.ExperimentalDecoy) ? Lollipop.peak_width_base_et : Lollipop.peak_width_base_ee) >= pf1_mass - pf2_mass) return true;
+                    if (mass - ((comparison == ProteoformComparison.ExperimentalTheoretical || comparison == ProteoformComparison.ExperimentalDecoy) ? Lollipop.peak_width_base_et : Lollipop.peak_width_base_ee) <= (pf1_mass - pf2_mass)
+                    && mass + ((comparison == ProteoformComparison.ExperimentalTheoretical || comparison == ProteoformComparison.ExperimentalDecoy) ? Lollipop.peak_width_base_et : Lollipop.peak_width_base_ee) >= (pf1_mass - pf2_mass)) return true;
                 }
                 return false;
             }
@@ -139,10 +139,11 @@ namespace ProteoformSuiteInternal
         public Dictionary<string, List<ProteoformRelation>> relate_ed()
         {
             Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
-            Parallel.ForEach(decoy_proteoforms, decoys =>
+            // Parallel.ForEach(decoy_proteoforms, decoys =>
+            foreach (KeyValuePair<string, TheoreticalProteoform[]> decoys in decoy_proteoforms)
             {
                 ed_relations[decoys.Key] = relate(experimental_proteoforms, Lollipop.limit_theoreticals_to_BU_or_TD_observed ? decoys.Value.Where(t => t.psm_list.Count > 0 || t.relationships.Count(r => r.relation_type == ProteoformComparison.TheoreticalTopDown) > 0).ToArray() : decoys.Value, ProteoformComparison.ExperimentalDecoy, true);
-            });
+            }
             return ed_relations;
         }
 
