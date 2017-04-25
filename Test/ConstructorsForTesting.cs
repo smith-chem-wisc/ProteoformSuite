@@ -17,19 +17,20 @@ namespace Test
             ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ExperimentalExperimental, 0);
             DeltaMassPeak ppp = new DeltaMassPeak(pp, new List<ProteoformRelation> { pp });
             pp.peak = ppp;
-            ppp.peak_accepted = true;
+            ppp.Accepted = true;
             p1.relationships.Add(pp);
             p2.relationships.Add(pp);
         }
 
-        public static void make_relation(Proteoform p1, Proteoform p2, ProteoformComparison c, double delta_mass)
+        public static ProteoformRelation make_relation(Proteoform p1, Proteoform p2, ProteoformComparison c, double delta_mass)
         {
             ProteoformRelation pp = new ProteoformRelation(p1, p2, c, delta_mass);
             p1.relationships.Add(pp);
             p2.relationships.Add(pp);
+            return pp;
         }
 
-
+        
         //MAKE THEORETICAL
         public static TheoreticalProteoform make_a_theoretical(string a, ProteinWithGoTerms p, Dictionary<InputFile, Protein[]> dict)
         {
@@ -104,7 +105,7 @@ namespace Test
             if (quantitative_observations.Count > 0)
             {
                 e.lt_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, true)));
-                if (Lollipop.neucode_labeled) e.hv_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, false)));
+                if (SaveState.lollipop.neucode_labeled) e.hv_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, false)));
             }
             e.root = e.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
             return e;
@@ -133,11 +134,11 @@ namespace Test
             return m;
         }
 
-        public static Dictionary<string, IList<Modification>> read_mods()
+        public static Dictionary<string, List<Modification>> read_mods()
         {
             Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "elements.dat"));
-            List<ModificationWithLocation> all_modifications = Lollipop.get_files(Lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
-            return Lollipop.make_modification_dictionary(all_modifications);
+            List<ModificationWithLocation> all_modifications = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
+            return SaveState.lollipop.theoretical_database.make_modification_dictionary(all_modifications);
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using System;
-using ProteoformSuiteInternal;
+﻿using ProteoformSuiteInternal;
+using System;
 using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
@@ -30,7 +30,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return peak != null ? peak.peak_deltaM_average : Double.NaN;
+                return peak != null ? peak.DeltaMass : Double.NaN;
             }
         }
 
@@ -46,11 +46,11 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return ((ProteoformRelation)display_object).accepted;
+                return ((ProteoformRelation)display_object).Accepted;
             }
             set
             {
-                ((ProteoformRelation)display_object).accepted = value;
+                ((ProteoformRelation)display_object).Accepted = value;
             }
         }
 
@@ -58,7 +58,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return ((ProteoformRelation)display_object).delta_mass;
+                return ((ProteoformRelation)display_object).DeltaMass;
             }
         }
 
@@ -74,7 +74,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return ((ProteoformRelation)display_object).nearby_relations.Count;
+                return ((ProteoformRelation)display_object).nearby_relations_count;
             }
         }
 
@@ -215,7 +215,7 @@ namespace ProteoformSuiteGUI
             : base(r)
         {
             peak = r.peak;
-            relation_type = r.relation_type;
+            relation_type = r.RelationType;
             connected_proteoforms = r.connected_proteoforms;
         }
 
@@ -286,7 +286,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(RelationType)].HeaderText = "Relation Type";
 
             //making these columns invisible
-            dgv.Columns[nameof(LysineCount)].Visible = Lollipop.neucode_labeled;
+            dgv.Columns[nameof(LysineCount)].Visible = SaveState.lollipop.neucode_labeled;
         } 
         #endregion
     }

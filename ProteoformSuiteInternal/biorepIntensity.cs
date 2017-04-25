@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
+    [Serializable]
     public class BiorepIntensity
     {
         public bool light { get; set; } = true; // true if unlabelled or neucode light; false if neucode heavy

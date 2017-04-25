@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Data;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
+    [Serializable]
     public class ProteoformFamily
     {
 
@@ -28,13 +29,12 @@ namespace ProteoformSuiteInternal
         public string accession_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.accession)); } }
         public string gene_list { get { return String.Join("; ", gene_names.Select(p => p.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Where(n => n != null).Distinct()); } }
         public string experimentals_list { get { return String.Join("; ", experimental_proteoforms.Select(p => p.accession)); } }
-        public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, Lollipop.deltaM_edge_display_rounding))); } }
-        public int lysine_count { get; set; } = -1;
+        public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, SaveState.lollipop.deltaM_edge_display_rounding))); } }
         public List<ExperimentalProteoform> experimental_proteoforms { get; private set; }
         public List<TheoreticalProteoform> theoretical_proteoforms { get; private set; }
         public List<GeneName> gene_names { get; private set; }
-        public HashSet<ProteoformRelation> relations { get; private set; }
-        public HashSet<Proteoform> proteoforms { get; private set; }
+        public List<ProteoformRelation> relations { get; private set; }
+        public List<Proteoform> proteoforms { get; private set; }
 
         #endregion Public Property
 
@@ -53,18 +53,18 @@ namespace ProteoformSuiteInternal
 
         public void construct_family()
         {
-            this.proteoforms = new HashSet<Proteoform>(construct_family(new List<Proteoform> { seed }));
+            proteoforms = new HashSet<Proteoform>(construct_family(new List<Proteoform> { seed })).ToList();
             separate_proteoforms();
         }
 
         public void merge_families()
         {
             IEnumerable<ProteoformFamily> gene_family =
-                    from f in Lollipop.proteoform_community.families
-                    from n in this.gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Distinct()
+                    from f in SaveState.lollipop.proteoform_community.families
+                    from n in gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Distinct()
                     where f.gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Contains(n)
                     select f;
-            proteoforms = new HashSet<Proteoform>(proteoforms.Concat(gene_family.SelectMany(f => f.proteoforms)));
+            proteoforms = new HashSet<Proteoform>(proteoforms.Concat(gene_family.SelectMany(f => f.proteoforms))).ToList();
             separate_proteoforms();
         }
 
@@ -74,7 +74,7 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(theoretical_proteoforms, t =>
             {
                 lock (identified_experimentals)
-                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(Lollipop.all_possible_ptmsets, Lollipop.all_mods_with_mass))
+                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
                     {
                         identified_experimentals.Add(e);
                     }
@@ -90,7 +90,7 @@ namespace ProteoformSuiteInternal
                 Parallel.ForEach(newly_identified_experimentals, id_experimental =>
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
-                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Lollipop.all_possible_ptmsets, Lollipop.all_mods_with_mass))
+                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
                             {
                                 identified_experimentals.Add(new_e);
                                 tmp_new_experimentals.Add(new_e);
@@ -114,12 +114,10 @@ namespace ProteoformSuiteInternal
 
         private void separate_proteoforms()
         {
-            this.theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
-            this.gene_names = theoretical_proteoforms.Select(t => t.gene_name).ToList();
-            HashSet<int> lysine_counts = new HashSet<int>(proteoforms.Select(p => p.lysine_count));
-            if (lysine_counts.Count == 1) this.lysine_count = lysine_counts.FirstOrDefault();
-            this.experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
-            this.relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.peak_accepted)));
+            theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
+            gene_names = theoretical_proteoforms.Select(t => t.gene_name).ToList();
+            experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
+            relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.Accepted))).ToList();
         }
 
         #endregion Private Methods

@@ -1,18 +1,18 @@
-﻿using System;
+﻿using Proteomics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
-    public class PtmCombos
+    public static class PtmCombos
     {
         // LOCALIZED MODIFICATION COMBINATIONS
         //Gets unique-mass (given a tolerance) ptm combinations from all the possible ones without positional redundancy
         //given a maximum number of ptms allowed on a theoretical protein
         //Includes an empty combination with no PTMs
-        public static List<PtmSet> get_combinations(IDictionary<int, List<Modification>> ptm_data, int num_ptms_needed, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
+        public static List<PtmSet> get_combinations(IDictionary<int, List<Modification>> ptm_data, int num_ptms_needed, Dictionary<double, int> modification_ranks, int added_ptm_penalization, bool limit_triples_and_greater)
         {
             List<Ptm> all_ptms = (
                 from position in ptm_data.Keys
@@ -20,35 +20,34 @@ namespace ProteoformSuiteInternal
                 select new Ptm(position, modification))
             .OrderBy(p => p.position).ToList();
 
+            int max_combinintorial_ptm_length = limit_triples_and_greater ? Math.Min(2, num_ptms_needed) : num_ptms_needed;
+            List<PtmSet> unique_mass_combinations = all_unique_positional_combinations(all_ptms, max_combinintorial_ptm_length, modification_ranks, added_ptm_penalization, limit_triples_and_greater)
+                .Concat(new List<PtmSet> { new PtmSet(new List<Ptm>()) }) //initialize with an "unmodified" ptmset
+                .ToList();
 
-            List<PtmSet> unique_mass_combinations = all_unique_positional_combinations(all_ptms, num_ptms_needed, modification_ranks, added_ptm_penalization)
-                .Concat(new List<PtmSet> { new PtmSet(new List<Ptm>()) })
+            if (limit_triples_and_greater)
+            {
+                for (int i = 3; i < num_ptms_needed + 1; i++)
+                {
+                    unique_mass_combinations.AddRange(ptm_data.Values.SelectMany(m => m).OfType<ModificationWithMass>().Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), modification_ranks, added_ptm_penalization)));
+                }
+            }
+
+            unique_mass_combinations = unique_mass_combinations
                 .OrderBy(x => x.ptm_rank_sum).DistinctBy(set => set.mass)
-                .ToList(); //initialize with an "unmodified" ptmset
-
-            //while (combinations.Count > 0)
-            //{
-            //    PtmSet combination = combinations[0];
-            //    unique_mass_combinations.Add(combination);
-            //    double lower_mass = combination.mass - Lollipop.ptmset_mass_tolerance;
-            //    double upper_mass = combination.mass + Lollipop.ptmset_mass_tolerance;
-            //    IEnumerable<PtmSet> redundant_mass_combinations = combinations
-            //        .Where(c => c.mass >= lower_mass && c.mass <= upper_mass);
-            //    combinations = combinations.Except(redundant_mass_combinations).ToList();
-            //}
+                .ToList(); 
 
             return unique_mass_combinations;
         }
 
         //For each length up to the maximum number of ptms (or the max number of modifications in this list),
         //generate all the combinations, with the shortest combinations first, and with the modifications at the first positions first
-        private static List<PtmSet> all_unique_positional_combinations(List<Ptm> all_ptms, int max_length, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
+        private static List<PtmSet> all_unique_positional_combinations(List<Ptm> all_ptms, int max_length, Dictionary<double, int> modification_ranks, int added_ptm_penalization, bool limit_triples_and_greater)
         {
             max_length = Math.Min(max_length, all_ptms.Count);
             List<PtmSet> combos = new List<PtmSet>(
                 from i in Enumerable.Range(1, max_length)
                 from combination in unique_positional_combinations(all_ptms, i, modification_ranks, added_ptm_penalization)
-                //where combination.ptm_combination.Count == combination.ptm_combination.DistinctBy(c => c.position).Count() //where the length of the positions list is the same as the number of unique positions
                 select combination
             );
             return combos;
@@ -72,7 +71,8 @@ namespace ProteoformSuiteInternal
                     value = all_ptms[mod_index];
                     result[result_index] = value;
                     mod_index++;
-                    if (prev_position == value.position) continue;
+                    if (prev_position == value.position)
+                        continue;
                     prev_position = value.position;
                     result_index++;
                     if (mod_index < all_ptms.Count)

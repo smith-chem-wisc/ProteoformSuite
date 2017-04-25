@@ -1,9 +1,9 @@
 ﻿using NUnit.Framework;
 using ProteoformSuiteInternal;
-using System.Collections.Generic;
-using System;
-using System.Linq;
 using Proteomics;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Test
 {
@@ -16,7 +16,7 @@ namespace Test
         [Test]
         public void TestNeuCodeLabeledProteoformCommunityRelate_EE()
         {
-            Lollipop.neucode_labeled = true;
+            SaveState.lollipop.neucode_labeled = true;
 
             // Two proteoforms; lysine count equal; mass difference < 250 -- return 1
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, 1, true);
@@ -103,7 +103,7 @@ namespace Test
         [Test]
         public void TestUnabeledProteoformCommunityRelate_EE()
         {
-            Lollipop.neucode_labeled = false;
+            SaveState.lollipop.neucode_labeled = false;
 
             // Two proteoforms; mass difference < 250 -- return 1
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, -1, true);
@@ -164,14 +164,14 @@ namespace Test
             //Two equal, two unequal lysine count. Each should create two unequal relations, so eight relations total
             //However, it shouldn't compare to itself, so that would make 4 total relations
             test_community = new ProteoformCommunity();
-            Lollipop.neucode_labeled = true;
+            SaveState.lollipop.neucode_labeled = true;
             test_community.experimental_proteoforms = new ExperimentalProteoform[] {
                 ConstructorsForTesting. ExperimentalProteoform("A1", 1000.0, 1, true),
                 ConstructorsForTesting. ExperimentalProteoform("A2", 1000.0, 2, true),
                 ConstructorsForTesting. ExperimentalProteoform("A3", 1000.0, 1, true),
                 ConstructorsForTesting. ExperimentalProteoform("A4", 1000.0, 2, true)
             };
-            Lollipop.ee_relations = test_community.relate(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
+            SaveState.lollipop.ee_relations = test_community.relate(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
             unequal_relations = test_community.relate_ef(test_community.experimental_proteoforms, test_community.experimental_proteoforms).Values.First();
             Assert.AreNotEqual(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2]);
             Assert.False(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[0], ProteoformComparison.ExperimentalExperimental));
@@ -189,7 +189,7 @@ namespace Test
                 ConstructorsForTesting.ExperimentalProteoform("A3", 3000, 1, true),
                 ConstructorsForTesting.ExperimentalProteoform("A4", 4000, 2, true)
             };
-            Lollipop.ee_relations = test_community.relate(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
+            SaveState.lollipop.ee_relations = test_community.relate(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
             unequal_relations = test_community.relate_ef(test_community.experimental_proteoforms, test_community.experimental_proteoforms).Values.First();
             Assert.AreEqual(0, unequal_relations.Count);
 
@@ -201,7 +201,7 @@ namespace Test
                 ConstructorsForTesting. ExperimentalProteoform("A3", 1000.0, 3, true),
                 ConstructorsForTesting. ExperimentalProteoform("A4", 1000.0, 4, true)
             };
-            Lollipop.ee_relations = test_community.relate(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
+            SaveState.lollipop.ee_relations = test_community.relate(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
             unequal_relations = test_community.relate_ef(test_community.experimental_proteoforms, test_community.experimental_proteoforms).Values.First();
             Assert.AreEqual(0, unequal_relations.Count);
 
@@ -219,30 +219,30 @@ namespace Test
 
         private void prepare_for_et(List<double> delta_masses)
         {
-            Lollipop.all_mods_with_mass = new List<ModificationWithMass>();
-            Lollipop.all_possible_ptmsets = new List<PtmSet>();
-            Lollipop.modification_ranks = new Dictionary<double, int>();
+            SaveState.lollipop.theoretical_database.all_mods_with_mass = new List<ModificationWithMass>();
+            SaveState.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet>();
+            SaveState.lollipop.modification_ranks = new Dictionary<double, int>();
 
             //Prepare for making ET relation
             foreach (double delta_m in new HashSet<double>(delta_masses))
             {
                 ModificationWithMass m = ConstructorsForTesting.get_modWithMass("fake" + delta_m.ToString(), delta_m);
-                Lollipop.all_mods_with_mass.Add(m);
-                Lollipop.all_possible_ptmsets.Add(new PtmSet(new List<Ptm> { new Ptm(-1, m) }));
-                Lollipop.modification_ranks.Add(delta_m, 2);
+                SaveState.lollipop.theoretical_database.all_mods_with_mass.Add(m);
+                SaveState.lollipop.theoretical_database.all_possible_ptmsets.Add(new PtmSet(new List<Ptm> { new Ptm(-1, m) }));
+                SaveState.lollipop.modification_ranks.Add(delta_m, 2);
             }
-            Lollipop.possible_ptmset_dictionary = Lollipop.make_ptmset_dictionary();
+            SaveState.lollipop.theoretical_database.possible_ptmset_dictionary = SaveState.lollipop.theoretical_database.make_ptmset_dictionary();
 
-            if (!Lollipop.modification_ranks.TryGetValue(0, out int a))
-                Lollipop.modification_ranks.Add(0, 1);
+            if (!SaveState.lollipop.modification_ranks.TryGetValue(0, out int a))
+                SaveState.lollipop.modification_ranks.Add(0, 1);
 
-            Lollipop.rank_sum_threshold = 2;
+            SaveState.lollipop.mod_rank_sum_threshold = 2;
         }
 
         [Test]
         public void TestNeuCodeLabeledProteoformCommunityRelate_ET()
         {
-            Lollipop.neucode_labeled = true;
+            SaveState.lollipop.neucode_labeled = true;
 
             // One experimental one theoretical proteoforms; lysine count equal; mass difference < 500 -- return 1
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, 1, true);
@@ -359,7 +359,7 @@ namespace Test
         [Test]
         public void TestUnabeledProteoformCommunityRelate_ET()
         {
-            Lollipop.neucode_labeled = false;
+            SaveState.lollipop.neucode_labeled = false;
 
             // One experimental one theoretical protoeform; mass difference < 500 -- return 1
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, -1, true);
@@ -477,11 +477,11 @@ namespace Test
 
             ProteoformRelation rel = edDictionary["fake_decoy_proteoform1"][0];
 
-            Assert.IsFalse(rel.accepted);
+            Assert.IsFalse(rel.Accepted);
             Assert.AreEqual("decoyProteoform1", rel.connected_proteoforms[1].accession);
-            Assert.AreEqual(0, rel.delta_mass);
+            Assert.AreEqual(0, rel.DeltaMass);
             Assert.IsEmpty(((TheoreticalProteoform)rel.connected_proteoforms[1]).fragment);
-            Assert.AreEqual(1, rel.nearby_relations.Count);  //shows that calculate_unadjusted_group_count works
+            Assert.AreEqual(1, rel.nearby_relations_count);  //shows that calculate_unadjusted_group_count works
             //Assert.AreEqual(1, rel.mass_difference_group.Count);  //I don't think we need this test anymore w/ way peaks are made -LVS
             Assert.AreEqual(-1, rel.lysine_count);
             Assert.AreEqual("T2", ((TheoreticalProteoform)rel.connected_proteoforms[1]).name);
@@ -489,7 +489,7 @@ namespace Test
             Assert.IsTrue(rel.outside_no_mans_land);
             Assert.IsNull(rel.peak);
             Assert.True(string.Equals("unmodified", ((TheoreticalProteoform)rel.connected_proteoforms[1]).ptm_description, StringComparison.CurrentCultureIgnoreCase));
-            Assert.AreEqual(1, rel.nearby_relations.Count);
+            Assert.AreEqual(1, rel.nearby_relations_count);
         }
 
         [Test]
