@@ -19,7 +19,23 @@ namespace ProteoformSuiteInternal
         public ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
         public Dictionary<string, List<Modification>> uniprotModifications = new Dictionary<string, List<Modification>>();
         public List<ModificationWithMass> variableModifications = new List<ModificationWithMass>();
-        public List<PtmSet> all_possible_ptmsets;
+
+        [NonSerialized]
+        private List<PtmSet> _all_possible_ptmsets = new List<PtmSet>();
+        public List<PtmSet> all_possible_ptmsets
+        {
+            get
+            {
+                if (_all_possible_ptmsets.Count == 0)
+                    _all_possible_ptmsets = PtmCombos.generate_all_ptmsets(Math.Min(2, SaveState.lollipop.max_ptms), all_mods_with_mass, SaveState.lollipop.modification_ranks, SaveState.lollipop.mod_rank_first_quartile / 2).ToList();
+                return _all_possible_ptmsets;
+            }
+
+            set
+            {
+                _all_possible_ptmsets = value;
+            }
+        }
 
         [NonSerialized] //regenerated upon load
         public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>();
@@ -76,7 +92,7 @@ namespace ProteoformSuiteInternal
             SaveState.lollipop.modification_ranks = rank_mods(theoretical_proteins, variableModifications, all_mods_with_mass);
 
             // Generate all ptm sets if not done already
-            if (all_possible_ptmsets == null)
+            if (all_possible_ptmsets.Count == 0)
             {
                 //Generate all two-member sets and all three-member (or greater) sets of the same modification (three-member combinitorics gets out of hand for assignment)
                 all_possible_ptmsets = PtmCombos.generate_all_ptmsets(Math.Min(2, SaveState.lollipop.max_ptms), all_mods_with_mass, SaveState.lollipop.modification_ranks, SaveState.lollipop.mod_rank_first_quartile / 2).ToList();

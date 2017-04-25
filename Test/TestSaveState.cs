@@ -115,6 +115,7 @@ namespace Test
             SaveState.lollipop = new Lollipop();
             SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
             SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -134,6 +135,7 @@ namespace Test
             SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_experimental_components, Purpose.Identification);
             SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
             SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -148,6 +150,7 @@ namespace Test
             Proteoform exp2;
             using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "exp")))
                 exp2 = (Proteoform)ser.Deserialize(file);
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -162,6 +165,7 @@ namespace Test
             ExperimentalProteoform exp2;
             using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "exp")))
                 exp2 = (ExperimentalProteoform)ser.Deserialize(file);
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -176,6 +180,7 @@ namespace Test
             ExperimentalProteoform exp2;
             using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "exp")))
                 exp2 = (ExperimentalProteoform)ser.Deserialize(file);
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -191,6 +196,7 @@ namespace Test
             QuantitativeProteoformValues exp2;
             using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "exp")))
                 exp2 = (QuantitativeProteoformValues)ser.Deserialize(file);
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -202,6 +208,7 @@ namespace Test
             SaveState.lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
             SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
             Assert.AreEqual(1, SaveState.lollipop.proteoform_community.experimental_proteoforms.Length);
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -232,6 +239,7 @@ namespace Test
             TheoreticalProteoform exp2;
             using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "theo")))
                 exp2 = (TheoreticalProteoform)ser.Deserialize(file);
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -243,6 +251,7 @@ namespace Test
             SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
             Assert.AreEqual(1, SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length);
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -254,6 +263,7 @@ namespace Test
             SaveState.lollipop.proteoform_community.relations_in_peaks.Clear();
             SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
             Assert.AreEqual(1, SaveState.lollipop.proteoform_community.relations_in_peaks.Count);
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -284,6 +294,7 @@ namespace Test
             ProteoformFamily fam;
             using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "fam")))
                 fam = (ProteoformFamily)ser.Deserialize(file);
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -293,6 +304,7 @@ namespace Test
             TestProteoformFamilies.construct_two_families_with_potentially_colliding_theoreticals();
             SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
             SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -329,6 +341,8 @@ namespace Test
                 ser.Serialize(file, ok);
             using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "prots")))
                 prots = (List<Protein>)ser.Deserialize(file);
+
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -366,6 +380,7 @@ namespace Test
                 ser.Serialize(file, okok);
             using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "prots")))
                 prots = (ProteinWithGoTerms[])ser.Deserialize(file);
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -399,6 +414,8 @@ namespace Test
                 ser.Serialize(file, new List<PtmSet> { set });
             using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfg")))
                 asdfg = (List<PtmSet>)ser.Deserialize(file);
+
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -466,6 +483,8 @@ namespace Test
                 ser.Serialize(file, SaveState.lollipop.theoretical_database);
             using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "theodb")))
                 db = (TheoreticalProteoformDatabase)ser.Deserialize(file);
+
+            SaveState.lollipop = new Lollipop();
         }
 
         [Test]
@@ -479,6 +498,7 @@ namespace Test
             SaveState.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet> { SaveState.lollipop.theoretical_database.all_possible_ptmsets[0] }; // make the test faster
             SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
             SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            SaveState.lollipop = new Lollipop();
         }
     }
 }

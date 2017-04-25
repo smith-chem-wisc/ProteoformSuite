@@ -12,18 +12,11 @@ namespace ProteoformSuiteInternal
 
         private static int instance_counter = 0;
 
-        //[NonSerialized]
-        //private List<ProteoformRelation> _grouped_relations;
-
         #endregion Private Fields
 
         #region Public Properties
 
         public List<ProteoformRelation> grouped_relations { get; set; }
-        //{
-        //    get { return _grouped_relations; }
-        //    set { _grouped_relations = value; }
-        //}
         public double DeltaMass { get; set; }
         public int peak_relation_group_count { get { return grouped_relations.Count; } }
         public double decoy_relation_count { get; set; }
