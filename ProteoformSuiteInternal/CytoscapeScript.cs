@@ -288,7 +288,7 @@ namespace ProteoformSuiteInternal
             }
             foreach (TopDownProteoform p in families.SelectMany(f => f.topdown_proteoforms.ToList()))
             {
-                string node_type = p.ptm_list_string();
+                string node_type = p.ptm_description;
                 node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity }) + Environment.NewLine;
             }
             if (gene_centric_families)
@@ -316,7 +316,7 @@ namespace ProteoformSuiteInternal
 
             else if (typeof(TopDownProteoform).IsAssignableFrom(p.GetType()))
             {
-                return p.accession + " " + ((TopDownProteoform)p).ptm_list_string();
+                return p.accession + " " + p.ptm_description;
             }
 
             else
@@ -394,7 +394,7 @@ namespace ProteoformSuiteInternal
                 writer.WriteEndElement();
 
                 //NODE PROPERTIES
-                double max_total_intensity = quantitative ?
+                double max_total_intensity = all_families.SelectMany(f => f.experimental_proteoforms).Count() == 0 ? 1e6 : quantitative?
                     (double)all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.quant.intensitySum) :
                     all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity);
                 writer.WriteStartElement("node");

@@ -18,10 +18,6 @@ namespace ProteoformSuiteInternal
         public double theoretical_mass { get; set; }
         public double agg_rt { get; set; }
         public List<double> all_RTs { get; set; }
-        public string ptm_descriptions
-        {
-            get { return ptm_list_string(); }
-        }
         public TopDownHit root;
         public List<TopDownHit> topdown_hits;
         public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ExperimentalTopDown).ToList().Count; } }
@@ -67,28 +63,11 @@ namespace ProteoformSuiteInternal
             this.all_RTs = new List<double>() { agg_rt };
         }
 
-        public string ptm_list_string()
-        {
-            if (ptm_set.ptm_combination.Count == 0)
-                return "unmodified";
-            string _modifications_string = "";
-            foreach (Ptm ptm in this.ptm_set.ptm_combination) _modifications_string += (ptm.modification.id + "@" + ptm.position + "; ");
-            return _modifications_string;
-        }
-
          
         private bool tolerable_rt(TopDownHit candidate, double rt)
         {
             return candidate.retention_time >= rt - Convert.ToDouble(Lollipop.retention_time_tolerance) &&
                 candidate.retention_time <= rt + Convert.ToDouble(Lollipop.retention_time_tolerance);
-        }
-
-        private bool tolerable_mass(TopDownHit candidate, double corrected_mass)
-        {
-            double mass_tolerance = corrected_mass / 1000000 * (double)Lollipop.mass_tolerance;
-            double low = corrected_mass - mass_tolerance;
-            double high = corrected_mass + mass_tolerance;
-            return candidate.corrected_mass >= low && candidate.corrected_mass <= high;
         }
 
         public bool same_ptms(TheoreticalProteoform theo)

@@ -38,7 +38,9 @@ namespace ProteoformSuiteInternal
                 ptm_description = ptm_set == null || ptm_set.ptm_combination == null ? 
                     "Unknown" : 
                     ptm_set.ptm_combination.Count == 0 ?
-                        "Unmodified" :
+                        "Unmodified" : 
+                        this is TopDownProteoform ?
+                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => ptm.modification.id + "@" + ptm.position)) :
                         String.Join("; ", ptm_set.ptm_combination.Select(ptm => ptm.modification.id));
             }
         }
