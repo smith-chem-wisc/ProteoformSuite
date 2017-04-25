@@ -124,6 +124,7 @@
     <Compile Include="GoTermNumber.cs" />
     <Compile Include="GoTerm.cs" />
     <Compile Include="IBiorepable.cs" />
+    <Compile Include="IMassDifference.cs" />
     <Compile Include="InputFile.cs" />
     <Compile Include="Lollipop.cs" />
     <Compile Include="Ptm.cs" />
@@ -137,6 +138,7 @@
     <Compile Include="ProteoformCommunity.cs" />
     <Compile Include="ProteoformFamily.cs" />
     <Compile Include="ProteoformRelation.cs" />
+    <Compile Include="QuantitativeProteoformValues.cs" />
     <Compile Include="ResultsSummaryGenerator.cs" />
     <Compile Include="SaveState.cs" />
     <Compile Include="TheoreticalProteoform.cs" />

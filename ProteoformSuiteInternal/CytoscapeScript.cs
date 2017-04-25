@@ -36,8 +36,8 @@ namespace ProteoformSuiteInternal
                 families = get_families(stuff.OfType<GoTerm>(), all_families).Distinct().ToList();
             if (families.Count <= 0 && typeof(GoTermNumber) == stuff[0].GetType())
                 families = get_families(stuff.OfType<GoTermNumber>(), all_families).Distinct().ToList();
-            if (families.Count <= 0 && typeof(ExperimentalProteoform.quantitativeValues).IsAssignableFrom(stuff[0].GetType()))
-                families = get_families(stuff.OfType<ExperimentalProteoform.quantitativeValues>(), all_families).Distinct().ToList();
+            if (families.Count <= 0 && typeof(QuantitativeProteoformValues).IsAssignableFrom(stuff[0].GetType()))
+                families = get_families(stuff.OfType<QuantitativeProteoformValues>(), all_families).Distinct().ToList();
             if (families.Count <= 0) return "Selected objects were not recognized.";
 
             return write_script(families, all_families, 
@@ -75,7 +75,7 @@ namespace ProteoformSuiteInternal
                    select f;
         }
 
-        private static IEnumerable<ProteoformFamily> get_families(IEnumerable<ExperimentalProteoform.quantitativeValues> qvals, List<ProteoformFamily> all_families)
+        private static IEnumerable<ProteoformFamily> get_families(IEnumerable<QuantitativeProteoformValues> qvals, List<ProteoformFamily> all_families)
         {
             return from f in all_families
                    from e in f.experimental_proteoforms
@@ -191,9 +191,9 @@ namespace ProteoformSuiteInternal
             string edge_rows = "";
             foreach (ProteoformRelation r in families.SelectMany(f => f.relations).Distinct())
             {
-                string delta_mass = Math.Round(r.peak.peak_deltaM_average, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
+                string delta_mass = Math.Round(r.peak.DeltaMass, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
                 //if (edge_label == Lollipop.edge_labels[1] && r.represented_modification == null) continue;
-                bool append_ptmlist = r.represented_ptmset != null && (r.relation_type != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.id != "Unmodified");
+                bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.id != "Unmodified");
                 edge_rows += String.Join("\t", new List<string>
                 {
                     get_proteoform_shared_name(r.connected_proteoforms[0], node_label, double_rounding),

@@ -17,16 +17,17 @@ namespace Test
             ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ExperimentalExperimental, 0);
             DeltaMassPeak ppp = new DeltaMassPeak(pp, new List<ProteoformRelation> { pp });
             pp.peak = ppp;
-            ppp.peak_accepted = true;
+            ppp.Accepted = true;
             p1.relationships.Add(pp);
             p2.relationships.Add(pp);
         }
 
-        public static void make_relation(Proteoform p1, Proteoform p2, ProteoformComparison c, double delta_mass)
+        public static ProteoformRelation make_relation(Proteoform p1, Proteoform p2, ProteoformComparison c, double delta_mass)
         {
             ProteoformRelation pp = new ProteoformRelation(p1, p2, c, delta_mass);
             p1.relationships.Add(pp);
             p2.relationships.Add(pp);
+            return pp;
         }
 
         
@@ -133,7 +134,7 @@ namespace Test
             return m;
         }
 
-        public static Dictionary<string, IList<Modification>> read_mods()
+        public static Dictionary<string, List<Modification>> read_mods()
         {
             Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "elements.dat"));
             List<ModificationWithLocation> all_modifications = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();

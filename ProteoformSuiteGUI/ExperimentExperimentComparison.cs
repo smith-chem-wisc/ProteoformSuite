@@ -9,7 +9,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace ProteoformSuiteGUI
 {
-    public partial class ExperimentExperimentComparison : Form
+    public partial class ExperimentExperimentComparison : Form, ISweetForm
     {
 
         #region Private Field
@@ -35,23 +35,19 @@ namespace ProteoformSuiteGUI
 
         #region Public Methods
 
-        public void compare_ee()
+        public bool ReadyToRunTheGamut()
         {
-            if (SaveState.lollipop.ee_relations.Count == 0 && SaveState.lollipop.proteoform_community.has_e_proteoforms)
-            {
-                run_the_gamut();
-            }
-            else if (SaveState.lollipop.ee_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
+            return SaveState.lollipop.ee_relations.Count == 0 && SaveState.lollipop.proteoform_community.has_e_proteoforms;
         }
 
-        public void run_the_gamut()
+        public void RunTheGamut()
         {
-            this.Cursor = Cursors.WaitCursor;
+            Cursor = Cursors.WaitCursor;
             SaveState.lollipop.ee_relations = SaveState.lollipop.proteoform_community.relate(SaveState.lollipop.proteoform_community.experimental_proteoforms, SaveState.lollipop.proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
             SaveState.lollipop.ef_relations = SaveState.lollipop.proteoform_community.relate_ef(SaveState.lollipop.proteoform_community.experimental_proteoforms, SaveState.lollipop.proteoform_community.experimental_proteoforms);
             SaveState.lollipop.ee_peaks = SaveState.lollipop.proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.ee_relations, SaveState.lollipop.ef_relations);
-            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsAndTables();
-            ((ProteoformSweet)MdiParent).quantification.ClearListsAndTables();
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).quantification.ClearListsTablesFigures();
 
             Parallel.Invoke
             (
@@ -65,7 +61,7 @@ namespace ProteoformSuiteGUI
                 ((ProteoformSweet)MdiParent).proteoformFamilies.update_figures_of_merit();
             }
 
-            this.Cursor = Cursors.Default;
+            Cursor = Cursors.Default;
         }
 
         public DataGridView GetEERelationDGV()
@@ -78,7 +74,7 @@ namespace ProteoformSuiteGUI
             return dgv_EE_Peaks;
         }
 
-        public void ClearListsAndTables()
+        public void ClearListsTablesFigures()
         {
             SaveState.lollipop.proteoform_community.clear_ee();
 
@@ -100,32 +96,11 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FormatPeakListGridView(dgv_EE_Peaks, true);
             GraphEERelations();
             GraphEEPeaks();
-            relationUtility.updateFiguresOfMerit(SaveState.lollipop.ee_peaks);
+            update_figures_of_merit();
             dgv_EE_Peaks.CurrentCellDirtyStateChanged += EE_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event 
         }
 
-        #endregion Public Methods
-
-        #region Other Private Methods
-
-        private void GraphEEPeaks()
-        {
-            DisplayUtility.GraphDeltaMassPeaks(ct_EE_peakList, SaveState.lollipop.ee_peaks, "Peak Count", "Decoy Count", SaveState.lollipop.ee_relations, "Nearby Relations");
-        }
-
-        private void bt_compare_EE_Click(object sender, EventArgs e)
-        {
-            if (SaveState.lollipop.proteoform_community.has_e_proteoforms && SaveState.lollipop.theoretical_database.all_possible_ptmsets != null)
-            {
-                ClearListsAndTables();
-                run_the_gamut();
-                xMaxEE.Value = Convert.ToDecimal(SaveState.lollipop.ee_max_mass_difference);
-            }
-            else if (SaveState.lollipop.theoretical_database.all_possible_ptmsets == null) MessageBox.Show("Go back and load in a theoretical database.");
-            else MessageBox.Show("Go back and aggregate experimental proteoforms.");
-        }
-
-        private void InitializeParameterSet()
+        public void InitializeParameterSet()
         {
             yMaxEE.Minimum = 0;
             yMaxEE.Maximum = 1000;
@@ -170,6 +145,32 @@ namespace ProteoformSuiteGUI
             nUD_EE_Upper_Bound.Value = (decimal)SaveState.lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
         }
 
+        #endregion Public Methods
+
+        #region Other Private Methods
+
+        private void GraphEEPeaks()
+        {
+            DisplayUtility.GraphDeltaMassPeaks(ct_EE_peakList, SaveState.lollipop.ee_peaks, "Peak Count", "Decoy Count", SaveState.lollipop.ee_relations, "Nearby Relations");
+        }
+
+        private void bt_compare_EE_Click(object sender, EventArgs e)
+        {
+            if (SaveState.lollipop.proteoform_community.has_e_proteoforms && SaveState.lollipop.theoretical_database.all_possible_ptmsets != null)
+            {
+                ClearListsTablesFigures();
+                RunTheGamut();
+                xMaxEE.Value = Convert.ToDecimal(SaveState.lollipop.ee_max_mass_difference);
+            }
+            else if (SaveState.lollipop.theoretical_database.all_possible_ptmsets == null) MessageBox.Show("Go back and load in a theoretical database.");
+            else MessageBox.Show("Go back and aggregate experimental proteoforms.");
+        }
+
+        private void update_figures_of_merit()
+        {
+            relationUtility.updateFiguresOfMerit(SaveState.lollipop.ee_peaks, tb_totalAcceptedEERelations, tb_TotalEEPeaks, tb_max_accepted_fdr);
+        }
+
         #endregion Other Private Methods
 
         #region EE Peak List Private Methods
@@ -197,7 +198,7 @@ namespace ProteoformSuiteGUI
             relationUtility.peak_acceptability_change(dgv_EE_Peaks);
             dgv_EE_Peaks.Refresh();
             dgv_EE_Relations.Refresh();
-            relationUtility.updateFiguresOfMerit(SaveState.lollipop.ee_peaks);
+            update_figures_of_merit();
         }
 
         #endregion EE Peak List Private Methods
@@ -245,15 +246,15 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.min_peak_count_ee = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
             Parallel.ForEach(SaveState.lollipop.ee_peaks, p =>
             {
-                p.peak_accepted = p.peak_relation_group_count >= SaveState.lollipop.min_peak_count_ee;
-                Parallel.ForEach(p.grouped_relations, r => r.accepted = p.peak_accepted);
+                p.Accepted = p.peak_relation_group_count >= SaveState.lollipop.min_peak_count_ee;
+                Parallel.ForEach(p.grouped_relations, r => r.Accepted = p.Accepted);
             });
             dgv_EE_Peaks.Refresh();
             dgv_EE_Relations.Refresh();
             ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
             StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = SaveState.lollipop.min_peak_count_ee };
             ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
-            relationUtility.updateFiguresOfMerit(SaveState.lollipop.ee_peaks);
+            update_figures_of_merit();
         }
 
         private void xMaxEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs

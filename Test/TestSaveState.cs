@@ -1,4 +1,7 @@
-﻿using NUnit.Framework;
+﻿using Chemistry;
+using NetSerializer;
+using NUnit.Framework;
+using Proteomics;
 using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
@@ -6,37 +9,25 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using UsefulProteomicsDatabases;
 
 namespace Test
 {
     [TestFixture]
     class TestSaveState
     {
+
+        #region Setup
+
         [OneTimeSetUp]
         public void setup()
         {
             Environment.CurrentDirectory = TestContext.CurrentContext.TestDirectory;
         }
 
-        //[Test]
-        //public void save_and_load_grouped_components()
-        //{
-        //    //reading in test excel file, process raw components before testing neucode pairs.
-        //    SaveState.lol.correctionFactors = null;
-        //    SaveState.lol.raw_experimental_components.Clear();
-        //    Func<InputFile, IEnumerable<Component>> componentReader = c => new ExcelReader().read_components_from_xlsx(c, SaveState.lol.correctionFactors);
-        //    SaveState.lol.input_files.Add(new InputFile("UnitTestFiles\\noisy.xlsx", Labeling.NeuCode, Purpose.Identification));
+        #endregion Setup
 
-        //    string inFileId = SaveState.lol.input_files[0].UniqueId.ToString();
-
-        //    SaveState.lol.neucode_labeled = true;
-        //    SaveState.lol.process_raw_components();
-        //    Assert.AreEqual(224, SaveState.lol.raw_experimental_components.Count);
-        //    SaveState.lol.raw_experimental_components.Clear();
-
-        //    StringBuilder builder = SaveState.save_all();
-        //    SaveState.open_all(builder.ToString().Split(new string[] { Environment.NewLine }, StringSplitOptions.None));
-        //}
+        #region Methods and Settings
 
         [Test]
         public void restore_lollipop_settings()
@@ -90,6 +81,10 @@ namespace Test
             }
         }
 
+        #endregion Methods and Settings
+
+        #region Results Summary
+
         [Test]
         public void results_summary_doesnt_crash_without_initializing()
         {
@@ -111,6 +106,9 @@ namespace Test
             Assert.True(lines.Any(a => a.Contains("E1")));
         }
 
+        #endregion Results Summary
+
+
         [Test]
         public void basic_serialization()
         {
@@ -120,24 +118,325 @@ namespace Test
         }
 
         [Test]
-        public void intermediate_serialization() //Nested objects in ProteoformRelation and ProteoformCommunity are throwing this for a loop
+        public void save_and_load_grouped_components()
         {
-            //SaveState.lollipop = new Lollipop();
-            //TestProteoformFamilies.construct_two_families_with_potentially_colliding_theoreticals();
-            //SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
-            //SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            //reading in test excel file, process raw components before testing neucode pairs.
+            SaveState.lollipop = new Lollipop();
+            SaveState.lollipop.correctionFactors = null;
+            SaveState.lollipop.raw_experimental_components.Clear();
+            Func<InputFile, IEnumerable<Component>> componentReader = c => new ComponentReader().read_components_from_xlsx(c, SaveState.lollipop.correctionFactors);
+            InputFile noisy = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "noisy.xlsx"), Labeling.NeuCode, Purpose.Identification);
+            SaveState.lollipop.input_files.Add(noisy);
+
+            string inFileId = noisy.UniqueId.ToString();
+
+            SaveState.lollipop.neucode_labeled = true;
+            SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_experimental_components, Purpose.Identification);
+            SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
         }
 
         [Test]
-        public void db_serialization() // Here, too
+        public void single_pf_serialization()
         {
-            //SaveState.lollipop = new Lollipop();
-            //SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
-            //SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
-            //SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
-            //SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
-            //SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
-            //SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            SaveState.lollipop = new Lollipop();
+            Serializer ser = new Serializer(new Type[] { typeof(Proteoform) });
+            Proteoform exp = new Proteoform("");
+            using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "exp")))
+                ser.Serialize(file, exp);
+
+            Proteoform exp2;
+            using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "exp")))
+                exp2 = (Proteoform)ser.Deserialize(file);
         }
+
+        [Test]
+        public void single_epf_serialization()
+        {
+            SaveState.lollipop = new Lollipop();
+            Serializer ser = new Serializer(new Type[] { typeof(ExperimentalProteoform) });
+            ExperimentalProteoform exp = ConstructorsForTesting.ExperimentalProteoform("");
+            using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "exp")))
+                ser.Serialize(file, exp);
+
+            ExperimentalProteoform exp2;
+            using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "exp")))
+                exp2 = (ExperimentalProteoform)ser.Deserialize(file);
+        }
+
+        [Test]
+        public void single_adv_exp_serialization()
+        {
+            SaveState.lollipop = new Lollipop();
+            Serializer ser = new Serializer(new Type[] { typeof(ExperimentalProteoform) });
+            ExperimentalProteoform exp = ConstructorsForTesting.ExperimentalProteoform("", new Component(), new List<Component>(), new List<Component>(), true);
+            using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "exp")))
+                ser.Serialize(file, exp);
+
+            ExperimentalProteoform exp2;
+            using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "exp")))
+                exp2 = (ExperimentalProteoform)ser.Deserialize(file);
+        }
+
+        [Test]
+        public void single_quantitative_value_serialization()
+        {
+            SaveState.lollipop = new Lollipop();
+            Serializer ser = new Serializer(new Type[] { typeof(QuantitativeProteoformValues) });
+            Component root = new Component();
+            QuantitativeProteoformValues exp = new QuantitativeProteoformValues(ConstructorsForTesting.ExperimentalProteoform("", root, new List<Component> { root }, new List<Component>(), true));
+            using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "exp")))
+                ser.Serialize(file, exp);
+
+            QuantitativeProteoformValues exp2;
+            using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "exp")))
+                exp2 = (QuantitativeProteoformValues)ser.Deserialize(file);
+        }
+
+        [Test]
+        public void exp_serialization()
+        {
+            SaveState.lollipop = new Lollipop();
+            SaveState.lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[] { ConstructorsForTesting.ExperimentalProteoform("", new Component(), new List<Component>(), new List<Component>(), true) };
+            SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            SaveState.lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
+            SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            Assert.AreEqual(1, SaveState.lollipop.proteoform_community.experimental_proteoforms.Length);
+        }
+
+        [Test]
+        public void single_theo_serialization()
+        {
+            SaveState.lollipop = new Lollipop();
+            Serializer ser = new Serializer(new Type[]
+            {
+                typeof(TheoreticalProteoform),
+                typeof(List<ProteinWithGoTerms>),
+                typeof(List<Tuple<string,string>>),
+                typeof(Protein),
+                typeof(ModificationWithLocation),
+                typeof(ModificationWithMass),
+                typeof(ModificationWithMassAndCf),
+                typeof(List<DatabaseReference>),
+                typeof(List<Tuple<string,string>>),
+                typeof(Dictionary<int, List<Modification>>),
+                typeof(Dictionary<string, IList<string>>),
+                typeof(List<ProteolysisProduct>),
+                typeof(ChemicalFormulaTerminus),
+                typeof(List<double>)
+            });
+            TheoreticalProteoform exp = ConstructorsForTesting.make_a_theoretical();
+            using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "theo")))
+                ser.Serialize(file, exp);
+
+            TheoreticalProteoform exp2;
+            using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "theo")))
+                exp2 = (TheoreticalProteoform)ser.Deserialize(file);
+        }
+
+        [Test]
+        public void theo_serialization()
+        {
+            SaveState.lollipop = new Lollipop();
+            SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[] { ConstructorsForTesting.make_a_theoretical() };
+            SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
+            SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            Assert.AreEqual(1, SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length);
+        }
+
+        [Test]
+        public void relation_serialization()
+        {
+            SaveState.lollipop = new Lollipop();
+            SaveState.lollipop.proteoform_community.relations_in_peaks = new List<ProteoformRelation> { ConstructorsForTesting.make_relation(ConstructorsForTesting.ExperimentalProteoform("", new Component(), new List<Component>(), new List<Component>(), true), ConstructorsForTesting.make_a_theoretical(), ProteoformComparison.ExperimentalTheoretical, 100.01) };
+            SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            SaveState.lollipop.proteoform_community.relations_in_peaks.Clear();
+            SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            Assert.AreEqual(1, SaveState.lollipop.proteoform_community.relations_in_peaks.Count);
+        }
+
+        [Test]
+        public void family_serialization()
+        {
+            SaveState.lollipop = new Lollipop();
+            Serializer ser = new Serializer(new Type[] {
+                typeof(ProteoformFamily),
+                typeof(TheoreticalProteoform),
+                typeof(List<ProteinWithGoTerms>),
+                typeof(List<Tuple<string,string>>),
+                typeof(Protein),
+                typeof(ModificationWithLocation),
+                typeof(ModificationWithMass),
+                typeof(ModificationWithMassAndCf),
+                typeof(List<DatabaseReference>),
+                typeof(List<Tuple<string,string>>),
+                typeof(Dictionary<int, List<Modification>>),
+                typeof(Dictionary<string, IList<string>>),
+                typeof(List<ProteolysisProduct>),
+                typeof(ChemicalFormulaTerminus),
+                typeof(List<double>)
+            });
+            TestProteoformFamilies.construct_two_families_with_potentially_colliding_theoreticals();
+            using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "fam")))
+                ser.Serialize(file, SaveState.lollipop.proteoform_community.families[0]);
+
+            ProteoformFamily fam;
+            using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "fam")))
+                fam = (ProteoformFamily)ser.Deserialize(file);
+        }
+
+        [Test]
+        public void intermediate_serialization() //Nested objects in ProteoformRelation and ProteoformCommunity are throwing this for a loop
+        {
+            SaveState.lollipop = new Lollipop();
+            TestProteoformFamilies.construct_two_families_with_potentially_colliding_theoreticals();
+            SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+        }
+
+        [Test]
+        public void protein_dict_serialization()
+        {
+            Serializer ser = new Serializer(new Type[] { 
+                typeof(List<Protein>),
+                typeof(ModificationWithLocation),
+                typeof(ModificationWithMass),
+                typeof(ModificationWithMassAndCf),
+                typeof(List<DatabaseReference>),
+                typeof(List<Tuple<string,string>>),
+                typeof(Dictionary<int, List<Modification>>),
+                typeof(Dictionary<string, IList<string>>),
+                typeof(List<ProteolysisProduct>),
+            });
+
+            ModificationMotif motif;
+            ModificationMotif.TryGetMotif("K", out motif);
+            ModificationWithMass m = new ModificationWithMass("asdf", new Tuple<string, string>("", ""), motif, ModificationSites.K, 10.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
+            ModificationWithMassAndCf mcf = new ModificationWithMassAndCf("asdf", new Tuple<string, string>("", ""), motif, ModificationSites.K, new ChemicalFormula(), 10.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
+
+            List<Modification> nice = new List<Modification>
+            {
+                new Modification("", ""),
+                new ModificationWithLocation("fayk",null, null,ModificationSites.A,null,  null),
+                m,
+                mcf
+            };
+            var ok = ProteinDbLoader.LoadProteinXML(Path.Combine(TestContext.CurrentContext.TestDirectory, @"xml2.xml"), false, nice, false, null, out Dictionary<string, Modification> un);
+
+            List<Protein> prots;
+            using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "prots")))
+                ser.Serialize(file, ok);
+            using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "prots")))
+                prots = (List<Protein>)ser.Deserialize(file);
+        }
+
+        [Test]
+        public void proteinwithgo_dict_serialization()
+        {
+            Serializer ser = new Serializer(new Type[] {
+                typeof(List<ProteinWithGoTerms>),
+                typeof(ModificationWithLocation),
+                typeof(ModificationWithMass),
+                typeof(ModificationWithMassAndCf),
+                typeof(List<DatabaseReference>),
+                typeof(List<Tuple<string,string>>),
+                typeof(Dictionary<int, List<Modification>>),
+                typeof(Dictionary<string, IList<string>>),
+                typeof(List<ProteolysisProduct>),
+            });
+
+            ModificationMotif motif;
+            ModificationMotif.TryGetMotif("K", out motif);
+            ModificationWithMass m = new ModificationWithMass("asdf", new Tuple<string, string>("", ""), motif, ModificationSites.K, 10.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
+            ModificationWithMassAndCf mcf = new ModificationWithMassAndCf("asdf", new Tuple<string, string>("", ""), motif, ModificationSites.K, new ChemicalFormula(), 10.01, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "");
+
+            List<Modification> nice = new List<Modification>
+            {
+                new Modification("", ""),
+                new ModificationWithLocation("fayk",null, null,ModificationSites.A,null,  null),
+                m,
+                mcf
+            };
+            List<Protein> ok = ProteinDbLoader.LoadProteinXML(Path.Combine(TestContext.CurrentContext.TestDirectory, @"xml2.xml"), false, nice, false, null, out Dictionary<string, Modification> un);
+            ProteinWithGoTerms[] okok = TheoreticalProteoformDatabase.expand_protein_entries(ok.ToArray());
+
+            ProteinWithGoTerms[] prots;
+            using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "prots")))
+                ser.Serialize(file, okok);
+            using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "prots")))
+                prots = (ProteinWithGoTerms[])ser.Deserialize(file);
+        }
+
+        [Test]
+        public void ptmsets_serialization()
+        {
+            Serializer ser = new Serializer(new Type[] {
+                typeof(List<ModificationWithMass>),
+                typeof(ModificationWithLocation),
+                typeof(ModificationWithMass),
+                typeof(ModificationWithMassAndCf),
+                typeof(List<DatabaseReference>),
+                typeof(List<double>),
+                typeof(Dictionary<int, List<Modification>>),
+                typeof(Dictionary<string, IList<string>>),
+                typeof(List<string>),
+            });
+
+            Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "elements.txt"));
+            List<ModificationWithMass> mods = PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, @"ptmlist.txt")).OfType<ModificationWithMass>().ToList();
+
+            List<ModificationWithMass> asdf;
+            using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdf")))
+                ser.Serialize(file, mods);
+            using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdf")))
+                asdf = (List<ModificationWithMass>)ser.Deserialize(file);
+        }
+
+        //[Test]
+        //public void db_serialization()
+        //{
+        //    SaveState.lollipop = new Lollipop();
+        //    SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
+        //    SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
+        //    SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
+        //    SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+
+        //    Serializer ser = new Serializer(new Type[] {
+        //        typeof(TheoreticalProteoformDatabase),
+        //        typeof(TheoreticalProteoform),
+        //        typeof(List<ProteinWithGoTerms>),
+        //        typeof(List<Tuple<string,string>>),
+        //        typeof(Protein),
+        //        typeof(ModificationWithLocation),
+        //        typeof(ModificationWithMass),
+        //        typeof(ModificationWithMassAndCf),
+        //        typeof(List<DatabaseReference>),
+        //        typeof(List<Tuple<string,string>>),
+        //        typeof(Dictionary<int, List<Modification>>),
+        //        typeof(Dictionary<string, IList<string>>),
+        //        typeof(List<ProteolysisProduct>),
+        //        typeof(ChemicalFormulaTerminus),
+        //        typeof(List<double>)
+        //    });
+        //    using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "theodb")))
+        //        ser.Serialize(file, SaveState.lollipop.theoretical_database);
+
+        //    TheoreticalProteoformDatabase db;
+        //    using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "theodb")))
+        //        db = (TheoreticalProteoformDatabase)ser.Deserialize(file);
+        //}
+
+        //[Test]
+        //public void db_serialization()
+        //{
+        //    SaveState.lollipop = new Lollipop();
+        //    SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
+        //    SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
+        //    SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
+        //    SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+        //    SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+        //    SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+        //}
     }
 }

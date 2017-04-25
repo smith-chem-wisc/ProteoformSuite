@@ -119,7 +119,7 @@ namespace Test
 
             // in bounds lowest monoisotopic error
             SaveState.lollipop.neucode_labeled = true;
-            List<ExperimentalProteoform> pfs = SaveState.lollipop.createProteoforms(neucodes, neucodes,0);
+            List<ExperimentalProteoform> pfs = SaveState.lollipop.createProteoforms(neucodes, neucodes, 0);
             List<ExperimentalProteoform> vetted_quant = SaveState.lollipop.assignQuantificationComponents(pfs, quant_components);
             Assert.AreEqual(1, vetted_quant.Count);
             Assert.AreEqual(2, vetted_quant[0].aggregated_components.Count);

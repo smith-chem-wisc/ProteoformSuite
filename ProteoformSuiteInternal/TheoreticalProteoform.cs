@@ -12,7 +12,7 @@ namespace ProteoformSuiteInternal
 
         #region Public Properties
 
-        public IEnumerable<ProteinWithGoTerms> ExpandedProteinList { get; set; } = new List<ProteinWithGoTerms>();
+        public List<ProteinWithGoTerms> ExpandedProteinList { get; set; } = new List<ProteinWithGoTerms>();
         public string name { get; set; }
         public string description { get; set; }
         public string fragment { get; set; }
@@ -33,7 +33,7 @@ namespace ProteoformSuiteInternal
             : base(accession, unmodified_mass + ptm_set.mass, lysine_count, is_target)
         {
             this.linked_proteoform_references = new List<Proteoform>();
-            this.ExpandedProteinList = expanded_protein_list;
+            this.ExpandedProteinList = expanded_protein_list.ToList();
             this.accession = accession;
             this.description = description;
             this.name = String.Join(";", expanded_protein_list.Select(p => p.Name));
@@ -43,7 +43,7 @@ namespace ProteoformSuiteInternal
             this.sequence = expanded_protein_list.First().BaseSequence;
             this.goTerms = expanded_protein_list.SelectMany(p => p.GoTerms).ToList();
             goTerm_IDs = String.Join("; ", goTerms.Select(g => g.Id));
-            this.gene_name = new GeneName(expanded_protein_list.SelectMany(t => t.GeneNames));
+            this.gene_name = new GeneName(expanded_protein_list.SelectMany(t => t.GeneNames).ToList());
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
             if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);

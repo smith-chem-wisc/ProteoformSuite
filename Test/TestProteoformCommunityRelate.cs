@@ -477,11 +477,11 @@ namespace Test
 
             ProteoformRelation rel = edDictionary["fake_decoy_proteoform1"][0];
 
-            Assert.IsFalse(rel.accepted);
+            Assert.IsFalse(rel.Accepted);
             Assert.AreEqual("decoyProteoform1", rel.connected_proteoforms[1].accession);
-            Assert.AreEqual(0, rel.delta_mass);
+            Assert.AreEqual(0, rel.DeltaMass);
             Assert.IsEmpty(((TheoreticalProteoform)rel.connected_proteoforms[1]).fragment);
-            Assert.AreEqual(1, rel.nearby_relations.Count);  //shows that calculate_unadjusted_group_count works
+            Assert.AreEqual(1, rel.nearby_relations_count);  //shows that calculate_unadjusted_group_count works
             //Assert.AreEqual(1, rel.mass_difference_group.Count);  //I don't think we need this test anymore w/ way peaks are made -LVS
             Assert.AreEqual(-1, rel.lysine_count);
             Assert.AreEqual("T2", ((TheoreticalProteoform)rel.connected_proteoforms[1]).name);
@@ -489,7 +489,7 @@ namespace Test
             Assert.IsTrue(rel.outside_no_mans_land);
             Assert.IsNull(rel.peak);
             Assert.True(string.Equals("unmodified", ((TheoreticalProteoform)rel.connected_proteoforms[1]).ptm_description, StringComparison.CurrentCultureIgnoreCase));
-            Assert.AreEqual(1, rel.nearby_relations.Count);
+            Assert.AreEqual(1, rel.nearby_relations_count);
         }
 
         [Test]

@@ -9,20 +9,35 @@ namespace ProteoformSuiteGUI
 {
     public class RelationUtility
     {
+
+        #region Public Fields
+
         public event PeakAcceptabilityChangedEventHandler PeakAcceptabilityChanged;
 
         public delegate void PeakAcceptabilityChangedEventHandler(object sender, PeakAcceptabilityChangedEventArgs e);
+
+        #endregion Public Fields
+
+        #region Public Constructor
 
         public RelationUtility()
         {
             PeakAcceptabilityChanged += Relation_PeakAcceptabilityChanged;
         }
 
-        public Tuple<string, string, string> updateFiguresOfMerit(List<DeltaMassPeak> peaks)
+        #endregion Public Constructor
+
+        #region Public Methods
+
+        public void updateFiguresOfMerit(List<DeltaMassPeak> peaks, TextBox tb_accepted_relations, TextBox tb_total_peaks, TextBox tb_max_fdr)
         {
-            List<DeltaMassPeak> big_peaks = peaks.Where(p => p.peak_accepted).ToList();
-            string max = (big_peaks.Count > 0) ? Math.Round(big_peaks.Max(p => p.peak_group_fdr), 3).ToString() : "";
-            return new Tuple<string, string, string>(big_peaks.Select(p => p.grouped_relations.Count).Sum().ToString(), big_peaks.Count.ToString(), max);
+            List<DeltaMassPeak> big_peaks = peaks.Where(p => p.Accepted).ToList();
+            string max_fdr = (big_peaks.Count > 0) ? 
+                Math.Round(big_peaks.Max(p => p.peak_group_fdr), 3).ToString() : 
+                "";
+            tb_max_fdr.Text = max_fdr;
+            tb_accepted_relations.Text = big_peaks.Sum(p => p.grouped_relations.Count(r => r.Accepted)).ToString();
+            tb_total_peaks.Text = big_peaks.Count.ToString();
         }
 
         public void peak_acceptability_change(DataGridView dgv)
@@ -47,6 +62,10 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        #endregion Public Methods
+
+        #region Protected Methods
+
         protected virtual void ONEAcceptibilityChanged(PeakAcceptabilityChangedEventArgs e)
         {
             if (PeakAcceptabilityChanged != null) Relation_PeakAcceptabilityChanged(this, e);
@@ -54,8 +73,11 @@ namespace ProteoformSuiteGUI
 
         protected void Relation_PeakAcceptabilityChanged(object sender, PeakAcceptabilityChangedEventArgs e)
         {
-            Parallel.ForEach(SaveState.lollipop.et_relations.Where(p => e.Peak.grouped_relations.Contains(p)), pRelation => pRelation.accepted = e.IsPeakAcceptable);
-            Parallel.ForEach(SaveState.lollipop.ee_relations.Where(p => e.Peak.grouped_relations.Contains(p)), pRelation => pRelation.accepted = e.IsPeakAcceptable);
+            Parallel.ForEach(SaveState.lollipop.et_relations.Where(p => e.Peak.grouped_relations.Contains(p)), pRelation => pRelation.Accepted = e.IsPeakAcceptable);
+            Parallel.ForEach(SaveState.lollipop.ee_relations.Where(p => e.Peak.grouped_relations.Contains(p)), pRelation => pRelation.Accepted = e.IsPeakAcceptable);
         }
+
+        #endregion Protected Methods
+
     }
 }

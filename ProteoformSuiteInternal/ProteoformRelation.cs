@@ -23,37 +23,40 @@ namespace ProteoformSuiteInternal
     //closer to the picture of the graph, in which we often say "deltaM" colloquially, whereas we tend to say "mass difference" when we're
     //referring to an individual value.
     [Serializable]
-    public class ProteoformRelation
+    public class ProteoformRelation : IMassDifference
     {
 
         #region Fields
 
         private static int instanceCounter = 0;
-        public int instanceId;
         public Proteoform[] connected_proteoforms = new Proteoform[2];
-        public ProteoformComparison relation_type;
+        public PtmSet candidate_ptmset = null;
+        public PtmSet represented_ptmset = null;
 
         [NonSerialized]
-        public PtmSet candidate_ptmset = null;
-        
+        private DeltaMassPeak _peak;
+
         [NonSerialized]
-        public PtmSet represented_ptmset = null;
+        private List<ProteoformRelation> _nearby_relations;
 
         #endregion Fields
 
         #region Public Properties
 
-        public double delta_mass { get; set; }
-        public DeltaMassPeak peak { get; set; }
-        public List<ProteoformRelation> nearby_relations { get; set; } // count is the "running sum"
+        public int InstanceId { get; set; }
+        public double DeltaMass { get; set; }
+        public DeltaMassPeak peak { get { return _peak; } set { _peak = value; } }
+        public List<ProteoformRelation> nearby_relations { get { return _nearby_relations; } set { _nearby_relations = value; } }
+        public int nearby_relations_count { get; set; } // count is the "running sum"; relations are not saved
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
+        public ProteoformComparison RelationType { get; set; }
 
         /// <summary>
         /// Is this relation in an accepted peak?
         /// ProteoformRelation.accepted may not be the same as DeltaMassPeak.peak_accepted, which denotes whether the peak is accepted.
         /// </summary>
-        public bool accepted { get; set; }
+        public bool Accepted { get; set; }
 
         #endregion Public Properties
 
@@ -61,11 +64,11 @@ namespace ProteoformSuiteInternal
 
         public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass)
         {
-            this.connected_proteoforms[0] = pf1;
-            this.connected_proteoforms[1] = pf2;
-            this.relation_type = relation_type;
-            this.delta_mass = delta_mass;
-            instanceId = instanceCounter;
+            connected_proteoforms[0] = pf1;
+            connected_proteoforms[1] = pf2;
+            RelationType = relation_type;
+            DeltaMass = delta_mass;
+            InstanceId = instanceCounter;
             lock (SaveState.lollipop) instanceCounter += 1; //Not thread safe
 
             if (SaveState.lollipop.neucode_labeled)
@@ -89,19 +92,6 @@ namespace ProteoformSuiteInternal
                 Math.Abs(delta_mass - Math.Truncate(delta_mass)) <= SaveState.lollipop.no_mans_land_lowerBound;
         }
 
-        public ProteoformRelation(ProteoformRelation relation)
-        {
-            connected_proteoforms = relation.connected_proteoforms.ToArray();
-            relation_type = relation.relation_type;
-            delta_mass = relation.delta_mass;
-            instanceId = instanceCounter;
-            lock (SaveState.lollipop) instanceCounter += 1; //Not thread safe
-
-            peak = relation.peak;
-            outside_no_mans_land = relation.outside_no_mans_land;
-            nearby_relations = relation.nearby_relations;
-        }
-
         #endregion Public Constructors
 
         #region Public Methods
@@ -111,23 +101,27 @@ namespace ProteoformSuiteInternal
             double peak_width_base = typeof(TheoreticalProteoform).IsAssignableFrom(all_ordered_relations[0].connected_proteoforms[1].GetType()) ?
                 SaveState.lollipop.peak_width_base_et :
                 SaveState.lollipop.peak_width_base_ee;
-            double lower_limit_of_peak_width = delta_mass - peak_width_base / 2;
-            double upper_limit_of_peak_width = delta_mass + peak_width_base / 2;
-            int idx = ordered_relation_ids.IndexOf(instanceId);
+            double lower_limit_of_peak_width = DeltaMass - peak_width_base / 2;
+            double upper_limit_of_peak_width = DeltaMass + peak_width_base / 2;
+            int idx = ordered_relation_ids.IndexOf(InstanceId);
             List<ProteoformRelation> within_range = new List<ProteoformRelation> { this };
             int curr_idx = idx - 1;
-            while (curr_idx >= 0 && lower_limit_of_peak_width <= all_ordered_relations[curr_idx].delta_mass)
+            while (curr_idx >= 0 && lower_limit_of_peak_width <= all_ordered_relations[curr_idx].DeltaMass)
             {
                 within_range.Add(all_ordered_relations[curr_idx]);
                 curr_idx--;
             }
             curr_idx = idx + 1;
-            while (curr_idx < all_ordered_relations.Count && all_ordered_relations[curr_idx].delta_mass <= upper_limit_of_peak_width)
+            while (curr_idx < all_ordered_relations.Count && all_ordered_relations[curr_idx].DeltaMass <= upper_limit_of_peak_width)
             {
                 within_range.Add(all_ordered_relations[curr_idx]);
                 curr_idx++;
             }
-            lock (this) nearby_relations = within_range;
+            lock (this)
+            {
+                nearby_relations = within_range;
+                nearby_relations_count = within_range.Count;
+            }
             return nearby_relations;
         }
 
@@ -140,24 +134,11 @@ namespace ProteoformSuiteInternal
                 peak.calculate_fdr(SaveState.lollipop.ef_relations);
         }
 
-        public IEnumerable<PtmSet> nearestPTMs(double dMass, ProteoformComparison relation_type)
-        {
-            foreach (PtmSet set in SaveState.lollipop.theoretical_database.all_possible_ptmsets)
-            {
-                bool valid_or_no_unmodified = set.ptm_combination.Count == 1 || !set.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0);
-                bool within_addition_tolerance = relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy ?
-                    Math.Abs(dMass - set.mass) <= 0.05 :
-                    Math.Abs(Math.Abs(dMass) - Math.Abs(set.mass)) <= 0.05; //In Daltons. This is a liberal threshold because these are filtered upon actual assignment
-                if (valid_or_no_unmodified && within_addition_tolerance)
-                    yield return set;
-            }
-        }
-
         public override bool Equals(object obj)
         {
             ProteoformRelation r2 = obj as ProteoformRelation;
             return r2 != null &&
-                (instanceId == r2.instanceId ||
+                (InstanceId == r2.InstanceId ||
                 connected_proteoforms[0] == r2.connected_proteoforms[1] && connected_proteoforms[1] == r2.connected_proteoforms[0] ||
                 connected_proteoforms[0] == r2.connected_proteoforms[0] && connected_proteoforms[1] == r2.connected_proteoforms[1]);
         }

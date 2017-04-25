@@ -9,14 +9,14 @@ using Chemistry;
 
 namespace ProteoformSuiteGUI
 {
-    public partial class ProteoformFamilies : Form
+    public partial class ProteoformFamilies : Form, ISweetForm
     {
         #region Public Constructor
 
         public ProteoformFamilies()
         {
             InitializeComponent();
-            initialize_settings();
+            InitializeParameterSet();
         }
 
         #endregion
@@ -25,15 +25,15 @@ namespace ProteoformSuiteGUI
 
         public void initialize_every_time()
         {
-            this.tb_familyBuildFolder.Text = SaveState.lollipop.family_build_folder_path;
-            this.nud_decimalRoundingLabels.Value = Convert.ToDecimal(SaveState.lollipop.deltaM_edge_display_rounding);
-            this.cb_buildAsQuantitative.Enabled = SaveState.lollipop.qVals.Count > 0;
-            this.cb_buildAsQuantitative.Checked = false;
-            this.cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(ProteoformCommunity.preferred_gene_label);
-            this.cb_geneCentric.Checked = ProteoformCommunity.gene_centric_families;
+            tb_familyBuildFolder.Text = SaveState.lollipop.family_build_folder_path;
+            nud_decimalRoundingLabels.Value = Convert.ToDecimal(SaveState.lollipop.deltaM_edge_display_rounding);
+            cb_buildAsQuantitative.Enabled = SaveState.lollipop.qVals.Count > 0;
+            cb_buildAsQuantitative.Checked = false;
+            cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(ProteoformCommunity.preferred_gene_label);
+            cb_geneCentric.Checked = ProteoformCommunity.gene_centric_families;
         }
 
-        public void initialize_settings()
+        public void InitializeParameterSet()
         {
             //Initialize display options
             cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
@@ -64,42 +64,50 @@ namespace ProteoformSuiteGUI
             tb_likelyCleavages.TextChanged -= tb_likelyCleavages_TextChanged;
             tb_likelyCleavages.Text = String.Join(",", SaveState.lollipop.likely_cleavages);
             tb_likelyCleavages.TextChanged += tb_likelyCleavages_TextChanged;
-        }
 
-        public void construct_families()
-        {
             initialize_every_time();
-            if (SaveState.lollipop.proteoform_community.families.Count <= 0 && SaveState.lollipop.proteoform_community.has_e_proteoforms) run_the_gamut();
         }
-
 
         public DataGridView GetDGV()
         {
             return dgv_main;
         }
 
-        public void run_the_gamut()
+        public bool ReadyToRunTheGamut()
         {
-            this.Cursor = Cursors.WaitCursor;
+            return SaveState.lollipop.proteoform_community.families.Count <= 0 && SaveState.lollipop.proteoform_community.has_e_proteoforms;
+        }
+
+        public void RunTheGamut()
+        {
+            Cursor = Cursors.WaitCursor;
             SaveState.lollipop.proteoform_community.families.Clear();
             SaveState.lollipop.proteoform_community.construct_families();
             fill_proteoform_families("");
             update_figures_of_merit();
-            this.Cursor = Cursors.Default;
+            Cursor = Cursors.Default;
         }
 
-        public void ClearListsAndTables()
+        public void FillTablesAndCharts()
+        {
+            fill_proteoform_families("");
+            update_figures_of_merit();
+        }
+
+        public void ClearListsTablesFigures()
         {
             SaveState.lollipop.proteoform_community.clear_families();
             dgv_main.DataSource = null;
             dgv_main.Rows.Clear();
+            dgv_proteoform_family_members.DataSource = null;
+            dgv_proteoform_family_members.Rows.Clear();
         }
 
         public void update_figures_of_merit()
         {
-            this.tb_TotalFamilies.Text = SaveState.lollipop.proteoform_community.families.Count(f => f.proteoforms.Count > 1).ToString();
-            this.tb_IdentifiedFamilies.Text = SaveState.lollipop.proteoform_community.families.Count(f => f.theoretical_proteoforms.Count > 0).ToString();
-            this.tb_singleton_count.Text = SaveState.lollipop.proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString();
+            tb_TotalFamilies.Text = SaveState.lollipop.proteoform_community.families.Count(f => f.proteoforms.Count > 1).ToString();
+            tb_IdentifiedFamilies.Text = SaveState.lollipop.proteoform_community.families.Count(f => f.theoretical_proteoforms.Count > 0).ToString();
+            tb_singleton_count.Text = SaveState.lollipop.proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString();
         }
 
         #endregion Public Methods
@@ -281,8 +289,8 @@ namespace ProteoformSuiteGUI
 
         private void Families_update_Click(object sender, EventArgs e)
         {
-            ClearListsAndTables();
-            run_the_gamut();
+            ClearListsTablesFigures();
+            RunTheGamut();
         }
 
         private void nud_decimalRoundingLabels_ValueChanged(object sender, EventArgs e)
