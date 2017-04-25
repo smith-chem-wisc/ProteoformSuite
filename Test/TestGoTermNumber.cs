@@ -1,10 +1,10 @@
 ﻿using NUnit.Framework;
-using System;
-using Proteomics;
 using ProteoformSuiteInternal;
+using Proteomics;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace Test
 {
@@ -111,14 +111,14 @@ namespace Test
             u.family = h;
             e2.family = h;
             List<ExperimentalProteoform> fake_significant = new List<ExperimentalProteoform> { e1 };
-            List<ProteinWithGoTerms> significant_proteins = Lollipop.getInducedOrRepressedProteins(fake_significant, 0, 1, 0);
-            List<GoTermNumber> gtn = Lollipop.getGoTermNumbers(significant_proteins, new List<ProteinWithGoTerms> { p1, p2, p3 });
+            List<ProteinWithGoTerms> significant_proteins = SaveState.lollipop.getInducedOrRepressedProteins(fake_significant, 0, 1, 0);
+            List<GoTermNumber> gtn = SaveState.lollipop.getGoTermNumbers(significant_proteins, new List<ProteinWithGoTerms> { p1, p2, p3 });
             Assert.AreEqual(2, significant_proteins.Count);
             Assert.AreEqual(1, gtn.Count);
             Assert.AreEqual("1", gtn.First().Id);
             Assert.AreEqual(0 - (decimal)Math.Log(2d / 3d, 2), gtn.First().log_odds_ratio);
 
-            List<ProteoformFamily> fams = Lollipop.getInterestingFamilies(gtn, families);
+            List<ProteoformFamily> fams = SaveState.lollipop.getInterestingFamilies(gtn, families);
             Assert.AreEqual(1, fams.Count);
             Assert.AreEqual(2, fams[0].theoretical_proteoforms.Count);
         }
@@ -167,16 +167,16 @@ namespace Test
             e1.family = f;
             u.family = h;
             e2.family = h;
-            Lollipop.inducedOrRepressedProteins = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
-            Lollipop.allTheoreticalProteins = true;
-            Lollipop.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
-            Lollipop.GO_analysis();
-            Assert.AreEqual(2, Lollipop.inducedOrRepressedProteins.Count);
-            Assert.AreEqual(1, Lollipop.goTermNumbers.Count);
-            Assert.AreEqual("1", Lollipop.goTermNumbers.First().Id);
-            Assert.AreEqual(0 - (decimal)Math.Log(2d / 3d, 2), Lollipop.goTermNumbers.First().log_odds_ratio);
+            SaveState.lollipop.inducedOrRepressedProteins = SaveState.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
+            SaveState.lollipop.allTheoreticalProteins = true;
+            SaveState.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
+            SaveState.lollipop.GO_analysis();
+            Assert.AreEqual(2, SaveState.lollipop.inducedOrRepressedProteins.Count);
+            Assert.AreEqual(1, SaveState.lollipop.goTermNumbers.Count);
+            Assert.AreEqual("1", SaveState.lollipop.goTermNumbers.First().Id);
+            Assert.AreEqual(0 - (decimal)Math.Log(2d / 3d, 2), SaveState.lollipop.goTermNumbers.First().log_odds_ratio);
 
-            List<ProteoformFamily> fams = Lollipop.getInterestingFamilies(Lollipop.goTermNumbers, families);
+            List<ProteoformFamily> fams = SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.goTermNumbers, families);
             Assert.AreEqual(1, fams.Count);
             Assert.AreEqual(2, fams[0].theoretical_proteoforms.Count);
         }
@@ -186,7 +186,7 @@ namespace Test
             ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ExperimentalExperimental, 0);
             DeltaMassPeak ppp = new DeltaMassPeak(pp, new List<ProteoformRelation> { pp });
             pp.peak = ppp;
-            ppp.peak_accepted = true;
+            ppp.Accepted = true;
             p1.relationships.Add(pp);
             p2.relationships.Add(pp);
         }
@@ -235,17 +235,17 @@ namespace Test
             e1.family = f;
             u.family = h;
             e2.family = h;
-            Lollipop.inducedOrRepressedProteins = Lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
-            Lollipop.allTheoreticalProteins = true;
-            Lollipop.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
-            Lollipop.backgroundProteinsList = Path.Combine(TestContext.CurrentContext.TestDirectory, "test_protein_list.txt");
-            Lollipop.GO_analysis();
-            Assert.AreEqual(2, Lollipop.inducedOrRepressedProteins.Count);
-            Assert.AreEqual(1, Lollipop.goTermNumbers.Count);
-            Assert.AreEqual("1", Lollipop.goTermNumbers.First().Id);
-            Assert.AreEqual(0 - (decimal)Math.Log(2d / 3d, 2), Lollipop.goTermNumbers.First().log_odds_ratio);
+            SaveState.lollipop.inducedOrRepressedProteins = SaveState.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
+            SaveState.lollipop.allTheoreticalProteins = true;
+            SaveState.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
+            SaveState.lollipop.backgroundProteinsList = Path.Combine(TestContext.CurrentContext.TestDirectory, "test_protein_list.txt");
+            SaveState.lollipop.GO_analysis();
+            Assert.AreEqual(2, SaveState.lollipop.inducedOrRepressedProteins.Count);
+            Assert.AreEqual(1, SaveState.lollipop.goTermNumbers.Count);
+            Assert.AreEqual("1", SaveState.lollipop.goTermNumbers.First().Id);
+            Assert.AreEqual(0 - (decimal)Math.Log(2d / 3d, 2), SaveState.lollipop.goTermNumbers.First().log_odds_ratio);
 
-            List<ProteoformFamily> fams = Lollipop.getInterestingFamilies(Lollipop.goTermNumbers, families);
+            List<ProteoformFamily> fams = SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.goTermNumbers, families);
             Assert.AreEqual(1, fams.Count);
             Assert.AreEqual(2, fams[0].theoretical_proteoforms.Count);
         }

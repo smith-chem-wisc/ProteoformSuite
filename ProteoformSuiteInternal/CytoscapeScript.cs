@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using Proteomics;
 using System.IO;
+using System.Linq;
+using System.Xml;
 
 namespace ProteoformSuiteInternal
 {
@@ -39,8 +36,8 @@ namespace ProteoformSuiteInternal
                 families = get_families(stuff.OfType<GoTerm>(), all_families).Distinct().ToList();
             if (families.Count <= 0 && typeof(GoTermNumber) == stuff[0].GetType())
                 families = get_families(stuff.OfType<GoTermNumber>(), all_families).Distinct().ToList();
-            if (families.Count <= 0 && typeof(ExperimentalProteoform.quantitativeValues).IsAssignableFrom(stuff[0].GetType()))
-                families = get_families(stuff.OfType<ExperimentalProteoform.quantitativeValues>(), all_families).Distinct().ToList();
+            if (families.Count <= 0 && typeof(QuantitativeProteoformValues).IsAssignableFrom(stuff[0].GetType()))
+                families = get_families(stuff.OfType<QuantitativeProteoformValues>(), all_families).Distinct().ToList();
             if (families.Count <= 0) return "Selected objects were not recognized.";
 
             return write_script(families, all_families, 
@@ -78,7 +75,7 @@ namespace ProteoformSuiteInternal
                    select f;
         }
 
-        private static IEnumerable<ProteoformFamily> get_families(IEnumerable<ExperimentalProteoform.quantitativeValues> qvals, List<ProteoformFamily> all_families)
+        private static IEnumerable<ProteoformFamily> get_families(IEnumerable<QuantitativeProteoformValues> qvals, List<ProteoformFamily> all_families)
         {
             return from f in all_families
                    from e in f.experimental_proteoforms
@@ -194,9 +191,9 @@ namespace ProteoformSuiteInternal
             string edge_rows = "";
             foreach (ProteoformRelation r in families.SelectMany(f => f.relations).Distinct())
             {
-                string delta_mass = Math.Round(r.peak.peak_deltaM_average, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
+                string delta_mass = Math.Round(r.peak.DeltaMass, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
                 //if (edge_label == Lollipop.edge_labels[1] && r.represented_modification == null) continue;
-                bool append_ptmlist = r.represented_ptmset != null && (r.relation_type != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.id != "Unmodified");
+                bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.id != "Unmodified");
                 edge_rows += String.Join("\t", new List<string>
                 {
                     get_proteoform_shared_name(r.connected_proteoforms[0], node_label, double_rounding),
@@ -236,7 +233,7 @@ namespace ProteoformSuiteInternal
             IEnumerable<TheoreticalProteoform> theoreticals, bool gene_centric_families, string preferred_gene_label)
         {
             string tsv_header = "accession\t" + proteoform_type_header + "\t" + size_header + "\t" + tooltip_header;
-            if (quantitative) tsv_header += "\t" + Lollipop.numerator_condition + "\t" + Lollipop.denominator_condition + "\t" + significant_header + "\t" + piechart_header;
+            if (quantitative) tsv_header += "\t" + SaveState.lollipop.numerator_condition + "\t" + SaveState.lollipop.denominator_condition + "\t" + significant_header + "\t" + piechart_header;
 
             string node_rows = "";
             foreach (ExperimentalProteoform p in families.SelectMany(f => f.experimental_proteoforms))
@@ -259,7 +256,7 @@ namespace ProteoformSuiteInternal
                     "Total Intensity = " + total_intensity.ToString(),
                     "Aggregated Component Count = " + p.aggregated_components.Count.ToString(),
                 });
-                if (Lollipop.neucode_labeled) node_rows += "; Lysine Count = " + p.lysine_count;
+                if (SaveState.lollipop.neucode_labeled) node_rows += "; Lysine Count = " + p.lysine_count;
                 if (quantitative && p.quant.intensitySum > 0)
                 {
                     node_rows += "\\n\\nQuantitation Results:";
@@ -268,8 +265,8 @@ namespace ProteoformSuiteInternal
                         "Log2FC = " + p.quant.logFoldChange.ToString(),
                         "Variance = " + p.quant.variance.ToString(),
                         "Significant = " + p.quant.significant.ToString(),
-                        Lollipop.numerator_condition + " Quantitative Component Count = " + p.lt_quant_components.ToString(),
-                        Lollipop.denominator_condition + " Quantitative Component Count = " + p.hv_quant_components.ToString(),
+                        SaveState.lollipop.numerator_condition + " Quantitative Component Count = " + p.lt_quant_components.ToString(),
+                        SaveState.lollipop.denominator_condition + " Quantitative Component Count = " + p.hv_quant_components.ToString(),
                     });
                 }
 
@@ -299,7 +296,7 @@ namespace ProteoformSuiteInternal
             {
                 ExperimentalProteoform e = (ExperimentalProteoform)p;
                 string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + e.accession;
-                if (node_label == Lollipop.node_labels[1] && e.linked_proteoform_references != null && e.linked_proteoform_references.Count > 0) name += " " + (e.linked_proteoform_references.First.Value as TheoreticalProteoform).accession + " " + (e.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => ptm.modification.id)));
+                if (node_label == Lollipop.node_labels[1] && e.linked_proteoform_references != null && e.linked_proteoform_references.Count > 0) name += " " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession + " " + (e.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => ptm.modification.id)));
                 return name;
             }
 
@@ -316,7 +313,7 @@ namespace ProteoformSuiteInternal
 
         private static string get_piechart_string(string color_scheme)
         {
-            return "piechart: attributelist = \"" + Lollipop.numerator_condition + "," + Lollipop.denominator_condition +
+            return "piechart: attributelist = \"" + SaveState.lollipop.numerator_condition + "," + SaveState.lollipop.denominator_condition +
                 "\" colorlist = \"" + color_schemes[color_scheme][0] + "," + color_schemes[color_scheme][3] +
                 "\" labellist = \",\"";
         }

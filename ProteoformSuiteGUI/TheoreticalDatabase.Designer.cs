@@ -59,6 +59,7 @@
             this.ckbx_Carbam = new System.Windows.Forms.CheckBox();
             this.ckbx_OxidMeth = new System.Windows.Forms.CheckBox();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
+            this.cb_limitLargePtmSets = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -81,6 +82,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.cb_limitLargePtmSets);
             this.splitContainer1.Panel1.Controls.Add(this.label8);
             this.splitContainer1.Panel1.Controls.Add(this.tb_totalTheoreticalProteoforms);
             this.splitContainer1.Panel1.Controls.Add(this.label7);
@@ -449,6 +451,19 @@
             this.dgv_Database.Size = new System.Drawing.Size(903, 737);
             this.dgv_Database.TabIndex = 0;
             // 
+            // cb_limitLargePtmSets
+            // 
+            this.cb_limitLargePtmSets.AutoSize = true;
+            this.cb_limitLargePtmSets.Checked = true;
+            this.cb_limitLargePtmSets.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_limitLargePtmSets.Location = new System.Drawing.Point(217, 511);
+            this.cb_limitLargePtmSets.Name = "cb_limitLargePtmSets";
+            this.cb_limitLargePtmSets.Size = new System.Drawing.Size(216, 17);
+            this.cb_limitLargePtmSets.TabIndex = 51;
+            this.cb_limitLargePtmSets.Text = "Limit Triples and Larger (Recommended)";
+            this.cb_limitLargePtmSets.UseVisualStyleBackColor = true;
+            this.cb_limitLargePtmSets.CheckedChanged += new System.EventHandler(this.cb_limitLargePtmSets_CheckedChanged);
+            // 
             // TheoreticalDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -509,5 +524,6 @@
         private System.Windows.Forms.TextBox tb_modTypesToExclude;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox tb_totalTheoreticalProteoforms;
+        private System.Windows.Forms.CheckBox cb_limitLargePtmSets;
     }
 }
