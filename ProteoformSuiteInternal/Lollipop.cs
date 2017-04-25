@@ -604,15 +604,6 @@ namespace ProteoformSuiteInternal
                 if (mod_dict.TryGetValue(nice.id, out IList<Modification> val)) val.Add(nice);
                 else mod_dict.Add(nice.id, new List<Modification> { nice });
             }
-
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\ptms.txt"))
-            {
-                foreach (ModificationWithLocation ptm in all_modifications)
-                {
-                    writer.WriteLine(ptm.id);
-                }
-            }
-
             return mod_dict;
         }
 
