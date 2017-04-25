@@ -216,7 +216,7 @@ namespace ProteoformSuiteInternal
                 //match each td proteoform group to the closest theoretical w/ same accession and modifications. (if no match always make relationship with unmodified)
                 if (theoreticals.Count > 0)
                 {
-
+                    //if accession the same, or uniprot ID the same, or same sequence (take into account cleaved methionine)
                     List<ProteoformRelation> possible_ttd_relations = theoreticals.Where(t => t.accession.Split('_')[0] == topdown.accession.Split('_')[0] || t.name.Split(';').Contains(topdown.uniprot_id) || (topdown.sequence == t.sequence && topdown.start_index == t.begin && topdown.stop_index == t.end)
                     || (topdown.sequence[0] == 'M' && topdown.sequence.Substring(1, topdown.sequence.Length -1) == t.sequence && t.begin == 2 && t.end == topdown.stop_index))
                     .Select(t => new ProteoformRelation(t, topdown, ProteoformComparison.TheoreticalTopDown, topdown.theoretical_mass - t.modified_mass)).ToList();
@@ -247,7 +247,8 @@ namespace ProteoformSuiteInternal
                         td_relations.Add(best_ttd_relation);
                     }
                     else
-                    {
+                    {   //need to remove ETD relations of td that couldn't be matched with a theoretical --> no gene name! 
+                        //shows Warning message in TopDown GUI if no TTD relations for the accession. 
                         td_relations.RemoveAll(p => p.connected_proteoforms.Contains(topdown));
                     }
                 }

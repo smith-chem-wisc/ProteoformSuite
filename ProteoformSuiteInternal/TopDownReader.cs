@@ -15,7 +15,7 @@ namespace ProteoformSuiteInternal
             List<TopDownHit> td_hits = new List<TopDownHit>();
 
             List<List<string>> cells = ExcelReader.get_cell_strings(file, true);
-            //get ptms on proteoform
+            //get ptms on proteoform -- check for mods. IF not in database, make new topdown mod, show Warning message. 
             foreach (List<string> cellStrings in cells)
             {
                 TopDownResultType tdResultType = (cellStrings[15] == "BioMarker") ? TopDownResultType.Biomarker : TopDownResultType.TightAbsoluteMass;
@@ -63,7 +63,7 @@ namespace ProteoformSuiteInternal
                         else
                         {
                             ModificationMotif motif;
-                            ModificationMotif.TryGetMotif(cellStrings[4][position - 1].ToString(), out motif);
+                            ModificationMotif.TryGetMotif(cellStrings[4][position].ToString(), out motif);
                             Ptm new_ptm = topdown_ptms.Where(m => m.modification.motif.Motif == motif.Motif && m.modification.id == resid).FirstOrDefault();
                             if (new_ptm != null)
                             {
