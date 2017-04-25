@@ -45,6 +45,7 @@ namespace Test
         [Test]
         public void testTheoreticalDatabaseCreateWithPTMs()
         {
+            SaveState.lollipop = new Lollipop();
             SaveState.lollipop.methionine_oxidation = false;
             SaveState.lollipop.carbamidomethylation = true;
             SaveState.lollipop.methionine_cleavage = true;
@@ -82,6 +83,7 @@ namespace Test
         [Test]
         public void testTheoreticalDatabaseCreateWithoutPTMs()
         {
+            SaveState.lollipop = new Lollipop();
             SaveState.lollipop.methionine_oxidation = false;
             SaveState.lollipop.carbamidomethylation = true;
             SaveState.lollipop.methionine_cleavage = true;
@@ -117,6 +119,7 @@ namespace Test
         [Test]
         public void testTheoreticalWithAndWithoutVariableMethionineOx()
         {
+            SaveState.lollipop = new Lollipop();
             SaveState.lollipop.methionine_oxidation = false;
             SaveState.lollipop.mod_types_to_exclude = SaveState.lollipop.mod_types_to_exclude.Concat(new string[] { "Uniprot" }).ToArray();
             SaveState.lollipop.methionine_cleavage = true;
@@ -145,6 +148,7 @@ namespace Test
         [Test]
         public void testTheoreticalWithMoreMethionineOx()
         {
+            SaveState.lollipop = new Lollipop();
             SaveState.lollipop.methionine_oxidation = true;
             SaveState.lollipop.methionine_cleavage = true;
             SaveState.lollipop.max_ptms = 0;
