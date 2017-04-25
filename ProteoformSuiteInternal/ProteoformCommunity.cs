@@ -217,8 +217,8 @@ namespace ProteoformSuiteInternal
                 if (theoreticals.Count > 0)
                 {
 
-                    List<ProteoformRelation> possible_ttd_relations = theoreticals.Where(t => t.accession.Split('_')[0] == topdown.accession.Split('_')[0] || t.name.Split(';').Contains(topdown.uniprot_id))// || (topdown.sequence == t.sequence && topdown.start_index == t.begin && topdown.stop_index == t.end)
-                   // || (topdown.sequence[0] == 'M' && topdown.sequence.Substring(1, topdown.sequence.Length - 1) == t.sequence && t.begin == 2 && t.end == topdown.stop_index))
+                    List<ProteoformRelation> possible_ttd_relations = theoreticals.Where(t => t.accession.Split('_')[0] == topdown.accession.Split('_')[0] || t.name.Split(';').Contains(topdown.uniprot_id) || (topdown.sequence == t.sequence && topdown.start_index == t.begin && topdown.stop_index == t.end)
+                    || (topdown.sequence[0] == 'M' && topdown.sequence.Substring(1, topdown.sequence.Length -1) == t.sequence && t.begin == 2 && t.end == topdown.stop_index))
                     .Select(t => new ProteoformRelation(t, topdown, ProteoformComparison.TheoreticalTopDown, topdown.theoretical_mass - t.modified_mass)).ToList();
                     ProteoformRelation best_ttd_relation = possible_ttd_relations.Where(t => topdown.same_ptms((TheoreticalProteoform)t.connected_proteoforms[0])).FirstOrDefault();
                     if (best_ttd_relation == null)
