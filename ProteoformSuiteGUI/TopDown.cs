@@ -58,7 +58,17 @@ namespace ProteoformSuiteGUI
         {
             ClearListsAndTables();
             aggregate_td_hits();
-            Lollipop.make_td_relationships();
+            if (TopDownReader.topdown_ptms.Count > 0)
+            {
+                MessageBox.Show("Warning: Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: "
+                  + String.Join(", ", TopDownReader.topdown_ptms.Select(m => m.modification.id + " at " + m.modification.motif.Motif)));
+            }
+            Lollipop.td_relations = Lollipop.proteoform_community.relate_td(Lollipop.proteoform_community.experimental_proteoforms.ToList(), Lollipop.proteoform_community.theoretical_proteoforms.ToList(), Lollipop.proteoform_community.topdown_proteoforms.Where(p => !p.targeted).ToList());
+            if(Lollipop.proteoform_community.topdown_proteoforms.Count(t => t.ttd_match_count == 0) > 0)
+            {
+                MessageBox.Show("Warning: Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: "
+                     + String.Join(", ", Lollipop.proteoform_community.topdown_proteoforms.Where(t => t.ttd_match_count == 0).Select(t => t.accession[0]).Distinct()));
+            }
             tb_exp_proteoforms.Text = Lollipop.proteoform_community.experimental_proteoforms.Count(exp => exp.accepted).ToString();
             load_dgv();
         }
@@ -79,6 +89,7 @@ namespace ProteoformSuiteGUI
         {
             Lollipop.proteoform_community.topdown_proteoforms = new TopDownProteoform[0];
             Lollipop.td_relations.Clear();
+            TopDownReader.topdown_ptms.Clear();
             foreach (Proteoform p in Lollipop.proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ExperimentalTopDown);
             foreach (Proteoform p in Lollipop.proteoform_community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.TheoreticalTopDown);
             foreach (Proteoform p in Lollipop.proteoform_community.topdown_proteoforms) p.relationships.RemoveAll(r => r.relation_type == ProteoformComparison.ExperimentalTopDown);
