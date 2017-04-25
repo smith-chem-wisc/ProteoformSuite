@@ -373,6 +373,7 @@ namespace Test
         {
             Serializer ser = new Serializer(new Type[] {
                 typeof(List<ModificationWithMass>),
+                typeof(List<PtmSet>),
                 typeof(ModificationWithLocation),
                 typeof(ModificationWithMass),
                 typeof(ModificationWithMassAndCf),
@@ -385,58 +386,99 @@ namespace Test
 
             Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "elements.txt"));
             List<ModificationWithMass> mods = PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, @"ptmlist.txt")).OfType<ModificationWithMass>().ToList();
+            PtmSet set = new PtmSet(new List<Ptm> { new Ptm(1, mods[0]) });
 
             List<ModificationWithMass> asdf;
             using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdf")))
                 ser.Serialize(file, mods);
             using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdf")))
                 asdf = (List<ModificationWithMass>)ser.Deserialize(file);
+
+            List<PtmSet> asdfg;
+            using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfg")))
+                ser.Serialize(file, new List<PtmSet> { set });
+            using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfg")))
+                asdfg = (List<PtmSet>)ser.Deserialize(file);
         }
 
-        //[Test]
-        //public void db_serialization()
-        //{
-        //    SaveState.lollipop = new Lollipop();
-        //    SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
-        //    SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
-        //    SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
-        //    SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+        [Test]
+        public void db_serialization()
+        {
+            SaveState.lollipop = new Lollipop();
+            SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
+            SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
+            SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
 
-        //    Serializer ser = new Serializer(new Type[] {
-        //        typeof(TheoreticalProteoformDatabase),
-        //        typeof(TheoreticalProteoform),
-        //        typeof(List<ProteinWithGoTerms>),
-        //        typeof(List<Tuple<string,string>>),
-        //        typeof(Protein),
-        //        typeof(ModificationWithLocation),
-        //        typeof(ModificationWithMass),
-        //        typeof(ModificationWithMassAndCf),
-        //        typeof(List<DatabaseReference>),
-        //        typeof(List<Tuple<string,string>>),
-        //        typeof(Dictionary<int, List<Modification>>),
-        //        typeof(Dictionary<string, IList<string>>),
-        //        typeof(List<ProteolysisProduct>),
-        //        typeof(ChemicalFormulaTerminus),
-        //        typeof(List<double>)
-        //    });
-        //    using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "theodb")))
-        //        ser.Serialize(file, SaveState.lollipop.theoretical_database);
+            Serializer ser = new Serializer(new Type[] {
+                typeof(TheoreticalProteoformDatabase),
+                typeof(TheoreticalProteoform),
+                typeof(List<ProteinWithGoTerms>),
+                typeof(List<Tuple<string,string>>),
+                typeof(Protein),
+                typeof(ModificationWithLocation),
+                typeof(ProteinSequenceGroup),
+                typeof(ModificationWithMass),
+                typeof(ModificationWithMassAndCf),
+                typeof(List<DatabaseReference>),
+                typeof(List<Tuple<string,string>>),
+                typeof(Dictionary<int, List<Modification>>),
+                typeof(Dictionary<string, IList<string>>),
+                typeof(List<ProteolysisProduct>),
+                typeof(ChemicalFormulaTerminus),
+                typeof(List<double>)
+            });
 
-        //    TheoreticalProteoformDatabase db;
-        //    using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "theodb")))
-        //        db = (TheoreticalProteoformDatabase)ser.Deserialize(file);
-        //}
+            SaveState.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet> { SaveState.lollipop.theoretical_database.all_possible_ptmsets[0] }; // make the test faster
 
-        //[Test]
-        //public void db_serialization()
-        //{
-        //    SaveState.lollipop = new Lollipop();
-        //    SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
-        //    SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
-        //    SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
-        //    SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
-        //    SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
-        //    SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
-        //}
+            //List<GoTerm> asdfg;
+            //using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfg")))
+            //    ser.Serialize(file, SaveState.lollipop.theoretical_database.expanded_proteins[0].GoTerms);
+            //using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfg")))
+            //    asdfg = (List<GoTerm>)ser.Deserialize(file);
+
+            //ProteinWithGoTerms[] asdfgh;
+            //using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfg")))
+            //    ser.Serialize(file, SaveState.lollipop.theoretical_database.expanded_proteins);
+            //using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfg")))
+            //    asdfgh = (ProteinWithGoTerms[])ser.Deserialize(file);
+
+            //Dictionary<string, List<Modification>> j;
+            //using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfg")))
+            //    ser.Serialize(file, SaveState.lollipop.theoretical_database.uniprotModifications);
+            //using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfg")))
+            //    j = (Dictionary<string, List<Modification>>)ser.Deserialize(file);
+
+            //Dictionary<InputFile, Protein[]> k;
+            //using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfg")))
+            //    ser.Serialize(file, SaveState.lollipop.theoretical_database.theoretical_proteins);
+            //using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfg")))
+            //    k = (Dictionary<InputFile, Protein[]>)ser.Deserialize(file);
+
+            //Dictionary<double, List<PtmSet>> asd;
+            //using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfg")))
+            //    ser.Serialize(file, SaveState.lollipop.theoretical_database.possible_ptmset_dictionary);
+            //using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfg")))
+            //    asd = (Dictionary<double, List<PtmSet>>)ser.Deserialize(file);
+
+            TheoreticalProteoformDatabase db;
+            using (var file = File.Create(Path.Combine(TestContext.CurrentContext.TestDirectory, "theodb")))
+                ser.Serialize(file, SaveState.lollipop.theoretical_database);
+            using (var file = File.OpenRead(Path.Combine(TestContext.CurrentContext.TestDirectory, "theodb")))
+                db = (TheoreticalProteoformDatabase)ser.Deserialize(file);
+        }
+
+        [Test]
+        public void db_in_lollipop_serialization()
+        {
+            SaveState.lollipop = new Lollipop();
+            SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
+            SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
+            SaveState.lollipop.theoretical_database.theoretical_proteins.Clear();
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            SaveState.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet> { SaveState.lollipop.theoretical_database.all_possible_ptmsets[0] }; // make the test faster
+            SaveState.save_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+            SaveState.load_all_results(Path.Combine(TestContext.CurrentContext.TestDirectory, "serial"));
+        }
     }
 }

@@ -16,22 +16,12 @@ namespace ProteoformSuiteInternal
         #region Public Fields
 
         public Dictionary<InputFile, Protein[]> theoretical_proteins = new Dictionary<InputFile, Protein[]>();
-
         public ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
-
-        //[NonSerialized]
-        //private Dictionary<string, List<Modification>> _uniprotModifications = new Dictionary<string, List<Modification>>();
         public Dictionary<string, List<Modification>> uniprotModifications = new Dictionary<string, List<Modification>>();
-        //public Dictionary<string, List<Modification>> uniprotModifications
-        //{
-        //    get { return _uniprotModifications; }
-        //    set { _uniprotModifications = value; }
-        //}
-
         public List<ModificationWithMass> variableModifications = new List<ModificationWithMass>();
-
         public List<PtmSet> all_possible_ptmsets;
 
+        [NonSerialized] //regenerated upon load
         public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>();
 
         public List<ModificationWithMass> all_mods_with_mass = new List<ModificationWithMass>();
