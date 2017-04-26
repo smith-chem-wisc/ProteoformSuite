@@ -68,9 +68,9 @@ namespace ProteoformSuiteGUI
             initialize_every_time();
         }
 
-        public DataGridView GetDGV()
+        public List<DataGridView> GetDGVs()
         {
-            return dgv_main;
+            return new List<DataGridView>() { dgv_main };
         }
 
         public bool ReadyToRunTheGamut()

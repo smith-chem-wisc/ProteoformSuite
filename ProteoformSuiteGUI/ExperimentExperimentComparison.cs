@@ -65,14 +65,9 @@ namespace ProteoformSuiteGUI
             Cursor = Cursors.Default;
         }
 
-        public DataGridView GetEERelationDGV()
+        public List<DataGridView> GetDGVs()
         {
-            return dgv_EE_Relations;
-        }
-
-        public DataGridView GetEEPeaksDGV()
-        {
-            return dgv_EE_Peaks;
+            return new List<DataGridView> { dgv_EE_Relations, dgv_EE_Peaks };
         }
 
         public void ClearListsTablesFigures()

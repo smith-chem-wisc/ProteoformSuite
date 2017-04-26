@@ -69,9 +69,9 @@ namespace ProteoformSuiteGUI
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
-        public DataGridView GetDGV()
+        public List<DataGridView> GetDGVs()
         {
-            return dgv_Database;
+            return new List<DataGridView>() { dgv_Database };
         }
 
         public void FillDataBaseTable(string table)
@@ -87,6 +87,7 @@ namespace ProteoformSuiteGUI
         {
             SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
             tb_totalTheoreticalProteoforms.Text = SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length.ToString();
         }
 
