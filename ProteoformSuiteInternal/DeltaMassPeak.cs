@@ -5,9 +5,9 @@ using System.Linq;
 namespace ProteoformSuiteInternal
 {
     //Please see ProteoformRelation class for notes on naming this one.
-    [Serializable]
     public class DeltaMassPeak : IMassDifference
     {
+
         #region Private Fields
 
         private static int instance_counter = 0;
@@ -148,5 +148,6 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Public Methods
+
     }
 }

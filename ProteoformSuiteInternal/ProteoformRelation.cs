@@ -22,7 +22,6 @@ namespace ProteoformSuiteInternal
     //DeltaMassPeak. I debated MassDifferencePeak, but I wanted to distance this class from MassDifference and draw the imagination
     //closer to the picture of the graph, in which we often say "deltaM" colloquially, whereas we tend to say "mass difference" when we're
     //referring to an individual value.
-    [Serializable]
     public class ProteoformRelation : IMassDifference
     {
 
@@ -33,20 +32,14 @@ namespace ProteoformSuiteInternal
         public PtmSet candidate_ptmset = null;
         public PtmSet represented_ptmset = null;
 
-        [NonSerialized]
-        private DeltaMassPeak _peak;
-
-        [NonSerialized]
-        private List<ProteoformRelation> _nearby_relations;
-
         #endregion Fields
 
         #region Public Properties
 
         public int InstanceId { get; set; }
         public double DeltaMass { get; set; }
-        public DeltaMassPeak peak { get { return _peak; } set { _peak = value; } }
-        public List<ProteoformRelation> nearby_relations { get { return _nearby_relations; } set { _nearby_relations = value; } }
+        public DeltaMassPeak peak { get; set; }
+        public List<ProteoformRelation> nearby_relations { get; set; }
         public int nearby_relations_count { get; set; } // count is the "running sum"; relations are not saved
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
@@ -83,7 +76,7 @@ namespace ProteoformSuiteInternal
                 double mass_tolerance = t.modified_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
                 List<PtmSet> narrower_range_of_candidates = candidate_sets.Where(s => Math.Abs(s.mass - delta_mass) < 0.05).ToList();
                 candidate_ptmset = t.generate_possible_added_ptmsets(narrower_range_of_candidates, delta_mass, mass_tolerance, SaveState.lollipop.theoretical_database.all_mods_with_mass, t, t.sequence, SaveState.lollipop.mod_rank_first_quartile)
-                    .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(delta_mass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
+                    .OrderBy(x => x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(delta_mass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
             }
 
@@ -129,9 +122,9 @@ namespace ProteoformSuiteInternal
         {
             new DeltaMassPeak(this, SaveState.lollipop.proteoform_community.remaining_relations_outside_no_mans); //setting the peak takes place elsewhere, but this constructs it
             if (connected_proteoforms[1] as TheoreticalProteoform != null && SaveState.lollipop.ed_relations.Count > 0)
-                peak.calculate_fdr(SaveState.lollipop.ed_relations);
+                lock (peak) peak.calculate_fdr(SaveState.lollipop.ed_relations);
             else if (connected_proteoforms[1] as ExperimentalProteoform != null && SaveState.lollipop.ef_relations.Count > 0)
-                peak.calculate_fdr(SaveState.lollipop.ef_relations);
+                lock (peak) peak.calculate_fdr(SaveState.lollipop.ef_relations);
         }
 
         public override bool Equals(object obj)

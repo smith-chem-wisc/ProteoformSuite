@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class ProteoformFamily
     {
 

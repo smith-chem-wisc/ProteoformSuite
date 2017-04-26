@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class Component : IBiorepable
     {
         #region Properties

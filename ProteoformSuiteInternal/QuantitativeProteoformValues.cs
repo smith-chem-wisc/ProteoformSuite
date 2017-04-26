@@ -7,33 +7,13 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class QuantitativeProteoformValues
     {
 
-        #region Private Fields
-
-        [NonSerialized]
-        private ExperimentalProteoform _proteoform;
-
-        #endregion Private Fields
-
         #region Public Properties
 
-        public ExperimentalProteoform proteoform
-        {
-            get
-            {
-                return _proteoform;
-            }
-
-            set
-            {
-                _proteoform = value;
-                accession = value.accession;
-            }
-        }
-        public string accession { get; set; }
+        public ExperimentalProteoform proteoform { get; set; }
+        public string accession { get { return proteoform.accession; } }
         public List<BiorepIntensity> lightBiorepIntensities { get; set; }
         public List<BiorepIntensity> heavyBiorepIntensities { get; set; }
         public List<BiorepIntensity> lightImputedIntensities { get; set; }
