@@ -37,7 +37,7 @@ namespace ProteoformSuiteInternal
         }
 
         public ProteoformFamily family { get; set; }
-        public List<ProteoformRelation> relationships { get; set; }
+        public List<ProteoformRelation> relationships { get; set; } = new List<ProteoformRelation>();
 
         /// <summary>
         /// Contains a list of proteoforms traced before arriving at this one. The first is a TheoreticalProteoform starting point in the family.

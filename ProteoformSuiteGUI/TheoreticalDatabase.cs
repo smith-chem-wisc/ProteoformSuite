@@ -259,6 +259,7 @@ namespace ProteoformSuiteGUI
             cmb_loadTable.SelectedIndex = 2;
             DisplayUtility.FillDataGridView(dgv_loadFiles, SaveState.lollipop.get_files(SaveState.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
+            initialize_table_bindinglist();
             set_Make_Database_Button();
         }
 
