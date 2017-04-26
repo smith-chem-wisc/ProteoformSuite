@@ -57,6 +57,7 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
             this.rb_standardOptions = new System.Windows.Forms.RadioButton();
+            this.btn_stepThrough = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles2)).BeginInit();
@@ -201,7 +202,7 @@
             // 
             // btn_fullRun
             // 
-            this.btn_fullRun.Location = new System.Drawing.Point(675, 626);
+            this.btn_fullRun.Location = new System.Drawing.Point(843, 626);
             this.btn_fullRun.Name = "btn_fullRun";
             this.btn_fullRun.Size = new System.Drawing.Size(156, 92);
             this.btn_fullRun.TabIndex = 17;
@@ -211,7 +212,7 @@
             // 
             // bt_clearResults
             // 
-            this.bt_clearResults.Location = new System.Drawing.Point(837, 626);
+            this.bt_clearResults.Location = new System.Drawing.Point(1005, 626);
             this.bt_clearResults.Name = "bt_clearResults";
             this.bt_clearResults.Size = new System.Drawing.Size(156, 92);
             this.bt_clearResults.TabIndex = 26;
@@ -361,10 +362,21 @@
             this.rb_standardOptions.UseVisualStyleBackColor = true;
             this.rb_standardOptions.CheckedChanged += new System.EventHandler(this.rb_standardOptions_CheckedChanged);
             // 
+            // btn_stepThrough
+            // 
+            this.btn_stepThrough.Location = new System.Drawing.Point(680, 626);
+            this.btn_stepThrough.Name = "btn_stepThrough";
+            this.btn_stepThrough.Size = new System.Drawing.Size(156, 92);
+            this.btn_stepThrough.TabIndex = 36;
+            this.btn_stepThrough.Text = "Step Through Processes";
+            this.btn_stepThrough.UseVisualStyleBackColor = true;
+            this.btn_stepThrough.Click += new System.EventHandler(this.btn_stepThrough_Click);
+            // 
             // LoadDeconvolutionResults
             // 
             this.ClientSize = new System.Drawing.Size(1362, 736);
             this.ControlBox = false;
+            this.Controls.Add(this.btn_stepThrough);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.cmb_loadTable3);
             this.Controls.Add(this.cmb_loadTable2);
@@ -430,5 +442,6 @@
         private System.Windows.Forms.RadioButton rb_standardOptions;
         private System.Windows.Forms.Label lb_filter3;
         private System.Windows.Forms.TextBox tb_filter3;
+        private System.Windows.Forms.Button btn_stepThrough;
     }
 }
