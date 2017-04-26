@@ -126,7 +126,7 @@ namespace ProteoformSuiteGUI
         {
             showForm(aggregatedProteoforms);
             if (run_when_form_loads && aggregatedProteoforms.ReadyToRunTheGamut()) aggregatedProteoforms.RunTheGamut();
-            else if (SaveState.lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
+            else if (!aggregatedProteoforms.ReadyToRunTheGamut() && SaveState.lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
         }
 
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
@@ -139,15 +139,15 @@ namespace ProteoformSuiteGUI
         {
             showForm(experimentalTheoreticalComparison);
             if (run_when_form_loads && experimentalTheoreticalComparison.ReadyToRunTheGamut()) experimentalTheoreticalComparison.RunTheGamut();
-            else if (SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
-            else if (SaveState.lollipop.et_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
+            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
+            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentExperimentComparison);
             if (run_when_form_loads && experimentExperimentComparison.ReadyToRunTheGamut()) experimentExperimentComparison.RunTheGamut();
-            else if (SaveState.lollipop.ee_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
+            else if (!experimentExperimentComparison.ReadyToRunTheGamut() && SaveState.lollipop.ee_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)

@@ -300,7 +300,7 @@ namespace ProteoformSuiteInternal
                     EnterTheoreticalProteformFamily(hunk, p, p.Accession + "_DECOY_" + decoyNumber, decoy_proteoforms, decoyNumber, variableModifications);
                 });
 
-                lock (SaveState.lollipop)
+                lock (SaveState.lollipop.proteoform_community.decoy_proteoforms)
                     SaveState.lollipop.proteoform_community.decoy_proteoforms.Add(decoy_database_name, decoy_proteoforms.ToArray());
             });
         }
