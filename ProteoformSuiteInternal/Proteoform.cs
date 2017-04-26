@@ -6,7 +6,6 @@ using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class Proteoform
     {
 
@@ -37,13 +36,8 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        [NonSerialized]
-        private ProteoformFamily _family = null;
-        public ProteoformFamily family { get { return _family; } set { _family = value; } }
-
-        [NonSerialized]
-        private List<ProteoformRelation> _relationships = new List<ProteoformRelation>();
-        public List<ProteoformRelation> relationships { get { return _relationships; } set { _relationships = value; } }
+        public ProteoformFamily family { get; set; }
+        public List<ProteoformRelation> relationships { get; set; }
 
         /// <summary>
         /// Contains a list of proteoforms traced before arriving at this one. The first is a TheoreticalProteoform starting point in the family.

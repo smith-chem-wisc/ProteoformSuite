@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class Lollipop
     {
 
@@ -278,10 +277,8 @@ namespace ProteoformSuiteInternal
 
         #region AGGREGATED PROTEOFORMS Private Fields
 
-        [NonSerialized]
         private List<ExperimentalProteoform> vetted_proteoforms = new List<ExperimentalProteoform>();
 
-        [NonSerialized]
         private Component[] ordered_components = new Component[0];
 
         #endregion AGGREGATED PROTEOFORMS Private Fields
@@ -596,10 +593,7 @@ namespace ProteoformSuiteInternal
 
         #region QUANTIFICATION Public Fields
 
-        [NonSerialized]
         public SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>();
-
-        [NonSerialized]
         public SortedDictionary<decimal, int> logSelectIntensityHistogram = new SortedDictionary<decimal, int>();
 
         public string numerator_condition = "";

@@ -3,7 +3,6 @@ using System;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class Ptm
     {
         public int position { get; private set; } = -1;

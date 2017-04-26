@@ -2,7 +2,6 @@
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class BiorepIntensity
     {
         public bool light { get; set; } = true; // true if unlabelled or neucode light; false if neucode heavy

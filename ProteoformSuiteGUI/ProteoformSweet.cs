@@ -1,10 +1,9 @@
-﻿using System;
+﻿using ProteoformSuiteInternal;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
 using System.IO;
-using ProteoformSuiteInternal;
+using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
 namespace ProteoformSuiteGUI
@@ -177,37 +176,6 @@ namespace ProteoformSuiteGUI
         #endregion RESULTS TOOL STRIP Private Methods
 
         #region FILE TOOL STRIP Private Methods
-
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Cursor = Cursors.WaitCursor;
-
-            foreach (ISweetForm form in forms)
-            {
-                form.ClearListsTablesFigures();
-            }
-
-            if (openResults.ShowDialog() == DialogResult.OK)
-            {
-                SaveState.load_all_results(openResults.FileName);
-            }
-
-            foreach (ISweetForm form in forms)
-            {
-                form.InitializeParameterSet();
-                form.FillTablesAndCharts();
-            }
-
-            Cursor = Cursors.Default;
-        }
-
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Cursor = Cursors.WaitCursor;
-            if (saveResults.ShowDialog() == DialogResult.OK)
-                SaveState.save_all_results(saveResults.FileName);
-            Cursor = Cursors.Default;
-        }
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {
