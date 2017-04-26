@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace ProteoformSuiteInternal
 {
@@ -24,23 +25,33 @@ namespace ProteoformSuiteInternal
 
         //For all files
         public string complete_path { get; set; }
+
         public string directory { get; set; }
+
         public string filename { get; set; }
+
         public string extension { get; set; }
+
         public Purpose purpose { get; set; }
 
 
         //For identification files
         public ComponentReader reader = new ComponentReader();
+
         public bool matchingCalibrationFile { get; set; } = false;
+
         public Labeling label { get; set; }
 
 
         // For quantitation files
         public int biological_replicate { get; set; } = 1;
+
         public int fraction { get; set; } = 1;
+
         public int technical_replicate { get; set; } = 1;
+
         public string lt_condition { get; set; } = "lt_condition";
+
         public string hv_condition { get; set; } = "hv_condition";
 
 
@@ -76,6 +87,7 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Public Constructors
+
     }
 
     public enum Purpose

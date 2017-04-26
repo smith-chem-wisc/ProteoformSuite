@@ -50,7 +50,7 @@ namespace ProteoformSuiteInternal
                                 monoError = monoisotopicPeak.Mz - dist[0];
                             }
                         }
-                        MsScan get_scan = Lollipop.Ms_scans.Where(s => s.filename == filename && s.scan_number == scan.OneBasedScanNumber).ToList().First();
+                        MsScan get_scan = SaveState.lollipop.Ms_scans.Where(s => s.filename == filename && s.scan_number == scan.OneBasedScanNumber).ToList().First();
                         get_scan.lock_mass_shift = monoError;
                     }
                 }
@@ -97,7 +97,7 @@ namespace ProteoformSuiteInternal
                     }
                     else
                     {
-                        List<Component> intact_masses = Lollipop.calibration_components.Where(c => c.input_file.filename == filename && Math.Abs(c.weighted_monoisotopic_mass - hit.reported_mass) < c.weighted_monoisotopic_mass / 1000000 * (double)Lollipop.mass_tolerance && Math.Abs(Convert.ToDouble(c.rt_range.Split('-')[0]) - hit.retention_time) < (double)Lollipop.retention_time_tolerance).ToList();
+                        List<Component> intact_masses = SaveState.lollipop.calibration_components.Where(c => c.input_file.filename == filename && Math.Abs(c.weighted_monoisotopic_mass - hit.reported_mass) < c.weighted_monoisotopic_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance && Math.Abs(Convert.ToDouble(c.rt_range.Split('-')[0]) - hit.retention_time) < (double)SaveState.lollipop.retention_time_tolerance).ToList();
                         {
                             foreach (Component c in intact_masses)
                             {
@@ -115,9 +115,9 @@ namespace ProteoformSuiteInternal
                 if (pointList.Count < 5) return null;
 
                 ////if lock mass, add lock mass peptide to training points
-                if (Lollipop.calibrate_lock_mass)
+                if (SaveState.lollipop.calibrate_lock_mass)
                 {
-                    foreach (MsScan scan in Lollipop.Ms_scans.Where(s => s.filename == filename && s.lock_mass_shift > 0 || s.lock_mass_shift < 0))
+                    foreach (MsScan scan in SaveState.lollipop.Ms_scans.Where(s => s.filename == filename && s.lock_mass_shift > 0 || s.lock_mass_shift < 0))
                     {
                         pointList.Add(new LabeledDataPoint(new double[2] { 589.2, scan.retention_time }, scan.lock_mass_shift));
                     }
@@ -168,9 +168,9 @@ namespace ProteoformSuiteInternal
             {
                 if (row.RowNumber() != 1)
                 {
-                    if (Lollipop.td_calibration_functions.ContainsKey(row.Cell(15).Value.ToString().Split('.')[0]))
+                    if (SaveState.lollipop.td_calibration_functions.ContainsKey(row.Cell(15).Value.ToString().Split('.')[0]))
                     {
-                        row.Cell(17).SetValue(Lollipop.td_hit_correction[new Tuple<string, int, double>(row.Cell(15).Value.ToString().Split('.')[0], Convert.ToInt16(row.Cell(18).GetDouble()), row.Cell(17).GetDouble())]);
+                        row.Cell(17).SetValue(SaveState.lollipop.td_hit_correction[new Tuple<string, int, double>(row.Cell(15).Value.ToString().Split('.')[0], Convert.ToInt16(row.Cell(18).GetDouble()), row.Cell(17).GetDouble())]);
                     }
                     //if hit's file not calibrated (not enough calibration points, remove from list
                     else
@@ -186,7 +186,7 @@ namespace ProteoformSuiteInternal
         //READ AND WRITE NEW CALIBRATED RAW EXPERIMENTAL COMPONENTS FILE
         public static void calibrate_components_in_xlsx(InputFile file)
         {
-            if ((!Lollipop.calibrate_td_results && !Lollipop.calibrate_intact_with_td_ids) || Lollipop.td_calibration_functions.ContainsKey(file.filename))
+            if ((!SaveState.lollipop.calibrate_td_results && !SaveState.lollipop.calibrate_intact_with_td_ids) || SaveState.lollipop.td_calibration_functions.ContainsKey(file.filename))
             {
                 //Copy file to new worksheet
                 string old_absolute_path = file.complete_path;
@@ -205,7 +205,7 @@ namespace ProteoformSuiteInternal
                 {
                     if (row.Cell(1).Value.ToString().Length == 0 && Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
                     {
-                        row.Cell(4).SetValue(Lollipop.file_mz_correction[new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(4).GetDouble(), 0), Math.Round(row.Cell(3).GetDouble(), 0))]);
+                        row.Cell(4).SetValue(SaveState.lollipop.file_mz_correction[new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(4).GetDouble(), 0), Math.Round(row.Cell(3).GetDouble(), 0))]);
                     }
                 });
                 workbook.Save();
@@ -214,7 +214,7 @@ namespace ProteoformSuiteInternal
 
         public static double get_correction_factor(string filename, string scan_range)
         {
-            if (Lollipop.correctionFactors == null) return 0D;
+            if (SaveState.lollipop.correctionFactors == null) return 0D;
             int[] scans = new int[2] { 0, 0 };
             try
             {
@@ -226,7 +226,7 @@ namespace ProteoformSuiteInternal
             if (scans[0] <= 0 || scans[1] <= 0) return 0D;
 
             IEnumerable<double> allCorrectionFactors =
-                (from s in Lollipop.correctionFactors
+                (from s in SaveState.lollipop.correctionFactors
                  where s.file_name == filename
                  where s.scan_number >= scans[0]
                  where s.scan_number <= scans[1]

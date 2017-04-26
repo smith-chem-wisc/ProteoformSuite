@@ -7,17 +7,50 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuiteGUI
 {
-    public partial class ResultsSummary : Form
+    public partial class ResultsSummary : Form, ISweetForm
     {
+
+        #region Public Constructor
+
         public ResultsSummary()
         {
             InitializeComponent();
         }
 
+        #endregion Public Constructor
+
+        #region Public Methods
+
         public void create_summary()
         {
             rtb_summary.Text = ResultsSummaryGenerator.generate_full_report();
         }
+
+        public bool ReadyToRunTheGamut()
+        {
+            return true;
+        }
+
+        public void RunTheGamut()
+        {
+            create_summary();
+        }
+
+        public void InitializeParameterSet()
+        { }
+
+        public void ClearListsTablesFigures()
+        {
+            rtb_summary.Text = "";
+            tb_summarySaveFolder.Text = "";
+        }
+
+        public void FillTablesAndCharts()
+        {
+            create_summary();
+        }
+
+        #endregion Public Methods
 
         FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
         private void btn_browseSummarySaveFolder_Click(object sender, EventArgs e)
@@ -67,16 +100,16 @@ namespace ProteoformSuiteGUI
             if (cb_saveCytoScripts.Checked)
             {
                 string message = "";
-                message += CytoscapeScript.write_cytoscape_script(Lollipop.proteoform_community.families, Lollipop.proteoform_community.families,
+                message += CytoscapeScript.write_cytoscape_script(SaveState.lollipop.proteoform_community.families, SaveState.lollipop.proteoform_community.families,
                     tb_summarySaveFolder.Text, "AllFamilies_", timestamp,
-                    Lollipop.qVals.Count > 0, true, true, false,
+                    SaveState.lollipop.qVals.Count > 0, true, true, false,
                     CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], 2,
                     ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
                 message += Environment.NewLine;
 
-                foreach (GoTermNumber gtn in Lollipop.goTermNumbers.Where(g => g.by < (double)Lollipop.minProteoformFDR).ToList())
+                foreach (GoTermNumber gtn in SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.minProteoformFDR).ToList())
                 {
-                    message += CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { gtn }, Lollipop.proteoform_community.families,
+                    message += CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { gtn }, SaveState.lollipop.proteoform_community.families,
                         tb_summarySaveFolder.Text, gtn.Aspect.ToString() + gtn.Description.Replace(" ", "_") + "_", timestamp,
                         true, true, true, false,
                         CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], 2,

@@ -1,5 +1,5 @@
-﻿using System;
-using Proteomics;
+﻿using Proteomics;
+using System;
 
 namespace ProteoformSuiteInternal
 {

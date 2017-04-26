@@ -27,7 +27,7 @@ namespace ProteoformSuiteInternal
                 lock (ms_scans) ms_scans.Add(scan);
             });
             //set charge, mz, intensity, find MS1 numbers
-            Parallel.ForEach(Lollipop.td_hits_calibration.Where(f => f.filename == filename).ToList(), hit =>
+            Parallel.ForEach(SaveState.lollipop.td_hits_calibration.Where(f => f.filename == filename).ToList(), hit =>
             {
                 double mz = (myMsDataFile.GetOneBasedScan(hit.scan) as ThermoScanWithPrecursor).IsolationMz;
                 hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)mz, 0)); //m / (m/z)  round to get charge 
@@ -40,7 +40,7 @@ namespace ProteoformSuiteInternal
         {
             List<MsScan> ms_scans = new List<MsScan>();
             foreach (InputFile file in files) ms_scans.AddRange(get_ms_scans(file.filename, file.complete_path));
-            Parallel.ForEach(Lollipop.proteoform_community.experimental_proteoforms, e =>
+            Parallel.ForEach(SaveState.lollipop.proteoform_community.experimental_proteoforms, e =>
             {
                 foreach (Component comp in e.aggregated_components)
                 {

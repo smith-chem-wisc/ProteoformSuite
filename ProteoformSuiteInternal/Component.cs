@@ -171,7 +171,7 @@ namespace ProteoformSuiteInternal
         public Component mergeTheseComponents(Component cpToMerge) //this method is used just after initial read of components to get rid of missed monoisotopics in the same scan.
         {
             //Note: the max missed monoisotopics is hard coded for now. Need more analysis to see whether this should be subject to user adjustment.
-            if (Math.Abs((this.weighted_monoisotopic_mass - cpToMerge.weighted_monoisotopic_mass)) <= (3 * Lollipop.MONOISOTOPIC_UNIT_MASS + Math.Max(this.weighted_monoisotopic_mass, cpToMerge.weighted_monoisotopic_mass) / 1000000d * (double)Lollipop.mass_tolerance))
+            if (Math.Abs((this.weighted_monoisotopic_mass - cpToMerge.weighted_monoisotopic_mass)) <= (3 * Lollipop.MONOISOTOPIC_UNIT_MASS + Math.Max(this.weighted_monoisotopic_mass, cpToMerge.weighted_monoisotopic_mass) / 1000000d * (double)SaveState.lollipop.mass_tolerance))
             {// we're merging missed monoisotopics
                 foreach (ChargeState cpCS in cpToMerge.charge_states)
                 {

@@ -1,12 +1,11 @@
-﻿using System;
-using ProteoformSuiteInternal;
+﻿using ProteoformSuiteInternal;
 using System.Windows.Forms;
-
 
 namespace ProteoformSuiteGUI
 {
     public class DisplayComponent : DisplayObject
     {
+
         #region Public Constructors
 
         public DisplayComponent(Component c)
@@ -165,10 +164,11 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(fract_abundance)].HeaderText = "Fractional Abundance (from Thermo Decon.)";
 
             //Visibility
-            dgv.Columns[nameof(intensity_sum_olcs)].Visible = Lollipop.neucode_labeled;
+            dgv.Columns[nameof(intensity_sum_olcs)].Visible = SaveState.lollipop.neucode_labeled;
             dgv.Columns[nameof(manual_mass_shift)].Visible = false;
         }
 
         #endregion
+        
     }
 }

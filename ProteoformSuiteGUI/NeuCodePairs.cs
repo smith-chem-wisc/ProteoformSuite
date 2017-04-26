@@ -9,14 +9,8 @@ using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
 {
-    public partial class NeuCodePairs : Form
+    public partial class NeuCodePairs : Form, ISweetForm
     {
-        #region Fields
-
-        bool initial_load = true;
-        public bool preloaded = false;
-
-        #endregion Fields
 
         #region Public Constructor
 
@@ -32,15 +26,33 @@ namespace ProteoformSuiteGUI
 
         #region Public Methods
 
-        public void display_neucode_pairs()
+        public bool ReadyToRunTheGamut()
         {
-            if (Lollipop.raw_neucode_pairs.Count > 0 && !preloaded)
-            {
-                GraphNeuCodePairs();
-                FillNeuCodePairsDGV();
-            }
-            preloaded = false;
-            initial_load = false;
+            return SaveState.lollipop.raw_neucode_pairs.Count > 0;
+        }
+
+        public void RunTheGamut()
+        {
+            GraphLysineCount();
+            GraphIntensityRatio();
+            FillNeuCodePairsDGV();
+        }
+
+        public void FillTablesAndCharts()
+        {
+            if (!ReadyToRunTheGamut()) return;
+            GraphLysineCount();
+            GraphIntensityRatio();
+            FillNeuCodePairsDGV();
+        }
+
+        public void ClearListsTablesFigures()
+        {
+            foreach (var series in ct_IntensityRatio.Series) series.Points.Clear();
+            foreach (var series in ct_LysineCount.Series) series.Points.Clear();
+
+            dgv_RawExpNeuCodePairs.DataSource = null;
+            dgv_RawExpNeuCodePairs.Rows.Clear();
         }
 
         public DataGridView GetDGV()
@@ -48,10 +60,23 @@ namespace ProteoformSuiteGUI
             return dgv_RawExpNeuCodePairs;
         }
 
-        public void GraphNeuCodePairs()
+        public void InitializeParameterSet()
         {
-            GraphLysineCount();
-            GraphIntensityRatio();
+            IRatMaxAcceptable.ValueChanged -= IRatMaxAcceptable_ValueChanged;
+            IRatMinAcceptable.ValueChanged -= IRatMinAcceptable_ValueChanged;
+            KMaxAcceptable.ValueChanged -= KMaxAcceptable_ValueChanged;
+            KMinAcceptable.ValueChanged -= KMinAcceptable_ValueChanged;
+
+            IRatMaxAcceptable.Minimum = -20; IRatMaxAcceptable.Maximum = 20; IRatMaxAcceptable.Value = SaveState.lollipop.max_intensity_ratio;
+            IRatMinAcceptable.Minimum = -20; IRatMinAcceptable.Maximum = 20; IRatMinAcceptable.Value = SaveState.lollipop.min_intensity_ratio;
+
+            KMaxAcceptable.Minimum = -28; KMaxAcceptable.Maximum = 28; KMaxAcceptable.Value = SaveState.lollipop.max_lysine_ct;
+            KMinAcceptable.Minimum = -28; KMinAcceptable.Maximum = 28; KMinAcceptable.Value = SaveState.lollipop.min_lysine_ct;
+
+            IRatMaxAcceptable.ValueChanged += IRatMaxAcceptable_ValueChanged;
+            IRatMinAcceptable.ValueChanged += IRatMinAcceptable_ValueChanged;
+            KMaxAcceptable.ValueChanged += KMaxAcceptable_ValueChanged;
+            KMinAcceptable.ValueChanged += KMinAcceptable_ValueChanged;
         }
 
         #endregion Public Methods
@@ -60,17 +85,8 @@ namespace ProteoformSuiteGUI
 
         private void FillNeuCodePairsDGV()
         {
-            DisplayUtility.FillDataGridView(dgv_RawExpNeuCodePairs, Lollipop.raw_neucode_pairs.Select(n => new DisplayNeuCodePair(n)));
+            DisplayUtility.FillDataGridView(dgv_RawExpNeuCodePairs, SaveState.lollipop.raw_neucode_pairs.Select(n => new DisplayNeuCodePair(n)));
             DisplayNeuCodePair.FormatNeuCodeTable(dgv_RawExpNeuCodePairs);
-        }
-
-        private void InitializeParameterSet()
-        {
-            IRatMaxAcceptable.Minimum = -20; IRatMaxAcceptable.Maximum = 20; IRatMaxAcceptable.Value = Lollipop.max_intensity_ratio;
-            IRatMinAcceptable.Minimum = -20; IRatMinAcceptable.Maximum = 20; IRatMinAcceptable.Value = Lollipop.min_intensity_ratio;
-
-            KMaxAcceptable.Minimum = -28; KMaxAcceptable.Maximum = 28; KMaxAcceptable.Value = Lollipop.max_lysine_ct;
-            KMinAcceptable.Minimum = -28; KMinAcceptable.Maximum = 28; KMinAcceptable.Value = Lollipop.min_lysine_ct;
         }
 
         private void GraphIntensityRatio()
@@ -82,7 +98,7 @@ namespace ProteoformSuiteGUI
             int ymax = 0;
             for (double i = 0; i <= 20; i = i + 0.05)
             {
-                List<NeuCodePair> proteoforms_by_intensityRatio = Lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio >= i - 0.025 && p.intensity_ratio < i + 0.025).ToList();
+                List<NeuCodePair> proteoforms_by_intensityRatio = SaveState.lollipop.raw_neucode_pairs.Where(p => p.intensity_ratio >= i - 0.025 && p.intensity_ratio < i + 0.025).ToList();
                 if (proteoforms_by_intensityRatio.Count > ymax)
                     ymax = proteoforms_by_intensityRatio.Count;
                 intensityRatioHistogram.Rows.Add(i, proteoforms_by_intensityRatio.Count);
@@ -111,7 +127,7 @@ namespace ProteoformSuiteGUI
             int ymax = 0;
             for (int i = 0; i <= 28; i++)
             {
-                List<NeuCodePair> pf_by_lysCt = Lollipop.raw_neucode_pairs.Where(p => p.lysine_count == i).ToList();
+                List<NeuCodePair> pf_by_lysCt = SaveState.lollipop.raw_neucode_pairs.Where(p => p.lysine_count == i).ToList();
                 if (pf_by_lysCt.Count > ymax)
                     ymax = pf_by_lysCt.Count;
                 lysCtHistogram.Rows.Add(i, pf_by_lysCt.Count);
@@ -175,46 +191,34 @@ namespace ProteoformSuiteGUI
 
         private void KMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load)
-            {
-                Lollipop.min_lysine_ct = KMinAcceptable.Value;
-                Parallel.ForEach(Lollipop.raw_neucode_pairs, p => p.set_accepted());
-                dgv_RawExpNeuCodePairs.Refresh();
-                ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsAndTables();
-            }
+            SaveState.lollipop.min_lysine_ct = KMinAcceptable.Value;
+            Parallel.ForEach(SaveState.lollipop.raw_neucode_pairs, p => p.set_accepted());
+            dgv_RawExpNeuCodePairs.Refresh();
+            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures();
         }
 
         private void KMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load)
-            {
-                Lollipop.max_lysine_ct = KMaxAcceptable.Value;
-                Parallel.ForEach(Lollipop.raw_neucode_pairs, p => p.set_accepted());
-                dgv_RawExpNeuCodePairs.Refresh();
-                ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsAndTables();
-            }
+            SaveState.lollipop.max_lysine_ct = KMaxAcceptable.Value;
+            Parallel.ForEach(SaveState.lollipop.raw_neucode_pairs, p => p.set_accepted());
+            dgv_RawExpNeuCodePairs.Refresh();
+            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures();
         }
 
         private void IRatMinAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load)
-            {
-                Lollipop.min_intensity_ratio = IRatMinAcceptable.Value;
-                Parallel.ForEach(Lollipop.raw_neucode_pairs, p => p.set_accepted());
-                dgv_RawExpNeuCodePairs.Refresh();
-                ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsAndTables();
-            }
+            SaveState.lollipop.min_intensity_ratio = IRatMinAcceptable.Value;
+            Parallel.ForEach(SaveState.lollipop.raw_neucode_pairs, p => p.set_accepted());
+            dgv_RawExpNeuCodePairs.Refresh();
+            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures();
         }
 
         private void IRatMaxAcceptable_ValueChanged(object sender, EventArgs e)
         {
-            if (!initial_load)
-            {
-                Lollipop.max_intensity_ratio = IRatMaxAcceptable.Value;
-                Parallel.ForEach(Lollipop.raw_neucode_pairs, p => p.set_accepted());
-                dgv_RawExpNeuCodePairs.Refresh();
-                ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsAndTables();
-            }
+            SaveState.lollipop.max_intensity_ratio = IRatMaxAcceptable.Value;
+            Parallel.ForEach(SaveState.lollipop.raw_neucode_pairs, p => p.set_accepted());
+            dgv_RawExpNeuCodePairs.Refresh();
+            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures();
         }
 
         #endregion Private Methods

@@ -1,10 +1,9 @@
-﻿using System;
+﻿using ProteoformSuiteInternal;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
 using System.IO;
-using ProteoformSuiteInternal;
+using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
 namespace ProteoformSuiteGUI
@@ -37,7 +36,7 @@ namespace ProteoformSuiteGUI
         OpenFileDialog openResults = new OpenFileDialog();
         SaveFileDialog saveResults = new SaveFileDialog();
         SaveFileDialog saveExcelDialog = new SaveFileDialog();
-        List<Form> forms;
+        List<ISweetForm> forms;
         Form current_form;
 
         #endregion Private Fields
@@ -48,8 +47,8 @@ namespace ProteoformSuiteGUI
         {
             InitializeComponent();
             InitializeForms();
-            this.WindowState = FormWindowState.Maximized;
-            this.Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
+            WindowState = FormWindowState.Maximized;
+            Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath);
             showForm(loadDeconvolutionResults);
             methodFileOpen.Filter = "Method XML File (*.xml)| *.xml";
             methodFileSave.DefaultExt = ".xml";
@@ -67,11 +66,21 @@ namespace ProteoformSuiteGUI
 
         private void InitializeForms()
         {
-            forms = new List<Form>(new Form[] {
-                loadDeconvolutionResults, rawExperimentalComponents, neuCodePairs, aggregatedProteoforms,
-                theoreticalDatabase, experimentalTheoreticalComparison, experimentExperimentComparison,
-                proteoformFamilies, quantification, topDown, resultsSummary
-            });
+
+            forms = new List<ISweetForm>
+            {
+                loadDeconvolutionResults,
+                rawExperimentalComponents,
+                neuCodePairs,
+                aggregatedProteoforms,
+                theoreticalDatabase,
+                experimentalTheoreticalComparison,
+                experimentExperimentComparison,
+                topDown,
+                proteoformFamilies,
+                quantification,
+                resultsSummary
+            };
 
             foreach (Form form in forms)
             {
@@ -107,19 +116,20 @@ namespace ProteoformSuiteGUI
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(rawExperimentalComponents);
-            rawExperimentalComponents.load_raw_components();
+            rawExperimentalComponents.initialize_every_time();
         }
 
         private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(neuCodePairs);
-            neuCodePairs.display_neucode_pairs();
+            if (neuCodePairs.ReadyToRunTheGamut()) neuCodePairs.RunTheGamut();
         }
 
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(aggregatedProteoforms);
-            if (run_when_form_loads) aggregatedProteoforms.aggregate_proteoforms();
+            if (run_when_form_loads && aggregatedProteoforms.ReadyToRunTheGamut()) aggregatedProteoforms.RunTheGamut();
+            else if (!aggregatedProteoforms.ReadyToRunTheGamut() && SaveState.lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
         }
 
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
@@ -131,19 +141,26 @@ namespace ProteoformSuiteGUI
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentalTheoreticalComparison);
-            if (run_when_form_loads) experimentalTheoreticalComparison.compare_et();
+            if (run_when_form_loads && experimentalTheoreticalComparison.ReadyToRunTheGamut()) experimentalTheoreticalComparison.RunTheGamut();
+            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
+            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentExperimentComparison);
-            if (run_when_form_loads) experimentExperimentComparison.compare_ee();
+            if (run_when_form_loads && experimentExperimentComparison.ReadyToRunTheGamut()) experimentExperimentComparison.RunTheGamut();
+            else if (!experimentExperimentComparison.ReadyToRunTheGamut() && SaveState.lollipop.ee_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(proteoformFamilies);
-            proteoformFamilies.construct_families();
+            if (proteoformFamilies.ReadyToRunTheGamut())
+            {
+                proteoformFamilies.initialize_every_time();
+                proteoformFamilies.RunTheGamut();
+            }
         }
         private void topdownResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -154,7 +171,7 @@ namespace ProteoformSuiteGUI
 
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (run_when_form_loads) quantification.perform_calculations();
+            if (run_when_form_loads && quantification.ReadyToRunTheGamut()) quantification.perform_calculations();
             quantification.initialize_every_time();
             showForm(quantification);
         }
@@ -168,18 +185,6 @@ namespace ProteoformSuiteGUI
         #endregion RESULTS TOOL STRIP Private Methods
 
         #region FILE TOOL STRIP Private Methods
-
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //if (openResults.ShowDialog() == DialogResult.OK)
-            //    SaveState.load_all_results(openResults.FileName);
-        }
-
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            //if (saveResults.ShowDialog() == DialogResult.OK)
-            //    SaveState.save_all_results(saveResults.FileName);
-        }
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -226,7 +231,7 @@ namespace ProteoformSuiteGUI
 
         private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (Lollipop.input_files.Count == 0)
+            if (SaveState.lollipop.input_files.Count == 0)
             {
                 MessageBox.Show("Please load in deconvolution result files in order to use load and run.");
                 return;
@@ -244,19 +249,17 @@ namespace ProteoformSuiteGUI
         public bool full_run()
         {
             clear_lists();
-            if (Lollipop.get_files(Lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
+            if (!SaveState.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory))
             {
-                MessageBox.Show("Please list at least one protein database and at least one PTM list.");
+                MessageBox.Show("Please list at least one protein database. Also, please make sure it has modifications listed (mzLibXml format) or to include and at least one PTM list.");
                 return false;
             }
 
-            this.Cursor = Cursors.WaitCursor;
+            Cursor = Cursors.WaitCursor;
             rawExperimentalComponents.load_raw_components(); //also loads the theoretical database, now
-            rawExperimentalComponents.preloaded = true;
-            neuCodePairs.preloaded = true;
-            aggregatedProteoforms.aggregate_proteoforms();
-            this.enable_neuCodeProteoformPairsToolStripMenuItem(Lollipop.neucode_labeled);
-            this.Cursor = Cursors.Default;
+            if (aggregatedProteoforms.ReadyToRunTheGamut()) aggregatedProteoforms.RunTheGamut();
+            enable_neuCodeProteoformPairsToolStripMenuItem(SaveState.lollipop.neucode_labeled);
+            Cursor = Cursors.Default;
             return true;
         }
 
@@ -301,6 +304,11 @@ namespace ProteoformSuiteGUI
                 SaveExcelFile(new List<DataGridView>() { experimentExperimentComparison.GetEERelationDGV(), experimentExperimentComparison.GetEEPeaksDGV() }, "experiment_experiment_comparison_table.xlsx");
             }
 
+            if (current_form == topDown)
+            {
+                SaveExcelFile(new List<DataGridView>() { topDown.GetTopDownDGV() }, "topdown_table.xlsx" );
+            }
+
             if (current_form == proteoformFamilies)
             {
                 SaveExcelFile(new List<DataGridView>() { proteoformFamilies.GetDGV() }, "proteoform_families_table.xlsx");
@@ -331,13 +339,13 @@ namespace ProteoformSuiteGUI
 
         public void save_all_plots(string folder, string timestamp)
         {
-            if (Lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_IntensityRatio, folder, "NeuCode_IntensityRatios_", timestamp);
-            if (Lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_LysineCount, folder, "NeuCode_LysineCounts_", timestamp);
-            if (Lollipop.et_relations.Count > 0) save_as_png(experimentalTheoreticalComparison.ct_ET_Histogram, folder, "ExperimentalTheoretical_MassDifferences_", timestamp);
-            if (Lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
-            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_proteoformIntensities, folder, "QuantifiedProteoform_Intensities_", timestamp);
-            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_relativeDifference, folder, "QuantifiedProteoform_Tusher2001Plot_", timestamp);
-            if (Lollipop.qVals.Count > 0) save_as_png(quantification.ct_volcano_logFold_logP, folder, "QuantifiedProteoform_VolcanoPlot_", timestamp);
+            if (SaveState.lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_IntensityRatio, folder, "NeuCode_IntensityRatios_", timestamp);
+            if (SaveState.lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_LysineCount, folder, "NeuCode_LysineCounts_", timestamp);
+            if (SaveState.lollipop.et_relations.Count > 0) save_as_png(experimentalTheoreticalComparison.ct_ET_Histogram, folder, "ExperimentalTheoretical_MassDifferences_", timestamp);
+            if (SaveState.lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
+            if (SaveState.lollipop.qVals.Count > 0) save_as_png(quantification.ct_proteoformIntensities, folder, "QuantifiedProteoform_Intensities_", timestamp);
+            if (SaveState.lollipop.qVals.Count > 0) save_as_png(quantification.ct_relativeDifference, folder, "QuantifiedProteoform_Tusher2001Plot_", timestamp);
+            if (SaveState.lollipop.qVals.Count > 0) save_as_png(quantification.ct_volcano_logFold_logP, folder, "QuantifiedProteoform_VolcanoPlot_", timestamp);
         }
 
         private void save_as_png(Chart ct, string folder, string prefix, string timestamp)
@@ -351,20 +359,20 @@ namespace ProteoformSuiteGUI
 
         public void clear_lists()
         {
-            Lollipop.raw_experimental_components.Clear();
-            Lollipop.raw_neucode_pairs.Clear();
-            Lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
-            Lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
-            Lollipop.et_relations.Clear();
-            Lollipop.et_peaks.Clear();
-            Lollipop.ee_relations.Clear();
-            Lollipop.ee_peaks.Clear();
-            Lollipop.proteoform_community.families.Clear();
-            Lollipop.ed_relations.Clear();
-            Lollipop.proteoform_community.relations_in_peaks.Clear();
-            Lollipop.proteoform_community.delta_mass_peaks.Clear();
-            Lollipop.ef_relations.Clear();
-            Lollipop.proteoform_community.decoy_proteoforms.Clear();
+            SaveState.lollipop.raw_experimental_components.Clear();
+            SaveState.lollipop.raw_neucode_pairs.Clear();
+            SaveState.lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
+            SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
+            SaveState.lollipop.et_relations.Clear();
+            SaveState.lollipop.et_peaks.Clear();
+            SaveState.lollipop.ee_relations.Clear();
+            SaveState.lollipop.ee_peaks.Clear();
+            SaveState.lollipop.proteoform_community.families.Clear();
+            SaveState.lollipop.ed_relations.Clear();
+            SaveState.lollipop.proteoform_community.relations_in_peaks.Clear();
+            SaveState.lollipop.proteoform_community.delta_mass_peaks.Clear();
+            SaveState.lollipop.ef_relations.Clear();
+            SaveState.lollipop.proteoform_community.decoy_proteoforms.Clear();
         }
 
         #endregion Public Method

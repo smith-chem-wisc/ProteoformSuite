@@ -47,8 +47,6 @@
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.dgv_ET_Peak_List = new System.Windows.Forms.DataGridView();
             this.ct_ET_peakList = new System.Windows.Forms.DataVisualization.Charting.Chart();
-            this.tb_notch_masses = new System.Windows.Forms.TextBox();
-            this.cb_notch_search = new System.Windows.Forms.CheckBox();
             this.cb_TDBUpsm = new System.Windows.Forms.CheckBox();
             this.cb_view_decoy_histogram = new System.Windows.Forms.CheckBox();
             this.bt_compare_ET = new System.Windows.Forms.Button();
@@ -151,8 +149,6 @@
             // 
             // splitContainer3.Panel2
             // 
-            this.splitContainer3.Panel2.Controls.Add(this.tb_notch_masses);
-            this.splitContainer3.Panel2.Controls.Add(this.cb_notch_search);
             this.splitContainer3.Panel2.Controls.Add(this.cb_TDBUpsm);
             this.splitContainer3.Panel2.Controls.Add(this.cb_view_decoy_histogram);
             this.splitContainer3.Panel2.Controls.Add(this.bt_compare_ET);
@@ -290,26 +286,6 @@
             this.ct_ET_peakList.TabIndex = 1;
             this.ct_ET_peakList.Text = "chart1";
             // 
-            // tb_notch_masses
-            // 
-            this.tb_notch_masses.Enabled = false;
-            this.tb_notch_masses.Location = new System.Drawing.Point(100, 44);
-            this.tb_notch_masses.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_notch_masses.Name = "tb_notch_masses";
-            this.tb_notch_masses.Size = new System.Drawing.Size(314, 20);
-            this.tb_notch_masses.TabIndex = 35;
-            // 
-            // cb_notch_search
-            // 
-            this.cb_notch_search.AutoSize = true;
-            this.cb_notch_search.Location = new System.Drawing.Point(3, 47);
-            this.cb_notch_search.Name = "cb_notch_search";
-            this.cb_notch_search.Size = new System.Drawing.Size(92, 17);
-            this.cb_notch_search.TabIndex = 34;
-            this.cb_notch_search.Text = "Notch Search";
-            this.cb_notch_search.UseVisualStyleBackColor = true;
-            this.cb_notch_search.CheckedChanged += new System.EventHandler(this.cb_notch_search_CheckedChanged);
-            // 
             // cb_TDBUpsm
             // 
             this.cb_TDBUpsm.AutoSize = true;
@@ -355,7 +331,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(199, 100);
+            this.groupBox4.Location = new System.Drawing.Point(199, 101);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -462,7 +438,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(431, 118);
+            this.groupBox3.Location = new System.Drawing.Point(431, 119);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -535,7 +511,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(431, 205);
+            this.groupBox2.Location = new System.Drawing.Point(431, 206);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -623,7 +599,7 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(199, 205);
+            this.groupBox1.Location = new System.Drawing.Point(199, 206);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -859,8 +835,6 @@
         private System.Windows.Forms.CheckBox cb_TDBUpsm;
         private System.Windows.Forms.TextBox tb_max_accepted_fdr;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.CheckBox cb_notch_search;
-        private System.Windows.Forms.TextBox tb_notch_masses;
         private System.Windows.Forms.CheckBox cb_Graph_lowerThreshold;
         private System.Windows.Forms.DataGridView dgv_ET_Pairs;
         private System.Windows.Forms.CheckBox cb_view_decoy_histogram;

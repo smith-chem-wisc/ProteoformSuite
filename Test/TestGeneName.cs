@@ -1,10 +1,7 @@
 ﻿using NUnit.Framework;
-using System;
-using Proteomics;
 using ProteoformSuiteInternal;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.IO;
 
 namespace Test
 {

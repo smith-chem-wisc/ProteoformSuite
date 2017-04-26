@@ -1,12 +1,11 @@
-﻿using System;
-using ProteoformSuiteInternal;
+﻿using ProteoformSuiteInternal;
 using System.Windows.Forms;
-
 
 namespace ProteoformSuiteGUI
 {
     public class DisplayChargeState : DisplayObject
     {
+
         #region Public Constructors
 
         public DisplayChargeState(ChargeState c)
@@ -69,5 +68,6 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion
+
     }
 }

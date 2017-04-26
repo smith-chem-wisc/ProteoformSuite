@@ -22,8 +22,8 @@ namespace ProteoformSuiteInternal
                 List<Ptm> modifications = new List<Ptm>();
                 for (int p = 0; p < identifications.NumModifications(i); p++)
                 {
-                    ModificationWithMass mod = Lollipop.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
-                    if (mod == null)  mod = Lollipop.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
+                    ModificationWithMass mod = SaveState.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
+                    if (mod == null)  mod = SaveState.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
                     if (mod != null) modifications.Add(new Ptm(identifications.ModificationLocation(i, p), mod));
                     else modifications.Add(new Ptm(identifications.ModificationLocation(i, p), new ModificationWithMass(identifications.ModificationAcession(i, p), null, null, ModificationSites.Any, 0, null, null, null, null)));
                 }
