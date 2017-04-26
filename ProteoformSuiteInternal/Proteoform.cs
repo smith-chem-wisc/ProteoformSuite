@@ -152,7 +152,7 @@ namespace ProteoformSuiteInternal
                         continue;
                     }
 
-                    bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.Motif == "M" && theoretical_base.begin == 2 && !mods_in_set.Contains(m);
+                    bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.Motif == "M" && theoretical_base.begin == 2 && !ptm_set.ptm_combination.Select(p => p.modification).Contains(m);
                     bool motif_matches_n_terminus = n_terminal_degraded_aas < theoretical_base_sequence.Length && m.motif.Motif == theoretical_base_sequence[n_terminal_degraded_aas].ToString();
                     bool motif_matches_c_terminus = c_terminal_degraded_aas < theoretical_base_sequence.Length && m.motif.Motif == theoretical_base_sequence[theoretical_base_sequence.Length - c_terminal_degraded_aas - 1].ToString();
                     bool cannot_be_degradation = !motif_matches_n_terminus && !motif_matches_c_terminus;
