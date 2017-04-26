@@ -36,7 +36,7 @@ namespace ProteoformSuiteGUI
         SaveFileDialog saveResults = new SaveFileDialog();
         SaveFileDialog saveExcelDialog = new SaveFileDialog();
         List<ISweetForm> forms;
-        Form current_form;
+        ISweetForm current_form;
 
         #endregion Private Fields
 
@@ -89,7 +89,7 @@ namespace ProteoformSuiteGUI
         {
             form.Show();
             form.WindowState = FormWindowState.Maximized;
-            current_form = form;
+            current_form = form as ISweetForm;
         }
 
         #endregion Private Setup Methods
@@ -265,8 +265,11 @@ namespace ProteoformSuiteGUI
 
         private void export_table()
         {
-            if (current_form != resultsSummary && current_form != loadDeconvolutionResults)
-            SaveExcelFile(((ISweetForm)current_form).GetDGVs(), current_form.Name + "_table.xlsx");
+            List<DataGridView> grid_views = current_form.GetDGVs();
+            if (grid_views != null)
+            {
+                SaveExcelFile(grid_views, (current_form as Form).Name + "_table.xlsx");
+            }
             else
             {
                 MessageBox.Show("There is no table on this page to export. Please navigate to another page with the Results tab.");
@@ -276,7 +279,7 @@ namespace ProteoformSuiteGUI
         private void SaveExcelFile(List<DataGridView> dgvs, string filename)
         {
             saveExcelDialog.FileName = filename;
-            DialogResult dr = this.saveExcelDialog.ShowDialog();
+            DialogResult dr = saveExcelDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
                 DGVExcelWriter writer = new DGVExcelWriter();
