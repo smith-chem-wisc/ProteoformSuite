@@ -1,10 +1,9 @@
-﻿using System;
+﻿using ProteoformSuiteInternal;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
 using System.IO;
-using ProteoformSuiteInternal;
+using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
 namespace ProteoformSuiteGUI
@@ -127,7 +126,7 @@ namespace ProteoformSuiteGUI
         {
             showForm(aggregatedProteoforms);
             if (run_when_form_loads && aggregatedProteoforms.ReadyToRunTheGamut()) aggregatedProteoforms.RunTheGamut();
-            else if (SaveState.lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
+            else if (!aggregatedProteoforms.ReadyToRunTheGamut() && SaveState.lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
         }
 
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
@@ -140,15 +139,15 @@ namespace ProteoformSuiteGUI
         {
             showForm(experimentalTheoreticalComparison);
             if (run_when_form_loads && experimentalTheoreticalComparison.ReadyToRunTheGamut()) experimentalTheoreticalComparison.RunTheGamut();
-            else if (SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
-            else if (SaveState.lollipop.et_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
+            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
+            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentExperimentComparison);
             if (run_when_form_loads && experimentExperimentComparison.ReadyToRunTheGamut()) experimentExperimentComparison.RunTheGamut();
-            else if (SaveState.lollipop.ee_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
+            else if (!experimentExperimentComparison.ReadyToRunTheGamut() && SaveState.lollipop.ee_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
@@ -177,37 +176,6 @@ namespace ProteoformSuiteGUI
         #endregion RESULTS TOOL STRIP Private Methods
 
         #region FILE TOOL STRIP Private Methods
-
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Cursor = Cursors.WaitCursor;
-
-            foreach (ISweetForm form in forms)
-            {
-                form.ClearListsTablesFigures();
-            }
-
-            if (openResults.ShowDialog() == DialogResult.OK)
-            {
-                SaveState.load_all_results(openResults.FileName);
-            }
-
-            foreach (ISweetForm form in forms)
-            {
-                form.InitializeParameterSet();
-                form.FillTablesAndCharts();
-            }
-
-            Cursor = Cursors.Default;
-        }
-
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Cursor = Cursors.WaitCursor;
-            if (saveResults.ShowDialog() == DialogResult.OK)
-                SaveState.save_all_results(saveResults.FileName);
-            Cursor = Cursors.Default;
-        }
 
         private void printToolStripMenuItem_Click(object sender, EventArgs e)
         {

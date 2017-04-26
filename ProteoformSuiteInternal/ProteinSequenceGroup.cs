@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class ProteinSequenceGroup : ProteinWithGoTerms
     {
         public ProteinSequenceGroup(IEnumerable<ProteinWithGoTerms> proteins_with_contaminants_first)

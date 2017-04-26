@@ -122,6 +122,14 @@ namespace ProteoformSuiteGUI
             nUD_PeakCountMinThreshold.Maximum = 1000;
             nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(SaveState.lollipop.min_peak_count_et); // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
 
+            //tb_peakTableFilter.TextChanged -= tb_peakTableFilter_TextChanged;
+            //tb_peakTableFilter.Text = "";
+            //tb_peakTableFilter.TextChanged += tb_peakTableFilter_TextChanged;
+
+            //tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
+            //tb_relationTableFilter.Text = "";
+            //tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
+
             //MASS WINDOW
             //only do this if ET hasn't already been run
             nUD_ET_Lower_Bound.Minimum = -500;
@@ -200,6 +208,15 @@ namespace ProteoformSuiteGUI
 
         #region ET Peak List Private Methods
 
+        //private void tb_peakTableFilter_TextChanged(object sender, EventArgs e)
+        //{
+        //    IEnumerable<object> selected_peaks = tb_peakTableFilter.Text == "" ?
+        //        SaveState.lollipop.et_peaks :
+        //        ExtensionMethods.filter(SaveState.lollipop.et_peaks, tb_peakTableFilter.Text);
+        //    DisplayUtility.FillDataGridView(dgv_ET_Peak_List, selected_peaks.OfType<DeltaMassPeak>());
+        //    DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List, false);
+        //}
+
         private void FillETPeakListTable()
         {
             DisplayUtility.FillDataGridView(dgv_ET_Peak_List, SaveState.lollipop.et_peaks.OrderByDescending(p => p.peak_relation_group_count).ToList());
@@ -214,7 +231,7 @@ namespace ProteoformSuiteGUI
                 if (e.Button == MouseButtons.Left)
                 {
                     ct_ET_peakList.ChartAreas[0].AxisX.StripLines.Clear();
-                    DeltaMassPeak selected_peak = (DeltaMassPeak)this.dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
+                    DeltaMassPeak selected_peak = (DeltaMassPeak)dgv_ET_Peak_List.Rows[clickedRow].DataBoundItem;
                     DisplayUtility.GraphSelectedDeltaMassPeak(ct_ET_peakList, selected_peak, SaveState.lollipop.et_relations);
                 }
                 else
@@ -267,8 +284,17 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion ET Peak List Private Methods
-      
+
         #region Histogram Private Methods
+
+        //private void tb_relationTableFilter_TextChanged(object sender, EventArgs e)
+        //{
+        //    IEnumerable<object> selected_peaks = tb_relationTableFilter.Text == "" ?
+        //        SaveState.lollipop.et_relations :
+        //        ExtensionMethods.filter(SaveState.lollipop.et_relations, tb_relationTableFilter.Text);
+        //    DisplayUtility.FillDataGridView(dgv_ET_Pairs, selected_peaks.OfType<ProteoformRelation>().Select(r => new DisplayProteoformRelation(r)));
+        //    DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Pairs, true, false);
+        //}
 
         private void GraphETRelations()
         {

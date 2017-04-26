@@ -1,6 +1,7 @@
 ﻿using ProteoformSuiteInternal;
 using System;
 using System.Data;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
@@ -138,6 +139,14 @@ namespace ProteoformSuiteGUI
             nUD_MaxRetTimeDifference.Maximum = 60;
             nUD_MaxRetTimeDifference.Value = Convert.ToDecimal(SaveState.lollipop.ee_max_RetentionTime_difference);
 
+            //tb_peakTableFilter.TextChanged -= tb_peakTableFilter_TextChanged;
+            //tb_peakTableFilter.Text = "";
+            //tb_peakTableFilter.TextChanged += tb_peakTableFilter_TextChanged;
+
+            //tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
+            //tb_relationTableFilter.Text = "";
+            //tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
+
             //MASS WINDOW
             nUD_EE_Upper_Bound.Minimum = 0;
             nUD_EE_Upper_Bound.Maximum = 500;
@@ -175,6 +184,15 @@ namespace ProteoformSuiteGUI
 
         #region EE Peak List Private Methods
 
+        //private void tb_peakTableFilter_TextChanged(object sender, EventArgs e)
+        //{
+        //    IEnumerable<object> selected_peaks = tb_peakTableFilter.Text == "" ?
+        //        SaveState.lollipop.ee_peaks :
+        //        ExtensionMethods.filter(SaveState.lollipop.ee_peaks, tb_peakTableFilter.Text);
+        //    DisplayUtility.FillDataGridView(dgv_EE_Peaks, selected_peaks.OfType<DeltaMassPeak>());
+        //    DisplayUtility.FormatPeakListGridView(dgv_EE_Peaks, true);
+        //}
+
         private void FillEEPeakListTable()
         {
             DisplayUtility.FillDataGridView(dgv_EE_Peaks, SaveState.lollipop.ee_peaks.OrderByDescending(p => p.peak_relation_group_count).ToList());
@@ -202,8 +220,17 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion EE Peak List Private Methods
-        
+
         #region Histogram Private Methods
+
+        //private void tb_relationTableFilter_TextChanged(object sender, EventArgs e)
+        //{
+        //    IEnumerable<object> selected_peaks = tb_relationTableFilter.Text == "" ?
+        //        SaveState.lollipop.ee_relations :
+        //        ExtensionMethods.filter(SaveState.lollipop.ee_relations, tb_relationTableFilter.Text);
+        //    DisplayUtility.FillDataGridView(dgv_EE_Relations, selected_peaks.OfType<ProteoformRelation>().Select(r => new DisplayProteoformRelation(r)));
+        //    DisplayProteoformRelation.FormatRelationsGridView(dgv_EE_Relations, false, true);
+        //}
 
         private void FillEEPairsGridView()
         {

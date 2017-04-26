@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class NeuCodePair : Component
     {
         #region Public Properties

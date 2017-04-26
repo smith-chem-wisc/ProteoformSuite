@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class ChargeState
     {
         #region Public Properties
