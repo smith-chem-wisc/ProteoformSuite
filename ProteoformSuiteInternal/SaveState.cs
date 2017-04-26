@@ -1,5 +1,4 @@
-﻿using NetSerializer;
-using Proteomics;
+﻿using Proteomics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,29 +14,6 @@ namespace ProteoformSuiteInternal
     {
 
         public static Lollipop lollipop = new Lollipop();
-
-        #region Private Field
-
-        private static Serializer ser = new Serializer(new Type[]
-        {
-            typeof(Lollipop),
-            typeof(ComponentReader), // not serialized currently because InputFile -> ComponentReader -> Component -> InputFile messes things up, and it's only used in loading components
-            typeof(ProteinSequenceGroup),
-            typeof(TheoreticalProteoformGroup),
-            typeof(Protein),
-            typeof(ModificationWithLocation),
-            typeof(ModificationWithMass),
-            typeof(ModificationWithMassAndCf),
-            typeof(List<DatabaseReference>),
-            typeof(List<Tuple<string,string>>),
-            typeof(Dictionary<int, List<Modification>>),
-            typeof(Dictionary<string, IList<string>>),
-            typeof(List<ProteolysisProduct>),
-            typeof(ChemicalFormulaTerminus),
-            typeof(List<double>)
-        });
-
-        #endregion Private Field
 
         #region BASICS FOR XML WRITING
 
