@@ -23,14 +23,9 @@ namespace ProteoformSuiteGUI
 
         #region Public Methods
 
-        public DataGridView Get_quant_results_DGV()
+        public List<DataGridView> GetDGVs()
         {
-            return dgv_quantification_results;
-        }
-
-        public DataGridView Get_GoTerms_DGV()
-        {
-            return dgv_goAnalysis;
+            return new List<DataGridView>() { dgv_quantification_results, dgv_goAnalysis };
         }
 
         public void perform_calculations() //this is the first thing that gets run on form load

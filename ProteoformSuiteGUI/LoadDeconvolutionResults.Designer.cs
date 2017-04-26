@@ -81,7 +81,7 @@
             this.rb_unlabeled.AutoSize = true;
             this.rb_unlabeled.Location = new System.Drawing.Point(23, 57);
             this.rb_unlabeled.Name = "rb_unlabeled";
-            this.rb_unlabeled.Size = new System.Drawing.Size(182, 36);
+            this.rb_unlabeled.Size = new System.Drawing.Size(73, 17);
             this.rb_unlabeled.TabIndex = 1;
             this.rb_unlabeled.Text = "Unlabeled";
             this.rb_unlabeled.UseVisualStyleBackColor = true;
@@ -92,7 +92,7 @@
             this.rb_neucode.Checked = true;
             this.rb_neucode.Location = new System.Drawing.Point(23, 26);
             this.rb_neucode.Name = "rb_neucode";
-            this.rb_neucode.Size = new System.Drawing.Size(282, 36);
+            this.rb_neucode.Size = new System.Drawing.Size(111, 17);
             this.rb_neucode.TabIndex = 0;
             this.rb_neucode.TabStop = true;
             this.rb_neucode.Text = "NeuCode Labeled";
@@ -224,7 +224,7 @@
             this.cb_run_when_load.AutoSize = true;
             this.cb_run_when_load.Location = new System.Drawing.Point(16, 587);
             this.cb_run_when_load.Name = "cb_run_when_load";
-            this.cb_run_when_load.Size = new System.Drawing.Size(402, 36);
+            this.cb_run_when_load.Size = new System.Drawing.Size(157, 17);
             this.cb_run_when_load.TabIndex = 27;
             this.cb_run_when_load.Text = "Process when loading page";
             this.cb_run_when_load.UseVisualStyleBackColor = true;
@@ -250,7 +250,7 @@
             this.lb_filter3.AutoSize = true;
             this.lb_filter3.Location = new System.Drawing.Point(114, 75);
             this.lb_filter3.Name = "lb_filter3";
-            this.lb_filter3.Size = new System.Drawing.Size(86, 32);
+            this.lb_filter3.Size = new System.Drawing.Size(32, 13);
             this.lb_filter3.TabIndex = 34;
             this.lb_filter3.Text = "filter3";
             // 
@@ -258,7 +258,7 @@
             // 
             this.tb_filter3.Location = new System.Drawing.Point(8, 72);
             this.tb_filter3.Name = "tb_filter3";
-            this.tb_filter3.Size = new System.Drawing.Size(100, 38);
+            this.tb_filter3.Size = new System.Drawing.Size(100, 20);
             this.tb_filter3.TabIndex = 33;
             this.tb_filter3.TextChanged += new System.EventHandler(this.tb_filter3_TextChanged);
             // 
@@ -267,7 +267,7 @@
             this.lb_filter2.AutoSize = true;
             this.lb_filter2.Location = new System.Drawing.Point(114, 49);
             this.lb_filter2.Name = "lb_filter2";
-            this.lb_filter2.Size = new System.Drawing.Size(86, 32);
+            this.lb_filter2.Size = new System.Drawing.Size(32, 13);
             this.lb_filter2.TabIndex = 32;
             this.lb_filter2.Text = "filter2";
             // 
@@ -276,7 +276,7 @@
             this.lb_filter1.AutoSize = true;
             this.lb_filter1.Location = new System.Drawing.Point(114, 22);
             this.lb_filter1.Name = "lb_filter1";
-            this.lb_filter1.Size = new System.Drawing.Size(86, 32);
+            this.lb_filter1.Size = new System.Drawing.Size(32, 13);
             this.lb_filter1.TabIndex = 31;
             this.lb_filter1.Text = "filter1";
             // 
@@ -284,7 +284,7 @@
             // 
             this.tb_filter2.Location = new System.Drawing.Point(8, 46);
             this.tb_filter2.Name = "tb_filter2";
-            this.tb_filter2.Size = new System.Drawing.Size(100, 38);
+            this.tb_filter2.Size = new System.Drawing.Size(100, 20);
             this.tb_filter2.TabIndex = 30;
             this.tb_filter2.TextChanged += new System.EventHandler(this.tb_filter2_TextChanged);
             // 
@@ -292,7 +292,7 @@
             // 
             this.tb_filter1.Location = new System.Drawing.Point(8, 19);
             this.tb_filter1.Name = "tb_filter1";
-            this.tb_filter1.Size = new System.Drawing.Size(100, 38);
+            this.tb_filter1.Size = new System.Drawing.Size(100, 20);
             this.tb_filter1.TabIndex = 29;
             this.tb_filter1.TextChanged += new System.EventHandler(this.tb_filter1_TextChanged);
             // 
@@ -302,7 +302,7 @@
             this.cmb_loadTable1.FormattingEnabled = true;
             this.cmb_loadTable1.Location = new System.Drawing.Point(13, 15);
             this.cmb_loadTable1.Name = "cmb_loadTable1";
-            this.cmb_loadTable1.Size = new System.Drawing.Size(429, 50);
+            this.cmb_loadTable1.Size = new System.Drawing.Size(429, 26);
             this.cmb_loadTable1.TabIndex = 31;
             this.cmb_loadTable1.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable1_SelectedIndexChanged);
             // 
@@ -312,7 +312,7 @@
             this.cmb_loadTable2.FormattingEnabled = true;
             this.cmb_loadTable2.Location = new System.Drawing.Point(460, 15);
             this.cmb_loadTable2.Name = "cmb_loadTable2";
-            this.cmb_loadTable2.Size = new System.Drawing.Size(429, 50);
+            this.cmb_loadTable2.Size = new System.Drawing.Size(429, 26);
             this.cmb_loadTable2.TabIndex = 32;
             this.cmb_loadTable2.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable2_SelectedIndexChanged);
             // 
@@ -322,7 +322,7 @@
             this.cmb_loadTable3.FormattingEnabled = true;
             this.cmb_loadTable3.Location = new System.Drawing.Point(907, 15);
             this.cmb_loadTable3.Name = "cmb_loadTable3";
-            this.cmb_loadTable3.Size = new System.Drawing.Size(429, 50);
+            this.cmb_loadTable3.Size = new System.Drawing.Size(429, 26);
             this.cmb_loadTable3.TabIndex = 33;
             this.cmb_loadTable3.SelectedIndexChanged += new System.EventHandler(this.cmb_LoadTable3_SelectedIndexChanged);
             // 
@@ -342,7 +342,7 @@
             this.rb_chemicalCalibration.AutoSize = true;
             this.rb_chemicalCalibration.Location = new System.Drawing.Point(90, 17);
             this.rb_chemicalCalibration.Name = "rb_chemicalCalibration";
-            this.rb_chemicalCalibration.Size = new System.Drawing.Size(316, 36);
+            this.rb_chemicalCalibration.Size = new System.Drawing.Size(120, 17);
             this.rb_chemicalCalibration.TabIndex = 37;
             this.rb_chemicalCalibration.Text = "Chemical Calibration";
             this.rb_chemicalCalibration.UseVisualStyleBackColor = true;
@@ -354,7 +354,7 @@
             this.rb_standardOptions.Checked = true;
             this.rb_standardOptions.Location = new System.Drawing.Point(8, 17);
             this.rb_standardOptions.Name = "rb_standardOptions";
-            this.rb_standardOptions.Size = new System.Drawing.Size(168, 36);
+            this.rb_standardOptions.Size = new System.Drawing.Size(68, 17);
             this.rb_standardOptions.TabIndex = 36;
             this.rb_standardOptions.TabStop = true;
             this.rb_standardOptions.Text = "Standard";

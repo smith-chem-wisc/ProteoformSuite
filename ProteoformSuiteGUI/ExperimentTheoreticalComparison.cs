@@ -65,14 +65,9 @@ namespace ProteoformSuiteGUI
             dgv_ET_Peak_List.CurrentCellDirtyStateChanged += ET_Peak_List_DirtyStateChanged;//re-instate event handler after form load and table refresh event 
         }
 
-        public DataGridView GetETRelationsDGV()
+        public List<DataGridView> GetDGVs()
         {
-            return dgv_ET_Pairs;
-        }
-
-        public DataGridView GetETPeaksDGV()
-        {
-            return dgv_ET_Peak_List;
+            return new List<DataGridView>() { dgv_ET_Pairs, dgv_ET_Peak_List };
         }
 
         public void ClearListsTablesFigures()
