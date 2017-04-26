@@ -57,6 +57,7 @@ namespace Test
             SaveState.lollipop.min_peptide_length = 7;
             SaveState.lollipop.ptmset_mass_tolerance = 0.00001;
             SaveState.lollipop.combine_identical_sequences = true;
+            SaveState.lollipop.theoretical_database.limit_triples_and_greater = false;
             SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
             SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
 
@@ -95,6 +96,7 @@ namespace Test
             SaveState.lollipop.min_peptide_length = 7;
             SaveState.lollipop.ptmset_mass_tolerance = 0.00001;
             SaveState.lollipop.combine_identical_sequences = true;
+            SaveState.lollipop.theoretical_database.limit_triples_and_greater = false;
             SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
             SaveState.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], SaveState.lollipop.input_files);
 
