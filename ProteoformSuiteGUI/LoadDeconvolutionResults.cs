@@ -30,6 +30,11 @@ namespace ProteoformSuiteGUI
             populate_file_lists();
         }
 
+        public List<DataGridView> GetDGVs()
+        {
+            return null;
+        }
+
         public void ClearListsTablesFigures()
         { }
 

@@ -1,4 +1,8 @@
-﻿namespace ProteoformSuiteGUI
+﻿using System.Windows.Forms;
+using System.Collections.Generic;
+
+
+namespace ProteoformSuiteGUI
 {
     interface ISweetForm
     {
@@ -7,5 +11,6 @@
         bool ReadyToRunTheGamut();
         void InitializeParameterSet();
         void FillTablesAndCharts();
+        List<DataGridView> GetDGVs();
     }
 }

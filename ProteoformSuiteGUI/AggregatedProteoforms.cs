@@ -131,9 +131,9 @@ namespace ProteoformSuiteGUI
             Cursor = Cursors.Default;
         }
 
-        public DataGridView GetDGV()
+        public List<DataGridView> GetDGVs()
         {
-            return dgv_AggregatedProteoforms;
+            return new List<DataGridView>() { dgv_AggregatedProteoforms };
         }
 
         public void FillTablesAndCharts()
