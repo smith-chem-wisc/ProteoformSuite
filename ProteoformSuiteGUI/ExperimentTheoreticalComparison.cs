@@ -348,6 +348,14 @@ namespace ProteoformSuiteGUI
             ct_ET_Histogram.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(xMaxET.Value);
         }
 
+        //Stripline
+        private void cb_Graph_lowerThreshold_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cb_Graph_lowerThreshold.Checked)
+                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
+            else if (!cb_Graph_lowerThreshold.Checked) ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+        }
+
         #endregion Histogram Private Methods
 
         #region Parameters Private Methods
