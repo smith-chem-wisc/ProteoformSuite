@@ -73,7 +73,7 @@ namespace ProteoformSuiteInternal
 
         public List<Proteoform> get_connected_proteoforms()
         {
-            return relationships.Where(r => r.peak.Accepted).SelectMany(r => r.connected_proteoforms).ToList();
+            return relationships.Where(r => r.Accepted).SelectMany(r => r.connected_proteoforms).ToList();
         }
 
         public List<ExperimentalProteoform> identify_connected_experimentals(List<PtmSet> all_possible_ptmsets, List<ModificationWithMass> all_mods_with_mass)
