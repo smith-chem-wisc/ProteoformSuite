@@ -1,12 +1,9 @@
 ﻿using NUnit.Framework;
+using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using ProteoformSuiteInternal;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-
+using System.Linq;
 
 namespace Test
 {
@@ -55,11 +52,20 @@ namespace Test
             c.add_charge_state(new List<string> { charge_count, intensity, mz_centroid, reported_mass });
         }
 
+<<<<<<< HEAD
         //[Test]
         //public void basic_read_correction_factors()
         //{
         //    InputFile corr = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "example_corrections.tsv"), Purpose.Calibration);
         //    Assert.IsNotEmpty(Lollipop.read_corrections(corr));
         //}
+=======
+        [Test]
+        public void basic_read_correction_factors()
+        {
+            InputFile corr = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "example_corrections.tsv"), Purpose.Calibration);
+            Assert.IsNotEmpty(SaveState.lollipop.read_corrections(corr));
+        }
+>>>>>>> 4256719b0a3d908269a3d7b54f0a7594ccb09f5b
     }
 }

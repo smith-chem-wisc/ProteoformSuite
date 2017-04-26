@@ -20,8 +20,8 @@ namespace ProteoformSuiteInternal
         public List<double> all_RTs { get; set; }
         public TopDownHit root;
         public List<TopDownHit> topdown_hits;
-        public int etd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.ExperimentalTopDown).ToList().Count; } }
-        public int ttd_match_count { get { return relationships.Where(r => r.relation_type == ProteoformComparison.TheoreticalTopDown).ToList().Count; } }
+        public int etd_match_count { get { return relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).ToList().Count; } }
+        public int ttd_match_count { get { return relationships.Where(r => r.RelationType == ProteoformComparison.TheoreticalTopDown).ToList().Count; } }
         public bool targeted { get; set; } = false;
         public int observations { get { return topdown_hits.Count; } }
         public int bottom_up_PSMs
@@ -38,7 +38,7 @@ namespace ProteoformSuiteInternal
 
         public TopDownProteoform(string accession, TopDownHit root, List<TopDownHit> candidate_hits) : base(accession)
         {
-            this.linked_proteoform_references = new LinkedList<Proteoform>();
+            this.linked_proteoform_references = new LinkedList<Proteoform>().ToList();
             this.root = root;
             this.name = root.name;
             this.ptm_set = new PtmSet( root.ptm_list);
@@ -66,8 +66,8 @@ namespace ProteoformSuiteInternal
          
         private bool tolerable_rt(TopDownHit candidate, double rt)
         {
-            return candidate.retention_time >= rt - Convert.ToDouble(Lollipop.retention_time_tolerance) &&
-                candidate.retention_time <= rt + Convert.ToDouble(Lollipop.retention_time_tolerance);
+            return candidate.retention_time >= rt - Convert.ToDouble(SaveState.lollipop.retention_time_tolerance) &&
+                candidate.retention_time <= rt + Convert.ToDouble(SaveState.lollipop.retention_time_tolerance);
         }
 
         public bool same_ptms(TheoreticalProteoform theo)

@@ -1,16 +1,19 @@
-﻿using System;
+﻿using Proteomics;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using System.Reflection;
-using System.IO;
 
 namespace ProteoformSuiteInternal
 {
     public class SaveState
     {
+
+        public static Lollipop lollipop = new Lollipop();
 
         #region BASICS FOR XML WRITING
 
@@ -81,7 +84,7 @@ namespace ProteoformSuiteInternal
                     writer.WriteStartElement("setting");
                     writer.WriteAttributeString("field_type", field.FieldType.FullName);
                     writer.WriteAttributeString("field_name", field.Name);
-                    writer.WriteAttributeString("field_value", field.GetValue(null).ToString());
+                    writer.WriteAttributeString("field_value", field.GetValue(lollipop).ToString());
                     writer.WriteEndElement();
                 }
             }
@@ -110,7 +113,7 @@ namespace ProteoformSuiteInternal
                 Type type = Type.GetType(type_string); //Takes only full name of type
                 string name = GetAttribute(setting, "field_name");
                 string value = GetAttribute(setting, "field_value");
-                lollipop_fields.FirstOrDefault(p => p.Name == name).SetValue(null, Convert.ChangeType(value, type));
+                lollipop_fields.FirstOrDefault(p => p.Name == name).SetValue(lollipop, Convert.ChangeType(value, type));
             }
         }
 

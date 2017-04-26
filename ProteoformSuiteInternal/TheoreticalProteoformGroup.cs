@@ -1,13 +1,20 @@
-﻿using System;
+﻿using Proteomics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
     public class TheoreticalProteoformGroup : TheoreticalProteoform
     {
+
+        #region Public Property
+
         public List<string> accessionList { get; set; } // this is the list of accession numbers for all proteoforms that share the same modified mass. the list gets alphabetical order
+
+        #endregion Public Property
+
+        #region Public Constructor
 
         public TheoreticalProteoformGroup(IEnumerable<TheoreticalProteoform> theoreticals_with_contaminants_first)
             : base(theoreticals_with_contaminants_first.FirstOrDefault().accession + "_" + theoreticals_with_contaminants_first.Count() + "T",
@@ -20,11 +27,14 @@ namespace ProteoformSuiteInternal
                 false,
                 new Dictionary<InputFile, Protein[]>())
         {
-            this.description = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.description));
-            this.name = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.name));
-            this.fragment = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.fragment));
-            this.accessionList = theoreticals_with_contaminants_first.Select(p => p.accession).ToList();
-            this.contaminant = theoreticals_with_contaminants_first.FirstOrDefault().contaminant;
+            description = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.description));
+            name = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.name));
+            fragment = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.fragment));
+            accessionList = theoreticals_with_contaminants_first.Select(p => p.accession).ToList();
+            contaminant = theoreticals_with_contaminants_first.FirstOrDefault().contaminant;
         }
+
+        #endregion Public Constructor
+
     }
 }

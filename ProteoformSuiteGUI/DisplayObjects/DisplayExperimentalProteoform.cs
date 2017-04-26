@@ -118,7 +118,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(gene_name)].HeaderText = "Gene Name";
 
             //VISIBILITY
-            dgv.Columns[nameof(lysine_count)].Visible = Lollipop.neucode_labeled; 
+            dgv.Columns[nameof(lysine_count)].Visible = SaveState.lollipop.neucode_labeled; 
         }
 
         #endregion

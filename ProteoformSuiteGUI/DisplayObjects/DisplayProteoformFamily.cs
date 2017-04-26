@@ -29,11 +29,6 @@ namespace ProteoformSuiteGUI
             get { return f.family_id; }
         }
 
-        public int lysine_count
-        {
-            get { return f.lysine_count; }
-        }
-
         public int experimental_count
         {
             get { return f.experimental_proteoforms.Count; }
@@ -91,7 +86,6 @@ namespace ProteoformSuiteGUI
 
             //set column header
             dgv.Columns[nameof(family_id)].HeaderText = "Family ID";
-            dgv.Columns[nameof(lysine_count)].HeaderText = "Lysine Count";
             dgv.Columns[nameof(experimental_count)].HeaderText = "Experimental Proteoforms";
             dgv.Columns[nameof(theoretical_count)].HeaderText = "Theoretical Proteoforms";
             dgv.Columns[nameof(relation_count)].HeaderText = "Relation Count";
