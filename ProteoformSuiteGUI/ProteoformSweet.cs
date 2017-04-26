@@ -89,7 +89,7 @@ namespace ProteoformSuiteGUI
         {
             form.Show();
             form.WindowState = FormWindowState.Maximized;
-            current_form = form;
+            current_form = form as ISweetForm;
         }
 
         #endregion Private Setup Methods
