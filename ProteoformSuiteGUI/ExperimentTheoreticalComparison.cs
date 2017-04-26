@@ -16,6 +16,7 @@ namespace ProteoformSuiteGUI
         #region Private Fields
 
         private RelationUtility relationUtility;
+        private List<DisplayProteoformRelation> displayRelations = new List<DisplayProteoformRelation>();
 
         #endregion Private Fields
 
@@ -57,7 +58,7 @@ namespace ProteoformSuiteGUI
             dgv_ET_Peak_List.CurrentCellDirtyStateChanged -= ET_Peak_List_DirtyStateChanged;//remove event handler on form load and table refresh event
             FillETPeakListTable();
             FillETRelationsGridView();
-            DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Pairs, true, false);
+            DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Relations, true, false);
             DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List, false);
             GraphETRelations();
             GraphETPeaks();
@@ -67,7 +68,7 @@ namespace ProteoformSuiteGUI
 
         public List<DataGridView> GetDGVs()
         {
-            return new List<DataGridView>() { dgv_ET_Pairs, dgv_ET_Peak_List };
+            return new List<DataGridView>() { dgv_ET_Relations, dgv_ET_Peak_List };
         }
 
         public void ClearListsTablesFigures()
@@ -77,9 +78,9 @@ namespace ProteoformSuiteGUI
             foreach (var series in ct_ET_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_ET_peakList.Series) series.Points.Clear();
 
-            dgv_ET_Pairs.DataSource = null;
+            dgv_ET_Relations.DataSource = null;
             dgv_ET_Peak_List.DataSource = null;
-            dgv_ET_Pairs.Rows.Clear();
+            dgv_ET_Relations.Rows.Clear();
             dgv_ET_Peak_List.Rows.Clear();
         }
 
@@ -117,13 +118,13 @@ namespace ProteoformSuiteGUI
             nUD_PeakCountMinThreshold.Maximum = 1000;
             nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(SaveState.lollipop.min_peak_count_et); // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
 
-            //tb_peakTableFilter.TextChanged -= tb_peakTableFilter_TextChanged;
-            //tb_peakTableFilter.Text = "";
-            //tb_peakTableFilter.TextChanged += tb_peakTableFilter_TextChanged;
+            tb_peakTableFilter.TextChanged -= tb_peakTableFilter_TextChanged;
+            tb_peakTableFilter.Text = "";
+            tb_peakTableFilter.TextChanged += tb_peakTableFilter_TextChanged;
 
-            //tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
-            //tb_relationTableFilter.Text = "";
-            //tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
+            tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
+            tb_relationTableFilter.Text = "";
+            tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
 
             //MASS WINDOW
             //only do this if ET hasn't already been run
@@ -194,23 +195,18 @@ namespace ProteoformSuiteGUI
             DisplayUtility.GraphDeltaMassPeaks(ct_ET_peakList, SaveState.lollipop.et_peaks, "Peak Count", "Median Decoy Count", SaveState.lollipop.et_relations, "Nearby Relations");
         }
 
-        private void FillETRelationsGridView()
-        {
-            DisplayUtility.FillDataGridView(dgv_ET_Pairs, SaveState.lollipop.et_relations.Select(r => new DisplayProteoformRelation(r)));
-        }
-
         #endregion Other Private Methods
 
         #region ET Peak List Private Methods
 
-        //private void tb_peakTableFilter_TextChanged(object sender, EventArgs e)
-        //{
-        //    IEnumerable<object> selected_peaks = tb_peakTableFilter.Text == "" ?
-        //        SaveState.lollipop.et_peaks :
-        //        ExtensionMethods.filter(SaveState.lollipop.et_peaks, tb_peakTableFilter.Text);
-        //    DisplayUtility.FillDataGridView(dgv_ET_Peak_List, selected_peaks.OfType<DeltaMassPeak>());
-        //    DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List, false);
-        //}
+        private void tb_peakTableFilter_TextChanged(object sender, EventArgs e)
+        {
+            IEnumerable<object> selected_peaks = tb_peakTableFilter.Text == "" ?
+                SaveState.lollipop.et_peaks :
+                ExtensionMethods.filter(SaveState.lollipop.et_peaks, tb_peakTableFilter.Text);
+            DisplayUtility.FillDataGridView(dgv_ET_Peak_List, selected_peaks.OfType<DeltaMassPeak>());
+            DisplayUtility.FormatPeakListGridView(dgv_ET_Peak_List, false);
+        }
 
         private void FillETPeakListTable()
         {
@@ -282,14 +278,20 @@ namespace ProteoformSuiteGUI
 
         #region Histogram Private Methods
 
-        //private void tb_relationTableFilter_TextChanged(object sender, EventArgs e)
-        //{
-        //    IEnumerable<object> selected_peaks = tb_relationTableFilter.Text == "" ?
-        //        SaveState.lollipop.et_relations :
-        //        ExtensionMethods.filter(SaveState.lollipop.et_relations, tb_relationTableFilter.Text);
-        //    DisplayUtility.FillDataGridView(dgv_ET_Pairs, selected_peaks.OfType<ProteoformRelation>().Select(r => new DisplayProteoformRelation(r)));
-        //    DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Pairs, true, false);
-        //}
+        private void tb_relationTableFilter_TextChanged(object sender, EventArgs e)
+        {
+            IEnumerable<object> selected_peaks = tb_relationTableFilter.Text == "" ?
+                displayRelations :
+                ExtensionMethods.filter(displayRelations.ToList(), tb_relationTableFilter.Text);
+            DisplayUtility.FillDataGridView(dgv_ET_Relations, selected_peaks);
+            DisplayProteoformRelation.FormatRelationsGridView(dgv_ET_Relations, true, false);
+        }
+
+        private void FillETRelationsGridView()
+        {
+            displayRelations = SaveState.lollipop.et_relations.Select(r => new DisplayProteoformRelation(r)).ToList();
+            DisplayUtility.FillDataGridView(dgv_ET_Relations, displayRelations);
+        }
 
         private void GraphETRelations()
         {
@@ -377,7 +379,7 @@ namespace ProteoformSuiteGUI
                     p.Accepted = p.peak_relation_group_count >= SaveState.lollipop.min_peak_count_et;
                     Parallel.ForEach(p.grouped_relations, r => r.Accepted = p.Accepted);
                 });
-                dgv_ET_Pairs.Refresh();
+                dgv_ET_Relations.Refresh();
                 dgv_ET_Peak_List.Refresh();
                 ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
                 StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = SaveState.lollipop.min_peak_count_et };
@@ -409,7 +411,7 @@ namespace ProteoformSuiteGUI
         private void ET_Peak_List_DirtyStateChanged(object sender, EventArgs e)
         {
             relationUtility.peak_acceptability_change(dgv_ET_Peak_List);
-            dgv_ET_Pairs.Refresh();
+            dgv_ET_Relations.Refresh();
             dgv_ET_Peak_List.Refresh();
             update_figures_of_merit();
         }
