@@ -3,7 +3,6 @@ using System.IO;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class InputFile
     {
 
@@ -37,7 +36,6 @@ namespace ProteoformSuiteInternal
 
 
         //For identification files
-        [NonSerialized]
         public ComponentReader reader = new ComponentReader();
 
         public bool matchingCalibrationFile { get; set; } = false;

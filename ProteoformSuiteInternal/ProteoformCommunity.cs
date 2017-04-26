@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class ProteoformCommunity
     {
 
@@ -63,7 +62,7 @@ namespace ProteoformSuiteInternal
                         ProteoformRelation best_relation = pf1.candidate_relatives
                             .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass))
                             .Where(r => r.candidate_ptmset != null) // don't consider unassignable relations for ET
-                            .OrderBy(r => r.candidate_ptmset.ptm_rank_sum) // get the best explanation for the experimental observation
+                            .OrderBy(r => r.candidate_ptmset.ptm_rank_sum + Math.Abs(Math.Abs(r.candidate_ptmset.mass) - Math.Abs(r.DeltaMass)) * 10E-6) // get the best explanation for the experimental observation
                             .FirstOrDefault();
 
                         pf1.candidate_relatives = best_relation != null ?
@@ -77,12 +76,6 @@ namespace ProteoformSuiteInternal
                 (from pf1 in pfs1
                  from pf2 in pf1.candidate_relatives
                  select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)).ToList();
-
-            //Candidate relatives aren't used again.
-            Parallel.ForEach(pfs1, pf =>
-            {
-                lock (pf) pf.candidate_relatives.Clear();
-            });
 
             return count_nearby_relations(relations);  //putative counts include no-mans land
         }
@@ -129,10 +122,10 @@ namespace ProteoformSuiteInternal
         public Dictionary<string, List<ProteoformRelation>> relate_ed()
         {
             Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
-            Parallel.ForEach(decoy_proteoforms, decoys =>
+            foreach (var decoys in decoy_proteoforms)
             {
-                ed_relations[decoys.Key] = relate(experimental_proteoforms, decoys.Value, ProteoformComparison.ExperimentalDecoy, true);
-            });
+                ed_relations.Add(decoys.Key, relate(experimental_proteoforms, decoys.Value, ProteoformComparison.ExperimentalDecoy, true));
+            }
             return ed_relations;
         }
 
@@ -179,7 +172,7 @@ namespace ProteoformSuiteInternal
                     t.Start();
                     running.Add(root);
                     active.Add(t);
-                    root = find_next_root(this.remaining_relations_outside_no_mans, running);
+                    root = find_next_root(remaining_relations_outside_no_mans, running);
                 }
 
                 foreach (Thread t in active)
@@ -202,11 +195,11 @@ namespace ProteoformSuiteInternal
 
                 List<ProteoformRelation> mass_differences_in_peaks = running.SelectMany(r => r.peak.grouped_relations).ToList();
                 relations_in_peaks.AddRange(mass_differences_in_peaks);
-                this.remaining_relations_outside_no_mans = this.remaining_relations_outside_no_mans.Except(mass_differences_in_peaks).ToList();
+                remaining_relations_outside_no_mans = remaining_relations_outside_no_mans.Except(mass_differences_in_peaks).ToList();
 
                 running.Clear();
                 active.Clear();
-                root = find_next_root(this.remaining_relations_outside_no_mans, running);
+                root = find_next_root(remaining_relations_outside_no_mans, running);
             }
             delta_mass_peaks.AddRange(peaks);
 

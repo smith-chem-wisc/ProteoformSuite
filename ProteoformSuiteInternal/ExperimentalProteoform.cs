@@ -10,7 +10,6 @@ namespace ProteoformSuiteInternal
     //However, I think this makes the programming a bit cleaner, since "Experimental-Theoretical" pairs should naturally be between 
     //"ExperimentalProteoform" and "TheoreticalProteoform" objects
 
-    [Serializable]
     public class ExperimentalProteoform : Proteoform
     {
 

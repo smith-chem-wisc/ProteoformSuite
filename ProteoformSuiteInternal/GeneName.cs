@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable] 
     public class GeneName
     {
         public IEnumerable<Tuple<string,string>> gene_names { get; private set; }

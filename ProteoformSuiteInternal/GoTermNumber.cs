@@ -6,7 +6,6 @@ using System.Numerics;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class GoTermNumber : GoTerm
     {
         public GoTerm goTerm { get; set; }

@@ -12,7 +12,6 @@ namespace ProteoformSuiteInternal
         BiologicalProcess
     }
 
-    [Serializable]
     public class GoTerm
     {
 

@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class TheoreticalProteoformGroup : TheoreticalProteoform
     {
 

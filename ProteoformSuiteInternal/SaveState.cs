@@ -1,5 +1,4 @@
-﻿using NetSerializer;
-using Proteomics;
+﻿using Proteomics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +7,6 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
-using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
@@ -16,29 +14,6 @@ namespace ProteoformSuiteInternal
     {
 
         public static Lollipop lollipop = new Lollipop();
-
-        #region Private Field
-
-        private static Serializer ser = new Serializer(new Type[]
-        {
-            typeof(Lollipop),
-            typeof(ComponentReader), // not serialized currently because InputFile -> ComponentReader -> Component -> InputFile messes things up, and it's only used in loading components
-            typeof(ProteinSequenceGroup),
-            typeof(TheoreticalProteoformGroup),
-            typeof(Protein),
-            typeof(ModificationWithLocation),
-            typeof(ModificationWithMass),
-            typeof(ModificationWithMassAndCf),
-            typeof(List<DatabaseReference>),
-            typeof(List<Tuple<string,string>>),
-            typeof(Dictionary<int, List<Modification>>),
-            typeof(Dictionary<string, IList<string>>),
-            typeof(List<ProteolysisProduct>),
-            typeof(ChemicalFormulaTerminus),
-            typeof(List<double>)
-        });
-
-        #endregion Private Field
 
         #region BASICS FOR XML WRITING
 
@@ -148,66 +123,6 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion METHOD SAVE/LOAD
-
-        #region Save and Load Results
-
-        public static void save_all_results(string filename)
-        {
-            using (var file = File.Create(filename))
-                ser.Serialize(file, lollipop);
-        }
-
-        public static void load_all_results(string filename)
-        {
-            using (var file = File.OpenRead(filename))
-                lollipop = (Lollipop) ser.Deserialize(file);
-
-            //Set nonserialized values to defaults instead of null
-            Lollipop defaults = new Lollipop();
-            foreach (FieldInfo field in typeof(Lollipop).GetFields())
-            {
-                if (field.GetValue(lollipop) == null) field.SetValue(lollipop, field.GetValue(defaults));
-            }
-
-            //Use setting methods to ensure properties are carried to nested objects
-            foreach (PropertyInfo property in typeof(Lollipop).GetProperties())
-            {
-                property.SetValue(lollipop, property.GetValue(lollipop));
-            }
-
-            //Recreate the connections that were broken
-            lollipop.theoretical_database.possible_ptmset_dictionary = lollipop.theoretical_database.make_ptmset_dictionary();
-            Parallel.ForEach(lollipop.proteoform_community.delta_mass_peaks, peak =>
-            {
-                foreach (ProteoformRelation relation in peak.grouped_relations)
-                {
-                    lock (relation) relation.peak = peak;
-                    foreach (Proteoform p in relation.connected_proteoforms)
-                    {
-                        lock (p)
-                        {
-                            if (p.relationships == null) p.relationships = new List<ProteoformRelation> { relation };
-                            else p.relationships.Add(relation);
-                        }
-                    }
-                }
-            });
-
-            Parallel.ForEach(lollipop.proteoform_community.experimental_proteoforms, pf =>
-            {
-                lock (pf.quant) pf.quant.proteoform = pf;
-            });
-
-            Parallel.ForEach(lollipop.proteoform_community.families, fam =>
-            {
-                foreach (Proteoform pf in fam.proteoforms)
-                {
-                    lock (pf) pf.family = fam;
-                }
-            });
-        }
-
-        #endregion Save and Load Results
 
     }
 }

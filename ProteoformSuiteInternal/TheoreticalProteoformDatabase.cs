@@ -9,25 +9,26 @@ using UsefulProteomicsDatabases;
 
 namespace ProteoformSuiteInternal
 {
-    [Serializable]
     public class TheoreticalProteoformDatabase
     {
 
         #region Public Fields
 
+        //Protein
         public Dictionary<InputFile, Protein[]> theoretical_proteins = new Dictionary<InputFile, Protein[]>();
         public ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
+
+        //Modifications
         public Dictionary<string, List<Modification>> uniprotModifications = new Dictionary<string, List<Modification>>();
         public List<ModificationWithMass> variableModifications = new List<ModificationWithMass>();
-        public List<PtmSet> all_possible_ptmsets = new List<PtmSet>();
-
-        [NonSerialized] //regenerated upon load
-        public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>();
-
         public List<ModificationWithMass> all_mods_with_mass = new List<ModificationWithMass>();
 
+        //PtmSets
+        public List<PtmSet> all_possible_ptmsets = new List<PtmSet>();
+        public Dictionary<double, List<PtmSet>> possible_ptmset_dictionary = new Dictionary<double, List<PtmSet>>();
         public List<PtmSet> acceptable_ptm_sets = new List<PtmSet>();
 
+        //Settings
         public bool limit_triples_and_greater = true;
 
         #endregion Public Fields
@@ -299,7 +300,7 @@ namespace ProteoformSuiteInternal
                     EnterTheoreticalProteformFamily(hunk, p, p.Accession + "_DECOY_" + decoyNumber, decoy_proteoforms, decoyNumber, variableModifications);
                 });
 
-                lock (SaveState.lollipop)
+                lock (SaveState.lollipop.proteoform_community.decoy_proteoforms)
                     SaveState.lollipop.proteoform_community.decoy_proteoforms.Add(decoy_database_name, decoy_proteoforms.ToArray());
             });
         }
