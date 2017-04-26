@@ -23,6 +23,7 @@ namespace Test
             pf2.name = "T1";
             ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
+            pr1.Accepted = true;
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
             DeltaMassPeak peak = new DeltaMassPeak(prs[0], prs);
@@ -154,6 +155,7 @@ namespace Test
             TheoreticalProteoformGroup pf2 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
             ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
+            pr1.Accepted = true;
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
             DeltaMassPeak peak = new DeltaMassPeak(prs[0], prs);
