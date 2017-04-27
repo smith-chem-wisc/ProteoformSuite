@@ -242,7 +242,7 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem resultsToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem resultsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadDeconvolutionResultsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rawExperimentalProteoformsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem neuCodeProteoformPairsToolStripMenuItem;
