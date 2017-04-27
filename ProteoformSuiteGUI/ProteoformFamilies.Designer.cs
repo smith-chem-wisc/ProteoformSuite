@@ -48,7 +48,6 @@
             this.cmbx_colorScheme = new System.Windows.Forms.ComboBox();
             this.lb_dgv_selection = new System.Windows.Forms.Label();
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
-            this.pictureBox_familyDisplay = new System.Windows.Forms.PictureBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -92,7 +91,6 @@
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_main)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_familyDisplay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
@@ -153,7 +151,6 @@
             this.splitContainer2.Panel2.Controls.Add(this.cmbx_colorScheme);
             this.splitContainer2.Panel2.Controls.Add(this.lb_dgv_selection);
             this.splitContainer2.Panel2.Controls.Add(this.cmbx_tableSelector);
-            this.splitContainer2.Panel2.Controls.Add(this.pictureBox_familyDisplay);
             this.splitContainer2.Size = new System.Drawing.Size(1184, 369);
             this.splitContainer2.SplitterDistance = 685;
             this.splitContainer2.TabIndex = 5;
@@ -322,14 +319,6 @@
             this.cmbx_tableSelector.Size = new System.Drawing.Size(121, 21);
             this.cmbx_tableSelector.TabIndex = 5;
             this.cmbx_tableSelector.SelectedIndexChanged += new System.EventHandler(this.cmbx_tableSelector_SelectedIndexChanged);
-            // 
-            // pictureBox_familyDisplay
-            // 
-            this.pictureBox_familyDisplay.Location = new System.Drawing.Point(270, 0);
-            this.pictureBox_familyDisplay.Name = "pictureBox_familyDisplay";
-            this.pictureBox_familyDisplay.Size = new System.Drawing.Size(221, 195);
-            this.pictureBox_familyDisplay.TabIndex = 4;
-            this.pictureBox_familyDisplay.TabStop = false;
             // 
             // splitContainer3
             // 
@@ -740,7 +729,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_main)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_familyDisplay)).EndInit();
             this.splitContainer3.Panel1.ResumeLayout(false);
             this.splitContainer3.Panel2.ResumeLayout(false);
             this.splitContainer3.Panel2.PerformLayout();
@@ -765,7 +753,6 @@
         private System.Windows.Forms.DataGridView dgv_main;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.DataGridView dgv_proteoform_family_members;
-        private System.Windows.Forms.PictureBox pictureBox_familyDisplay;
         private System.Windows.Forms.Button btn_buildSelectedFamilies;
         private System.Windows.Forms.Button btn_buildAllFamilies;
         private System.Windows.Forms.Label label_tempFileFolder;

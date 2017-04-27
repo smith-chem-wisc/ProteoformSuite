@@ -22,7 +22,9 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return peak != null ? peak.peak_relation_group_count : -1000000;
+                return peak != null ? 
+                    peak.peak_relation_group_count :
+                    -1000000;
             }
         }
 
@@ -30,7 +32,9 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return peak != null ? peak.DeltaMass : Double.NaN;
+                return peak != null ? 
+                    peak.DeltaMass : 
+                    Double.NaN;
             }
         }
 
@@ -92,8 +96,9 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_intensity; }
-                catch { return Double.NaN; }
+                return connected_proteoforms[0] as ExperimentalProteoform != null ?
+                    ((ExperimentalProteoform)connected_proteoforms[0]).agg_intensity :
+                    Double.NaN;
             }
         }
 
@@ -101,8 +106,9 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try { return ((ExperimentalProteoform)connected_proteoforms[0]).agg_rt; }
-                catch { return Double.NaN; }
+                return connected_proteoforms[0] as ExperimentalProteoform != null ?
+                    ((ExperimentalProteoform)connected_proteoforms[0]).agg_rt :
+                    Double.NaN;
             }
         }
 
@@ -110,8 +116,9 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try { return ((ExperimentalProteoform)connected_proteoforms[0]).aggregated_components.Count; }
-                catch { return -1000000; }
+                return connected_proteoforms[0] as ExperimentalProteoform != null ?
+                    ((ExperimentalProteoform)connected_proteoforms[0]).aggregated_components.Count :
+                    -1000000;
             }
         }
 
@@ -119,8 +126,9 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try {return ((ExperimentalProteoform)connected_proteoforms[0]).agg_mass; }
-                catch { return Double.NaN; }
+                return connected_proteoforms[0] as ExperimentalProteoform != null ?
+                    ((ExperimentalProteoform)connected_proteoforms[0]).agg_mass :
+                    Double.NaN;
             }
         }
 
@@ -128,8 +136,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try { return ((ExperimentalProteoform)connected_proteoforms[0]).accession; }
-                catch { return null; }
+                return connected_proteoforms[0].accession;
             }
         }
 
@@ -139,7 +146,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                return connected_proteoforms[1] is ExperimentalProteoform ?
+                return connected_proteoforms[1] as ExperimentalProteoform != null ?
                     ((ExperimentalProteoform)connected_proteoforms[1]).agg_mass :
                     ((TheoreticalProteoform)connected_proteoforms[1]).modified_mass;
             }
@@ -149,8 +156,9 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_intensity; }
-                catch { return 0; }
+                return connected_proteoforms[1] as ExperimentalProteoform != null ?
+                    ((ExperimentalProteoform)connected_proteoforms[1]).agg_intensity :
+                    0;
             }
         }
 
@@ -158,8 +166,9 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try { return ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt; }
-                catch { return 0; }
+                return connected_proteoforms[1] as ExperimentalProteoform != null ?
+                    ((ExperimentalProteoform)connected_proteoforms[1]).agg_rt :
+                    0;
             }
         }
 
@@ -167,8 +176,9 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try { return ((ExperimentalProteoform)connected_proteoforms[1]).aggregated_components.Count; }
-                catch { return 0; }
+                return connected_proteoforms[1] as ExperimentalProteoform != null ?
+                    ((ExperimentalProteoform)connected_proteoforms[1]).aggregated_components.Count :
+                    0;
             }
         }
 
@@ -176,8 +186,7 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try { return (connected_proteoforms[1]).accession; }
-                catch { return null; }
+                return connected_proteoforms[1].accession;
             }
         }
 
@@ -185,16 +194,19 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try { return ((TheoreticalProteoform)connected_proteoforms[1]).name; }
-                catch { return null; } }
+                return connected_proteoforms[1] as TheoreticalProteoform != null ?
+                    ((TheoreticalProteoform)connected_proteoforms[1]).name :
+                    "";
+            }
         }
 
         public string Fragment
         {
             get
             {
-                try { return ((TheoreticalProteoform)connected_proteoforms[1]).fragment; }
-                catch { return null; }
+                return connected_proteoforms[1] as TheoreticalProteoform != null ?
+                    ((TheoreticalProteoform)connected_proteoforms[1]).fragment :
+                    "";
             }
         }
 
@@ -202,8 +214,9 @@ namespace ProteoformSuiteGUI
         {
             get
             {
-                try { return connected_proteoforms[1].ptm_description; }
-                catch { return null; }
+                return connected_proteoforms[1] as TheoreticalProteoform != null ?
+                    ((TheoreticalProteoform)connected_proteoforms[1]).description :
+                    "";
             }
         }
 
