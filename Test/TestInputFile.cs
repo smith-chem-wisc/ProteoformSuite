@@ -83,15 +83,9 @@ namespace Test
         [Test]
         public void matching_calibration_none_possible()
         {
-<<<<<<< HEAD
             InputFile c = new InputFile("fake.txt", Purpose.RawFile);
-            Lollipop.input_files = new List<InputFile> { c };
-            Assert.AreNotEqual("", Lollipop.match_calibration_files());
-=======
-            InputFile c = new InputFile("fake.txt", Purpose.Calibration);
             SaveState.lollipop.input_files = new List<InputFile> { c };
             Assert.AreNotEqual("", SaveState.lollipop.match_calibration_files());
->>>>>>> 4256719b0a3d908269a3d7b54f0a7594ccb09f5b
         }
     }
 }

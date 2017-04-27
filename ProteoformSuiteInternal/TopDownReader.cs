@@ -8,10 +8,18 @@ namespace ProteoformSuiteInternal
 {
     public class TopDownReader
     {
-        public static List<Ptm> topdown_ptms = new List<Ptm>(); //PTMs not in theoretical database... 
+
+        #region Private Fields
+
+        private Dictionary<char, double> aaIsotopeMassList;
+
+        #endregion Private Fields
+
+        public List<Ptm> topdown_ptms = new List<Ptm>(); //PTMs not in theoretical database... 
         //Reading in Top-down excel
-        public static List<TopDownHit> ReadTDFile(InputFile file)
+        public List<TopDownHit> ReadTDFile(InputFile file)
         {
+            aaIsotopeMassList = new AminoAcidMasses(SaveState.lollipop.carbamidomethylation, SaveState.lollipop.natural_lysine_isotope_abundance, SaveState.lollipop.neucode_light_lysine, SaveState.lollipop.neucode_heavy_lysine).AA_Masses;
             List<TopDownHit> td_hits = new List<TopDownHit>();
 
             List<List<string>> cells = ExcelReader.get_cell_strings(file, true);
@@ -77,7 +85,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
                 //convert into new td hit
-                TopDownHit td_hit = new TopDownHit(file, tdResultType, cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
+                TopDownHit td_hit = new TopDownHit(aaIsotopeMassList, file, tdResultType, cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
                 Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]), ptm_list, Convert.ToDouble(cellStrings[16]), Convert.ToDouble(cellStrings[12]),
                 Convert.ToInt16(cellStrings[17]), Convert.ToDouble(cellStrings[18]), cellStrings[14].Split('.')[0], file.targeted_td_result);
                 td_hits.Add(td_hit);

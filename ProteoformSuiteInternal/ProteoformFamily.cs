@@ -127,7 +127,7 @@ namespace ProteoformSuiteInternal
             gene_names = theoretical_proteoforms.Select(t => t.gene_name).ToList();
             topdown_proteoforms = proteoforms.OfType<TopDownProteoform>().ToList();
             experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
-            relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.Accepted))).ToList();
+            relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.Accepted))).ToList();
         }
 
         #endregion Private Methods

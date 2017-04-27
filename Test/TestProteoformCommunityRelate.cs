@@ -183,7 +183,7 @@ namespace Test
 
             //Two equal, two unequal lysine count. But one each has mass_difference > 250, so no relations
             test_community = new ProteoformCommunity();
-            Lollipop.ee_relations.Clear();
+            SaveState.lollipop.ee_relations.Clear();
             test_community.experimental_proteoforms = new ExperimentalProteoform[] {
                 ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, 1, true),
                 ConstructorsForTesting.ExperimentalProteoform("A2", 2000, 2, true),
@@ -234,15 +234,8 @@ namespace Test
             }
             SaveState.lollipop.theoretical_database.possible_ptmset_dictionary = SaveState.lollipop.theoretical_database.make_ptmset_dictionary();
 
-<<<<<<< HEAD
-            Lollipop.make_ptmset_dictionary();
-
-            if (!Lollipop.modification_ranks.TryGetValue(0, out int a))
-                Lollipop.modification_ranks.Add(0, 1);
-=======
             if (!SaveState.lollipop.modification_ranks.TryGetValue(0, out int a))
                 SaveState.lollipop.modification_ranks.Add(0, 1);
->>>>>>> 4256719b0a3d908269a3d7b54f0a7594ccb09f5b
 
             SaveState.lollipop.mod_rank_sum_threshold = 2;
         }

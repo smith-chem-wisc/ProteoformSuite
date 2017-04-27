@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
+
     public class TopDownHit
     {
         public MsScan ms_scan { get; set; }
@@ -32,7 +33,7 @@ namespace ProteoformSuiteInternal
         public TopDownResultType tdResultType { get; set; }
         public InputFile file { get; set; }
 
-        public TopDownHit(InputFile file, TopDownResultType tdResultType, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, bool targeted)
+        public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, bool targeted)
         {
             this.file = file;
             this.tdResultType = tdResultType;
@@ -45,7 +46,7 @@ namespace ProteoformSuiteInternal
             this.ptm_list = modifications;
             this.reported_mass = reported_mass;
             this.corrected_mass = reported_mass;
-            this.theoretical_mass = theoretical_mass;
+            this.theoretical_mass = TheoreticalProteoform.CalculateProteoformMass(sequence, aaIsotopeMassList);
             this.scan = scan;
             this.retention_time = retention_time;
             this.filename = filename;
