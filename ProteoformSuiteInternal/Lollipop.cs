@@ -509,12 +509,13 @@ namespace ProteoformSuiteInternal
         #region TOPDOWN 
 
         public List<TopDownHit> top_down_hits = new List<TopDownHit>();
+        public TopDownReader topdownReader = new TopDownReader();
 
         public void read_in_td_hits()
         {
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
             {
-                top_down_hits.AddRange(TopDownReader.ReadTDFile(file));
+                top_down_hits.AddRange(topdownReader.ReadTDFile(file));
             }
         }
 
@@ -977,7 +978,7 @@ namespace ProteoformSuiteInternal
         {
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
             {
-                td_hits_calibration.AddRange(TopDownReader.ReadTDFile(file));
+                td_hits_calibration.AddRange(topdownReader.ReadTDFile(file));
             }
         }
 

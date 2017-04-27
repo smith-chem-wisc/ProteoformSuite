@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace ProteoformSuiteInternal
 {
@@ -174,12 +175,12 @@ namespace ProteoformSuiteInternal
                     }
                 }
                 //add the best td relation
-                foreach(ProteoformRelation relation in all_td_relations)
+                foreach (ProteoformRelation relation in all_td_relations)
                 {
                     if (SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(relation.DeltaMass, 1), out List<PtmSet> candidate_sets))
                     {
                         double mass_tolerance = topdown.modified_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
-                        relation.candidate_ptmset = topdown.generate_possible_added_ptmsets(candidate_sets, relation.DeltaMass, mass_tolerance, SaveState.lollipop.theoretical_database.all_mods_with_mass, topdown, topdown.sequence, SaveState.lollipop.mod_rank_first_quartile)
+                        relation.candidate_ptmset = topdown.generate_possible_added_ptmsets(candidate_sets.Where(s => Math.Abs(s.mass - relation.DeltaMass) < 0.05).ToList(), relation.DeltaMass, mass_tolerance, SaveState.lollipop.theoretical_database.all_mods_with_mass, topdown, topdown.sequence, SaveState.lollipop.mod_rank_first_quartile)
                         .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(relation.DeltaMass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                         .FirstOrDefault();
                     }
@@ -197,45 +198,52 @@ namespace ProteoformSuiteInternal
 
 
                 //match each td proteoform group to the closest theoretical w/ same accession and modifications. (if no match always make relationship with unmodified)
-                if (theoreticals.Count > 0)
+                //if accession the same, or uniprot ID the same, or same sequence (take into account cleaved methionine)
+                List<TheoreticalProteoform> candidate_theoreticals = theoreticals.Where(t => t.name.Split(';').Contains(topdown.uniprot_id)).ToList();
+
+                List<ProteoformRelation> possible_ttd_relations = candidate_theoreticals.Select(t => new ProteoformRelation(t, topdown, ProteoformComparison.TheoreticalTopDown, topdown.theoretical_mass - t.modified_mass)).ToList();
+                ProteoformRelation best_ttd_relation;
+                foreach (ProteoformRelation relation in possible_ttd_relations)
                 {
-                    //if accession the same, or uniprot ID the same, or same sequence (take into account cleaved methionine)
-                    List<ProteoformRelation> possible_ttd_relations = theoreticals.Where(t => t.accession.Split('_')[0] == topdown.accession.Split('_')[0] || t.name.Split(';').Contains(topdown.uniprot_id) || (topdown.sequence == t.sequence && topdown.start_index == t.begin && topdown.stop_index == t.end)
-                    || (topdown.sequence[0] == 'M' && topdown.sequence.Substring(1, topdown.sequence.Length -1) == t.sequence && t.begin == 2 && t.end == topdown.stop_index))
-                    .Select(t => new ProteoformRelation(t, topdown, ProteoformComparison.TheoreticalTopDown, topdown.theoretical_mass - t.modified_mass)).ToList();
-                    ProteoformRelation best_ttd_relation = possible_ttd_relations.Where(t => topdown.same_ptms((TheoreticalProteoform)t.connected_proteoforms[0])).FirstOrDefault();
-                    if (best_ttd_relation == null)
+                    if (SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(relation.DeltaMass, 1), out List<PtmSet> candidate_sets))
                     {
-                        foreach (ProteoformRelation relation in possible_ttd_relations)
-                        {
-                            if (SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(relation.DeltaMass, 1), out List<PtmSet> candidate_sets))
-                            {
-                                double mass_tolerance = topdown.theoretical_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
-                                relation.candidate_ptmset = topdown.generate_possible_added_ptmsets(candidate_sets, relation.DeltaMass, mass_tolerance, SaveState.lollipop.theoretical_database.all_mods_with_mass, topdown, topdown.sequence, SaveState.lollipop.mod_rank_first_quartile)
-                                .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(relation.DeltaMass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
-                                .FirstOrDefault();
-                            }
-                        }
-                        best_ttd_relation = possible_ttd_relations.Where(r => r.candidate_ptmset != null).OrderBy(r => r.candidate_ptmset.ptm_rank_sum).FirstOrDefault();
-                    }
-                    if (best_ttd_relation == null)
-                    {
-                        best_ttd_relation = possible_ttd_relations.Where(r => r.connected_proteoforms[0].ptm_set.ptm_combination.Count == 0).FirstOrDefault();
-                    }
-                    if (best_ttd_relation != null)
-                    {
-                        best_ttd_relation.connected_proteoforms[0].relationships.Add(best_ttd_relation);
-                        best_ttd_relation.connected_proteoforms[1].relationships.Add(best_ttd_relation);
-                        best_ttd_relation.Accepted = true;
-                        td_relations.Add(best_ttd_relation);
-                    }
-                    else
-                    {   //need to remove ETD relations of td that couldn't be matched with a theoretical --> no gene name! 
-                        //shows Warning message in TopDown GUI if no TTD relations for the accession. 
-                        td_relations.RemoveAll(p => p.connected_proteoforms.Contains(topdown));
+                        double mass_tolerance = topdown.theoretical_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
+                        relation.candidate_ptmset = topdown.generate_possible_added_ptmsets(candidate_sets.Where(s => Math.Abs(s.mass - relation.DeltaMass) < 0.05).ToList(), relation.DeltaMass, mass_tolerance, SaveState.lollipop.theoretical_database.all_mods_with_mass, relation.connected_proteoforms[0], ((TheoreticalProteoform)relation.connected_proteoforms[0]).sequence, SaveState.lollipop.mod_rank_first_quartile)
+                        .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(relation.DeltaMass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
+                        .FirstOrDefault();
                     }
                 }
+                best_ttd_relation = possible_ttd_relations.Where(r => r.candidate_ptmset != null).OrderBy(r => r.candidate_ptmset.ptm_rank_sum).FirstOrDefault();
+                if (best_ttd_relation == null)
+                {
+                    best_ttd_relation = possible_ttd_relations.Where(r => r.connected_proteoforms[0].ptm_set.ptm_combination.Count == 0 && (((TheoreticalProteoform)r.connected_proteoforms[0]).fragment == "full" || ((TheoreticalProteoform)r.connected_proteoforms[0]).fragment == "full-met-cleaved")).FirstOrDefault();
+                }
+                if (best_ttd_relation == null)
+                {
+                    best_ttd_relation = possible_ttd_relations.Where(r => r.connected_proteoforms[0].ptm_set.ptm_combination.Count == 0).FirstOrDefault();
+                }
+                if (best_ttd_relation != null)
+                {
+                    best_ttd_relation.connected_proteoforms[0].relationships.Add(best_ttd_relation);
+                    best_ttd_relation.connected_proteoforms[1].relationships.Add(best_ttd_relation);
+                    best_ttd_relation.Accepted = true;
+                    td_relations.Add(best_ttd_relation);
+                }
+                else
+                {   //need to remove ETD relations of td that couldn't be matched with a theoretical --> no gene name! 
+                    //shows Warning message in TopDown GUI if no TTD relations for the accession. 
+                    td_relations.RemoveAll(p => p.connected_proteoforms.Contains(topdown));
+                }
             }
+
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\testingttdrelations.tsv"))
+            {
+                foreach (ProteoformRelation r in td_relations)
+                {
+                    writer.WriteLine(r.connected_proteoforms[0].accession + r.connected_proteoforms[0].modified_mass + "\t" + r.connected_proteoforms[0].ptm_description + "\t" + r.connected_proteoforms[1].accession + "\t" + r.connected_proteoforms[1].ptm_description + "\t" + r.DeltaMass + "\t" + (r.candidate_ptmset == null ? "null" : String.Join("; ", r.candidate_ptmset.ptm_combination.Select(ptm => ptm.modification.id))));
+                }
+            }
+
             return td_relations;
         }
 

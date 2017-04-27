@@ -14,12 +14,7 @@ namespace Test
         public void test_construct_one_proteform_family_from_ET()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-<<<<<<< HEAD
-
-            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
-=======
             SaveState.lollipop.theoretical_database.uniprotModifications = new Dictionary<string, List<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
->>>>>>> 4256719b0a3d908269a3d7b54f0a7594ccb09f5b
 
             //One accepted ET relation; should give one ProteoformFamily
             SaveState.lollipop.min_peak_count_et = 1;
@@ -29,7 +24,7 @@ namespace Test
             pf2.name = "T1";
             ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
-            pr1.accepted = true;
+            pr1.Accepted = true;
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
             DeltaMassPeak peak = new DeltaMassPeak(prs[0], prs);
@@ -53,12 +48,7 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             SaveState.lollipop.proteoform_community = test_community;
 
-<<<<<<< HEAD
-
-            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
-=======
             SaveState.lollipop.theoretical_database.uniprotModifications = new Dictionary<string, List<Modification>> { { "unmodified", new List<Modification> { new Modification("unmodified", "unknown") } } };
->>>>>>> 4256719b0a3d908269a3d7b54f0a7594ccb09f5b
 
             SaveState.lollipop.min_peak_count_ee = 2;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
@@ -166,7 +156,7 @@ namespace Test
             TheoreticalProteoformGroup pf2 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
             ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
             ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
-            pr1.accepted = true;
+            pr1.Accepted = true;
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
             DeltaMassPeak peak = new DeltaMassPeak(prs[0], prs);
@@ -201,18 +191,10 @@ namespace Test
                 { "fake", new List<Modification> { ConstructorsForTesting.get_modWithMass("fake", 19) } },
             };
 
-<<<<<<< HEAD
-            Lollipop.modification_ranks = new Dictionary<double, int> { { 0, 1 }, { 19, 2 } };
-            Lollipop.rank_sum_threshold = 2;
-            Lollipop.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, Lollipop.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList(), Lollipop.modification_ranks, 1);
-            Lollipop.make_ptmset_dictionary();
-            Lollipop.all_mods_with_mass = Lollipop.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
-=======
             SaveState.lollipop.modification_ranks = new Dictionary<double, int> { { 0, 1 }, { 19, 2 } };
             SaveState.lollipop.mod_rank_sum_threshold = 2;
             SaveState.lollipop.theoretical_database.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, SaveState.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList(), SaveState.lollipop.modification_ranks, 1);
             SaveState.lollipop.theoretical_database.all_mods_with_mass = SaveState.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
->>>>>>> 4256719b0a3d908269a3d7b54f0a7594ccb09f5b
 
             SaveState.lollipop.ee_max_mass_difference = 20;
             SaveState.lollipop.peak_width_base_ee = 0.015;

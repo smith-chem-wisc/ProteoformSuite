@@ -20,30 +20,17 @@ namespace Test
         public void testFindRawNeuCodePairsMethod()
         {
             //reading in test excel file, process raw components before testing neucode pairs.
-<<<<<<< HEAD
-            Lollipop.correctionFactors = null;
-            Lollipop.raw_experimental_components.Clear();
-            Func<InputFile, IEnumerable<Component>> componentReader = c => new ComponentReader().read_components_from_xlsx(c, true);
-            InputFile noisy = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "noisy.xlsx"), Labeling.NeuCode, Purpose.Identification);
-            Lollipop.input_files.Add(noisy);
-            string inFileId = noisy.UniqueId.ToString();
-
-            Lollipop.neucode_labeled = true;
-            Lollipop.process_raw_components(Lollipop.input_files, Lollipop.raw_experimental_components, Purpose.Identification, true);
-            Assert.AreEqual(223, Lollipop.raw_experimental_components.Count);
-=======
             SaveState.lollipop.correctionFactors = null;
             SaveState.lollipop.raw_experimental_components.Clear();
-            Func<InputFile, IEnumerable<Component>> componentReader = c => new ComponentReader().read_components_from_xlsx(c, SaveState.lollipop.correctionFactors);
+            Func<InputFile, IEnumerable<Component>> componentReader = c => new ComponentReader().read_components_from_xlsx(c, true);
             InputFile noisy = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "noisy.xlsx"), Labeling.NeuCode, Purpose.Identification);
             SaveState.lollipop.input_files.Add(noisy);
 
             string inFileId = noisy.UniqueId.ToString();
 
             SaveState.lollipop.neucode_labeled = true;
-            SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_experimental_components, Purpose.Identification);
+            SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_experimental_components, Purpose.Identification, true);
             Assert.AreEqual(223, SaveState.lollipop.raw_experimental_components.Count);
->>>>>>> 4256719b0a3d908269a3d7b54f0a7594ccb09f5b
 
             //Check the validity of one component read from the Excel file
             Component c1 = SaveState.lollipop.raw_experimental_components[0];

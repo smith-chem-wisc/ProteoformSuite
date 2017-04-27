@@ -94,12 +94,7 @@ namespace Test
             ProteoformCommunity test_community = new ProteoformCommunity();
             SaveState.lollipop.proteoform_community = test_community;
 
-<<<<<<< HEAD
-
-            Lollipop.uniprotModifications = new Dictionary<string, IList<Modification>>
-=======
             SaveState.lollipop.theoretical_database.uniprotModifications = new Dictionary<string, List<Modification>>
->>>>>>> 4256719b0a3d908269a3d7b54f0a7594ccb09f5b
             {
                 { "unmodified", new List<Modification>() { ConstructorsForTesting.get_modWithMass("unmodified", 0) } }
             };
