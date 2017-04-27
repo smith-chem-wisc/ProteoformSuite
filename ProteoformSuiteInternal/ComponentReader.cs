@@ -78,6 +78,11 @@ namespace ProteoformSuiteInternal
             return final_components;
         }
 
+        public List<Component> TEST_remove_monoisotopic_duplicates_harmonics_from_same_scan(List<Component> raw_components) //Call private method for unit test.
+        {
+            return remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components);
+        }
+
         #endregion Public Method
 
         #region Private Methods
@@ -134,7 +139,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
 
-                List<Component> someComponents = scanComps.OrderByDescending(w => w.weighted_monoisotopic_mass).ToList();
+                List<Component> someComponents = scanComps.OrderByDescending(w => w.weighted_monoisotopic_mass).ToList(); // sorting by mass means that all harmonics are a component are lower on the list.
                 foreach (Component hc in someComponents)
                 {
                     if (removeThese.Contains(hc))
