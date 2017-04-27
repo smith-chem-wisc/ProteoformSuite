@@ -94,7 +94,7 @@ namespace ProteoformSuiteInternal
                         null); //Experimental without theoretical reference
                 string theoretical_base_sequence = theoretical_base != null ? theoretical_base.sequence : "";
 
-                PtmSet best_addition = generate_possible_added_ptmsets(r.peak.possiblePeakAssignments, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, theoretical_base_sequence, SaveState.lollipop.mod_rank_first_quartile / 2)
+                PtmSet best_addition = generate_possible_added_ptmsets(r.peak.possiblePeakAssignments, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, theoretical_base_sequence, 1)
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
 
@@ -177,7 +177,7 @@ namespace ProteoformSuiteInternal
                     // 2. Second, other degradations and methionine cleavage are weighted mid-level
                     // 3. Missed monoisotopic errors are considered, but weighted towards the bottom. This should allow missed monoisotopics with common modifications like oxidation, but not rare ones.
                     if (likely_cleavage_site || m.modificationType == "FattyAcid" || m.modificationType == "Unlocalized")  
-                        rank_sum += SaveState.lollipop.mod_rank_first_quartile;
+                        rank_sum += SaveState.lollipop.mod_rank_first_quartile / 2;
                     else if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation)
                         rank_sum += SaveState.lollipop.mod_rank_second_quartile;
                     else if (m.modificationType == "Deconvolution Error")
