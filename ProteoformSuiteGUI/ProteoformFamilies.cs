@@ -68,9 +68,9 @@ namespace ProteoformSuiteGUI
             initialize_every_time();
         }
 
-        public DataGridView GetDGV()
+        public List<DataGridView> GetDGVs()
         {
-            return dgv_main;
+            return new List<DataGridView>() { dgv_main };
         }
 
         public bool ReadyToRunTheGamut()
@@ -81,7 +81,7 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut()
         {
             Cursor = Cursors.WaitCursor;
-            SaveState.lollipop.proteoform_community.families.Clear();
+            SaveState.lollipop.proteoform_community.clear_families();
             SaveState.lollipop.proteoform_community.construct_families();
             fill_proteoform_families("");
             update_figures_of_merit();

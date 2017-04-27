@@ -27,9 +27,11 @@ namespace ProteoformSuiteInternal
 
             if (limit_triples_and_greater)
             {
+                List<ModificationWithMass> unique_mods = ptm_data.Values.SelectMany(m => m).OfType<ModificationWithMass>().Distinct().ToList();
                 for (int i = 3; i < num_ptms_needed + 1; i++)
                 {
-                    unique_mass_combinations.AddRange(ptm_data.Values.SelectMany(m => m).OfType<ModificationWithMass>().Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), modification_ranks, added_ptm_penalization)));
+                    List<ModificationWithMass> mods_to_repeat = unique_mods.Where(m => ptm_data.Count(kv => kv.Value.Contains(m)) >= i).ToList(); // where the number of unique positions is greater than the number of times to repeat;
+                    unique_mass_combinations.AddRange(mods_to_repeat.Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), modification_ranks, added_ptm_penalization)));
                 }
             }
 
