@@ -100,6 +100,7 @@
     <Compile Include="TestGoTermNumber.cs" />
     <Compile Include="TestInputFile.cs" />
     <Compile Include="TestQuantification.cs" />
+    <Compile Include="TestRemoveMonoisotopicDuplicatesHarmonics.cs" />
     <Compile Include="TestSaveState.cs" />
     <Compile Include="TestExperimentalProteoform.cs" />
     <Compile Include="TestFindRawComponentsAndNeuCodePairs.cs" />
