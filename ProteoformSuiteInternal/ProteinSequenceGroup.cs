@@ -15,7 +15,7 @@ namespace ProteoformSuiteInternal
                 proteins_with_contaminants_first.First().ProteolysisProducts.Select(p => p.OneBasedBeginPosition).ToArray(),
                 proteins_with_contaminants_first.First().ProteolysisProducts.Select(p => p.OneBasedEndPosition).ToArray(),
                 proteins_with_contaminants_first.First().ProteolysisProducts.Select(p => p.Type).ToArray(),
-                proteins_with_contaminants_first.First().Name,
+                String.Join(";", proteins_with_contaminants_first.Select(p => p.Name).Distinct()),
                 proteins_with_contaminants_first.First().FullName,
                 false, 
                 proteins_with_contaminants_first.Any(p => p.IsContaminant), 
