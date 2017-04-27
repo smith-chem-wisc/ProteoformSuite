@@ -81,7 +81,7 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut()
         {
             Cursor = Cursors.WaitCursor;
-            SaveState.lollipop.proteoform_community.families.Clear();
+            SaveState.lollipop.proteoform_community.clear_families();
             SaveState.lollipop.proteoform_community.construct_families();
             fill_proteoform_families("");
             update_figures_of_merit();
