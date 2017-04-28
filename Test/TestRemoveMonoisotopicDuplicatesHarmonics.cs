@@ -21,7 +21,7 @@ namespace Test
         {
             cList.Clear();
             L.neucode_labeled = false;
-            
+
             List<double> possibleMissedMonoisotopicsList =
                         Enumerable.Range(-3, 7).Select(x =>
                         1000d + ((double)x) * Lollipop.MONOISOTOPIC_UNIT_MASS).ToList();
@@ -36,7 +36,7 @@ namespace Test
                 c.weighted_monoisotopic_mass = mass;
                 if (counter == 3)
                 {
-                    ChargeState cs1 = new ChargeState(10, 100d, (mass + 10d*Lollipop.PROTON_MASS)/10d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                    ChargeState cs1 = new ChargeState(10, 100d, (mass + 10d * Lollipop.PROTON_MASS) / 10d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
                     c.charge_states.Add(cs1);
                 }
                 else
@@ -114,7 +114,7 @@ namespace Test
                 }
                 else
                 {
-                    if(mass == 1000d/2d || mass == 1000d / 3d)
+                    if (mass == 1000d / 2d || mass == 1000d / 3d)
                     {
                         ChargeState cs1 = new ChargeState(10, 5d, (c.weighted_monoisotopic_mass + 10d * Lollipop.PROTON_MASS) / 10d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
                         c.charge_states.Add(cs1);
@@ -123,7 +123,7 @@ namespace Test
                     {
                         ChargeState cs1 = new ChargeState(10, 1d, (c.weighted_monoisotopic_mass + 10d * Lollipop.PROTON_MASS) / 10d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
                         c.charge_states.Add(cs1);
-                    }                    
+                    }
                 }
 
                 c.scan_range = "1-2";
@@ -222,7 +222,7 @@ namespace Test
                 c.id = counter.ToString();
                 c.weighted_monoisotopic_mass = mass;
 
-                if(mass == 1000d)
+                if (mass == 1000d)
                 {
                     for (int j = 1; j < 4; j++)
                     {
@@ -237,7 +237,7 @@ namespace Test
                         ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
                         c.charge_states.Add(cs);
                     }
-                }                
+                }
                 c.scan_range = "1-2";
                 c.calculate_properties();
                 cList.Add(c);
@@ -294,6 +294,45 @@ namespace Test
 
             Assert.AreEqual(1, compressed.Count);
             Assert.AreEqual(500, Convert.ToInt32(compressed.FirstOrDefault().weighted_monoisotopic_mass));
+        }
+
+        [Test]
+        public void neuCodeHarmonics()
+        {
+            cList.Clear();
+            L.neucode_labeled = true;
+
+            Component c1 = new Component();
+            c1.input_file = new InputFile("path", Purpose.Identification);
+            c1.id = 1.ToString();
+            ChargeState csOne = new ChargeState(10, 200d, 100.8068165d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction) ** Because of NeuCode correction, this mass is stepped down by 2.0046 Da to make sure it's a neucode pair
+            c1.charge_states.Add(csOne);
+            c1.scan_range = "1-2";
+            c1.calculate_properties();
+            cList.Add(c1);
+
+            Component c2 = new Component();
+            c2.input_file = new InputFile("path", Purpose.Identification);
+            c2.id = 2.ToString();
+            ChargeState csTwo = new ChargeState(10, 100d, 101.057698, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+            c2.charge_states.Add(csTwo);
+            c2.scan_range = "1-2";
+            c2.calculate_properties();
+            cList.Add(c2);
+
+            Component c3 = new Component();
+            c3.input_file = new InputFile("path", Purpose.Identification);
+            c3.id = 3.ToString();
+            ChargeState csThree = new ChargeState(10, 50d, 201.1081195d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+            c3.charge_states.Add(csThree);
+            c3.scan_range = "1-2";
+            c3.calculate_properties();
+            cList.Add(c3);
+
+
+            List<Component> compressed = new List<Component>(cr.TEST_remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
+
+            Assert.AreEqual(2, compressed.Count);
         }
 
     }

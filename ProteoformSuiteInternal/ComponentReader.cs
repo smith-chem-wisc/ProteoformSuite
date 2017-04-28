@@ -178,17 +178,8 @@ namespace ProteoformSuiteInternal
 
                                 if (hc.charge_states.Count == h.charge_states.Count)
                                 {
-                                    //throw out the lower mass component
-                                    if (hc.weighted_monoisotopic_mass > h.weighted_monoisotopic_mass)
-                                    {
-                                        hc.mergeTheseComponents(h);
-                                        removeThese.Add(h);
-                                    }
-                                    else
-                                    {
-                                        h.mergeTheseComponents(hc);
-                                        removeThese.Add(hc);
-                                    }
+                                    hc.mergeTheseComponents(h);
+                                    removeThese.Add(h);
                                 }
 
                                 else
