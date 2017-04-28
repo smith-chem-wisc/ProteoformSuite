@@ -126,7 +126,7 @@ namespace ProteoformSuiteGUI
         {
             showForm(aggregatedProteoforms);
             if (run_when_form_loads && aggregatedProteoforms.ReadyToRunTheGamut()) aggregatedProteoforms.RunTheGamut();
-            else if (!aggregatedProteoforms.ReadyToRunTheGamut() && SaveState.lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
+            else if (!aggregatedProteoforms.ReadyToRunTheGamut() && SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
         }
 
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
@@ -139,7 +139,7 @@ namespace ProteoformSuiteGUI
         {
             showForm(experimentalTheoreticalComparison);
             if (run_when_form_loads && experimentalTheoreticalComparison.ReadyToRunTheGamut()) experimentalTheoreticalComparison.RunTheGamut();
-            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
+            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.target_proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
             else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
@@ -317,18 +317,14 @@ namespace ProteoformSuiteGUI
         {
             SaveState.lollipop.raw_experimental_components.Clear();
             SaveState.lollipop.raw_neucode_pairs.Clear();
-            SaveState.lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
-            SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
+            SaveState.lollipop.target_proteoform_community = new ProteoformCommunity();
+            SaveState.lollipop.decoy_proteoform_communities.Clear();
             SaveState.lollipop.et_relations.Clear();
             SaveState.lollipop.et_peaks.Clear();
             SaveState.lollipop.ee_relations.Clear();
             SaveState.lollipop.ee_peaks.Clear();
-            SaveState.lollipop.proteoform_community.families.Clear();
             SaveState.lollipop.ed_relations.Clear();
-            SaveState.lollipop.proteoform_community.relations_in_peaks.Clear();
-            SaveState.lollipop.proteoform_community.delta_mass_peaks.Clear();
             SaveState.lollipop.ef_relations.Clear();
-            SaveState.lollipop.proteoform_community.decoy_proteoforms.Clear();
         }
 
         #endregion Public Method

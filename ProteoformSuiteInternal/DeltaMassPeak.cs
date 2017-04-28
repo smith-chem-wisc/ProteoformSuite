@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
@@ -27,7 +28,7 @@ namespace ProteoformSuiteInternal
         public string possiblePeakAssignments_string { get; set; }
         public ProteoformComparison RelationType { get; set; }
         public int InstanceId { get; set; }
-
+        
         #endregion Public Properties
 
         #region Public Constructor
@@ -82,18 +83,24 @@ namespace ProteoformSuiteInternal
                 DeltaMass = grouped_relations.Select(r => r.DeltaMass).Average();
             }
 
-            foreach (ProteoformRelation mass_difference in grouped_relations)
-                foreach (Proteoform p in mass_difference.connected_proteoforms)
-                    lock (p) p.relationships.Add(mass_difference);
+            //foreach (ProteoformRelation mass_difference in grouped_relations)
+            //    foreach (Proteoform p in mass_difference.connected_proteoforms)
+            //        lock (p) p.relationships.Add(mass_difference);
 
             return grouped_relations;
         }
 
-        private int count_nearby_decoys(List<ProteoformRelation> all_relations)
+        public int count_nearby_decoys(List<ProteoformRelation> all_relations)
         {
             double lower_limit_of_peak_width = (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy) ? DeltaMass - SaveState.lollipop.peak_width_base_et / 2 : DeltaMass - SaveState.lollipop.peak_width_base_ee / 2;
             double upper_limit_of_peak_width = (all_relations[0].RelationType == ProteoformComparison.ExperimentalDecoy) ? DeltaMass + SaveState.lollipop.peak_width_base_et / 2 : DeltaMass + SaveState.lollipop.peak_width_base_ee / 2;
-            return all_relations.Count(relation => relation.DeltaMass >= lower_limit_of_peak_width && relation.DeltaMass <= upper_limit_of_peak_width);
+            List<ProteoformRelation> decoys_in_peaks = all_relations.Where(relation => relation.DeltaMass >= lower_limit_of_peak_width && relation.DeltaMass <= upper_limit_of_peak_width).ToList();
+            Parallel.ForEach(decoys_in_peaks, r =>
+            {
+                r.Accepted = this.Accepted;
+                if (r.Accepted) r.peak = this; else r.peak = null;
+            });
+            return decoys_in_peaks.Count;
         }
 
         #endregion Private Methods
@@ -102,6 +109,7 @@ namespace ProteoformSuiteInternal
 
         public void calculate_fdr(Dictionary<string, List<ProteoformRelation>> decoy_relations)
         {
+
             List<int> nearby_decoy_counts = decoy_relations.Values.Select(v => count_nearby_decoys(v)).OrderBy(x => x).ToList();
             double median_false_peak_count;
             if (nearby_decoy_counts.Count % 2 == 0) //is even
@@ -125,7 +133,7 @@ namespace ProteoformSuiteInternal
             foreach (ProteoformRelation r in this.grouped_relations)
             {
                 Proteoform p = r.connected_proteoforms[0];
-                if (p is ExperimentalProteoform && ((ExperimentalProteoform)p).mass_shifted == false && SaveState.lollipop.proteoform_community.experimental_proteoforms.Contains(p))
+                if (p is ExperimentalProteoform && ((ExperimentalProteoform)p).mass_shifted == false && SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Contains(p))
                     ((ExperimentalProteoform)p).shift_masses(shift, neucode_labeled);
             }
 
