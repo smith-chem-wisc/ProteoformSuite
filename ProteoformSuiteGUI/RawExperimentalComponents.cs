@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Collections.Generic;
 
 namespace ProteoformSuiteGUI
 {
@@ -44,9 +45,9 @@ namespace ProteoformSuiteGUI
             (MdiParent as ProteoformSweet).theoreticalDatabase.FillDataBaseTable("Target");
         }
 
-        public DataGridView GetDGV()
+        public List<DataGridView> GetDGVs()
         {
-            return dgv_rawComponents;
+            return new List<DataGridView>() { dgv_rawComponents };
         }
 
         public void FillTablesAndCharts()
@@ -91,6 +92,10 @@ namespace ProteoformSuiteGUI
             dgv_rawComponents.Rows.Clear();
             dgv_chargeStates.DataSource = null;
             dgv_chargeStates.Rows.Clear();
+
+            ((ProteoformSweet)MdiParent).neuCodePairs.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures();
+
         }
 
         #endregion Public Methods

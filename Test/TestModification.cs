@@ -176,5 +176,29 @@ namespace Test
             Assert.AreEqual(1 + 3 + 3, PtmCombos.get_combinations(ptm_data, 2, fake_ranks, 1, false).Count());
             Assert.AreEqual(1 + 3 + 3 + 3, PtmCombos.get_combinations(ptm_data, 3, fake_ranks, 1, false).Count());
         }
+
+        [Test]
+        public void test_limit_large_combos()
+        {
+            IDictionary<int, List<Modification>> a1 = new Dictionary<int, List<Modification>>
+            {
+                { 1, new List<Modification>{ ConstructorsForTesting.get_modWithMass("ox", 16) } },
+                { 2, new List<Modification>{ ConstructorsForTesting.get_modWithMass("ox", 16) } },
+                { 3, new List<Modification>{ ConstructorsForTesting.get_modWithMass("ox", 16) } },
+                { 4, new List<Modification>{ ConstructorsForTesting.get_modWithMass("ac", 42) } },
+            };
+            List<PtmSet> sets1 = PtmCombos.get_combinations(a1, 3, new Dictionary<double, int> { { 16, 1 }, { 42, 2 } }, 1, true);
+            Assert.AreEqual(1, sets1.Count(s => s.ptm_combination.Count == 3));
+            Assert.True(sets1.Where(s => s.ptm_combination.Count == 3).First().ptm_combination.All(p => p.modification.id == "ox"));
+
+            IDictionary<int, List<Modification>> a2 = new Dictionary<int, List<Modification>>
+            {
+                { 1, new List<Modification>{ ConstructorsForTesting.get_modWithMass("ox", 16), ConstructorsForTesting.get_modWithMass("ox", 16) } },
+                { 3, new List<Modification>{ ConstructorsForTesting.get_modWithMass("ox", 16) } },
+                { 4, new List<Modification>{ ConstructorsForTesting.get_modWithMass("ac", 42) } },
+            };
+            List<PtmSet> sets2 = PtmCombos.get_combinations(a2, 3, new Dictionary<double, int> { { 16, 1 }, { 42, 2 } }, 1, true);
+            Assert.AreEqual(0, sets2.Count(s => s.ptm_combination.Count == 3));
+        }
     }
 }

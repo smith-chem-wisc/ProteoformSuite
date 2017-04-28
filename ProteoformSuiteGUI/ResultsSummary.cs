@@ -4,6 +4,7 @@ using ProteoformSuiteInternal;
 using System.Windows.Forms;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace ProteoformSuiteGUI
 {
@@ -20,6 +21,11 @@ namespace ProteoformSuiteGUI
         #endregion Public Constructor
 
         #region Public Methods
+
+        public List<DataGridView> GetDGVs()
+        {
+            return null;
+        }
 
         public void create_summary()
         {
