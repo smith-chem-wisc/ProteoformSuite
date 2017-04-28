@@ -37,11 +37,11 @@ namespace ProteoformSuiteInternal
             report += SaveState.lollipop.raw_neucode_pairs.Count.ToString() + "\tRaw NeuCode Pairs" + Environment.NewLine;
             report += SaveState.lollipop.raw_neucode_pairs.Count(nc => nc.accepted).ToString() + "\tAccepted NeuCode Pairs" + Environment.NewLine + Environment.NewLine;
 
-            report += SaveState.lollipop.proteoform_community.experimental_proteoforms.Length.ToString() + "\tExperimental Proteoforms" + Environment.NewLine;
-            report += SaveState.lollipop.proteoform_community.experimental_proteoforms.Count(e => e.accepted).ToString() + "\tAccepted Experimental Proteoforms" + Environment.NewLine;
+            report += SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Length.ToString() + "\tExperimental Proteoforms" + Environment.NewLine;
+            report += SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.accepted).ToString() + "\tAccepted Experimental Proteoforms" + Environment.NewLine;
             report += SaveState.lollipop.theoretical_database.theoretical_proteins.Sum(kv => kv.Value.Length).ToString() + "\tTheoretical Proteins" + Environment.NewLine;
             report += SaveState.lollipop.theoretical_database.expanded_proteins.Length + "\tExpanded Theoretical Proteins" + Environment.NewLine;
-            report += SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length.ToString() + "\tTheoretical Proteoforms" + Environment.NewLine + Environment.NewLine;
+            report += SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString() + "\tTheoretical Proteoforms" + Environment.NewLine + Environment.NewLine;
 
             report += SaveState.lollipop.et_peaks.Count.ToString() + "\tExperimental-Theoretical Peaks" + Environment.NewLine;
             report += SaveState.lollipop.et_relations.Count.ToString() + "\tExperimental-Theoretical Pairs" + Environment.NewLine;
@@ -55,14 +55,14 @@ namespace ProteoformSuiteInternal
             report += SaveState.lollipop.ee_relations.Count(r => r.Accepted).ToString() + "\tAccepted Experimental-Experimental Pairs" + Environment.NewLine;
             report += SaveState.lollipop.ef_relations.Count <= 0 ? Environment.NewLine : SaveState.lollipop.ef_relations.Average(d => d.Value.Count).ToString() + "\tAverage Experimental-False Pairs" + Environment.NewLine + Environment.NewLine;
 
-            report += SaveState.lollipop.proteoform_community.families.Count.ToString() + "\tProteoform Families" + Environment.NewLine;
-            List<ProteoformFamily> identified_families = SaveState.lollipop.proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() == 1).ToList();
-            List<ProteoformFamily> ambiguous_families = SaveState.lollipop.proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() > 1).ToList();
+            report += SaveState.lollipop.target_proteoform_community.families.Count.ToString() + "\tProteoform Families" + Environment.NewLine;
+            List<ProteoformFamily> identified_families = SaveState.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() == 1).ToList();
+            List<ProteoformFamily> ambiguous_families = SaveState.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() > 1).ToList();
             report += identified_families.Count.ToString() + "\tIdentified Families (Correspond to 1 gene)" + Environment.NewLine;
             report += identified_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Identified Families" + Environment.NewLine;
             report += ambiguous_families.Count.ToString() + "\tAmbiguous Families (Correspond to > 1 gene)" + Environment.NewLine;
             report += ambiguous_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Ambiguous Families" + Environment.NewLine;
-            report += SaveState.lollipop.proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString() + "\tOrphaned Experimental Proteoforms (Not joined with another proteoform)" + Environment.NewLine + Environment.NewLine;
+            report += SaveState.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString() + "\tOrphaned Experimental Proteoforms (Not joined with another proteoform)" + Environment.NewLine + Environment.NewLine;
 
             report += SaveState.lollipop.satisfactoryProteoforms.Count.ToString() + "\tQuantified Experimental Proteoforms (Threshold for Quantification: " + SaveState.lollipop.minBiorepsWithObservations.ToString() + " = " + SaveState.lollipop.observation_requirement + ")" + Environment.NewLine;
             report += SaveState.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + SaveState.lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + SaveState.lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + SaveState.lollipop.minProteoformFDR.ToString() + ")" + Environment.NewLine + Environment.NewLine;
@@ -103,7 +103,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add((SaveState.lollipop.denominator_condition == "" ? "Condition #2" : SaveState.lollipop.denominator_condition) + " Quantified Proteoform Intensity", typeof(double));
             results.Columns.Add("Statistically Significant", typeof(bool));
 
-            foreach (ExperimentalProteoform e in SaveState.lollipop.proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
+            foreach (ExperimentalProteoform e in SaveState.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
                 .Where(e => e.linked_proteoform_references != null)
                 .OrderByDescending(e => e.quant.significant ? 1 : 0)
                 .ThenBy(e => (e.linked_proteoform_references.First() as TheoreticalProteoform).accession)

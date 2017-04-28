@@ -39,15 +39,20 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.proteoform_community.has_e_and_t_proteoforms;
+            return SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.target_proteoform_community.has_e_and_t_proteoforms;
         }
 
         public void RunTheGamut()
         {
             Cursor = Cursors.WaitCursor;
-            SaveState.lollipop.et_relations = SaveState.lollipop.proteoform_community.relate(SaveState.lollipop.proteoform_community.experimental_proteoforms, SaveState.lollipop.proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true);
-            SaveState.lollipop.ed_relations = SaveState.lollipop.proteoform_community.relate_ed();
-            SaveState.lollipop.et_peaks = SaveState.lollipop.proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.et_relations, SaveState.lollipop.ed_relations);
+            SaveState.lollipop.et_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true);
+            for (int i = 0; i < SaveState.lollipop.decoy_databases; i++)
+            {
+                string key = "Decoy_Proteoform_Community_" + i;
+                SaveState.lollipop.ed_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true));
+                if (i == 0) ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
+            }
+            SaveState.lollipop.et_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.et_relations, SaveState.lollipop.ed_relations);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
             FillTablesAndCharts();
             Cursor = Cursors.Default;
@@ -73,7 +78,7 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsTablesFigures()
         {
-            SaveState.lollipop.proteoform_community.clear_et();
+            SaveState.lollipop.clear_et();
 
             foreach (var series in ct_ET_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_ET_peakList.Series) series.Points.Clear();
@@ -150,7 +155,7 @@ namespace ProteoformSuiteGUI
 
         private void bt_compare_et_Click(object sender, EventArgs e)
         {
-            if (SaveState.lollipop.proteoform_community.has_e_and_t_proteoforms)
+            if (SaveState.lollipop.target_proteoform_community.has_e_and_t_proteoforms)
             {
                 shift_masses();
                 ClearListsTablesFigures();
@@ -158,7 +163,7 @@ namespace ProteoformSuiteGUI
                 xMaxET.Value = (decimal)SaveState.lollipop.et_high_mass_difference;
                 xMinET.Value = (decimal)SaveState.lollipop.et_low_mass_difference;
             }
-            else if (SaveState.lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
+            else if (SaveState.lollipop.target_proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
             else MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
@@ -299,7 +304,7 @@ namespace ProteoformSuiteGUI
             ct_ET_Histogram.Series["relations"].Enabled = true;
             if (SaveState.lollipop.ed_relations.Count > 0)
             {
-                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, SaveState.lollipop.ed_relations["DecoyDatabase_0"], "decoys");
+                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, SaveState.lollipop.ed_relations["Decoy_Proteoform_Community_0"], "decoys");
                 ct_ET_Histogram.Series["decoys"].Enabled = false;
                 cb_view_decoy_histogram.Enabled = true;
             }
@@ -385,6 +390,7 @@ namespace ProteoformSuiteGUI
                 Parallel.ForEach(SaveState.lollipop.et_peaks, p =>
                 {
                     p.Accepted = p.peak_relation_group_count >= SaveState.lollipop.min_peak_count_et;
+                    p.count_nearby_decoys(SaveState.lollipop.ed_relations.Values.SelectMany(v => v).ToList());
                     Parallel.ForEach(p.grouped_relations, r => r.Accepted = p.Accepted);
                 });
                 dgv_ET_Relations.Refresh();
@@ -419,6 +425,10 @@ namespace ProteoformSuiteGUI
         private void ET_Peak_List_DirtyStateChanged(object sender, EventArgs e)
         {
             relationUtility.peak_acceptability_change(dgv_ET_Peak_List);
+            Parallel.ForEach(SaveState.lollipop.et_peaks, p =>
+            {
+                p.count_nearby_decoys(SaveState.lollipop.ed_relations.SelectMany(c => c.Value).ToList());
+            });
             dgv_ET_Relations.Refresh();
             dgv_ET_Peak_List.Refresh();
             update_figures_of_merit();

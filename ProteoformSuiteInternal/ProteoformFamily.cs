@@ -56,10 +56,10 @@ namespace ProteoformSuiteInternal
             separate_proteoforms();
         }
 
-        public void merge_families()
+        public void merge_families(List<ProteoformFamily> families)
         {
             IEnumerable<ProteoformFamily> gene_family =
-                    from f in SaveState.lollipop.proteoform_community.families
+                    from f in families
                     from n in gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Distinct()
                     where f.gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Contains(n)
                     select f;
@@ -116,7 +116,7 @@ namespace ProteoformSuiteInternal
             theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
             gene_names = theoretical_proteoforms.Select(t => t.gene_name).ToList();
             experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
-            relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.peak.Accepted))).ToList();
+            relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.Accepted))).ToList();
         }
 
         #endregion Private Methods
