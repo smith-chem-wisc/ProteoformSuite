@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TheoreticalDatabase));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.cb_limitLargePtmSets = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.tb_totalTheoreticalProteoforms = new System.Windows.Forms.TextBox();
             this.label7 = new System.Windows.Forms.Label();
@@ -59,7 +60,8 @@
             this.ckbx_Carbam = new System.Windows.Forms.CheckBox();
             this.ckbx_OxidMeth = new System.Windows.Forms.CheckBox();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
-            this.cb_limitLargePtmSets = new System.Windows.Forms.CheckBox();
+            this.splitter1 = new System.Windows.Forms.Splitter();
+            this.btn_downloadUniProtPtmList = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -82,6 +84,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.btn_downloadUniProtPtmList);
             this.splitContainer1.Panel1.Controls.Add(this.cb_limitLargePtmSets);
             this.splitContainer1.Panel1.Controls.Add(this.label8);
             this.splitContainer1.Panel1.Controls.Add(this.tb_totalTheoreticalProteoforms);
@@ -111,11 +114,25 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.splitter1);
             this.splitContainer1.Panel2.Controls.Add(this.dgv_Database);
             this.splitContainer1.Size = new System.Drawing.Size(1362, 741);
             this.splitContainer1.SplitterDistance = 452;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // cb_limitLargePtmSets
+            // 
+            this.cb_limitLargePtmSets.AutoSize = true;
+            this.cb_limitLargePtmSets.Checked = true;
+            this.cb_limitLargePtmSets.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_limitLargePtmSets.Location = new System.Drawing.Point(217, 511);
+            this.cb_limitLargePtmSets.Name = "cb_limitLargePtmSets";
+            this.cb_limitLargePtmSets.Size = new System.Drawing.Size(216, 17);
+            this.cb_limitLargePtmSets.TabIndex = 51;
+            this.cb_limitLargePtmSets.Text = "Limit Triples and Larger (Recommended)";
+            this.cb_limitLargePtmSets.UseVisualStyleBackColor = true;
+            this.cb_limitLargePtmSets.CheckedChanged += new System.EventHandler(this.cb_limitLargePtmSets_CheckedChanged);
             // 
             // label8
             // 
@@ -196,7 +213,7 @@
             // 
             // btn_addFiles
             // 
-            this.btn_addFiles.Location = new System.Drawing.Point(53, 236);
+            this.btn_addFiles.Location = new System.Drawing.Point(18, 236);
             this.btn_addFiles.Name = "btn_addFiles";
             this.btn_addFiles.Size = new System.Drawing.Size(122, 36);
             this.btn_addFiles.TabIndex = 24;
@@ -206,7 +223,7 @@
             // 
             // btn_clearFiles
             // 
-            this.btn_clearFiles.Location = new System.Drawing.Point(230, 236);
+            this.btn_clearFiles.Location = new System.Drawing.Point(296, 236);
             this.btn_clearFiles.Name = "btn_clearFiles";
             this.btn_clearFiles.Size = new System.Drawing.Size(122, 36);
             this.btn_clearFiles.TabIndex = 23;
@@ -451,18 +468,24 @@
             this.dgv_Database.Size = new System.Drawing.Size(903, 737);
             this.dgv_Database.TabIndex = 0;
             // 
-            // cb_limitLargePtmSets
+            // splitter1
             // 
-            this.cb_limitLargePtmSets.AutoSize = true;
-            this.cb_limitLargePtmSets.Checked = true;
-            this.cb_limitLargePtmSets.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_limitLargePtmSets.Location = new System.Drawing.Point(217, 511);
-            this.cb_limitLargePtmSets.Name = "cb_limitLargePtmSets";
-            this.cb_limitLargePtmSets.Size = new System.Drawing.Size(216, 17);
-            this.cb_limitLargePtmSets.TabIndex = 51;
-            this.cb_limitLargePtmSets.Text = "Limit Triples and Larger (Recommended)";
-            this.cb_limitLargePtmSets.UseVisualStyleBackColor = true;
-            this.cb_limitLargePtmSets.CheckedChanged += new System.EventHandler(this.cb_limitLargePtmSets_CheckedChanged);
+            this.splitter1.Location = new System.Drawing.Point(0, 0);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.splitter1.Size = new System.Drawing.Size(3, 737);
+            this.splitter1.TabIndex = 1;
+            this.splitter1.TabStop = false;
+            // 
+            // btn_downloadUniProtPtmList
+            // 
+            this.btn_downloadUniProtPtmList.Location = new System.Drawing.Point(156, 236);
+            this.btn_downloadUniProtPtmList.Name = "btn_downloadUniProtPtmList";
+            this.btn_downloadUniProtPtmList.Size = new System.Drawing.Size(122, 36);
+            this.btn_downloadUniProtPtmList.TabIndex = 52;
+            this.btn_downloadUniProtPtmList.Text = "Download UniProt PTM List";
+            this.btn_downloadUniProtPtmList.UseVisualStyleBackColor = true;
+            this.btn_downloadUniProtPtmList.Click += new System.EventHandler(this.btn_downloadUniProtPtmList_Click);
             // 
             // TheoreticalDatabase
             // 
@@ -525,5 +548,7 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox tb_totalTheoreticalProteoforms;
         private System.Windows.Forms.CheckBox cb_limitLargePtmSets;
+        private System.Windows.Forms.Splitter splitter1;
+        private System.Windows.Forms.Button btn_downloadUniProtPtmList;
     }
 }
