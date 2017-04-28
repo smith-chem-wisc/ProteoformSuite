@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using UsefulProteomicsDatabases;
 
 namespace ProteoformSuiteGUI
 {
@@ -242,8 +244,22 @@ namespace ProteoformSuiteGUI
             clear_lists();
             if (!SaveState.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory))
             {
-                MessageBox.Show("Please list at least one protein database. Also, please make sure it has modifications listed (mzLibXml format) or to include and at least one PTM list.");
-                return false;
+                if (SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
+                {
+                    MessageBox.Show("Please list at least one protein database.", "Full Run");
+                    return false;
+                }
+                else
+                {
+                    DialogResult d = MessageBox.Show("No PTM list is listed.\n\nWill now download the default PTM list from UniProt and use it for the Full Run.", "Full Run", MessageBoxButtons.OKCancel);
+                    if (d == DialogResult.OK)
+                    {
+                        SaveState.lollipop.enter_uniprot_ptmlist();
+                        loadDeconvolutionResults.RunTheGamut();
+                    }
+                    else return false;
+                }
+                
             }
 
             Cursor = Cursors.WaitCursor;
@@ -332,7 +348,6 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Public Method
-
 
     }
 }
