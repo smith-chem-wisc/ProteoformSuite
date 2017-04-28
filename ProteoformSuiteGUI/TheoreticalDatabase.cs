@@ -37,7 +37,9 @@ namespace ProteoformSuiteGUI
 
         private void set_Make_Database_Button()
         {
-            btn_Make_Databases.Enabled = ReadyToRunTheGamut();
+            bool ready_to_run = ReadyToRunTheGamut();
+            btn_downloadUniProtPtmList.Enabled = !ready_to_run && SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.PtmList).Count() == 0;
+            btn_Make_Databases.Enabled = ready_to_run;
         }
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)
@@ -309,5 +311,12 @@ namespace ProteoformSuiteGUI
 
         #endregion ADD/CLEAR Private Methods
 
+        private void btn_downloadUniProtPtmList_Click(object sender, EventArgs e)
+        {
+            SaveState.lollipop.enter_uniprot_ptmlist();
+            DisplayUtility.FillDataGridView(dgv_loadFiles, SaveState.lollipop.get_files(SaveState.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
+            btn_downloadUniProtPtmList.Enabled = false;
+        }
     }
 }
