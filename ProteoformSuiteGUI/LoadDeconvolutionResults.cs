@@ -30,6 +30,11 @@ namespace ProteoformSuiteGUI
             populate_file_lists();
         }
 
+        public List<DataGridView> GetDGVs()
+        {
+            return null;
+        }
+
         public void ClearListsTablesFigures()
         { }
 
@@ -277,7 +282,7 @@ namespace ProteoformSuiteGUI
         }
         #endregion CLEAR BUTTONS Private Methods
 
-        #region FULL RUN Private Methods
+        #region FULL RUN & STEP THROUGH Private Methods
 
         private void btn_fullRun_Click(object sender, EventArgs e)
         {
@@ -300,7 +305,15 @@ namespace ProteoformSuiteGUI
         {
             ProteoformSweet.run_when_form_loads = cb_run_when_load.Checked;
         }
-        #endregion FULL RUN Private Methods
+
+        private void btn_stepThrough_Click(object sender, EventArgs e)
+        {
+            (MdiParent as ProteoformSweet).resultsToolStripMenuItem.ShowDropDown();
+            MessageBox.Show("Use the Results menu to step through processing results.\n\n" + 
+                "Load results and databases in this panel, and then proceed to Raw Experimental Components.", "Step Through Introduction.");
+        }
+
+        #endregion FULL RUN & STEP THROUGH Private Methods
 
         #region FILTERS Private Methods
 

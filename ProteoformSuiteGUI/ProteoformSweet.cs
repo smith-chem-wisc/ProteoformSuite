@@ -36,7 +36,7 @@ namespace ProteoformSuiteGUI
         SaveFileDialog saveResults = new SaveFileDialog();
         SaveFileDialog saveExcelDialog = new SaveFileDialog();
         List<ISweetForm> forms;
-        Form current_form;
+        ISweetForm current_form;
 
         #endregion Private Fields
 
@@ -89,7 +89,7 @@ namespace ProteoformSuiteGUI
         {
             form.Show();
             form.WindowState = FormWindowState.Maximized;
-            current_form = form;
+            current_form = form as ISweetForm;
         }
 
         #endregion Private Setup Methods
@@ -265,51 +265,21 @@ namespace ProteoformSuiteGUI
 
         private void export_table()
         {
-            if (current_form == rawExperimentalComponents)
+            List<DataGridView> grid_views = current_form.GetDGVs();
+            if (grid_views != null)
             {
-                SaveExcelFile(new List<DataGridView>() { rawExperimentalComponents.GetDGV() }, "raw_experimental_components_table.xlsx");
+                SaveExcelFile(grid_views, (current_form as Form).Name + "_table.xlsx");
             }
-
-            if (current_form == neuCodePairs)
+            else
             {
-                SaveExcelFile(new List<DataGridView>() { neuCodePairs.GetDGV() }, "neucode_pairs_table.xlsx");
-            }
-
-            if (current_form == aggregatedProteoforms)
-            {
-                SaveExcelFile(new List<DataGridView>() { aggregatedProteoforms.GetDGV() }, "aggregated_proteoforms_table.xlsx");
-            }
-
-            if (current_form == theoreticalDatabase)
-            {
-                SaveExcelFile(new List<DataGridView>() { theoreticalDatabase.GetDGV() }, "theoretical_database_table.xlsx");
-            }
-
-            if (current_form == experimentalTheoreticalComparison)
-            {
-                SaveExcelFile(new List<DataGridView>() { experimentalTheoreticalComparison.GetETRelationsDGV(), experimentalTheoreticalComparison.GetETPeaksDGV() }, "experimental_theoretical_comparison_table.xlsx");
-            }
-
-            if (current_form == experimentExperimentComparison)
-            {
-                SaveExcelFile(new List<DataGridView>() { experimentExperimentComparison.GetEERelationDGV(), experimentExperimentComparison.GetEEPeaksDGV() }, "experiment_experiment_comparison_table.xlsx");
-            }
-
-            if (current_form == proteoformFamilies)
-            {
-                SaveExcelFile(new List<DataGridView>() { proteoformFamilies.GetDGV() }, "proteoform_families_table.xlsx");
-            }
-
-            if (current_form == quantification)
-            {
-                SaveExcelFile(new List<DataGridView>() { quantification.Get_GoTerms_DGV(), quantification.Get_quant_results_DGV() }, "quantification_table.xlsx");
+                MessageBox.Show("There is no table on this page to export. Please navigate to another page with the Results tab.");
             }
         }
 
         private void SaveExcelFile(List<DataGridView> dgvs, string filename)
         {
             saveExcelDialog.FileName = filename;
-            DialogResult dr = this.saveExcelDialog.ShowDialog();
+            DialogResult dr = saveExcelDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
                 DGVExcelWriter writer = new DGVExcelWriter();

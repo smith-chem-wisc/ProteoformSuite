@@ -55,9 +55,9 @@ namespace ProteoformSuiteGUI
             dgv_RawExpNeuCodePairs.Rows.Clear();
         }
 
-        public DataGridView GetDGV()
+        public List<DataGridView> GetDGVs()
         {
-            return dgv_RawExpNeuCodePairs;
+            return new List<DataGridView>() { dgv_RawExpNeuCodePairs };
         }
 
         public void InitializeParameterSet()

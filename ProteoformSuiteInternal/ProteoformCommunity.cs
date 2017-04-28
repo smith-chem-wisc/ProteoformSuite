@@ -376,7 +376,13 @@ namespace ProteoformSuiteInternal
         public void clear_families()
         {
             families.Clear();
-            foreach (Proteoform p in experimental_proteoforms) p.family = null;
+            foreach (Proteoform p in experimental_proteoforms)
+            {
+                p.family = null;
+                p.ptm_set = new PtmSet(new List<Ptm>());
+                p.linked_proteoform_references = null;
+                p.gene_name = null;
+            }
             foreach (Proteoform p in theoretical_proteoforms) p.family = null;
             foreach (Proteoform p in decoy_proteoforms.Values.SelectMany(d => d)) p.family = null;
         }
