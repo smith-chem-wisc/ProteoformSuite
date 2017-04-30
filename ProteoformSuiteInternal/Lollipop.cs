@@ -514,6 +514,40 @@ namespace ProteoformSuiteInternal
         public List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
         public List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
 
+        public void relate_ed()
+        {
+            SaveState.lollipop.ed_relations.Clear();
+            for (int i = 0; i < SaveState.lollipop.decoy_proteoform_communities.Count; i++)
+            {
+                string key = "Decoy_Proteoform_Community_" + i;
+                SaveState.lollipop.ed_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true));
+                if (i == 0) ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
+            }
+
+            foreach (ProteoformRelation mass_difference in ed_relations.Values.SelectMany(v => v))
+            {
+                foreach (Proteoform p in mass_difference.connected_proteoforms)
+                p.relationships.Add(mass_difference);
+            }
+        }
+
+        public void relate_ef()
+        {
+            SaveState.lollipop.ef_relations.Clear();
+            for (int i = 0; i < SaveState.lollipop.decoy_proteoform_communities.Count; i++)
+            {
+                string key = "Decoy_Proteoform_Community_" + i;
+                SaveState.lollipop.ef_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate_ef(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms));
+                if (i == 0) ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ef_relations[key]); //count from first decoy database (for histogram)
+            }
+
+            foreach (ProteoformRelation mass_difference in ef_relations.Values.SelectMany(v => v))
+            {
+                foreach (Proteoform p in mass_difference.connected_proteoforms)
+                    p.relationships.Add(mass_difference);
+            }
+        }
+
         #endregion ET,ED,EE,EF COMPARISONS Public Fields
 
         #region PROTEOFORM FAMILIES Public Fields
@@ -976,15 +1010,7 @@ namespace ProteoformSuiteInternal
         {
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
             {
-                community.families.Clear();
-                foreach (Proteoform p in community.experimental_proteoforms)
-                {
-                    p.family = null;
-                    p.ptm_set = new PtmSet(new List<Ptm>());
-                    p.linked_proteoform_references = null;
-                    p.gene_name = null;
-                }
-                foreach (Proteoform p in community.theoretical_proteoforms) p.family = null;
+                community.clear_families();
             }
         }
     }

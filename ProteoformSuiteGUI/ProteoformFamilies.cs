@@ -83,14 +83,16 @@ namespace ProteoformSuiteGUI
             Cursor = Cursors.WaitCursor;
             SaveState.lollipop.clear_families();
             SaveState.lollipop.construct_families();
-            fill_proteoform_families("");
+            cmbx_tableSelector.SelectedIndex = 0;
+            tb_tableFilter.Text = "";
+            fill_proteoform_families("", -1);
             update_figures_of_merit();
             Cursor = Cursors.Default;
         }
 
         public void FillTablesAndCharts()
         {
-            fill_proteoform_families("");
+            fill_proteoform_families("", -1);
             update_figures_of_merit();
         }
 
@@ -108,8 +110,21 @@ namespace ProteoformSuiteGUI
             tb_TotalFamilies.Text = SaveState.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count > 1).ToString();
             tb_IdentifiedFamilies.Text = SaveState.lollipop.target_proteoform_community.families.Count(f => f.theoretical_proteoforms.Count > 0).ToString();
             tb_singleton_count.Text = SaveState.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString();
-            tb_identified_experimentals.Text = SaveState.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() == 1).Sum(f => f.experimental_proteoforms.Count).ToString();
-            tb_identified_decoys.Text = SaveState.lollipop.decoy_proteoform_communities.Values.Average(d => d.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() == 1).Sum(f => f.experimental_proteoforms.Count)).ToString();
+            tb_identified_experimentals.Text = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null).ToString();
+            if (SaveState.lollipop.decoy_proteoform_communities.Values.SelectMany(v => v.experimental_proteoforms).Count() > 0)
+            tb_identified_decoys.Text = Math.Round(SaveState.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null)), 0).ToString();
+
+            //change selected table names based on # decoy communities
+            int decoy_communities = SaveState.lollipop.decoy_proteoform_communities.Count;
+            for(int i = 0; i < decoy_communities; i++)
+            {
+               if (!cmbx_tableSelector.Items.Contains("Decoy Community " + i)) cmbx_tableSelector.Items.Add("Decoy Community " + i);
+            }
+            //if more items than decoy databases, remove later ones //FIX   
+            while(cmbx_tableSelector.Items.Count - 5 - decoy_communities > 0)
+            {
+                cmbx_tableSelector.Items.RemoveAt(5 + decoy_communities);
+            }
         }
 
         #endregion Public Methods
@@ -136,26 +151,32 @@ namespace ProteoformSuiteGUI
 
         private void cmbx_tableSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text);
+            if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text, -1);
             else if (cmbx_tableSelector.SelectedIndex == 1) fill_theoreticals(tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.BiologicalProcess, tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.CellularComponent, tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 4) fill_go(Aspect.MolecularFunction, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex > 4) fill_proteoform_families(tb_tableFilter.Text, cmbx_tableSelector.SelectedIndex - 5);
         }
 
         private void tb_tableFilter_TextChanged(object sender, EventArgs e)
         {
-            if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text);
+            if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text, -1);
             else if (cmbx_tableSelector.SelectedIndex == 1) fill_theoreticals(tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.BiologicalProcess, tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.CellularComponent, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex > 4) fill_proteoform_families(tb_tableFilter.Text, cmbx_tableSelector.SelectedIndex - 5);
         }
 
-        public void fill_proteoform_families(string filter)
+        public void fill_proteoform_families(string filter, int decoyCommunityMinusOneIsTarget)
         {
             IEnumerable<object> families = filter == "" ?
+                 ( decoyCommunityMinusOneIsTarget < 0 ? 
                 SaveState.lollipop.target_proteoform_community.families.OrderByDescending(f => f.relations.Count) :
-                ExtensionMethods.filter(SaveState.lollipop.target_proteoform_community.families.OrderByDescending(f => f.relations.Count), filter);
+                SaveState.lollipop.decoy_proteoform_communities["Decoy_Proteoform_Community_" + decoyCommunityMinusOneIsTarget].families.OrderByDescending(f => f.relations.Count)) :
+                ( decoyCommunityMinusOneIsTarget < 0 ?
+                ExtensionMethods.filter(SaveState.lollipop.target_proteoform_community.families.OrderByDescending(f => f.relations.Count), filter)
+                : ExtensionMethods.filter(SaveState.lollipop.decoy_proteoform_communities["Decoy_Proteoform_Community_" + decoyCommunityMinusOneIsTarget].families.OrderByDescending(f => f.relations.Count), filter));
             DisplayUtility.FillDataGridView(dgv_main, families.OfType<ProteoformFamily>().Select(f => new DisplayProteoformFamily(f)));
             DisplayProteoformFamily.format_families_dgv(dgv_main);
         }
@@ -178,12 +199,12 @@ namespace ProteoformSuiteGUI
 
         private void dgv_proteoform_families_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (cmbx_tableSelector.SelectedIndex == 0 && e.RowIndex >= 0) display_family_members(e.RowIndex, e.ColumnIndex);
+            if ((cmbx_tableSelector.SelectedIndex == 0 || cmbx_tableSelector.SelectedIndex > 4) && e.RowIndex >= 0) display_family_members(e.RowIndex, e.ColumnIndex);
         }
 
         private void dgv_proteoform_families_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (cmbx_tableSelector.SelectedIndex == 0 && e.RowIndex >= 0) display_family_members(e.RowIndex, e.ColumnIndex);
+            if ((cmbx_tableSelector.SelectedIndex == 0 || cmbx_tableSelector.SelectedIndex > 4) && e.RowIndex >= 0) display_family_members(e.RowIndex, e.ColumnIndex);
         }
 
         private void display_family_members(int row_index, int column_index)

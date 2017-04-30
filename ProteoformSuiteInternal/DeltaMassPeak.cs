@@ -83,9 +83,9 @@ namespace ProteoformSuiteInternal
                 DeltaMass = grouped_relations.Select(r => r.DeltaMass).Average();
             }
 
-            //foreach (ProteoformRelation mass_difference in grouped_relations)
-            //    foreach (Proteoform p in mass_difference.connected_proteoforms)
-            //        lock (p) p.relationships.Add(mass_difference);
+            foreach (ProteoformRelation mass_difference in grouped_relations)
+                foreach (Proteoform p in mass_difference.connected_proteoforms)
+                    lock (p) p.relationships.Add(mass_difference);
 
             return grouped_relations;
         }
@@ -98,7 +98,7 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(decoys_in_peaks, r =>
             {
                 r.Accepted = this.Accepted;
-                if (r.Accepted) r.peak = this; else r.peak = null;
+                if (r.Accepted) r.peak = this; //assign relation this peak so possible peak assignments used when identifying experimentals
             });
             return decoys_in_peaks.Count;
         }
