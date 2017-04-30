@@ -74,10 +74,6 @@ namespace ProteoformSuiteInternal
                  from pf2 in pf1.candidate_relatives
                  select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)).ToList();
 
-            foreach (ProteoformRelation mass_difference in relations)
-                foreach (Proteoform p in mass_difference.connected_proteoforms)
-                    lock (p) p.relationships.Add(mass_difference);
-
             return count_nearby_relations(relations);  //putative counts include no-mans land
         }
 
@@ -310,7 +306,23 @@ namespace ProteoformSuiteInternal
 
         #endregion CONSTRUCTING FAMILIES
 
+        #region CLEAR FAMILIES
 
-
+        public void clear_families()
+        {
+            families.Clear();
+            foreach (Proteoform p in experimental_proteoforms)
+            {
+                p.family = null;
+                p.ptm_set = new PtmSet(new List<Ptm>());
+                p.linked_proteoform_references = null;
+                p.gene_name = null;
+            }
+            foreach (Proteoform p in theoretical_proteoforms) p.family = null;
+        }
+        #endregion CLEAR FAMILIES
     }
+
+
+
 }

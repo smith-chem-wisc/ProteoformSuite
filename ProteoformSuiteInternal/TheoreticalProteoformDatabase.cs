@@ -285,6 +285,7 @@ namespace ProteoformSuiteInternal
 
         private void process_decoys(ProteinWithGoTerms[] expanded_proteins, IEnumerable<ModificationWithMass> variableModifications)
         {
+            SaveState.lollipop.decoy_proteoform_communities.Clear();
             Parallel.For(0, SaveState.lollipop.decoy_databases, decoyNumber =>
             {
             List<TheoreticalProteoform> decoy_proteoforms = new List<TheoreticalProteoform>();

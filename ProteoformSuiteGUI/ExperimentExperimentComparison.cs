@@ -46,13 +46,7 @@ namespace ProteoformSuiteGUI
         {
             Cursor = Cursors.WaitCursor;
             SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
-            for(int i = 0; i < SaveState.lollipop.decoy_databases; i++)
-            {
-                string key = "Decoy_Proteoform_Community_" + i;
-                SaveState.lollipop.ef_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate_ef(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms));
-                if (i == 0) ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ef_relations[key]); //count from first decoy database (for histogram)
-            }
-
+            SaveState.lollipop.relate_ef();
             SaveState.lollipop.ee_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.ee_relations, SaveState.lollipop.ef_relations);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
             ((ProteoformSweet)MdiParent).quantification.ClearListsTablesFigures();
@@ -65,7 +59,7 @@ namespace ProteoformSuiteGUI
 
             if (SaveState.lollipop.neucode_labeled)
             {
-                ((ProteoformSweet)MdiParent).proteoformFamilies.fill_proteoform_families("");
+                ((ProteoformSweet)MdiParent).proteoformFamilies.fill_proteoform_families("", -1);
                 ((ProteoformSweet)MdiParent).proteoformFamilies.update_figures_of_merit();
             }
 
