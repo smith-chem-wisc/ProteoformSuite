@@ -526,7 +526,7 @@ namespace ProteoformSuiteInternal
             //TopDownHit[] remaining_td_hits = new TopDownHit[0];
             List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
             //aggregate to td hit w/ smallest mass error
-            remaining_td_hits = top_down_hits.OrderBy(t => Math.Abs(t.corrected_mass - t.theoretical_mass - Math.Round(t.corrected_mass - t.theoretical_mass, 0))).ToList();
+            remaining_td_hits = top_down_hits.ToList();
             while (remaining_td_hits.Count > 0)
             {
                 TopDownHit root = remaining_td_hits[0];
