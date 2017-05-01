@@ -46,7 +46,7 @@ namespace ProteoformSuiteInternal
             this.ptm_list = modifications;
             this.reported_mass = reported_mass;
             this.corrected_mass = reported_mass;
-            this.theoretical_mass = TheoreticalProteoform.CalculateProteoformMass(sequence, aaIsotopeMassList);
+            this.theoretical_mass = TheoreticalProteoform.CalculateProteoformMass(sequence, aaIsotopeMassList) + ptm_list.Sum(p => p.modification.monoisotopicMass);
             this.scan = scan;
             this.retention_time = retention_time;
             this.filename = filename;

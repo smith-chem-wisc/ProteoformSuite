@@ -43,14 +43,10 @@ namespace ProteoformSuiteInternal
                         {
                             ModificationMotif motif;
                             ModificationMotif.TryGetMotif(cellStrings[4][0].ToString(), out motif);
-                            Ptm new_ptm = topdown_ptms.Where(m => m.modification.motif.Motif == motif.Motif && m.modification.id == cellStrings[8].Split(',')[0]).FirstOrDefault();//multiple modifications can be indicated in this cell (e.g. alpha-amino acetylated residue@N, O-phospho-L-serine@95)
-                            if (new_ptm != null)
-                            {
-                                ptm_list.Add(new_ptm);
-                            }
-                            else
-                            {
-                                topdown_ptms.Add(new Ptm(position, new ModificationWithMass(cellStrings[8].Split(',')[0], null, motif , ModificationSites.NTerminus, 0, null, new List<double>(), new List<double>(), null)));
+                            Ptm new_ptm = topdown_ptms.Where(m => m.modification.motif.Motif == motif.Motif && m.modification.id == "N-terminal acetylation").FirstOrDefault();//multiple modifications can be indicated in this cell (e.g. alpha-amino acetylated residue@N, O-phospho-L-serine@95)
+                            if (new_ptm == null) //if not in topdown_ptms list, add it (will show in warning)
+                            { 
+                               topdown_ptms.Add(new Ptm(position, new ModificationWithMass("N-terminal acetylation", null, motif , ModificationSites.NTerminus, 0, null, new List<double>(), new List<double>(), null)));
                             }
                         }
                     }
@@ -73,43 +69,38 @@ namespace ProteoformSuiteInternal
                             ModificationMotif motif;
                             ModificationMotif.TryGetMotif(cellStrings[4][position].ToString(), out motif);
                             Ptm new_ptm = topdown_ptms.Where(m => m.modification.motif.Motif == motif.Motif && m.modification.id == resid).FirstOrDefault();
-                            if (new_ptm != null)
-                            {
-                                ptm_list.Add(new_ptm);
-                            }
-                            else
-                            {
+                            if (new_ptm == null) //if not in topdown_ptms list, add it (will show in warning)
                                 topdown_ptms.Add(new Ptm(position, new ModificationWithMass(resid, null, motif, ModificationSites.NTerminus, 0, null, new List<double>(), new List<double>(), null)));
-                            }
                         }
                     }
                 }
+
                 //This is the excel file header:
                 //convert into new td hit
-                        //cellStrings[0]=PFR
-                        //cellStrings[1]=Uniprot Id
-                        //cellStrings[2]=Accession
-                        //cellStrings[3]=Description
-                        //cellStrings[4]=Sequence
-                        //cellStrings[5]=Start Index
-                        //cellStrings[6]=End Index
-                        //cellStrings[7]=Sequence Length
-                        //cellStrings[8]=Modifications
-                        //cellStrings[9]=Modification Codes
-                        //cellStrings[10]=N Terminal Modification Code
-                        //cellStrings[11]=C Terminal Modification Code
-                        //cellStrings[12]=Monoisotopic Mass
-                        //cellStrings[13]=Average Mass
-                        //cellStrings[14]=File Name
-                        //cellStrings[15]=Result Set
-                        //cellStrings[16]=Observed Precursor Mass
-                        //cellStrings[17]=ScanIndex
-                        //cellStrings[18]=RetentionTime
-                        //cellStrings[19]=Global Q-value
-                        //cellStrings[20]=P-score
-                        //cellStrings[21]=E-value
-                        //cellStrings[22]=C-score
-                        //cellStrings[23]=% Cleavages
+                //cellStrings[0]=PFR
+                //cellStrings[1]=Uniprot Id
+                //cellStrings[2]=Accession
+                //cellStrings[3]=Description
+                //cellStrings[4]=Sequence
+                //cellStrings[5]=Start Index
+                //cellStrings[6]=End Index
+                //cellStrings[7]=Sequence Length
+                //cellStrings[8]=Modifications
+                //cellStrings[9]=Modification Codes
+                //cellStrings[10]=N Terminal Modification Code
+                //cellStrings[11]=C Terminal Modification Code
+                //cellStrings[12]=Monoisotopic Mass
+                //cellStrings[13]=Average Mass
+                //cellStrings[14]=File Name
+                //cellStrings[15]=Result Set
+                //cellStrings[16]=Observed Precursor Mass
+                //cellStrings[17]=ScanIndex
+                //cellStrings[18]=RetentionTime
+                //cellStrings[19]=Global Q-value
+                //cellStrings[20]=P-score
+                //cellStrings[21]=E-value
+                //cellStrings[22]=C-score
+                //cellStrings[23]=% Cleavages
 
                 TopDownHit td_hit = new TopDownHit(aaIsotopeMassList, file, tdResultType, cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
                 Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]), ptm_list, Convert.ToDouble(cellStrings[16]), Convert.ToDouble(cellStrings[12]),
