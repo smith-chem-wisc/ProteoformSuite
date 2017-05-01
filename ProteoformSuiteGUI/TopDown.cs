@@ -27,9 +27,6 @@ namespace ProteoformSuiteGUI
 
         }
 
-        //adding a test line
-
-
 
         public void FillTablesAndCharts()
         {
