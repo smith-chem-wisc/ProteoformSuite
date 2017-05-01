@@ -54,7 +54,7 @@ namespace ProteoformSuiteGUI
             Parallel.Invoke
             (
                 () => FillTablesAndCharts(),
-                () => { if (SaveState.lollipop.neucode_labeled) SaveState.lollipop.construct_families(); }
+                () => { if (SaveState.lollipop.neucode_labeled) SaveState.lollipop.construct_target_and_decoy_families(); }
             );
 
             if (SaveState.lollipop.neucode_labeled)
@@ -210,10 +210,7 @@ namespace ProteoformSuiteGUI
         private void EE_Peak_List_DirtyStateChanged(object sender, EventArgs e)
         {
             relationUtility.peak_acceptability_change(dgv_EE_Peaks);
-            Parallel.ForEach(SaveState.lollipop.ee_peaks, p =>
-            {
-                p.count_nearby_decoys(SaveState.lollipop.ef_relations.SelectMany(c => c.Value).ToList());
-            });
+            Parallel.ForEach(SaveState.lollipop.ef_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
             dgv_EE_Peaks.Refresh();
             dgv_EE_Relations.Refresh();
             update_figures_of_merit();
@@ -244,7 +241,7 @@ namespace ProteoformSuiteGUI
             ct_EE_Histogram.Series["relations"].Enabled = true;
             if (SaveState.lollipop.ef_relations.Count > 0)
             {
-                DisplayUtility.GraphRelationsChart(ct_EE_Histogram, SaveState.lollipop.ef_relations["Decoy_Proteoform_Community_0"], "decoys");
+                DisplayUtility.GraphRelationsChart(ct_EE_Histogram, SaveState.lollipop.ef_relations[SaveState.lollipop.decoy_community_name_prefix + "0"], "decoys");
                 ct_EE_Histogram.Series["decoys"].Enabled = false;
                 cb_view_decoy_histogram.Enabled = true;
             }
@@ -275,9 +272,9 @@ namespace ProteoformSuiteGUI
             Parallel.ForEach(SaveState.lollipop.ee_peaks, p =>
             {
                 p.Accepted = p.peak_relation_group_count >= SaveState.lollipop.min_peak_count_ee;
-                p.count_nearby_decoys(SaveState.lollipop.ef_relations.Values.SelectMany(v => v).ToList());
                 Parallel.ForEach(p.grouped_relations, r => r.Accepted = p.Accepted);
             });
+            Parallel.ForEach(SaveState.lollipop.ef_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
             dgv_EE_Peaks.Refresh();
             dgv_EE_Relations.Refresh();
             ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();

@@ -262,6 +262,7 @@ namespace ProteoformSuiteInternal
 
         public ProteoformCommunity target_proteoform_community = new ProteoformCommunity();
         public Dictionary<string, ProteoformCommunity> decoy_proteoform_communities = new Dictionary<string, ProteoformCommunity> ();
+        public string decoy_community_name_prefix = "Decoy_Proteoform_Community_";
         public List<Component> remaining_components = new List<Component>();
         public List<Component> remaining_verification_components = new List<Component>();
         public List<Component> remaining_quantification_components = new List<Component>();
@@ -519,7 +520,7 @@ namespace ProteoformSuiteInternal
             SaveState.lollipop.ed_relations.Clear();
             for (int i = 0; i < SaveState.lollipop.decoy_proteoform_communities.Count; i++)
             {
-                string key = "Decoy_Proteoform_Community_" + i;
+                string key = decoy_community_name_prefix + i;
                 SaveState.lollipop.ed_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true));
                 if (i == 0) ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
             }
@@ -536,7 +537,7 @@ namespace ProteoformSuiteInternal
             SaveState.lollipop.ef_relations.Clear();
             for (int i = 0; i < SaveState.lollipop.decoy_proteoform_communities.Count; i++)
             {
-                string key = "Decoy_Proteoform_Community_" + i;
+                string key = decoy_community_name_prefix + i;
                 SaveState.lollipop.ef_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate_ef(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms));
                 if (i == 0) ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ef_relations[key]); //count from first decoy database (for histogram)
             }
@@ -560,7 +561,7 @@ namespace ProteoformSuiteInternal
         public static List<string> gene_name_labels = new List<string> { "Primary, e.g. HOG1", "Ordered Locus, e.g. YLR113W" };
         public string[] likely_cleavages = new string[] { "I", "L", "A" };
 
-        public void construct_families()
+        public void construct_target_and_decoy_families()
         {
             target_proteoform_community.construct_families();
             foreach (var decoys in decoy_proteoform_communities.Values) decoys.construct_families();
