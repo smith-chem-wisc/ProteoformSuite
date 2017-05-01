@@ -320,6 +320,73 @@ namespace Test
         }
 
         [Test]
+        public void test_construct_target_and_decoy_families()
+        {
+            SaveState.lollipop = new Lollipop();
+            SaveState.lollipop.neucode_labeled = true;
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1", 1000, 5, true);
+            ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("E2", 1020, 5, true);
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E3", 1040, 8, true);
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4", 1050, 5, true);
+            TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("t1", 1000, 5);
+            TheoreticalProteoform decoy1 = ConstructorsForTesting.make_a_theoretical("Decoy1", 1020, 5);
+
+            TestProteoformCommunityRelate.prepare_for_et(new List<double>() { 0 });
+
+            SaveState.lollipop.target_proteoform_community = new ProteoformCommunity();
+            SaveState.lollipop.target_proteoform_community.experimental_proteoforms = new ExperimentalProteoform[4] { pf1, pf2, pf3, pf4 };
+            SaveState.lollipop.target_proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[1] { t1 };
+            SaveState.lollipop.decoy_proteoform_communities.Add(SaveState.lollipop.decoy_community_name_prefix + "0", new ProteoformCommunity());
+            SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].experimental_proteoforms = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
+            SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].theoretical_proteoforms = new TheoreticalProteoform[1] { decoy1 };
+
+            SaveState.lollipop.et_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true);
+            SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
+            SaveState.lollipop.relate_ed();
+            SaveState.lollipop.relate_ef();
+            foreach (ProteoformRelation pr in SaveState.lollipop.et_relations) pr.set_nearby_group(SaveState.lollipop.et_relations, SaveState.lollipop.et_relations.Select(r => r.InstanceId).ToList());
+            foreach (ProteoformRelation pr in SaveState.lollipop.ee_relations) pr.set_nearby_group(SaveState.lollipop.ee_relations, SaveState.lollipop.ee_relations.Select(r => r.InstanceId).ToList());
+
+            SaveState.lollipop.et_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.et_relations, SaveState.lollipop.ed_relations);
+            SaveState.lollipop.ee_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.ee_relations, SaveState.lollipop.ef_relations);
+
+            //one ED relation
+            Assert.AreEqual(1, SaveState.lollipop.ed_relations.Values.SelectMany(v => v).Count());
+            Assert.AreEqual(1, SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].theoretical_proteoforms.SelectMany(t => t.relationships).Count());
+
+            //peak is unaccepted --> relation should be unaccepted, peak added to relation
+            Assert.IsFalse(SaveState.lollipop.ed_relations.First().Value.FirstOrDefault().Accepted); //should be false if peak unaccepted
+            Assert.AreEqual(1, SaveState.lollipop.et_peaks.Count);
+            Assert.IsNotNull(SaveState.lollipop.ed_relations.Values.SelectMany(v => v).First().peak);
+
+
+            //peak is accepted --> relation should be accepted, peak added to relation
+            SaveState.lollipop.min_peak_count_et = 1;
+            SaveState.lollipop.et_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.et_relations, SaveState.lollipop.ed_relations);
+            Assert.IsTrue(SaveState.lollipop.ed_relations.First().Value.FirstOrDefault().Accepted); //should be true if peak accepted
+            Assert.IsNotNull(SaveState.lollipop.ed_relations.Values.SelectMany(v => v).First().peak);
+            Assert.AreEqual(1, SaveState.lollipop.ed_relations.Values.SelectMany(v => v).Count(r => r.Accepted)); //only 1 relation is in delta mass range of accepted peak - only 1 accepted
+
+            //2 ef relations, unaccepted because peak unaccepted
+            Assert.AreEqual(3, SaveState.lollipop.ef_relations.Values.SelectMany(v => v).Count()); //2 ef relations
+            Assert.AreEqual(0, SaveState.lollipop.ef_relations.Values.SelectMany(v => v).Count(r => r.Accepted)); //all peaks accepted are false, so relation accepted should be false
+
+            //one peak accepted --> one of the EF relations falls into range of peak and should be accepted
+            SaveState.lollipop.min_peak_count_ee = 1;
+            SaveState.lollipop.ee_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.ee_relations, SaveState.lollipop.ef_relations);
+            Assert.AreEqual(3, SaveState.lollipop.ee_peaks.Count(p => p.Accepted));
+            Assert.AreEqual(1, SaveState.lollipop.ef_relations.Values.SelectMany(v => v).Count(r => r.Accepted)); //only 1 relation is in delta mass range of accepted peak - only 1 accepted
+            SaveState.lollipop.construct_target_and_decoy_families();
+
+            //should be 2 target families and 3 decoy families
+            //only make decoy relations out of accepted relations --> 1 family with accepted relations
+            Assert.AreEqual(2, SaveState.lollipop.target_proteoform_community.families.Count);
+            Assert.AreEqual(3, SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].families.Count);
+            Assert.AreEqual(1, SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].families.Count(f => f.relations.Count > 0));
+            Assert.AreEqual(2, SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].families.SelectMany(f => f.relations).Count());
+        }
+
+        [Test]
         public void test_results_summary_with_peaks()
         {
             SaveState.lollipop.theoretical_database.theoretical_proteins = new Dictionary<InputFile, Protein[]>();
@@ -356,8 +423,10 @@ namespace Test
             Assert.IsNotEmpty(community.experimental_proteoforms.First().ptm_set.ptm_combination);
             Assert.True(community.experimental_proteoforms.First().relationships.Any(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical));
             SaveState.lollipop.clear_et();
+            Assert.IsEmpty(SaveState.lollipop.et_peaks);
             Assert.IsEmpty(SaveState.lollipop.et_relations);
             Assert.IsNotEmpty(SaveState.lollipop.ee_relations);
+            Assert.IsNotEmpty(SaveState.lollipop.ee_peaks);
             Assert.IsEmpty(community.families);
             Assert.False(SaveState.lollipop.et_relations.Any(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical));
             Assert.False(SaveState.lollipop.et_relations.Any(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical));
@@ -385,6 +454,8 @@ namespace Test
             SaveState.lollipop.clear_ee();
             Assert.IsNotEmpty(SaveState.lollipop.et_relations);
             Assert.IsEmpty(SaveState.lollipop.ee_relations);
+            Assert.IsEmpty(SaveState.lollipop.ee_peaks);
+            Assert.IsNotEmpty(SaveState.lollipop.et_peaks);
             Assert.IsEmpty(community.families);
             Assert.False(SaveState.lollipop.ee_relations.Any(r => r.RelationType == ProteoformComparison.ExperimentalExperimental));
             Assert.False(SaveState.lollipop.ee_peaks.Any(r => r.RelationType == ProteoformComparison.ExperimentalExperimental));
@@ -398,12 +469,20 @@ namespace Test
         [Test]
         public void community_clear_families()
         {
-            ProteoformCommunity community = construct_two_families_with_potentially_colliding_theoreticals();
-            Assert.IsNotEmpty(community.families);
-            Assert.True(community.experimental_proteoforms.Any(p => p.family != null));
-            community.clear_families();
-            Assert.IsEmpty(community.families);
-            Assert.True(community.experimental_proteoforms.All(p => p.family == null));
+            SaveState.lollipop = new Lollipop();
+            ProteoformCommunity target = construct_two_families_with_potentially_colliding_theoreticals();
+            ProteoformCommunity decoy = construct_two_families_with_potentially_colliding_theoreticals();
+            SaveState.lollipop.target_proteoform_community = target;
+            SaveState.lollipop.decoy_proteoform_communities.Add(SaveState.lollipop.decoy_community_name_prefix + "0", decoy);
+            Assert.IsNotEmpty(SaveState.lollipop.target_proteoform_community.families);
+            Assert.True(SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Any(p => p.family != null));
+            Assert.IsNotEmpty(SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].families);
+            Assert.True(SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].experimental_proteoforms.Any(p => p.family != null));
+            SaveState.lollipop.clear_families();
+            Assert.IsEmpty(SaveState.lollipop.target_proteoform_community.families);
+            Assert.True(SaveState.lollipop.target_proteoform_community.experimental_proteoforms.All(p => p.family == null));
+            Assert.IsEmpty(SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].families);
+            Assert.True(SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].experimental_proteoforms.All(p => p.family == null));
         }
     }
 }

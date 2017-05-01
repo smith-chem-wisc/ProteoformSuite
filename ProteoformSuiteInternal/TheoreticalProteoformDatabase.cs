@@ -304,9 +304,9 @@ namespace ProteoformSuiteInternal
 
             lock (SaveState.lollipop.decoy_proteoform_communities)
             {
-                SaveState.lollipop.decoy_proteoform_communities.Add("Decoy_Proteoform_Community_" + decoyNumber, new ProteoformCommunity());
-                SaveState.lollipop.decoy_proteoform_communities["Decoy_Proteoform_Community_" + decoyNumber].theoretical_proteoforms = decoy_proteoforms.ToArray();
-                SaveState.lollipop.decoy_proteoform_communities["Decoy_Proteoform_Community_" + decoyNumber].experimental_proteoforms =
+                SaveState.lollipop.decoy_proteoform_communities.Add(SaveState.lollipop.decoy_community_name_prefix + decoyNumber, new ProteoformCommunity());
+                SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + decoyNumber].theoretical_proteoforms = decoy_proteoforms.ToArray();
+                SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + decoyNumber].experimental_proteoforms =
                 SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
             }
             });

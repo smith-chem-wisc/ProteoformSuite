@@ -217,7 +217,7 @@ namespace Test
             Assert.AreEqual(0, unequal_relations.Count);
         }
 
-        private void prepare_for_et(List<double> delta_masses)
+        public static void prepare_for_et(List<double> delta_masses)
         {
             SaveState.lollipop.theoretical_database.all_mods_with_mass = new List<ModificationWithMass>();
             SaveState.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet>();
@@ -444,24 +444,24 @@ namespace Test
             Assert.AreEqual(0, SaveState.lollipop.ed_relations.Count);
 
             //create a decoy proteoform community
-            SaveState.lollipop.decoy_proteoform_communities.Add("Decoy_Proteoform_Community_0", new ProteoformCommunity());            
+            SaveState.lollipop.decoy_proteoform_communities.Add(SaveState.lollipop.decoy_community_name_prefix + "0", new ProteoformCommunity());            
             TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical("decoyProteoform1", 0, -1);
-            SaveState.lollipop.decoy_proteoform_communities["Decoy_Proteoform_Community_0"].theoretical_proteoforms = new TheoreticalProteoform[1] { pf2 };
+            SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].theoretical_proteoforms = new TheoreticalProteoform[1] { pf2 };
             SaveState.lollipop.relate_ed();
             // Have a single decoy community --> have single ed_relations 
             Assert.AreEqual(1, SaveState.lollipop.ed_relations.Count);
             // But it's empty
-            Assert.IsEmpty(SaveState.lollipop.ed_relations["Decoy_Proteoform_Community_0"]);
+            Assert.IsEmpty(SaveState.lollipop.ed_relations[SaveState.lollipop.decoy_community_name_prefix + "0"]);
 
             // In order to make it not empty, we must have relate_et method output a non-empty List
             // it must take as arguments non-empty pfs1 and pfs2
             // So testProteoformCommunity.experimental_proteoforms must be non-empty
             // And decoy_proteoforms["fake_decoy_proteoform1"] must be non-empty
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("experimentalProteoform1");
-            SaveState.lollipop.decoy_proteoform_communities["Decoy_Proteoform_Community_0"].theoretical_proteoforms.First().ExpandedProteinList = new List<ProteinWithGoTerms> { p1 };
+            SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].theoretical_proteoforms.First().ExpandedProteinList = new List<ProteinWithGoTerms> { p1 };
 
-            Assert.IsEmpty(SaveState.lollipop.decoy_proteoform_communities["Decoy_Proteoform_Community_0"].experimental_proteoforms);
-            SaveState.lollipop.decoy_proteoform_communities["Decoy_Proteoform_Community_0"].experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
+            Assert.IsEmpty(SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].experimental_proteoforms);
+            SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
 
             SaveState.lollipop.clear_et();
             prepare_for_et(new List<double> { pf1.modified_mass - pf2.modified_mass });
@@ -470,9 +470,9 @@ namespace Test
             // Make sure there is one relation total, because only a single decoy was provided
             Assert.AreEqual(1, SaveState.lollipop.ed_relations.Count);
             Assert.IsNotEmpty(SaveState.lollipop.ed_relations);
-            Assert.AreEqual(1, SaveState.lollipop.ed_relations["Decoy_Proteoform_Community_0"].Count); // Make sure there is one relation for the provided fake_decoy_proteoform1
+            Assert.AreEqual(1, SaveState.lollipop.ed_relations[SaveState.lollipop.decoy_community_name_prefix + "0"].Count); // Make sure there is one relation for the provided fake_decoy_proteoform1
 
-            ProteoformRelation rel = SaveState.lollipop.ed_relations["Decoy_Proteoform_Community_0"][0];
+            ProteoformRelation rel = SaveState.lollipop.ed_relations[SaveState.lollipop.decoy_community_name_prefix + "0"][0];
 
             Assert.IsFalse(rel.Accepted);
             Assert.AreEqual("decoyProteoform1", rel.connected_proteoforms[1].accession);

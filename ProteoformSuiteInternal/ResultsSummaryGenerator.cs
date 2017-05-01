@@ -62,7 +62,11 @@ namespace ProteoformSuiteInternal
             report += identified_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Identified Families" + Environment.NewLine;
             report += ambiguous_families.Count.ToString() + "\tAmbiguous Families (Correspond to > 1 gene)" + Environment.NewLine;
             report += ambiguous_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Ambiguous Families" + Environment.NewLine;
-            report += SaveState.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString() + "\tOrphaned Experimental Proteoforms (Not joined with another proteoform)" + Environment.NewLine + Environment.NewLine;
+            report += SaveState.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString() + "\tOrphaned Experimental Proteoforms (Not joined with another proteoform)" + Environment.NewLine;
+            report += SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null).ToString() + "\tIdentified Experimental Proteoforms" + Environment.NewLine;
+            if (SaveState.lollipop.decoy_proteoform_communities.Values.SelectMany(v => v.families).Count() > 0)
+                report += Math.Round(SaveState.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null)) / SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null), 2) + "\tProteoform FDR" + Environment.NewLine;
+            report += Environment.NewLine;
 
             report += SaveState.lollipop.satisfactoryProteoforms.Count.ToString() + "\tQuantified Experimental Proteoforms (Threshold for Quantification: " + SaveState.lollipop.minBiorepsWithObservations.ToString() + " = " + SaveState.lollipop.observation_requirement + ")" + Environment.NewLine;
             report += SaveState.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + SaveState.lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + SaveState.lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + SaveState.lollipop.minProteoformFDR.ToString() + ")" + Environment.NewLine + Environment.NewLine;

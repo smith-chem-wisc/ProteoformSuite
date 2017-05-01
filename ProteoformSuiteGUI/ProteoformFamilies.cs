@@ -82,7 +82,7 @@ namespace ProteoformSuiteGUI
         {
             Cursor = Cursors.WaitCursor;
             SaveState.lollipop.clear_families();
-            SaveState.lollipop.construct_families();
+            SaveState.lollipop.construct_target_and_decoy_families();
             cmbx_tableSelector.SelectedIndex = 0;
             tb_tableFilter.Text = "";
             fill_proteoform_families("", -1);
@@ -173,10 +173,10 @@ namespace ProteoformSuiteGUI
             IEnumerable<object> families = filter == "" ?
                  ( decoyCommunityMinusOneIsTarget < 0 ? 
                 SaveState.lollipop.target_proteoform_community.families.OrderByDescending(f => f.relations.Count) :
-                SaveState.lollipop.decoy_proteoform_communities["Decoy_Proteoform_Community_" + decoyCommunityMinusOneIsTarget].families.OrderByDescending(f => f.relations.Count)) :
+                SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + decoyCommunityMinusOneIsTarget].families.OrderByDescending(f => f.relations.Count)) :
                 ( decoyCommunityMinusOneIsTarget < 0 ?
                 ExtensionMethods.filter(SaveState.lollipop.target_proteoform_community.families.OrderByDescending(f => f.relations.Count), filter)
-                : ExtensionMethods.filter(SaveState.lollipop.decoy_proteoform_communities["Decoy_Proteoform_Community_" + decoyCommunityMinusOneIsTarget].families.OrderByDescending(f => f.relations.Count), filter));
+                : ExtensionMethods.filter(SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + decoyCommunityMinusOneIsTarget].families.OrderByDescending(f => f.relations.Count), filter));
             DisplayUtility.FillDataGridView(dgv_main, families.OfType<ProteoformFamily>().Select(f => new DisplayProteoformFamily(f)));
             DisplayProteoformFamily.format_families_dgv(dgv_main);
         }
