@@ -13,9 +13,6 @@ namespace ProteoformSuiteInternal
 
         public ExperimentalProteoform[] experimental_proteoforms = new ExperimentalProteoform[0];
         public TheoreticalProteoform[] theoretical_proteoforms = new TheoreticalProteoform[0];
-        public Dictionary<string, TheoreticalProteoform[]> decoy_proteoforms = new Dictionary<string, TheoreticalProteoform[]>();
-        public List<ProteoformRelation> relations_in_peaks = new List<ProteoformRelation>();
-        public List<DeltaMassPeak> delta_mass_peaks = new List<DeltaMassPeak>();
         public List<ProteoformFamily> families = new List<ProteoformFamily>();
 
         #endregion Public Fields
@@ -111,7 +108,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        private static List<ProteoformRelation> count_nearby_relations(List<ProteoformRelation> all_relations)
+        public static List<ProteoformRelation> count_nearby_relations(List<ProteoformRelation> all_relations)
         {
             List<ProteoformRelation> all_ordered_relations = all_relations.OrderBy(x => x.DeltaMass).ToList();
             List<int> ordered_relation_ids = all_ordered_relations.Select(r => r.InstanceId).ToList();
@@ -119,32 +116,22 @@ namespace ProteoformSuiteInternal
             return all_ordered_relations;
         }
 
-        public Dictionary<string, List<ProteoformRelation>> relate_ed()
-        {
-            Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
-            foreach (var decoys in decoy_proteoforms)
-            {
-                ed_relations.Add(decoys.Key, relate(experimental_proteoforms, decoys.Value, ProteoformComparison.ExperimentalDecoy, true));
-            }
-            return ed_relations;
-        }
+        //public Dictionary<string, List<ProteoformRelation>> relate_ed()
+        //{
+        //    Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
+        //    foreach (var decoys in decoy_proteoforms)
+        //    {
+        //        ed_relations.Add(decoys.Key, relate(experimental_proteoforms, decoys.Value, ProteoformComparison.ExperimentalDecoy, true));
+        //    }
+        //    return ed_relations;
+        //}
 
-        public Dictionary<string, List<ProteoformRelation>> relate_ef(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2)
+        public List<ProteoformRelation> relate_ef(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2)
         {
             List<ProteoformRelation> all_ef_relations = relate(pfs1, pfs2, ProteoformComparison.ExperimentalFalse, true);
-
-            //take 10 random subsets from all allowed ef relations (will use median for fdr calculations of each peak)
-            Dictionary<string, List<ProteoformRelation>> ef_relations = new Dictionary<string, List<ProteoformRelation>>();
-            Parallel.For(0, 10, i =>
-            {
-                string key = "EF_relations_" + i;
-                ProteoformRelation[] to_shuffle = new List<ProteoformRelation>(all_ef_relations).ToArray();
-                to_shuffle.Shuffle();
-                lock (ef_relations) ef_relations.Add(key, to_shuffle.Take(SaveState.lollipop.ee_relations.Count).ToList());
-            });
-
-            count_nearby_relations(ef_relations.Values.First()); //count from first decoy database
-            return ef_relations;
+            ProteoformRelation[] to_shuffle = new List<ProteoformRelation>(all_ef_relations).ToArray();
+            to_shuffle.Shuffle();
+            return to_shuffle.Take(SaveState.lollipop.ee_relations.Count).ToList();
         }
 
         #endregion BUILDING RELATIONSHIPS
@@ -194,14 +181,13 @@ namespace ProteoformSuiteInternal
                 }
 
                 List<ProteoformRelation> mass_differences_in_peaks = running.SelectMany(r => r.peak.grouped_relations).ToList();
-                relations_in_peaks.AddRange(mass_differences_in_peaks);
                 remaining_relations_outside_no_mans = remaining_relations_outside_no_mans.Except(mass_differences_in_peaks).ToList();
 
                 running.Clear();
                 active.Clear();
                 root = find_next_root(remaining_relations_outside_no_mans, running);
             }
-            delta_mass_peaks.AddRange(peaks);
+            if (peaks.Count > 0 && peaks.First().RelationType == ProteoformComparison.ExperimentalTheoretical) SaveState.lollipop.et_peaks.AddRange(peaks); else SaveState.lollipop.ee_peaks.AddRange(peaks);
 
             //Nearby relations are no longer needed after counting them
             Parallel.ForEach(decoy_relations.SelectMany(kv => kv.Value).Concat(relations).ToList(), r =>
@@ -291,7 +277,7 @@ namespace ProteoformSuiteInternal
                 while (remaining.Count > 0 && active.Count < Environment.ProcessorCount)
                 {
                     ProteoformFamily fam = remaining.Pop();
-                    Thread t = new Thread(new ThreadStart(fam.merge_families));
+                    Thread t = new Thread(() => fam.merge_families(this.families));
                     t.Start();
                     running.Add(fam);
                     active.Add(t);
@@ -320,58 +306,7 @@ namespace ProteoformSuiteInternal
 
         #endregion CONSTRUCTING FAMILIES
 
-        #region CLEAR METHODS
-
-        public void clear_et()
-        {
-            SaveState.lollipop.et_relations.Clear();
-            SaveState.lollipop.et_peaks.Clear();
-            SaveState.lollipop.ed_relations.Clear();
-            SaveState.lollipop.proteoform_community.families.Clear();
-
-            foreach (Proteoform p in experimental_proteoforms)
-            {
-                p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical || r.RelationType == ProteoformComparison.ExperimentalDecoy);
-                p.family = null;
-                p.ptm_set = new PtmSet(new List<Ptm>());
-                p.linked_proteoform_references = null;
-                p.gene_name = null;
-            }
-
-            foreach (Proteoform p in theoretical_proteoforms)
-            {
-                p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical || r.RelationType == ProteoformComparison.ExperimentalDecoy);
-                p.family = null;
-            }
-
-            foreach (Proteoform p in SaveState.lollipop.proteoform_community.decoy_proteoforms.Values.SelectMany(d => d))
-            {
-                p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical || r.RelationType == ProteoformComparison.ExperimentalDecoy);
-            }
-
-            relations_in_peaks.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical || r.RelationType == ProteoformComparison.ExperimentalDecoy);
-            delta_mass_peaks.RemoveAll(k => k.RelationType == ProteoformComparison.ExperimentalTheoretical || k.RelationType == ProteoformComparison.ExperimentalDecoy);
-        }
-
-        public void clear_ee()
-        {
-            SaveState.lollipop.ee_relations.Clear();
-            SaveState.lollipop.ee_peaks.Clear();
-            SaveState.lollipop.ef_relations.Clear();
-            SaveState.lollipop.proteoform_community.families.Clear();
-
-            foreach (Proteoform p in SaveState.lollipop.proteoform_community.experimental_proteoforms)
-            {
-                p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalExperimental || r.RelationType == ProteoformComparison.ExperimentalFalse);
-                p.family = null;
-                p.ptm_set = new PtmSet(new List<Ptm>());
-                p.linked_proteoform_references = null;
-                p.gene_name = null;
-            }
-
-            relations_in_peaks.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalExperimental || r.RelationType == ProteoformComparison.ExperimentalFalse);
-            delta_mass_peaks.RemoveAll(k => k.RelationType == ProteoformComparison.ExperimentalExperimental || k.RelationType == ProteoformComparison.ExperimentalFalse);
-        }
+        #region CLEAR FAMILIES
 
         public void clear_families()
         {
@@ -384,9 +319,10 @@ namespace ProteoformSuiteInternal
                 p.gene_name = null;
             }
             foreach (Proteoform p in theoretical_proteoforms) p.family = null;
-            foreach (Proteoform p in decoy_proteoforms.Values.SelectMany(d => d)) p.family = null;
         }
-        #endregion CLEAR METHODS
-
+        #endregion CLEAR FAMILIES
     }
+
+
+
 }

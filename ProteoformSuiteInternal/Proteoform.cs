@@ -79,7 +79,7 @@ namespace ProteoformSuiteInternal
         public List<ExperimentalProteoform> identify_connected_experimentals(List<PtmSet> all_possible_ptmsets, List<ModificationWithMass> all_mods_with_mass)
         {
             List<ExperimentalProteoform> identified = new List<ExperimentalProteoform>();
-            foreach (ProteoformRelation r in relationships.Where(r => r.peak.Accepted).Distinct().ToList())
+            foreach (ProteoformRelation r in relationships.Where(r => r.Accepted).Distinct().ToList())
             {
                 ExperimentalProteoform e = r.connected_proteoforms.OfType<ExperimentalProteoform>().FirstOrDefault(p => p != this);
                 if (e == null) continue; // Looking at an ET pair, expecting an EE pair

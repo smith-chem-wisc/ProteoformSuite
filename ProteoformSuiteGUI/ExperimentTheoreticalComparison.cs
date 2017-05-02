@@ -39,15 +39,15 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.proteoform_community.has_e_and_t_proteoforms;
+            return SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.target_proteoform_community.has_e_and_t_proteoforms;
         }
 
         public void RunTheGamut()
         {
             Cursor = Cursors.WaitCursor;
-            SaveState.lollipop.et_relations = SaveState.lollipop.proteoform_community.relate(SaveState.lollipop.proteoform_community.experimental_proteoforms, SaveState.lollipop.proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true);
-            SaveState.lollipop.ed_relations = SaveState.lollipop.proteoform_community.relate_ed();
-            SaveState.lollipop.et_peaks = SaveState.lollipop.proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.et_relations, SaveState.lollipop.ed_relations);
+            SaveState.lollipop.et_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true);
+            SaveState.lollipop.relate_ed();
+            SaveState.lollipop.et_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.et_relations, SaveState.lollipop.ed_relations);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
             FillTablesAndCharts();
             Cursor = Cursors.Default;
@@ -73,7 +73,7 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsTablesFigures()
         {
-            SaveState.lollipop.proteoform_community.clear_et();
+            SaveState.lollipop.clear_et();
 
             foreach (var series in ct_ET_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_ET_peakList.Series) series.Points.Clear();
@@ -150,7 +150,7 @@ namespace ProteoformSuiteGUI
 
         private void bt_compare_et_Click(object sender, EventArgs e)
         {
-            if (SaveState.lollipop.proteoform_community.has_e_and_t_proteoforms)
+            if (SaveState.lollipop.target_proteoform_community.has_e_and_t_proteoforms)
             {
                 shift_masses();
                 ClearListsTablesFigures();
@@ -158,7 +158,7 @@ namespace ProteoformSuiteGUI
                 xMaxET.Value = (decimal)SaveState.lollipop.et_high_mass_difference;
                 xMinET.Value = (decimal)SaveState.lollipop.et_low_mass_difference;
             }
-            else if (SaveState.lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
+            else if (SaveState.lollipop.target_proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
             else MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
@@ -299,7 +299,7 @@ namespace ProteoformSuiteGUI
             ct_ET_Histogram.Series["relations"].Enabled = true;
             if (SaveState.lollipop.ed_relations.Count > 0)
             {
-                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, SaveState.lollipop.ed_relations["DecoyDatabase_0"], "decoys");
+                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, SaveState.lollipop.ed_relations[SaveState.lollipop.decoy_community_name_prefix + "0"], "decoys");
                 ct_ET_Histogram.Series["decoys"].Enabled = false;
                 cb_view_decoy_histogram.Enabled = true;
             }
@@ -381,19 +381,18 @@ namespace ProteoformSuiteGUI
         private void nUD_PeakCountMinThreshold_ValueChanged(object sender, EventArgs e)
         {
             SaveState.lollipop.min_peak_count_et = Convert.ToDouble(nUD_PeakCountMinThreshold.Value);
+            Parallel.ForEach(SaveState.lollipop.et_peaks, p =>
             {
-                Parallel.ForEach(SaveState.lollipop.et_peaks, p =>
-                {
-                    p.Accepted = p.peak_relation_group_count >= SaveState.lollipop.min_peak_count_et;
-                    Parallel.ForEach(p.grouped_relations, r => r.Accepted = p.Accepted);
-                });
-                dgv_ET_Relations.Refresh();
-                dgv_ET_Peak_List.Refresh();
-                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
-                StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = SaveState.lollipop.min_peak_count_et };
-                ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
-                update_figures_of_merit();
-            }
+                p.Accepted = p.peak_relation_group_count >= SaveState.lollipop.min_peak_count_et;
+                Parallel.ForEach(p.grouped_relations, r => r.Accepted = p.Accepted);
+            });
+            Parallel.ForEach(SaveState.lollipop.ed_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
+            dgv_ET_Relations.Refresh();
+            dgv_ET_Peak_List.Refresh();
+            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+            StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = SaveState.lollipop.min_peak_count_et };
+            ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
+            update_figures_of_merit();
         }
 
         #endregion Parameters Private Methods
@@ -419,6 +418,7 @@ namespace ProteoformSuiteGUI
         private void ET_Peak_List_DirtyStateChanged(object sender, EventArgs e)
         {
             relationUtility.peak_acceptability_change(dgv_ET_Peak_List);
+            Parallel.ForEach(SaveState.lollipop.ed_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
             dgv_ET_Relations.Refresh();
             dgv_ET_Peak_List.Refresh();
             update_figures_of_merit();
