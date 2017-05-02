@@ -236,7 +236,7 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\testingttdrelations.tsv"))
+            using (var writer = new StreamWriter("C:\\Users\\Michael\\Documents\\Projects\\TopDownData\\testingttdrelations.tsv"))
             {
                 foreach (ProteoformRelation r in td_relations)
                 {

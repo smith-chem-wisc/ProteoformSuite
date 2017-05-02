@@ -30,10 +30,11 @@ namespace ProteoformSuiteInternal
         public double mz { get; set; }
         public double intensity { get; set; } //precursor ion intensity
         public bool targeted { get; set; }
+        public double score { get; set; }//C-score
         public TopDownResultType tdResultType { get; set; }
         public InputFile file { get; set; }
 
-        public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, bool targeted)
+        public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, bool targeted, double score)
         {
             this.file = file;
             this.tdResultType = tdResultType;
@@ -51,6 +52,7 @@ namespace ProteoformSuiteInternal
             this.retention_time = retention_time;
             this.filename = filename;
             this.targeted = targeted;
+            this.score = score;
         }
 
         public bool same_ptm_hits(TopDownHit root)

@@ -510,6 +510,10 @@ namespace ProteoformSuiteInternal
 
         public List<TopDownHit> top_down_hits = new List<TopDownHit>();
         public TopDownReader topdownReader = new TopDownReader();
+        public double min_C_score = 3.0d;
+                    //C-score > 40: proteoform is both identified and fully characterized; 
+                    //3 ≤ Cscore≤ 40: proteoform is identified, but only partially characterized; 
+                    //C-score < 3: proteoform is neither identified nor characterized.
 
         public void read_in_td_hits()
         {
@@ -525,8 +529,10 @@ namespace ProteoformSuiteInternal
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
             //TopDownHit[] remaining_td_hits = new TopDownHit[0];
             List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
-            //aggregate to td hit w/ smallest mass error
-            remaining_td_hits = top_down_hits.ToList();
+            //aggregate to td hit w/ highest c-score as root
+            remaining_td_hits = top_down_hits.Where(h => h.score > min_C_score).ToList();
+            remaining_td_hits.OrderByDescending(h => h.score).ToList();
+
             while (remaining_td_hits.Count > 0)
             {
                 TopDownHit root = remaining_td_hits[0];
