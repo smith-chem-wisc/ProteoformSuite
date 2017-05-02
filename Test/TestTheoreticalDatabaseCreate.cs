@@ -234,11 +234,5 @@ namespace Test
             Assert.AreEqual("T3_3G", psg.Accession);
             Assert.True(psg.IsContaminant);
         }
-
-        [Test]
-        public void test_expand_proteins()
-        {
-
-        }
     }
 }
