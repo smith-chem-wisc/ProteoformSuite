@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using UsefulProteomicsDatabases;
 
 namespace ProteoformSuiteInternal
 {
@@ -104,6 +105,12 @@ namespace ProteoformSuiteInternal
                     destination.Add(file);
                 }
             }
+        }
+
+        public void enter_uniprot_ptmlist()
+        {
+            Loaders.LoadUniprot(Path.Combine(Environment.CurrentDirectory, "ptmlist.txt"));
+            SaveState.lollipop.enter_input_files(new string[] { Path.Combine(Environment.CurrentDirectory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], SaveState.lollipop.input_files);
         }
 
         public string match_calibration_files()
