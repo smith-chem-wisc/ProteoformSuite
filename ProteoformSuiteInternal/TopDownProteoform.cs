@@ -16,8 +16,8 @@ namespace ProteoformSuiteInternal
         public int stop_index { get; set; } //position one based
         public double monoisotopic_mass { get; set; } //calibrated mass
         public double theoretical_mass { get; set; }
-        public double agg_rt { get; set; }
         public List<double> all_RTs { get; set; }
+        public string all_RTs_string {get { return String.Join("; ", all_RTs); } }
         public TopDownHit root;
         public List<TopDownHit> topdown_hits;
         public int etd_match_count { get { return relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).ToList().Count; } }
@@ -84,7 +84,6 @@ namespace ProteoformSuiteInternal
                 second_average.Add(in_tol.Average(), in_tol);
                 foreach (var rm in in_tol) first_average.Remove(rm);
             }
-            this.agg_rt = second_average.OrderByDescending(sa => sa.Value.Count).First().Key;
             return second_average.Keys.ToList();
         }
 
