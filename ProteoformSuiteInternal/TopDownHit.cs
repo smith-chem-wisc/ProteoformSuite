@@ -14,10 +14,10 @@ namespace ProteoformSuiteInternal
         public double retention_time { get; set; }
         public string filename { get; set; }
         public string uniprot_id { get; set; }
-        public string sequence { get; set; }
-        public int start_index { get; set; }
-        public int stop_index { get; set; }
-        public List<Ptm> ptm_list { get; set; } = new List<Ptm>();
+        public string sequence { get; set; } 
+        public int start_index { get; set; } //position one based
+        public int stop_index { get; set; } //position one based
+        public List<Ptm> ptm_list { get; set; } = new List<Ptm>(); //position one based
         public double theoretical_mass { get; set; }
         public string accession { get; set; }
         public string name { get; set; }

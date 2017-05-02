@@ -12,8 +12,8 @@ namespace ProteoformSuiteInternal
         public string uniprot_id { get; set; }
         public string name { get; set; }
         public string sequence { get; set; }
-        public int start_index { get; set; }
-        public int stop_index { get; set; }
+        public int start_index { get; set; } //position one based
+        public int stop_index { get; set; } //position one based
         public double monoisotopic_mass { get; set; } //calibrated mass
         public double theoretical_mass { get; set; }
         public double agg_rt { get; set; }
@@ -36,31 +36,56 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public TopDownProteoform(string accession, TopDownHit root, List<TopDownHit> candidate_hits) : base(accession)
+        public TopDownProteoform(string accession, TopDownHit root, List<TopDownHit> hits) : base(accession)
         {
             this.linked_proteoform_references = new LinkedList<Proteoform>().ToList();
             this.root = root;
             this.name = root.name;
-            this.ptm_set = new PtmSet( root.ptm_list);
+            this.ptm_set = new PtmSet(root.ptm_list);
             this.uniprot_id = root.uniprot_id;
             this.sequence = root.sequence;
             this.start_index = root.start_index;
             this.theoretical_mass = root.theoretical_mass;
             this.stop_index = root.stop_index;
-            this.topdown_hits = new List<TopDownHit>() { root };
-            topdown_hits.AddRange(candidate_hits.Where(h => this.tolerable_rt(h, root.retention_time)));
+            this.topdown_hits = hits;
             this.calculate_properties();
             this.targeted = root.targeted;
+            this.lysine_count = sequence.Count(s => s == 'K');
         }
 
 
         private void calculate_properties()
         {
-            this.agg_rt = topdown_hits.Select(h => h.retention_time).Average(); //need to use average (no intensity info)
             this.monoisotopic_mass = topdown_hits.Select(h => (h.corrected_mass - Math.Round(h.corrected_mass - h.theoretical_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.monoisotopic_mass;
             this.accession = accession+ "_TD1_" + Math.Round(this.theoretical_mass, 2) + "_Da_"  + start_index + "to" + stop_index ;
-            this.all_RTs = new List<double>() { agg_rt };
+            this.all_RTs = get_retention_times();
+        }
+
+        private List<double> get_retention_times()
+        {
+            List<double> all_RT = topdown_hits.OrderByDescending(h => h.score).Select(h => h.retention_time).ToList();
+            double rt = all_RT.First();
+            Dictionary<double, List<double>> first_average = new Dictionary<double, List<double>>();
+            Dictionary<double, List<double>> second_average = new Dictionary<double, List<double>>();
+            //first average
+            while (all_RT.Count > 0)
+            {
+                rt = all_RT.First();
+                List<double> in_tol = all_RT.Where(r => Math.Abs(rt - r) <= Convert.ToDouble(SaveState.lollipop.retention_time_tolerance)).ToList();
+                first_average.Add(in_tol.Average(), in_tol);
+                all_RT = all_RT.Except(first_average.Values.SelectMany(v => v)).ToList();
+            }
+            //second average
+            while(first_average.Count > 0)
+            {
+                rt = first_average.Keys.First();
+                List<double> in_tol = first_average.Keys.Where(r => Math.Abs(rt - r) <= Convert.ToDouble(SaveState.lollipop.retention_time_tolerance)).ToList();
+                second_average.Add(in_tol.Average(), in_tol);
+                foreach (var rm in in_tol) first_average.Remove(rm);
+            }
+            this.agg_rt = second_average.OrderByDescending(sa => sa.Value.Count).First().Key;
+            return second_average.Keys.ToList();
         }
 
          

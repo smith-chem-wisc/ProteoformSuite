@@ -31,7 +31,7 @@ namespace ProteoformSuiteInternal
                 //N-term modifications
                 if (cellStrings[10].Length > 0) //N Terminal Modification Code
                 {
-                    int position = 0;
+                    int position = 1;
                     if (cellStrings[10].Split(':')[1] == "1458")//PSI-MOD 1458 is supposed to be N-terminal acetylation
                     {
                         ModificationWithMass mod = SaveState.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id.Contains("acetyl") && m.motif.Motif == cellStrings[4][0].ToString()).FirstOrDefault();
@@ -61,13 +61,13 @@ namespace ProteoformSuiteInternal
                         string resid = ptm.Split(':')[1].Split('@')[0];//The number after the @ is the position in the protein
                         while (resid.Length < 4) resid = "0" + resid;//short part should be the accession number, which is an integer
                         resid = "AA" + resid;
-                        int position = Convert.ToInt16(ptm.Split(':')[1].Split('@')[1]);
+                        int position = Convert.ToInt16(ptm.Split(':')[1].Split('@')[1]) + 1; //one based sequence
                         ModificationWithMass mod = SaveState.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.linksToOtherDbs.ContainsKey("RESID")).Where(m => m.linksToOtherDbs["RESID"].Contains(resid)).FirstOrDefault();
                         if (mod != null) ptm_list.Add(new Ptm(position, mod));
                         else
                         {
                             ModificationMotif motif;
-                            ModificationMotif.TryGetMotif(cellStrings[4][position].ToString(), out motif);
+                            ModificationMotif.TryGetMotif(cellStrings[4][position - 1].ToString(), out motif);
                             Ptm new_ptm = topdown_ptms.Where(m => m.modification.motif.Motif == motif.Motif && m.modification.id == resid).FirstOrDefault();
                             if (new_ptm == null) //if not in topdown_ptms list, add it (will show in warning)
                                 topdown_ptms.Add(new Ptm(position, new ModificationWithMass(resid, null, motif, ModificationSites.NTerminus, 0, null, new List<double>(), new List<double>(), null)));

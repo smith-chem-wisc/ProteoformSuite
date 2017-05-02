@@ -528,44 +528,26 @@ namespace ProteoformSuiteInternal
             //group hits into topdown proteoforms by accession/theoretical AND observed mass
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
             //TopDownHit[] remaining_td_hits = new TopDownHit[0];
-            List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
+            List<TopDownHit> remaining_td_hits = top_down_hits.Where(h => h.score > min_C_score).OrderByDescending(h => h.score).ToList();
+            
             //aggregate to td hit w/ highest c-score as root
-            remaining_td_hits = top_down_hits.Where(h => h.score > min_C_score).ToList();
-            remaining_td_hits.OrderByDescending(h => h.score).ToList();
-
             while (remaining_td_hits.Count > 0)
             {
                 TopDownHit root = remaining_td_hits[0];
                 //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
-                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, remaining_td_hits.Where(h => h != root && h.targeted == root.targeted && h.accession == root.accession && h.sequence == root.sequence && h.same_ptm_hits(root)).ToList());
+                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, remaining_td_hits.Where(h => h.targeted == root.targeted && h.accession == root.accession && h.sequence == root.sequence && h.same_ptm_hits(root)).ToList());
                 topdown_proteoforms.Add(new_pf);
                 foreach (TopDownHit hit in new_pf.topdown_hits) remaining_td_hits.Remove(hit);
-            }
-            topdown_proteoforms = topdown_proteoforms.Where(p => p != null).OrderByDescending(p => p.topdown_hits.Count).ToList();
-            //aggregate all RT's
-            List<TopDownProteoform> refined_topdown_proteoforms = new List<TopDownProteoform>();
-            while (topdown_proteoforms.Count > 0)
-            {
-                TopDownProteoform p = topdown_proteoforms[0];
-                topdown_proteoforms.Remove(p);
-                List<TopDownProteoform> p_diff_RT = topdown_proteoforms.Where(t => t != p && t.accession == p.accession && p.sequence == t.sequence && p.topdown_hits[0].same_ptm_hits(t.topdown_hits[0])).ToList();
-                p.all_RTs.AddRange(p_diff_RT.Select(t => t.agg_rt));
-                p.topdown_hits.AddRange(p_diff_RT.SelectMany(t => t.topdown_hits));
-                topdown_proteoforms = topdown_proteoforms.Except(p_diff_RT).ToList();
-                if (refined_topdown_proteoforms.Select(t => t.accession).Contains(p.accession))
+
+                //could have cases where topdown proteoforms same accession, mass, diff PTMs --> need a diff accession
+                if (topdown_proteoforms.Select(t => t.accession).Contains(new_pf.accession))
                 {
-                    string[] old_accession = p.accession.Split('_');
+                    string[] old_accession = new_pf.accession.Split('_');
                     int num = Convert.ToInt16(old_accession[1].ElementAt(2).ToString()) + 1;
-                    p.accession = old_accession[0] + "_TD" + num + "_" + old_accession[2] + old_accession[3] + "_" + old_accession[4];
+                    new_pf.accession = old_accession[0] + "_TD" + num + "_" + old_accession[2] + old_accession[3] + "_" + old_accession[4];
                 }
-                refined_topdown_proteoforms.Add(p);
             }
-            Parallel.ForEach(refined_topdown_proteoforms, p =>
-            {
-                p.modified_mass = p.topdown_hits.Average(h => h.corrected_mass - Math.Round(h.corrected_mass - p.root.corrected_mass));
-                p.monoisotopic_mass = p.modified_mass;
-            });
-            proteoform_community.topdown_proteoforms = refined_topdown_proteoforms.ToArray();
+            proteoform_community.topdown_proteoforms = topdown_proteoforms.Where(p => p != null).ToArray();
         }
 
         #endregion TOPDOWN 

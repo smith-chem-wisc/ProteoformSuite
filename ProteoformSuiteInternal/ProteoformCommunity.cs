@@ -236,14 +236,6 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            using (var writer = new StreamWriter("C:\\Users\\Michael\\Documents\\Projects\\TopDownData\\testingttdrelations.tsv"))
-            {
-                foreach (ProteoformRelation r in td_relations)
-                {
-                    writer.WriteLine(r.connected_proteoforms[0].accession + r.connected_proteoforms[0].modified_mass + "\t" + r.connected_proteoforms[0].ptm_description + "\t" + r.connected_proteoforms[1].accession + "\t" + r.connected_proteoforms[1].ptm_description + "\t" + r.DeltaMass + "\t" + (r.candidate_ptmset == null ? "null" : String.Join("; ", r.candidate_ptmset.ptm_combination.Select(ptm => ptm.modification.id))));
-                }
-            }
-
             return td_relations;
         }
 
