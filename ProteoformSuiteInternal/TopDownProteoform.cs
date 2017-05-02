@@ -16,8 +16,7 @@ namespace ProteoformSuiteInternal
         public int stop_index { get; set; } //position one based
         public double monoisotopic_mass { get; set; } //calibrated mass
         public double theoretical_mass { get; set; }
-        public List<double> all_RTs { get; set; }
-        public string all_RTs_string {get { return String.Join("; ", all_RTs); } }
+        public double agg_RT { get; set; }
         public TopDownHit root;
         public List<TopDownHit> topdown_hits;
         public int etd_match_count { get { return relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).ToList().Count; } }
@@ -59,34 +58,8 @@ namespace ProteoformSuiteInternal
             this.monoisotopic_mass = topdown_hits.Select(h => (h.corrected_mass - Math.Round(h.corrected_mass - h.theoretical_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.monoisotopic_mass;
             this.accession = accession+ "_TD1_" + Math.Round(this.theoretical_mass, 2) + "_Da_"  + start_index + "to" + stop_index ;
-            this.all_RTs = get_retention_times();
+            this.agg_RT = topdown_hits.Select(h => h.retention_time).Average();
         }
-
-        private List<double> get_retention_times()
-        {
-            List<double> all_RT = topdown_hits.OrderByDescending(h => h.score).Select(h => h.retention_time).ToList();
-            double rt = all_RT.First();
-            Dictionary<double, List<double>> first_average = new Dictionary<double, List<double>>();
-            Dictionary<double, List<double>> second_average = new Dictionary<double, List<double>>();
-            //first average
-            while (all_RT.Count > 0)
-            {
-                rt = all_RT.First();
-                List<double> in_tol = all_RT.Where(r => Math.Abs(rt - r) <= Convert.ToDouble(SaveState.lollipop.retention_time_tolerance)).ToList();
-                first_average.Add(in_tol.Average(), in_tol);
-                all_RT = all_RT.Except(first_average.Values.SelectMany(v => v)).ToList();
-            }
-            //second average
-            while(first_average.Count > 0)
-            {
-                rt = first_average.Keys.First();
-                List<double> in_tol = first_average.Keys.Where(r => Math.Abs(rt - r) <= Convert.ToDouble(SaveState.lollipop.retention_time_tolerance)).ToList();
-                second_average.Add(in_tol.Average(), in_tol);
-                foreach (var rm in in_tol) first_average.Remove(rm);
-            }
-            return second_average.Keys.ToList();
-        }
-
          
         private bool tolerable_rt(TopDownHit candidate, double rt)
         {
