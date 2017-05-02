@@ -336,7 +336,7 @@ namespace ProteoformSuiteInternal
                     new TheoreticalProteoform(
                         accession + "_P" + ptm_set_counter.ToString(),
                         prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
-                        (prot as ProteinSequenceGroup != null ? ((ProteinSequenceGroup)prot).proteinWithGoTermList : new List<ProteinWithGoTerms> { prot }),
+                        new List<ProteinWithGoTerms> { prot },
                         unmodified_mass,
                         lysine_count,
                         ptm_set,

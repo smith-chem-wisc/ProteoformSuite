@@ -160,19 +160,16 @@ namespace ProteoformSuiteInternal
 
                 foreach (int m in missed_monoisotopics_range)
                 {
-                    foreach (double rt in topdown.all_RTs)
-                    {
                         double shift = m * Lollipop.MONOISOTOPIC_UNIT_MASS;
                         double mass_tol = (mass + shift) / 1000000 * Convert.ToInt32(SaveState.lollipop.mass_tolerance);
                         double low = mass + shift - mass_tol;
                         double high = mass + shift + mass_tol;
                         List<ExperimentalProteoform> matching_e = experimentals.Where(ep => ep.modified_mass >= low && ep.modified_mass <= high
-                        && (Math.Abs(ep.agg_rt - rt) <= Convert.ToDouble(SaveState.lollipop.retention_time_tolerance))).ToList();
+                        && (Math.Abs(ep.agg_rt - topdown.agg_RT) <= Convert.ToDouble(SaveState.lollipop.retention_time_tolerance))).ToList();
                         foreach (ExperimentalProteoform e in matching_e)
                         {
                             all_td_relations.Add(new ProteoformRelation(topdown, e, ProteoformComparison.ExperimentalTopDown, (e.modified_mass - mass)));
                         }
-                    }
                 }
                 //add the best td relation
                 foreach (ProteoformRelation relation in all_td_relations)
