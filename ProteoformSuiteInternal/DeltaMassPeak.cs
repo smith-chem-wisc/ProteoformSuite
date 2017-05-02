@@ -17,7 +17,7 @@ namespace ProteoformSuiteInternal
 
         #region Public Properties
 
-        public List<ProteoformRelation> grouped_relations { get; set; }
+        public List<ProteoformRelation> grouped_relations { get; set; } //target relations only. Decoy relations in the peak range have relation.peak set to this
         public double DeltaMass { get; set; }
         public int peak_relation_group_count { get { return grouped_relations.Count; } }
         public double decoy_relation_count { get; set; }
@@ -99,11 +99,13 @@ namespace ProteoformSuiteInternal
             {
                 lock (r)
                 {
-                    r.Accepted = this.Accepted;
-                    r.peak = this; //assign relation this peak so possible peak assignments used when identifying experimentals
+                    if (r.peak == null || this.peak_relation_group_count > r.peak.peak_relation_group_count)
+                    {
+                        r.Accepted = this.Accepted;
+                        r.peak = this; //assign relation this peak so possible peak assignments used when identifying experimentals
+                    }
                 }
             }
-
             return decoys_in_peaks.Count;
         }
 
