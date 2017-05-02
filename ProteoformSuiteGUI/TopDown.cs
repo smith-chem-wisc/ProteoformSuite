@@ -48,7 +48,7 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut()
         {
             ClearListsTablesFigures();
-            aggregate_td_hits();
+            AggregateTdHits();
             if (SaveState.lollipop.topdownReader.topdown_ptms.Count > 0)
             {
                 MessageBox.Show("Warning: Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: "
@@ -95,12 +95,12 @@ namespace ProteoformSuiteGUI
             return true;
         }
 
-        private void aggregate_td_hits()
+        private void AggregateTdHits()
         {
             if (SaveState.lollipop.top_down_hits.Count == 0) SaveState.lollipop.read_in_td_hits();
             if (SaveState.lollipop.top_down_hits.Count > 0)
             {
-                SaveState.lollipop.aggregate_td_hits();
+                SaveState.lollipop.AggregateTdHits();
                 bt_targeted_td_relations.Enabled = (SaveState.lollipop.proteoform_community.topdown_proteoforms.Where(p => p.targeted).Count() > 0);
                 tb_tdProteoforms.Text = SaveState.lollipop.proteoform_community.topdown_proteoforms.Count(p => !p.targeted).ToString();
             }
