@@ -361,7 +361,14 @@ namespace Test
 
 
             //peak is accepted --> relation should be accepted, peak added to relation
+            SaveState.lollipop.clear_et();
             SaveState.lollipop.min_peak_count_et = 1;
+            SaveState.lollipop.et_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true);
+            SaveState.lollipop.relate_ed();
+            foreach (ProteoformRelation pr in SaveState.lollipop.et_relations) pr.set_nearby_group(SaveState.lollipop.et_relations, SaveState.lollipop.et_relations.Select(r => r.InstanceId).ToList());
+            foreach (ProteoformRelation pr in SaveState.lollipop.ee_relations) pr.set_nearby_group(SaveState.lollipop.ee_relations, SaveState.lollipop.ee_relations.Select(r => r.InstanceId).ToList());
+            SaveState.lollipop.et_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.et_relations, SaveState.lollipop.ed_relations);
+
             SaveState.lollipop.et_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.et_relations, SaveState.lollipop.ed_relations);
             Assert.IsTrue(SaveState.lollipop.ed_relations.First().Value.FirstOrDefault().Accepted); //should be true if peak accepted
             Assert.IsNotNull(SaveState.lollipop.ed_relations.Values.SelectMany(v => v).First().peak);
@@ -372,9 +379,13 @@ namespace Test
             Assert.AreEqual(0, SaveState.lollipop.ef_relations.Values.SelectMany(v => v).Count(r => r.Accepted)); //all peaks accepted are false, so relation accepted should be false
 
             //one peak accepted --> one of the EF relations falls into range of peak and should be accepted
+            SaveState.lollipop.clear_ee();
             SaveState.lollipop.min_peak_count_ee = 1;
+            SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
+            SaveState.lollipop.relate_ef();
             SaveState.lollipop.ee_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.ee_relations, SaveState.lollipop.ef_relations);
             Assert.AreEqual(3, SaveState.lollipop.ee_peaks.Count(p => p.Accepted));
+            Assert.AreEqual(3, SaveState.lollipop.ee_relations.Count);
             Assert.AreEqual(1, SaveState.lollipop.ef_relations.Values.SelectMany(v => v).Count(r => r.Accepted)); //only 1 relation is in delta mass range of accepted peak - only 1 accepted
             SaveState.lollipop.construct_target_and_decoy_families();
 
