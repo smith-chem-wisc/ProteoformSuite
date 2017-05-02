@@ -53,9 +53,9 @@ namespace ProteoformSuiteGUI
             {
                 string table = cmbx_DisplayWhichDB.SelectedItem.ToString();
                 if (table == "Target")
-                    DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
+                    DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
                 else
-                    DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.proteoform_community.decoy_proteoforms[table].Select(t => new DisplayTheoreticalProteoform(t)));
+                    DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.decoy_proteoform_communities[table].theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
             }
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
@@ -66,7 +66,7 @@ namespace ProteoformSuiteGUI
 
         public void load_dgv()
         {
-            DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
+            DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
             this.initialize_table_bindinglist();
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
@@ -79,9 +79,9 @@ namespace ProteoformSuiteGUI
         public void FillDataBaseTable(string table)
         {
             if (table == "Target")
-                DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
-            else if (SaveState.lollipop.proteoform_community.decoy_proteoforms.ContainsKey(table))
-                DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.proteoform_community.decoy_proteoforms[table].Select(t => new DisplayTheoreticalProteoform(t)));
+                DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
+            else if (SaveState.lollipop.decoy_proteoform_communities.ContainsKey(table))
+                DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.decoy_proteoform_communities[table].theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
@@ -89,15 +89,16 @@ namespace ProteoformSuiteGUI
         {
             SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsTablesFigures();
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
-            tb_totalTheoreticalProteoforms.Text = SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length.ToString();
+            tb_totalTheoreticalProteoforms.Text = SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
         }
 
         public void initialize_table_bindinglist()
         {
             List<string> databases = new List<string> { "Target" };
-            if (SaveState.lollipop.proteoform_community.decoy_proteoforms.Keys.Count > 0)
-                foreach (string name in SaveState.lollipop.proteoform_community.decoy_proteoforms.Keys)
+            if (SaveState.lollipop.decoy_proteoform_communities.Keys.Count > 0)
+            foreach (string name in SaveState.lollipop.decoy_proteoform_communities.Keys)
                     databases.Add(name);
             cmbx_DisplayWhichDB.DataSource = new BindingList<string>(databases.ToList());
         }
@@ -157,7 +158,7 @@ namespace ProteoformSuiteGUI
         
         public void FillTablesAndCharts()
         {
-            DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
+            DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
             initialize_table_bindinglist();
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
@@ -269,8 +270,8 @@ namespace ProteoformSuiteGUI
         private void tb_tableFilter_TextChanged(object sender, EventArgs e)
         {
             IEnumerable<object> selected_theoreticals = tb_tableFilter.Text == "" ?
-                SaveState.lollipop.proteoform_community.theoretical_proteoforms :
-                ExtensionMethods.filter(SaveState.lollipop.proteoform_community.theoretical_proteoforms, tb_tableFilter.Text);
+                SaveState.lollipop.target_proteoform_community.theoretical_proteoforms :
+                ExtensionMethods.filter(SaveState.lollipop.target_proteoform_community.theoretical_proteoforms, tb_tableFilter.Text);
             DisplayUtility.FillDataGridView(dgv_Database, selected_theoreticals.OfType<TheoreticalProteoform>().Select(t => new DisplayTheoreticalProteoform(t)));
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }

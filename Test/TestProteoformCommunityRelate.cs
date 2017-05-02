@@ -172,7 +172,7 @@ namespace Test
                 ConstructorsForTesting. ExperimentalProteoform("A4", 1000.0, 2, true)
             };
             SaveState.lollipop.ee_relations = test_community.relate(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
-            unequal_relations = test_community.relate_ef(test_community.experimental_proteoforms, test_community.experimental_proteoforms).Values.First();
+            unequal_relations = test_community.relate_ef(test_community.experimental_proteoforms, test_community.experimental_proteoforms);
             Assert.AreNotEqual(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2]);
             Assert.False(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[0], ProteoformComparison.ExperimentalExperimental));
             Assert.AreNotEqual(test_community.experimental_proteoforms[0].lysine_count, test_community.experimental_proteoforms[1].lysine_count);
@@ -190,7 +190,7 @@ namespace Test
                 ConstructorsForTesting.ExperimentalProteoform("A4", 4000, 2, true)
             };
             SaveState.lollipop.ee_relations = test_community.relate(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
-            unequal_relations = test_community.relate_ef(test_community.experimental_proteoforms, test_community.experimental_proteoforms).Values.First();
+            unequal_relations = test_community.relate_ef(test_community.experimental_proteoforms, test_community.experimental_proteoforms);
             Assert.AreEqual(0, unequal_relations.Count);
 
             //None equal lysine count (apart from itself), four unequal lysine count. Each should create no unequal relations, so no relations total
@@ -202,7 +202,7 @@ namespace Test
                 ConstructorsForTesting. ExperimentalProteoform("A4", 1000.0, 4, true)
             };
             SaveState.lollipop.ee_relations = test_community.relate(test_community.experimental_proteoforms, test_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
-            unequal_relations = test_community.relate_ef(test_community.experimental_proteoforms, test_community.experimental_proteoforms).Values.First();
+            unequal_relations = test_community.relate_ef(test_community.experimental_proteoforms, test_community.experimental_proteoforms);
             Assert.AreEqual(0, unequal_relations.Count);
 
             //All equal, no unequal lysine count because there's an empty list of unequal lysine-count proteoforms. Each should create no unequal relations, so no relations total
@@ -213,11 +213,11 @@ namespace Test
                 ConstructorsForTesting. ExperimentalProteoform("A3", 1000.0, 1, true),
                 ConstructorsForTesting. ExperimentalProteoform("A4", 1000.0, 1, true)
             };
-            unequal_relations = test_community.relate_ef(test_community.experimental_proteoforms, test_community.experimental_proteoforms).Values.First();
+            unequal_relations = test_community.relate_ef(test_community.experimental_proteoforms, test_community.experimental_proteoforms);
             Assert.AreEqual(0, unequal_relations.Count);
         }
 
-        private void prepare_for_et(List<double> delta_masses)
+        public static void prepare_for_et(List<double> delta_masses)
         {
             SaveState.lollipop.theoretical_database.all_mods_with_mass = new List<ModificationWithMass>();
             SaveState.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet>();
@@ -438,44 +438,41 @@ namespace Test
         [Test]
         public void TestProteoformCommunityRelate_ED()
         {
-            ProteoformCommunity testProteoformCommunity = new ProteoformCommunity();
-            var edDictionary = testProteoformCommunity.relate_ed();
+            SaveState.lollipop = new Lollipop();
+            SaveState.lollipop.decoy_databases = 1;
             // In empty comminity, relate ed is empty
-            Assert.AreEqual(0, edDictionary.Count);
+            Assert.AreEqual(0, SaveState.lollipop.ed_relations.Count);
 
-            testProteoformCommunity.decoy_proteoforms = new Dictionary<string, TheoreticalProteoform[]>();
-            edDictionary = testProteoformCommunity.relate_ed();
-            // In comminity with initialized decoy_proteoforms, still no relations
-            Assert.AreEqual(0, edDictionary.Count);
-
-            testProteoformCommunity.decoy_proteoforms["fake_decoy_proteoform1"] = new TheoreticalProteoform[0];
-            edDictionary = testProteoformCommunity.relate_ed();
-            // In community with a single decoy proteoform, have a single relation
-            Assert.AreEqual(1, edDictionary.Count);
+            //create a decoy proteoform community
+            SaveState.lollipop.decoy_proteoform_communities.Add(SaveState.lollipop.decoy_community_name_prefix + "0", new ProteoformCommunity());            
+            TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical("decoyProteoform1", 0, -1);
+            SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].theoretical_proteoforms = new TheoreticalProteoform[1] { pf2 };
+            SaveState.lollipop.relate_ed();
+            // Have a single decoy community --> have single ed_relations 
+            Assert.AreEqual(1, SaveState.lollipop.ed_relations.Count);
             // But it's empty
-            Assert.IsEmpty(edDictionary["fake_decoy_proteoform1"]);
+            Assert.IsEmpty(SaveState.lollipop.ed_relations[SaveState.lollipop.decoy_community_name_prefix + "0"]);
 
             // In order to make it not empty, we must have relate_et method output a non-empty List
             // it must take as arguments non-empty pfs1 and pfs2
             // So testProteoformCommunity.experimental_proteoforms must be non-empty
             // And decoy_proteoforms["fake_decoy_proteoform1"] must be non-empty
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("experimentalProteoform1");
-            TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical("decoyProteoform1", 0, -1);
-            testProteoformCommunity.decoy_proteoforms["fake_decoy_proteoform1"] = new TheoreticalProteoform[] { pf2 };
-            testProteoformCommunity.decoy_proteoforms["fake_decoy_proteoform1"].First().ExpandedProteinList = new List<ProteinWithGoTerms> { p1 };
+            SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].theoretical_proteoforms.First().ExpandedProteinList = new List<ProteinWithGoTerms> { p1 };
 
-            Assert.IsEmpty(testProteoformCommunity.experimental_proteoforms);
-            testProteoformCommunity.experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
+            Assert.IsEmpty(SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].experimental_proteoforms);
+            SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
 
+            SaveState.lollipop.clear_et();
             prepare_for_et(new List<double> { pf1.modified_mass - pf2.modified_mass });
-            edDictionary = testProteoformCommunity.relate_ed();
+            SaveState.lollipop.relate_ed();
 
             // Make sure there is one relation total, because only a single decoy was provided
-            Assert.AreEqual(1, edDictionary.Count);
-            Assert.IsNotEmpty(edDictionary["fake_decoy_proteoform1"]);
-            Assert.AreEqual(1, edDictionary["fake_decoy_proteoform1"].Count); // Make sure there is one relation for the provided fake_decoy_proteoform1
+            Assert.AreEqual(1, SaveState.lollipop.ed_relations.Count);
+            Assert.IsNotEmpty(SaveState.lollipop.ed_relations);
+            Assert.AreEqual(1, SaveState.lollipop.ed_relations[SaveState.lollipop.decoy_community_name_prefix + "0"].Count); // Make sure there is one relation for the provided fake_decoy_proteoform1
 
-            ProteoformRelation rel = edDictionary["fake_decoy_proteoform1"][0];
+            ProteoformRelation rel = SaveState.lollipop.ed_relations[SaveState.lollipop.decoy_community_name_prefix + "0"][0];
 
             Assert.IsFalse(rel.Accepted);
             Assert.AreEqual("decoyProteoform1", rel.connected_proteoforms[1].accession);

@@ -267,7 +267,9 @@ namespace ProteoformSuiteInternal
 
         #region AGGREGATED PROTEOFORMS Public Fields
 
-        public ProteoformCommunity proteoform_community = new ProteoformCommunity();
+        public ProteoformCommunity target_proteoform_community = new ProteoformCommunity();
+        public Dictionary<string, ProteoformCommunity> decoy_proteoform_communities = new Dictionary<string, ProteoformCommunity> ();
+        public string decoy_community_name_prefix = "Decoy_Proteoform_Community_";
         public List<Component> remaining_components = new List<Component>();
         public List<Component> remaining_verification_components = new List<Component>();
         public List<Component> remaining_quantification_components = new List<Component>();
@@ -297,7 +299,11 @@ namespace ProteoformSuiteInternal
             List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(raw_neucode_pairs, raw_experimental_components, min_num_CS);
             if (two_pass_validation) vetted_proteoforms = vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms);
             else vetted_proteoforms = candidateExperimentalProteoforms;
-            proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
+            target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
+            foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
+            {
+                community.experimental_proteoforms = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
+            }
             if (neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0) assignQuantificationComponents(vetted_proteoforms, raw_quantification_components);
             return vetted_proteoforms;
         }
@@ -460,7 +466,10 @@ namespace ProteoformSuiteInternal
 
         public void clear_aggregation()
         {
-            SaveState.lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
+            foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
+            {
+                community.experimental_proteoforms = new ExperimentalProteoform[0];
+            }
             SaveState.lollipop.vetted_proteoforms.Clear();
             SaveState.lollipop.ordered_components = new Component[0];
             SaveState.lollipop.remaining_components.Clear();
@@ -479,7 +488,6 @@ namespace ProteoformSuiteInternal
         public bool neucode_heavy_lysine = false;
         public int max_ptms = 4;
         public int decoy_databases = 1;
-        public string decoy_database_name_prefix = "DecoyDatabase_";
         public int min_peptide_length = 7;
         public double ptmset_mass_tolerance = 0.00001;
         public bool combine_identical_sequences = true;
@@ -514,6 +522,40 @@ namespace ProteoformSuiteInternal
         public List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
         public List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
 
+        public void relate_ed()
+        {
+            SaveState.lollipop.ed_relations.Clear();
+            for (int i = 0; i < SaveState.lollipop.decoy_proteoform_communities.Count; i++)
+            {
+                string key = decoy_community_name_prefix + i;
+                SaveState.lollipop.ed_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true));
+                if (i == 0) ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
+            }
+
+            foreach (ProteoformRelation mass_difference in ed_relations.Values.SelectMany(v => v))
+            {
+                foreach (Proteoform p in mass_difference.connected_proteoforms)
+                p.relationships.Add(mass_difference);
+            }
+        }
+
+        public void relate_ef()
+        {
+            SaveState.lollipop.ef_relations.Clear();
+            for (int i = 0; i < SaveState.lollipop.decoy_proteoform_communities.Count; i++)
+            {
+                string key = decoy_community_name_prefix + i;
+                SaveState.lollipop.ef_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate_ef(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms));
+                if (i == 0) ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ef_relations[key]); //count from first decoy database (for histogram)
+            }
+
+            foreach (ProteoformRelation mass_difference in ef_relations.Values.SelectMany(v => v))
+            {
+                foreach (Proteoform p in mass_difference.connected_proteoforms)
+                    p.relationships.Add(mass_difference);
+            }
+        }
+
         #endregion ET,ED,EE,EF COMPARISONS Public Fields
 
         #region PROTEOFORM FAMILIES Public Fields
@@ -525,6 +567,12 @@ namespace ProteoformSuiteInternal
         public static string[] edge_labels = new string[] { "Mass Difference", "Modification IDs (omits edges with null IDs)" };
         public static List<string> gene_name_labels = new List<string> { "Primary, e.g. HOG1", "Ordered Locus, e.g. YLR113W" };
         public string[] likely_cleavages = new string[] { "I", "L", "A" };
+
+        public void construct_target_and_decoy_families()
+        {
+            target_proteoform_community.construct_families();
+            foreach (var decoys in decoy_proteoform_communities.Values) decoys.construct_families();
+        }
 
         #endregion PROTEOFORM FAMILIES Public Fields
 
@@ -647,16 +695,16 @@ namespace ProteoformSuiteInternal
             IEnumerable<string> hvconditions = hvConditionsBioReps.Keys;
             List<string> conditions = ltconditions.Concat(hvconditions).Distinct().ToList();
 
-            computeBiorepIntensities(proteoform_community.experimental_proteoforms, ltconditions, hvconditions);
-            defineAllObservedIntensityDistribution(proteoform_community.experimental_proteoforms, logIntensityHistogram);
-            satisfactoryProteoforms = determineProteoformsMeetingCriteria(conditions, proteoform_community.experimental_proteoforms, observation_requirement, minBiorepsWithObservations);
+            computeBiorepIntensities(target_proteoform_community.experimental_proteoforms, ltconditions, hvconditions);
+            defineAllObservedIntensityDistribution(target_proteoform_community.experimental_proteoforms, logIntensityHistogram);
+            satisfactoryProteoforms = determineProteoformsMeetingCriteria(conditions, target_proteoform_community.experimental_proteoforms, observation_requirement, minBiorepsWithObservations);
             defineSelectObservedIntensityDistribution(satisfactoryProteoforms, logSelectIntensityHistogram);
             defineBackgroundIntensityDistribution(neucode_labeled, quantBioFracCombos, satisfactoryProteoforms, backgroundShift, backgroundWidth);
             computeProteoformTestStatistics(neucode_labeled, satisfactoryProteoforms, bkgdAverageIntensity, bkgdStDev, numerator_condition, denominator_condition, sKnot_minFoldChange);
             computeSortedTestStatistics(satisfactoryProteoforms);
             offsetFDR = computeFoldChangeFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics, satisfactoryProteoforms, permutedTestStatistics, offsetTestStatistics);
             computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, sortedProteoformTestStatistics, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity);
-            observedProteins = getProteins(proteoform_community.experimental_proteoforms.Where(x => x.accepted));
+            observedProteins = getProteins(target_proteoform_community.experimental_proteoforms.Where(x => x.accepted));
             quantifiedProteins = getProteins(satisfactoryProteoforms);
             inducedOrRepressedProteins = getInducedOrRepressedProteins(satisfactoryProteoforms, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity);
         }
@@ -914,5 +962,67 @@ namespace ProteoformSuiteInternal
 
         #endregion GO-TERMS AND GO-TERM SIGNIFICANCE
 
+        #region CLEAR METHODS
+
+        public void clear_et()
+        {
+            SaveState.lollipop.et_relations.Clear();
+            SaveState.lollipop.et_peaks.Clear();
+            SaveState.lollipop.ed_relations.Clear();
+            SaveState.lollipop.target_proteoform_community.families.Clear();
+            SaveState.lollipop.decoy_proteoform_communities.Values.Select(c => c.families).ToList().Clear();
+
+            foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
+            {
+                foreach (Proteoform p in community.experimental_proteoforms)
+                {
+                    p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical || r.RelationType == ProteoformComparison.ExperimentalDecoy);
+                    p.family = null;
+                    p.ptm_set = new PtmSet(new List<Ptm>());
+                    p.linked_proteoform_references = null;
+                    p.gene_name = null;
+                }
+
+                foreach (Proteoform p in community.theoretical_proteoforms)
+                {
+                    p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical || r.RelationType == ProteoformComparison.ExperimentalDecoy);
+                    p.family = null;
+                }
+
+                et_peaks.RemoveAll(k => k.RelationType == ProteoformComparison.ExperimentalTheoretical || k.RelationType == ProteoformComparison.ExperimentalDecoy);
+            }
+        }
+
+        public void clear_ee()
+        {
+            SaveState.lollipop.ee_relations.Clear();
+            SaveState.lollipop.ee_peaks.Clear();
+            SaveState.lollipop.ef_relations.Clear();
+            foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
+            {
+                community.families.Clear();
+                foreach (Proteoform p in community.experimental_proteoforms)
+                {
+                    p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalExperimental || r.RelationType == ProteoformComparison.ExperimentalFalse);
+                    p.family = null;
+                    p.ptm_set = new PtmSet(new List<Ptm>());
+                    p.linked_proteoform_references = null;
+                    p.gene_name = null;
+                }
+
+                ee_peaks.RemoveAll(k => k.RelationType == ProteoformComparison.ExperimentalExperimental || k.RelationType == ProteoformComparison.ExperimentalFalse);
+            }
+        }
+
+        public void clear_families()
+        {
+            foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
+            {
+                community.clear_families();
+            }
+        }
     }
+    #endregion CLEAR METHODS
+
 }
+

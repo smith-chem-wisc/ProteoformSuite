@@ -75,28 +75,30 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return SaveState.lollipop.proteoform_community.families.Count <= 0 && SaveState.lollipop.proteoform_community.has_e_proteoforms;
+            return SaveState.lollipop.target_proteoform_community.families.Count <= 0 && SaveState.lollipop.target_proteoform_community.has_e_proteoforms;
         }
 
         public void RunTheGamut()
         {
             Cursor = Cursors.WaitCursor;
-            SaveState.lollipop.proteoform_community.clear_families();
-            SaveState.lollipop.proteoform_community.construct_families();
-            fill_proteoform_families("");
+            SaveState.lollipop.clear_families();
+            SaveState.lollipop.construct_target_and_decoy_families();
+            cmbx_tableSelector.SelectedIndex = 0;
+            tb_tableFilter.Text = "";
+            fill_proteoform_families("", -1);
             update_figures_of_merit();
             Cursor = Cursors.Default;
         }
 
         public void FillTablesAndCharts()
         {
-            fill_proteoform_families("");
+            fill_proteoform_families("", -1);
             update_figures_of_merit();
         }
 
         public void ClearListsTablesFigures()
         {
-            SaveState.lollipop.proteoform_community.clear_families();
+            SaveState.lollipop.clear_families();
             dgv_main.DataSource = null;
             dgv_main.Rows.Clear();
             dgv_proteoform_family_members.DataSource = null;
@@ -105,9 +107,24 @@ namespace ProteoformSuiteGUI
 
         public void update_figures_of_merit()
         {
-            tb_TotalFamilies.Text = SaveState.lollipop.proteoform_community.families.Count(f => f.proteoforms.Count > 1).ToString();
-            tb_IdentifiedFamilies.Text = SaveState.lollipop.proteoform_community.families.Count(f => f.theoretical_proteoforms.Count > 0).ToString();
-            tb_singleton_count.Text = SaveState.lollipop.proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString();
+            tb_TotalFamilies.Text = SaveState.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count > 1).ToString();
+            tb_IdentifiedFamilies.Text = SaveState.lollipop.target_proteoform_community.families.Count(f => f.theoretical_proteoforms.Count > 0).ToString();
+            tb_singleton_count.Text = SaveState.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString();
+            tb_identified_experimentals.Text = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null).ToString();
+            if (SaveState.lollipop.decoy_proteoform_communities.Values.SelectMany(v => v.experimental_proteoforms).Count() > 0)
+            tb_identified_decoys.Text = Math.Round(SaveState.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null)), 0).ToString();
+
+            //change selected table names based on # decoy communities
+            int decoy_communities = SaveState.lollipop.decoy_proteoform_communities.Count;
+            for(int i = 0; i < decoy_communities; i++)
+            {
+               if (!cmbx_tableSelector.Items.Contains("Decoy Community " + i)) cmbx_tableSelector.Items.Add("Decoy Community " + i);
+            }
+            //if more items than decoy databases, remove later ones //FIX   
+            while(cmbx_tableSelector.Items.Count - 5 - decoy_communities > 0)
+            {
+                cmbx_tableSelector.Items.RemoveAt(5 + decoy_communities);
+            }
         }
 
         #endregion Public Methods
@@ -134,26 +151,32 @@ namespace ProteoformSuiteGUI
 
         private void cmbx_tableSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text);
+            if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text, -1);
             else if (cmbx_tableSelector.SelectedIndex == 1) fill_theoreticals(tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.BiologicalProcess, tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.CellularComponent, tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 4) fill_go(Aspect.MolecularFunction, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex > 4) fill_proteoform_families(tb_tableFilter.Text, cmbx_tableSelector.SelectedIndex - 5);
         }
 
         private void tb_tableFilter_TextChanged(object sender, EventArgs e)
         {
-            if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text);
+            if (cmbx_tableSelector.SelectedIndex == 0) fill_proteoform_families(tb_tableFilter.Text, -1);
             else if (cmbx_tableSelector.SelectedIndex == 1) fill_theoreticals(tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 2) fill_go(Aspect.BiologicalProcess, tb_tableFilter.Text);
             else if (cmbx_tableSelector.SelectedIndex == 3) fill_go(Aspect.CellularComponent, tb_tableFilter.Text);
+            else if (cmbx_tableSelector.SelectedIndex > 4) fill_proteoform_families(tb_tableFilter.Text, cmbx_tableSelector.SelectedIndex - 5);
         }
 
-        public void fill_proteoform_families(string filter)
+        public void fill_proteoform_families(string filter, int decoyCommunityMinusOneIsTarget)
         {
             IEnumerable<object> families = filter == "" ?
-                SaveState.lollipop.proteoform_community.families.OrderByDescending(f => f.relations.Count) :
-                ExtensionMethods.filter(SaveState.lollipop.proteoform_community.families.OrderByDescending(f => f.relations.Count), filter);
+                 ( decoyCommunityMinusOneIsTarget < 0 ? 
+                SaveState.lollipop.target_proteoform_community.families.OrderByDescending(f => f.relations.Count) :
+                SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + decoyCommunityMinusOneIsTarget].families.OrderByDescending(f => f.relations.Count)) :
+                ( decoyCommunityMinusOneIsTarget < 0 ?
+                ExtensionMethods.filter(SaveState.lollipop.target_proteoform_community.families.OrderByDescending(f => f.relations.Count), filter)
+                : ExtensionMethods.filter(SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + decoyCommunityMinusOneIsTarget].families.OrderByDescending(f => f.relations.Count), filter));
             DisplayUtility.FillDataGridView(dgv_main, families.OfType<ProteoformFamily>().Select(f => new DisplayProteoformFamily(f)));
             DisplayProteoformFamily.format_families_dgv(dgv_main);
         }
@@ -161,8 +184,8 @@ namespace ProteoformSuiteGUI
         private void fill_theoreticals(string filter)
         {
             IEnumerable<object> theoreticals = filter == "" ?
-                SaveState.lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms) :
-                ExtensionMethods.filter(SaveState.lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms), filter);
+                SaveState.lollipop.target_proteoform_community.families.SelectMany(f => f.theoretical_proteoforms) :
+                ExtensionMethods.filter(SaveState.lollipop.target_proteoform_community.families.SelectMany(f => f.theoretical_proteoforms), filter);
             DisplayUtility.FillDataGridView(dgv_main, theoreticals.OfType<TheoreticalProteoform>().Select(t => new DisplayTheoreticalProteoform(t)));
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_main);
         }
@@ -170,18 +193,18 @@ namespace ProteoformSuiteGUI
         private void fill_go(Aspect aspect, string filter)
         {
             DisplayUtility.FillDataGridView(dgv_main, filter == "" ?
-                SaveState.lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.ExpandedProteinList).SelectMany(g => g.GoTerms).Where(g => g.Aspect == aspect) :
-                ExtensionMethods.filter(SaveState.lollipop.proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.ExpandedProteinList).SelectMany(g => g.GoTerms).Where(g => g.Aspect == aspect), filter));
+                SaveState.lollipop.target_proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.ExpandedProteinList).SelectMany(g => g.GoTerms).Where(g => g.Aspect == aspect) :
+                ExtensionMethods.filter(SaveState.lollipop.target_proteoform_community.families.SelectMany(f => f.theoretical_proteoforms).SelectMany(t => t.ExpandedProteinList).SelectMany(g => g.GoTerms).Where(g => g.Aspect == aspect), filter));
         }
 
         private void dgv_proteoform_families_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (cmbx_tableSelector.SelectedIndex == 0 && e.RowIndex >= 0) display_family_members(e.RowIndex, e.ColumnIndex);
+            if ((cmbx_tableSelector.SelectedIndex == 0 || cmbx_tableSelector.SelectedIndex > 4) && e.RowIndex >= 0) display_family_members(e.RowIndex, e.ColumnIndex);
         }
 
         private void dgv_proteoform_families_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (cmbx_tableSelector.SelectedIndex == 0 && e.RowIndex >= 0) display_family_members(e.RowIndex, e.ColumnIndex);
+            if ((cmbx_tableSelector.SelectedIndex == 0 || cmbx_tableSelector.SelectedIndex > 4) && e.RowIndex >= 0) display_family_members(e.RowIndex, e.ColumnIndex);
         }
 
         private void display_family_members(int row_index, int column_index)
@@ -266,7 +289,7 @@ namespace ProteoformSuiteGUI
         {
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
-            string message = CytoscapeScript.write_cytoscape_script(SaveState.lollipop.proteoform_community.families, SaveState.lollipop.proteoform_community.families,
+            string message = CytoscapeScript.write_cytoscape_script(SaveState.lollipop.target_proteoform_community.families, SaveState.lollipop.target_proteoform_community.families,
                 SaveState.lollipop.family_build_folder_path, "", time_stamp,
                 cb_buildAsQuantitative.Checked, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked,
                 cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), SaveState.lollipop.deltaM_edge_display_rounding,
@@ -279,7 +302,7 @@ namespace ProteoformSuiteGUI
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
             object[] selected = DisplayUtility.get_selected_objects(dgv_main);
-            string message = CytoscapeScript.write_cytoscape_script(selected, SaveState.lollipop.proteoform_community.families,
+            string message = CytoscapeScript.write_cytoscape_script(selected, SaveState.lollipop.target_proteoform_community.families,
                 SaveState.lollipop.family_build_folder_path, "", time_stamp,
                 cb_buildAsQuantitative.Checked, cb_redBorder.Checked, cb_boldLabel.Checked, cb_moreOpacity.Checked,
                 cmbx_colorScheme.SelectedItem.ToString(), cmbx_edgeLabel.SelectedItem.ToString(), cmbx_nodeLabel.SelectedItem.ToString(), cmbx_nodeLabelPositioning.SelectedItem.ToString(), SaveState.lollipop.deltaM_edge_display_rounding,
@@ -317,9 +340,9 @@ namespace ProteoformSuiteGUI
         private void btn_inclusion_list_all_families_Click(object sender, EventArgs e)
         {
             List<ExperimentalProteoform> proteoforms = new List<ExperimentalProteoform>();
-            if (cb_identified_families.Checked) proteoforms.AddRange(SaveState.lollipop.proteoform_community.families.Where(f => f.relations.Count > 0 && f.theoretical_proteoforms.Count > 0).SelectMany(f => f.experimental_proteoforms).ToList());
-            if (cb_unidentified_families.Checked) proteoforms.AddRange(SaveState.lollipop.proteoform_community.families.Where(f => f.relations.Count > 0 && f.theoretical_proteoforms.Count == 0).SelectMany(f => f.experimental_proteoforms).ToList());
-            if (cb_orphans.Checked) proteoforms.AddRange(SaveState.lollipop.proteoform_community.families.Where(f => f.relations.Count == 0).SelectMany(f => f.experimental_proteoforms).ToList());
+            if (cb_identified_families.Checked) proteoforms.AddRange(SaveState.lollipop.target_proteoform_community.families.Where(f => f.relations.Count > 0 && f.theoretical_proteoforms.Count > 0).SelectMany(f => f.experimental_proteoforms).ToList());
+            if (cb_unidentified_families.Checked) proteoforms.AddRange(SaveState.lollipop.target_proteoform_community.families.Where(f => f.relations.Count > 0 && f.theoretical_proteoforms.Count == 0).SelectMany(f => f.experimental_proteoforms).ToList());
+            if (cb_orphans.Checked) proteoforms.AddRange(SaveState.lollipop.target_proteoform_community.families.Where(f => f.relations.Count == 0).SelectMany(f => f.experimental_proteoforms).ToList());
             write_inclusion_list(proteoforms);
         }
 
