@@ -48,7 +48,7 @@ namespace ProteoformSuiteInternal
             this.theoretical_mass = root.theoretical_mass;
             this.stop_index = root.stop_index;
             this.topdown_hits = new List<TopDownHit>() { root };
-            topdown_hits.AddRange(candidate_hits.Where(h => this.tolerable_rt(h, root.retention_time)));//&& this.tolerable_mass(h, root.corrected_mass)));
+            topdown_hits.AddRange(candidate_hits.Where(h => this.tolerable_rt(h, root.retention_time)));
             this.calculate_properties();
             this.targeted = root.targeted;
         }

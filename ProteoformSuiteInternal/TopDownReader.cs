@@ -104,7 +104,7 @@ namespace ProteoformSuiteInternal
 
                 TopDownHit td_hit = new TopDownHit(aaIsotopeMassList, file, tdResultType, cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
                 Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]), ptm_list, Convert.ToDouble(cellStrings[16]), Convert.ToDouble(cellStrings[12]),
-                Convert.ToInt16(cellStrings[17]), Convert.ToDouble(cellStrings[18]), cellStrings[14].Split('.')[0], file.targeted_td_result);
+                Convert.ToInt16(cellStrings[17]), Convert.ToDouble(cellStrings[18]), cellStrings[14].Split('.')[0], file.targeted_td_result, Convert.ToDouble(cellStrings[22]));
                 td_hits.Add(td_hit);
             }
             return td_hits;
