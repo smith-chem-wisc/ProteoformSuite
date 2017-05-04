@@ -901,8 +901,6 @@
         private System.Windows.Forms.SplitContainer splitContainer5;
         private System.Windows.Forms.DataGridView dgv_ET_Peak_List;
         private System.Windows.Forms.Button bt_compare_ET;
-        private System.Windows.Forms.SplitContainer splitContainer6;
-        private System.Windows.Forms.DataGridView dgv_psmList;
         private System.Windows.Forms.CheckBox cb_TDBUpsm;
         private System.Windows.Forms.TextBox tb_max_accepted_fdr;
         private System.Windows.Forms.Label label9;
