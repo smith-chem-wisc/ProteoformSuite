@@ -523,7 +523,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public void aggregate_td_hits()
+        public void AggregateTdHits()
         {
             //group hits into topdown proteoforms by accession/theoretical AND observed mass
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
