@@ -27,7 +27,7 @@ namespace ProteoformSuiteInternal
             foreach (List<string> cellStrings in cells)
             {
                 TopDownResultType tdResultType = (cellStrings[15] == "BioMarker") ? TopDownResultType.Biomarker : TopDownResultType.TightAbsoluteMass;
-                List<Ptm> ptm_list = new List<Ptm>();
+                List<Ptm> ptm_list = new List<Ptm>(); // if nothing gets added, an empty ptmlist is passed to the topdownhit constructor.
                 //N-term modifications
                 if (cellStrings[10].Length > 0) //N Terminal Modification Code
                 {

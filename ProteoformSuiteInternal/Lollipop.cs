@@ -588,6 +588,7 @@ namespace ProteoformSuiteInternal
                 //find topdownhits within RT tol --> first average
                 double first_RT_average = remaining_td_hits.Where(h => h.targeted == root.targeted && Math.Abs(h.retention_time - root.retention_time) <= Convert.ToDouble(retention_time_tolerance) && h.accession == root.accession && h.sequence == root.sequence && h.same_ptm_hits(root)).Select(h => h.retention_time).Average();
                 List<TopDownHit> hits_to_aggregate = remaining_td_hits.Where(h => h.targeted == root.targeted && Math.Abs(h.retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance) && h.accession == root.accession && h.sequence == root.sequence && h.same_ptm_hits(root)).OrderByDescending(h => h.score).ToList();
+                //List<TopDownHit> hits_to_aggregate = remaining_td_hits.Where(h => h.targeted == root.targeted && Math.Abs(h.retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance) && h.accession == root.accession && h.sequence == root.sequence).OrderByDescending(h => h.score).ToList();
                 root = hits_to_aggregate[0];
                 //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
                 TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, hits_to_aggregate);
