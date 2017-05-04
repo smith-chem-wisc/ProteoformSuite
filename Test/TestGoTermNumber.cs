@@ -187,6 +187,7 @@ namespace Test
             DeltaMassPeak ppp = new DeltaMassPeak(pp, new List<ProteoformRelation> { pp });
             pp.Accepted = true;
             pp.peak = ppp;
+            pp.Accepted = true;
             ppp.Accepted = true;
             p1.relationships.Add(pp);
             p2.relationships.Add(pp);

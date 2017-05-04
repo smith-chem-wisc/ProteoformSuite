@@ -4,6 +4,7 @@ using ProteoformSuiteInternal;
 using System.Windows.Forms;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace ProteoformSuiteGUI
 {
@@ -20,6 +21,11 @@ namespace ProteoformSuiteGUI
         #endregion Public Constructor
 
         #region Public Methods
+
+        public List<DataGridView> GetDGVs()
+        {
+            return null;
+        }
 
         public void create_summary()
         {
@@ -100,7 +106,7 @@ namespace ProteoformSuiteGUI
             if (cb_saveCytoScripts.Checked)
             {
                 string message = "";
-                message += CytoscapeScript.write_cytoscape_script(SaveState.lollipop.proteoform_community.families, SaveState.lollipop.proteoform_community.families,
+                message += CytoscapeScript.write_cytoscape_script(SaveState.lollipop.target_proteoform_community.families, SaveState.lollipop.target_proteoform_community.families,
                     tb_summarySaveFolder.Text, "AllFamilies_", timestamp,
                     SaveState.lollipop.qVals.Count > 0, true, true, false,
                     CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], 2,
@@ -109,7 +115,7 @@ namespace ProteoformSuiteGUI
 
                 foreach (GoTermNumber gtn in SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.minProteoformFDR).ToList())
                 {
-                    message += CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { gtn }, SaveState.lollipop.proteoform_community.families,
+                    message += CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { gtn }, SaveState.lollipop.target_proteoform_community.families,
                         tb_summarySaveFolder.Text, gtn.Aspect.ToString() + gtn.Description.Replace(" ", "_") + "_", timestamp,
                         true, true, true, false,
                         CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], 2,

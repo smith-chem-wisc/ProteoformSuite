@@ -40,7 +40,7 @@ namespace ProteoformSuiteInternal
         {
             List<MsScan> ms_scans = new List<MsScan>();
             foreach (InputFile file in files) ms_scans.AddRange(get_ms_scans(file.filename, file.complete_path));
-            Parallel.ForEach(SaveState.lollipop.proteoform_community.experimental_proteoforms, e =>
+            Parallel.ForEach(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, e =>
             {
                 foreach (Component comp in e.aggregated_components)
                 {

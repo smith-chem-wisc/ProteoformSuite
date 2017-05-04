@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Collections.Generic;
 
 namespace ProteoformSuiteGUI
 {
@@ -32,7 +33,7 @@ namespace ProteoformSuiteGUI
                 () => SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_quantification_components, Purpose.Quantification, true),
                 () => 
                 {
-                    if (SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length <= 0)
+                    if (SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length <= 0)
                         SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(Path.Combine(Environment.CurrentDirectory)));
                 }
             );
@@ -44,9 +45,9 @@ namespace ProteoformSuiteGUI
             (MdiParent as ProteoformSweet).theoreticalDatabase.FillDataBaseTable("Target");
         }
 
-        public DataGridView GetDGV()
+        public List<DataGridView> GetDGVs()
         {
-            return dgv_rawComponents;
+            return new List<DataGridView>() { dgv_rawComponents };
         }
 
         public void FillTablesAndCharts()
@@ -91,6 +92,10 @@ namespace ProteoformSuiteGUI
             dgv_rawComponents.Rows.Clear();
             dgv_chargeStates.DataSource = null;
             dgv_chargeStates.Rows.Clear();
+
+            ((ProteoformSweet)MdiParent).neuCodePairs.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures();
+
         }
 
         #endregion Public Methods

@@ -91,8 +91,9 @@ namespace Test
         [Test]
         public void TestAcceptDeltaMassPeaks()
         {
+            SaveState.lollipop = new Lollipop();
             ProteoformCommunity test_community = new ProteoformCommunity();
-            SaveState.lollipop.proteoform_community = test_community;
+            SaveState.lollipop.target_proteoform_community = test_community;
 
             SaveState.lollipop.theoretical_database.uniprotModifications = new Dictionary<string, List<Modification>>
             {
@@ -130,9 +131,9 @@ namespace Test
             Assert.AreEqual(3, pr4.nearby_relations_count);
 
             SaveState.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet> { new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }) };
-            test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
-            Assert.AreEqual(1, test_community.delta_mass_peaks.Count);
-            DeltaMassPeak peak = test_community.delta_mass_peaks[0];
+            SaveState.lollipop.et_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
+            Assert.AreEqual(1, SaveState.lollipop.et_peaks.Count);
+            DeltaMassPeak peak = SaveState.lollipop.et_peaks[0];
             Assert.AreEqual(3, peak.grouped_relations.Count);
             Assert.AreEqual(3, pr2.peak.peak_relation_group_count);
             Assert.AreEqual(0, pr2.peak.DeltaMass);
@@ -148,7 +149,7 @@ namespace Test
         public void wrong_relation_shifting()
         {
             ProteoformCommunity test_community = new ProteoformCommunity();
-            SaveState.lollipop.proteoform_community = test_community;
+            SaveState.lollipop.target_proteoform_community = test_community;
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
             ProteoformComparison wrong_comparison = ProteoformComparison.ExperimentalExperimental;
@@ -157,7 +158,7 @@ namespace Test
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr2, pr3 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
             test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
-            Assert.False(test_community.delta_mass_peaks[0].shift_experimental_masses(1, true));
+            Assert.False(SaveState.lollipop.et_peaks[0].shift_experimental_masses(1, true));
         }
 
         [Test]
@@ -176,8 +177,9 @@ namespace Test
         [Test]
         public void shift_et_peak_neucode()
         {
+            SaveState.lollipop = new Lollipop();
             ProteoformCommunity test_community = new ProteoformCommunity();
-            SaveState.lollipop.proteoform_community = test_community;
+            SaveState.lollipop.target_proteoform_community = test_community;
 
             //Make a few experimental proteoforms
             List<Component> n1 = TestExperimentalProteoform.generate_neucode_components(100);
@@ -193,7 +195,7 @@ namespace Test
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4");
             pf4.aggregated_components = n4;
 
-            SaveState.lollipop.proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
+            SaveState.lollipop.target_proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
 
             //Connect them to theoreticals to form two peaks
             ProteoformComparison comparison14 = ProteoformComparison.ExperimentalTheoretical;
@@ -211,10 +213,10 @@ namespace Test
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1, pr2, pr3, pr4 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
             test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
-            Assert.AreEqual(2, test_community.delta_mass_peaks.Count);
+            Assert.AreEqual(2, SaveState.lollipop.et_peaks.Count);
 
             //Shift the peaks, which shifts all of the proteoforms
-            DeltaMassPeak d2 = test_community.delta_mass_peaks[1];
+            DeltaMassPeak d2 = SaveState.lollipop.et_peaks[1];
             d2.shift_experimental_masses(-1, true);
 
             Assert.IsTrue(pf3.mass_shifted);
@@ -241,8 +243,9 @@ namespace Test
         [Test]
         public void shift_et_peak_unlabeled()
         {
+            SaveState.lollipop = new Lollipop();
             ProteoformCommunity test_community = new ProteoformCommunity();
-            SaveState.lollipop.proteoform_community = test_community;
+            SaveState.lollipop.target_proteoform_community = test_community;
 
             //Make a few experimental proteoforms
             List<Component> n1 = TestExperimentalProteoform.generate_neucode_components(100);
@@ -258,7 +261,7 @@ namespace Test
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4");
             pf4.aggregated_components = n4;
 
-            SaveState.lollipop.proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
+            SaveState.lollipop.target_proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
 
             //Connect them to theoreticals to form two peaks
             ProteoformComparison comparison14 = ProteoformComparison.ExperimentalTheoretical;
@@ -276,10 +279,10 @@ namespace Test
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1, pr2, pr3, pr4 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
             test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
-            Assert.AreEqual(2, test_community.delta_mass_peaks.Count);
+            Assert.AreEqual(2, SaveState.lollipop.et_peaks.Count);
 
             //Shift the peaks, which shifts all of the proteoforms
-            DeltaMassPeak d2 = test_community.delta_mass_peaks[1];
+            DeltaMassPeak d2 = SaveState.lollipop.et_peaks[1];
             d2.shift_experimental_masses(-1, false);
 
             Assert.IsTrue(pf3.mass_shifted);

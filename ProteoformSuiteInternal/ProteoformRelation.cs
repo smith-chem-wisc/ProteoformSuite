@@ -123,7 +123,7 @@ namespace ProteoformSuiteInternal
 
         public void generate_peak()
         {
-            new DeltaMassPeak(this, SaveState.lollipop.proteoform_community.remaining_relations_outside_no_mans); //setting the peak takes place elsewhere, but this constructs it
+            new DeltaMassPeak(this, SaveState.lollipop.target_proteoform_community.remaining_relations_outside_no_mans); //setting the peak takes place elsewhere, but this constructs it
             if (connected_proteoforms[1] as TheoreticalProteoform != null && SaveState.lollipop.ed_relations.Count > 0)
                 lock (peak) peak.calculate_fdr(SaveState.lollipop.ed_relations);
             else if (connected_proteoforms[1] as ExperimentalProteoform != null && SaveState.lollipop.ef_relations.Count > 0)

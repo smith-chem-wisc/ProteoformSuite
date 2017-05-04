@@ -17,6 +17,7 @@ namespace ProteoformSuiteGUI
         #region Private Field
 
         private RelationUtility relationUtility;
+        private List<DisplayProteoformRelation> displayRelations = new List<DisplayProteoformRelation>();
 
         #endregion Private Field
 
@@ -39,46 +40,41 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return SaveState.lollipop.ee_relations.Count == 0 && SaveState.lollipop.proteoform_community.has_e_proteoforms;
+            return SaveState.lollipop.ee_relations.Count == 0 && SaveState.lollipop.target_proteoform_community.has_e_proteoforms;
         }
 
         public void RunTheGamut()
         {
             Cursor = Cursors.WaitCursor;
-            SaveState.lollipop.ee_relations = SaveState.lollipop.proteoform_community.relate(SaveState.lollipop.proteoform_community.experimental_proteoforms, SaveState.lollipop.proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
-            SaveState.lollipop.ef_relations = SaveState.lollipop.proteoform_community.relate_ef(SaveState.lollipop.proteoform_community.experimental_proteoforms, SaveState.lollipop.proteoform_community.experimental_proteoforms);
-            SaveState.lollipop.ee_peaks = SaveState.lollipop.proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.ee_relations, SaveState.lollipop.ef_relations);
+            SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
+            SaveState.lollipop.relate_ef();
+            SaveState.lollipop.ee_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.ee_relations, SaveState.lollipop.ef_relations);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
             ((ProteoformSweet)MdiParent).quantification.ClearListsTablesFigures();
 
             Parallel.Invoke
             (
                 () => FillTablesAndCharts(),
-                () => { if (SaveState.lollipop.neucode_labeled) SaveState.lollipop.proteoform_community.construct_families(); }
+                () => { if (SaveState.lollipop.neucode_labeled) SaveState.lollipop.construct_target_and_decoy_families(); }
             );
 
             if (SaveState.lollipop.neucode_labeled)
             {
-                ((ProteoformSweet)MdiParent).proteoformFamilies.fill_proteoform_families("");
+                ((ProteoformSweet)MdiParent).proteoformFamilies.fill_proteoform_families("", -1);
                 ((ProteoformSweet)MdiParent).proteoformFamilies.update_figures_of_merit();
             }
 
             Cursor = Cursors.Default;
         }
 
-        public DataGridView GetEERelationDGV()
+        public List<DataGridView> GetDGVs()
         {
-            return dgv_EE_Relations;
-        }
-
-        public DataGridView GetEEPeaksDGV()
-        {
-            return dgv_EE_Peaks;
+            return new List<DataGridView> { dgv_EE_Relations, dgv_EE_Peaks };
         }
 
         public void ClearListsTablesFigures()
         {
-            SaveState.lollipop.proteoform_community.clear_ee();
+            SaveState.lollipop.clear_ee();
 
             foreach (var series in ct_EE_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_EE_peakList.Series) series.Points.Clear();
@@ -96,7 +92,7 @@ namespace ProteoformSuiteGUI
         {
             dgv_EE_Peaks.CurrentCellDirtyStateChanged -= EE_Peak_List_DirtyStateChanged;//remove event handler on form load and table refresh event
             FillEEPeakListTable();
-            FillEEPairsGridView();
+            FillEERelationsGridView();
             DisplayProteoformRelation.FormatRelationsGridView(dgv_EE_Relations, false, true);
             DisplayUtility.FormatPeakListGridView(dgv_EE_Peaks, true);
             GraphEERelations();
@@ -143,13 +139,13 @@ namespace ProteoformSuiteGUI
             nUD_MaxRetTimeDifference.Maximum = 60;
             nUD_MaxRetTimeDifference.Value = Convert.ToDecimal(SaveState.lollipop.ee_max_RetentionTime_difference);
 
-            //tb_peakTableFilter.TextChanged -= tb_peakTableFilter_TextChanged;
-            //tb_peakTableFilter.Text = "";
-            //tb_peakTableFilter.TextChanged += tb_peakTableFilter_TextChanged;
+            tb_peakTableFilter.TextChanged -= tb_peakTableFilter_TextChanged;
+            tb_peakTableFilter.Text = "";
+            tb_peakTableFilter.TextChanged += tb_peakTableFilter_TextChanged;
 
-            //tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
-            //tb_relationTableFilter.Text = "";
-            //tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
+            tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
+            tb_relationTableFilter.Text = "";
+            tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
 
             //MASS WINDOW
             nUD_EE_Upper_Bound.Minimum = 0;
@@ -169,7 +165,7 @@ namespace ProteoformSuiteGUI
 
         private void bt_compare_EE_Click(object sender, EventArgs e)
         {
-            if (SaveState.lollipop.proteoform_community.has_e_proteoforms && SaveState.lollipop.theoretical_database.all_possible_ptmsets.Count > 0)
+            if (SaveState.lollipop.target_proteoform_community.has_e_proteoforms && SaveState.lollipop.theoretical_database.all_possible_ptmsets.Count > 0)
             {
                 ClearListsTablesFigures();
                 RunTheGamut();
@@ -188,14 +184,14 @@ namespace ProteoformSuiteGUI
 
         #region EE Peak List Private Methods
 
-        //private void tb_peakTableFilter_TextChanged(object sender, EventArgs e)
-        //{
-        //    IEnumerable<object> selected_peaks = tb_peakTableFilter.Text == "" ?
-        //        SaveState.lollipop.ee_peaks :
-        //        ExtensionMethods.filter(SaveState.lollipop.ee_peaks, tb_peakTableFilter.Text);
-        //    DisplayUtility.FillDataGridView(dgv_EE_Peaks, selected_peaks.OfType<DeltaMassPeak>());
-        //    DisplayUtility.FormatPeakListGridView(dgv_EE_Peaks, true);
-        //}
+        private void tb_peakTableFilter_TextChanged(object sender, EventArgs e)
+        {
+            IEnumerable<object> selected_peaks = tb_peakTableFilter.Text == "" ?
+                SaveState.lollipop.ee_peaks :
+                ExtensionMethods.filter(SaveState.lollipop.ee_peaks, tb_peakTableFilter.Text);
+            DisplayUtility.FillDataGridView(dgv_EE_Peaks, selected_peaks.OfType<DeltaMassPeak>());
+            DisplayUtility.FormatPeakListGridView(dgv_EE_Peaks, true);
+        }
 
         private void FillEEPeakListTable()
         {
@@ -218,6 +214,7 @@ namespace ProteoformSuiteGUI
         private void EE_Peak_List_DirtyStateChanged(object sender, EventArgs e)
         {
             relationUtility.peak_acceptability_change(dgv_EE_Peaks);
+            Parallel.ForEach(SaveState.lollipop.ef_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
             dgv_EE_Peaks.Refresh();
             dgv_EE_Relations.Refresh();
             update_figures_of_merit();
@@ -228,18 +225,19 @@ namespace ProteoformSuiteGUI
 
         #region Histogram Private Methods
 
-        //private void tb_relationTableFilter_TextChanged(object sender, EventArgs e)
-        //{
-        //    IEnumerable<object> selected_peaks = tb_relationTableFilter.Text == "" ?
-        //        SaveState.lollipop.ee_relations :
-        //        ExtensionMethods.filter(SaveState.lollipop.ee_relations, tb_relationTableFilter.Text);
-        //    DisplayUtility.FillDataGridView(dgv_EE_Relations, selected_peaks.OfType<ProteoformRelation>().Select(r => new DisplayProteoformRelation(r)));
-        //    DisplayProteoformRelation.FormatRelationsGridView(dgv_EE_Relations, false, true);
-        //}
-
-        private void FillEEPairsGridView()
+        private void tb_relationTableFilter_TextChanged(object sender, EventArgs e)
         {
-            DisplayUtility.FillDataGridView(dgv_EE_Relations, SaveState.lollipop.ee_relations.Select(r => new DisplayProteoformRelation(r)));
+            IEnumerable<object> selected_peaks = tb_relationTableFilter.Text == "" ?
+                displayRelations :
+                ExtensionMethods.filter(displayRelations.ToList(), tb_relationTableFilter.Text);
+            DisplayUtility.FillDataGridView(dgv_EE_Relations, selected_peaks);
+            DisplayProteoformRelation.FormatRelationsGridView(dgv_EE_Relations, false, true);
+        }
+
+        private void FillEERelationsGridView()
+        {
+            displayRelations = SaveState.lollipop.ee_relations.Select(r => new DisplayProteoformRelation(r)).ToList();
+            DisplayUtility.FillDataGridView(dgv_EE_Relations, displayRelations);
         }
 
         private void GraphEERelations()
@@ -248,7 +246,7 @@ namespace ProteoformSuiteGUI
             ct_EE_Histogram.Series["relations"].Enabled = true;
             if (SaveState.lollipop.ef_relations.Count > 0)
             {
-                DisplayUtility.GraphRelationsChart(ct_EE_Histogram, SaveState.lollipop.ef_relations["EF_relations_0"], "decoys");
+                DisplayUtility.GraphRelationsChart(ct_EE_Histogram, SaveState.lollipop.ef_relations[SaveState.lollipop.decoy_community_name_prefix + "0"], "decoys");
                 ct_EE_Histogram.Series["decoys"].Enabled = false;
                 cb_view_decoy_histogram.Enabled = true;
             }
@@ -281,6 +279,7 @@ namespace ProteoformSuiteGUI
                 p.Accepted = p.peak_relation_group_count >= SaveState.lollipop.min_peak_count_ee;
                 Parallel.ForEach(p.grouped_relations, r => r.Accepted = p.Accepted);
             });
+            Parallel.ForEach(SaveState.lollipop.ef_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
             dgv_EE_Peaks.Refresh();
             dgv_EE_Relations.Refresh();
             ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();

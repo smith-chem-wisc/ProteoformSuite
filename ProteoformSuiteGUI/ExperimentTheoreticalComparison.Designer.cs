@@ -42,16 +42,22 @@
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.tb_IdentifiedProteoforms = new System.Windows.Forms.TextBox();
             this.tb_TotalPeaks = new System.Windows.Forms.TextBox();
+            this.cb_Graph_lowerThreshold = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.dgv_ET_Peak_List = new System.Windows.Forms.DataGridView();
             this.ct_ET_peakList = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.cb_TDBUpsm = new System.Windows.Forms.CheckBox();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.cb_view_decoy_histogram = new System.Windows.Forms.CheckBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.tb_relationTableFilter = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.tb_peakTableFilter = new System.Windows.Forms.TextBox();
             this.bt_compare_ET = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.cb_Graph_lowerThreshold = new System.Windows.Forms.CheckBox();
             this.tb_max_accepted_fdr = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
@@ -74,7 +80,7 @@
             this.nUD_NoManLower = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.dgv_ET_Pairs = new System.Windows.Forms.DataGridView();
+            this.dgv_ET_Relations = new System.Windows.Forms.DataGridView();
             this.ct_ET_Histogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -94,6 +100,8 @@
             this.splitContainer5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Peak_List)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_peakList)).BeginInit();
+            this.groupBox6.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakWidthBase)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakCountMinThreshold)).BeginInit();
@@ -112,7 +120,7 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Pairs)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Relations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).BeginInit();
             this.SuspendLayout();
             // 
@@ -150,7 +158,8 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.cb_TDBUpsm);
-            this.splitContainer3.Panel2.Controls.Add(this.cb_view_decoy_histogram);
+            this.splitContainer3.Panel2.Controls.Add(this.groupBox6);
+            this.splitContainer3.Panel2.Controls.Add(this.groupBox5);
             this.splitContainer3.Panel2.Controls.Add(this.bt_compare_ET);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox4);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox3);
@@ -296,18 +305,78 @@
             this.cb_TDBUpsm.Text = "Limit to theoreticals with TD or BU PSMs";
             this.cb_TDBUpsm.UseVisualStyleBackColor = true;
             this.cb_TDBUpsm.CheckedChanged += new System.EventHandler(this.cb_TDBUpsm_CheckedChanged);
+            //
+            // groupBox6
+            // 
+            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox6.Controls.Add(this.cb_Graph_lowerThreshold);
+            this.groupBox6.Controls.Add(this.cb_view_decoy_histogram);
+            this.groupBox6.Location = new System.Drawing.Point(486, 185);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(263, 93);
+            this.groupBox6.TabIndex = 36;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "ET Histogram Selection";
             // 
             // cb_view_decoy_histogram
             // 
             this.cb_view_decoy_histogram.AutoSize = true;
             this.cb_view_decoy_histogram.Enabled = false;
-            this.cb_view_decoy_histogram.Location = new System.Drawing.Point(192, 62);
+            this.cb_view_decoy_histogram.Location = new System.Drawing.Point(25, 29);
             this.cb_view_decoy_histogram.Name = "cb_view_decoy_histogram";
             this.cb_view_decoy_histogram.Size = new System.Drawing.Size(196, 17);
             this.cb_view_decoy_histogram.TabIndex = 33;
             this.cb_view_decoy_histogram.Text = "View Experimental-Decoy Histogram";
             this.cb_view_decoy_histogram.UseVisualStyleBackColor = true;
             this.cb_view_decoy_histogram.CheckedChanged += new System.EventHandler(this.cb_view_decoy_histogram_CheckedChanged);
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox5.Controls.Add(this.label12);
+            this.groupBox5.Controls.Add(this.tb_relationTableFilter);
+            this.groupBox5.Controls.Add(this.label13);
+            this.groupBox5.Controls.Add(this.tb_peakTableFilter);
+            this.groupBox5.Location = new System.Drawing.Point(486, 79);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(263, 100);
+            this.groupBox5.TabIndex = 35;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Table Control";
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(137, 60);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(118, 13);
+            this.label12.TabIndex = 3;
+            this.label12.Text = "EE Relation Table Filter";
+            // 
+            // tb_relationTableFilter
+            // 
+            this.tb_relationTableFilter.Location = new System.Drawing.Point(25, 57);
+            this.tb_relationTableFilter.Name = "tb_relationTableFilter";
+            this.tb_relationTableFilter.Size = new System.Drawing.Size(100, 20);
+            this.tb_relationTableFilter.TabIndex = 2;
+            this.tb_relationTableFilter.TextChanged += new System.EventHandler(this.tb_relationTableFilter_TextChanged);
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(137, 25);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(104, 13);
+            this.label13.TabIndex = 1;
+            this.label13.Text = "EE Peak Table Filter";
+            // 
+            // tb_peakTableFilter
+            // 
+            this.tb_peakTableFilter.Location = new System.Drawing.Point(25, 22);
+            this.tb_peakTableFilter.Name = "tb_peakTableFilter";
+            this.tb_peakTableFilter.Size = new System.Drawing.Size(100, 20);
+            this.tb_peakTableFilter.TabIndex = 0;
+            this.tb_peakTableFilter.TextChanged += new System.EventHandler(this.tb_peakTableFilter_TextChanged);
             // 
             // bt_compare_ET
             // 
@@ -324,38 +393,24 @@
             // groupBox4
             // 
             this.groupBox4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.groupBox4.Controls.Add(this.cb_Graph_lowerThreshold);
             this.groupBox4.Controls.Add(this.tb_max_accepted_fdr);
             this.groupBox4.Controls.Add(this.label9);
             this.groupBox4.Controls.Add(this.label4);
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(199, 101);
+            this.groupBox4.Location = new System.Drawing.Point(29, 73);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox4.Size = new System.Drawing.Size(242, 101);
+            this.groupBox4.Size = new System.Drawing.Size(242, 108);
             this.groupBox4.TabIndex = 15;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "ET Peak List Parameters";
             // 
-            // cb_Graph_lowerThreshold
-            // 
-            this.cb_Graph_lowerThreshold.AutoSize = true;
-            this.cb_Graph_lowerThreshold.Checked = true;
-            this.cb_Graph_lowerThreshold.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_Graph_lowerThreshold.Location = new System.Drawing.Point(43, 34);
-            this.cb_Graph_lowerThreshold.Name = "cb_Graph_lowerThreshold";
-            this.cb_Graph_lowerThreshold.Size = new System.Drawing.Size(55, 17);
-            this.cb_Graph_lowerThreshold.TabIndex = 28;
-            this.cb_Graph_lowerThreshold.Text = "Graph";
-            this.cb_Graph_lowerThreshold.UseVisualStyleBackColor = true;
-            this.cb_Graph_lowerThreshold.CheckedChanged += new System.EventHandler(this.cb_Graph_lowerThreshold_CheckedChanged);
-            // 
             // tb_max_accepted_fdr
             // 
-            this.tb_max_accepted_fdr.Location = new System.Drawing.Point(133, 71);
+            this.tb_max_accepted_fdr.Location = new System.Drawing.Point(138, 76);
             this.tb_max_accepted_fdr.Margin = new System.Windows.Forms.Padding(2);
             this.tb_max_accepted_fdr.Name = "tb_max_accepted_fdr";
             this.tb_max_accepted_fdr.ReadOnly = true;
@@ -366,7 +421,7 @@
             // 
             this.label9.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(0, 74);
+            this.label9.Location = new System.Drawing.Point(4, 79);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(129, 13);
@@ -377,7 +432,7 @@
             // 
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(16, 18);
+            this.label4.Location = new System.Drawing.Point(16, 25);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(113, 13);
@@ -388,7 +443,7 @@
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(16, 48);
+            this.label3.Location = new System.Drawing.Point(16, 55);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(105, 13);
@@ -404,7 +459,7 @@
             0,
             0,
             196608});
-            this.nUD_PeakWidthBase.Location = new System.Drawing.Point(133, 16);
+            this.nUD_PeakWidthBase.Location = new System.Drawing.Point(138, 23);
             this.nUD_PeakWidthBase.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_PeakWidthBase.Maximum = new decimal(new int[] {
             5,
@@ -412,7 +467,7 @@
             0,
             65536});
             this.nUD_PeakWidthBase.Name = "nUD_PeakWidthBase";
-            this.nUD_PeakWidthBase.Size = new System.Drawing.Size(80, 20);
+            this.nUD_PeakWidthBase.Size = new System.Drawing.Size(86, 20);
             this.nUD_PeakWidthBase.TabIndex = 13;
             this.nUD_PeakWidthBase.Value = new decimal(new int[] {
             1,
@@ -424,10 +479,10 @@
             // nUD_PeakCountMinThreshold
             // 
             this.nUD_PeakCountMinThreshold.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.nUD_PeakCountMinThreshold.Location = new System.Drawing.Point(133, 43);
+            this.nUD_PeakCountMinThreshold.Location = new System.Drawing.Point(138, 50);
             this.nUD_PeakCountMinThreshold.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_PeakCountMinThreshold.Name = "nUD_PeakCountMinThreshold";
-            this.nUD_PeakCountMinThreshold.Size = new System.Drawing.Size(80, 20);
+            this.nUD_PeakCountMinThreshold.Size = new System.Drawing.Size(86, 20);
             this.nUD_PeakCountMinThreshold.TabIndex = 10;
             this.nUD_PeakCountMinThreshold.ValueChanged += new System.EventHandler(this.nUD_PeakCountMinThreshold_ValueChanged);
             // 
@@ -438,11 +493,11 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(431, 119);
+            this.groupBox3.Location = new System.Drawing.Point(278, 73);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox3.Size = new System.Drawing.Size(192, 83);
+            this.groupBox3.Size = new System.Drawing.Size(192, 108);
             this.groupBox3.TabIndex = 14;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "ET Histogram Boundaries";
@@ -451,7 +506,7 @@
             // 
             this.label5.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(31, 27);
+            this.label5.Location = new System.Drawing.Point(20, 30);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(59, 13);
@@ -462,7 +517,7 @@
             // 
             this.label6.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(31, 54);
+            this.label6.Location = new System.Drawing.Point(20, 57);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(59, 13);
@@ -472,7 +527,7 @@
             // nUD_ET_Lower_Bound
             // 
             this.nUD_ET_Lower_Bound.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.nUD_ET_Lower_Bound.Location = new System.Drawing.Point(107, 23);
+            this.nUD_ET_Lower_Bound.Location = new System.Drawing.Point(96, 26);
             this.nUD_ET_Lower_Bound.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_ET_Lower_Bound.Maximum = new decimal(new int[] {
             0,
@@ -492,7 +547,7 @@
             // nUD_ET_Upper_Bound
             // 
             this.nUD_ET_Upper_Bound.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.nUD_ET_Upper_Bound.Location = new System.Drawing.Point(107, 54);
+            this.nUD_ET_Upper_Bound.Location = new System.Drawing.Point(96, 57);
             this.nUD_ET_Upper_Bound.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_ET_Upper_Bound.Maximum = new decimal(new int[] {
             500,
@@ -511,11 +566,11 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(431, 206);
+            this.groupBox2.Location = new System.Drawing.Point(278, 185);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox2.Size = new System.Drawing.Size(192, 83);
+            this.groupBox2.Size = new System.Drawing.Size(192, 92);
             this.groupBox2.TabIndex = 11;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "ET Histogram Scaling";
@@ -523,7 +578,7 @@
             // yMaxET
             // 
             this.yMaxET.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.yMaxET.Location = new System.Drawing.Point(63, 20);
+            this.yMaxET.Location = new System.Drawing.Point(63, 29);
             this.yMaxET.Margin = new System.Windows.Forms.Padding(2);
             this.yMaxET.Minimum = new decimal(new int[] {
             100,
@@ -544,7 +599,7 @@
             0,
             0,
             65536});
-            this.xMinET.Location = new System.Drawing.Point(23, 41);
+            this.xMinET.Location = new System.Drawing.Point(23, 50);
             this.xMinET.Margin = new System.Windows.Forms.Padding(2);
             this.xMinET.Minimum = new decimal(new int[] {
             100,
@@ -559,7 +614,7 @@
             // yMinET
             // 
             this.yMinET.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.yMinET.Location = new System.Drawing.Point(63, 60);
+            this.yMinET.Location = new System.Drawing.Point(63, 69);
             this.yMinET.Margin = new System.Windows.Forms.Padding(2);
             this.yMinET.Minimum = new decimal(new int[] {
             100,
@@ -580,7 +635,7 @@
             0,
             0,
             65536});
-            this.xMaxET.Location = new System.Drawing.Point(107, 41);
+            this.xMaxET.Location = new System.Drawing.Point(107, 50);
             this.xMaxET.Margin = new System.Windows.Forms.Padding(2);
             this.xMaxET.Minimum = new decimal(new int[] {
             100,
@@ -599,11 +654,11 @@
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.nUD_NoManLower);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(199, 206);
+            this.groupBox1.Location = new System.Drawing.Point(32, 185);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
-            this.groupBox1.Size = new System.Drawing.Size(221, 83);
+            this.groupBox1.Size = new System.Drawing.Size(239, 92);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "No Man\'s Land";
@@ -617,7 +672,7 @@
             0,
             0,
             131072});
-            this.nUD_NoManUpper.Location = new System.Drawing.Point(124, 60);
+            this.nUD_NoManUpper.Location = new System.Drawing.Point(133, 61);
             this.nUD_NoManUpper.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_NoManUpper.Maximum = new decimal(new int[] {
             1,
@@ -643,7 +698,7 @@
             // 
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(5, 62);
+            this.label2.Location = new System.Drawing.Point(14, 63);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(93, 13);
@@ -659,7 +714,7 @@
             0,
             0,
             131072});
-            this.nUD_NoManLower.Location = new System.Drawing.Point(124, 20);
+            this.nUD_NoManLower.Location = new System.Drawing.Point(133, 29);
             this.nUD_NoManLower.Margin = new System.Windows.Forms.Padding(2);
             this.nUD_NoManLower.Maximum = new decimal(new int[] {
             99,
@@ -675,7 +730,7 @@
             // 
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(5, 21);
+            this.label1.Location = new System.Drawing.Point(14, 30);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(93, 13);
@@ -692,7 +747,7 @@
             // 
             // splitContainer2.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.dgv_ET_Pairs);
+            this.splitContainer2.Panel1.Controls.Add(this.dgv_ET_Relations);
             // 
             // splitContainer2.Panel2
             // 
@@ -702,20 +757,20 @@
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 0;
             // 
-            // dgv_ET_Pairs
+            // dgv_ET_Relations
             // 
-            this.dgv_ET_Pairs.AllowUserToAddRows = false;
-            this.dgv_ET_Pairs.AllowUserToDeleteRows = false;
-            this.dgv_ET_Pairs.AllowUserToOrderColumns = true;
-            this.dgv_ET_Pairs.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_ET_Pairs.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_ET_Pairs.Location = new System.Drawing.Point(0, 0);
-            this.dgv_ET_Pairs.Margin = new System.Windows.Forms.Padding(2);
-            this.dgv_ET_Pairs.Name = "dgv_ET_Pairs";
-            this.dgv_ET_Pairs.ReadOnly = true;
-            this.dgv_ET_Pairs.RowTemplate.Height = 28;
-            this.dgv_ET_Pairs.Size = new System.Drawing.Size(710, 508);
-            this.dgv_ET_Pairs.TabIndex = 0;
+            this.dgv_ET_Relations.AllowUserToAddRows = false;
+            this.dgv_ET_Relations.AllowUserToDeleteRows = false;
+            this.dgv_ET_Relations.AllowUserToOrderColumns = true;
+            this.dgv_ET_Relations.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_ET_Relations.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_ET_Relations.Location = new System.Drawing.Point(0, 0);
+            this.dgv_ET_Relations.Margin = new System.Windows.Forms.Padding(2);
+            this.dgv_ET_Relations.Name = "dgv_ET_Relations";
+            this.dgv_ET_Relations.ReadOnly = true;
+            this.dgv_ET_Relations.RowTemplate.Height = 28;
+            this.dgv_ET_Relations.Size = new System.Drawing.Size(710, 508);
+            this.dgv_ET_Relations.TabIndex = 0;
             // 
             // ct_ET_Histogram
             // 
@@ -737,6 +792,19 @@
             this.ct_ET_Histogram.TabIndex = 0;
             this.ct_ET_Histogram.Text = "chart1";
             // 
+            // cb_Graph_lowerThreshold
+            // 
+            this.cb_Graph_lowerThreshold.AutoSize = true;
+            this.cb_Graph_lowerThreshold.Checked = true;
+            this.cb_Graph_lowerThreshold.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_Graph_lowerThreshold.Location = new System.Drawing.Point(25, 53);
+            this.cb_Graph_lowerThreshold.Name = "cb_Graph_lowerThreshold";
+            this.cb_Graph_lowerThreshold.Size = new System.Drawing.Size(103, 17);
+            this.cb_Graph_lowerThreshold.TabIndex = 28;
+            this.cb_Graph_lowerThreshold.Text = "Show Threshold";
+            this.cb_Graph_lowerThreshold.UseVisualStyleBackColor = true;
+            this.cb_Graph_lowerThreshold.CheckedChanged += new System.EventHandler(this.cb_Graph_lowerThreshold_CheckedChanged);
+            // 
             // ExperimentTheoreticalComparison
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -754,7 +822,6 @@
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer3.Panel1.ResumeLayout(false);
             this.splitContainer3.Panel2.ResumeLayout(false);
-            this.splitContainer3.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
             this.splitContainer4.Panel1.ResumeLayout(false);
@@ -768,6 +835,10 @@
             this.splitContainer5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Peak_List)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_peakList)).EndInit();
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakWidthBase)).EndInit();
@@ -789,7 +860,7 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Pairs)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_ET_Relations)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_ET_Histogram)).EndInit();
             this.ResumeLayout(false);
 
@@ -835,8 +906,14 @@
         private System.Windows.Forms.CheckBox cb_TDBUpsm;
         private System.Windows.Forms.TextBox tb_max_accepted_fdr;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.CheckBox cb_Graph_lowerThreshold;
-        private System.Windows.Forms.DataGridView dgv_ET_Pairs;
+        private System.Windows.Forms.DataGridView dgv_ET_Relations;
         private System.Windows.Forms.CheckBox cb_view_decoy_histogram;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.TextBox tb_relationTableFilter;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.TextBox tb_peakTableFilter;
+        private System.Windows.Forms.CheckBox cb_Graph_lowerThreshold;
     }
 }

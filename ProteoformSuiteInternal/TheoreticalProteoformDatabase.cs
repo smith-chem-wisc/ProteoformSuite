@@ -47,7 +47,11 @@ namespace ProteoformSuiteInternal
                 return;
 
             //Clear out data from potential previous runs
-            SaveState.lollipop.proteoform_community.decoy_proteoforms.Clear();
+            foreach(ProteoformCommunity community in SaveState.lollipop.decoy_proteoform_communities.Values)
+            {
+                community.theoretical_proteoforms = new TheoreticalProteoform[0];
+
+            }
             theoretical_proteins.Clear();
 
             //Read the UniProt-XML and ptmlist
@@ -76,20 +80,15 @@ namespace ProteoformSuiteInternal
 
             SaveState.lollipop.modification_ranks = rank_mods(theoretical_proteins, variableModifications, all_mods_with_mass);
 
-            // Generate all ptm sets if not done already
-            if (all_possible_ptmsets.Count == 0)
+            //Generate all two-member sets and all three-member (or greater) sets of the same modification (three-member combinitorics gets out of hand for assignment)
+            all_possible_ptmsets = PtmCombos.generate_all_ptmsets(Math.Min(2, SaveState.lollipop.max_ptms), all_mods_with_mass, SaveState.lollipop.modification_ranks, SaveState.lollipop.mod_rank_first_quartile / 2).ToList();
+            for (int i = 3; i < SaveState.lollipop.max_ptms + 1; i++)
             {
-                //Generate all two-member sets and all three-member (or greater) sets of the same modification (three-member combinitorics gets out of hand for assignment)
-                all_possible_ptmsets = PtmCombos.generate_all_ptmsets(Math.Min(2, SaveState.lollipop.max_ptms), all_mods_with_mass, SaveState.lollipop.modification_ranks, SaveState.lollipop.mod_rank_first_quartile / 2).ToList();
-                for (int i = 3; i < SaveState.lollipop.max_ptms + 1; i++)
-                {
-                    all_possible_ptmsets.AddRange(all_mods_with_mass.Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), SaveState.lollipop.modification_ranks, SaveState.lollipop.mod_rank_first_quartile / 2)));
-                }
+                all_possible_ptmsets.AddRange(all_mods_with_mass.Select(m => new PtmSet(Enumerable.Repeat(new Ptm(-1, m), i).ToList(), SaveState.lollipop.modification_ranks, SaveState.lollipop.mod_rank_first_quartile / 2)));
             }
 
             //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
-            if (possible_ptmset_dictionary.Count == 0)
-                possible_ptmset_dictionary = make_ptmset_dictionary();
+            possible_ptmset_dictionary = make_ptmset_dictionary();
 
             expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
             aaIsotopeMassList = new AminoAcidMasses(SaveState.lollipop.carbamidomethylation, SaveState.lollipop.natural_lysine_isotope_abundance, SaveState.lollipop.neucode_light_lysine, SaveState.lollipop.neucode_heavy_lysine).AA_Masses;
@@ -101,8 +100,11 @@ namespace ProteoformSuiteInternal
 
             if (SaveState.lollipop.combine_theoretical_proteoforms_byMass)
             {
-                SaveState.lollipop.proteoform_community.theoretical_proteoforms = group_proteoforms_by_mass(SaveState.lollipop.proteoform_community.theoretical_proteoforms);
-                SaveState.lollipop.proteoform_community.decoy_proteoforms = SaveState.lollipop.proteoform_community.decoy_proteoforms.ToDictionary(kv => kv.Key, kv => group_proteoforms_by_mass(kv.Value) as TheoreticalProteoform[]);
+                SaveState.lollipop.target_proteoform_community.theoretical_proteoforms = group_proteoforms_by_mass(SaveState.lollipop.target_proteoform_community.theoretical_proteoforms);
+                foreach (ProteoformCommunity community in SaveState.lollipop.decoy_proteoform_communities.Values)
+                {
+                   community.theoretical_proteoforms = group_proteoforms_by_mass(community.theoretical_proteoforms);
+                }
             }
         }
 
@@ -278,30 +280,35 @@ namespace ProteoformSuiteInternal
         {
             List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
             Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.Accession, theoretical_proteoforms, -100, variableModifications));
-            SaveState.lollipop.proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
+            SaveState.lollipop.target_proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
         }
 
         private void process_decoys(ProteinWithGoTerms[] expanded_proteins, IEnumerable<ModificationWithMass> variableModifications)
         {
+            SaveState.lollipop.decoy_proteoform_communities.Clear();
             Parallel.For(0, SaveState.lollipop.decoy_databases, decoyNumber =>
             {
-                List<TheoreticalProteoform> decoy_proteoforms = new List<TheoreticalProteoform>();
-                string giantProtein = GetOneGiantProtein(expanded_proteins, SaveState.lollipop.methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
-                string decoy_database_name = SaveState.lollipop.decoy_database_name_prefix + decoyNumber;
-                ProteinWithGoTerms[] shuffled_proteins = new ProteinWithGoTerms[expanded_proteins.Length];
-                Array.Copy(expanded_proteins, shuffled_proteins, expanded_proteins.Length);
-                new Random().Shuffle(shuffled_proteins); //randomize order of protein array
+            List<TheoreticalProteoform> decoy_proteoforms = new List<TheoreticalProteoform>();
+            string giantProtein = GetOneGiantProtein(expanded_proteins, SaveState.lollipop.methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
+            ProteinWithGoTerms[] shuffled_proteins = new ProteinWithGoTerms[expanded_proteins.Length];
+            Array.Copy(expanded_proteins, shuffled_proteins, expanded_proteins.Length);
+            new Random().Shuffle(shuffled_proteins); //randomize order of protein array
 
-                int prevLength = 0;
-                Parallel.ForEach(shuffled_proteins, p =>
-                {
-                    string hunk = giantProtein.Substring(prevLength, p.BaseSequence.Length);
-                    prevLength += p.BaseSequence.Length;
-                    EnterTheoreticalProteformFamily(hunk, p, p.Accession + "_DECOY_" + decoyNumber, decoy_proteoforms, decoyNumber, variableModifications);
-                });
+            int prevLength = 0;
+            Parallel.ForEach(shuffled_proteins, p =>
+            {
+                string hunk = giantProtein.Substring(prevLength, p.BaseSequence.Length);
+                prevLength += p.BaseSequence.Length;
+                EnterTheoreticalProteformFamily(hunk, p, p.Accession + "_DECOY_" + decoyNumber, decoy_proteoforms, decoyNumber, variableModifications);
+            });
 
-                lock (SaveState.lollipop.proteoform_community.decoy_proteoforms)
-                    SaveState.lollipop.proteoform_community.decoy_proteoforms.Add(decoy_database_name, decoy_proteoforms.ToArray());
+            lock (SaveState.lollipop.decoy_proteoform_communities)
+            {
+                SaveState.lollipop.decoy_proteoform_communities.Add(SaveState.lollipop.decoy_community_name_prefix + decoyNumber, new ProteoformCommunity());
+                SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + decoyNumber].theoretical_proteoforms = decoy_proteoforms.ToArray();
+                SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + decoyNumber].experimental_proteoforms =
+                SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
+            }
             });
         }
 

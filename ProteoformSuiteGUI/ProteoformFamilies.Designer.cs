@@ -48,7 +48,6 @@
             this.cmbx_colorScheme = new System.Windows.Forms.ComboBox();
             this.lb_dgv_selection = new System.Windows.Forms.Label();
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
-            this.pictureBox_familyDisplay = new System.Windows.Forms.PictureBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
             this.bt_merge_orphans_by_RT = new System.Windows.Forms.Button();
@@ -85,6 +84,10 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.Families_update = new System.Windows.Forms.Button();
+            this.tb_identified_experimentals = new System.Windows.Forms.TextBox();
+            this.tb_identified_decoys = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -94,7 +97,6 @@
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_main)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_familyDisplay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
@@ -155,7 +157,6 @@
             this.splitContainer2.Panel2.Controls.Add(this.cmbx_colorScheme);
             this.splitContainer2.Panel2.Controls.Add(this.lb_dgv_selection);
             this.splitContainer2.Panel2.Controls.Add(this.cmbx_tableSelector);
-            this.splitContainer2.Panel2.Controls.Add(this.pictureBox_familyDisplay);
             this.splitContainer2.Size = new System.Drawing.Size(1184, 369);
             this.splitContainer2.SplitterDistance = 685;
             this.splitContainer2.TabIndex = 5;
@@ -325,14 +326,6 @@
             this.cmbx_tableSelector.TabIndex = 5;
             this.cmbx_tableSelector.SelectedIndexChanged += new System.EventHandler(this.cmbx_tableSelector_SelectedIndexChanged);
             // 
-            // pictureBox_familyDisplay
-            // 
-            this.pictureBox_familyDisplay.Location = new System.Drawing.Point(270, 0);
-            this.pictureBox_familyDisplay.Name = "pictureBox_familyDisplay";
-            this.pictureBox_familyDisplay.Size = new System.Drawing.Size(221, 195);
-            this.pictureBox_familyDisplay.TabIndex = 4;
-            this.pictureBox_familyDisplay.TabStop = false;
-            // 
             // splitContainer3
             // 
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -345,6 +338,10 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.Controls.Add(this.label13);
+            this.splitContainer3.Panel2.Controls.Add(this.label5);
+            this.splitContainer3.Panel2.Controls.Add(this.tb_identified_decoys);
+            this.splitContainer3.Panel2.Controls.Add(this.tb_identified_experimentals);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
             this.splitContainer3.Panel2.Controls.Add(this.btn_inclusion_list_all_families);
@@ -744,6 +741,48 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
+            // tb_identified_experimentals
+            // 
+            this.tb_identified_experimentals.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.tb_identified_experimentals.Location = new System.Drawing.Point(286, 345);
+            this.tb_identified_experimentals.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_identified_experimentals.Name = "tb_identified_experimentals";
+            this.tb_identified_experimentals.ReadOnly = true;
+            this.tb_identified_experimentals.Size = new System.Drawing.Size(86, 20);
+            this.tb_identified_experimentals.TabIndex = 63;
+            // 
+            // tb_identified_decoys
+            // 
+            this.tb_identified_decoys.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.tb_identified_decoys.Location = new System.Drawing.Point(286, 369);
+            this.tb_identified_decoys.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_identified_decoys.Name = "tb_identified_decoys";
+            this.tb_identified_decoys.ReadOnly = true;
+            this.tb_identified_decoys.Size = new System.Drawing.Size(86, 20);
+            this.tb_identified_decoys.TabIndex = 64;
+            // 
+            // label5
+            // 
+            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(376, 348);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(118, 13);
+            this.label5.TabIndex = 65;
+            this.label5.Text = "Identified Experimentals";
+            // 
+            // label13
+            // 
+            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(374, 372);
+            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(89, 13);
+            this.label13.TabIndex = 66;
+            this.label13.Text = "Identified Decoys";
+            // 
             // ProteoformFamilies
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -764,7 +803,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_main)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox_familyDisplay)).EndInit();
             this.splitContainer3.Panel1.ResumeLayout(false);
             this.splitContainer3.Panel2.ResumeLayout(false);
             this.splitContainer3.Panel2.PerformLayout();
@@ -789,7 +827,6 @@
         private System.Windows.Forms.DataGridView dgv_main;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private System.Windows.Forms.DataGridView dgv_proteoform_family_members;
-        private System.Windows.Forms.PictureBox pictureBox_familyDisplay;
         private System.Windows.Forms.Button btn_buildSelectedFamilies;
         private System.Windows.Forms.Button btn_buildAllFamilies;
         private System.Windows.Forms.Label label_tempFileFolder;
@@ -840,5 +877,9 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox tb_likelyCleavages;
         private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox tb_identified_decoys;
+        private System.Windows.Forms.TextBox tb_identified_experimentals;
     }
 }
