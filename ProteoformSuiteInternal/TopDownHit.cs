@@ -17,7 +17,7 @@ namespace ProteoformSuiteInternal
         public string sequence { get; set; } 
         public int start_index { get; set; } //position one based
         public int stop_index { get; set; } //position one based
-        public List<Ptm> ptm_list { get; set; } = new List<Ptm>(); //position one based
+        public List<Ptm> ptm_list { get; set; } = new List<Ptm>(); //position one based. this list is empty if unmodified.
         public double theoretical_mass { get; set; }
         public string accession { get; set; }
         public string name { get; set; }
@@ -53,6 +53,11 @@ namespace ProteoformSuiteInternal
             this.filename = filename;
             this.targeted = targeted;
             this.score = score;
+        }
+        
+        public TopDownHit()
+        {
+
         }
 
         public bool same_ptm_hits(TopDownHit root)
