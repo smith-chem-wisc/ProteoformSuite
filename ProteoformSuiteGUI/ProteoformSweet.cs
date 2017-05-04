@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using UsefulProteomicsDatabases;
 
 namespace ProteoformSuiteGUI
 {
@@ -37,7 +39,7 @@ namespace ProteoformSuiteGUI
         SaveFileDialog saveResults = new SaveFileDialog();
         SaveFileDialog saveExcelDialog = new SaveFileDialog();
         List<ISweetForm> forms;
-        Form current_form;
+        ISweetForm current_form;
 
         #endregion Private Fields
 
@@ -92,7 +94,7 @@ namespace ProteoformSuiteGUI
         {
             form.Show();
             form.WindowState = FormWindowState.Maximized;
-            current_form = form;
+            current_form = form as ISweetForm;
         }
 
         #endregion Private Setup Methods
@@ -129,7 +131,7 @@ namespace ProteoformSuiteGUI
         {
             showForm(aggregatedProteoforms);
             if (run_when_form_loads && aggregatedProteoforms.ReadyToRunTheGamut()) aggregatedProteoforms.RunTheGamut();
-            else if (!aggregatedProteoforms.ReadyToRunTheGamut() && SaveState.lollipop.proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
+            else if (!aggregatedProteoforms.ReadyToRunTheGamut() && SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
         }
 
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
@@ -142,7 +144,7 @@ namespace ProteoformSuiteGUI
         {
             showForm(experimentalTheoreticalComparison);
             if (run_when_form_loads && experimentalTheoreticalComparison.ReadyToRunTheGamut()) experimentalTheoreticalComparison.RunTheGamut();
-            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
+            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.target_proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
             else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
@@ -251,8 +253,22 @@ namespace ProteoformSuiteGUI
             clear_lists();
             if (!SaveState.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory))
             {
-                MessageBox.Show("Please list at least one protein database. Also, please make sure it has modifications listed (mzLibXml format) or to include and at least one PTM list.");
-                return false;
+                if (SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
+                {
+                    MessageBox.Show("Please list at least one protein database.", "Full Run");
+                    return false;
+                }
+                else
+                {
+                    DialogResult d = MessageBox.Show("No PTM list is listed.\n\nWill now download the default PTM list from UniProt and use it for the Full Run.", "Full Run", MessageBoxButtons.OKCancel);
+                    if (d == DialogResult.OK)
+                    {
+                        SaveState.lollipop.enter_uniprot_ptmlist();
+                        loadDeconvolutionResults.RunTheGamut();
+                    }
+                    else return false;
+                }
+                
             }
 
             Cursor = Cursors.WaitCursor;
@@ -274,56 +290,21 @@ namespace ProteoformSuiteGUI
 
         private void export_table()
         {
-            if (current_form == rawExperimentalComponents)
+            List<DataGridView> grid_views = current_form.GetDGVs();
+            if (grid_views != null)
             {
-                SaveExcelFile(new List<DataGridView>() { rawExperimentalComponents.GetDGV() }, "raw_experimental_components_table.xlsx");
+                SaveExcelFile(grid_views, (current_form as Form).Name + "_table.xlsx");
             }
-
-            if (current_form == neuCodePairs)
+            else
             {
-                SaveExcelFile(new List<DataGridView>() { neuCodePairs.GetDGV() }, "neucode_pairs_table.xlsx");
-            }
-
-            if (current_form == aggregatedProteoforms)
-            {
-                SaveExcelFile(new List<DataGridView>() { aggregatedProteoforms.GetDGV() }, "aggregated_proteoforms_table.xlsx");
-            }
-
-            if (current_form == theoreticalDatabase)
-            {
-                SaveExcelFile(new List<DataGridView>() { theoreticalDatabase.GetDGV() }, "theoretical_database_table.xlsx");
-            }
-
-            if (current_form == experimentalTheoreticalComparison)
-            {
-                SaveExcelFile(new List<DataGridView>() { experimentalTheoreticalComparison.GetETRelationsDGV(), experimentalTheoreticalComparison.GetETPeaksDGV() }, "experimental_theoretical_comparison_table.xlsx");
-            }
-
-            if (current_form == experimentExperimentComparison)
-            {
-                SaveExcelFile(new List<DataGridView>() { experimentExperimentComparison.GetEERelationDGV(), experimentExperimentComparison.GetEEPeaksDGV() }, "experiment_experiment_comparison_table.xlsx");
-            }
-
-            if (current_form == topDown)
-            {
-                SaveExcelFile(new List<DataGridView>() { topDown.GetTopDownDGV() }, "topdown_table.xlsx" );
-            }
-
-            if (current_form == proteoformFamilies)
-            {
-                SaveExcelFile(new List<DataGridView>() { proteoformFamilies.GetDGV() }, "proteoform_families_table.xlsx");
-            }
-
-            if (current_form == quantification)
-            {
-                SaveExcelFile(new List<DataGridView>() { quantification.Get_GoTerms_DGV(), quantification.Get_quant_results_DGV() }, "quantification_table.xlsx");
+                MessageBox.Show("There is no table on this page to export. Please navigate to another page with the Results tab.");
             }
         }
 
         private void SaveExcelFile(List<DataGridView> dgvs, string filename)
         {
             saveExcelDialog.FileName = filename;
-            DialogResult dr = this.saveExcelDialog.ShowDialog();
+            DialogResult dr = saveExcelDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
                 DGVExcelWriter writer = new DGVExcelWriter();
@@ -361,22 +342,17 @@ namespace ProteoformSuiteGUI
         {
             SaveState.lollipop.raw_experimental_components.Clear();
             SaveState.lollipop.raw_neucode_pairs.Clear();
-            SaveState.lollipop.proteoform_community.experimental_proteoforms = new ExperimentalProteoform[0];
-            SaveState.lollipop.proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
+            SaveState.lollipop.target_proteoform_community = new ProteoformCommunity();
+            SaveState.lollipop.decoy_proteoform_communities.Clear();
             SaveState.lollipop.et_relations.Clear();
             SaveState.lollipop.et_peaks.Clear();
             SaveState.lollipop.ee_relations.Clear();
             SaveState.lollipop.ee_peaks.Clear();
-            SaveState.lollipop.proteoform_community.families.Clear();
             SaveState.lollipop.ed_relations.Clear();
-            SaveState.lollipop.proteoform_community.relations_in_peaks.Clear();
-            SaveState.lollipop.proteoform_community.delta_mass_peaks.Clear();
             SaveState.lollipop.ef_relations.Clear();
-            SaveState.lollipop.proteoform_community.decoy_proteoforms.Clear();
         }
 
         #endregion Public Method
-
 
     }
 }

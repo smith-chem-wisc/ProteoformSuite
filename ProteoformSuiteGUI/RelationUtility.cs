@@ -75,9 +75,9 @@ namespace ProteoformSuiteGUI
                 int rowIndex = dgv.CurrentCell.RowIndex;
 
                 if (columnIndex < 0) return;
-                string columnName = dgv.Columns[columnIndex].Name;
+                string columnName = dgv.Columns[columnIndex].HeaderText;
 
-                if (columnName == "peak_accepted")
+                if (columnName == "Peak Accepted")
                 {
                     bool acceptibilityStatus = Convert.ToBoolean(dgv.Rows[rowIndex].Cells[columnIndex].Value);
                     DeltaMassPeak selected_peak = (DeltaMassPeak)dgv.Rows[rowIndex].DataBoundItem;

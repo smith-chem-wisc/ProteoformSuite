@@ -57,10 +57,10 @@ namespace ProteoformSuiteInternal
             separate_proteoforms();
         }
 
-        public void merge_families()
+        public void merge_families(List<ProteoformFamily> families)
         {
             IEnumerable<ProteoformFamily> gene_family =
-                    from f in SaveState.lollipop.proteoform_community.families
+                    from f in families
                     from n in gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Distinct()
                     where f.gene_names.Select(g => g.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Contains(n)
                     select f;

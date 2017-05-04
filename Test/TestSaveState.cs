@@ -95,7 +95,7 @@ namespace Test
             e.ptm_set = e.linked_proteoform_references.Last().ptm_set;
             ProteoformFamily f = new ProteoformFamily(e);
             f.construct_family();
-            SaveState.lollipop.proteoform_community.families = new List<ProteoformFamily> { f };
+            SaveState.lollipop.target_proteoform_community.families = new List<ProteoformFamily> { f };
             string[] lines = ResultsSummaryGenerator.results_dataframe().Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.True(lines.Count() == 3);
             Assert.True(lines.Any(a => a.Contains("E1")));

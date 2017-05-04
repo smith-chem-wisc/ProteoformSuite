@@ -809,6 +809,7 @@ namespace Test
             t.relationships.Add(et);
             ProteoformRelation eu = new ProteoformRelation(e, u, ProteoformComparison.ExperimentalTheoretical, 0);
             DeltaMassPeak eup = new DeltaMassPeak(eu, new List<ProteoformRelation> { eu });
+            eu.Accepted = true;
             eu.peak = eup;
             eu.Accepted = true;
             eup.Accepted = true;

@@ -40,7 +40,7 @@ namespace ProteoformSuiteGUI
 
         private void updateFiguresOfMerit()
         {
-            tb_totalAggregatedProteoforms.Text = SaveState.lollipop.proteoform_community.experimental_proteoforms.Count(p => p.accepted).ToString();
+            tb_totalAggregatedProteoforms.Text = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(p => p.accepted).ToString();
         }
 
         private void nUP_mass_tolerance_ValueChanged(object sender, EventArgs e)
@@ -68,7 +68,7 @@ namespace ProteoformSuiteGUI
             {
                 RunTheGamut();
             }
-            else if (SaveState.lollipop.proteoform_community.experimental_proteoforms.Length <= 0)
+            else if (SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Length <= 0)
             {
                 MessageBox.Show("Go back and load in deconvolution results.");
             }
@@ -92,8 +92,8 @@ namespace ProteoformSuiteGUI
         private void tb_tableFilter_TextChanged(object sender, EventArgs e)
         {
             IEnumerable<object> selected_aggregates = tb_tableFilter.Text == "" ?
-                SaveState.lollipop.proteoform_community.experimental_proteoforms :
-                ExtensionMethods.filter(SaveState.lollipop.proteoform_community.experimental_proteoforms, tb_tableFilter.Text);
+                SaveState.lollipop.target_proteoform_community.experimental_proteoforms :
+                ExtensionMethods.filter(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, tb_tableFilter.Text);
 
             DisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, selected_aggregates.OfType<ExperimentalProteoform>().Select(ep => new DisplayExperimentalProteoform(ep)));
             DisplayExperimentalProteoform.FormatAggregatesTable(dgv_AggregatedProteoforms);
@@ -109,7 +109,7 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return SaveState.lollipop.proteoform_community.experimental_proteoforms.Length <= 0
+            return SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Length <= 0
                 && (SaveState.lollipop.neucode_labeled && SaveState.lollipop.raw_neucode_pairs.Count > 0 || SaveState.lollipop.raw_experimental_components.Count > 0);
         }
 
@@ -119,7 +119,7 @@ namespace ProteoformSuiteGUI
             ClearListsTablesFigures();
             SaveState.lollipop.aggregate_proteoforms(SaveState.lollipop.validate_proteoforms, SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, SaveState.lollipop.min_num_CS);
             FillTablesAndCharts();
-            if (SaveState.lollipop.neucode_labeled && SaveState.lollipop.proteoform_community.theoretical_proteoforms.Length > 0)
+            if (SaveState.lollipop.neucode_labeled && SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length > 0)
             {
                 ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.RunTheGamut();
                 ((ProteoformSweet)MdiParent).experimentExperimentComparison.RunTheGamut();
@@ -130,14 +130,14 @@ namespace ProteoformSuiteGUI
             Cursor = Cursors.Default;
         }
 
-        public DataGridView GetDGV()
+        public List<DataGridView> GetDGVs()
         {
-            return dgv_AggregatedProteoforms;
+            return new List<DataGridView>() { dgv_AggregatedProteoforms };
         }
 
         public void FillTablesAndCharts()
         {
-            DisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, SaveState.lollipop.proteoform_community.experimental_proteoforms.Select(e => new DisplayExperimentalProteoform(e)));
+            DisplayUtility.FillDataGridView(dgv_AggregatedProteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new DisplayExperimentalProteoform(e)));
             DisplayExperimentalProteoform.FormatAggregatesTable(dgv_AggregatedProteoforms);
         }
 
