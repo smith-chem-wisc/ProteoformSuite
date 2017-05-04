@@ -853,7 +853,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tb_max_accepted_fdr;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.CheckBox cb_view_ef;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.CheckBox cb_automate_peak_acceptance;
         private System.Windows.Forms.CheckBox cb_view_decoy_histogram;
