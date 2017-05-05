@@ -101,6 +101,15 @@ namespace Test
             Assert.True(lines.Any(a => a.Contains("E1")));
         }
 
+        [Test]
+        public void saveall()
+        {
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("asdf");
+            SaveState.lollipop.qVals.Add(e.quant);
+            SaveState.lollipop.goTermNumbers.Add(new GoTermNumber(new GoTerm("id", "desc", Aspect.BiologicalProcess), 0, 0, 0, 0));
+            ResultsSummaryGenerator.save_all(TestContext.CurrentContext.TestDirectory, SaveState.time_stamp());
+        }
+
         #endregion Results Summary
 
     }
