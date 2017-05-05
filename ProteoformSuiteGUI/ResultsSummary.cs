@@ -51,6 +51,7 @@ namespace ProteoformSuiteGUI
         {
             rtb_summary.Text = "";
             tb_summarySaveFolder.Text = "";
+            SaveState.lollipop.results_folder = "";
         }
 
         public void FillTablesAndCharts()
