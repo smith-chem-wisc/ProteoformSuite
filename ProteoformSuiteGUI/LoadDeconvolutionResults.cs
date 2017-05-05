@@ -26,7 +26,9 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
+            tb_resultsFolder.Text = SaveState.lollipop.results_folder;
             rb_neucode.Checked = SaveState.lollipop.neucode_labeled;
+            ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(SaveState.lollipop.neucode_labeled);
             populate_file_lists();
         }
 
@@ -311,6 +313,18 @@ namespace ProteoformSuiteGUI
             (MdiParent as ProteoformSweet).resultsToolStripMenuItem.ShowDropDown();
             MessageBox.Show("Use the Results menu to step through processing results.\n\n" + 
                 "Load results and databases in this panel, and then proceed to Raw Experimental Components.", "Step Through Introduction.");
+        }
+
+        FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+        private void btn_browseSummarySaveFolder_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = folderBrowser.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                string temp_folder_path = folderBrowser.SelectedPath;
+                tb_resultsFolder.Text = temp_folder_path;
+                SaveState.lollipop.results_folder = temp_folder_path;
+            }
         }
 
         #endregion FULL RUN & STEP THROUGH Private Methods

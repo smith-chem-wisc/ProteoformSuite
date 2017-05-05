@@ -65,6 +65,7 @@
             this.cmbx_ratioDenominator = new System.Windows.Forms.ComboBox();
             this.cmbx_ratioNumerator = new System.Windows.Forms.ComboBox();
             this.gb_backgroundGoTerms = new System.Windows.Forms.GroupBox();
+            this.rb_detectedSampleSet = new System.Windows.Forms.RadioButton();
             this.btn_customBackgroundBrowse = new System.Windows.Forms.Button();
             this.tb_goTermCustomBackground = new System.Windows.Forms.TextBox();
             this.rb_customBackgroundSet = new System.Windows.Forms.RadioButton();
@@ -106,7 +107,6 @@
             this.nud_Offset = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.nud_sKnot_minFoldChange = new System.Windows.Forms.NumericUpDown();
-            this.rb_detectedSampleSet = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantification_results)).BeginInit();
             this.gb_quantDataDisplaySelection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).BeginInit();
@@ -221,7 +221,7 @@
             0,
             0,
             65536});
-            this.nud_bkgdShift.Location = new System.Drawing.Point(76, 26);
+            this.nud_bkgdShift.Location = new System.Drawing.Point(77, 19);
             this.nud_bkgdShift.Maximum = new decimal(new int[] {
             0,
             0,
@@ -236,10 +236,10 @@
             this.nud_bkgdShift.Size = new System.Drawing.Size(48, 20);
             this.nud_bkgdShift.TabIndex = 4;
             this.nud_bkgdShift.Value = new decimal(new int[] {
-            2,
+            18,
             0,
             0,
-            -2147483648});
+            -2147418112});
             this.nud_bkgdShift.ValueChanged += new System.EventHandler(this.nud_bkgdShift_ValueChanged);
             // 
             // ct_volcano_logFold_logP
@@ -500,6 +500,18 @@
             this.gb_backgroundGoTerms.TabStop = false;
             this.gb_backgroundGoTerms.Text = "Background GO Terms";
             // 
+            // rb_detectedSampleSet
+            // 
+            this.rb_detectedSampleSet.AutoSize = true;
+            this.rb_detectedSampleSet.Location = new System.Drawing.Point(23, 38);
+            this.rb_detectedSampleSet.Name = "rb_detectedSampleSet";
+            this.rb_detectedSampleSet.Size = new System.Drawing.Size(126, 17);
+            this.rb_detectedSampleSet.TabIndex = 19;
+            this.rb_detectedSampleSet.TabStop = true;
+            this.rb_detectedSampleSet.Text = "Detected Sample Set";
+            this.rb_detectedSampleSet.UseVisualStyleBackColor = true;
+            this.rb_detectedSampleSet.CheckedChanged += new System.EventHandler(this.rb_detectedSampleSet_CheckedChanged);
+            // 
             // btn_customBackgroundBrowse
             // 
             this.btn_customBackgroundBrowse.Enabled = false;
@@ -543,11 +555,11 @@
             this.rb_allTheoreticalProteins.UseVisualStyleBackColor = true;
             this.rb_allTheoreticalProteins.CheckedChanged += new System.EventHandler(this.rb_allTheoreticalProteins_CheckedChanged);
             // 
-            // rb_allSampleGOTerms
+            // rb_quantifiedSampleSet
             // 
             this.rb_quantifiedSampleSet.AutoSize = true;
             this.rb_quantifiedSampleSet.Location = new System.Drawing.Point(23, 19);
-            this.rb_quantifiedSampleSet.Name = "rb_allSampleGOTerms";
+            this.rb_quantifiedSampleSet.Name = "rb_quantifiedSampleSet";
             this.rb_quantifiedSampleSet.Size = new System.Drawing.Size(130, 17);
             this.rb_quantifiedSampleSet.TabIndex = 0;
             this.rb_quantifiedSampleSet.TabStop = true;
@@ -965,18 +977,6 @@
             this.nud_sKnot_minFoldChange.Size = new System.Drawing.Size(66, 20);
             this.nud_sKnot_minFoldChange.TabIndex = 0;
             this.nud_sKnot_minFoldChange.ValueChanged += new System.EventHandler(this.nud_sKnot_minFoldChange_ValueChanged);
-            // 
-            // rb_detectedSampleSet
-            // 
-            this.rb_detectedSampleSet.AutoSize = true;
-            this.rb_detectedSampleSet.Location = new System.Drawing.Point(23, 38);
-            this.rb_detectedSampleSet.Name = "rb_detectedSampleSet";
-            this.rb_detectedSampleSet.Size = new System.Drawing.Size(126, 17);
-            this.rb_detectedSampleSet.TabIndex = 19;
-            this.rb_detectedSampleSet.TabStop = true;
-            this.rb_detectedSampleSet.Text = "Detected Sample Set";
-            this.rb_detectedSampleSet.UseVisualStyleBackColor = true;
-            this.rb_detectedSampleSet.CheckedChanged += new System.EventHandler(this.rb_detectedSampleSet_CheckedChanged);
             // 
             // Quantification
             // 

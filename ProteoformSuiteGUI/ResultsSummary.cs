@@ -43,7 +43,9 @@ namespace ProteoformSuiteGUI
         }
 
         public void InitializeParameterSet()
-        { }
+        {
+            tb_summarySaveFolder.Text = SaveState.lollipop.results_folder;
+        }
 
         public void ClearListsTablesFigures()
         {
@@ -58,72 +60,34 @@ namespace ProteoformSuiteGUI
 
         #endregion Public Methods
 
+        #region Private Fields
+
         FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+
+        #endregion Private Fields
+
+        #region Private Methods
+
         private void btn_browseSummarySaveFolder_Click(object sender, EventArgs e)
         {
-            DialogResult dr = this.folderBrowser.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
+            DialogResult dr = folderBrowser.ShowDialog();
+            if (dr == DialogResult.OK)
             {
                 string temp_folder_path = folderBrowser.SelectedPath;
-                tb_summarySaveFolder.Text = temp_folder_path; //triggers TextChanged method
+                tb_summarySaveFolder.Text = temp_folder_path;
+                SaveState.lollipop.results_folder = temp_folder_path;
             }
         }
 
         private void btn_save_Click(object sender, EventArgs e)
         {
-            if (!Directory.Exists(tb_summarySaveFolder.Text)) return;
+            if (!Directory.Exists(SaveState.lollipop.results_folder)) return;
             string timestamp = SaveState.time_stamp();
-            Parallel.Invoke
-            (
-                () => save_summary(timestamp),
-                () => save_dataframe(timestamp),
-                () => save_cytoscripts(timestamp)
-            );
-            save_plots(timestamp);
+            ResultsSummaryGenerator.save_all(SaveState.lollipop.results_folder, timestamp);
+            ((ProteoformSweet)MdiParent).save_all_plots(SaveState.lollipop.results_folder, timestamp);
         }
 
-        private void save_summary(string timestamp)
-        {
-            using (StreamWriter writer = new StreamWriter(Path.Combine(tb_summarySaveFolder.Text, "summary_" + timestamp + ".txt")))
-                writer.Write(ResultsSummaryGenerator.generate_full_report());
-        }
+        #endregion Private Methods
 
-        private void save_dataframe(string timestamp)
-        {
-            using (StreamWriter writer = new StreamWriter(Path.Combine(tb_summarySaveFolder.Text, "results_" + timestamp + ".tsv")))
-                if (cb_saveDataframe.Checked)
-                    writer.Write(ResultsSummaryGenerator.results_dataframe());
-        }
-
-        private void save_plots(string timestamp)
-        {
-            if (cb_savePlots.Checked)
-                ((ProteoformSweet)MdiParent).save_all_plots(tb_summarySaveFolder.Text, timestamp);
-        }
-
-        private void save_cytoscripts(string timestamp)
-        {
-            if (cb_saveCytoScripts.Checked)
-            {
-                string message = "";
-                message += CytoscapeScript.write_cytoscape_script(SaveState.lollipop.target_proteoform_community.families, SaveState.lollipop.target_proteoform_community.families,
-                    tb_summarySaveFolder.Text, "AllFamilies_", timestamp,
-                    SaveState.lollipop.qVals.Count > 0, true, true, false,
-                    CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], 2,
-                    ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
-                message += Environment.NewLine;
-
-                foreach (GoTermNumber gtn in SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.minProteoformFDR).ToList())
-                {
-                    message += CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { gtn }, SaveState.lollipop.target_proteoform_community.families,
-                        tb_summarySaveFolder.Text, gtn.Aspect.ToString() + gtn.Description.Replace(" ", "_") + "_", timestamp,
-                        true, true, true, false,
-                        CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], 2,
-                        ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
-                    message += Environment.NewLine;
-                }
-                message += "Remember to install the package \"enhancedGraphics\" under App -> App Manager to view piechart nodes for quantitative data";
-            }
-        }
     }
 }
