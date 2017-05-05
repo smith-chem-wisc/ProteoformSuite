@@ -6,7 +6,6 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using UsefulProteomicsDatabases;
 
 namespace ProteoformSuiteGUI
 {
@@ -171,6 +170,7 @@ namespace ProteoformSuiteGUI
 
         private void resultsSummaryToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            resultsSummary.InitializeParameterSet();
             resultsSummary.create_summary();
             showForm(resultsSummary);
         }
@@ -255,17 +255,36 @@ namespace ProteoformSuiteGUI
                     if (d == DialogResult.OK)
                     {
                         SaveState.lollipop.enter_uniprot_ptmlist();
-                        loadDeconvolutionResults.RunTheGamut();
+                        if (loadDeconvolutionResults.ReadyToRunTheGamut()) loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
                     }
                     else return false;
                 }
                 
             }
 
+            if (SaveState.lollipop.results_folder == "")
+            {
+                DialogResult d = MessageBox.Show("Choose a results folder for this Full Run?", "Full Run", MessageBoxButtons.YesNoCancel);
+                if (d == DialogResult.Yes)
+                {
+                    FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
+                    DialogResult dr = folderBrowser.ShowDialog();
+                    if (dr == DialogResult.OK)
+                    {
+                        string temp_folder_path = folderBrowser.SelectedPath;
+                        SaveState.lollipop.results_folder = temp_folder_path;
+                        loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
+                    }
+                }
+                else if (d == DialogResult.Cancel) return false;
+            }
+
             Cursor = Cursors.WaitCursor;
             rawExperimentalComponents.load_raw_components(); //also loads the theoretical database, now
             if (aggregatedProteoforms.ReadyToRunTheGamut()) aggregatedProteoforms.RunTheGamut();
-            enable_neuCodeProteoformPairsToolStripMenuItem(SaveState.lollipop.neucode_labeled);
+            string timestamp = SaveState.time_stamp();
+            ResultsSummaryGenerator.save_all(SaveState.lollipop.results_folder, timestamp);
+            save_all_plots(SaveState.lollipop.results_folder, timestamp);
             Cursor = Cursors.Default;
             return true;
         }

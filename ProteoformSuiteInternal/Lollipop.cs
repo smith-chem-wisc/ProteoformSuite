@@ -962,6 +962,12 @@ namespace ProteoformSuiteInternal
 
         #endregion GO-TERMS AND GO-TERM SIGNIFICANCE
 
+        #region RESULTS Public Field
+
+        public string results_folder = "";
+
+        #endregion RESULTS Public Field
+
         #region CLEAR METHODS
 
         public void clear_et()
@@ -1014,15 +1020,16 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public void clear_families()
+        public void clear_all_families()
         {
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
             {
                 community.clear_families();
             }
         }
-    }
-    #endregion CLEAR METHODS
 
+        #endregion CLEAR METHODS
+
+    }
 }
 
