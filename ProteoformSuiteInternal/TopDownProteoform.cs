@@ -52,6 +52,26 @@ namespace ProteoformSuiteInternal
             this.lysine_count = sequence.Count(s => s == 'K');
         }
 
+        public TopDownProteoform(TopDownProteoform t) : base(t.accession)
+        {
+            this.linked_proteoform_references = new LinkedList<Proteoform>().ToList();
+            this.root = t.root;
+            this.name = t.name;
+            this.ptm_set = new PtmSet(t.ptm_set.ptm_combination);
+            this.uniprot_id = t.uniprot_id;
+            this.sequence = t.sequence;
+            this.start_index = t.start_index;
+            this.theoretical_mass = t.theoretical_mass;
+            this.stop_index = t.stop_index;
+            this.topdown_hits = t.topdown_hits;
+            this.monoisotopic_mass = t.monoisotopic_mass;
+            this.modified_mass = this.monoisotopic_mass;
+            this.accession = t.accession;
+            this.agg_RT = t.agg_RT;
+            this.targeted = t.targeted;
+            this.lysine_count = t.lysine_count;
+        }
+
 
         private void calculate_properties()
         {

@@ -60,7 +60,11 @@ namespace ProteoformSuiteGUI
                   + String.Join(", ", SaveState.lollipop.topdownReader.topdown_ptms.Select(m => m.modification.id + " at " + m.modification.motif.Motif)));
             }
             SaveState.lollipop.td_relations = SaveState.lollipop.target_proteoform_community.relate_td(SaveState.lollipop.target_proteoform_community.experimental_proteoforms.ToList(), SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.ToList(), SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Where(p => !p.targeted).ToList());
-            if (SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.ttd_match_count == 0) > 0)
+            foreach (ProteoformCommunity c in SaveState.lollipop.decoy_proteoform_communities.Values)
+            { 
+                c.relate_td(c.experimental_proteoforms.ToList(), c.theoretical_proteoforms.ToList(), c.topdown_proteoforms.Where(p => !p.targeted).ToList());
+
+            } if (SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.ttd_match_count == 0) > 0)
             {
                 MessageBox.Show("Warning: Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: "
                      + String.Join(", ", SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Where(t => t.ttd_match_count == 0).Select(t => t.accession.Split('_')[0]).Distinct()));

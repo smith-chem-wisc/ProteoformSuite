@@ -604,6 +604,10 @@ namespace ProteoformSuiteInternal
                 topdown_proteoforms.Add(new_pf);
             }
             SaveState.lollipop.target_proteoform_community.topdown_proteoforms = topdown_proteoforms.Where(p => p!= null).ToArray();
+            foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
+            {
+                community.topdown_proteoforms = SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Select(e => new TopDownProteoform(e)).ToArray();
+            }
         }
 
         #endregion TOPDOWN 
