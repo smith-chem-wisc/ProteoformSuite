@@ -107,7 +107,9 @@ namespace Test
             SaveState.lollipop = new Lollipop();
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("asdf");
             SaveState.lollipop.qVals.Add(e.quant);
-            SaveState.lollipop.goTermNumbers.Add(new GoTermNumber(new GoTerm("id", "desc", Aspect.BiologicalProcess), 0, 0, 0, 0));
+            GoTermNumber g = new GoTermNumber(new GoTerm("id", "desc", Aspect.BiologicalProcess), 0, 0, 0, 0);
+            g.by = -1;
+            SaveState.lollipop.goTermNumbers.Add(g);
             ResultsSummaryGenerator.save_all(TestContext.CurrentContext.TestDirectory, SaveState.time_stamp());
         }
 
