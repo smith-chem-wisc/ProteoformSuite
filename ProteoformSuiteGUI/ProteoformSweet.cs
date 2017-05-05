@@ -255,25 +255,25 @@ namespace ProteoformSuiteGUI
                     if (d == DialogResult.OK)
                     {
                         SaveState.lollipop.enter_uniprot_ptmlist();
-                        loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
+                        if (loadDeconvolutionResults.ReadyToRunTheGamut()) loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
                     }
                     else return false;
                 }
                 
             }
 
-            if (SaveState.lollipop.results_folder == null)
+            if (SaveState.lollipop.results_folder == "")
             {
-                DialogResult d = MessageBox.Show("Choose a results folder for this Full Run.", "Full Run", MessageBoxButtons.YesNoCancel);
-                if (d == DialogResult.OK)
+                DialogResult d = MessageBox.Show("Choose a results folder for this Full Run?", "Full Run", MessageBoxButtons.YesNoCancel);
+                if (d == DialogResult.Yes)
                 {
                     FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
                     DialogResult dr = folderBrowser.ShowDialog();
-                    if (dr == DialogResult.Yes)
+                    if (dr == DialogResult.OK)
                     {
                         string temp_folder_path = folderBrowser.SelectedPath;
                         SaveState.lollipop.results_folder = temp_folder_path;
-                        loadDeconvolutionResults.RunTheGamut(); // updates the textbox
+                        loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
                     }
                 }
                 else if (d == DialogResult.Cancel) return false;

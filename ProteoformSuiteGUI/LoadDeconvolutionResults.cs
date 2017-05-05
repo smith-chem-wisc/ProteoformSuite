@@ -29,7 +29,6 @@ namespace ProteoformSuiteGUI
             tb_resultsFolder.Text = SaveState.lollipop.results_folder;
             rb_neucode.Checked = SaveState.lollipop.neucode_labeled;
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(SaveState.lollipop.neucode_labeled);
-            populate_file_lists();
         }
 
         public List<DataGridView> GetDGVs()
@@ -38,7 +37,10 @@ namespace ProteoformSuiteGUI
         }
 
         public void ClearListsTablesFigures()
-        { }
+        {
+            SaveState.lollipop.results_folder = "";
+            tb_resultsFolder.Text = "";
+        }
 
         public bool ReadyToRunTheGamut()
         {
