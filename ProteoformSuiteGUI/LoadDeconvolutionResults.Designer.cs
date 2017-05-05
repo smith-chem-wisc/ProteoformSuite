@@ -58,12 +58,16 @@
             this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
             this.rb_standardOptions = new System.Windows.Forms.RadioButton();
             this.btn_stepThrough = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btn_browseSummarySaveFolder = new System.Windows.Forms.Button();
+            this.tb_resultsFolder = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles3)).BeginInit();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -333,7 +337,7 @@
             this.groupBox4.Controls.Add(this.rb_standardOptions);
             this.groupBox4.Location = new System.Drawing.Point(232, 569);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(218, 43);
+            this.groupBox4.Size = new System.Drawing.Size(210, 43);
             this.groupBox4.TabIndex = 35;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Load Options";
@@ -341,7 +345,7 @@
             // rb_chemicalCalibration
             // 
             this.rb_chemicalCalibration.AutoSize = true;
-            this.rb_chemicalCalibration.Location = new System.Drawing.Point(90, 17);
+            this.rb_chemicalCalibration.Location = new System.Drawing.Point(85, 17);
             this.rb_chemicalCalibration.Name = "rb_chemicalCalibration";
             this.rb_chemicalCalibration.Size = new System.Drawing.Size(120, 17);
             this.rb_chemicalCalibration.TabIndex = 37;
@@ -372,10 +376,40 @@
             this.btn_stepThrough.UseVisualStyleBackColor = true;
             this.btn_stepThrough.Click += new System.EventHandler(this.btn_stepThrough_Click);
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.btn_browseSummarySaveFolder);
+            this.groupBox2.Controls.Add(this.tb_resultsFolder);
+            this.groupBox2.Location = new System.Drawing.Point(843, 569);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(318, 43);
+            this.groupBox2.TabIndex = 38;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Full Run Save Options";
+            // 
+            // btn_browseSummarySaveFolder
+            // 
+            this.btn_browseSummarySaveFolder.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btn_browseSummarySaveFolder.Location = new System.Drawing.Point(172, 12);
+            this.btn_browseSummarySaveFolder.Name = "btn_browseSummarySaveFolder";
+            this.btn_browseSummarySaveFolder.Size = new System.Drawing.Size(130, 26);
+            this.btn_browseSummarySaveFolder.TabIndex = 33;
+            this.btn_browseSummarySaveFolder.Text = "Browse Results Folder";
+            this.btn_browseSummarySaveFolder.UseVisualStyleBackColor = true;
+            this.btn_browseSummarySaveFolder.Click += new System.EventHandler(this.btn_browseSummarySaveFolder_Click);
+            // 
+            // tb_resultsFolder
+            // 
+            this.tb_resultsFolder.Location = new System.Drawing.Point(6, 16);
+            this.tb_resultsFolder.Name = "tb_resultsFolder";
+            this.tb_resultsFolder.Size = new System.Drawing.Size(160, 20);
+            this.tb_resultsFolder.TabIndex = 30;
+            // 
             // LoadDeconvolutionResults
             // 
             this.ClientSize = new System.Drawing.Size(1362, 736);
             this.ControlBox = false;
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btn_stepThrough);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.cmb_loadTable3);
@@ -407,6 +441,8 @@
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -443,5 +479,8 @@
         private System.Windows.Forms.Label lb_filter3;
         private System.Windows.Forms.TextBox tb_filter3;
         private System.Windows.Forms.Button btn_stepThrough;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.TextBox tb_resultsFolder;
+        private System.Windows.Forms.Button btn_browseSummarySaveFolder;
     }
 }

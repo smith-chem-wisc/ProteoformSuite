@@ -30,6 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TheoreticalDatabase));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.btn_downloadUniProtPtmList = new System.Windows.Forms.Button();
             this.cb_limitLargePtmSets = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.tb_totalTheoreticalProteoforms = new System.Windows.Forms.TextBox();
@@ -59,9 +60,8 @@
             this.ckbx_Meth_Cleaved = new System.Windows.Forms.CheckBox();
             this.ckbx_Carbam = new System.Windows.Forms.CheckBox();
             this.ckbx_OxidMeth = new System.Windows.Forms.CheckBox();
-            this.dgv_Database = new System.Windows.Forms.DataGridView();
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.btn_downloadUniProtPtmList = new System.Windows.Forms.Button();
+            this.dgv_Database = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -114,12 +114,22 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitter1);
             this.splitContainer1.Panel2.Controls.Add(this.dgv_Database);
+            this.splitContainer1.Panel2.Controls.Add(this.splitter1);
             this.splitContainer1.Size = new System.Drawing.Size(1362, 741);
             this.splitContainer1.SplitterDistance = 452;
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
+            // 
+            // btn_downloadUniProtPtmList
+            // 
+            this.btn_downloadUniProtPtmList.Location = new System.Drawing.Point(156, 236);
+            this.btn_downloadUniProtPtmList.Name = "btn_downloadUniProtPtmList";
+            this.btn_downloadUniProtPtmList.Size = new System.Drawing.Size(122, 36);
+            this.btn_downloadUniProtPtmList.TabIndex = 52;
+            this.btn_downloadUniProtPtmList.Text = "Download UniProt PTM List";
+            this.btn_downloadUniProtPtmList.UseVisualStyleBackColor = true;
+            this.btn_downloadUniProtPtmList.Click += new System.EventHandler(this.btn_downloadUniProtPtmList_Click);
             // 
             // cb_limitLargePtmSets
             // 
@@ -327,6 +337,11 @@
             this.nUD_NumDecoyDBs.Name = "nUD_NumDecoyDBs";
             this.nUD_NumDecoyDBs.Size = new System.Drawing.Size(48, 20);
             this.nUD_NumDecoyDBs.TabIndex = 8;
+            this.nUD_NumDecoyDBs.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             this.nUD_NumDecoyDBs.ValueChanged += new System.EventHandler(this.nUD_NumDecoyDBs_ValueChanged);
             // 
             // label1
@@ -453,21 +468,6 @@
             this.ckbx_OxidMeth.UseVisualStyleBackColor = true;
             this.ckbx_OxidMeth.CheckedChanged += new System.EventHandler(this.ckbx_OxidMeth_CheckedChanged);
             // 
-            // dgv_Database
-            // 
-            this.dgv_Database.AllowUserToAddRows = false;
-            this.dgv_Database.AllowUserToDeleteRows = false;
-            this.dgv_Database.AllowUserToOrderColumns = true;
-            this.dgv_Database.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_Database.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_Database.Location = new System.Drawing.Point(0, 0);
-            this.dgv_Database.Margin = new System.Windows.Forms.Padding(2);
-            this.dgv_Database.Name = "dgv_Database";
-            this.dgv_Database.ReadOnly = true;
-            this.dgv_Database.RowTemplate.Height = 28;
-            this.dgv_Database.Size = new System.Drawing.Size(903, 737);
-            this.dgv_Database.TabIndex = 0;
-            // 
             // splitter1
             // 
             this.splitter1.Location = new System.Drawing.Point(0, 0);
@@ -477,15 +477,20 @@
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
             // 
-            // btn_downloadUniProtPtmList
+            // dgv_Database
             // 
-            this.btn_downloadUniProtPtmList.Location = new System.Drawing.Point(156, 236);
-            this.btn_downloadUniProtPtmList.Name = "btn_downloadUniProtPtmList";
-            this.btn_downloadUniProtPtmList.Size = new System.Drawing.Size(122, 36);
-            this.btn_downloadUniProtPtmList.TabIndex = 52;
-            this.btn_downloadUniProtPtmList.Text = "Download UniProt PTM List";
-            this.btn_downloadUniProtPtmList.UseVisualStyleBackColor = true;
-            this.btn_downloadUniProtPtmList.Click += new System.EventHandler(this.btn_downloadUniProtPtmList_Click);
+            this.dgv_Database.AllowUserToAddRows = false;
+            this.dgv_Database.AllowUserToDeleteRows = false;
+            this.dgv_Database.AllowUserToOrderColumns = true;
+            this.dgv_Database.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_Database.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_Database.Location = new System.Drawing.Point(3, 0);
+            this.dgv_Database.Margin = new System.Windows.Forms.Padding(2);
+            this.dgv_Database.Name = "dgv_Database";
+            this.dgv_Database.ReadOnly = true;
+            this.dgv_Database.RowTemplate.Height = 28;
+            this.dgv_Database.Size = new System.Drawing.Size(900, 737);
+            this.dgv_Database.TabIndex = 2;
             // 
             // TheoreticalDatabase
             // 
@@ -532,7 +537,6 @@
         private System.Windows.Forms.CheckBox ckbx_Carbam;
         private System.Windows.Forms.CheckBox ckbx_OxidMeth;
         private System.Windows.Forms.Button btn_Make_Databases;
-        private System.Windows.Forms.DataGridView dgv_Database;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown nUD_MinPeptideLength;
         private System.Windows.Forms.CheckBox ckbx_combineIdenticalSequences;
@@ -550,5 +554,6 @@
         private System.Windows.Forms.CheckBox cb_limitLargePtmSets;
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Button btn_downloadUniProtPtmList;
+        private System.Windows.Forms.DataGridView dgv_Database;
     }
 }

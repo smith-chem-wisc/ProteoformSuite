@@ -489,7 +489,7 @@ namespace Test
             Assert.True(SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Any(p => p.family != null));
             Assert.IsNotEmpty(SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].families);
             Assert.True(SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].experimental_proteoforms.Any(p => p.family != null));
-            SaveState.lollipop.clear_families();
+            SaveState.lollipop.clear_all_families();
             Assert.IsEmpty(SaveState.lollipop.target_proteoform_community.families);
             Assert.True(SaveState.lollipop.target_proteoform_community.experimental_proteoforms.All(p => p.family == null));
             Assert.IsEmpty(SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].families);
