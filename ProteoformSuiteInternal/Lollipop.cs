@@ -964,7 +964,7 @@ namespace ProteoformSuiteInternal
 
         #region RESULTS Public Field
 
-        public string results_folder;
+        public string results_folder = "";
 
         #endregion RESULTS Public Field
 
