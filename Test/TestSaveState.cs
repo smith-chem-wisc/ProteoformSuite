@@ -104,6 +104,7 @@ namespace Test
         [Test]
         public void saveall()
         {
+            SaveState.lollipop = new Lollipop();
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("asdf");
             SaveState.lollipop.qVals.Add(e.quant);
             SaveState.lollipop.goTermNumbers.Add(new GoTermNumber(new GoTerm("id", "desc", Aspect.BiologicalProcess), 0, 0, 0, 0));
