@@ -789,7 +789,6 @@
             // 
             // cmbx_nodeLayout
             // 
-            this.cmbx_nodeLayout.Enabled = false;
             this.cmbx_nodeLayout.FormattingEnabled = true;
             this.cmbx_nodeLayout.Location = new System.Drawing.Point(267, 46);
             this.cmbx_nodeLayout.Name = "cmbx_nodeLayout";

@@ -154,11 +154,9 @@ namespace ProteoformSuiteGUI
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(proteoformFamilies);
+            proteoformFamilies.initialize_every_time();
             if (proteoformFamilies.ReadyToRunTheGamut())
-            {
-                proteoformFamilies.initialize_every_time();
                 proteoformFamilies.RunTheGamut();
-            }
         }
 
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e)
