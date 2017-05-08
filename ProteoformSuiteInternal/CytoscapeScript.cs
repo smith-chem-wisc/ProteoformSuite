@@ -441,13 +441,13 @@ namespace ProteoformSuiteInternal
         
         public static Dictionary<string, List<string>> color_schemes = new Dictionary<string, List<string>>
         {
-            //Colors: exp, ptm, theo, pie
-            { color_scheme_names[0], new List<string> { "#3333FF", "#00CC00", "#FF0000", "#FFFF00" } },
-            { color_scheme_names[1], new List<string> { "#9886E8", "#97CACB", "#FF77A1", "#FFFFBE" } },
-            { color_scheme_names[2], new List<string> { "#2F5E91", "#2D6A00", "#F45512", "#916415" } },
-            { color_scheme_names[3], new List<string> { "#5338FF", "#1F8A70", "#FF6533", "#FFE11A" } },
-            { color_scheme_names[4], new List<string> { "#A8E1FF", "#B29162", "#B26276", "#FFF08C" } },
-            { color_scheme_names[5], new List<string> { "#3D8A99", "#979C9C", "#963C4B", "#F2EBC7" } }
+            //Colors: exp, ptm, theo, pie, gene
+            { color_scheme_names[0], new List<string> { "#3333FF", "#00CC00", "#FF0000", "#FFFF00", "#DC89BA" } },
+            { color_scheme_names[1], new List<string> { "#6ACCE6", "#7EC67E", "#7EC67E", "#F0EE89", "#DC89BA" } },
+            { color_scheme_names[2], new List<string> { "#2F5E91", "#2D6A00", "#F45512", "#916415", "#916415" } },
+            { color_scheme_names[3], new List<string> { "#5338FF", "#1F8A70", "#FF6533", "#FFE11A", "#FFE11A" } },
+            { color_scheme_names[4], new List<string> { "#A8E1FF", "#B29162", "#B26276", "#FFF08C", "#FFF08C" } },
+            { color_scheme_names[5], new List<string> { "#3D8A99", "#979C9C", "#963C4B", "#F2EBC7", "#F2EBC7" } }
         };
 
         public static string not_quantified = "#D3D3D3";
@@ -644,7 +644,18 @@ namespace ProteoformSuiteInternal
                             new Tuple<string, string>("#D3D3D3", experimental_notQuantified_label),
                             new Tuple<string, string>(color_schemes[color_scheme][1], modified_theoretical_label),
                             new Tuple<string, string>(color_schemes[color_scheme][2], unmodified_theoretical_label),
-                            new Tuple<string, string>(color_schemes[color_scheme][3], gene_name_label)
+                            new Tuple<string, string>(color_schemes[color_scheme].Last(), gene_name_label)
+                            //new Tuple<string, string>(color_schemes[color_scheme].Last(), transcript_name_label)
+                        });
+                    if (style.Key == "NODE_SHAPE")
+                        write_discreteMapping(writer, "string", proteoform_type_header, new List<Tuple<string, string>>()
+                        {
+                            new Tuple<string, string>("ELLIPSE", experimental_label),
+                            new Tuple<string, string>("ELLIPSE", experimental_notQuantified_label),
+                            new Tuple<string, string>("ELLIPSE", modified_theoretical_label),
+                            new Tuple<string, string>("ELLIPSE", unmodified_theoretical_label),
+                            new Tuple<string, string>("RECTANGLE", gene_name_label)
+                            //new Tuple<string, string>("DIAMOND", transcript_name_label)
                         });
                     if (style.Key == "NODE_LABEL_COLOR") write_passthrough(writer, "string", "shared name");
                     if (style.Key == "NODE_LABEL") write_passthrough(writer, "string", "name");
