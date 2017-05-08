@@ -10,44 +10,8 @@ namespace ProteoformSuiteInternal
 {
     public static class CytoscapeScript
     {
-        public static string write_cytoscape_script(List<ProteoformFamily> families, List<ProteoformFamily> all_families, 
-            string folder_path, string file_prefix, string time_stamp, 
-            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace, bool quantitative_moreOpacity,
-            string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
-            bool gene_centric_families, string prefered_gene_label)
-        {
-            return write_script(families, all_families, 
-                folder_path, file_prefix, time_stamp, 
-                quantitative, quantitative_redBorder, quantitative_boldFace, quantitative_moreOpacity, 
-                color_scheme, edge_label, node_label, node_label_position, node_position, double_rounding, 
-                gene_centric_families, prefered_gene_label);
-        }
 
-        public static string write_cytoscape_script(object[] stuff, List<ProteoformFamily> all_families, 
-            string folder_path, string file_prefix, string time_stamp, 
-            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace, bool quantitative_moreOpacity,
-            string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
-            bool gene_centric_families, string prefered_gene_label)
-        {
-            List<ProteoformFamily> families = stuff.OfType<ProteoformFamily>().ToList();
-
-            if (stuff.Length <= 0) return "No objects were selected";
-            if (families.Count <= 0 && typeof(TheoreticalProteoform).IsAssignableFrom(stuff[0].GetType()))
-                families = get_families(stuff.OfType<TheoreticalProteoform>(), all_families).Distinct().ToList();
-            if (families.Count <= 0 && typeof(GoTerm) == stuff[0].GetType())
-                families = get_families(stuff.OfType<GoTerm>(), all_families).Distinct().ToList();
-            if (families.Count <= 0 && typeof(GoTermNumber) == stuff[0].GetType())
-                families = get_families(stuff.OfType<GoTermNumber>(), all_families).Distinct().ToList();
-            if (families.Count <= 0 && typeof(QuantitativeProteoformValues).IsAssignableFrom(stuff[0].GetType()))
-                families = get_families(stuff.OfType<QuantitativeProteoformValues>(), all_families).Distinct().ToList();
-            if (families.Count <= 0) return "Selected objects were not recognized.";
-
-            return write_script(families, all_families, 
-                folder_path, file_prefix, time_stamp, 
-                quantitative, quantitative_redBorder, quantitative_boldFace, quantitative_moreOpacity, 
-                color_scheme, edge_label, node_label, node_label_position, node_position, double_rounding, 
-                gene_centric_families, prefered_gene_label);
-        }
+        #region Private Methods
 
         private static IEnumerable<ProteoformFamily> get_families(IEnumerable<TheoreticalProteoform> theoreticals, List<ProteoformFamily> all_families)
         {
@@ -85,16 +49,75 @@ namespace ProteoformSuiteInternal
                    select f;
         }
 
+        #endregion
+
+        #region CYTOSCAPE SCRIPT Fields
+
         public static string node_file_prefix = "cytoscape_nodes_";
+
         public static string edge_file_prefix = "cytoscape_edges_";
+
         public static string style_file_prefix = "cytoscape_style_";
+
         public static string script_file_prefix = "cytoscape_script_";
+
         public static string node_file_extension = ".tsv";
+
         public static string edge_file_extension = ".tsv";
+
         public static string style_file_extension = ".xml";
+
         public static string script_file_extension = ".txt";
-        private static string write_script(List<ProteoformFamily> families, List<ProteoformFamily> all_families, 
-            string folder_path, string file_prefix, string time_stamp, 
+
+        #endregion
+
+        #region CYTOSCAPE SCRIPT Public Methods
+
+        public static string write_cytoscape_script(List<ProteoformFamily> families, List<ProteoformFamily> all_families,
+            string folder_path, string file_prefix, string time_stamp,
+            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace, bool quantitative_moreOpacity,
+            string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
+            bool gene_centric_families, string prefered_gene_label)
+        {
+            return write_script(families, all_families,
+                folder_path, file_prefix, time_stamp,
+                quantitative, quantitative_redBorder, quantitative_boldFace, quantitative_moreOpacity,
+                color_scheme, edge_label, node_label, node_label_position, node_position, double_rounding,
+                gene_centric_families, prefered_gene_label);
+        }
+
+        public static string write_cytoscape_script(object[] stuff, List<ProteoformFamily> all_families,
+            string folder_path, string file_prefix, string time_stamp,
+            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace, bool quantitative_moreOpacity,
+            string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
+            bool gene_centric_families, string prefered_gene_label)
+        {
+            List<ProteoformFamily> families = stuff.OfType<ProteoformFamily>().ToList();
+
+            if (stuff.Length <= 0) return "No objects were selected";
+            if (families.Count <= 0 && typeof(TheoreticalProteoform).IsAssignableFrom(stuff[0].GetType()))
+                families = get_families(stuff.OfType<TheoreticalProteoform>(), all_families).Distinct().ToList();
+            if (families.Count <= 0 && typeof(GoTerm) == stuff[0].GetType())
+                families = get_families(stuff.OfType<GoTerm>(), all_families).Distinct().ToList();
+            if (families.Count <= 0 && typeof(GoTermNumber) == stuff[0].GetType())
+                families = get_families(stuff.OfType<GoTermNumber>(), all_families).Distinct().ToList();
+            if (families.Count <= 0 && typeof(QuantitativeProteoformValues).IsAssignableFrom(stuff[0].GetType()))
+                families = get_families(stuff.OfType<QuantitativeProteoformValues>(), all_families).Distinct().ToList();
+            if (families.Count <= 0) return "Selected objects were not recognized.";
+
+            return write_script(families, all_families,
+                folder_path, file_prefix, time_stamp,
+                quantitative, quantitative_redBorder, quantitative_boldFace, quantitative_moreOpacity,
+                color_scheme, edge_label, node_label, node_label_position, node_position, double_rounding,
+                gene_centric_families, prefered_gene_label);
+        }
+
+        #endregion Public Methods
+
+        #region CYTOSCAPE SCRIPT Private Methods
+
+        private static string write_script(List<ProteoformFamily> families, List<ProteoformFamily> all_families,
+            string folder_path, string file_prefix, string time_stamp,
             bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace, bool quantitative_moreOpacity,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
             bool gene_centric_families, string preferred_gene_label)
@@ -169,8 +192,11 @@ namespace ProteoformSuiteInternal
             });
         }
 
+        #endregion CYTOSCAPE SCRIPT Private Methods
 
-        //CYTOSCAPE NODE AND EDGE TABLES
+        #region CYTOSCAPE NODE AND EDGE TABLES Fields
+
+        //Headers
         public static string lysine_count_header = "lysine_ct";
         public static string delta_mass_header = "delta_mass";
         public static string edge_ptm_header = "modification";
@@ -180,14 +206,23 @@ namespace ProteoformSuiteInternal
         public static string layout_header = "layout";
         public static string piechart_header = "piechart_graphics";
         public static string significant_header = "significant_difference";
+
+        //Node types
         public static string experimental_label = "experimental";
         public static string experimental_notQuantified_label = "experimental_below_quantification_threshold";
         public static string unmodified_theoretical_label = "theoretical";
         public static string modified_theoretical_label = "modified_theoretical";
         public static string gene_name_label = "gene_name";
+
+        //Other
         public static string mock_intensity = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
-        public static string get_cytoscape_edges_tsv(List<ProteoformFamily> families, 
-            string edge_label, string node_label, int double_rounding, 
+
+        #endregion CYTOSCAPE NODE AND EDGE TABLES Public Fields
+
+        #region  CYTOSCAPE NODE AND EDGE TABLES Methods
+
+        public static string get_cytoscape_edges_tsv(List<ProteoformFamily> families,
+            string edge_label, string node_label, int double_rounding,
             IEnumerable<TheoreticalProteoform> theoreticals, bool gene_centric_families, string preferred_gene_label)
         {
             DataTable edge_table = new DataTable();
@@ -390,8 +425,11 @@ namespace ProteoformSuiteInternal
                 "\" labellist = \",\"";
         }
 
-        //CYTOSCAPE STYLES XML
-        public static string[] color_scheme_names = new string[6] 
+        #endregion  CYTOSCAPE NODE AND EDGE TABLES Methods
+
+        #region CYTOSCAPE STYLES XML Fields
+
+        public static string[] color_scheme_names = new string[6]
         {
             "Licorice",
             "Smarties",
@@ -400,10 +438,10 @@ namespace ProteoformSuiteInternal
             "Marshmallow",
             "Wisconsin Schaum Torte"
         };
-
-        //Colors: exp, ptm, theo, pie
+        
         public static Dictionary<string, List<string>> color_schemes = new Dictionary<string, List<string>>
         {
+            //Colors: exp, ptm, theo, pie
             { color_scheme_names[0], new List<string> { "#3333FF", "#00CC00", "#FF0000", "#FFFF00" } },
             { color_scheme_names[1], new List<string> { "#9886E8", "#97CACB", "#FF77A1", "#FFFFBE" } },
             { color_scheme_names[2], new List<string> { "#2F5E91", "#2D6A00", "#F45512", "#916415" } },
@@ -414,7 +452,7 @@ namespace ProteoformSuiteInternal
 
         public static string not_quantified = "#D3D3D3";
 
-        public static string[] node_label_positions = new string[3] 
+        public static string[] node_label_positions = new string[3]
         {
             "On Node",
             "Above Node",
@@ -422,8 +460,124 @@ namespace ProteoformSuiteInternal
             //"Outside Circle"
         };
 
-        public static void write_styles(List<ProteoformFamily> all_families, string styles_path, string style_name, string time_stamp, 
-            string edge_label, string node_label, string node_label_position, string color_scheme, 
+        //These are the default styles associated with the "Sample1" style in Cytoscape
+        public static Dictionary<string, string> default_styles = new Dictionary<string, string>()
+        {
+            //DEFAULT NETWORK STYLES 
+            { "NETWORK_WIDTH", "550.0"},
+            { "NETWORK_EDGE_SELECTION", "true"},
+            { "NETWORK_TITLE", ""},
+            { "NETWORK_CENTER_Z_LOCATION", "0.0"},
+            { "NETWORK_NODE_SELECTION", "true"},
+            { "NETWORK_CENTER_X_LOCATION", "0.0"},
+            { "NETWORK_HEIGHT", "400.0"},
+            { "NETWORK_BACKGROUND_PAINT", "#FFFFFF"},
+            { "NETWORK_DEPTH", "0.0"},
+            { "NETWORK_SCALE_FACTOR", "1.0"},
+            { "NETWORK_SIZE", "550.0"},
+            { "NETWORK_CENTER_Y_LOCATION", "0.0"},
+
+            //DEFAULT NODE STYLES
+            { "NODE_LABEL_POSITION", "C,C,c,0.00,0.00"},
+            { "NODE_CUSTOMPAINT_7", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_7, name=Node Custom Paint 7)"},
+            { "NODE_CUSTOMGRAPHICS_7", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
+            { "NODE_CUSTOMGRAPHICS_SIZE_1", "50.0"},
+            { "NODE_BORDER_PAINT", "#000000"},
+            { "NODE_BORDER_TRANSPARENCY", "100"},
+            { "NODE_CUSTOMGRAPHICS_POSITION_2", "C,C,c,0.00,0.00"},
+            { "NODE_CUSTOMPAINT_5", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_5, name=Node Custom Paint 5)"},
+            { "COMPOUND_NODE_PADDING", "10.0"},
+            { "COMPOUND_NODE_SHAPE", "ROUND_RECTANGLE"},
+            { "NODE_CUSTOMGRAPHICS_POSITION_9", "C,C,c,0.00,0.00"},
+            { "NODE_SHAPE", "ELLIPSE"},
+            { "NODE_CUSTOMGRAPHICS_POSITION_1", "C,C,c,0.00,0.00"},
+            { "NODE_LABEL_FONT_FACE", "Dialog.plain,plain,12"},
+            { "NODE_CUSTOMGRAPHICS_2", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
+            { "NODE_CUSTOMGRAPHICS_9", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
+            { "NODE_TRANSPARENCY", "255"},
+            { "NODE_CUSTOMGRAPHICS_POSITION_4", "C,C,c,0.00,0.00"},
+            { "NODE_CUSTOMGRAPHICS_1", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
+            { "NODE_CUSTOMGRAPHICS_SIZE_2", "50.0"},
+            { "NODE_CUSTOMPAINT_1", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_1, name=Node Custom Paint 1)"},
+            { "NODE_HEIGHT", "30.0"},
+            { "NODE_SELECTED_PAINT", "#FFFF00"},
+            { "NODE_CUSTOMGRAPHICS_8", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
+            { "NODE_CUSTOMPAINT_4", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_4, name=Node Custom Paint 4)"},
+            { "NODE_CUSTOMGRAPHICS_SIZE_7", "50.0"},
+            { "NODE_WIDTH", "70.0"},
+            { "NODE_X_LOCATION", "0.0"},
+            { "NODE_FILL_COLOR", "#CCCCFF"},
+            { "NODE_CUSTOMGRAPHICS_SIZE_5", "50.0"},
+            { "NODE_TOOLTIP", ""},
+            { "NODE_CUSTOMGRAPHICS_SIZE_6", "50.0"},
+            { "NODE_BORDER_STROKE", "SOLID"},
+            { "NODE_CUSTOMGRAPHICS_SIZE_3", "50.0"},
+            { "NODE_SELECTED", "false"},
+            { "NODE_LABEL_COLOR", "#000000"},
+            { "NODE_CUSTOMGRAPHICS_4", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
+            { "NODE_VISIBLE", "true"},
+            { "NODE_CUSTOMGRAPHICS_SIZE_9", "50.0"},
+            { "NODE_CUSTOMPAINT_9", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_9, name=Node Custom Paint 9)"},
+            { "NODE_CUSTOMGRAPHICS_3", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
+            { "NODE_Z_LOCATION", "0.0"},
+            { "NODE_LABEL_TRANSPARENCY", "255"},
+            { "NODE_LABEL_FONT_SIZE", "12"},
+            { "NODE_CUSTOMGRAPHICS_POSITION_6", "C,C,c,0.00,0.00"},
+            { "NODE_LABEL", ""},
+            { "NODE_CUSTOMGRAPHICS_POSITION_8", "C,C,c,0.00,0.00"},
+            { "NODE_CUSTOMGRAPHICS_5", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
+            { "NODE_CUSTOMGRAPHICS_POSITION_3", "C,C,c,0.00,0.00"},
+            { "NODE_PAINT", "#787878"},
+            { "NODE_NESTED_NETWORK_IMAGE_VISIBLE", "true"},
+            { "NODE_CUSTOMPAINT_8", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_8, name=Node Custom Paint 8)"},
+            { "NODE_LABEL_WIDTH", "200.0"},
+            { "NODE_DEPTH", "0.0"},
+            { "NODE_CUSTOMGRAPHICS_6", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
+            { "NODE_SIZE", "40.0"},
+            { "NODE_Y_LOCATION", "0.0"},
+            { "NODE_BORDER_WIDTH", "2.0"},
+            { "NODE_CUSTOMGRAPHICS_POSITION_7", "C,C,c,0.00,0.00"},
+            { "NODE_CUSTOMGRAPHICS_SIZE_4", "50.0"},
+            { "NODE_CUSTOMPAINT_2", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_2, name=Node Custom Paint 2)"},
+            { "NODE_CUSTOMGRAPHICS_SIZE_8", "50.0"},
+            { "NODE_CUSTOMPAINT_3", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_3, name=Node Custom Paint 3)"},
+            { "NODE_CUSTOMPAINT_6", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_3, name=Node Custom Paint 6)"},
+            { "NODE_CUSTOMGRAPHICS_POSITION_5", "C,C,c,0.00,0.00"},
+
+            //DEFAULT EDGE STYLES
+            { "EDGE_SOURCE_ARROW_SHAPE", "NONE"},
+            { "EDGE_SOURCE_ARROW_UNSELECTED_PAINT", "#000000"},
+            { "EDGE_LABEL_TRANSPARENCY", "255"},
+            { "EDGE_LINE_TYPE", "SOLID"},
+            { "EDGE_SOURCE_ARROW_SELECTED_PAINT", "#FFFF00"},
+            { "EDGE_TARGET_ARROW_SHAPE", "NONE"},
+            { "EDGE_STROKE_SELECTED_PAINT", "#FF0000"},
+            { "EDGE_LABEL", ""},
+            { "EDGE_TOOLTIP", ""},
+            { "EDGE_STROKE_UNSELECTED_PAINT", "#333333"},
+            { "EDGE_LABEL_FONT_FACE", "Dialog.plain,plain,10"},
+            { "EDGE_LABEL_FONT_SIZE", "15"},
+            { "EDGE_TARGET_ARROW_SELECTED_PAINT", "#FFFF00"},
+            { "EDGE_LABEL_COLOR", "#333333"},
+            { "EDGE_PAINT", "#323232"},
+            { "EDGE_SELECTED_PAINT", "#FF0000"},
+            { "EDGE_BEND", ""},
+            { "EDGE_TRANSPARENCY", "255"},
+            { "EDGE_SELECTED", "false"},
+            { "EDGE_UNSELECTED_PAINT", "#404040"},
+            { "EDGE_CURVED", "true"},
+            { "EDGE_LABEL_WIDTH", "200.0"},
+            { "EDGE_VISIBLE", "true"},
+            { "EDGE_WIDTH", "1.0"},
+            { "EDGE_TARGET_ARROW_UNSELECTED_PAINT", "#000000"}
+        };
+
+        #endregion CYTOSCAPE STYLES XML Public Fields
+
+        #region CYTOSCAPE STYLES XML Methods
+
+        public static void write_styles(List<ProteoformFamily> all_families, string styles_path, string style_name, string time_stamp,
+            string edge_label, string node_label, string node_label_position, string color_scheme,
             bool quantitative, bool quantitative_redBorder, bool quantitative_moreOpacity, bool quantitative_boldFace)
         {
             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
@@ -589,7 +743,7 @@ namespace ProteoformSuiteInternal
             writer.WriteStartElement("continuousMapping");
             writer.WriteAttributeString("attributeType", attribute_type);
             writer.WriteAttributeString("attributeName", attribute_name);
-            foreach(Tuple<string, string, string, string> p in points)
+            foreach (Tuple<string, string, string, string> p in points)
             {
                 writer.WriteStartElement("continuousMappingPoint");
                 writer.WriteAttributeString("lesserValue", p.Item1);
@@ -601,116 +755,7 @@ namespace ProteoformSuiteInternal
             writer.WriteEndElement();
         }
 
-        //These are the default styles associated with the "Sample1" style in Cytoscape
-        public static Dictionary<string, string> default_styles = new Dictionary<string, string>()
-        {
-            //DEFAULT NETWORK STYLES 
-            { "NETWORK_WIDTH", "550.0"},
-            { "NETWORK_EDGE_SELECTION", "true"},
-            { "NETWORK_TITLE", ""},
-            { "NETWORK_CENTER_Z_LOCATION", "0.0"},
-            { "NETWORK_NODE_SELECTION", "true"},
-            { "NETWORK_CENTER_X_LOCATION", "0.0"},
-            { "NETWORK_HEIGHT", "400.0"},
-            { "NETWORK_BACKGROUND_PAINT", "#FFFFFF"},
-            { "NETWORK_DEPTH", "0.0"},
-            { "NETWORK_SCALE_FACTOR", "1.0"},
-            { "NETWORK_SIZE", "550.0"},
-            { "NETWORK_CENTER_Y_LOCATION", "0.0"},
+        #endregion CYTOSCAPE STYLES XML Methods
 
-            //DEFAULT NODE STYLES
-            { "NODE_LABEL_POSITION", "C,C,c,0.00,0.00"},
-            { "NODE_CUSTOMPAINT_7", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_7, name=Node Custom Paint 7)"},
-            { "NODE_CUSTOMGRAPHICS_7", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
-            { "NODE_CUSTOMGRAPHICS_SIZE_1", "50.0"},
-            { "NODE_BORDER_PAINT", "#000000"},
-            { "NODE_BORDER_TRANSPARENCY", "100"},
-            { "NODE_CUSTOMGRAPHICS_POSITION_2", "C,C,c,0.00,0.00"},
-            { "NODE_CUSTOMPAINT_5", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_5, name=Node Custom Paint 5)"},
-            { "COMPOUND_NODE_PADDING", "10.0"},
-            { "COMPOUND_NODE_SHAPE", "ROUND_RECTANGLE"},
-            { "NODE_CUSTOMGRAPHICS_POSITION_9", "C,C,c,0.00,0.00"},
-            { "NODE_SHAPE", "ELLIPSE"},
-            { "NODE_CUSTOMGRAPHICS_POSITION_1", "C,C,c,0.00,0.00"},
-            { "NODE_LABEL_FONT_FACE", "Dialog.plain,plain,12"},
-            { "NODE_CUSTOMGRAPHICS_2", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
-            { "NODE_CUSTOMGRAPHICS_9", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
-            { "NODE_TRANSPARENCY", "255"},
-            { "NODE_CUSTOMGRAPHICS_POSITION_4", "C,C,c,0.00,0.00"},
-            { "NODE_CUSTOMGRAPHICS_1", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
-            { "NODE_CUSTOMGRAPHICS_SIZE_2", "50.0"},
-            { "NODE_CUSTOMPAINT_1", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_1, name=Node Custom Paint 1)"},
-            { "NODE_HEIGHT", "30.0"},
-            { "NODE_SELECTED_PAINT", "#FFFF00"},
-            { "NODE_CUSTOMGRAPHICS_8", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
-            { "NODE_CUSTOMPAINT_4", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_4, name=Node Custom Paint 4)"},
-            { "NODE_CUSTOMGRAPHICS_SIZE_7", "50.0"},
-            { "NODE_WIDTH", "70.0"},
-            { "NODE_X_LOCATION", "0.0"},
-            { "NODE_FILL_COLOR", "#CCCCFF"},
-            { "NODE_CUSTOMGRAPHICS_SIZE_5", "50.0"},
-            { "NODE_TOOLTIP", ""},
-            { "NODE_CUSTOMGRAPHICS_SIZE_6", "50.0"},
-            { "NODE_BORDER_STROKE", "SOLID"},
-            { "NODE_CUSTOMGRAPHICS_SIZE_3", "50.0"},
-            { "NODE_SELECTED", "false"},
-            { "NODE_LABEL_COLOR", "#000000"},
-            { "NODE_CUSTOMGRAPHICS_4", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
-            { "NODE_VISIBLE", "true"},
-            { "NODE_CUSTOMGRAPHICS_SIZE_9", "50.0"},
-            { "NODE_CUSTOMPAINT_9", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_9, name=Node Custom Paint 9)"},
-            { "NODE_CUSTOMGRAPHICS_3", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
-            { "NODE_Z_LOCATION", "0.0"},
-            { "NODE_LABEL_TRANSPARENCY", "255"},
-            { "NODE_LABEL_FONT_SIZE", "12"},
-            { "NODE_CUSTOMGRAPHICS_POSITION_6", "C,C,c,0.00,0.00"},
-            { "NODE_LABEL", ""},
-            { "NODE_CUSTOMGRAPHICS_POSITION_8", "C,C,c,0.00,0.00"},
-            { "NODE_CUSTOMGRAPHICS_5", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
-            { "NODE_CUSTOMGRAPHICS_POSITION_3", "C,C,c,0.00,0.00"},
-            { "NODE_PAINT", "#787878"},
-            { "NODE_NESTED_NETWORK_IMAGE_VISIBLE", "true"},
-            { "NODE_CUSTOMPAINT_8", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_8, name=Node Custom Paint 8)"},
-            { "NODE_LABEL_WIDTH", "200.0"},
-            { "NODE_DEPTH", "0.0"},
-            { "NODE_CUSTOMGRAPHICS_6", "org.cytoscape.ding.customgraphics.NullCustomGraphics,0,[ Remove Graphics ],"},
-            { "NODE_SIZE", "40.0"},
-            { "NODE_Y_LOCATION", "0.0"},
-            { "NODE_BORDER_WIDTH", "2.0"},
-            { "NODE_CUSTOMGRAPHICS_POSITION_7", "C,C,c,0.00,0.00"},
-            { "NODE_CUSTOMGRAPHICS_SIZE_4", "50.0"},
-            { "NODE_CUSTOMPAINT_2", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_2, name=Node Custom Paint 2)"},
-            { "NODE_CUSTOMGRAPHICS_SIZE_8", "50.0"},
-            { "NODE_CUSTOMPAINT_3", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_3, name=Node Custom Paint 3)"},
-            { "NODE_CUSTOMPAINT_6", "DefaultVisualizableVisualProperty(id=NODE_CUSTOMPAINT_3, name=Node Custom Paint 6)"},
-            { "NODE_CUSTOMGRAPHICS_POSITION_5", "C,C,c,0.00,0.00"},
-
-            //DEFAULT EDGE STYLES
-            { "EDGE_SOURCE_ARROW_SHAPE", "NONE"},
-            { "EDGE_SOURCE_ARROW_UNSELECTED_PAINT", "#000000"},
-            { "EDGE_LABEL_TRANSPARENCY", "255"},
-            { "EDGE_LINE_TYPE", "SOLID"},
-            { "EDGE_SOURCE_ARROW_SELECTED_PAINT", "#FFFF00"},
-            { "EDGE_TARGET_ARROW_SHAPE", "NONE"},
-            { "EDGE_STROKE_SELECTED_PAINT", "#FF0000"},
-            { "EDGE_LABEL", ""},
-            { "EDGE_TOOLTIP", ""},
-            { "EDGE_STROKE_UNSELECTED_PAINT", "#333333"},
-            { "EDGE_LABEL_FONT_FACE", "Dialog.plain,plain,10"},
-            { "EDGE_LABEL_FONT_SIZE", "15"},
-            { "EDGE_TARGET_ARROW_SELECTED_PAINT", "#FFFF00"},
-            { "EDGE_LABEL_COLOR", "#333333"},
-            { "EDGE_PAINT", "#323232"},
-            { "EDGE_SELECTED_PAINT", "#FF0000"},
-            { "EDGE_BEND", ""},
-            { "EDGE_TRANSPARENCY", "255"},
-            { "EDGE_SELECTED", "false"},
-            { "EDGE_UNSELECTED_PAINT", "#404040"},
-            { "EDGE_CURVED", "true"},
-            { "EDGE_LABEL_WIDTH", "200.0"},
-            { "EDGE_VISIBLE", "true"},
-            { "EDGE_WIDTH", "1.0"},
-            { "EDGE_TARGET_ARROW_UNSELECTED_PAINT", "#000000"}
-        };
     }
 }
