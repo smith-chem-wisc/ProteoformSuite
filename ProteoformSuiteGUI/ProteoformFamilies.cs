@@ -11,6 +11,7 @@ namespace ProteoformSuiteGUI
 {
     public partial class ProteoformFamilies : Form, ISweetForm
     {
+
         #region Public Constructor
 
         public ProteoformFamilies()
@@ -45,7 +46,7 @@ namespace ProteoformSuiteGUI
             cmbx_tableSelector.Items.AddRange(table_names);
 
             cmbx_colorScheme.SelectedIndex = 0;
-            cmbx_nodeLayout.SelectedIndex = 0;
+            cmbx_nodeLayout.SelectedIndex = 1;
             cmbx_nodeLabelPositioning.SelectedIndex = 0;
             cmbx_edgeLabel.SelectedIndex = 1;
             cmbx_nodeLabel.SelectedIndex = 1;
