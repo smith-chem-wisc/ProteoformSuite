@@ -108,7 +108,7 @@ namespace ProteoformSuiteGUI
             cb_boldLabel.Checked = true;
             cb_moreOpacity.Checked = false;
 
-            cmbx_colorScheme.SelectedIndex = 0;
+            cmbx_colorScheme.SelectedIndex = 1;
             cmbx_nodeLayout.SelectedIndex = 1;
             cmbx_nodeLabelPositioning.SelectedIndex = 0;
             cmbx_geneLabel.SelectedIndex = 1;
@@ -457,7 +457,7 @@ namespace ProteoformSuiteGUI
         private void btn_browseTempFolder_Click(object sender, EventArgs e)
         {
             DialogResult dr = this.folderBrowser.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
+            if (dr == DialogResult.OK)
             {
                 string temp_folder_path = folderBrowser.SelectedPath;
                 tb_familyBuildFolder.Text = temp_folder_path; //triggers TextChanged method

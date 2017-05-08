@@ -45,7 +45,7 @@ namespace ProteoformSuiteGUI
             cmbx_geneLabel.Items.AddRange(Lollipop.gene_name_labels.ToArray());
             cmbx_tableSelector.Items.AddRange(table_names);
 
-            cmbx_colorScheme.SelectedIndex = 0;
+            cmbx_colorScheme.SelectedIndex = 1;
             cmbx_nodeLayout.SelectedIndex = 1;
             cmbx_nodeLabelPositioning.SelectedIndex = 0;
             cmbx_edgeLabel.SelectedIndex = 1;
