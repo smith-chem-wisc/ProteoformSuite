@@ -109,7 +109,7 @@ namespace ProteoformSuiteGUI
             cb_moreOpacity.Checked = false;
 
             cmbx_colorScheme.SelectedIndex = 0;
-            cmbx_nodeLayout.SelectedIndex = 0;
+            cmbx_nodeLayout.SelectedIndex = 1;
             cmbx_nodeLabelPositioning.SelectedIndex = 0;
             cmbx_geneLabel.SelectedIndex = 1;
             cmbx_nodeLabel.SelectedIndex = 1;
