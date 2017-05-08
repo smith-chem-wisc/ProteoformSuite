@@ -562,11 +562,34 @@ namespace ProteoformSuiteInternal
 
         public string family_build_folder_path = "";
         public int deltaM_edge_display_rounding = 2;
-        public static string[] node_positioning = new string[] { "Arbitrary Circle", "Mass-Based Spiral", "Circle by Mass" }; // "Mass X-Axis" };
-        public static string[] node_labels = new string[] { "Experimental ID", "Inferred Theoretical ID" };
-        public static string[] edge_labels = new string[] { "Mass Difference", "Modification IDs (omits edges with null IDs)" };
-        public static List<string> gene_name_labels = new List<string> { "Primary, e.g. HOG1", "Ordered Locus, e.g. YLR113W" };
-        public string[] likely_cleavages = new string[] { "I", "L", "A" };
+        public static string[] node_positioning = new string[] 
+        {
+            "Arbitrary Circle",
+            "Mass-Based Spiral",
+            "Circle by Mass",
+            //"Mass X-Axis" 
+        };
+        public static string[] node_labels = new string[] 
+        {
+            "Experimental ID",
+            "Inferred Theoretical ID"
+        };
+        public static string[] edge_labels = new string[] 
+        {
+            "Mass Difference",
+            "Modification IDs (omits edges with null IDs)"
+        };
+        public static List<string> gene_name_labels = new List<string>
+        {
+            "Primary, e.g. HOG1",
+            "Ordered Locus, e.g. YLR113W"
+        };
+        public string[] likely_cleavages = new string[] 
+        {
+            "I",
+            "L",
+            "A"
+        };
 
         public void construct_target_and_decoy_families()
         {
