@@ -20,7 +20,7 @@ namespace Test
             f.construct_family();
             string node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f }, 
                 false, 
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], 2, 
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2, 
                 f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1]);
             Assert.True(node_table.Contains(CytoscapeScript.modified_theoretical_label));
             Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, Lollipop.node_labels[0], 2));
@@ -38,7 +38,7 @@ namespace Test
             f.construct_family();
             string node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f }, 
                 false, 
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], 2, 
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2, 
                 f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1]);
             Assert.True(node_table.Contains(CytoscapeScript.modified_theoretical_label));
             Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, Lollipop.node_labels[0], 2));
@@ -52,7 +52,7 @@ namespace Test
             f.construct_family();
             string node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f }, 
                 false, 
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], 2, 
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2, 
                 f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1]);
             Assert.True(node_table.Contains(CytoscapeScript.unmodified_theoretical_label));
             Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, Lollipop.node_labels[0], 2));
@@ -71,7 +71,7 @@ namespace Test
             f.construct_family();
             string node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f }, 
                 false, 
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], 2, 
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2, 
                 f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1]);
             Assert.True(node_table.Contains(CytoscapeScript.unmodified_theoretical_label));
             Assert.AreNotEqual(f.theoretical_proteoforms[0].accession, CytoscapeScript.get_proteoform_shared_name(p, Lollipop.node_labels[0], 2));
@@ -88,7 +88,7 @@ namespace Test
             f.construct_family();
             string node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f }, 
                 false, 
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], 2, 
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2, 
                 f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1]);
             Assert.True(node_table.Contains("E1"));
             Assert.True(node_table.Contains("999.99"));
@@ -102,7 +102,7 @@ namespace Test
             string message = CytoscapeScript.write_cytoscape_script(f, f, 
                 TestContext.CurrentContext.TestDirectory, "", "test", 
                 false, false, false, false, 
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], 2, 
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2, 
                 false, Lollipop.gene_name_labels[1]);
             Assert.True(message.Contains("Error"));
         }
@@ -126,7 +126,7 @@ namespace Test
             string message = CytoscapeScript.write_cytoscape_script(f, f, 
                 TestContext.CurrentContext.TestDirectory, "", "test", 
                 false, false, false, false, 
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], 2, 
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2, 
                 false, Lollipop.gene_name_labels[1]);
             Assert.True(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.script_file_prefix + "test" + CytoscapeScript.script_file_extension)));
             Assert.True(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.style_file_prefix + "test" + CytoscapeScript.style_file_extension)));
@@ -170,7 +170,7 @@ namespace Test
             string message = CytoscapeScript.write_cytoscape_script(f, f, 
                 "", "", "test",
                 false, false, false, false, 
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], 2, 
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2, 
                 false, Lollipop.gene_name_labels[1]);
             Assert.False(message.StartsWith("Finished"));
         }
@@ -195,7 +195,7 @@ namespace Test
             }
 
             string nodes = CytoscapeScript.get_cytoscape_nodes_tsv(community.families, false,
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], 2, 
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2, 
                 theoreticals, false, Lollipop.gene_name_labels[1]);
             lines = nodes.Split(new char[] { '\n' });
             HashSet<string> shared_pf_names_nodes = new HashSet<string>();
@@ -219,7 +219,7 @@ namespace Test
             CytoscapeScript.write_cytoscape_script(community.families.SelectMany(f => f.theoretical_proteoforms.Where(t => t.ExpandedProteinList.Select(p => p.FullName).Contains(TestProteoformFamilies.p1_fullName))).ToArray(), community.families, 
                 TestContext.CurrentContext.TestDirectory, "", "test", 
                 false, false, false, false, 
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], 2, 
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2, 
                 false, Lollipop.gene_name_labels[1]);
             string[] edge_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.edge_file_prefix + "test" + CytoscapeScript.edge_file_extension));
             HashSet<string> shared_pf_names_edges = new HashSet<string>();
@@ -253,7 +253,7 @@ namespace Test
             CytoscapeScript.write_cytoscape_script(new GoTerm[] { TestProteoformFamilies.p1_goterm }, community.families, 
                 TestContext.CurrentContext.TestDirectory, "", "test", 
                 false, false, false, false, 
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], 2, 
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2, 
                 false, Lollipop.gene_name_labels[1]);
             string[] edge_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.edge_file_prefix + "test" + CytoscapeScript.edge_file_extension));
             HashSet<string> shared_pf_names_edges = new HashSet<string>();
@@ -287,7 +287,7 @@ namespace Test
             CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { new GoTermNumber(TestProteoformFamilies.p1_goterm, 0,0,0,0) }, community.families,
                 TestContext.CurrentContext.TestDirectory, "", "test",
                 false, false, false, false,
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], 2,
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2,
                 false, Lollipop.gene_name_labels[1]);
             string[] edge_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.edge_file_prefix + "test" + CytoscapeScript.edge_file_extension));
             HashSet<string> shared_pf_names_edges = new HashSet<string>();
@@ -321,7 +321,7 @@ namespace Test
             CytoscapeScript.write_cytoscape_script(community.families.SelectMany(f => f.experimental_proteoforms.Select(ex => ex.quant)).ToArray(), community.families, 
                 TestContext.CurrentContext.TestDirectory, "", "test", 
                 false, false, false, false,
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], 2, false, Lollipop.gene_name_labels[1]);
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2, false, Lollipop.gene_name_labels[1]);
             string[] edge_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.edge_file_prefix + "test" + CytoscapeScript.edge_file_extension));
             HashSet<string> shared_pf_names_edges = new HashSet<string>();
             for (int i = 1; i < edge_lines.Length; i++)
@@ -354,7 +354,7 @@ namespace Test
             CytoscapeScript.write_cytoscape_script(new List<ProteoformFamily> { community.families[0] }, community.families, 
                 TestContext.CurrentContext.TestDirectory, "", "test", 
                 false, false, false, false, 
-                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], 2, 
+                CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[0], 2, 
                 false, Lollipop.gene_name_labels[1]);
             string[] edge_lines = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, CytoscapeScript.edge_file_prefix + "test" + CytoscapeScript.edge_file_extension));
             HashSet<string> shared_pf_names_edges = new HashSet<string>();

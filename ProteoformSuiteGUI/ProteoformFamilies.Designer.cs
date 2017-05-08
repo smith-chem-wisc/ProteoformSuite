@@ -50,6 +50,10 @@
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
+            this.label13 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.tb_identified_decoys = new System.Windows.Forms.TextBox();
+            this.tb_identified_experimentals = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tb_likelyCleavages = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
@@ -82,10 +86,6 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.Families_update = new System.Windows.Forms.Button();
-            this.tb_identified_experimentals = new System.Windows.Forms.TextBox();
-            this.tb_identified_decoys = new System.Windows.Forms.TextBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -290,7 +290,6 @@
             // 
             // cmbx_nodeLayout
             // 
-            this.cmbx_nodeLayout.Enabled = false;
             this.cmbx_nodeLayout.FormattingEnabled = true;
             this.cmbx_nodeLayout.Location = new System.Drawing.Point(7, 111);
             this.cmbx_nodeLayout.Name = "cmbx_nodeLayout";
@@ -379,6 +378,48 @@
             this.dgv_proteoform_family_members.Name = "dgv_proteoform_family_members";
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(675, 513);
             this.dgv_proteoform_family_members.TabIndex = 3;
+            // 
+            // label13
+            // 
+            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(374, 372);
+            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(89, 13);
+            this.label13.TabIndex = 66;
+            this.label13.Text = "Identified Decoys";
+            // 
+            // label5
+            // 
+            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(376, 348);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(118, 13);
+            this.label5.TabIndex = 65;
+            this.label5.Text = "Identified Experimentals";
+            // 
+            // tb_identified_decoys
+            // 
+            this.tb_identified_decoys.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.tb_identified_decoys.Location = new System.Drawing.Point(286, 369);
+            this.tb_identified_decoys.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_identified_decoys.Name = "tb_identified_decoys";
+            this.tb_identified_decoys.ReadOnly = true;
+            this.tb_identified_decoys.Size = new System.Drawing.Size(86, 20);
+            this.tb_identified_decoys.TabIndex = 64;
+            // 
+            // tb_identified_experimentals
+            // 
+            this.tb_identified_experimentals.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.tb_identified_experimentals.Location = new System.Drawing.Point(286, 345);
+            this.tb_identified_experimentals.Margin = new System.Windows.Forms.Padding(2);
+            this.tb_identified_experimentals.Name = "tb_identified_experimentals";
+            this.tb_identified_experimentals.ReadOnly = true;
+            this.tb_identified_experimentals.Size = new System.Drawing.Size(86, 20);
+            this.tb_identified_experimentals.TabIndex = 63;
             // 
             // groupBox2
             // 
@@ -716,48 +757,6 @@
             this.Families_update.UseMnemonic = false;
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
-            // 
-            // tb_identified_experimentals
-            // 
-            this.tb_identified_experimentals.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.tb_identified_experimentals.Location = new System.Drawing.Point(286, 345);
-            this.tb_identified_experimentals.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_identified_experimentals.Name = "tb_identified_experimentals";
-            this.tb_identified_experimentals.ReadOnly = true;
-            this.tb_identified_experimentals.Size = new System.Drawing.Size(86, 20);
-            this.tb_identified_experimentals.TabIndex = 63;
-            // 
-            // tb_identified_decoys
-            // 
-            this.tb_identified_decoys.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.tb_identified_decoys.Location = new System.Drawing.Point(286, 369);
-            this.tb_identified_decoys.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_identified_decoys.Name = "tb_identified_decoys";
-            this.tb_identified_decoys.ReadOnly = true;
-            this.tb_identified_decoys.Size = new System.Drawing.Size(86, 20);
-            this.tb_identified_decoys.TabIndex = 64;
-            // 
-            // label5
-            // 
-            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(376, 348);
-            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(118, 13);
-            this.label5.TabIndex = 65;
-            this.label5.Text = "Identified Experimentals";
-            // 
-            // label13
-            // 
-            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(374, 372);
-            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(89, 13);
-            this.label13.TabIndex = 66;
-            this.label13.Text = "Identified Decoys";
             // 
             // ProteoformFamilies
             // 
