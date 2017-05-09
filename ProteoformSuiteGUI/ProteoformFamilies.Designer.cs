@@ -382,28 +382,6 @@
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(832, 443);
             this.dgv_proteoform_family_members.TabIndex = 3;
             // 
-            // bt_merge_orphans_by_RT
-            // 
-            this.bt_merge_orphans_by_RT.Location = new System.Drawing.Point(15, 374);
-            this.bt_merge_orphans_by_RT.Name = "bt_merge_orphans_by_RT";
-            this.bt_merge_orphans_by_RT.Size = new System.Drawing.Size(120, 27);
-            this.bt_merge_orphans_by_RT.TabIndex = 63;
-            this.bt_merge_orphans_by_RT.Text = "Merge orphans by RT";
-            this.bt_merge_orphans_by_RT.UseVisualStyleBackColor = true;
-            this.bt_merge_orphans_by_RT.Click += new System.EventHandler(this.bt_merge_orphans_by_RT_Click);
-            // 
-            // bt_agg_within_fam
-            // 
-            this.bt_agg_within_fam.Location = new System.Drawing.Point(15, 341);
-            this.bt_agg_within_fam.Name = "bt_agg_within_fam";
-            this.bt_agg_within_fam.Size = new System.Drawing.Size(120, 27);
-            this.bt_agg_within_fam.TabIndex = 62;
-            this.bt_agg_within_fam.Text = "Merge by RT in family";
-            this.bt_agg_within_fam.UseVisualStyleBackColor = true;
-            this.bt_agg_within_fam.Click += new System.EventHandler(this.bt_agg_within_fam_Click);
-            this.dgv_proteoform_family_members.Size = new System.Drawing.Size(675, 513);
-            this.dgv_proteoform_family_members.TabIndex = 3;
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.tb_likelyCleavages);
