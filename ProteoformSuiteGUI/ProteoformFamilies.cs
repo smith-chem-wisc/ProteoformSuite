@@ -111,7 +111,7 @@ namespace ProteoformSuiteGUI
             tb_TotalFamilies.Text = SaveState.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count > 1).ToString();
             tb_IdentifiedFamilies.Text = SaveState.lollipop.target_proteoform_community.families.Count(f => f.theoretical_proteoforms.Count > 0).ToString();
             tb_singleton_count.Text = SaveState.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString();
-            tb_identified_experimentals.Text = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null).ToString();
+            tb_identified_experimentals.Text = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && e.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) == 0).ToString();
             //identified decoys have a linked proteoform reference and NOT in experiment-topdown pair
             if (SaveState.lollipop.decoy_proteoform_communities.Values.SelectMany(v => v.experimental_proteoforms).Count() > 0)
             tb_identified_decoys.Text = Math.Round(SaveState.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && e.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) == 0)), 0).ToString();
