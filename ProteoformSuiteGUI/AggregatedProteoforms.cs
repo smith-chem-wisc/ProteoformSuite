@@ -58,6 +58,12 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.missed_monos = nUD_Missed_Monos.Value;
         }
 
+
+        private void nUD_min_rel_abundance_ValueChanged(object sender, EventArgs e)
+        {
+            SaveState.lollipop.min_relative_abundance = Convert.ToDouble(nUD_min_rel_abundance.Value);
+        }
+
         private void nUD_Missed_Ks_ValueChanged(object sender, EventArgs e)
         {
             SaveState.lollipop.missed_lysines = nUD_Missed_Ks.Value;
@@ -117,7 +123,7 @@ namespace ProteoformSuiteGUI
         {
             Cursor = Cursors.WaitCursor;
             ClearListsTablesFigures();
-            SaveState.lollipop.aggregate_proteoforms(SaveState.lollipop.validate_proteoforms, SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, SaveState.lollipop.min_num_CS);
+            SaveState.lollipop.aggregate_proteoforms(SaveState.lollipop.validate_proteoforms, SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, SaveState.lollipop.min_num_CS, SaveState.lollipop.min_relative_abundance);
             FillTablesAndCharts();
             if (SaveState.lollipop.neucode_labeled && SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length > 0)
             {
@@ -171,6 +177,5 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Public Methods
-        
     }
 }
