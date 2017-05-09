@@ -90,7 +90,6 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
             ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsTablesFigures();
             ((ProteoformSweet)MdiParent).topDown.ClearListsTablesFigures();
-            tb_totalTheoreticalProteoforms.Text = SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
             ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsTablesFigures();
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
             tb_totalTheoreticalProteoforms.Text = SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();

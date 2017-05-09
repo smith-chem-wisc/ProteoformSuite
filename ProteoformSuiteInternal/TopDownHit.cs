@@ -89,17 +89,17 @@ namespace ProteoformSuiteInternal
     //CALIBRATION
     public class TrainingPoint 
     {
-        public DataPoint datapoint;
+        public CalibrationDataPoint datapoint;
         public double label;
 
-        public TrainingPoint(DataPoint t, double label)
+        public TrainingPoint(CalibrationDataPoint t, double label)
         {
             datapoint = t;
             this.label = label;
         }
     }
 
-    public class DataPoint
+    public class CalibrationDataPoint
     {
         public double mz;
         public double rt;
@@ -109,7 +109,7 @@ namespace ProteoformSuiteInternal
         public double relativeMZ;
         public string filename;
 
-        public DataPoint(double mz, double rt, int msnOrder, string filename, int SelectedIonGuessChargeStateGuess = 0, double IsolationMZ = 0, double relativeMZ = 0)
+        public CalibrationDataPoint(double mz, double rt, int msnOrder, string filename, int SelectedIonGuessChargeStateGuess = 0, double IsolationMZ = 0, double relativeMZ = 0)
         {
             this.mz = mz;
             this.rt = rt;

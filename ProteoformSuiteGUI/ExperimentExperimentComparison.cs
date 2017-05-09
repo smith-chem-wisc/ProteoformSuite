@@ -343,6 +343,7 @@ namespace ProteoformSuiteGUI
                     peak.Accepted = SaveState.lollipop.theoretical_database.all_possible_ptmsets.Where(s => s.ptm_combination.Count == 1 || !s.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0)).Where(m => Math.Abs(m.mass - (peak.DeltaMass)) <= SaveState.lollipop.peak_width_base_ee / 2).Count() > 0;
                     Parallel.ForEach(peak.grouped_relations, r => r.Accepted = peak.Accepted);
                 });
+                Parallel.ForEach(SaveState.lollipop.ef_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
                 dgv_EE_Peaks.Refresh();
             }
         }
