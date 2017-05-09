@@ -40,30 +40,6 @@ namespace ProteoformSuiteGUI
             tb_total_peaks.Text = big_peaks.Count.ToString();
         }
 
-        public List<double> get_notch_masses(TextBox tb)
-        {
-            List<double> masses = new List<double>();
-            try
-            {
-                string[] notch_masses = tb.Text.Split(';');
-                if (notch_masses.Length == 0)
-                {
-                    MessageBox.Show("No notch masses entered.");
-                    return null;
-                }
-                foreach (string mass in notch_masses)
-                {
-                    masses.Add(Convert.ToDouble(mass));
-                }
-                return masses;
-            }
-            catch
-            {
-                MessageBox.Show("Masses in incorrect format.");
-                return null;
-            }
-        }
-
 
         public void peak_acceptability_change(DataGridView dgv)
         {

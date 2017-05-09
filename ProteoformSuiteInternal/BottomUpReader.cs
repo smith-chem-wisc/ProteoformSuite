@@ -10,9 +10,11 @@ namespace ProteoformSuiteInternal
 {
     public class BottomUpReader
     {
+        public static List<ModificationWithMass> bottom_up_PTMs = new List<ModificationWithMass>(); //PTMs from BU file that did not match to any PTMs in uniprotModifications dictionary, added to warning
         //READING IN BOTTOM-UP MORPHEUS FILE
         public static List<BottomUpPSM> ReadBUFile(string filename)
         {
+            bottom_up_PTMs.Clear();
             List<BottomUpPSM> psm_list = new List<BottomUpPSM>();
             var identifications = new MzidIdentifications(filename);
             for (int i = 0; i < identifications.Count; i++)
@@ -23,9 +25,19 @@ namespace ProteoformSuiteInternal
                 for (int p = 0; p < identifications.NumModifications(i); p++)
                 {
                     ModificationWithMass mod = SaveState.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
-                    if (mod == null)  mod = SaveState.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
                     if (mod != null) modifications.Add(new Ptm(identifications.ModificationLocation(i, p), mod));
-                    else modifications.Add(new Ptm(identifications.ModificationLocation(i, p), new ModificationWithMass(identifications.ModificationAcession(i, p), null, null, ModificationSites.Any, 0, null, null, null, null)));
+                    else
+                    {
+                        ModificationMotif motif;
+                        ModificationMotif.TryGetMotif(identifications.PeptideSequenceWithoutModifications(i)[identifications.ModificationLocation(i, p)].ToString(), out motif);
+                        ModificationWithMass new_ptm = bottom_up_PTMs.Where(m => m.id == identifications.ModificationAcession(i, p)).FirstOrDefault();
+                        if (new_ptm == null) //if not in bottom_up_PTMs list, add it (will show in warning)
+                        {
+                            new_ptm = new ModificationWithMass(identifications.ModificationAcession(i, p), null, motif, ModificationSites.Any, 0, null, new List<double>(), new List<double>(), null);
+                            bottom_up_PTMs.Add(new_ptm);
+                            modifications.Add(new Ptm(identifications.ModificationLocation(i, p), new_ptm));
+                        }
+                    }
                 }
                 psm_list.Add(new BottomUpPSM(identifications.PeptideSequenceWithoutModifications(i), identifications.StartResidueInProtein(i), identifications.EndResidueInProtein(i), modifications, identifications.Ms2SpectrumID(i), identifications.ProteinAccession(i), identifications.ProteinFullName(i), identifications.ExperimentalMassToCharge(i), identifications.ChargeState(i), (identifications.ExperimentalMassToCharge(i) - identifications.CalculatedMassToCharge(i))));
             }

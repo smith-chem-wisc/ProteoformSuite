@@ -41,10 +41,4 @@ namespace ProteoformSuiteInternal
             this.modifications = modifications;
         }
     }
-
-    public enum PsmType
-    {
-        BottomUp,
-        TopDown
-    }
 }

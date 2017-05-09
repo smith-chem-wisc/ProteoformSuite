@@ -64,7 +64,8 @@ namespace ProteoformSuiteGUI
             { 
                 c.relate_td(c.experimental_proteoforms.ToList(), c.theoretical_proteoforms.ToList(), c.topdown_proteoforms.Where(p => !p.targeted).ToList());
 
-            } if (SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.ttd_match_count == 0) > 0)
+            }
+            if (SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.ttd_match_count == 0) > 0)
             {
                 MessageBox.Show("Warning: Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: "
                      + String.Join(", ", SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Where(t => t.ttd_match_count == 0).Select(t => t.accession.Split('_')[0]).Distinct()));
@@ -75,13 +76,15 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsTablesFigures()
         {
-            SaveState.lollipop.target_proteoform_community.topdown_proteoforms = new TopDownProteoform[0];
             SaveState.lollipop.td_relations.Clear();
             SaveState.lollipop.topdownReader.topdown_ptms.Clear();
-            foreach (Proteoform p in SaveState.lollipop.target_proteoform_community.experimental_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTopDown);
-            foreach (Proteoform p in SaveState.lollipop.target_proteoform_community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.TheoreticalTopDown);
-            foreach (Proteoform p in SaveState.lollipop.target_proteoform_community.topdown_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTopDown);
-            foreach (Proteoform p in SaveState.lollipop.target_proteoform_community.topdown_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.TheoreticalTopDown);
+            foreach (ProteoformCommunity community in SaveState.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { SaveState.lollipop.target_proteoform_community }))
+            {
+                community.topdown_proteoforms = new TopDownProteoform[0];
+                foreach (Proteoform p in community.experimental_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTopDown);
+                foreach (Proteoform p in community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.TheoreticalTopDown);
+                foreach (Proteoform p in community.topdown_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTopDown || r.RelationType == ProteoformComparison.TheoreticalTopDown);
+            }
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
             dgv_TD_proteoforms.DataSource = null;
             dgv_TD_proteoforms.Rows.Clear();
@@ -243,38 +246,5 @@ namespace ProteoformSuiteGUI
             else if (cmbx_td_or_e_proteoforms.SelectedItem.ToString() == "Experimental Proteoforms" && SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Length > 0)
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Where(exp => exp.accepted).ToList());
         }
-
-        //private void bt_check_fragmented_e_Click(object sender, EventArgs e)
-        //{
-        //    MessageBox.Show("Please select raw files.");
-        //    OpenFileDialog openFileDialog1 = new OpenFileDialog();
-        //    openFileDialog1.Title = "My Thermo Raw Files";
-        //    openFileDialog1.Filter = "Raw Files (*.raw) | *.raw";
-        //    openFileDialog1.Multiselect = true;
-
-        //    DialogResult dr = openFileDialog1.ShowDialog();
-        //    if (dr == DialogResult.OK)
-        //    {
-        //        RawFileReader.check_fragmented_experimentals(enter_input_files(openFileDialog1.FileNames, new List<string> { ".raw" }, Purpose.RawFile));
-        //        dgv_TD_proteoforms.Refresh();
-        //        MessageBox.Show("Successfully checked if experimentals were fragmented.");
-        //    }
-        //    else return;
-        //}
-
-        //private List<InputFile> enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, Purpose purpose)
-        //{
-        //    List<InputFile> files_added = new List<InputFile>();
-        //    foreach (string enteredFile in files)
-        //    {
-        //        if (!Lollipop.input_files.Where(f => f.purpose == purpose).Any(f => f.complete_path == enteredFile))
-        //        {
-        //            InputFile file = new InputFile(enteredFile, purpose);
-        //            Lollipop.input_files.Add(file);
-        //            files_added.Add(file);
-        //        }
-        //    }
-        //    return files_added;
-        //}
     }
 }

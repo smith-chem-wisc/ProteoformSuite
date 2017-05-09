@@ -15,7 +15,7 @@ namespace ProteoformSuiteInternal
 
         #endregion Private Fields
 
-        public List<Ptm> topdown_ptms = new List<Ptm>(); //PTMs not in theoretical database added to warning file.
+        public List<ModificationWithMass> topdown_ptms = new List<ModificationWithMass>(); //PTMs not in theoretical database added to warning file.
         //Reading in Top-down excel
         public List<TopDownHit> ReadTDFile(InputFile file)
         {
@@ -43,10 +43,10 @@ namespace ProteoformSuiteInternal
                         {
                             ModificationMotif motif;
                             ModificationMotif.TryGetMotif(cellStrings[4][0].ToString(), out motif);
-                            Ptm new_ptm = topdown_ptms.Where(m => m.modification.motif.Motif == motif.Motif && m.modification.id == "N-terminal acetylation").FirstOrDefault();//multiple modifications can be indicated in this cell (e.g. alpha-amino acetylated residue@N, O-phospho-L-serine@95)
+                            ModificationWithMass new_ptm = topdown_ptms.Where(m => m.id == "N-terminal acetylation").FirstOrDefault();//multiple modifications can be indicated in this cell (e.g. alpha-amino acetylated residue@N, O-phospho-L-serine@95)
                             if (new_ptm == null) //if not in topdown_ptms list, add it (will show in warning)
                             { 
-                               topdown_ptms.Add(new Ptm(position, new ModificationWithMass("N-terminal acetylation", null, motif , ModificationSites.NTerminus, 0, null, new List<double>(), new List<double>(), null)));
+                               topdown_ptms.Add(new ModificationWithMass("N-terminal acetylation", null, motif , ModificationSites.NTerminus, 0, null, new List<double>(), new List<double>(), null));
                             }
                         }
                     }
@@ -68,9 +68,9 @@ namespace ProteoformSuiteInternal
                         {
                             ModificationMotif motif;
                             ModificationMotif.TryGetMotif(cellStrings[4][position - 1].ToString(), out motif);
-                            Ptm new_ptm = topdown_ptms.Where(m => m.modification.motif.Motif == motif.Motif && m.modification.id == resid).FirstOrDefault();
+                            ModificationWithMass new_ptm = topdown_ptms.Where(m => m.id == resid).FirstOrDefault();
                             if (new_ptm == null) //if not in topdown_ptms list, add it (will show in warning)
-                                topdown_ptms.Add(new Ptm(position, new ModificationWithMass(resid, null, motif, ModificationSites.NTerminus, 0, null, new List<double>(), new List<double>(), null)));
+                                topdown_ptms.Add( new ModificationWithMass(resid, null, motif, ModificationSites.Any, 0, null, new List<double>(), new List<double>(), null));
                         }
                     }
                 }
@@ -110,55 +110,4 @@ namespace ProteoformSuiteInternal
             return td_hits;
         }
     }
-}
-
-                //PROSIGHT READIN
-                //        else if (td_software == TDSoftware.ProSight)
-                //        {
-                //            string[] description = cellStrings[13].Split(';');
-                //            string[] accession = description[0].Split(',');
-
-                //            string file_sequence = cellStrings[6];
-                //            file_sequence = file_sequence.Replace(")", "(");
-                //            string[] split_sequence = file_sequence.Split('(');
-                //            List<int> positions = new List<int>();
-                //            string sequence = "";
-                //            for (int j = 0; j < split_sequence.Length; j++)
-                //            {
-                //                try
-                //                {
-                //                    //if number, add position of PTM to list
-                //                    int mod_id = Convert.ToInt16(split_sequence[j]);
-                //                    positions.Add(sequence.Length);
-                //                }
-                //                catch { sequence += split_sequence[j]; }
-                //            }
-
-                //            List<Ptm> ptm_list = new List<Ptm>();
-                //            string modification_description = cellStrings[8];
-                //            modification_description = modification_description.Replace(", ", "; ");
-                //            string[] modifications = modification_description.Split(';');
-                //            if (modifications.Length > 1)
-                //            {
-                //                for (int j = 0; j < modifications.Length; j++)
-                //                {
-                //                    string[] new_modification = modifications[j].Split('(');
-                //                    int position = positions[j];
-                //                    Ptm ptm = new Ptm(position, new Modification(new_modification[0]));
-                //                    ptm_list.Add(ptm);
-                //                }
-                //            }
-                //            string[] full_filename = cellStrings[14].Split('.');
-
-                //            Result_Set result_set = new Result_Set();
-                //            if (cellStrings[3] == "absolute_mass") result_set = Result_Set.tight_absolute_mass;
-                //            else if (cellStrings[3] == "biomarker") result_set = Result_Set.biomarker;
-
-                //            TopDownHit td_proteoform = new TopDownHit(cellStrings[4], accession[0], description[1], sequence,
-                //               0, 0, ptm_list, Convert.ToDouble(cellStrings[10]), Convert.ToDouble(cellStrings[9]), 0, 0, full_filename[0], Convert.ToDouble(cellStrings[20]), result_set);
-                //            td_proteoforms.Add(td_proteoform);
-                //        }
-                //    }
-                //}
-
- 
+} 
