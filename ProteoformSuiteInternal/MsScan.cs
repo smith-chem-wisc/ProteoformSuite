@@ -20,7 +20,7 @@ namespace ProteoformSuiteInternal
         public double lock_mass_shift { get; set; } = 0.0;
         public double precursor_mz { get; set; }
 
-        public MsScan(int ms_order, int scan_number, string filename, double retention_time, double injection_time, double TIC)
+        public MsScan(int ms_order, int scan_number, string filename, double retention_time, double injection_time, double TIC, double[] noises, double[] peak_x, double [] peak_y)
         {
             this.ms_order = ms_order;
             this.scan_number = scan_number;

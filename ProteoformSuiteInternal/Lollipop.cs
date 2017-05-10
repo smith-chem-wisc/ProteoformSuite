@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
+using Chemistry;
 
 namespace ProteoformSuiteInternal
 {
@@ -274,7 +275,6 @@ namespace ProteoformSuiteInternal
         public int min_agg_count = 1;
         public int min_num_CS = 1;
         public int min_num_bioreps = 1;
-        public double min_relative_abundance;
 
         #endregion AGGREGATED PROTEOFORMS Public Fields
 
@@ -288,9 +288,9 @@ namespace ProteoformSuiteInternal
 
         #region AGGREGATED PROTEOFORMS
 
-        public List<ExperimentalProteoform> aggregate_proteoforms(bool two_pass_validation, IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS, double min_relative_abundance)
+        public List<ExperimentalProteoform> aggregate_proteoforms(bool two_pass_validation, IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS)
         {
-            List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(raw_neucode_pairs, raw_experimental_components, min_num_CS, min_relative_abundance);
+            List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(raw_neucode_pairs, raw_experimental_components, min_num_CS);
             if (two_pass_validation) vetted_proteoforms = vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms);
             else vetted_proteoforms = candidateExperimentalProteoforms;
             target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
@@ -306,7 +306,7 @@ namespace ProteoformSuiteInternal
         //If no NeuCodePairs exist, e.g. for an experiment without labeling, the raw components are used instead.
         //Uses an ordered list, so that the proteoform with max intensity is always chosen first
         //raw_neucode_pairs = raw_neucode_pairs.Where(p => p != null).ToList();
-        public List<ExperimentalProteoform> createProteoforms(IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, int min_num_CS, double min_relative_abundance)
+        public List<ExperimentalProteoform> createProteoforms(IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, int min_num_CS)
         {
             List<ExperimentalProteoform> candidateExperimentalProteoforms = new List<ExperimentalProteoform>();
             ordered_components = new Component[0];
@@ -316,8 +316,8 @@ namespace ProteoformSuiteInternal
 
             // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
             ordered_components = neucode_labeled ?
-                raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true && p.charge_states.Count >= min_num_CS && p.relative_abundance >= min_relative_abundance).ToArray() :
-                raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.num_charge_states >= min_num_CS && p.relative_abundance >= min_relative_abundance).ToArray();
+                raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true && p.charge_states.Count >= min_num_CS).ToArray() :
+                raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.num_charge_states >= min_num_CS).ToArray();
             remaining_components = new List<Component>(ordered_components);
 
             Component root = ordered_components.FirstOrDefault();
@@ -450,14 +450,14 @@ namespace ProteoformSuiteInternal
         //Idea 1: Start with Components -- have them find the most intense nearby component. Then, go through and correct edge cases that aren't correct.
         //Idea 2: Use the assumption that proteoforms distant to the manual shift will not regroup.
         //Idea 2.1: Put the shifted proteoforms, plus some range from the min and max masses in there, and reaggregate the components with the aggregate_proteoforms algorithm.
-        public List<ExperimentalProteoform> regroup_components(bool neucode_labeled, bool two_pass_validation, IEnumerable<InputFile> input_files, List<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS, double min_relative_abundance)
+        public List<ExperimentalProteoform> regroup_components(bool neucode_labeled, bool two_pass_validation, IEnumerable<InputFile> input_files, List<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS)
         {
             if (neucode_labeled)
             {
                 raw_neucode_pairs.Clear();
                 process_neucode_components(raw_neucode_pairs);
             }
-            return aggregate_proteoforms(two_pass_validation, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_num_CS, min_relative_abundance);
+            return aggregate_proteoforms(two_pass_validation, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_num_CS);
         }
 
         public void clear_aggregation()
@@ -1020,14 +1020,15 @@ namespace ProteoformSuiteInternal
         #region CALIBRATION
         public  bool calibrate_lock_mass = false;
         public  bool calibrate_td_results = true;
-        public  bool calibrate_intact_with_td_ids = false;
+        public bool calibrate_intact_with_td_ids = false;
         public  List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
         public  List<MsScan> Ms_scans = new List<MsScan>();
         public  Dictionary<string, Func<double[], double>> td_calibration_functions = new Dictionary<string, Func<double[], double>>();
         public  List<Correction> correctionFactors = new List<Correction>();
-        public  Dictionary<Tuple<string, double, double>, double> file_mz_correction = new Dictionary<Tuple<string, double, double>, double>();
+        public  Dictionary<Tuple<string, double, double>, Tuple<double, double>> file_mz_correction = new Dictionary<Tuple<string, double, double>, Tuple<double, double>>();
         public  Dictionary<Tuple<string, int, double>, double> td_hit_correction = new Dictionary<Tuple<string, int, double>, double>();
         public  List<Component> calibration_components = new List<Component>();
+
 
         public void read_in_calibration_td_hits()
         {
@@ -1088,28 +1089,37 @@ namespace ProteoformSuiteInternal
             }
         }
 
+        double monoisotopic_averagine = 111.0543053;
+        double average_averagine = 111.1234625;
         public void determine_component_shift()
         {
             Parallel.ForEach(calibration_components, c =>
             {
                 if ((!calibrate_td_results && !calibrate_intact_with_td_ids) || td_calibration_functions.ContainsKey(c.input_file.filename))
                 {
+                    MsScan scan = Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First();
                     foreach (ChargeState cs in c.charge_states)
                     {
+                        double average_mass = cs.mz_centroid.ToMass(cs.charge_count) / monoisotopic_averagine * average_averagine;
+                        int units_over = Convert.ToInt16(average_mass - cs.mz_centroid.ToMass(cs.charge_count));
+                        double mz_average = cs.mz_centroid + (units_over * Lollipop.MONOISOTOPIC_UNIT_MASS / cs.charge_count);
+                        int index_peak = scan.peak_x.Select((x, i) => new { Index = i, Distance = Math.Abs(mz_average - x) }).OrderBy(x => x.Distance).First().Index;
+
                         double corrected_mz = (calibrate_td_results || calibrate_intact_with_td_ids) ? cs.mz_centroid - td_calibration_functions[c.input_file.filename](new double[] { cs.mz_centroid, Convert.ToDouble(c.rt_range.Split('-')[0]) }) : cs.mz_centroid - Calibration.get_correction_factor(c.input_file.filename, c.scan_range);
                         var key = new Tuple<string, double, double>(c.input_file.filename, Math.Round(cs.mz_centroid, 0), Math.Round(cs.intensity, 0));
                         if (!file_mz_correction.ContainsKey(key))
                         {
-                            lock (file_mz_correction) file_mz_correction.Add(key, corrected_mz);
+                            lock (file_mz_correction) file_mz_correction.Add(key, new Tuple<double, double> ( corrected_mz, scan.peak_y[index_peak] / scan.noises[index_peak]));
                         }
                     }
                 }
             });
         }
 
+
         public void calibrate_td_hits(string filename)
         {
-            if (calibrate_td_results || calibrate_intact_with_td_ids && td_calibration_functions.ContainsKey(filename))
+            if (calibrate_td_results && td_calibration_functions.ContainsKey(filename))
             {
                 Func<double[], double> bestCf = td_calibration_functions[filename];
                 //need to calibrate all the others

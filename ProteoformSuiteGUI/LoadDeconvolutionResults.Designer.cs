@@ -360,7 +360,7 @@
             this.rb_chemicalCalibration.AutoSize = true;
             this.rb_chemicalCalibration.Location = new System.Drawing.Point(165, 17);
             this.rb_chemicalCalibration.Name = "rb_chemicalCalibration";
-            this.rb_chemicalCalibration.Size = new System.Drawing.Size(120, 17);
+            this.rb_chemicalCalibration.Size = new System.Drawing.Size(102, 17);
             this.rb_chemicalCalibration.TabIndex = 37;
             this.rb_chemicalCalibration.Text = "Mass Calibration";
             this.rb_chemicalCalibration.UseVisualStyleBackColor = true;
@@ -427,7 +427,7 @@
             this.cb_td_hits_diff_file.UseVisualStyleBackColor = true;
             this.cb_td_hits_diff_file.Visible = false;
             this.cb_td_hits_diff_file.CheckedChanged += new System.EventHandler(this.cb_td_hits_diff_file_CheckedChanged);
-            //
+            // 
             // btn_stepThrough
             // 
             this.btn_stepThrough.Location = new System.Drawing.Point(680, 626);
