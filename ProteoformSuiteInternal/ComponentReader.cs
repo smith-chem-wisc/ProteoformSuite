@@ -56,7 +56,9 @@ namespace ProteoformSuiteInternal
                     else new_component.add_charge_state(cellStrings);
                 }
             }
-            add_component(new_component); //add the final component
+            //sometimes weird deconvolution repeats... check
+            if(raw_components_in_file.Count(c => c.intensity_sum == new_component.intensity_sum && c.scan_range == new_component.scan_range && c.reported_monoisotopic_mass == new_component.reported_monoisotopic_mass) == 0)
+                add_component(new_component); //add the final component
             final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
             scan_ranges = new HashSet<string>(final_components.Select(c => c.scan_range).ToList()).ToList();
             return final_components;

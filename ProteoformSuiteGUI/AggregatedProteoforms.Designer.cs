@@ -340,7 +340,7 @@
             this.nUD_RetTimeToleranace.Location = new System.Drawing.Point(170, 44);
             this.nUD_RetTimeToleranace.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_RetTimeToleranace.Maximum = new decimal(new int[] {
-            10,
+            200,
             0,
             0,
             0});
