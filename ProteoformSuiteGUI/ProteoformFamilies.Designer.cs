@@ -847,8 +847,6 @@
         public System.Windows.Forms.ComboBox cmbx_geneLabel;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox cmbx_nodeLabel;
-        private System.Windows.Forms.Button bt_merge_orphans_by_RT;
-        private System.Windows.Forms.Button bt_agg_within_fam;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox tb_likelyCleavages;
         private System.Windows.Forms.Label label12;
