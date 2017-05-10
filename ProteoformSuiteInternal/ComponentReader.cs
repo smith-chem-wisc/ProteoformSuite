@@ -39,14 +39,14 @@ namespace ProteoformSuiteInternal
             {
                 if (i == 0) continue; //skip component header                        
                 List<string> cellStrings = cells[i];
-                if (cellStrings.Count > 4) //component row
+                if (cellStrings.Count > 5) //component row
                 {
                     if (i > 1) add_component(new_component); // here we're adding the previously read component
                     new_component = new Component(cellStrings, file); // starting fresh here with a newly created componet.
                     charge_row_index = 0;
                     scan_range = cellStrings[8];
                 }
-                else if (cellStrings.Count == 4) //charge-state row
+                else if (cellStrings.Count == 4 || cellStrings.Count == 5) //charge-state row
                 {
                     if (charge_row_index == 0)
                     {

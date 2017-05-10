@@ -275,6 +275,7 @@ namespace ProteoformSuiteInternal
         public int min_agg_count = 1;
         public int min_num_CS = 1;
         public int min_num_bioreps = 1;
+        public double min_signal_to_noise = 0;
 
         #endregion AGGREGATED PROTEOFORMS Public Fields
 
@@ -288,9 +289,9 @@ namespace ProteoformSuiteInternal
 
         #region AGGREGATED PROTEOFORMS
 
-        public List<ExperimentalProteoform> aggregate_proteoforms(bool two_pass_validation, IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS)
+        public List<ExperimentalProteoform> aggregate_proteoforms(bool two_pass_validation, IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS, double min_signal_to_noise)
         {
-            List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(raw_neucode_pairs, raw_experimental_components, min_num_CS);
+            List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(raw_neucode_pairs, raw_experimental_components, min_num_CS, min_signal_to_noise);
             if (two_pass_validation) vetted_proteoforms = vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms);
             else vetted_proteoforms = candidateExperimentalProteoforms;
             target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
@@ -306,7 +307,7 @@ namespace ProteoformSuiteInternal
         //If no NeuCodePairs exist, e.g. for an experiment without labeling, the raw components are used instead.
         //Uses an ordered list, so that the proteoform with max intensity is always chosen first
         //raw_neucode_pairs = raw_neucode_pairs.Where(p => p != null).ToList();
-        public List<ExperimentalProteoform> createProteoforms(IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, int min_num_CS)
+        public List<ExperimentalProteoform> createProteoforms(IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, int min_num_CS, double min_signal_to_noise)
         {
             List<ExperimentalProteoform> candidateExperimentalProteoforms = new List<ExperimentalProteoform>();
             ordered_components = new Component[0];
@@ -316,8 +317,8 @@ namespace ProteoformSuiteInternal
 
             // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
             ordered_components = neucode_labeled ?
-                raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true && p.charge_states.Count >= min_num_CS).ToArray() :
-                raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.num_charge_states >= min_num_CS).ToArray();
+                raw_neucode_pairs.OrderByDescending(p => p.intensity_sum_olcs).Where(p => p.accepted == true && p.charge_states.Count >= min_num_CS && p.charge_states.Max(c => c.signal_to_noise) >= min_signal_to_noise).ToArray() :
+                raw_experimental_components.OrderByDescending(p => p.intensity_sum).Where(p => p.accepted == true && p.num_charge_states >= min_num_CS && p.charge_states.Max(c => c.signal_to_noise) >= min_signal_to_noise).ToArray();
             remaining_components = new List<Component>(ordered_components);
 
             Component root = ordered_components.FirstOrDefault();
@@ -450,14 +451,14 @@ namespace ProteoformSuiteInternal
         //Idea 1: Start with Components -- have them find the most intense nearby component. Then, go through and correct edge cases that aren't correct.
         //Idea 2: Use the assumption that proteoforms distant to the manual shift will not regroup.
         //Idea 2.1: Put the shifted proteoforms, plus some range from the min and max masses in there, and reaggregate the components with the aggregate_proteoforms algorithm.
-        public List<ExperimentalProteoform> regroup_components(bool neucode_labeled, bool two_pass_validation, IEnumerable<InputFile> input_files, List<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS)
+        public List<ExperimentalProteoform> regroup_components(bool neucode_labeled, bool two_pass_validation, IEnumerable<InputFile> input_files, List<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS, double min_signal_to_noise)
         {
             if (neucode_labeled)
             {
                 raw_neucode_pairs.Clear();
                 process_neucode_components(raw_neucode_pairs);
             }
-            return aggregate_proteoforms(two_pass_validation, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_num_CS);
+            return aggregate_proteoforms(two_pass_validation, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_num_CS, min_signal_to_noise);
         }
 
         public void clear_aggregation()

@@ -45,6 +45,11 @@ namespace ProteoformSuiteGUI
             get { return c.charge_count; }
         }
 
+        public double signal_to_noise
+        {
+            get { return c.signal_to_noise; }
+        }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -57,12 +62,14 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(intensity)].DefaultCellStyle.Format = "0.####";
             dgv.Columns[nameof(mz_centroid)].DefaultCellStyle.Format = "0.####";
             dgv.Columns[nameof(calculated_mass)].DefaultCellStyle.Format = "0.####";
+            dgv.Columns[nameof(signal_to_noise)].DefaultCellStyle.Format = "0.####";
 
             //set column header
             dgv.Columns[nameof(intensity)].HeaderText = "Intensity";
             dgv.Columns[nameof(mz_centroid)].HeaderText = "Centroid m/z";
             dgv.Columns[nameof(calculated_mass)].HeaderText = "Calculated Mass";
             dgv.Columns[nameof(charge_count)].HeaderText = "Charge Count";
+            dgv.Columns[nameof(signal_to_noise)].HeaderText = "Signal to Noise";
 
             dgv.AllowUserToAddRows = false;
         }

@@ -84,6 +84,11 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.min_num_CS = Convert.ToInt16(nUD_min_num_CS.Value);
         }
 
+        private void nUD_min_signal_to_noise_ValueChanged(object sender, EventArgs e)
+        {
+            SaveState.lollipop.min_signal_to_noise = Convert.ToDouble(nUD_min_signal_to_noise.Value);
+        }
+
         private void cb_validateProteoforms_CheckedChanged(object sender, EventArgs e)
         {
             SaveState.lollipop.validate_proteoforms = cb_validateProteoforms.Checked;
@@ -117,7 +122,7 @@ namespace ProteoformSuiteGUI
         {
             Cursor = Cursors.WaitCursor;
             ClearListsTablesFigures();
-            SaveState.lollipop.aggregate_proteoforms(SaveState.lollipop.validate_proteoforms, SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, SaveState.lollipop.min_num_CS);
+            SaveState.lollipop.aggregate_proteoforms(SaveState.lollipop.validate_proteoforms, SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, SaveState.lollipop.min_num_CS, SaveState.lollipop.min_signal_to_noise);
             FillTablesAndCharts();
             if (SaveState.lollipop.neucode_labeled && SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length > 0)
             {
