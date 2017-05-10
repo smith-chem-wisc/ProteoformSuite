@@ -404,6 +404,5 @@ namespace ProteoformSuiteGUI
             if (cb_td_hits_diff_file.Checked) cb_tdhits.Checked = false;
         }
         #endregion CHANGED TABLE SELECTION Private Methods
-
     }
 }

@@ -22,7 +22,7 @@ namespace ProteoformSuiteInternal
             ThermoStaticData myMsDataFile = ThermoStaticData.LoadAllStaticData(raw_file_path);
             Parallel.ForEach(myMsDataFile, spectrum =>
             {
-                MsScan scan = new MsScan(spectrum.MsnOrder, spectrum.OneBasedScanNumber, filename, spectrum.RetentionTime, spectrum.RetentionTime, spectrum.TotalIonCurrent);
+                MsScan scan = new MsScan(spectrum.MsnOrder, spectrum.OneBasedScanNumber, filename, spectrum.RetentionTime, spectrum.RetentionTime, spectrum.TotalIonCurrent, spectrum.MassSpectrum.GetNoises(), spectrum.MassSpectrum.XArray, spectrum.MassSpectrum.YArray);
                 if (scan.ms_order == 2) scan.precursor_mz = (spectrum as ThermoScanWithPrecursor).IsolationMz;
                 lock (ms_scans) ms_scans.Add(scan);
             });

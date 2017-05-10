@@ -203,9 +203,19 @@ namespace ProteoformSuiteInternal
                 var worksheet = workbook.Worksheets.Worksheet(1);
                 Parallel.ForEach(worksheet.Rows(), row =>
                 {
-                    if (row.Cell(1).Value.ToString().Length == 0 && Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
+                    if (row.Cell(1).Value.ToString().Length == 0)
                     {
-                        row.Cell(4).SetValue(SaveState.lollipop.file_mz_correction[new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(4).GetDouble(), 0), Math.Round(row.Cell(3).GetDouble(), 0))]);
+                        if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
+                        {
+                            Tuple<double, double> value;
+                            if (SaveState.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(4).GetDouble(), 0), Math.Round(row.Cell(3).GetDouble(), 0)), out value))
+                                row.Cell(4).SetValue(value.Item1);
+                            row.Cell(6).SetValue(value.Item2);
+                        }
+                        else
+                        {
+                            row.Cell(6).SetValue("Signal to Noise");
+                        }
                     }
                 });
                 workbook.Save();
