@@ -55,6 +55,9 @@
             this.dgv_AcceptNeuCdLtProteoforms = new System.Windows.Forms.DataGridView();
             this.nUD_min_signal_to_noise = new System.Windows.Forms.NumericUpDown();
             this.label10 = new System.Windows.Forms.Label();
+            this.nUD_min_left_peaks = new System.Windows.Forms.NumericUpDown();
+            this.label11 = new System.Windows.Forms.Label();
+            this.nUD_min_right_peaks = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AggregatedProteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -73,6 +76,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUP_mass_tolerance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AcceptNeuCdLtProteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_signal_to_noise)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_left_peaks)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_right_peaks)).BeginInit();
             this.SuspendLayout();
             // 
             // dgv_AggregatedProteoforms
@@ -120,6 +125,9 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.nUD_min_right_peaks);
+            this.splitContainer2.Panel1.Controls.Add(this.nUD_min_left_peaks);
+            this.splitContainer2.Panel1.Controls.Add(this.label11);
             this.splitContainer2.Panel1.Controls.Add(this.nUD_min_signal_to_noise);
             this.splitContainer2.Panel1.Controls.Add(this.label10);
             this.splitContainer2.Panel1.Controls.Add(this.nUD_min_num_bioreps);
@@ -153,7 +161,7 @@
             // 
             // nUD_min_num_bioreps
             // 
-            this.nUD_min_num_bioreps.Location = new System.Drawing.Point(170, 154);
+            this.nUD_min_num_bioreps.Location = new System.Drawing.Point(170, 144);
             this.nUD_min_num_bioreps.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_min_num_bioreps.Minimum = new decimal(new int[] {
             1,
@@ -173,7 +181,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(55, 154);
+            this.label6.Location = new System.Drawing.Point(55, 144);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(80, 13);
@@ -200,7 +208,7 @@
             // 
             // cb_validateProteoforms
             // 
-            this.cb_validateProteoforms.Location = new System.Drawing.Point(90, 227);
+            this.cb_validateProteoforms.Location = new System.Drawing.Point(58, 242);
             this.cb_validateProteoforms.Name = "cb_validateProteoforms";
             this.cb_validateProteoforms.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.cb_validateProteoforms.Size = new System.Drawing.Size(123, 17);
@@ -211,7 +219,7 @@
             // 
             // nUD_min_num_CS
             // 
-            this.nUD_min_num_CS.Location = new System.Drawing.Point(170, 130);
+            this.nUD_min_num_CS.Location = new System.Drawing.Point(170, 120);
             this.nUD_min_num_CS.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_min_num_CS.Minimum = new decimal(new int[] {
             1,
@@ -231,7 +239,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(48, 132);
+            this.label8.Location = new System.Drawing.Point(48, 122);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(107, 13);
@@ -240,7 +248,7 @@
             // 
             // nUD_min_agg_count
             // 
-            this.nUD_min_agg_count.Location = new System.Drawing.Point(170, 176);
+            this.nUD_min_agg_count.Location = new System.Drawing.Point(170, 166);
             this.nUD_min_agg_count.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_min_agg_count.Maximum = new decimal(new int[] {
             20,
@@ -255,7 +263,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(39, 176);
+            this.label7.Location = new System.Drawing.Point(39, 166);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(116, 13);
@@ -413,7 +421,7 @@
             0,
             0,
             131072});
-            this.nUD_min_signal_to_noise.Location = new System.Drawing.Point(168, 200);
+            this.nUD_min_signal_to_noise.Location = new System.Drawing.Point(168, 190);
             this.nUD_min_signal_to_noise.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_min_signal_to_noise.Maximum = new decimal(new int[] {
             10,
@@ -428,12 +436,50 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(37, 201);
+            this.label10.Location = new System.Drawing.Point(37, 191);
             this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(101, 13);
             this.label10.TabIndex = 53;
             this.label10.Text = "Min. Signal to Noise";
+            // 
+            // nUD_min_left_peaks
+            // 
+            this.nUD_min_left_peaks.Location = new System.Drawing.Point(168, 215);
+            this.nUD_min_left_peaks.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
+            this.nUD_min_left_peaks.Maximum = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.nUD_min_left_peaks.Name = "nUD_min_left_peaks";
+            this.nUD_min_left_peaks.Size = new System.Drawing.Size(80, 20);
+            this.nUD_min_left_peaks.TabIndex = 56;
+            this.nUD_min_left_peaks.ValueChanged += new System.EventHandler(this.nUD_min_left_peaks_ValueChanged);
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(25, 216);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(142, 13);
+            this.label11.TabIndex = 55;
+            this.label11.Text = "Min Peaks L/R of Averagine";
+            // 
+            // nUD_min_right_peaks
+            // 
+            this.nUD_min_right_peaks.Location = new System.Drawing.Point(252, 216);
+            this.nUD_min_right_peaks.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
+            this.nUD_min_right_peaks.Maximum = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.nUD_min_right_peaks.Name = "nUD_min_right_peaks";
+            this.nUD_min_right_peaks.Size = new System.Drawing.Size(80, 20);
+            this.nUD_min_right_peaks.TabIndex = 57;
+            this.nUD_min_right_peaks.ValueChanged += new System.EventHandler(this.nUD_min_right_peaks_ValueChanged);
             // 
             // AggregatedProteoforms
             // 
@@ -465,6 +511,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUP_mass_tolerance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AcceptNeuCdLtProteoforms)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_min_signal_to_noise)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_left_peaks)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_right_peaks)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -497,5 +545,8 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NumericUpDown nUD_min_signal_to_noise;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.NumericUpDown nUD_min_right_peaks;
+        private System.Windows.Forms.NumericUpDown nUD_min_left_peaks;
+        private System.Windows.Forms.Label label11;
     }
 }

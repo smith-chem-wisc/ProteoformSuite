@@ -49,6 +49,16 @@ namespace ProteoformSuiteGUI
         {
             get { return c.signal_to_noise; }
         }
+        
+        public int isotopic_peaks_left_averagine
+        {
+            get { return c.isotopic_peaks_left_averagine; }
+        }
+
+        public int isotopic_peaks_right_averagine
+        {
+            get { return c.isotopic_peaks_right_averagine; }
+        }
 
         #endregion Public Properties
 
@@ -70,6 +80,8 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(calculated_mass)].HeaderText = "Calculated Mass";
             dgv.Columns[nameof(charge_count)].HeaderText = "Charge Count";
             dgv.Columns[nameof(signal_to_noise)].HeaderText = "Signal to Noise";
+            dgv.Columns[nameof(isotopic_peaks_left_averagine)].HeaderText = "Number Isotopic Peaks Left of Averagine Peak";
+            dgv.Columns[nameof(isotopic_peaks_right_averagine)].HeaderText = "Number of Isotopic Peaks Right of Averagine Peak";
 
             dgv.AllowUserToAddRows = false;
         }
