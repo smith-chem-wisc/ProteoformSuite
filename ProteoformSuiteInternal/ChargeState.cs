@@ -12,6 +12,9 @@ namespace ProteoformSuiteInternal
         public double mz_centroid { get; set; } //value from deconv 4.0
         public double calculated_mass { get; set; }  // the value reported by decon 4.0 is incorrect, so we calculate it from m/z and charge (including correction when necessary)
         public double signal_to_noise { get; set; }
+        public int isotopic_peaks_left_averagine { get; set; }
+        public int isotopic_peaks_right_averagine { get; set; }
+
         #endregion Public Properties
 
         #region Public Constructors
@@ -22,6 +25,8 @@ namespace ProteoformSuiteInternal
             this.intensity = Convert.ToDouble(charge_row[1]);
             this.mz_centroid = Convert.ToDouble(charge_row[2]);
             this.signal_to_noise = charge_row.Count > 4 ? Convert.ToDouble(charge_row[4]) : 0;
+            this.isotopic_peaks_left_averagine = charge_row.Count > 4 ? Convert.ToInt16(charge_row[5]) : 0;
+            this.isotopic_peaks_right_averagine = charge_row.Count > 4 ? Convert.ToInt16(charge_row[6]) : 0;
             this.calculated_mass = correct_calculated_mass();
         }
 

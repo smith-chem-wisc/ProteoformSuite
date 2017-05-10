@@ -207,14 +207,18 @@ namespace ProteoformSuiteInternal
                     {
                         if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
                         {
-                            Tuple<double, double> value;
+                            Tuple<double, double, int, int> value;
                             if (SaveState.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(4).GetDouble(), 0), Math.Round(row.Cell(3).GetDouble(), 0)), out value))
                                 row.Cell(4).SetValue(value.Item1);
                             row.Cell(6).SetValue(value.Item2);
+                            row.Cell(7).SetValue(value.Item3);
+                            row.Cell(8).SetValue(value.Item4);
                         }
                         else
                         {
                             row.Cell(6).SetValue("Signal to Noise");
+                            row.Cell(7).SetValue("Isotopic peaks left of averagine");
+                            row.Cell(8).SetValue("Isotopic peaks right of averageine");
                         }
                     }
                 });
