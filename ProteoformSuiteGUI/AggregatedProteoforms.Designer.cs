@@ -53,6 +53,8 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.dgv_AcceptNeuCdLtProteoforms = new System.Windows.Forms.DataGridView();
+            this.nUD_min_signal_to_noise = new System.Windows.Forms.NumericUpDown();
+            this.label10 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AggregatedProteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -70,6 +72,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_RetTimeToleranace)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUP_mass_tolerance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AcceptNeuCdLtProteoforms)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_signal_to_noise)).BeginInit();
             this.SuspendLayout();
             // 
             // dgv_AggregatedProteoforms
@@ -117,6 +120,8 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.nUD_min_signal_to_noise);
+            this.splitContainer2.Panel1.Controls.Add(this.label10);
             this.splitContainer2.Panel1.Controls.Add(this.nUD_min_num_bioreps);
             this.splitContainer2.Panel1.Controls.Add(this.label6);
             this.splitContainer2.Panel1.Controls.Add(this.label9);
@@ -400,6 +405,36 @@
             this.dgv_AcceptNeuCdLtProteoforms.Size = new System.Drawing.Size(1012, 328);
             this.dgv_AcceptNeuCdLtProteoforms.TabIndex = 0;
             // 
+            // nUD_min_signal_to_noise
+            // 
+            this.nUD_min_signal_to_noise.DecimalPlaces = 2;
+            this.nUD_min_signal_to_noise.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.nUD_min_signal_to_noise.Location = new System.Drawing.Point(168, 200);
+            this.nUD_min_signal_to_noise.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
+            this.nUD_min_signal_to_noise.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.nUD_min_signal_to_noise.Name = "nUD_min_signal_to_noise";
+            this.nUD_min_signal_to_noise.Size = new System.Drawing.Size(80, 20);
+            this.nUD_min_signal_to_noise.TabIndex = 54;
+            this.nUD_min_signal_to_noise.ValueChanged += new System.EventHandler(this.nUD_min_signal_to_noise_ValueChanged);
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(37, 201);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(101, 13);
+            this.label10.TabIndex = 53;
+            this.label10.Text = "Min. Signal to Noise";
+            // 
             // AggregatedProteoforms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -429,6 +464,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_RetTimeToleranace)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUP_mass_tolerance)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AcceptNeuCdLtProteoforms)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_signal_to_noise)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -459,5 +495,7 @@
         private System.Windows.Forms.TextBox tb_tableFilter;
         private System.Windows.Forms.NumericUpDown nUD_min_num_bioreps;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.NumericUpDown nUD_min_signal_to_noise;
+        private System.Windows.Forms.Label label10;
     }
 }

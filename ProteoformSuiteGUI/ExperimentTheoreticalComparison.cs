@@ -185,7 +185,7 @@ namespace ProteoformSuiteGUI
                 ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsTablesFigures();
                 ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
                 ((ProteoformSweet)MdiParent).quantification.ClearListsTablesFigures();
-                SaveState.lollipop.regroup_components(SaveState.lollipop.neucode_labeled, SaveState.lollipop.validate_proteoforms, SaveState.lollipop.input_files, SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, SaveState.lollipop.min_num_CS);
+                SaveState.lollipop.regroup_components(SaveState.lollipop.neucode_labeled, SaveState.lollipop.validate_proteoforms, SaveState.lollipop.input_files, SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, SaveState.lollipop.min_num_CS, SaveState.lollipop.min_signal_to_noise);
             }
         }
 
