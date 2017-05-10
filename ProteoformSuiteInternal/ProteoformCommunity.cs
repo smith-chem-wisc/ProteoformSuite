@@ -117,16 +117,6 @@ namespace ProteoformSuiteInternal
             return all_ordered_relations;
         }
 
-        //public Dictionary<string, List<ProteoformRelation>> relate_ed()
-        //{
-        //    Dictionary<string, List<ProteoformRelation>> ed_relations = new Dictionary<string, List<ProteoformRelation>>();
-        //    foreach (var decoys in decoy_proteoforms)
-        //    {
-        //        ed_relations.Add(decoys.Key, relate(experimental_proteoforms, decoys.Value, ProteoformComparison.ExperimentalDecoy, true));
-        //    }
-        //    return ed_relations;
-        //}
-
         public List<ProteoformRelation> relate_ef(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2)
         {
             List<ProteoformRelation> all_ef_relations = relate(pfs1, pfs2, ProteoformComparison.ExperimentalFalse, true);
@@ -429,8 +419,6 @@ namespace ProteoformSuiteInternal
             foreach (Proteoform p in theoretical_proteoforms) p.family = null;
         }
         #endregion CLEAR FAMILIES
+
     }
-
-
-
 }

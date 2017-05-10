@@ -1,13 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
     public static class ResultsSummaryGenerator
     {
+
+        #region Private Methods
+
+        private static void save_summary(string directory, string timestamp)
+        {
+            using (StreamWriter writer = new StreamWriter(Path.Combine(SaveState.lollipop.results_folder, "summary_" + timestamp + ".txt")))
+                writer.Write(generate_full_report());
+        }
+
+        private static void save_dataframe(string directory, string timestamp)
+        {
+            using (StreamWriter writer = new StreamWriter(Path.Combine(SaveState.lollipop.results_folder, "results_" + timestamp + ".tsv")))
+                writer.Write(results_dataframe());
+        }
+
+        private static void save_cytoscripts(string directory, string timestamp)
+        {
+            string message = "";
+            message += CytoscapeScript.write_cytoscape_script(SaveState.lollipop.target_proteoform_community.families, SaveState.lollipop.target_proteoform_community.families,
+                SaveState.lollipop.results_folder, "AllFamilies_", timestamp,
+                SaveState.lollipop.qVals.Count > 0, true, true, false,
+                CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
+                ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
+            message += Environment.NewLine;
+
+            if (SaveState.lollipop.qVals.Count > 0)
+            {
+                message += CytoscapeScript.write_cytoscape_script(SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.minProteoformFDR, SaveState.lollipop.minProteoformIntensity).Distinct().ToList(), SaveState.lollipop.target_proteoform_community.families,
+                    SaveState.lollipop.results_folder, "SignificantChanges_", timestamp,
+                    SaveState.lollipop.qVals.Count > 0, true, true, false,
+                    CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
+                    ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
+                message += Environment.NewLine;
+            }
+
+            foreach (GoTermNumber gtn in SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.minProteoformFDR).ToList())
+            {
+                message += CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { gtn }, SaveState.lollipop.target_proteoform_community.families,
+                    SaveState.lollipop.results_folder, gtn.Aspect.ToString() + gtn.Description.Replace(" ", "_") + "_", timestamp,
+                    true, true, true, false,
+                    CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
+                    ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
+                message += Environment.NewLine;
+            }
+            message += "Remember to install the package \"enhancedGraphics\" under App -> App Manager to view piechart nodes for quantitative data";
+        }
+
+        #endregion Private Methods
+
+        #region Public Methods
+
+        public static void save_all(string directory, string timestamp)
+        {
+            Parallel.Invoke
+            (
+                () => save_summary(SaveState.lollipop.results_folder, timestamp),
+                () => save_dataframe(SaveState.lollipop.results_folder, timestamp),
+                () => save_cytoscripts(SaveState.lollipop.results_folder, timestamp)
+            );
+        }
+
         public static string generate_full_report()
         {
             return
@@ -76,17 +139,17 @@ namespace ProteoformSuiteInternal
             report += SaveState.lollipop.goTermNumbers.Count(g => g.by < (double)SaveState.lollipop.minProteoformFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + SaveState.lollipop.minProteoformFDR.ToString() + "): " + Environment.NewLine + Environment.NewLine;
 
             return report;
-       }
+        }
 
         public static string proteins_of_significance()
         {
-            return "Identified Proteins with Significant Change: " + Environment.NewLine 
+            return "Identified Proteins with Significant Change: " + Environment.NewLine
                 + String.Join(Environment.NewLine, SaveState.lollipop.inducedOrRepressedProteins.Select(p => p.Accession).Distinct().OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
         }
 
         public static string go_terms_of_significance()
         {
-            return "GO Terms of Significance (Benjimini-Yekeulti p-value < " + SaveState.lollipop.minProteoformFDR.ToString() + "): " + Environment.NewLine 
+            return "GO Terms of Significance (Benjimini-Yekeulti p-value < " + SaveState.lollipop.minProteoformFDR.ToString() + "): " + Environment.NewLine
                 + String.Join(Environment.NewLine, SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.minProteoformFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
 
         }
@@ -143,5 +206,8 @@ namespace ProteoformSuiteInternal
             }
             return result_string.ToString();
         }
+
+        #endregion Public Methods
+
     }
 }
