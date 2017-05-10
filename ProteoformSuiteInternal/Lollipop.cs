@@ -1141,7 +1141,7 @@ namespace ProteoformSuiteInternal
                         bool peak_exists = true;
                         while(peak_exists)
                         {
-                            if (scan.peak_x.Count(p => Math.Abs(p - (mz_average - peak_over * Lollipop.MONOISOTOPIC_UNIT_MASS / cs.charge_count)) < .005) == 1)
+                            if (scan.peak_x.Count(p => Math.Abs(p - (mz_average - peak_over * Lollipop.MONOISOTOPIC_UNIT_MASS / cs.charge_count)) < .005) >= 1)
                             {
                                 left_averagine++;
                                 peak_over++;
@@ -1154,7 +1154,7 @@ namespace ProteoformSuiteInternal
                         peak_exists = true;
                         while (peak_exists)
                         {
-                            if (scan.peak_x.Count(p => Math.Abs(p - (mz_average + peak_over * Lollipop.MONOISOTOPIC_UNIT_MASS / cs.charge_count)) < .005) == 1)
+                            if (scan.peak_x.Count(p => Math.Abs(p - (mz_average + peak_over * Lollipop.MONOISOTOPIC_UNIT_MASS / cs.charge_count)) < .005) >= 1)
                             {
                                 right_averagine++;
                                 peak_over++;
