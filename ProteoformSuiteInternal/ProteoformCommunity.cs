@@ -161,7 +161,7 @@ namespace ProteoformSuiteInternal
                     }
                 }
 
-                ProteoformRelation best_relation = all_td_relations.Where(r => r.candidate_ptmset != null).OrderBy(r => r.candidate_ptmset.ptm_rank_sum).FirstOrDefault();
+                ProteoformRelation best_relation = all_td_relations.Where(r => r.candidate_ptmset != null).OrderBy(r => r.candidate_ptmset.ptm_rank_sum + Math.Abs(Math.Abs(r.candidate_ptmset.mass) - Math.Abs(r.DeltaMass)) * 10E-6).FirstOrDefault();
                 if (best_relation != null)
                 {
                     best_relation.connected_proteoforms[0].relationships.Add(best_relation);

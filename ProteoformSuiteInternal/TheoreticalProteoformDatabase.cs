@@ -50,7 +50,6 @@ namespace ProteoformSuiteInternal
             foreach(ProteoformCommunity community in SaveState.lollipop.decoy_proteoform_communities.Values)
             {
                 community.theoretical_proteoforms = new TheoreticalProteoform[0];
-
             }
             theoretical_proteins.Clear();
 
@@ -89,6 +88,13 @@ namespace ProteoformSuiteInternal
 
             //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
             possible_ptmset_dictionary = make_ptmset_dictionary();
+
+            //read in BU results if available
+            SaveState.lollipop.BottomUpPSMList.Clear();
+            foreach(InputFile file in SaveState.lollipop.input_files.Where(f => f.purpose == Purpose.BottomUp))
+            {
+                SaveState.lollipop.BottomUpPSMList.AddRange(BottomUpReader.ReadBUFile(file.filename));
+            }
 
             expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
             aaIsotopeMassList = new AminoAcidMasses(SaveState.lollipop.carbamidomethylation, SaveState.lollipop.natural_lysine_isotope_abundance, SaveState.lollipop.neucode_light_lysine, SaveState.lollipop.neucode_heavy_lysine).AA_Masses;

@@ -148,8 +148,8 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            if (get_files(input_files, Purpose.RawFile).Count() > 0 && !get_files(input_files, Purpose.RawFile).Any(f => f.matchingCalibrationFile))
-                return_message += "To use calibration files, please give them the same filenames as the deconvolution results to which they correspond.";
+            if ((calibrate_td_results || calibrate_lock_mass) && input_files.Count(f => f.purpose == Purpose.CalibrationIdentification) > 0  && get_files(input_files, Purpose.RawFile).Count() > 0 && !get_files(input_files, Purpose.RawFile).Any(f => f.matchingCalibrationFile))
+                return_message += "To calibrate, deconvolution identification files should have the same names as corresponding raw files.";
 
             return return_message;
         }
@@ -498,7 +498,7 @@ namespace ProteoformSuiteInternal
         public int mod_rank_second_quartile = 0;
         public int mod_rank_third_quartile = 0;
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
-
+        public List<BottomUpPSM> BottomUpPSMList = new List<BottomUpPSM>();
         #endregion THEORETICAL DATABASE Public Fields
 
         #region ET,ED,EE,EF COMPARISONS Public Fields
@@ -1078,7 +1078,7 @@ namespace ProteoformSuiteInternal
                     process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.filename == filename).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
                     get_calibration_points(filename);
                     calibrate_td_hits(filename);
-                    determine_component_shift();
+                    determine_component_shift(filename);
                     InputFile file = input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.filename == filename).FirstOrDefault();
                     if (file != null) Calibration.calibrate_components_in_xlsx(file);
                 }
@@ -1107,7 +1107,7 @@ namespace ProteoformSuiteInternal
 
                 if (calibrate_td_results || calibrate_intact_with_td_ids)
                 {
-                    Func<double[], double> bestCf = Calibration.Run_TdMzCal(filename, td_hits_calibration.Where(h => h.filename == filename && h.tdResultType == TopDownResultType.TightAbsoluteMass).ToList(), true);
+                    Func<double[], double> bestCf = Calibration.Run_TdMzCal(filename, td_hits_calibration.Where(h => h.filename == filename && h.tdResultType == TopDownResultType.TightAbsoluteMass && h.score >= 3).ToList(), true);
                     if (bestCf != null) td_calibration_functions.Add(filename, bestCf);
                     if (calibrate_intact_with_td_ids)
                     {
@@ -1120,9 +1120,9 @@ namespace ProteoformSuiteInternal
 
         double monoisotopic_averagine = 111.0543053;
         double average_averagine = 111.1234625;
-        public void determine_component_shift()
+        public void determine_component_shift(string filename)
         {
-            Parallel.ForEach(calibration_components, c =>
+            Parallel.ForEach(calibration_components.Where(c => c.input_file.filename == filename), c =>
             {
                 if ((!calibrate_td_results && !calibrate_intact_with_td_ids) || td_calibration_functions.ContainsKey(c.input_file.filename))
                 {
@@ -1165,9 +1165,12 @@ namespace ProteoformSuiteInternal
 
                         double corrected_mz = (calibrate_td_results || calibrate_intact_with_td_ids) ? cs.mz_centroid - td_calibration_functions[c.input_file.filename](new double[] { cs.mz_centroid, Convert.ToDouble(c.rt_range.Split('-')[0]) }) : cs.mz_centroid - Calibration.get_correction_factor(c.input_file.filename, c.scan_range);
                         var key = new Tuple<string, double, double>(c.input_file.filename, Math.Round(cs.mz_centroid, 0), Math.Round(cs.intensity, 0));
-                        if (!file_mz_correction.ContainsKey(key))
+                        lock (file_mz_correction)
                         {
-                            lock (file_mz_correction) file_mz_correction.Add(key, new Tuple<double, double, int, int> ( corrected_mz, scan.peak_y[index_peak] / scan.noises[index_peak], left_averagine, right_averagine));
+                            if (!file_mz_correction.ContainsKey(key))
+                            {
+                                file_mz_correction.Add(key, new Tuple<double, double, int, int>(corrected_mz, scan.peak_y[index_peak] / scan.noises[index_peak], left_averagine, right_averagine));
+                            }
                         }
                     }
                 }

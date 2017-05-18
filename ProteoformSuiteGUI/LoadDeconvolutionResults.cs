@@ -390,17 +390,23 @@ namespace ProteoformSuiteGUI
         private void bt_calibrate_Click(object sender, EventArgs e)
         {
             if (!cb_tdhits.Checked && !cb_lockmass.Checked && !cb_td_hits_diff_file.Checked) { MessageBox.Show("Please select at least one calibration method."); return; }
+            if (SaveState.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() == 0)
+            {
+                MessageBox.Show("Please enter raw files to calibrate."); return;
+            }
             if (cb_tdhits.Checked || cb_td_hits_diff_file.Checked)
             {
-                if (SaveState.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationTopDown).Count() > 0) SaveState.lollipop.read_in_calibration_td_hits();
-                else { MessageBox.Show("Please enter top-down results files to calibrate."); return; }
+                if (SaveState.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationTopDown).Count() == 0)
+                { MessageBox.Show("Please enter top-down results files to calibrate."); return; }
+                if (SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
+                {
+                    MessageBox.Show("First create a theoretical proteoform database. On the Results tab, select Theoretical Proteoform Database.");
+                    return;
+                }
+                else  SaveState.lollipop.read_in_calibration_td_hits();
             }
-            if (SaveState.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() > 0)
-            {
-              SaveState.lollipop.calibrate_files();
-              MessageBox.Show("Successfully calibrated files.");
-            }
-            else { MessageBox.Show("Please enter raw files to calibrate."); return; }
+            SaveState.lollipop.calibrate_files();
+            MessageBox.Show("Successfully calibrated files.");
         }
 
         private void cb_tdhits_CheckedChanged(object sender, EventArgs e)

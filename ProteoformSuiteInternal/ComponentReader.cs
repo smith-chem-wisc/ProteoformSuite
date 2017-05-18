@@ -41,7 +41,8 @@ namespace ProteoformSuiteInternal
                 List<string> cellStrings = cells[i];
                 if (cellStrings.Count > 7) //component row
                 {
-                    if (i > 1) add_component(new_component); // here we're adding the previously read component
+                    if (i > 1 && raw_components_in_file.Count(c => c.intensity_sum == new_component.intensity_sum && c.scan_range == new_component.scan_range && c.reported_monoisotopic_mass == new_component.reported_monoisotopic_mass) == 0)
+                        add_component(new_component); // here we're adding the previously read component
                     new_component = new Component(cellStrings, file); // starting fresh here with a newly created componet.
                     charge_row_index = 0;
                     scan_range = cellStrings[8];

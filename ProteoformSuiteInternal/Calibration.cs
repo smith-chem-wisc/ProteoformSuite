@@ -65,29 +65,12 @@ namespace ProteoformSuiteInternal
             Func<double[], double> calibration_function = null;
             if (identifications.Count >= 5)  //need at least 5 calibration points to consider
             {
-                //filter out 5% outliers
-                List<double> mass_errors = identifications.Select(h => (h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0)).ToList().OrderBy(m => m).ToList();
-                double percent_in_window = 1;
-                int start = 0; //start index
-                int count = identifications.Count; //end index
-                while (percent_in_window > .95)  //decrease window until ~95% of points in it
-                {
-                    List<double> mass_errors_start = mass_errors.GetRange(start + 1, count - 1);
-                    double start_range = mass_errors_start.Max() - mass_errors_start.Min();
-                    List<double> mass_errors_end = mass_errors.GetRange(start, count - 1);
-                    double end_range = mass_errors_end.Max() - mass_errors_end.Min();
-                    if (start_range < end_range) start++; //if window smaller from removing first delta m, keep this window
-                    count--; //either way count fewer
-                    percent_in_window = (double)mass_errors.GetRange(start, count).ToList().Count / mass_errors.Count;
-                }
-                List<TopDownHit> identifications_to_use = identifications.OrderBy(h => ((h.theoretical_mass - h.reported_mass) - Math.Round(h.theoretical_mass - h.reported_mass, 0))).ToList().GetRange(start, count).ToList();
-
                 //get data points
                 List<LabeledDataPoint> pointList = new List<LabeledDataPoint>();
 
                 //if calibrating td file intact masses, can use hits themselves as calibration points
                 //otherwise, find intact masses that are within .05 Da and 3 minutes - use to calibrate. 
-                foreach (TopDownHit hit in identifications_to_use)
+                foreach (TopDownHit hit in identifications)
                 {
                     if (td_file)
                     {
