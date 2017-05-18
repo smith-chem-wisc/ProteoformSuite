@@ -200,6 +200,7 @@ namespace Test
             SaveState.lollipop.mod_rank_sum_threshold = 2;
             SaveState.lollipop.theoretical_database.all_possible_ptmsets = PtmCombos.generate_all_ptmsets(1, SaveState.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList(), SaveState.lollipop.modification_ranks, 1);
             SaveState.lollipop.theoretical_database.all_mods_with_mass = SaveState.lollipop.theoretical_database.uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().ToList();
+            SaveState.lollipop.theoretical_database.possible_ptmset_dictionary = SaveState.lollipop.theoretical_database.make_ptmset_dictionary();
 
             SaveState.lollipop.ee_max_mass_difference = 20;
             SaveState.lollipop.peak_width_base_ee = 0.015;

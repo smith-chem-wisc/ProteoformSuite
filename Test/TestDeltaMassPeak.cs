@@ -131,6 +131,7 @@ namespace Test
             Assert.AreEqual(3, pr4.nearby_relations_count);
 
             SaveState.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet> { new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }) };
+            SaveState.lollipop.theoretical_database.possible_ptmset_dictionary = SaveState.lollipop.theoretical_database.make_ptmset_dictionary();
             SaveState.lollipop.et_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
             Assert.AreEqual(1, SaveState.lollipop.et_peaks.Count);
             DeltaMassPeak peak = SaveState.lollipop.et_peaks[0];
