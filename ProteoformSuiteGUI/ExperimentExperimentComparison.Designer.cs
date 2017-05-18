@@ -68,6 +68,12 @@
             this.label5 = new System.Windows.Forms.Label();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.tb_relationTableFilter = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.tb_peakTableFilter = new System.Windows.Forms.TextBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.cb_view_decoy_histogram = new System.Windows.Forms.CheckBox();
             this.bt_compare_EE = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -80,12 +86,6 @@
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.tb_peakTableFilter = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.tb_relationTableFilter = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
@@ -118,6 +118,8 @@
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
+            this.groupBox6.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -127,8 +129,6 @@
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
-            this.groupBox5.SuspendLayout();
-            this.groupBox6.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -493,6 +493,7 @@
             // 
             // splitContainer5.Panel2
             // 
+            this.splitContainer5.Panel2.Controls.Add(this.cb_automate_peak_acceptance);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox6);
             this.splitContainer5.Panel2.Controls.Add(this.groupBox5);
             this.splitContainer5.Panel2.Controls.Add(this.bt_compare_EE);
@@ -523,6 +524,66 @@
             this.splitContainer4.Size = new System.Drawing.Size(808, 307);
             this.splitContainer4.SplitterDistance = 376;
             this.splitContainer4.TabIndex = 18;
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox6.Controls.Add(this.label11);
+            this.groupBox6.Controls.Add(this.tb_relationTableFilter);
+            this.groupBox6.Controls.Add(this.label8);
+            this.groupBox6.Controls.Add(this.tb_peakTableFilter);
+            this.groupBox6.Location = new System.Drawing.Point(449, 113);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(263, 100);
+            this.groupBox6.TabIndex = 34;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Table Control";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(137, 60);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(118, 13);
+            this.label11.TabIndex = 3;
+            this.label11.Text = "EE Relation Table Filter";
+            // 
+            // tb_relationTableFilter
+            // 
+            this.tb_relationTableFilter.Location = new System.Drawing.Point(25, 57);
+            this.tb_relationTableFilter.Name = "tb_relationTableFilter";
+            this.tb_relationTableFilter.Size = new System.Drawing.Size(100, 20);
+            this.tb_relationTableFilter.TabIndex = 2;
+            this.tb_relationTableFilter.TextChanged += new System.EventHandler(this.tb_relationTableFilter_TextChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(137, 25);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(104, 13);
+            this.label8.TabIndex = 1;
+            this.label8.Text = "EE Peak Table Filter";
+            // 
+            // tb_peakTableFilter
+            // 
+            this.tb_peakTableFilter.Location = new System.Drawing.Point(25, 22);
+            this.tb_peakTableFilter.Name = "tb_peakTableFilter";
+            this.tb_peakTableFilter.Size = new System.Drawing.Size(100, 20);
+            this.tb_peakTableFilter.TabIndex = 0;
+            this.tb_peakTableFilter.TextChanged += new System.EventHandler(this.tb_peakTableFilter_TextChanged);
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox5.Controls.Add(this.cb_view_decoy_histogram);
+            this.groupBox5.Controls.Add(this.cb_Graph_lowerThreshold);
+            this.groupBox5.Location = new System.Drawing.Point(449, 219);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(236, 106);
+            this.groupBox5.TabIndex = 33;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "EE Histogram Selection";
             // 
             // cb_view_decoy_histogram
             // 
@@ -591,7 +652,6 @@
             // groupBox1
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox1.Controls.Add(this.cb_automate_peak_acceptance);
             this.groupBox1.Controls.Add(this.tb_max_accepted_fdr);
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.nUD_MaxRetTimeDifference);
@@ -610,7 +670,7 @@
             // cb_automate_peak_acceptance
             // 
             this.cb_automate_peak_acceptance.AutoSize = true;
-            this.cb_automate_peak_acceptance.Location = new System.Drawing.Point(0, 82);
+            this.cb_automate_peak_acceptance.Location = new System.Drawing.Point(245, 96);
             this.cb_automate_peak_acceptance.Name = "cb_automate_peak_acceptance";
             this.cb_automate_peak_acceptance.Size = new System.Drawing.Size(237, 17);
             this.cb_automate_peak_acceptance.TabIndex = 30;
@@ -688,66 +748,6 @@
             this.splitContainer3.SplitterDistance = 440;
             this.splitContainer3.TabIndex = 17;
             // 
-            // groupBox5
-            // 
-            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox5.Controls.Add(this.cb_view_decoy_histogram);
-            this.groupBox5.Controls.Add(this.cb_Graph_lowerThreshold);
-            this.groupBox5.Location = new System.Drawing.Point(449, 219);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(236, 106);
-            this.groupBox5.TabIndex = 33;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "EE Histogram Selection";
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox6.Controls.Add(this.label11);
-            this.groupBox6.Controls.Add(this.tb_relationTableFilter);
-            this.groupBox6.Controls.Add(this.label8);
-            this.groupBox6.Controls.Add(this.tb_peakTableFilter);
-            this.groupBox6.Location = new System.Drawing.Point(449, 113);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(263, 100);
-            this.groupBox6.TabIndex = 34;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Table Control";
-            // 
-            // tb_peakTableFilter
-            // 
-            this.tb_peakTableFilter.Location = new System.Drawing.Point(25, 22);
-            this.tb_peakTableFilter.Name = "tb_peakTableFilter";
-            this.tb_peakTableFilter.Size = new System.Drawing.Size(100, 20);
-            this.tb_peakTableFilter.TabIndex = 0;
-            this.tb_peakTableFilter.TextChanged += new System.EventHandler(this.tb_peakTableFilter_TextChanged);
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(137, 25);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(104, 13);
-            this.label8.TabIndex = 1;
-            this.label8.Text = "EE Peak Table Filter";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(137, 60);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(118, 13);
-            this.label11.TabIndex = 3;
-            this.label11.Text = "EE Relation Table Filter";
-            // 
-            // tb_relationTableFilter
-            // 
-            this.tb_relationTableFilter.Location = new System.Drawing.Point(25, 57);
-            this.tb_relationTableFilter.Name = "tb_relationTableFilter";
-            this.tb_relationTableFilter.Size = new System.Drawing.Size(100, 20);
-            this.tb_relationTableFilter.TabIndex = 2;
-            this.tb_relationTableFilter.TextChanged += new System.EventHandler(this.tb_relationTableFilter_TextChanged);
-            // 
             // ExperimentExperimentComparison
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -785,12 +785,17 @@
             this.splitContainer6.ResumeLayout(false);
             this.splitContainer5.Panel1.ResumeLayout(false);
             this.splitContainer5.Panel2.ResumeLayout(false);
+            this.splitContainer5.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer5)).EndInit();
             this.splitContainer5.ResumeLayout(false);
             this.splitContainer4.Panel1.ResumeLayout(false);
             this.splitContainer4.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -803,10 +808,6 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
-            this.groupBox6.ResumeLayout(false);
-            this.groupBox6.PerformLayout();
             this.ResumeLayout(false);
 
         }
