@@ -79,7 +79,7 @@ namespace Test
             List<Component> components = TestExperimentalProteoform.generate_neucode_components(TestExperimentalProteoform.starter_mass);
 
             SaveState.lollipop.neucode_labeled = true;
-            List<ExperimentalProteoform> pfs = SaveState.lollipop.createProteoforms(components.OfType<NeuCodePair>(), components, 0);
+            List<ExperimentalProteoform> pfs = SaveState.lollipop.createProteoforms(components.OfType<NeuCodePair>(), components, 0, 0, 0, 0);
             Assert.AreEqual(1, pfs.Count);
             Assert.AreEqual(2, pfs[0].aggregated_components.Count);
             Assert.AreEqual(2, components.Count);
@@ -98,7 +98,7 @@ namespace Test
 
             // in bounds lowest monoisotopic error
             SaveState.lollipop.neucode_labeled = true;
-            List<ExperimentalProteoform> pfs = SaveState.lollipop.createProteoforms(neucodes, components, 0);
+            List<ExperimentalProteoform> pfs = SaveState.lollipop.createProteoforms(neucodes, components, 0, 0, 0, 0);
             List<ExperimentalProteoform> vetted = SaveState.lollipop.vetExperimentalProteoforms(pfs, components, new List<ExperimentalProteoform>());
             Assert.AreEqual(1, vetted.Count);
             Assert.AreEqual(2, vetted[0].aggregated_components.Count);
@@ -119,7 +119,7 @@ namespace Test
 
             // in bounds lowest monoisotopic error
             SaveState.lollipop.neucode_labeled = true;
-            List<ExperimentalProteoform> pfs = SaveState.lollipop.createProteoforms(neucodes, neucodes, 0);
+            List<ExperimentalProteoform> pfs = SaveState.lollipop.createProteoforms(neucodes, neucodes, 0, 0, 0, 0);
             List<ExperimentalProteoform> vetted_quant = SaveState.lollipop.assignQuantificationComponents(pfs, quant_components);
             Assert.AreEqual(1, vetted_quant.Count);
             Assert.AreEqual(2, vetted_quant[0].aggregated_components.Count);
@@ -144,7 +144,7 @@ namespace Test
             //Must use SaveState.lol.remaining_components because ThreadStart only uses void methods
             SaveState.lollipop.neucode_labeled = true;
             SaveState.lollipop.input_files = new List<InputFile> { new InputFile("fake.txt", Purpose.Quantification) };
-            List<ExperimentalProteoform> vetted_quant = SaveState.lollipop.aggregate_proteoforms(true, neucodes, components, quant_components, 0);
+            List<ExperimentalProteoform> vetted_quant = SaveState.lollipop.aggregate_proteoforms(true, neucodes, components, quant_components, 0, 0, 0, 0);
             Assert.AreEqual(1, vetted_quant.Count);
             Assert.AreEqual(2, vetted_quant[0].aggregated_components.Count);
             Assert.AreEqual(2, vetted_quant[0].lt_verification_components.Count);
@@ -168,7 +168,7 @@ namespace Test
             //Must use SaveState.lol.remaining_components because ThreadStart only uses void methods
             SaveState.lollipop.neucode_labeled = true;
             SaveState.lollipop.input_files = new List<InputFile> { new InputFile("fake.txt", Purpose.Quantification) };
-            List<ExperimentalProteoform> vetted_quant = SaveState.lollipop.aggregate_proteoforms(false, neucodes, components, quant_components, 0);
+            List<ExperimentalProteoform> vetted_quant = SaveState.lollipop.aggregate_proteoforms(false, neucodes, components, quant_components, 0, 0, 0, 0);
             Assert.AreEqual(1, vetted_quant.Count);
             Assert.AreEqual(2, vetted_quant[0].aggregated_components.Count);
             Assert.AreEqual(0, vetted_quant[0].lt_verification_components.Count);
@@ -207,7 +207,7 @@ namespace Test
         {
             SaveState.lollipop.raw_neucode_pairs.Add(new NeuCodePair());
             Assert.IsNotEmpty(SaveState.lollipop.raw_neucode_pairs);
-            Assert.IsEmpty(SaveState.lollipop.regroup_components(true, false, new List<InputFile>(), SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, 0));
+            Assert.IsEmpty(SaveState.lollipop.regroup_components(true, false, new List<InputFile>(), SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, 0, 0, 0, 0));
             Assert.IsEmpty(SaveState.lollipop.raw_neucode_pairs);
         }
     }
