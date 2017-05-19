@@ -79,15 +79,5 @@ namespace Test
             Assert.False(c.matchingCalibrationFile);
             Assert.False(i.matchingCalibrationFile);
         }
-
-        [Test]
-        public void matching_calibration_none_possible()
-        {
-            SaveState.lollipop.calibrate_td_results = true;
-            InputFile c = new InputFile("fake.xlsx", Purpose.CalibrationIdentification);
-            InputFile r = new InputFile("other.raw", Purpose.RawFile);
-            SaveState.lollipop.input_files = new List<InputFile> { c, r};
-            Assert.AreNotEqual("", SaveState.lollipop.match_calibration_files());
-        }
     }
 }
