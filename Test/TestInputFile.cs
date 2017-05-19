@@ -43,7 +43,7 @@ namespace Test
         public void matching_calibration_one_match()
         {
             InputFile c = new InputFile("fake.txt", Purpose.RawFile);
-            InputFile i = new InputFile("fake.txt", Purpose.Identification);
+            InputFile i = new InputFile("fake.txt", Purpose.CalibrationIdentification);
             Assert.False(c.matchingCalibrationFile);
             Assert.False(i.matchingCalibrationFile);
             c.filename = "hello";
@@ -58,8 +58,8 @@ namespace Test
         public void matching_calibration_two_match()
         {
             InputFile c = new InputFile("fake.txt", Purpose.RawFile);
-            InputFile i = new InputFile("fake.txt", Purpose.Identification);
-            InputFile j = new InputFile("fake.txt", Purpose.Identification);
+            InputFile i = new InputFile("fake.txt", Purpose.CalibrationIdentification);
+            InputFile j = new InputFile("fake.txt", Purpose.CalibrationIdentification);
             c.filename = "hello";
             i.filename = "hello";
             j.filename = "hello";
@@ -71,13 +71,31 @@ namespace Test
         public void matching_calibration_no_match()
         {
             InputFile c = new InputFile("fake.txt", Purpose.RawFile);
-            InputFile i = new InputFile("fake.txt", Purpose.Identification);
+            InputFile i = new InputFile("fake.txt", Purpose.CalibrationIdentification);
             c.filename = "hello";
             i.filename = "hey";
             SaveState.lollipop.input_files = new List<InputFile> { c, i };
             SaveState.lollipop.match_calibration_files();
             Assert.False(c.matchingCalibrationFile);
             Assert.False(i.matchingCalibrationFile);
+        }
+
+        [Test]
+        public void one_match_one_doesnt()
+        {
+            SaveState.lollipop.calibrate_lock_mass = true;
+            InputFile c = new InputFile("fake1.txt", Purpose.RawFile);
+            InputFile i = new InputFile("fake1.txt", Purpose.CalibrationIdentification);
+            InputFile a = new InputFile("fake2.txt", Purpose.CalibrationIdentification);
+            c.filename = "hello";
+            i.filename = "hello";
+            a.filename = "hey";
+            SaveState.lollipop.input_files = new List<InputFile> { c, i, a };
+            SaveState.lollipop.match_calibration_files();
+            Assert.True(c.matchingCalibrationFile);
+            Assert.True(i.matchingCalibrationFile);
+            Assert.False (a.matchingCalibrationFile);
+            Assert.AreNotEqual("", SaveState.lollipop.match_calibration_files());
         }
     }
 }
