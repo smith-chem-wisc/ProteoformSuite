@@ -148,7 +148,7 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            if ((calibrate_td_results || calibrate_lock_mass) && input_files.Count(f => f.purpose == Purpose.CalibrationIdentification) > 0  && get_files(input_files, Purpose.RawFile).Count() > 0 && !get_files(input_files, Purpose.RawFile).Any(f => f.matchingCalibrationFile))
+            if ((calibrate_lock_mass || calibrate_td_results || calibrate_lock_mass) && input_files.Count(f => f.purpose == Purpose.CalibrationIdentification) > 0  && get_files(input_files, Purpose.RawFile).Count() > 0 && get_files(input_files, Purpose.CalibrationIdentification).Any(f => !f.matchingCalibrationFile))
                 return_message += "To calibrate, deconvolution identification files should have the same names as corresponding raw files.";
 
             return return_message;
