@@ -54,7 +54,14 @@ namespace ProteoformSuiteInternal
                 peak_relation_group_count >= SaveState.lollipop.min_peak_count_et :
                 peak_relation_group_count >= SaveState.lollipop.min_peak_count_ee;
 
-            possiblePeakAssignments = nearestPTMs(DeltaMass, RelationType).ToList();
+            List<PtmSet> candidates;
+            if (SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(DeltaMass, 1), out candidates))
+            {
+                possiblePeakAssignments = candidates.Where(c => RelationType == ProteoformComparison.ExperimentalTheoretical || RelationType == ProteoformComparison.ExperimentalDecoy ?
+                        Math.Abs(DeltaMass - c.mass) <= 0.05 :
+                        Math.Abs(Math.Abs(DeltaMass) - Math.Abs(c.mass)) <= 0.05).ToList();
+            }
+            else possiblePeakAssignments = new List<PtmSet>();
             possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.Select(ptmset => String.Join(";", ptmset.ptm_combination.Select(m => m.modification.id)))) + "]";
         }
 
@@ -143,19 +150,6 @@ namespace ProteoformSuiteInternal
             }
 
             return true;
-        }
-
-        public IEnumerable<PtmSet> nearestPTMs(double dMass, ProteoformComparison relation_type)
-        {
-            foreach (PtmSet set in SaveState.lollipop.theoretical_database.all_possible_ptmsets)
-            {
-                bool valid_or_no_unmodified = set.ptm_combination.Count == 1 || !set.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0);
-                bool within_addition_tolerance = relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy ?
-                    Math.Abs(dMass - set.mass) <= 0.05 :
-                    Math.Abs(Math.Abs(dMass) - Math.Abs(set.mass)) <= 0.05; //In Daltons. This is a liberal threshold because these are filtered upon actual assignment
-                if (valid_or_no_unmodified && within_addition_tolerance)
-                    yield return set;
-            }
         }
 
         #endregion Public Methods
