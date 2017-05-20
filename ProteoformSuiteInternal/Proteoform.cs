@@ -32,7 +32,7 @@ namespace ProteoformSuiteInternal
                     "Unknown" : 
                     ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" :
-                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => ptm.modification.id));
+                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => SaveState.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id));
             }
         }
 
@@ -142,7 +142,7 @@ namespace ProteoformSuiteInternal
             {
                 List<ModificationWithMass> mods_in_set = set.ptm_combination.Select(ptm => ptm.modification).ToList();
 
-                int rank_sum = additional_ptm_penalty * (set.ptm_combination.Count - 1); // penalize additional PTMs
+                int rank_sum = additional_ptm_penalty * (set.ptm_combination.Sum(m => SaveState.lollipop.theoretical_database.unlocalized_lookup[m.modification].ptm_count) - 1); // penalize additional PTMs
 
                 foreach (ModificationWithMass m in mods_in_set)
                 {
