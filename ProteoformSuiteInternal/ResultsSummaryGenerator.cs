@@ -121,10 +121,13 @@ namespace ProteoformSuiteInternal
             report += SaveState.lollipop.target_proteoform_community.families.Count.ToString() + "\tProteoform Families" + Environment.NewLine;
             List<ProteoformFamily> identified_families = SaveState.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() == 1).ToList();
             List<ProteoformFamily> ambiguous_families = SaveState.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() > 1).ToList();
+            List<ProteoformFamily> unidentified_families = SaveState.lollipop.target_proteoform_community.families.Where(f => f.gene_names.Select(g => g.ordered_locus).Distinct().Count() == 0 && f.proteoforms.Count > 1).ToList();
             report += identified_families.Count.ToString() + "\tIdentified Families (Correspond to 1 gene)" + Environment.NewLine;
             report += identified_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Identified Families" + Environment.NewLine;
             report += ambiguous_families.Count.ToString() + "\tAmbiguous Families (Correspond to > 1 gene)" + Environment.NewLine;
             report += ambiguous_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Ambiguous Families" + Environment.NewLine;
+            report += unidentified_families.Count.ToString() + "\tUnidentified Families (Correspond to no gene)" + Environment.NewLine;
+            report += unidentified_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Unidentified Families" + Environment.NewLine;
             report += SaveState.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString() + "\tOrphaned Experimental Proteoforms (Not joined with another proteoform)" + Environment.NewLine + Environment.NewLine;
 
             report += SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null).ToString() + "\tIdentified Experimental Proteoforms" + Environment.NewLine;

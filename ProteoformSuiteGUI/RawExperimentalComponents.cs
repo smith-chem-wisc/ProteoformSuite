@@ -33,8 +33,8 @@ namespace ProteoformSuiteGUI
                 () => SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_quantification_components, Purpose.Quantification),
                 () => 
                 {
-                    if (SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length <= 0)
-                        SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(Path.Combine(Environment.CurrentDirectory)));
+                    if ((MdiParent as ProteoformSweet).theoreticalDatabase.ReadyToRunTheGamut())
+                        (MdiParent as ProteoformSweet).theoreticalDatabase.RunTheGamut();
                 }
             );
 
@@ -42,7 +42,6 @@ namespace ProteoformSuiteGUI
             NeuCodePairs pairs_form = (MdiParent as ProteoformSweet).neuCodePairs;
             if (SaveState.lollipop.neucode_labeled && pairs_form.ReadyToRunTheGamut())
                 pairs_form.RunTheGamut();
-            (MdiParent as ProteoformSweet).theoreticalDatabase.FillDataBaseTable("Target");
         }
 
         public List<DataGridView> GetDGVs()
