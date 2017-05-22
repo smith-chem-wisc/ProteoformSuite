@@ -93,7 +93,7 @@ namespace ProteoformSuiteInternal
             SaveState.lollipop.BottomUpPSMList.Clear();
             foreach(InputFile file in SaveState.lollipop.input_files.Where(f => f.purpose == Purpose.BottomUp))
             {
-                SaveState.lollipop.BottomUpPSMList.AddRange(BottomUpReader.ReadBUFile(file.filename));
+                SaveState.lollipop.BottomUpPSMList.AddRange(BottomUpReader.ReadBUFile(file.complete_path));
             }
 
             expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());

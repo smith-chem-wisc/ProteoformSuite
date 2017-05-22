@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
 
     public class TopDownHit
     {
-        public MsScan ms_scan { get; set; }
-        public int scan { get; set; }
+        public MsScan ms1Scan { get; set; }
+        public int ms2ScanNumber { get; set; }
         public double retention_time { get; set; }
         public string filename { get; set; }
         public string uniprot_id { get; set; }
-        public string sequence { get; set; } 
+        public string sequence { get; set; }
         public int start_index { get; set; } //position one based
         public int stop_index { get; set; } //position one based
         public List<Ptm> ptm_list { get; set; } = new List<Ptm>(); //position one based. this list is empty if unmodified.
@@ -28,7 +29,6 @@ namespace ProteoformSuiteInternal
         public int charge { get; set; }
         public double mass_error { get; set; }
         public double mz { get; set; }
-        public double intensity { get; set; } //precursor ion intensity
         public bool targeted { get; set; }
         public double score { get; set; }//C-score
         public TopDownResultType tdResultType { get; set; }
@@ -48,13 +48,13 @@ namespace ProteoformSuiteInternal
             this.reported_mass = reported_mass;
             this.corrected_mass = reported_mass;
             this.theoretical_mass = TheoreticalProteoform.CalculateProteoformMass(sequence, aaIsotopeMassList) + ptm_list.Sum(p => p.modification.monoisotopicMass);
-            this.scan = scan;
+            this.ms2ScanNumber = scan;
             this.retention_time = retention_time;
             this.filename = filename;
             this.targeted = targeted;
             this.score = score;
         }
-        
+
         public TopDownHit()
         {
 
@@ -78,61 +78,59 @@ namespace ProteoformSuiteInternal
         {
             return (observed - theoretical_mass) - Math.Round(observed - theoretical, 0);
         }
+
+        public string GetSequenceWithChemicalFormula()
+        {
+
+            var sbsequence = new StringBuilder();
+
+            // variable modification on peptide N-terminus
+            ModificationWithMass pep_n_term_variable_mod = ptm_list.Where(p => p.position == 1).Select(m => m.modification).FirstOrDefault();
+            if (pep_n_term_variable_mod != null)
+            {
+                var jj = pep_n_term_variable_mod as ModificationWithMassAndCf;
+                if (jj != null && Math.Abs(jj.chemicalFormula.MonoisotopicMass - jj.monoisotopicMass) < 1e-5)
+                    sbsequence.Append('[' + jj.chemicalFormula.Formula + ']');
+                else
+                    return null;
+            }
+
+            for (int r = 0; r < sequence.Length; r++)
+            {
+                sbsequence.Append(sequence[r]);
+                // variable modification on this residue
+                ModificationWithMass residue_variable_mod = ptm_list.Where(p => p.position == r + 2).Select(m => m.modification).FirstOrDefault();
+                if (residue_variable_mod != null)
+                {
+                    var jj = residue_variable_mod as ModificationWithMassAndCf;
+                    if (jj != null && Math.Abs(jj.chemicalFormula.MonoisotopicMass - jj.monoisotopicMass) < 1e-5)
+                        sbsequence.Append('[' + jj.chemicalFormula.Formula + ']');
+                    else
+                        return null;
+                }
+            }
+
+            // variable modification on peptide C-terminus
+            ModificationWithMass pep_c_term_variable_mod = ptm_list.Where(p => p.position == sequence.Length + 2).Select(m => m.modification).FirstOrDefault();
+            if (pep_c_term_variable_mod != null)
+            {
+                var jj = pep_c_term_variable_mod as ModificationWithMassAndCf;
+                if (jj != null && Math.Abs(jj.chemicalFormula.MonoisotopicMass - jj.monoisotopicMass) < 1e-5)
+                    sbsequence.Append('[' + jj.chemicalFormula.Formula + ']');
+                else
+                    return null;
+            }
+
+            return sbsequence.ToString();
+        }
+
     }
+
 
     public enum TopDownResultType
     {
         Biomarker,
         TightAbsoluteMass
     }
-
-    //CALIBRATION
-    public class TrainingPoint 
-    {
-        public CalibrationDataPoint datapoint;
-        public double label;
-
-        public TrainingPoint(CalibrationDataPoint t, double label)
-        {
-            datapoint = t;
-            this.label = label;
-        }
-    }
-
-    public class CalibrationDataPoint
-    {
-        public double mz;
-        public double rt;
-        public int msnOrder;
-        public int SelectedIonGuessChargeStateGuess;
-        public double IsolationMZ;
-        public double relativeMZ;
-        public string filename;
-
-        public CalibrationDataPoint(double mz, double rt, int msnOrder, string filename, int SelectedIonGuessChargeStateGuess = 0, double IsolationMZ = 0, double relativeMZ = 0)
-        {
-            this.mz = mz;
-            this.rt = rt;
-            this.msnOrder = msnOrder;
-            this.SelectedIonGuessChargeStateGuess = SelectedIonGuessChargeStateGuess;
-            this.IsolationMZ = IsolationMZ;
-            this.relativeMZ = relativeMZ;
-            this.filename = filename;
-        }
-    }
-
-    public class LabeledDataPoint
-    {
-        public double[] inputs;
-        public double output;
-
-        public LabeledDataPoint(double[] v1, double v2)
-        {
-            inputs = v1;
-            output = v2;
-        }
-    }
-
-
 
 }

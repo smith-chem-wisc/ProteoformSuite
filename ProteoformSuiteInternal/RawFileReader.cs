@@ -22,16 +22,17 @@ namespace ProteoformSuiteInternal
             ThermoStaticData myMsDataFile = ThermoStaticData.LoadAllStaticData(raw_file_path);
             Parallel.ForEach(myMsDataFile, spectrum =>
             {
-                MsScan scan = new MsScan(spectrum.MsnOrder, spectrum.OneBasedScanNumber, filename, spectrum.RetentionTime, spectrum.RetentionTime, spectrum.TotalIonCurrent, spectrum.MassSpectrum.GetNoises(), spectrum.MassSpectrum.XArray, spectrum.MassSpectrum.YArray);
+                MsScan scan = new MsScan(spectrum.MsnOrder, spectrum.OneBasedScanNumber, filename, spectrum.RetentionTime, Convert.ToDouble(spectrum.InjectionTime), spectrum.TotalIonCurrent, spectrum.MassSpectrum.GetNoises(), spectrum.MassSpectrum.XArray, spectrum.MassSpectrum.YArray);
                 if (scan.ms_order == 2) scan.precursor_mz = (spectrum as ThermoScanWithPrecursor).IsolationMz;
                 lock (ms_scans) ms_scans.Add(scan);
             });
             //set charge, mz, intensity, find MS1 numbers
             Parallel.ForEach(SaveState.lollipop.td_hits_calibration.Where(f => f.filename == filename).ToList(), hit =>
             {
-                double mz = (myMsDataFile.GetOneBasedScan(hit.scan) as ThermoScanWithPrecursor).IsolationMz;
+                double mz = (myMsDataFile.GetOneBasedScan(hit.ms2ScanNumber) as ThermoScanWithPrecursor).IsolationMz;
                 hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)mz, 0)); //m / (m/z)  round to get charge 
                 hit.mz = hit.reported_mass.ToMz(hit.charge);
+                hit.ms1Scan = ms_scans.Where(s => hit.ms2ScanNumber > s.scan_number && s.ms_order == 1).OrderByDescending(s => s.scan_number).First();
             });
             return ms_scans;
         }

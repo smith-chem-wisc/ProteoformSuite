@@ -104,6 +104,11 @@ namespace ProteoformSuiteGUI
             get { return t.goTerm_IDs; }
         }
 
+        public int bottomUpPSMcount
+        {
+            get { return t.psm_list.Count;  }
+        }
+
         #endregion Public Properties
 
         #region Public Methods
