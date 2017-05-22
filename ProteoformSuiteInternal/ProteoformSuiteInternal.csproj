@@ -112,10 +112,17 @@
     <Compile Include="BigRational.cs" />
     <Compile Include="BiorepIntensity.cs" />
     <Compile Include="BottomUpReader.cs" />
+    <Compile Include="CalibrationFunctions\CalibrationFunction.cs" />
+    <Compile Include="CalibrationFunctions\ConstantCalibrationFunction.cs" />
+    <Compile Include="CalibrationFunctions\IdentityCalibrationFunction.cs" />
+    <Compile Include="CalibrationFunctions\LinearCalibrationFunctionMathNet.cs" />
+    <Compile Include="CalibrationFunctions\RandomForestCalibrationFunction.cs" />
+    <Compile Include="CalibrationFunctions\RegressionTree.cs" />
     <Compile Include="ChargeState.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Correction.cs" />
     <Compile Include="CytoscapeScript.cs" />
+    <Compile Include="DataPointAcquisitionResults.cs" />
     <Compile Include="DeltaMassPeak.cs" />
     <Compile Include="ComponentReader.cs" />
     <Compile Include="ExcelReader.cs" />
@@ -127,6 +134,7 @@
     <Compile Include="IBiorepable.cs" />
     <Compile Include="IMassDifference.cs" />
     <Compile Include="InputFile.cs" />
+    <Compile Include="LabeledMs1DataPoint.cs" />
     <Compile Include="Lollipop.cs" />
     <Compile Include="Ptm.cs" />
     <Compile Include="PtmCombos.cs" />
@@ -152,6 +160,7 @@
     <Compile Include="TheoreticalProteoformDatabase.cs" />
     <Compile Include="TheoreticalProteoformGroup.cs" />
     <Compile Include="TopDownProteoform.cs" />
+    <Compile Include="TransformFunction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

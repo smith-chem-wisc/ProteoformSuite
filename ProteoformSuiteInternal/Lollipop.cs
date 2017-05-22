@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
 using Chemistry;
+using MassSpectrometry;
 
 namespace ProteoformSuiteInternal
 {
@@ -1049,9 +1050,9 @@ namespace ProteoformSuiteInternal
         public bool calibrate_intact_with_td_ids = false;
         public  List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
         public  List<MsScan> Ms_scans = new List<MsScan>();
-        public  Dictionary<string, Func<double[], double>> td_calibration_functions = new Dictionary<string, Func<double[], double>>();
+        public  Dictionary<string,bool> td_calibration_functions = new Dictionary<string, bool>();
         public  List<Correction> correctionFactors = new List<Correction>();
-        public  Dictionary<Tuple<string, double, double>, Tuple<double, double, int, int>> file_mz_correction = new Dictionary<Tuple<string, double, double>, Tuple<double, double, int, int>>();
+        public  Dictionary<Tuple<string, double>, Tuple<double, double, int, int>> file_mz_correction = new Dictionary<Tuple<string, double>, Tuple<double, double, int, int>>();
         public  Dictionary<Tuple<string, int, double>, double> td_hit_correction = new Dictionary<Tuple<string, int, double>, double>();
         public  List<Component> calibration_components = new List<Component>();
 
@@ -1073,24 +1074,26 @@ namespace ProteoformSuiteInternal
             //get calibration points and calibrate deconvolution files
             foreach (string filename in filenames.Distinct())
             {
+                Calibration calibration = new Calibration();
                 if (calibrate_intact_with_td_ids || input_files.Count(f => f.purpose == Purpose.RawFile && f.filename == filename) == 1)
                 {
                     process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.filename == filename).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
-                    get_calibration_points(filename);
+                    get_calibration_points(calibration, filename);
                     calibrate_td_hits(filename);
-                    determine_component_shift(filename);
+                    determine_component_shift(calibration, filename);
                     InputFile file = input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.filename == filename).FirstOrDefault();
-                    if (file != null) Calibration.calibrate_components_in_xlsx(file);
+                    if (file != null) calibration.calibrate_components_in_xlsx(file);
                 }
             }
+            Calibration cali = new Calibration();
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
             {
-                Calibration.calibrate_td_hits_file(file);
+                cali.calibrate_td_hits_file(file);
             }
         }
 
 
-        public void get_calibration_points(string filename)
+        public void get_calibration_points(Calibration calibration, string filename)
         {
             List<InputFile> raw_files = input_files.Where(f => f.purpose == Purpose.RawFile && f.filename == filename).ToList();
             if (raw_files.Count > 0)
@@ -1101,18 +1104,18 @@ namespace ProteoformSuiteInternal
 
                 if (calibrate_lock_mass)
                 {
-                    Calibration.raw_lock_mass(filename, raw_file.complete_path);
+                    calibration.raw_lock_mass(filename, raw_file.complete_path);
                     correctionFactors.AddRange(Correction.CorrectionFactorInterpolation(Ms_scans.Where(s => s.filename == filename).Select(s => (new Correction(s.filename, s.scan_number, s.lock_mass_shift)))));
                 }
 
                 if (calibrate_td_results || calibrate_intact_with_td_ids)
                 {
-                    Func<double[], double> bestCf = Calibration.Run_TdMzCal(filename, td_hits_calibration.Where(h => h.filename == filename && h.tdResultType == TopDownResultType.TightAbsoluteMass && h.score >= 3).ToList(), true);
-                    if (bestCf != null) td_calibration_functions.Add(filename, bestCf);
+                    bool calibrated =calibration.Run_TdMzCal(raw_file, td_hits_calibration.Where(h => h.filename == filename && h.score >= 40).ToList(), true, 0.2);
+                    if (calibrated) td_calibration_functions.Add(filename, calibrated);
                     if (calibrate_intact_with_td_ids)
                     {
-                        bestCf = Calibration.Run_TdMzCal(filename, td_hits_calibration.Where(h => h.tdResultType == TopDownResultType.TightAbsoluteMass).ToList(), false);
-                        if (bestCf != null) td_calibration_functions.Add(filename, bestCf);
+                        calibrated = calibration.Run_TdMzCal(raw_file, td_hits_calibration.Where(h => h.tdResultType == TopDownResultType.TightAbsoluteMass).ToList(), false, 0.2);
+                        if (calibrated) td_calibration_functions.Add(filename, true);
                     }
                 }
             }
@@ -1120,7 +1123,7 @@ namespace ProteoformSuiteInternal
 
         double monoisotopic_averagine = 111.0543053;
         double average_averagine = 111.1234625;
-        public void determine_component_shift(string filename)
+        public void determine_component_shift(Calibration calibration, string filename)
         {
             Parallel.ForEach(calibration_components.Where(c => c.input_file.filename == filename), c =>
             {
@@ -1161,10 +1164,9 @@ namespace ProteoformSuiteInternal
                             }
                             else peak_exists = false;
                         }
-
-
-                        double corrected_mz = (calibrate_td_results || calibrate_intact_with_td_ids) ? cs.mz_centroid - td_calibration_functions[c.input_file.filename](new double[] { cs.mz_centroid, Convert.ToDouble(c.rt_range.Split('-')[0]) }) : cs.mz_centroid - Calibration.get_correction_factor(c.input_file.filename, c.scan_range);
-                        var key = new Tuple<string, double, double>(c.input_file.filename, Math.Round(cs.mz_centroid, 0), Math.Round(cs.intensity, 0));
+                        MsScan ms1 = Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).FirstOrDefault();
+                        double corrected_mz = (calibrate_td_results || calibrate_intact_with_td_ids) ? cs.mz_centroid : cs.mz_centroid - calibration.get_correction_factor(c.input_file.filename, c.scan_range);
+                        var key = new Tuple<string, double>(c.input_file.filename, Math.Round(cs.intensity, 0));
                         lock (file_mz_correction)
                         {
                             if (!file_mz_correction.ContainsKey(key))
@@ -1182,12 +1184,11 @@ namespace ProteoformSuiteInternal
         {
             if (calibrate_td_results && td_calibration_functions.ContainsKey(filename))
             {
-                Func<double[], double> bestCf = td_calibration_functions[filename];
                 //need to calibrate all the others
                 foreach (TopDownHit hit in td_hits_calibration.Where(h => h.filename == filename))
                 {
-                    Tuple<string, int, double> key = new Tuple<string, int, double>(filename, hit.scan, hit.reported_mass);
-                    if (!td_hit_correction.ContainsKey(key)) lock (td_hit_correction) td_hit_correction.Add(key, (hit.mz - bestCf(new double[] { hit.mz, hit.retention_time })) * hit.charge - hit.charge * PROTON_MASS);
+                    Tuple<string, int, double> key = new Tuple<string, int, double>(filename, hit.ms2ScanNumber, hit.reported_mass);
+                    if (!td_hit_correction.ContainsKey(key)) lock (td_hit_correction) td_hit_correction.Add(key, hit.mz.ToMass(hit.charge));
                 }
             }
             else if (!calibrate_td_results && calibrate_lock_mass)
@@ -1195,10 +1196,10 @@ namespace ProteoformSuiteInternal
                 foreach (TopDownHit hit in td_hits_calibration.Where(h => h.filename == filename))
                 {
                     double correction = 0;
-                    try { correction = correctionFactors.Where(c => c.file_name == filename && c.scan_number == hit.scan).First().correction; }
+                    try { correction = correctionFactors.Where(c => c.file_name == filename && c.scan_number == hit.ms1Scan.scan_number).First().correction; }
                     catch { }
-                    Tuple<string, int, double> key = new Tuple<string, int, double>(filename, hit.scan, hit.reported_mass);
-                    if (!td_hit_correction.ContainsKey(key)) lock (td_hit_correction) td_hit_correction.Add(key, (hit.mz - correction) * hit.charge - hit.charge * PROTON_MASS);
+                    Tuple<string, int, double> key = new Tuple<string, int, double>(filename, hit.ms1Scan.scan_number, hit.reported_mass);
+                    if (!td_hit_correction.ContainsKey(key)) lock (td_hit_correction) td_hit_correction.Add(key, hit.mz.ToMass(hit.charge));
                 }
             }
         }

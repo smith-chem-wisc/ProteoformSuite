@@ -126,7 +126,7 @@ namespace ProteoformSuiteInternal
         }
 
         public List<ProteoformRelation> relate_td(List<ExperimentalProteoform> experimentals, List<TheoreticalProteoform> theoreticals, List<TopDownProteoform> topdowns)
-        {
+        {  
             List<ProteoformRelation> td_relations = new List<ProteoformRelation>();
 
             int max_missed_monoisotopics = Convert.ToInt32(SaveState.lollipop.missed_monos);
@@ -139,7 +139,7 @@ namespace ProteoformSuiteInternal
                 foreach (int m in missed_monoisotopics_range)
                 {
                         double shift = m * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                        double mass_tol = (mass + shift) / 1000000 * Convert.ToInt32(SaveState.lollipop.mass_tolerance);
+                        double mass_tol = (mass + shift) / 1000000 * Convert.ToInt32(SaveState.lollipop.mass_tolerance) / 2;
                         double low = mass + shift - mass_tol;
                         double high = mass + shift + mass_tol;
                         List<ExperimentalProteoform> matching_e = experimentals.Where(ep => ep.modified_mass >= low && ep.modified_mass <= high

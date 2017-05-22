@@ -48,7 +48,7 @@ namespace ProteoformSuiteInternal
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
             if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
-            psm_list = SaveState.lollipop.BottomUpPSMList.Where(p => p.protein_accession == this.accession.Split('_')[0]).ToList();
+            psm_list = SaveState.lollipop.BottomUpPSMList.Where(p => p.protein_accession == this.accession.Split('_')[0]).ToList(); //TODO: th
         }
 
         #endregion Public Constructor
