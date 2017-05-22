@@ -62,7 +62,9 @@ namespace ProteoformSuiteInternal
                         Math.Abs(Math.Abs(DeltaMass) - Math.Abs(c.mass)) <= 0.05).ToList();
             }
             else possiblePeakAssignments = new List<PtmSet>();
-            possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.Select(ptmset => String.Join(";", ptmset.ptm_combination.Select(m => m.modification.id)))) + "]";
+            possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.Select(ptmset => 
+                String.Join(";", ptmset.ptm_combination.Select(ptm => 
+                    SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).Distinct()))) + "]";
         }
 
         #endregion Public Constructor

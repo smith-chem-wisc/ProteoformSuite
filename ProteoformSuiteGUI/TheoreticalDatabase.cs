@@ -86,15 +86,6 @@ namespace ProteoformSuiteGUI
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
-        public void make_databases()
-        {
-            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
-            ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsTablesFigures();
-            ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsTablesFigures();
-            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
-            tb_totalTheoreticalProteoforms.Text = SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
-        }
-
         public void initialize_table_bindinglist()
         {
             List<string> databases = new List<string> { "Target" };
@@ -135,7 +126,11 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut()
         {
             Cursor = Cursors.WaitCursor;
-            make_databases();
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
+            ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
+            tb_totalTheoreticalProteoforms.Text = SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
             FillTablesAndCharts();
             Cursor = Cursors.Default;
         }
