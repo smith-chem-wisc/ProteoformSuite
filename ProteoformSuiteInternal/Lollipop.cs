@@ -879,8 +879,8 @@ namespace ProteoformSuiteInternal
         public List<ProteinWithGoTerms> getInducedOrRepressedProteins(IEnumerable<ExperimentalProteoform> satisfactoryProteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
         {
             return getInterestingProteoforms(satisfactoryProteoforms, minProteoformAbsLogFoldChange, maxProteoformFDR, minProteoformIntensity)
-                .Select(p => p.family)
-                .SelectMany(pf => pf.theoretical_proteoforms)
+                .Where(pf => pf.linked_proteoform_references != null && pf.linked_proteoform_references.FirstOrDefault() as TheoreticalProteoform != null)
+                .Select(pf => pf.linked_proteoform_references.First() as TheoreticalProteoform)
                 .SelectMany(t => t.ExpandedProteinList)
                 .DistinctBy(pwg => pwg.Accession.Split('_')[0])
                 .ToList();

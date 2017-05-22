@@ -141,8 +141,12 @@
     <Compile Include="TheoreticalProteoform.cs" />
     <Compile Include="TheoreticalProteoformDatabase.cs" />
     <Compile Include="TheoreticalProteoformGroup.cs" />
+    <Compile Include="UnlocalizedModification.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Mods\stored_mods.modnames">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

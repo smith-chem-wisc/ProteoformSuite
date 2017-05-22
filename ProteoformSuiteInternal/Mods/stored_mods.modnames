@@ -1,0 +1,230 @@
+Sulfate Adduct	Sulfate Adduct	1
+Acetone Artifact (Unconfirmed)	Acetone Artifact	1
+CHDH	Lipid	1
+CHDHminus2methylenes	Lipid	1
+1-thioglycine	1-thioglycine	1
+"2,3-didehydroalanine (Cys)"	"2,3-didehydroalanine (Cys)"	1
+4-aspartylphosphate	Phospho	1
+Acetyl	Acetyl	1
+Acetylation+Methionine	Retained Acetylated Methionine	2
+Acetyllysine	Acetyl	1
+Acetyllysine	Acetyl	1
+Asymmetric dimethylarginine	Dimethyl	2
+Carbamidomethyl	Carbamidomethyl	1
+Carbamidomethyl	Carbamidomethyl	1
+Carboxymethyl+Methionine	Retained Carboxmethylmethionine	2
+Cysteine methyl ester	Methyl	1
+Cysteine sulfinic acid (-SO2H)	Cysteine sulfinic acid (-SO2H)	1
+Deamidation on N	Deamidation	1
+Deamidation on Q	Deamidation	1
+Dehydroalanine from Cysteine	Dehydroalanine from Cysteine	1
+Dioxidation	Ox, Ox	2
+Diphthamide	Diphthamide	1
+Farnesylation	Farnesylation	1
+GG of K	GG of K	1
+Hex(1) on S	Hex(1)	1
+Hex(1) on T	Hex(1)	1
+Hex(1)Fuc(1) on T	Hex(1)Fuc(1)	1
+Hex(1)HexNAc(1) on N	Hex(1)HexNAc(1)	1
+Hex(1)HexNAc(2) on N	Hex(1)HexNAc(2)	1
+Hex(1)NeuAc(1) on N	Hex(1)NeuAc(1)	1
+Hex(1)NeuAc(1) on T	Hex(1)NeuAc(1)	1
+Hex(2) on N	Hex(2)	1
+Hex(2) on S	Hex(2)	1
+Hex(2) on T	Hex(2)	1
+Hex(3)HexNAc(3) on S	Hex(3)HexNAc(3)	1
+Hex(3)HexNAc(3) on T	Hex(3)HexNAc(3)	1
+Hex(3)HexNAc(4)NeuAc(1) on N	Hex(3)HexNAc(4)NeuAc(1)	1
+Hex(3)HexNAc(4)NeuAc(1) on S	Hex(3)HexNAc(4)NeuAc(1)	1
+Hex(3)HexNAc(4)NeuAc(1) on T	Hex(3)HexNAc(4)NeuAc(1)	1
+Hex(3)HexNAc(5)NeuAc(1) on S	Hex(3)HexNAc(5)NeuAc(1)	1
+Hex(3)HexNAc(6) on N	Hex(3)HexNAc(6)	1
+Hex(3)HexNAc(6) on S	Hex(3)HexNAc(6)	1
+Hex(3)HexNAc(6)Fuc(1) on N	Hex(3)HexNAc(6)Fuc(1)	1
+Hex(3)HexNAc(6)Fuc(1) on S	Hex(3)HexNAc(6)Fuc(1)	1
+Hex(3)HexNAc(6)NeuAc(1) on N	Hex(3)HexNAc(6)NeuAc(1)	1
+Hex(3)HexNAc(6)NeuAc(1) on S	Hex(3)HexNAc(6)NeuAc(1)	1
+Hex(3)HexNAc(6)NeuAc(1) on T	Hex(3)HexNAc(6)NeuAc(1)	1
+Hex(4)HexNAc(3) on N	Hex(4)HexNAc(3)	1
+Hex(4)HexNAc(3) on S	Hex(4)HexNAc(3)	1
+Hex(4)HexNAc(3) on T	Hex(4)HexNAc(3)	1
+Hex(4)HexNAc(4)Fuc(1)NeuAc(1) on N	Hex(4)HexNAc(4)Fuc(1)NeuAc(1)	1
+Hex(4)HexNAc(4)Fuc(1)NeuAc(1) on S	Hex(4)HexNAc(4)Fuc(1)NeuAc(1)	1
+Hex(4)HexNAc(4)Fuc(1)NeuAc(1) on T	Hex(4)HexNAc(4)Fuc(1)NeuAc(1)	1
+Hex(4)HexNAc(5) on N	Hex(4)HexNAc(5)	1
+Hex(4)HexNAc(5) on S	Hex(4)HexNAc(5)	1
+Hex(4)HexNAc(5) on T	Hex(4)HexNAc(5)	1
+Hex(4)HexNAc(5)Fuc(1)NeuAc(1) on N	Hex(4)HexNAc(5)Fuc(1)NeuAc(1)	1
+Hex(4)HexNAc(5)Fuc(1)NeuAc(1) on S	Hex(4)HexNAc(5)Fuc(1)NeuAc(1)	1
+Hex(4)HexNAc(5)Fuc(1)NeuAc(1) on T	Hex(4)HexNAc(5)Fuc(1)NeuAc(1)	1
+Hex(4)HexNAc(5)Fuc(1)NeuAc(2) on N	Hex(4)HexNAc(5)Fuc(1)NeuAc(2)	1
+Hex(4)HexNAc(5)Fuc(1)NeuAc(2) on S	Hex(4)HexNAc(5)Fuc(1)NeuAc(2)	1
+Hex(4)HexNAc(5)Fuc(1)NeuAc(2) on T	Hex(4)HexNAc(5)Fuc(1)NeuAc(2)	1
+Hex(4)HexNAc(5)NeuAc(1) on N	Hex(4)HexNAc(5)NeuAc(1)	1
+Hex(4)HexNAc(5)NeuAc(1) on S	Hex(4)HexNAc(5)NeuAc(1)	1
+Hex(4)HexNAc(5)NeuAc(1) on T	Hex(4)HexNAc(5)NeuAc(1)	1
+Hex(4)HexNAc(5)NeuAc(2) on S	Hex(4)HexNAc(5)NeuAc(2)	1
+Hex(4)HexNAc(5)NeuAc(2) on T	Hex(4)HexNAc(5)NeuAc(2)	1
+Hex(5)HexNAc(2) on S	Hex(5)HexNAc(2)	1
+Hex(5)HexNAc(2) on T	Hex(5)HexNAc(2)	1
+Hex(5)HexNAc(3) on N	Hex(5)HexNAc(3)	1
+Hex(5)HexNAc(3) on T	Hex(5)HexNAc(3)	1
+Hex(5)HexNAc(4)Fuc(1) on S	Hex(5)HexNAc(4)Fuc(1)	1
+Hex(5)HexNAc(5)Fuc(1) on N	Hex(5)HexNAc(5)Fuc(1)	1
+Hex(5)HexNAc(5)Fuc(1) on S	Hex(5)HexNAc(5)Fuc(1)	1
+Hex(5)HexNAc(5)Fuc(1) on T	Hex(5)HexNAc(5)Fuc(1)	1
+Hex(5)HexNAc(6)Fuc(1) on N	Hex(5)HexNAc(6)Fuc(1)	1
+Hex(5)HexNAc(6)Fuc(1) on S	Hex(5)HexNAc(6)Fuc(1)	1
+Hex(5)HexNAc(6)Fuc(1) on T	Hex(5)HexNAc(6)Fuc(1)	1
+Hex(5)HexNAc(6)Fuc(1)NeuAc(2) on N	Hex(5)HexNAc(6)Fuc(1)NeuAc(2)	1
+Hex(5)HexNAc(6)Fuc(1)NeuAc(2) on S	Hex(5)HexNAc(6)Fuc(1)NeuAc(2)	1
+Hex(5)HexNAc(6)Fuc(1)NeuAc(2) on T	Hex(5)HexNAc(6)Fuc(1)NeuAc(2)	1
+Hex(5)HexNAc(6)Fuc(1)NeuAc(3) on N	Hex(5)HexNAc(6)Fuc(1)NeuAc(3)	1
+Hex(5)HexNAc(6)Fuc(1)NeuAc(3) on S	Hex(5)HexNAc(6)Fuc(1)NeuAc(3)	1
+Hex(5)HexNAc(6)Fuc(1)NeuAc(3) on T	Hex(5)HexNAc(6)Fuc(1)NeuAc(3)	1
+Hex(5)HexNAc(6)Fuc(2)NeuAc(1) on N	Hex(5)HexNAc(6)Fuc(2)NeuAc(1)	1
+Hex(5)HexNAc(6)Fuc(2)NeuAc(1) on S	Hex(5)HexNAc(6)Fuc(2)NeuAc(1)	1
+Hex(5)HexNAc(6)Fuc(2)NeuAc(1) on T	Hex(5)HexNAc(6)Fuc(2)NeuAc(1)	1
+Hex(5)HexNAc(6)NeuAc(1) on N	Hex(5)HexNAc(6)NeuAc(1)	1
+Hex(5)HexNAc(6)NeuAc(1) on S	Hex(5)HexNAc(6)NeuAc(1)	1
+Hex(5)HexNAc(6)NeuAc(1) on T	Hex(5)HexNAc(6)NeuAc(1)	1
+Hex(5)HexNAc(6)NeuAc(2) on N	Hex(5)HexNAc(6)NeuAc(2)	1
+Hex(5)HexNAc(6)NeuAc(2) on S	Hex(5)HexNAc(6)NeuAc(2)	1
+Hex(5)HexNAc(6)NeuAc(2) on T	Hex(5)HexNAc(6)NeuAc(2)	1
+Hex(6)HexNAc(7) on N	Hex(6)HexNAc(7) on N	1
+Hex(6)HexNAc(7) on S	Hex(6)HexNAc(7) on S	1
+Hex(6)HexNAc(7) on T	Hex(6)HexNAc(7) on T	1
+Hex(6)HexNAc(7)Fuc(1)NeuAc(2) on N	Hex(6)HexNAc(7)Fuc(1)NeuAc(2)	1
+Hex(6)HexNAc(7)Fuc(1)NeuAc(3) on N	Hex(6)HexNAc(7)Fuc(1)NeuAc(3)	1
+Hex(6)HexNAc(7)Fuc(1)NeuAc(3) on S	Hex(6)HexNAc(7)Fuc(1)NeuAc(3)	1
+Hex(6)HexNAc(7)Fuc(1)NeuAc(3) on T	Hex(6)HexNAc(7)Fuc(1)NeuAc(3)	1
+Hex(6)HexNAc(7)Fuc(1)NeuAc(4) on N	Hex(6)HexNAc(7)Fuc(1)NeuAc(4)	1
+Hex(6)HexNAc(7)Fuc(1)NeuAc(4) on S	Hex(6)HexNAc(7)Fuc(1)NeuAc(4)	1
+Hex(6)HexNAc(7)Fuc(1)NeuAc(4) on T	Hex(6)HexNAc(7)Fuc(1)NeuAc(4)	1
+HexNAc(1)Fuc(1) on S	HexNAc(1)Fuc(1)	1
+HexNAc(1)NeuAc(1) on S	HexNAc(1)NeuAc(1)	1
+HexNAc(1)NeuAc(1) on T	HexNAc(1)NeuAc(1)	1
+HexNAc(2) on S	HexNAc(2)	1
+HexNAc(2) on T	HexNAc(2)	1
+Hypusine	Hypusine	1
+Leucine methyl ester	Methyl	1
+Lysine methyl ester	Methyl	1
+Met loss + acetaldehyde	Met Loss + Acetaldehyde	2
+Met loss + Acetylation	Met Loss + Acetylation	2
+Methyl on D	Methyl	1
+Methyl on D	Methyl	1
+Methyl on E	Methyl	1
+Methyl on E	Methyl	1
+Methyl on K	Methyl	1
+Methyl on K	Methyl	1
+Methyl on N	Methyl	1
+Methyl on N	Methyl	1
+Methyl on Q	Methyl	1
+Methyl on Q	Methyl	1
+Methyl on R	Methyl	1
+Methyl on R	Methyl	1
+Methyl on S	Methyl	1
+Methyl on S	Methyl	1
+Methyl on V	Methyl	1
+Methyl on V	Methyl	1
+Myristoylation of K	Myristoylation of K	1
+"N,N-dimethylproline"	Methyl, Methyl	2
+N6-(pyridoxal phosphate)lysine	N6-(pyridoxal phosphate)lysine	1
+"N6,N6,N6-trimethyllysine"	Methyl, Methyl, Methyl	3
+"N6,N6-dimethyllysine"	Methyl, Methyl	2
+N6-acetyllysine	Acetyl	1
+N6-biotinyllysine	Biotinyl	1
+N6-carboxylysine	N6-carboxylysine	1
+N6-lipoyllysine	N6-lipoyllysine	1
+N6-methyllysine	Methyl	1
+N-acetylalanine	Acetyl	1
+N-acetylmethionine	Acetyl	1
+N-acetylserine	Acetyl	1
+N-acetylthreonine	Acetyl	1
+N-acetylvaline	Acetyl	1
+NeuAc(1) on N	NeuAc(1)	1
+NeuAc(1) on S	NeuAc(1)	1
+NeuAc(2) on S	NeuAc(2)	1
+NeuAc(2) on T	NeuAc(2)	1
+N-formylmethionine	N-formylmethionine	1
+O-(pantetheine 4'-phosphoryl)serine	O-(pantetheine 4'-phosphoryl)serine	1
+Oxidation and then loss of oxidized M side chain	Oxidation and then loss of oxidized M side chain	1
+Oxidation of W to Kynurenine	Oxidation of W to Kynurenine	1
+Oxidation on F	Ox	1
+Oxidation on P	Ox	1
+Oxidation on W	Ox	1
+Oxidation on Y	Ox	1
+Palmitoylation on K	Palmitoylation	1
+Palmitoylation on S	Palmitoylation	1
+Palmitoylation on T	Palmitoylation	1
+Phospho on S	Phospho	1
+Phospho on S	Phospho	1
+Phospho on T	Phospho	1
+Phospho on T	Phospho	1
+Phospho on Y	Phospho	1
+Phospho on Y	Phospho	1
+Phosphohistidine	Phospho	1
+Phosphoserine	Phospho	1
+Phosphothreonine	Phospho	1
+Phosphotyrosine	Phospho	1
+Proline Oxidation to pyroglutamic acid	Proline Oxidation to Pyroglutamic Acid	1
+Pros-8alpha-FAD histidine	Pros-8alpha-FAD histidine	1
+Pyrrolidinone	Pyrrolidinone	1
+Pyruvic acid (Ser)	Pyruvic acid (Ser)	1
+S-(dipyrrolylmethanemethyl)cysteine	S-(dipyrrolylmethanemethyl)cysteine	1
+S-glutathionyl cysteine	S-glutathionyl cysteine	1
+S-methylcysteine	Methyl	1
+Sulfonation on S	Sulfonation	1
+Sulfonation on T	Sulfonation	1
+TriMethylation	Methyl, Methyl, Methyl	3
+Trioxidation of C	Ox, Ox, Ox	3
+Tryptophan oxidation to oxolactone	Tryptophan oxidation to oxolactone	1
+Tryptophan (W)	Tryptophan (W)	1
+Tyrosine (Y)	Tyrosine (Y)	1
+Arginine (R)	Arginine (R)	1
+Selenocysteine (U)	Selenocysteine (U)	1
+Phenylalanine (F)	Phenylalanine (F)	1
+Histidine (H)	Histidine (H)	1
+Methionine (M)	Retained Met	1
+Glutamic Acid (E)	Glutamic Acid (E)	1
+Lysine (K)	Lysine (K)	1
+Glutamine (Q)	Glutamine (Q)	1
+Aspartic Acid (D)	Aspartic Acid (D)	1
+Asparagine (N)	Asparagine (N)	1
+Isoleucine (I)	Isoleucine (I)	1
+Leucine (L)	Leucine (L)	1
+Cysteine (C)	Cysteine (C)	1
+Threonine (T)	Threonine (T)	1
+Valine (V)	Valine (V)	1
+Proline (P)	Proline (P)	1
+Serine (S)	Serine (S)	1
+Alanine (A)	Alanine (A)	1
+Glycine (G)	Glycine (G)	1
+Water Adduct	Water Adduct	1
+Oxidation	Ox	1
+Methyl on H	Methyl	1
+Missed Monoisotopic (-1)	Missed Monoisotopic (-1)	1
+Missed Monoisotopic (+1)	Missed Monoisotopic (+1)	1
+Missing Tryptophan (W)	Missing Tryptophan (W)	1
+Missing Tyrosine (Y)	Missing Tyrosine (Y)	1
+Missing Arginine (R)	Missing Arginine (R)	1
+Missing Selenocysteine (U)	Missing Selenocysteine (U)	1
+Missing Phenylalanine (F)	Missing Phenylalanine (F)	1
+Missing Histidine (H)	Missing Histidine (H)	1
+Missing Methionine (M)	Missing Methionine (M)	1
+Missing Glutamic Acid (E)	Missing Glutamic Acid (E)	1
+Missing Lysine (K)	Missing Lysine (K)	1
+Missing Glutamine (Q)	Missing Glutamine (Q)	1
+Missing Aspartic Acid (D)	Missing Aspartic Acid (D)	1
+Missing Asparagine (N)	Missing Asparagine (N)	1
+Missing Isoleucine (I)	Missing Isoleucine (I)	1
+Missing Leucine (L)	Missing Leucine (L)	1
+Missing Cysteine (C)	Missing Cysteine (C)	1
+Missing Threonine (T)	Missing Threonine (T)	1
+Missing Valine (V)	Missing Valine (V)	1
+Missing Proline (P)	Missing Proline (P)	1
+Missing Serine (S)	Missing Serine (S)	1
+Missing Alanine (A)	Missing Alanine (A)	1
+Missing Glycine (G)	Missing Glycine (G)	1
+Oxidation of M	Ox	1
+Oxidation of M	Ox	1

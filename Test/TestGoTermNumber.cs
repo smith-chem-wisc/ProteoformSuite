@@ -69,6 +69,7 @@ namespace Test
         [Test]
         public void get_interesting_goterm_families()
         {
+            SaveState.lollipop = new Lollipop();
             DatabaseReference d1 = new DatabaseReference("GO", "GO:1", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:1") });
             DatabaseReference d2 = new DatabaseReference("GO", "GO:2", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:2") });
             DatabaseReference d3 = new DatabaseReference("GO", "GO:1", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:1") });
@@ -78,7 +79,8 @@ namespace Test
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference> { d1 }, new List<GoTerm> { g1 });
             ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference> { d2 }, new List<GoTerm> { g2 });
             ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference> { d3 }, new List<GoTerm> { g3 });
-            Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]> {
+            Dictionary<InputFile, Protein[]> dict = new Dictionary<InputFile, Protein[]>
+            {
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p1 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p2 } },
                 { new InputFile("fake.txt", Purpose.ProteinDatabase), new Protein[] { p3 } },
@@ -98,12 +100,14 @@ namespace Test
             u.ExpandedProteinList = new List<ProteinWithGoTerms> { p2 };
             v.ExpandedProteinList = new List<ProteinWithGoTerms> { p3 };
             make_relation(e1, t);
-            make_relation(e1, v);
+            //make_relation(e1, v); // we don't allow this to happen anymore... we only allow one ET conntection per E
             make_relation(e2, u);
-            ProteoformFamily f = new ProteoformFamily(e1); // two theoreticals with the same GoTerms... expecting one GoTerm number but two theoretical proteins
+            ProteoformFamily f = new ProteoformFamily(e1); // two theoreticals with the same GoTerms... expecting one GoTerm number but two theoretical proteins (now only one)
             ProteoformFamily h = new ProteoformFamily(e2);
             f.construct_family();
+            f.identify_experimentals();
             h.construct_family();
+            h.identify_experimentals();
             List<ProteoformFamily> families = new List<ProteoformFamily> { f, h };
             t.family = f;
             v.family = f;
@@ -113,19 +117,20 @@ namespace Test
             List<ExperimentalProteoform> fake_significant = new List<ExperimentalProteoform> { e1 };
             List<ProteinWithGoTerms> significant_proteins = SaveState.lollipop.getInducedOrRepressedProteins(fake_significant, 0, 1, 0);
             List<GoTermNumber> gtn = SaveState.lollipop.getGoTermNumbers(significant_proteins, new List<ProteinWithGoTerms> { p1, p2, p3 });
-            Assert.AreEqual(2, significant_proteins.Count);
+            Assert.AreEqual(1, significant_proteins.Count);
             Assert.AreEqual(1, gtn.Count);
             Assert.AreEqual("1", gtn.First().Id);
             Assert.AreEqual(0 - (decimal)Math.Log(2d / 3d, 2), gtn.First().log_odds_ratio);
 
             List<ProteoformFamily> fams = SaveState.lollipop.getInterestingFamilies(gtn, families);
             Assert.AreEqual(1, fams.Count);
-            Assert.AreEqual(2, fams[0].theoretical_proteoforms.Count);
+            Assert.AreEqual(1, fams[0].theoretical_proteoforms.Count);
         }
 
         [Test]
         public void test_goterm_analysis()
         {
+            SaveState.lollipop = new Lollipop();
             DatabaseReference d1 = new DatabaseReference("GO", "GO:1", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:1") });
             DatabaseReference d2 = new DatabaseReference("GO", "GO:2", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:2") });
             DatabaseReference d3 = new DatabaseReference("GO", "GO:1", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:1") });
@@ -160,7 +165,9 @@ namespace Test
             ProteoformFamily f = new ProteoformFamily(e1); // two theoreticals with the same GoTerms... expecting one GoTerm number but two theoretical proteins
             ProteoformFamily h = new ProteoformFamily(e2);
             f.construct_family();
+            f.identify_experimentals();
             h.construct_family();
+            h.identify_experimentals();
             List<ProteoformFamily> families = new List<ProteoformFamily> { f, h };
             t.family = f;
             v.family = f;
@@ -171,7 +178,7 @@ namespace Test
             SaveState.lollipop.allTheoreticalProteins = true;
             SaveState.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
             SaveState.lollipop.GO_analysis();
-            Assert.AreEqual(2, SaveState.lollipop.inducedOrRepressedProteins.Count);
+            Assert.AreEqual(1, SaveState.lollipop.inducedOrRepressedProteins.Count);  // only taking one ET connection by definition in forming ET relations; only one is used in identify theoreticals
             Assert.AreEqual(1, SaveState.lollipop.goTermNumbers.Count);
             Assert.AreEqual("1", SaveState.lollipop.goTermNumbers.First().Id);
             Assert.AreEqual(0 - (decimal)Math.Log(2d / 3d, 2), SaveState.lollipop.goTermNumbers.First().log_odds_ratio);
@@ -195,6 +202,7 @@ namespace Test
         [Test]
         public void test_goterm_analysis_with_custom_list()
         {
+            SaveState.lollipop = new Lollipop();
             DatabaseReference d1 = new DatabaseReference("GO", "GO:1", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:1") });
             DatabaseReference d2 = new DatabaseReference("GO", "GO:2", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:2") });
             DatabaseReference d3 = new DatabaseReference("GO", "GO:1", new List<Tuple<string, string>> { new Tuple<string, string>("term", "P:1") });
@@ -229,7 +237,9 @@ namespace Test
             ProteoformFamily f = new ProteoformFamily(e1); // two theoreticals with the same GoTerms... expecting one GoTerm number but two theoretical proteins
             ProteoformFamily h = new ProteoformFamily(e2);
             f.construct_family();
+            f.identify_experimentals();
             h.construct_family();
+            h.identify_experimentals();
             List<ProteoformFamily> families = new List<ProteoformFamily> { f, h };
             t.family = f;
             v.family = f;
@@ -241,7 +251,7 @@ namespace Test
             SaveState.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
             SaveState.lollipop.backgroundProteinsList = Path.Combine(TestContext.CurrentContext.TestDirectory, "test_protein_list.txt");
             SaveState.lollipop.GO_analysis();
-            Assert.AreEqual(2, SaveState.lollipop.inducedOrRepressedProteins.Count);
+            Assert.AreEqual(1, SaveState.lollipop.inducedOrRepressedProteins.Count);  // only taking one ET connection by definition in forming ET relations; only one is used in identify theoreticals
             Assert.AreEqual(1, SaveState.lollipop.goTermNumbers.Count);
             Assert.AreEqual("1", SaveState.lollipop.goTermNumbers.First().Id);
             Assert.AreEqual(0 - (decimal)Math.Log(2d / 3d, 2), SaveState.lollipop.goTermNumbers.First().log_odds_ratio);
