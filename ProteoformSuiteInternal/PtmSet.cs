@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace ProteoformSuiteInternal
@@ -37,7 +36,7 @@ namespace ProteoformSuiteInternal
 
         public void compute_ptm_rank_sum(Dictionary<double, int> mod_ranks, int additional_ptm_penalization_factor)
         {
-            ptm_rank_sum = ptm_combination.Sum(ptm => mod_ranks[ptm.modification.monoisotopicMass])
+            ptm_rank_sum = ptm_combination.Sum(ptm => SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification u) ? u.ptm_rank : mod_ranks[ptm.modification.monoisotopicMass])
                 + additional_ptm_penalization_factor * (ptm_combination.Count - 1) // penalize additional PTMs
                 - ptm_combination.Count(ptm => SaveState.lollipop.theoretical_database.variableModifications.Contains(ptm.modification)); // favor variable modifications over regular
         }

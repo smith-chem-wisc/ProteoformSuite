@@ -1,5 +1,5 @@
 1-thioglycine	1-thioglycine	1
-"2,3-didehydroalanine (Cys)"	"2,3-didehydroalanine (Cys)"	1
+2,3-didehydroalanine (Cys)	2,3-didehydroalanine (Cys)	1
 4-aspartylphosphate	Phospho	1
 Acetone Artifact (Unconfirmed)	Acetone Artifact	1
 Acetyl	Acetyl	1
@@ -29,13 +29,13 @@ dHex on T	dHex on T	1
 dHex(1)Hex(3)HexNAc(2) on Nxs	dHex(1)Hex(3)HexNAc(2)	1
 dHex(1)Hex(3)HexNAc(2) on S	dHex(1)Hex(3)HexNAc(2)	1
 dHex(1)Hex(3)HexNAc(2) on T	dHex(1)Hex(3)HexNAc(2)	1
-DiMethyl on A	"Methyl, Methyl"	2
-DiMethyl on K	"Methyl, Methyl"	2
-DiMethyl on N	"Methyl, Methyl"	2
-DiMethyl on R	"Methyl, Methyl"	2
-Dioxidation	"Ox, Ox"	2
-Dioxidation on P	"Ox, Ox"	2
-Dioxidation on W	"Ox, Ox"	2
+DiMethyl on A	Methyl, Methyl	2
+DiMethyl on K	Methyl, Methyl	2
+DiMethyl on N	Methyl, Methyl	2
+DiMethyl on R	Methyl, Methyl	2
+Dioxidation	Ox, Ox	2
+Dioxidation on P	Ox, Ox	2
+Dioxidation on W	Ox, Ox	2
 Diphthamide	Diphthamide	1
 Farnesylation	Farnesylation	1
 Galactosyl	Galactosyl	1
@@ -215,11 +215,11 @@ Missing Valine (V)	Missing Valine (V)	1
 Myristoylation of C	Myristoylation	1
 Myristoylation of G	Myristoylation	1
 Myristoylation of K	Myristoylation of K	1
-"N,N,N-trimethylglycine"	"N,N,N-trimethylglycine"	1
-"N,N-dimethylproline"	"Methyl, Methyl"	2
+N,N,N-trimethylglycine	N,N,N-trimethylglycine	1
+N,N-dimethylproline	Methyl, Methyl	2
 N6-(pyridoxal phosphate)lysine	N6-(pyridoxal phosphate)lysine	1
-"N6,N6,N6-trimethyllysine"	"Methyl, Methyl, Methyl"	3
-"N6,N6-dimethyllysine"	"Methyl, Methyl"	2
+N6,N6,N6-trimethyllysine	Methyl, Methyl, Methyl	3
+N6,N6-dimethyllysine	Methyl, Methyl	2
 N6-acetyllysine	Acetyl	1
 N6-biotinyllysine	Biotinyl	1
 N6-carboxylysine	N6-carboxylysine	1
@@ -276,8 +276,8 @@ Sulfonation on T	Sulfonation	1
 Sulfonation on Y	Sulfonation	1
 Threonine (T)	Threonine (T)	1
 Topaquinone	Topaquinone	1
-TriMethylation	"Methyl, Methyl, Methyl"	3
-Trioxidation of C	"Ox, Ox, Ox"	3
+TriMethylation	Methyl, Methyl, Methyl	3
+Trioxidation of C	Ox, Ox, Ox	3
 Tryptophan (W)	Tryptophan (W)	1
 Tryptophan oxidation to hydroxykynurenin	Tryptophan oxidation to hydroxykynurenin	1
 Tryptophan oxidation to oxolactone	Tryptophan oxidation to oxolactone	1
