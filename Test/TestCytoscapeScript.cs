@@ -112,7 +112,7 @@ namespace Test
         {
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical();
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
-            ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
+            ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.ExperimentalTheoretical, 0, TestContext.CurrentContext.TestDirectory);
             et.peak = new DeltaMassPeak(et, new List<ProteoformRelation> { et });
             et.peak.Accepted = true;
             e.relationships.Add(et);
@@ -160,7 +160,7 @@ namespace Test
         {
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical();
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
-            ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.ExperimentalTheoretical, 0);
+            ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.ExperimentalTheoretical, 0, TestContext.CurrentContext.TestDirectory);
             e.agg_intensity = 999.99;
             e.quant.lightIntensitySum = 444.44m;
             e.quant.heavyIntensitySum = 333.33m;

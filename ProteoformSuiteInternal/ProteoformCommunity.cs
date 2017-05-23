@@ -57,7 +57,7 @@ namespace ProteoformSuiteInternal
                     if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
                     {
                         ProteoformRelation best_relation = pf1.candidate_relatives
-                            .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass))
+                            .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass, Environment.CurrentDirectory))
                             .Where(r => r.candidate_ptmset != null) // don't consider unassignable relations for ET
                             .OrderBy(r => r.candidate_ptmset.ptm_rank_sum + Math.Abs(Math.Abs(r.candidate_ptmset.mass) - Math.Abs(r.DeltaMass)) * 10E-6) // get the best explanation for the experimental observation
                             .FirstOrDefault();
@@ -72,7 +72,7 @@ namespace ProteoformSuiteInternal
             List<ProteoformRelation> relations =
                 (from pf1 in pfs1
                  from pf2 in pf1.candidate_relatives
-                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)).ToList();
+                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass, Environment.CurrentDirectory)).ToList();
 
             return count_nearby_relations(relations);  //putative counts include no-mans land
         }

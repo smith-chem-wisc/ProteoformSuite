@@ -102,13 +102,13 @@ namespace ProteoformSuiteGUI
             xMinET.Maximum = xMaxET.Value;
             xMinET.Value = nUD_ET_Lower_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
-            nUD_NoManLower.Minimum = 00m;
-            nUD_NoManLower.Maximum = 0.49m;
-            nUD_NoManLower.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_lowerBound); // lower bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
+            //nUD_NoManLower.Minimum = 00m;
+            //nUD_NoManLower.Maximum = 0.49m;
+            //nUD_NoManLower.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_lowerBound); // lower bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
 
-            nUD_NoManUpper.Minimum = 0.50m;
-            nUD_NoManUpper.Maximum = 1.00m;
-            nUD_NoManUpper.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_upperBound); // upper bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
+            //nUD_NoManUpper.Minimum = 0.50m;
+            //nUD_NoManUpper.Maximum = 1.00m;
+            //nUD_NoManUpper.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_upperBound); // upper bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
 
             nUD_PeakWidthBase.Minimum = 0.001m;
             nUD_PeakWidthBase.Maximum = 0.5000m;
@@ -128,13 +128,13 @@ namespace ProteoformSuiteGUI
 
             //MASS WINDOW
             //only do this if ET hasn't already been run
-            nUD_ET_Lower_Bound.Minimum = -500;
+            nUD_ET_Lower_Bound.Minimum = -2000;
             nUD_ET_Lower_Bound.Maximum = 0;
             if (!SaveState.lollipop.neucode_labeled) SaveState.lollipop.et_low_mass_difference = -50;
             nUD_ET_Lower_Bound.Value = Convert.ToDecimal(SaveState.lollipop.et_low_mass_difference); // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
 
             nUD_ET_Upper_Bound.Minimum = 0;
-            nUD_ET_Upper_Bound.Maximum = 500;
+            nUD_ET_Upper_Bound.Maximum = 2000;
             if (!SaveState.lollipop.neucode_labeled) SaveState.lollipop.et_high_mass_difference = 150;
             nUD_ET_Upper_Bound.Value = Convert.ToDecimal(SaveState.lollipop.et_high_mass_difference); // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
         }
@@ -361,15 +361,7 @@ namespace ProteoformSuiteGUI
         #region Parameters Private Methods
 
         // bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
-        private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
-        {
-            SaveState.lollipop.no_mans_land_lowerBound = Convert.ToDouble(nUD_NoManLower.Value);
-        }
-
-        private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
-        {
-            SaveState.lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value);
-        }
+        // not modifiable currently
 
         // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
         private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e)

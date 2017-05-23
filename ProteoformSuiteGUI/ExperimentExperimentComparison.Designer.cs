@@ -43,8 +43,6 @@
             this.nUD_EE_Upper_Bound = new System.Windows.Forms.NumericUpDown();
             this.nUD_PeakWidthBase = new System.Windows.Forms.NumericUpDown();
             this.nUD_PeakCountMinThreshold = new System.Windows.Forms.NumericUpDown();
-            this.nUD_NoManLower = new System.Windows.Forms.NumericUpDown();
-            this.nUD_NoManUpper = new System.Windows.Forms.NumericUpDown();
             this.yMaxEE = new System.Windows.Forms.NumericUpDown();
             this.xMaxEE = new System.Windows.Forms.NumericUpDown();
             this.yMinEE = new System.Windows.Forms.NumericUpDown();
@@ -68,6 +66,12 @@
             this.label5 = new System.Windows.Forms.Label();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label11 = new System.Windows.Forms.Label();
+            this.tb_relationTableFilter = new System.Windows.Forms.TextBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.tb_peakTableFilter = new System.Windows.Forms.TextBox();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.cb_view_decoy_histogram = new System.Windows.Forms.CheckBox();
             this.bt_compare_EE = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -79,19 +83,13 @@
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.tb_peakTableFilter = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.tb_relationTableFilter = new System.Windows.Forms.TextBox();
+            this.tb_noMansLowerBound = new System.Windows.Forms.TextBox();
+            this.tb_noMansUpperBound = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakWidthBase)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakCountMinThreshold)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_NoManLower)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_NoManUpper)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yMaxEE)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xMaxEE)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yMinEE)).BeginInit();
@@ -117,6 +115,8 @@
             this.splitContainer4.Panel1.SuspendLayout();
             this.splitContainer4.Panel2.SuspendLayout();
             this.splitContainer4.SuspendLayout();
+            this.groupBox6.SuspendLayout();
+            this.groupBox5.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -126,8 +126,6 @@
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
-            this.groupBox5.SuspendLayout();
-            this.groupBox6.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -188,29 +186,6 @@
             this.nUD_PeakCountMinThreshold.Size = new System.Drawing.Size(120, 20);
             this.nUD_PeakCountMinThreshold.TabIndex = 6;
             this.nUD_PeakCountMinThreshold.ValueChanged += new System.EventHandler(this.nUD_PeakCountMinThreshold_ValueChanged);
-            // 
-            // nUD_NoManLower
-            // 
-            this.nUD_NoManLower.DecimalPlaces = 2;
-            this.nUD_NoManLower.Location = new System.Drawing.Point(42, 35);
-            this.nUD_NoManLower.Name = "nUD_NoManLower";
-            this.nUD_NoManLower.Size = new System.Drawing.Size(120, 20);
-            this.nUD_NoManLower.TabIndex = 7;
-            this.nUD_NoManLower.ValueChanged += new System.EventHandler(this.nUD_NoManLower_ValueChanged);
-            // 
-            // nUD_NoManUpper
-            // 
-            this.nUD_NoManUpper.DecimalPlaces = 2;
-            this.nUD_NoManUpper.Location = new System.Drawing.Point(42, 74);
-            this.nUD_NoManUpper.Name = "nUD_NoManUpper";
-            this.nUD_NoManUpper.Size = new System.Drawing.Size(120, 20);
-            this.nUD_NoManUpper.TabIndex = 8;
-            this.nUD_NoManUpper.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            65536});
-            this.nUD_NoManUpper.ValueChanged += new System.EventHandler(this.nUD_NoManUpper_ValueChanged);
             // 
             // yMaxEE
             // 
@@ -308,18 +283,18 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(-1, 58);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(93, 13);
+            this.label7.Size = new System.Drawing.Size(142, 13);
             this.label7.TabIndex = 19;
-            this.label7.Text = "Upper Bound (Da)";
+            this.label7.Text = "Upper Bound Model Formula";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(-1, 19);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(93, 13);
+            this.label6.Size = new System.Drawing.Size(142, 13);
             this.label6.TabIndex = 18;
-            this.label6.Text = "Lower Bound (Da)";
+            this.label6.Text = "Lower Bound Model Formula";
             // 
             // label4
             // 
@@ -523,6 +498,66 @@
             this.splitContainer4.SplitterDistance = 376;
             this.splitContainer4.TabIndex = 18;
             // 
+            // groupBox6
+            // 
+            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox6.Controls.Add(this.label11);
+            this.groupBox6.Controls.Add(this.tb_relationTableFilter);
+            this.groupBox6.Controls.Add(this.label8);
+            this.groupBox6.Controls.Add(this.tb_peakTableFilter);
+            this.groupBox6.Location = new System.Drawing.Point(449, 113);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(263, 100);
+            this.groupBox6.TabIndex = 34;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Table Control";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(137, 60);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(118, 13);
+            this.label11.TabIndex = 3;
+            this.label11.Text = "EE Relation Table Filter";
+            // 
+            // tb_relationTableFilter
+            // 
+            this.tb_relationTableFilter.Location = new System.Drawing.Point(25, 57);
+            this.tb_relationTableFilter.Name = "tb_relationTableFilter";
+            this.tb_relationTableFilter.Size = new System.Drawing.Size(100, 20);
+            this.tb_relationTableFilter.TabIndex = 2;
+            this.tb_relationTableFilter.TextChanged += new System.EventHandler(this.tb_relationTableFilter_TextChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(137, 25);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(104, 13);
+            this.label8.TabIndex = 1;
+            this.label8.Text = "EE Peak Table Filter";
+            // 
+            // tb_peakTableFilter
+            // 
+            this.tb_peakTableFilter.Location = new System.Drawing.Point(25, 22);
+            this.tb_peakTableFilter.Name = "tb_peakTableFilter";
+            this.tb_peakTableFilter.Size = new System.Drawing.Size(100, 20);
+            this.tb_peakTableFilter.TabIndex = 0;
+            this.tb_peakTableFilter.TextChanged += new System.EventHandler(this.tb_peakTableFilter_TextChanged);
+            // 
+            // groupBox5
+            // 
+            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox5.Controls.Add(this.cb_view_decoy_histogram);
+            this.groupBox5.Controls.Add(this.cb_Graph_lowerThreshold);
+            this.groupBox5.Location = new System.Drawing.Point(449, 219);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(236, 106);
+            this.groupBox5.TabIndex = 33;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "EE Histogram Selection";
+            // 
             // cb_view_decoy_histogram
             // 
             this.cb_view_decoy_histogram.AutoSize = true;
@@ -576,9 +611,9 @@
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox2.Controls.Add(this.nUD_NoManUpper);
+            this.groupBox2.Controls.Add(this.tb_noMansUpperBound);
+            this.groupBox2.Controls.Add(this.tb_noMansLowerBound);
             this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Controls.Add(this.nUD_NoManLower);
             this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Location = new System.Drawing.Point(12, 219);
             this.groupBox2.Name = "groupBox2";
@@ -675,65 +710,23 @@
             this.splitContainer3.SplitterDistance = 440;
             this.splitContainer3.TabIndex = 17;
             // 
-            // groupBox5
+            // tb_noMansLowerBound
             // 
-            this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox5.Controls.Add(this.cb_view_decoy_histogram);
-            this.groupBox5.Controls.Add(this.cb_Graph_lowerThreshold);
-            this.groupBox5.Location = new System.Drawing.Point(449, 219);
-            this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(236, 106);
-            this.groupBox5.TabIndex = 33;
-            this.groupBox5.TabStop = false;
-            this.groupBox5.Text = "EE Histogram Selection";
+            this.tb_noMansLowerBound.Location = new System.Drawing.Point(42, 35);
+            this.tb_noMansLowerBound.Name = "tb_noMansLowerBound";
+            this.tb_noMansLowerBound.ReadOnly = true;
+            this.tb_noMansLowerBound.Size = new System.Drawing.Size(120, 20);
+            this.tb_noMansLowerBound.TabIndex = 20;
+            this.tb_noMansLowerBound.Text = "PO4";
             // 
-            // groupBox6
+            // tb_noMansUpperBound
             // 
-            this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox6.Controls.Add(this.label11);
-            this.groupBox6.Controls.Add(this.tb_relationTableFilter);
-            this.groupBox6.Controls.Add(this.label8);
-            this.groupBox6.Controls.Add(this.tb_peakTableFilter);
-            this.groupBox6.Location = new System.Drawing.Point(449, 113);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(263, 100);
-            this.groupBox6.TabIndex = 34;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Table Control";
-            // 
-            // tb_peakTableFilter
-            // 
-            this.tb_peakTableFilter.Location = new System.Drawing.Point(25, 22);
-            this.tb_peakTableFilter.Name = "tb_peakTableFilter";
-            this.tb_peakTableFilter.Size = new System.Drawing.Size(100, 20);
-            this.tb_peakTableFilter.TabIndex = 0;
-            this.tb_peakTableFilter.TextChanged += new System.EventHandler(this.tb_peakTableFilter_TextChanged);
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(137, 25);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(104, 13);
-            this.label8.TabIndex = 1;
-            this.label8.Text = "EE Peak Table Filter";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(137, 60);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(118, 13);
-            this.label11.TabIndex = 3;
-            this.label11.Text = "EE Relation Table Filter";
-            // 
-            // tb_relationTableFilter
-            // 
-            this.tb_relationTableFilter.Location = new System.Drawing.Point(25, 57);
-            this.tb_relationTableFilter.Name = "tb_relationTableFilter";
-            this.tb_relationTableFilter.Size = new System.Drawing.Size(100, 20);
-            this.tb_relationTableFilter.TabIndex = 2;
-            this.tb_relationTableFilter.TextChanged += new System.EventHandler(this.tb_relationTableFilter_TextChanged);
+            this.tb_noMansUpperBound.Location = new System.Drawing.Point(42, 74);
+            this.tb_noMansUpperBound.Name = "tb_noMansUpperBound";
+            this.tb_noMansUpperBound.ReadOnly = true;
+            this.tb_noMansUpperBound.Size = new System.Drawing.Size(120, 20);
+            this.tb_noMansUpperBound.TabIndex = 21;
+            this.tb_noMansUpperBound.Text = "CH2";
             // 
             // ExperimentExperimentComparison
             // 
@@ -750,8 +743,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakWidthBase)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakCountMinThreshold)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_NoManLower)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_NoManUpper)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.yMaxEE)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xMaxEE)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.yMinEE)).EndInit();
@@ -778,6 +769,10 @@
             this.splitContainer4.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer4)).EndInit();
             this.splitContainer4.ResumeLayout(false);
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -790,10 +785,6 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
-            this.groupBox6.ResumeLayout(false);
-            this.groupBox6.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -806,8 +797,6 @@
         private System.Windows.Forms.NumericUpDown nUD_EE_Upper_Bound;
         private System.Windows.Forms.NumericUpDown nUD_PeakWidthBase;
         private System.Windows.Forms.NumericUpDown nUD_PeakCountMinThreshold;
-        private System.Windows.Forms.NumericUpDown nUD_NoManLower;
-        private System.Windows.Forms.NumericUpDown nUD_NoManUpper;
         private System.Windows.Forms.NumericUpDown yMaxEE;
         private System.Windows.Forms.NumericUpDown xMaxEE;
         private System.Windows.Forms.NumericUpDown yMinEE;
@@ -848,6 +837,8 @@
         private System.Windows.Forms.TextBox tb_relationTableFilter;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox tb_peakTableFilter;
+        private System.Windows.Forms.TextBox tb_noMansUpperBound;
+        private System.Windows.Forms.TextBox tb_noMansLowerBound;
     }
 }
 

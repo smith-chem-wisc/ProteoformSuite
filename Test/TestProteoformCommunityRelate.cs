@@ -503,5 +503,32 @@ namespace Test
             Assert.True(community.has_e_proteoforms);
             Assert.True(community.has_e_and_t_proteoforms);
         }
+
+        [Test]
+        public void test_no_mans_land()
+        {
+            var e = ConstructorsForTesting.ExperimentalProteoform("");
+            var ee = ProteoformComparison.ExperimentalExperimental;
+
+            // Small masses, tight tolerance
+            ProteoformRelation r1 = new ProteoformRelation(e, e, ee, 0.001, TestContext.CurrentContext.TestDirectory);
+            Assert.IsTrue(r1.outside_no_mans_land);
+            ProteoformRelation r2 = new ProteoformRelation(e, e, ee, 0.0012, TestContext.CurrentContext.TestDirectory);
+            Assert.IsFalse(r2.outside_no_mans_land);
+            ProteoformRelation r3 = new ProteoformRelation(e, e, ee, -0.9992, TestContext.CurrentContext.TestDirectory);
+            Assert.IsTrue(r3.outside_no_mans_land);
+            ProteoformRelation r4 = new ProteoformRelation(e, e, ee, -0.999, TestContext.CurrentContext.TestDirectory);
+            Assert.IsFalse(r4.outside_no_mans_land);
+
+            // Larger masses, larger tolerance
+            ProteoformRelation r5 = new ProteoformRelation(e, e, ee, 200.22, TestContext.CurrentContext.TestDirectory);
+            Assert.IsTrue(r5.outside_no_mans_land);
+            ProteoformRelation r6 = new ProteoformRelation(e, e, ee, 200.23, TestContext.CurrentContext.TestDirectory);
+            Assert.IsFalse(r6.outside_no_mans_land);
+            ProteoformRelation r7 = new ProteoformRelation(e, e, ee, 200.92, TestContext.CurrentContext.TestDirectory);
+            Assert.IsTrue(r7.outside_no_mans_land);
+            ProteoformRelation r8 = new ProteoformRelation(e, e, ee, 200.91, TestContext.CurrentContext.TestDirectory);
+            Assert.IsFalse(r8.outside_no_mans_land);
+        }
     }
 }

@@ -25,7 +25,7 @@ namespace Test
             TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
             pf2.name = "T1";
             ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
-            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
+            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0, TestContext.CurrentContext.TestDirectory);
             pr1.Accepted = true;
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
@@ -110,10 +110,10 @@ namespace Test
             ProteoformComparison comparison45 = ProteoformComparison.ExperimentalExperimental;
             ProteoformComparison comparison56 = ProteoformComparison.ExperimentalExperimental;
             ProteoformComparison comparison67 = ProteoformComparison.ExperimentalExperimental;
-            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison34, 0);
-            ProteoformRelation pr3 = new ProteoformRelation(pf4, pf5, comparison45, 19); //not accepted
-            ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0);
-            ProteoformRelation pr5 = new ProteoformRelation(pf6, pf7, comparison67, 0);
+            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison34, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr3 = new ProteoformRelation(pf4, pf5, comparison45, 19, TestContext.CurrentContext.TestDirectory); //not accepted
+            ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr5 = new ProteoformRelation(pf6, pf7, comparison67, 0, TestContext.CurrentContext.TestDirectory);
 
             List<ProteoformRelation> prs2 = new List<ProteoformRelation> { pr2, pr3, pr4, pr5 }.OrderBy(r => r.DeltaMass).ToList();
             foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2, prs2.Select(r => r.InstanceId).ToList());
@@ -159,7 +159,7 @@ namespace Test
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
             TheoreticalProteoformGroup pf2 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
             ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
-            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
+            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0, TestContext.CurrentContext.TestDirectory);
             pr1.Accepted = true;
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());

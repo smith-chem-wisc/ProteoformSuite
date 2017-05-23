@@ -115,13 +115,13 @@ namespace ProteoformSuiteGUI
             xMinEE.Maximum = xMaxEE.Value;
             xMinEE.Value = 0; // scaling for x-axis minimum in the histogram of all EE pairs
 
-            nUD_NoManLower.Minimum = 00m;
-            nUD_NoManLower.Maximum = 0.49m;
-            nUD_NoManLower.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_lowerBound);
+            //nUD_NoManLower.Minimum = 00m;
+            //nUD_NoManLower.Maximum = 0.49m;
+            //nUD_NoManLower.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_lowerBound);
 
-            nUD_NoManUpper.Minimum = 0.50m;
-            nUD_NoManUpper.Maximum = 1.00m;
-            nUD_NoManUpper.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_upperBound);
+            //nUD_NoManUpper.Minimum = 0.50m;
+            //nUD_NoManUpper.Maximum = 1.00m;
+            //nUD_NoManUpper.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_upperBound);
 
             nUD_PeakWidthBase.Minimum = 0.001m;
             nUD_PeakWidthBase.Maximum = 0.5000m;
@@ -145,7 +145,7 @@ namespace ProteoformSuiteGUI
 
             //MASS WINDOW
             nUD_EE_Upper_Bound.Minimum = 0;
-            nUD_EE_Upper_Bound.Maximum = 500;
+            nUD_EE_Upper_Bound.Maximum = 2000;
             if (!SaveState.lollipop.neucode_labeled) SaveState.lollipop.ee_max_mass_difference = 150;
             nUD_EE_Upper_Bound.Value = (decimal)SaveState.lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
         }
@@ -313,16 +313,6 @@ namespace ProteoformSuiteGUI
         #endregion Histogram Private Methods
 
         #region Parameters Private Methods
-
-        private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
-        {
-            SaveState.lollipop.no_mans_land_lowerBound = Convert.ToDouble(nUD_NoManLower.Value);
-        }
-
-        private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
-        {
-            SaveState.lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value);
-        }
 
         private void nUD_MaxRetTimeDifference_ValueChanged(object sender, EventArgs e)
         {

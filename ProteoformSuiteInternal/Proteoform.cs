@@ -146,9 +146,11 @@ namespace ProteoformSuiteInternal
 
                 foreach (ModificationWithMass m in mods_in_set)
                 {
+                    int mod_rank = SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification u) ? u.ptm_rank : SaveState.lollipop.modification_ranks[m.monoisotopicMass];
+
                     if (m.monoisotopicMass == 0)
                     {
-                        rank_sum += SaveState.lollipop.modification_ranks[m.monoisotopicMass];
+                        rank_sum += mod_rank;
                         continue;
                     }
 
@@ -173,19 +175,17 @@ namespace ProteoformSuiteInternal
                     // In order of likelihood:
                     // 1. First, we observe I/L/A cleavage to be the most common, 
                     // 1. "Fatty Acid" is a list of modifications prevalent in yeast or bacterial analysis, 
-                    // 1. and unlocalized modifications are a subset of modifications in the intact_mods.txt list that should be included in intact analysis
+                    // 1. and unlocalized modifications are a subset of modifications in the intact_mods.txt list that should be included in intact analysis (handled in unlocalized modification)
                     // 2. Second, other degradations and methionine cleavage are weighted mid-level
-                    // 3. Missed monoisotopic errors are considered, but weighted towards the bottom. This should allow missed monoisotopics with common modifications like oxidation, but not rare ones.
-                    if (likely_cleavage_site || m.modificationType == "FattyAcid" || m.modificationType == "Unlocalized")  
+                    // 3. Missed monoisotopic errors are considered, but weighted towards the bottom. This should allow missed monoisotopics with common modifications like oxidation, but not rare ones.  (handled in unlocalized modification)
+                    if (likely_cleavage_site)  
                         rank_sum += SaveState.lollipop.mod_rank_first_quartile / 2;
                     else if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation)
                         rank_sum += SaveState.lollipop.mod_rank_second_quartile;
-                    else if (m.modificationType == "Deconvolution Error")
-                        rank_sum += SaveState.lollipop.mod_rank_third_quartile;
                     else
                         rank_sum += known_mods.Concat(SaveState.lollipop.theoretical_database.variableModifications).Contains(m) ?
-                            SaveState.lollipop.modification_ranks[m.monoisotopicMass] :
-                            SaveState.lollipop.modification_ranks[m.monoisotopicMass] + SaveState.lollipop.mod_rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
+                            mod_rank :
+                            mod_rank + SaveState.lollipop.mod_rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
                 }
 
                 if (rank_sum <= SaveState.lollipop.mod_rank_sum_threshold)
