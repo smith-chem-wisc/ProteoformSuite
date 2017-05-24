@@ -41,7 +41,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Quantification));
             this.dgv_quantification_results = new System.Windows.Forms.DataGridView();
             this.gb_quantDataDisplaySelection = new System.Windows.Forms.GroupBox();
-            this.btn_refreshCalculation = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.nud_bkgdWidth = new System.Windows.Forms.NumericUpDown();
@@ -107,6 +106,7 @@
             this.nud_Offset = new System.Windows.Forms.NumericUpDown();
             this.label12 = new System.Windows.Forms.Label();
             this.nud_sKnot_minFoldChange = new System.Windows.Forms.NumericUpDown();
+            this.btn_refreshCalculation = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_quantification_results)).BeginInit();
             this.gb_quantDataDisplaySelection.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).BeginInit();
@@ -142,7 +142,6 @@
             // 
             // gb_quantDataDisplaySelection
             // 
-            this.gb_quantDataDisplaySelection.Controls.Add(this.btn_refreshCalculation);
             this.gb_quantDataDisplaySelection.Controls.Add(this.label5);
             this.gb_quantDataDisplaySelection.Controls.Add(this.label4);
             this.gb_quantDataDisplaySelection.Controls.Add(this.nud_bkgdWidth);
@@ -156,20 +155,10 @@
             this.gb_quantDataDisplaySelection.TabStop = false;
             this.gb_quantDataDisplaySelection.Text = "Adjust Background Imputation";
             // 
-            // btn_refreshCalculation
-            // 
-            this.btn_refreshCalculation.Location = new System.Drawing.Point(289, 19);
-            this.btn_refreshCalculation.Name = "btn_refreshCalculation";
-            this.btn_refreshCalculation.Size = new System.Drawing.Size(138, 23);
-            this.btn_refreshCalculation.TabIndex = 8;
-            this.btn_refreshCalculation.Text = "Refresh Calculation";
-            this.btn_refreshCalculation.UseVisualStyleBackColor = true;
-            this.btn_refreshCalculation.Click += new System.EventHandler(this.btn_refreshCalculation_Click);
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(154, 24);
+            this.label5.Location = new System.Drawing.Point(142, 19);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(63, 13);
             this.label5.TabIndex = 7;
@@ -192,7 +181,7 @@
             0,
             0,
             65536});
-            this.nud_bkgdWidth.Location = new System.Drawing.Point(216, 20);
+            this.nud_bkgdWidth.Location = new System.Drawing.Point(204, 15);
             this.nud_bkgdWidth.Maximum = new decimal(new int[] {
             1,
             0,
@@ -977,12 +966,23 @@
             this.nud_sKnot_minFoldChange.TabIndex = 0;
             this.nud_sKnot_minFoldChange.ValueChanged += new System.EventHandler(this.nud_sKnot_minFoldChange_ValueChanged);
             // 
+            // btn_refreshCalculation
+            // 
+            this.btn_refreshCalculation.Location = new System.Drawing.Point(517, 432);
+            this.btn_refreshCalculation.Name = "btn_refreshCalculation";
+            this.btn_refreshCalculation.Size = new System.Drawing.Size(482, 23);
+            this.btn_refreshCalculation.TabIndex = 17;
+            this.btn_refreshCalculation.Text = "Refresh Calculations";
+            this.btn_refreshCalculation.UseVisualStyleBackColor = true;
+            this.btn_refreshCalculation.Click += new System.EventHandler(this.btn_refreshCalculation_Click);
+            // 
             // Quantification
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(2099, 892);
             this.ControlBox = false;
+            this.Controls.Add(this.btn_refreshCalculation);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.ct_relativeDifference);
             this.Controls.Add(this.groupBox4);
@@ -1051,7 +1051,6 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.NumericUpDown nud_bkgdWidth;
         private System.Windows.Forms.NumericUpDown nud_bkgdShift;
-        private System.Windows.Forms.Button btn_refreshCalculation;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.NumericUpDown nud_minObservations;
         private System.Windows.Forms.ComboBox cmbx_observationsTypeRequired;
@@ -1102,5 +1101,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox cmbx_nodeLabel;
         private System.Windows.Forms.RadioButton rb_detectedSampleSet;
+        private System.Windows.Forms.Button btn_refreshCalculation;
     }
 }

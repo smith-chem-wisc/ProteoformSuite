@@ -511,9 +511,9 @@ namespace Test
             var ee = ProteoformComparison.ExperimentalExperimental;
 
             // Small masses, tight tolerance
-            ProteoformRelation r1 = new ProteoformRelation(e, e, ee, 0.09, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation r1 = new ProteoformRelation(e, e, ee, 0.015, TestContext.CurrentContext.TestDirectory);
             Assert.IsTrue(r1.outside_no_mans_land);
-            ProteoformRelation r2 = new ProteoformRelation(e, e, ee, 0.091, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation r2 = new ProteoformRelation(e, e, ee, 0.016, TestContext.CurrentContext.TestDirectory);
             Assert.IsFalse(r2.outside_no_mans_land);
             ProteoformRelation r3 = new ProteoformRelation(e, e, ee, -0.966, TestContext.CurrentContext.TestDirectory);
             Assert.IsTrue(r3.outside_no_mans_land);
@@ -521,9 +521,9 @@ namespace Test
             Assert.IsFalse(r4.outside_no_mans_land);
 
             // Larger masses, larger tolerance
-            ProteoformRelation r5 = new ProteoformRelation(e, e, ee, 200.22, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation r5 = new ProteoformRelation(e, e, ee, 200.23, TestContext.CurrentContext.TestDirectory);
             Assert.IsTrue(r5.outside_no_mans_land);
-            ProteoformRelation r6 = new ProteoformRelation(e, e, ee, 200.23, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation r6 = new ProteoformRelation(e, e, ee, 200.24, TestContext.CurrentContext.TestDirectory);
             Assert.IsFalse(r6.outside_no_mans_land);
             ProteoformRelation r7 = new ProteoformRelation(e, e, ee, 200.89, TestContext.CurrentContext.TestDirectory);
             Assert.IsTrue(r7.outside_no_mans_land);

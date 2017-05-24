@@ -28,20 +28,15 @@ namespace ProteoformSuiteGUI
             return new List<DataGridView>() { dgv_quantification_results, dgv_goAnalysis };
         }
 
-        public void perform_calculations() //this is the first thing that gets run on form load
-        {
-            InitializeParameterSet();
-            RunTheGamut();
-        }
-
         public void RunTheGamut()
         {
+            ClearListsTablesFigures(true);
             SaveState.lollipop.quantify();
             SaveState.lollipop.GO_analysis();
             FillTablesAndCharts();
         }
 
-        public void ClearListsTablesFigures()
+        public void ClearListsTablesFigures(bool clear_following)
         {
             SaveState.lollipop.logIntensityHistogram.Clear();
             SaveState.lollipop.logSelectIntensityHistogram.Clear();
@@ -54,15 +49,26 @@ namespace ProteoformSuiteGUI
             foreach (var series in ct_proteoformIntensities.Series) series.Points.Clear();
             foreach (var series in ct_relativeDifference.Series) series.Points.Clear();
             foreach (var series in ct_volcano_logFold_logP.Series) series.Points.Clear();
+
             dgv_goAnalysis.DataSource = null;
             dgv_quantification_results.DataSource = null;
             dgv_goAnalysis.Rows.Clear();
             dgv_quantification_results.Rows.Clear();
+
+            if (clear_following)
+            {
+                for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
+                {
+                    ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
+                    sweet.ClearListsTablesFigures(false);
+                }
+            }
         }
 
         public bool ReadyToRunTheGamut()
         {
-            return SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.Quantification).Count() > 0 && SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Length > 0 && SaveState.lollipop.qVals.Count <= 0;
+            return SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.Quantification).Count() > 0 
+                && SaveState.lollipop.target_proteoform_community.families.Count > 0;
         }
 
         public void FillTablesAndCharts()
@@ -155,7 +161,6 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
             cmbx_observationsTypeRequired.SelectedIndexChanged += cmbx_observationsTypeRequired_SelectedIndexChanged;
 
-
             nud_sKnot_minFoldChange.ValueChanged -= nud_sKnot_minFoldChange_ValueChanged;
             nud_sKnot_minFoldChange.Value = SaveState.lollipop.sKnot_minFoldChange;
             nud_sKnot_minFoldChange.ValueChanged += nud_sKnot_minFoldChange_ValueChanged;
@@ -192,10 +197,20 @@ namespace ProteoformSuiteGUI
 
         private void btn_refreshCalculation_Click(object sender, EventArgs e)
         {
-            this.Cursor = Cursors.WaitCursor;
-            SaveState.lollipop.quantify();
-            FillTablesAndCharts();
-            this.Cursor = Cursors.Default;
+            if (ReadyToRunTheGamut())
+            {
+                Cursor = Cursors.WaitCursor;
+                RunTheGamut();
+                Cursor = Cursors.Default;
+            }
+            else if (SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.Quantification).Count() <= 0)
+                MessageBox.Show("Please load quantification results in Load Deconvolution Results.", "Quantification");
+            else if (SaveState.lollipop.raw_experimental_components.Count <= 0)
+                MessageBox.Show("Please load deconvolution results.", "Quantification");
+            else if (SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Length <= 0)
+                MessageBox.Show("Please aggregate proteoform observations.", "Quantification");
+            else if (SaveState.lollipop.target_proteoform_community.families.Count <= 0)
+                MessageBox.Show("Please construct proteoform families.", "Quantification");
         }
 
         private void plotObservedVsExpectedRelativeDifference()
@@ -305,15 +320,19 @@ namespace ProteoformSuiteGUI
         private void nud_bkgdShift_ValueChanged(object sender, EventArgs e)
         {
             SaveState.lollipop.backgroundShift = nud_bkgdShift.Value;
-            if (SaveState.lollipop.qVals.Count > 0) SaveState.lollipop.defineAllObservedIntensityDistribution(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.logIntensityHistogram);
-            if (SaveState.lollipop.qVals.Count > 0) SaveState.lollipop.defineBackgroundIntensityDistribution(SaveState.lollipop.neucode_labeled, SaveState.lollipop.quantBioFracCombos, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.backgroundShift, SaveState.lollipop.backgroundWidth);
+            if (SaveState.lollipop.qVals.Count <= 0)
+                return;
+            SaveState.lollipop.defineAllObservedIntensityDistribution(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.logIntensityHistogram);
+            SaveState.lollipop.defineBackgroundIntensityDistribution(SaveState.lollipop.neucode_labeled, SaveState.lollipop.quantBioFracCombos, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.backgroundShift, SaveState.lollipop.backgroundWidth);
         }
 
         private void nud_bkgdWidth_ValueChanged(object sender, EventArgs e)
         {
             SaveState.lollipop.backgroundWidth = nud_bkgdWidth.Value;
-            if (SaveState.lollipop.qVals.Count > 0) SaveState.lollipop.defineAllObservedIntensityDistribution(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.logIntensityHistogram);
-            if (SaveState.lollipop.qVals.Count > 0) SaveState.lollipop.defineBackgroundIntensityDistribution(SaveState.lollipop.neucode_labeled, SaveState.lollipop.quantBioFracCombos, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.backgroundShift, SaveState.lollipop.backgroundWidth);
+            if (SaveState.lollipop.qVals.Count <= 0)
+                return;
+            SaveState.lollipop.defineAllObservedIntensityDistribution(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.logIntensityHistogram);
+            SaveState.lollipop.defineBackgroundIntensityDistribution(SaveState.lollipop.neucode_labeled, SaveState.lollipop.quantBioFracCombos, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.backgroundShift, SaveState.lollipop.backgroundWidth);
         }
 
         private void cmbx_observationsTypeRequired_SelectedIndexChanged(object sender, EventArgs e)
@@ -329,6 +348,8 @@ namespace ProteoformSuiteGUI
         private void nud_sKnot_minFoldChange_ValueChanged(object sender, EventArgs e)
         {
             SaveState.lollipop.sKnot_minFoldChange = nud_sKnot_minFoldChange.Value;
+            if (SaveState.lollipop.satisfactoryProteoforms.Count <= 0)
+                return;
             SaveState.lollipop.computeProteoformTestStatistics(SaveState.lollipop.neucode_labeled, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.bkgdAverageIntensity, SaveState.lollipop.bkgdStDev, SaveState.lollipop.numerator_condition, SaveState.lollipop.denominator_condition, SaveState.lollipop.sKnot_minFoldChange);
             SaveState.lollipop.computeSortedTestStatistics(SaveState.lollipop.satisfactoryProteoforms);
             SaveState.lollipop.computeFoldChangeFDR(SaveState.lollipop.sortedAvgPermutationTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.permutedTestStatistics, SaveState.lollipop.offsetTestStatistics);
@@ -339,6 +360,8 @@ namespace ProteoformSuiteGUI
         private void nud_Offset_ValueChanged(object sender, EventArgs e)
         {
             SaveState.lollipop.offsetTestStatistics = nud_Offset.Value;
+            if (SaveState.lollipop.satisfactoryProteoforms.Count <= 0)
+                return;
             SaveState.lollipop.computeFoldChangeFDR(SaveState.lollipop.sortedAvgPermutationTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.permutedTestStatistics, SaveState.lollipop.offsetTestStatistics);
             plotObservedVsExpectedOffsets();
         }

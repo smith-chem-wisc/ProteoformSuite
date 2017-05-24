@@ -298,7 +298,7 @@
             this.groupBox6.Controls.Add(this.cb_discoveryHistogram);
             this.groupBox6.Controls.Add(this.cb_Graph_lowerThreshold);
             this.groupBox6.Controls.Add(this.cb_view_decoy_histogram);
-            this.groupBox6.Location = new System.Drawing.Point(486, 189);
+            this.groupBox6.Location = new System.Drawing.Point(486, 190);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(263, 93);
             this.groupBox6.TabIndex = 36;
@@ -348,7 +348,7 @@
             this.groupBox5.Controls.Add(this.tb_relationTableFilter);
             this.groupBox5.Controls.Add(this.label13);
             this.groupBox5.Controls.Add(this.tb_peakTableFilter);
-            this.groupBox5.Location = new System.Drawing.Point(486, 83);
+            this.groupBox5.Location = new System.Drawing.Point(486, 84);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(263, 100);
             this.groupBox5.TabIndex = 35;
@@ -396,7 +396,7 @@
             this.bt_compare_ET.Name = "bt_compare_ET";
             this.bt_compare_ET.Size = new System.Drawing.Size(832, 23);
             this.bt_compare_ET.TabIndex = 32;
-            this.bt_compare_ET.Text = "Compare Experiment-Theoretical Proteoforms";
+            this.bt_compare_ET.Text = "Compare Theoretical Proteoforms with Experimental Proteoforms";
             this.bt_compare_ET.UseMnemonic = false;
             this.bt_compare_ET.UseVisualStyleBackColor = true;
             this.bt_compare_ET.Click += new System.EventHandler(this.bt_compare_et_Click);
@@ -410,7 +410,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(29, 77);
+            this.groupBox4.Location = new System.Drawing.Point(29, 78);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -504,7 +504,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(278, 77);
+            this.groupBox3.Location = new System.Drawing.Point(278, 78);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -577,7 +577,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(278, 189);
+            this.groupBox2.Location = new System.Drawing.Point(278, 190);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -665,7 +665,7 @@
             this.groupBox1.Controls.Add(this.tb_noMansLowerBound);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(32, 189);
+            this.groupBox1.Location = new System.Drawing.Point(32, 190);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);

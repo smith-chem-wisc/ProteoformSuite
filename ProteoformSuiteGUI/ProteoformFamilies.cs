@@ -81,14 +81,11 @@ namespace ProteoformSuiteGUI
 
         public void RunTheGamut()
         {
-            Cursor = Cursors.WaitCursor;
-            SaveState.lollipop.clear_all_families();
+            ClearListsTablesFigures(true);
             SaveState.lollipop.construct_target_and_decoy_families();
             cmbx_tableSelector.SelectedIndex = 0;
             tb_tableFilter.Text = "";
-            fill_proteoform_families("", -1);
-            update_figures_of_merit();
-            Cursor = Cursors.Default;
+            FillTablesAndCharts();
         }
 
         public void FillTablesAndCharts()
@@ -97,13 +94,22 @@ namespace ProteoformSuiteGUI
             update_figures_of_merit();
         }
 
-        public void ClearListsTablesFigures()
+        public void ClearListsTablesFigures(bool clear_following)
         {
             SaveState.lollipop.clear_all_families();
             dgv_main.DataSource = null;
             dgv_main.Rows.Clear();
             dgv_proteoform_family_members.DataSource = null;
             dgv_proteoform_family_members.Rows.Clear();
+
+            if (clear_following)
+            {
+                for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
+                {
+                    ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
+                    sweet.ClearListsTablesFigures(false);
+                }
+            }
         }
 
         public void update_figures_of_merit()
@@ -313,8 +319,12 @@ namespace ProteoformSuiteGUI
 
         private void Families_update_Click(object sender, EventArgs e)
         {
-            ClearListsTablesFigures();
-            RunTheGamut();
+            if (ReadyToRunTheGamut())
+            {
+                Cursor = Cursors.WaitCursor;
+                RunTheGamut();
+                Cursor = Cursors.Default;
+            }
         }
 
         private void nud_decimalRoundingLabels_ValueChanged(object sender, EventArgs e)
@@ -345,12 +355,6 @@ namespace ProteoformSuiteGUI
             if (cb_unidentified_families.Checked) proteoforms.AddRange(SaveState.lollipop.target_proteoform_community.families.Where(f => f.relations.Count > 0 && f.theoretical_proteoforms.Count == 0).SelectMany(f => f.experimental_proteoforms).ToList());
             if (cb_orphans.Checked) proteoforms.AddRange(SaveState.lollipop.target_proteoform_community.families.Where(f => f.relations.Count == 0).SelectMany(f => f.experimental_proteoforms).ToList());
             write_inclusion_list(proteoforms);
-        }
-
-
-        private void btn_merge_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void btn_inclusion_list_selected_families_Click(object sender, EventArgs e)
