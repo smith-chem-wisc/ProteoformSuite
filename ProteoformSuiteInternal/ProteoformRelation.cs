@@ -34,8 +34,8 @@ namespace ProteoformSuiteInternal
         public Proteoform[] connected_proteoforms = new Proteoform[2];
         public PtmSet candidate_ptmset = null;
         public PtmSet represented_ptmset = null;
-        private static ChemicalFormula ch2 = null;
-        private static ChemicalFormula po4 = null;
+        private static ChemicalFormula CH2 = null;
+        private static ChemicalFormula HPO3 = null;
 
         #endregion Fields
 
@@ -44,7 +44,7 @@ namespace ProteoformSuiteInternal
         public int InstanceId { get; set; }
         public double DeltaMass { get; set; }
         public DeltaMassPeak peak { get; set; }
-        public List<ProteoformRelation> nearby_relations { get; set; }
+        public List<ProteoformRelation> nearby_relations { get; set; } // cleared after accepting peaks
         public int nearby_relations_count { get; set; } // count is the "running sum"; relations are not saved
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
@@ -69,11 +69,11 @@ namespace ProteoformSuiteInternal
             InstanceId = instanceCounter;
             lock (SaveState.lollipop) instanceCounter += 1; //Not thread safe
 
-            if (ch2 == null || po4 == null)
+            if (CH2 == null || HPO3 == null)
             {
                 Loaders.LoadElements(Path.Combine(current_directory, "elements.dat"));
-                ch2 = ChemicalFormula.ParseFormula("C1 H2");
-                po4 = ChemicalFormula.ParseFormula("H1 O3 P1");
+                CH2 = ChemicalFormula.ParseFormula("C1 H2");
+                HPO3 = ChemicalFormula.ParseFormula("H1 O3 P1");
             }
 
             if (SaveState.lollipop.neucode_labeled)
@@ -82,7 +82,8 @@ namespace ProteoformSuiteInternal
             }
 
             if ((relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy) 
-                && SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out List<PtmSet> candidate_sets))
+                && SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out List<PtmSet> candidate_sets)
+                && pf2 as TheoreticalProteoform != null)
             {
                 TheoreticalProteoform t = pf2 as TheoreticalProteoform;
                 double mass_tolerance = t.modified_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
@@ -92,8 +93,8 @@ namespace ProteoformSuiteInternal
                     .FirstOrDefault();
             }
 
-            double low_decimal_bound = ((ch2.MonoisotopicMass - Math.Truncate(ch2.MonoisotopicMass)) / ch2.MonoisotopicMass) * (Math.Abs(delta_mass) + 1);
-            double high_decimal_bound = 1 + ((po4.MonoisotopicMass - Math.Ceiling(po4.MonoisotopicMass)) / po4.MonoisotopicMass) * (Math.Abs(delta_mass) + 1);
+            double low_decimal_bound = ((CH2.MonoisotopicMass - Math.Truncate(CH2.MonoisotopicMass)) / CH2.MonoisotopicMass) * (Math.Abs(delta_mass) + 1);
+            double high_decimal_bound = 1 + ((HPO3.MonoisotopicMass - Math.Ceiling(HPO3.MonoisotopicMass)) / HPO3.MonoisotopicMass) * (Math.Abs(delta_mass) + 1);
             double delta_mass_decimal = Math.Abs(delta_mass - Math.Truncate(delta_mass));
 
             outside_no_mans_land = delta_mass_decimal <= low_decimal_bound || delta_mass_decimal >= high_decimal_bound 

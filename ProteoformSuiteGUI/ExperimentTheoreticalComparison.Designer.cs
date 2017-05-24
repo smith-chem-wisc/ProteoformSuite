@@ -48,6 +48,7 @@
             this.dgv_ET_Peak_List = new System.Windows.Forms.DataGridView();
             this.ct_ET_peakList = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.cb_discoveryHistogram = new System.Windows.Forms.CheckBox();
             this.cb_Graph_lowerThreshold = new System.Windows.Forms.CheckBox();
             this.cb_view_decoy_histogram = new System.Windows.Forms.CheckBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
@@ -294,21 +295,33 @@
             // groupBox6
             // 
             this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox6.Controls.Add(this.cb_discoveryHistogram);
             this.groupBox6.Controls.Add(this.cb_Graph_lowerThreshold);
             this.groupBox6.Controls.Add(this.cb_view_decoy_histogram);
-            this.groupBox6.Location = new System.Drawing.Point(486, 187);
+            this.groupBox6.Location = new System.Drawing.Point(486, 189);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(263, 93);
             this.groupBox6.TabIndex = 36;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "ET Histogram Selection";
             // 
+            // cb_discoveryHistogram
+            // 
+            this.cb_discoveryHistogram.AutoSize = true;
+            this.cb_discoveryHistogram.Location = new System.Drawing.Point(25, 46);
+            this.cb_discoveryHistogram.Name = "cb_discoveryHistogram";
+            this.cb_discoveryHistogram.Size = new System.Drawing.Size(193, 17);
+            this.cb_discoveryHistogram.TabIndex = 34;
+            this.cb_discoveryHistogram.Text = "Raw ET Histogram with Unmodified";
+            this.cb_discoveryHistogram.UseVisualStyleBackColor = true;
+            this.cb_discoveryHistogram.CheckedChanged += new System.EventHandler(this.cb_discoveryHistogram_CheckedChanged);
+            // 
             // cb_Graph_lowerThreshold
             // 
             this.cb_Graph_lowerThreshold.AutoSize = true;
             this.cb_Graph_lowerThreshold.Checked = true;
             this.cb_Graph_lowerThreshold.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_Graph_lowerThreshold.Location = new System.Drawing.Point(25, 53);
+            this.cb_Graph_lowerThreshold.Location = new System.Drawing.Point(25, 69);
             this.cb_Graph_lowerThreshold.Name = "cb_Graph_lowerThreshold";
             this.cb_Graph_lowerThreshold.Size = new System.Drawing.Size(103, 17);
             this.cb_Graph_lowerThreshold.TabIndex = 28;
@@ -320,7 +333,7 @@
             // 
             this.cb_view_decoy_histogram.AutoSize = true;
             this.cb_view_decoy_histogram.Enabled = false;
-            this.cb_view_decoy_histogram.Location = new System.Drawing.Point(25, 29);
+            this.cb_view_decoy_histogram.Location = new System.Drawing.Point(25, 23);
             this.cb_view_decoy_histogram.Name = "cb_view_decoy_histogram";
             this.cb_view_decoy_histogram.Size = new System.Drawing.Size(196, 17);
             this.cb_view_decoy_histogram.TabIndex = 33;
@@ -335,7 +348,7 @@
             this.groupBox5.Controls.Add(this.tb_relationTableFilter);
             this.groupBox5.Controls.Add(this.label13);
             this.groupBox5.Controls.Add(this.tb_peakTableFilter);
-            this.groupBox5.Location = new System.Drawing.Point(486, 81);
+            this.groupBox5.Location = new System.Drawing.Point(486, 83);
             this.groupBox5.Name = "groupBox5";
             this.groupBox5.Size = new System.Drawing.Size(263, 100);
             this.groupBox5.TabIndex = 35;
@@ -397,7 +410,7 @@
             this.groupBox4.Controls.Add(this.label3);
             this.groupBox4.Controls.Add(this.nUD_PeakWidthBase);
             this.groupBox4.Controls.Add(this.nUD_PeakCountMinThreshold);
-            this.groupBox4.Location = new System.Drawing.Point(29, 75);
+            this.groupBox4.Location = new System.Drawing.Point(29, 77);
             this.groupBox4.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Padding = new System.Windows.Forms.Padding(2);
@@ -491,7 +504,7 @@
             this.groupBox3.Controls.Add(this.label6);
             this.groupBox3.Controls.Add(this.nUD_ET_Lower_Bound);
             this.groupBox3.Controls.Add(this.nUD_ET_Upper_Bound);
-            this.groupBox3.Location = new System.Drawing.Point(278, 75);
+            this.groupBox3.Location = new System.Drawing.Point(278, 77);
             this.groupBox3.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Padding = new System.Windows.Forms.Padding(2);
@@ -564,7 +577,7 @@
             this.groupBox2.Controls.Add(this.xMinET);
             this.groupBox2.Controls.Add(this.yMinET);
             this.groupBox2.Controls.Add(this.xMaxET);
-            this.groupBox2.Location = new System.Drawing.Point(278, 187);
+            this.groupBox2.Location = new System.Drawing.Point(278, 189);
             this.groupBox2.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Padding = new System.Windows.Forms.Padding(2);
@@ -652,7 +665,7 @@
             this.groupBox1.Controls.Add(this.tb_noMansLowerBound);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
-            this.groupBox1.Location = new System.Drawing.Point(32, 187);
+            this.groupBox1.Location = new System.Drawing.Point(32, 189);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
@@ -663,23 +676,21 @@
             // 
             // tb_noMansUpperBound
             // 
-            this.tb_noMansUpperBound.Enabled = true;
-            this.tb_noMansUpperBound.ReadOnly = true;
             this.tb_noMansUpperBound.Location = new System.Drawing.Point(51, 72);
             this.tb_noMansUpperBound.Name = "tb_noMansUpperBound";
+            this.tb_noMansUpperBound.ReadOnly = true;
             this.tb_noMansUpperBound.Size = new System.Drawing.Size(120, 20);
             this.tb_noMansUpperBound.TabIndex = 23;
             this.tb_noMansUpperBound.Text = "CH2";
             // 
             // tb_noMansLowerBound
             // 
-            this.tb_noMansLowerBound.Enabled = true;
-            this.tb_noMansLowerBound.ReadOnly = true;
             this.tb_noMansLowerBound.Location = new System.Drawing.Point(51, 34);
             this.tb_noMansLowerBound.Name = "tb_noMansLowerBound";
+            this.tb_noMansLowerBound.ReadOnly = true;
             this.tb_noMansLowerBound.Size = new System.Drawing.Size(120, 20);
             this.tb_noMansLowerBound.TabIndex = 22;
-            this.tb_noMansLowerBound.Text = "PO4";
+            this.tb_noMansLowerBound.Text = "HPO3";
             // 
             // label2
             // 
@@ -863,5 +874,6 @@
         private System.Windows.Forms.CheckBox cb_Graph_lowerThreshold;
         private System.Windows.Forms.TextBox tb_noMansUpperBound;
         private System.Windows.Forms.TextBox tb_noMansLowerBound;
+        private System.Windows.Forms.CheckBox cb_discoveryHistogram;
     }
 }

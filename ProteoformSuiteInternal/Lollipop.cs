@@ -528,7 +528,7 @@ namespace ProteoformSuiteInternal
             for (int i = 0; i < SaveState.lollipop.decoy_proteoform_communities.Count; i++)
             {
                 string key = decoy_community_name_prefix + i;
-                SaveState.lollipop.ed_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true));
+                SaveState.lollipop.ed_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true, true));
                 if (i == 0) ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
             }
 
