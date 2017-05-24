@@ -47,6 +47,12 @@ namespace ProteoformSuiteGUI
             set { m.ptm_count = value; }
         }
 
+        public bool require_proteoform_without_mod
+        {
+            get { return m.require_proteoform_without_mod; }
+            set { m.require_proteoform_without_mod = value; }
+        }
+
         public int PtmRank
         {
             get { return m.ptm_rank; }
@@ -67,6 +73,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(OriginalID)].HeaderText = "Original ID";
             dgv.Columns[nameof(ID)].HeaderText = "New ID";
             dgv.Columns[nameof(PtmCount)].HeaderText = "Num. PTMs Represented";
+            dgv.Columns[nameof(require_proteoform_without_mod)].HeaderText = "Require Proteoform Without This Modification";
             dgv.Columns[nameof(PtmRank)].HeaderText = "Frequency-Based Rank of PTM Mass";
 
             //EDITABILITY

@@ -98,15 +98,17 @@ namespace ProteoformSuiteInternal
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
 
-                ModificationWithMass best_loss = null;
-                foreach (ModificationWithMass m in all_mods_with_mass)
+                PtmSet best_loss = null;
+                foreach (PtmSet set in all_possible_ptmsets)
                 {
-                    bool within_loss_tolerance = deltaM >= -m.monoisotopicMass - mass_tolerance && deltaM <= -m.monoisotopicMass + mass_tolerance;
-                    bool can_be_removed = this.ptm_set.ptm_combination.Select(ptm => ptm.modification).Contains(m);
-                    bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-m.monoisotopicMass)) < Math.Abs(deltaM - (-best_loss.monoisotopicMass));
+                    bool within_loss_tolerance = deltaM >= -set.mass - mass_tolerance && deltaM <= -set.mass + mass_tolerance;
+                    var these_mods = this.ptm_set.ptm_combination.Select(ptm => ptm.modification);
+                    var those_mods = set.ptm_combination.Select(ptm => ptm.modification);
+                    bool can_be_removed = these_mods.All(m => those_mods.Contains(m));
+                    bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-set.mass)) < Math.Abs(deltaM - (-best_loss.mass));
                     if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
                     {
-                        best_loss = m;
+                        best_loss = set;
                     }
                 }
 
@@ -120,11 +122,24 @@ namespace ProteoformSuiteInternal
                 if (best_addition == null && best_loss == null)
                     continue;
 
-                PtmSet with_mod_change = best_loss != null ?
-                    new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Where(ptm => !ptm.modification.Equals(best_loss)))) :
-                    new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Concat(best_addition.ptm_combination).Where(ptm => ptm.modification.monoisotopicMass != 0).ToList()));
+                // Make the new ptmset with ptms removed or added
+                PtmSet with_mod_change = null;
+                if (best_loss == null)
+                {
+                    with_mod_change = new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Concat(best_addition.ptm_combination).Where(ptm => ptm.modification.monoisotopicMass != 0).ToList()));
+                }
+                else
+                {
+                    List<Ptm> new_combo = new List<Ptm>(this.ptm_set.ptm_combination);
+                    foreach (Ptm ptm in best_loss.ptm_combination)
+                    {
+                        new_combo.Remove(new_combo.FirstOrDefault(asdf => asdf.modification == ptm.modification));
+                    }
+                    with_mod_change = new PtmSet(new_combo);
+                }
+
                 lock (r) lock (e)
-                        assign_pf_identity(e, this, with_mod_change, r, sign, best_loss != null ? new PtmSet(new List<Ptm> { new Ptm(-1, best_loss) }) : best_addition);
+                    assign_pf_identity(e, this, with_mod_change, r, sign, best_loss != null ? best_loss : best_addition);
                 identified.Add(e);
             }
             return identified;
@@ -159,7 +174,8 @@ namespace ProteoformSuiteInternal
                     bool motif_matches_c_terminus = c_terminal_degraded_aas < theoretical_base_sequence.Length && m.motif.Motif == theoretical_base_sequence[theoretical_base_sequence.Length - c_terminal_degraded_aas - 1].ToString();
                     bool cannot_be_degradation = !motif_matches_n_terminus && !motif_matches_c_terminus;
                     if (m.modificationType == "Missing" && cannot_be_degradation
-                        || m.modificationType == "AminoAcid" && !could_be_m_retention)
+                        || m.modificationType == "AminoAcid" && !could_be_m_retention
+                        || SaveState.lollipop.theoretical_database.unlocalized_lookup[m].require_proteoform_without_mod && set.ptm_combination.Count > 1)
                     {
                         rank_sum = Int32.MaxValue;
                         break;

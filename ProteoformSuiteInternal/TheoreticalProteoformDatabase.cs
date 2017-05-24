@@ -304,7 +304,7 @@ namespace ProteoformSuiteInternal
             {
                 foreach (var unloc in unlocalized_lookup)
                 {
-                    writer.WriteLine(unloc.Key.id + "\t" + unloc.Value.id + "\t" + unloc.Value.ptm_count.ToString());
+                    writer.WriteLine(unloc.Key.id + "\t" + unloc.Value.id + "\t" + unloc.Value.ptm_count.ToString() + "\t" + unloc.Value.require_proteoform_without_mod.ToString());
                 }
             }
         }
@@ -334,6 +334,7 @@ namespace ProteoformSuiteInternal
                 {
                     mod_unlocalized.Value.id = new_info[1];
                     mod_unlocalized.Value.ptm_count = Convert.ToInt32(new_info[2]);
+                    mod_unlocalized.Value.require_proteoform_without_mod = Convert.ToBoolean(new_info[3]);
                 }
             }
         }
