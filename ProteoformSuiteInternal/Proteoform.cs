@@ -103,8 +103,8 @@ namespace ProteoformSuiteInternal
                 {
                     bool within_loss_tolerance = deltaM >= -set.mass - mass_tolerance && deltaM <= -set.mass + mass_tolerance;
                     var these_mods = this.ptm_set.ptm_combination.Select(ptm => ptm.modification);
-                    var those_mods = set.ptm_combination.Select(ptm => ptm.modification);
-                    bool can_be_removed = these_mods.All(m => those_mods.Contains(m));
+                    var those_mods = set.ptm_combination.Select(ptm => ptm.modification); // all must be in the current set to remove them
+                    bool can_be_removed = those_mods.All(m => these_mods.Contains(m));
                     bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-set.mass)) < Math.Abs(deltaM - (-best_loss.mass));
                     if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
                     {
@@ -175,7 +175,7 @@ namespace ProteoformSuiteInternal
                     bool cannot_be_degradation = !motif_matches_n_terminus && !motif_matches_c_terminus;
                     if (m.modificationType == "Missing" && cannot_be_degradation
                         || m.modificationType == "AminoAcid" && !could_be_m_retention
-                        || SaveState.lollipop.theoretical_database.unlocalized_lookup[m].require_proteoform_without_mod && set.ptm_combination.Count > 1)
+                        || u != null ? u.require_proteoform_without_mod : false && set.ptm_combination.Count > 1)
                     {
                         rank_sum = Int32.MaxValue;
                         break;

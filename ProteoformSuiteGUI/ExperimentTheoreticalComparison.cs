@@ -46,7 +46,7 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut()
         {
             Cursor = Cursors.WaitCursor;
-            SaveState.lollipop.et_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, true);
+            SaveState.lollipop.et_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, true);
             SaveState.lollipop.relate_ed();
             SaveState.lollipop.et_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.et_relations, SaveState.lollipop.ed_relations);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
@@ -360,7 +360,7 @@ namespace ProteoformSuiteGUI
                 if (et_histogram_from_unmod.Count == 0)
                 {
                     ProteoformCommunity community = new ProteoformCommunity();
-                    et_histogram_from_unmod = community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Where(ex => ex.accepted).ToArray(), SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.ptm_set.mass == 0).Select(t => new Proteoform(t.accession, t.unmodified_mass, t.lysine_count, t.is_target)).ToArray(), ProteoformComparison.ExperimentalTheoretical, false, false);
+                    et_histogram_from_unmod = community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Where(ex => ex.accepted).ToArray(), SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.ptm_set.mass == 0).Select(t => new Proteoform(t.accession, t.unmodified_mass, t.lysine_count, t.is_target)).ToArray(), ProteoformComparison.ExperimentalTheoretical, false, Environment.CurrentDirectory, false);
                 }
                 DisplayUtility.GraphRelationsChart(ct_ET_Histogram, et_histogram_from_unmod, "relations", true);
                 cb_Graph_lowerThreshold.Checked = false;
