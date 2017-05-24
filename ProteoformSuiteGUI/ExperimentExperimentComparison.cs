@@ -45,7 +45,7 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut()
         {
             Cursor = Cursors.WaitCursor;
-            SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true, true);
+            SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true, Environment.CurrentDirectory, true);
             SaveState.lollipop.relate_ef();
             SaveState.lollipop.ee_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.ee_relations, SaveState.lollipop.ef_relations);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
