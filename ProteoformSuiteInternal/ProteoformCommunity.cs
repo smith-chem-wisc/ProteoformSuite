@@ -33,7 +33,7 @@ namespace ProteoformSuiteInternal
 
         #region BUILDING RELATIONSHIPS
 
-        public List<ProteoformRelation> relate(ExperimentalProteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type, bool accepted_only)
+        public List<ProteoformRelation> relate(ExperimentalProteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type, bool accepted_only, bool limit_et_relations)
         {
             if (accepted_only)
                 pfs1 = pfs1.Where(pf1 => pf1.accepted).ToArray();
@@ -54,7 +54,7 @@ namespace ProteoformSuiteInternal
                         pf1.gene_name = null;
                     }
 
-                    if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
+                    if (limit_et_relations && (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy))
                     {
                         ProteoformRelation best_relation = pf1.candidate_relatives
                             .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass, Environment.CurrentDirectory))
@@ -118,7 +118,7 @@ namespace ProteoformSuiteInternal
 
         public List<ProteoformRelation> relate_ef(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2)
         {
-            List<ProteoformRelation> all_ef_relations = relate(pfs1, pfs2, ProteoformComparison.ExperimentalFalse, true);
+            List<ProteoformRelation> all_ef_relations = relate(pfs1, pfs2, ProteoformComparison.ExperimentalFalse, true, true);
             ProteoformRelation[] to_shuffle = new List<ProteoformRelation>(all_ef_relations).ToArray();
             to_shuffle.Shuffle();
             return to_shuffle.Take(SaveState.lollipop.ee_relations.Count).ToList();

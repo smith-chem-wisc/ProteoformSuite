@@ -28,18 +28,29 @@ namespace ProteoformSuiteInternal
         private static void save_cytoscripts(string directory, string timestamp)
         {
             string message = "";
+
             message += CytoscapeScript.write_cytoscape_script(SaveState.lollipop.target_proteoform_community.families, SaveState.lollipop.target_proteoform_community.families,
-                SaveState.lollipop.results_folder, "AllFamilies_", timestamp,
-                SaveState.lollipop.qVals.Count > 0, true, true, false,
-                CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
-                ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
+                    SaveState.lollipop.results_folder, "AllFamilies_", timestamp,
+                    false, 
+                    true, true, false,
+                    CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
+                    ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
             message += Environment.NewLine;
 
             if (SaveState.lollipop.qVals.Count > 0)
             {
+                message += CytoscapeScript.write_cytoscape_script(SaveState.lollipop.target_proteoform_community.families, SaveState.lollipop.target_proteoform_community.families,
+                    SaveState.lollipop.results_folder, "AllQuantFamilies_", timestamp,
+                    true,
+                    true, true, false,
+                    CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
+                    ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
+                message += Environment.NewLine;
+
                 message += CytoscapeScript.write_cytoscape_script(SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.minProteoformFDR, SaveState.lollipop.minProteoformIntensity).Distinct().ToList(), SaveState.lollipop.target_proteoform_community.families,
                     SaveState.lollipop.results_folder, "SignificantChanges_", timestamp,
-                    SaveState.lollipop.qVals.Count > 0, true, true, false,
+                    true, 
+                    true, true, false,
                     CytoscapeScript.color_scheme_names[1], Lollipop.edge_labels[1], Lollipop.node_labels[1], CytoscapeScript.node_label_positions[0], Lollipop.node_positioning[1], 2,
                     ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
                 message += Environment.NewLine;

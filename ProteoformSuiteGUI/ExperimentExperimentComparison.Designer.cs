@@ -717,7 +717,7 @@
             this.tb_noMansLowerBound.ReadOnly = true;
             this.tb_noMansLowerBound.Size = new System.Drawing.Size(120, 20);
             this.tb_noMansLowerBound.TabIndex = 20;
-            this.tb_noMansLowerBound.Text = "PO4";
+            this.tb_noMansLowerBound.Text = "HPO3";
             // 
             // tb_noMansUpperBound
             // 

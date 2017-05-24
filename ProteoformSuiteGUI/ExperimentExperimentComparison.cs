@@ -45,7 +45,7 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut()
         {
             Cursor = Cursors.WaitCursor;
-            SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
+            SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true, true);
             SaveState.lollipop.relate_ef();
             SaveState.lollipop.ee_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.ee_relations, SaveState.lollipop.ef_relations);
             ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
@@ -114,14 +114,6 @@ namespace ProteoformSuiteGUI
             xMinEE.Minimum = -100;
             xMinEE.Maximum = xMaxEE.Value;
             xMinEE.Value = 0; // scaling for x-axis minimum in the histogram of all EE pairs
-
-            //nUD_NoManLower.Minimum = 00m;
-            //nUD_NoManLower.Maximum = 0.49m;
-            //nUD_NoManLower.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_lowerBound);
-
-            //nUD_NoManUpper.Minimum = 0.50m;
-            //nUD_NoManUpper.Maximum = 1.00m;
-            //nUD_NoManUpper.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_upperBound);
 
             nUD_PeakWidthBase.Minimum = 0.001m;
             nUD_PeakWidthBase.Maximum = 0.5000m;
@@ -237,11 +229,11 @@ namespace ProteoformSuiteGUI
 
         private void GraphEERelations()
         {
-            DisplayUtility.GraphRelationsChart(ct_EE_Histogram, SaveState.lollipop.ee_relations, "relations");
+            DisplayUtility.GraphRelationsChart(ct_EE_Histogram, SaveState.lollipop.ee_relations, "relations", false);
             ct_EE_Histogram.Series["relations"].Enabled = true;
             if (SaveState.lollipop.ef_relations.Count > 0)
             {
-                DisplayUtility.GraphRelationsChart(ct_EE_Histogram, SaveState.lollipop.ef_relations[SaveState.lollipop.decoy_community_name_prefix + "0"], "decoys");
+                DisplayUtility.GraphRelationsChart(ct_EE_Histogram, SaveState.lollipop.ef_relations[SaveState.lollipop.decoy_community_name_prefix + "0"], "decoys", false);
                 ct_EE_Histogram.Series["decoys"].Enabled = false;
                 cb_view_decoy_histogram.Enabled = true;
             }
