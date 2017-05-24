@@ -99,6 +99,15 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
+            //MASS WINDOW
+            nUD_EE_Upper_Bound.Minimum = 0;
+            nUD_EE_Upper_Bound.Maximum = 2000;
+            xMaxEE.Maximum = nUD_EE_Upper_Bound.Maximum;
+            xMinEE.Maximum = nUD_EE_Upper_Bound.Maximum;
+            if (!SaveState.lollipop.neucode_labeled) SaveState.lollipop.ee_max_mass_difference = 150;
+            nUD_EE_Upper_Bound.Value = (decimal)SaveState.lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
+
+            //Other stuff
             yMaxEE.Minimum = 0;
             yMaxEE.Maximum = 1000;
             yMaxEE.Value = 100; // scaling for y-axis maximum in the histogram of all EE pairs
@@ -108,11 +117,9 @@ namespace ProteoformSuiteGUI
             yMinEE.Value = 0; // scaling for y-axis minimum in the histogram of all EE pairs
 
             xMaxEE.Minimum = xMinEE.Value;
-            xMaxEE.Maximum = 500;
             xMaxEE.Value = (decimal)SaveState.lollipop.ee_max_mass_difference; // scaling for x-axis maximum in the histogram of all EE pairs
 
             xMinEE.Minimum = -100;
-            xMinEE.Maximum = xMaxEE.Value;
             xMinEE.Value = 0; // scaling for x-axis minimum in the histogram of all EE pairs
 
             nUD_PeakWidthBase.Minimum = 0.001m;
@@ -134,12 +141,6 @@ namespace ProteoformSuiteGUI
             tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
             tb_relationTableFilter.Text = "";
             tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
-
-            //MASS WINDOW
-            nUD_EE_Upper_Bound.Minimum = 0;
-            nUD_EE_Upper_Bound.Maximum = 2000;
-            if (!SaveState.lollipop.neucode_labeled) SaveState.lollipop.ee_max_mass_difference = 150;
-            nUD_EE_Upper_Bound.Value = (decimal)SaveState.lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
         }
 
         #endregion Public Methods

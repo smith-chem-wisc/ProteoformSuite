@@ -120,6 +120,11 @@ namespace ProteoformSuiteGUI
             tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
             tb_tableFilter.Text = "";
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
+
+            tb_modTableFilter.TextChanged -= tb_modTableFilter_TextChanged;
+            tb_modTableFilter.Text = "";
+            tb_modTableFilter.TextChanged += tb_modTableFilter_TextChanged;
+
             tb_totalTheoreticalProteoforms.Text = SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
         }
 
@@ -345,6 +350,16 @@ namespace ProteoformSuiteGUI
             DisplayUnlocalizedModification.FormatUnlocalizedModificationTable(dgv_unlocalizedModifications);
         }
 
+        private void tb_modTableFilter_TextChanged(object sender, EventArgs e)
+        {
+            IEnumerable<object> selected_unmods = tb_modTableFilter.Text == "" ?
+                SaveState.lollipop.theoretical_database.unlocalized_lookup.Values :
+                ExtensionMethods.filter(SaveState.lollipop.theoretical_database.unlocalized_lookup.Values, tb_modTableFilter.Text);
+            DisplayUtility.FillDataGridView(dgv_unlocalizedModifications, selected_unmods.OfType<UnlocalizedModification>().Select(u => new DisplayUnlocalizedModification(u)));
+            DisplayUnlocalizedModification.FormatUnlocalizedModificationTable(dgv_unlocalizedModifications);
+        }
+
         #endregion Modification Names Private Methods
+
     }
 }
