@@ -363,13 +363,27 @@ namespace ProteoformSuiteGUI
                     et_histogram_from_unmod = community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Where(ex => ex.accepted).ToArray(), SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.ptm_set.mass == 0).Select(t => new Proteoform(t.accession, t.unmodified_mass, t.lysine_count, t.is_target)).ToArray(), ProteoformComparison.ExperimentalTheoretical, false, Environment.CurrentDirectory, false);
                 }
                 DisplayUtility.GraphRelationsChart(ct_ET_Histogram, et_histogram_from_unmod, "relations", true);
+
+                // Show the raw relations in the table
+                tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
+                tb_relationTableFilter.Text = "";
+                tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
+
+                displayRelations = et_histogram_from_unmod.Select(r => new DisplayProteoformRelation(r)).ToList();
+                DisplayUtility.FillDataGridView(dgv_ET_Relations, displayRelations);
+
+                // Get rid of the stripline by default
                 cb_Graph_lowerThreshold.Checked = false;
                 Cursor = Cursors.Default;
             }
             else
             {
                 DisplayUtility.GraphRelationsChart(ct_ET_Histogram, SaveState.lollipop.et_relations, "relations", true);
+                FillETRelationsGridView();
                 cb_Graph_lowerThreshold.Checked = true;
+                tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
+                tb_relationTableFilter.Text = "";
+                tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
             }
         }
 

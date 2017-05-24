@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
@@ -64,7 +63,7 @@ namespace ProteoformSuiteInternal
             else possiblePeakAssignments = new List<PtmSet>();
             possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.Select(ptmset => 
                 String.Join(";", ptmset.ptm_combination.Select(ptm => 
-                    SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id).Distinct()))) + "]";
+                    SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id)).Distinct())) + "]";
         }
 
         #endregion Public Constructor
