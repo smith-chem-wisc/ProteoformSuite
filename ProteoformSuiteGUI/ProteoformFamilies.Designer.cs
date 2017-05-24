@@ -69,7 +69,6 @@
             this.cb_moreOpacity = new System.Windows.Forms.CheckBox();
             this.cb_boldLabel = new System.Windows.Forms.CheckBox();
             this.cb_redBorder = new System.Windows.Forms.CheckBox();
-            this.btn_merge = new System.Windows.Forms.Button();
             this.tb_singleton_count = new System.Windows.Forms.TextBox();
             this.lb_singletons = new System.Windows.Forms.Label();
             this.nud_decimalRoundingLabels = new System.Windows.Forms.NumericUpDown();
@@ -346,7 +345,6 @@
             this.splitContainer3.Panel2.Controls.Add(this.btn_inclusion_list_selected_families);
             this.splitContainer3.Panel2.Controls.Add(this.cb_buildAsQuantitative);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox5);
-            this.splitContainer3.Panel2.Controls.Add(this.btn_merge);
             this.splitContainer3.Panel2.Controls.Add(this.tb_singleton_count);
             this.splitContainer3.Panel2.Controls.Add(this.lb_singletons);
             this.splitContainer3.Panel2.Controls.Add(this.nud_decimalRoundingLabels);
@@ -590,17 +588,6 @@
             this.cb_redBorder.Text = "Red Node Border";
             this.cb_redBorder.UseVisualStyleBackColor = true;
             // 
-            // btn_merge
-            // 
-            this.btn_merge.Enabled = false;
-            this.btn_merge.Location = new System.Drawing.Point(75, 212);
-            this.btn_merge.Name = "btn_merge";
-            this.btn_merge.Size = new System.Drawing.Size(195, 23);
-            this.btn_merge.TabIndex = 45;
-            this.btn_merge.Text = "Merge Selected Proteoforms";
-            this.btn_merge.UseVisualStyleBackColor = true;
-            this.btn_merge.Click += new System.EventHandler(this.btn_merge_Click);
-            // 
             // tb_singleton_count
             // 
             this.tb_singleton_count.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
@@ -753,7 +740,7 @@
             this.Families_update.Name = "Families_update";
             this.Families_update.Size = new System.Drawing.Size(402, 23);
             this.Families_update.TabIndex = 33;
-            this.Families_update.Text = "Update";
+            this.Families_update.Text = "Construct Families and Identify Proteoforms";
             this.Families_update.UseMnemonic = false;
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
@@ -820,7 +807,6 @@
         private System.Windows.Forms.Label lb_singletons;
         private System.Windows.Forms.ComboBox cmbx_tableSelector;
         private System.Windows.Forms.Label lb_dgv_selection;
-        private System.Windows.Forms.Button btn_merge;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox tb_tableFilter;
         private System.Windows.Forms.Label label4;

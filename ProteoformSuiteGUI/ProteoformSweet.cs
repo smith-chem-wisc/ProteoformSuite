@@ -24,6 +24,7 @@ namespace ProteoformSuiteGUI
         public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
         public Quantification quantification = new Quantification();
         public ResultsSummary resultsSummary = new ResultsSummary();
+        public List<ISweetForm> forms = new List<ISweetForm>();
         public static bool run_when_form_loads;
 
         #endregion Public Fields
@@ -36,7 +37,6 @@ namespace ProteoformSuiteGUI
         OpenFileDialog openResults = new OpenFileDialog();
         SaveFileDialog saveResults = new SaveFileDialog();
         SaveFileDialog saveExcelDialog = new SaveFileDialog();
-        List<ISweetForm> forms;
         ISweetForm current_form;
 
         #endregion Private Fields
@@ -114,20 +114,19 @@ namespace ProteoformSuiteGUI
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(rawExperimentalComponents);
-            rawExperimentalComponents.initialize_every_time();
+            rawExperimentalComponents.InitializeParameterSet();
         }
 
         private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(neuCodePairs);
-            if (neuCodePairs.ReadyToRunTheGamut()) neuCodePairs.RunTheGamut();
+            if (neuCodePairs.ReadyToRunTheGamut())
+                neuCodePairs.RunTheGamut(); // There's no update/run button in NeuCodePairs, so just fill the tables
         }
 
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(aggregatedProteoforms);
-            if (run_when_form_loads && aggregatedProteoforms.ReadyToRunTheGamut()) aggregatedProteoforms.RunTheGamut();
-            else if (!aggregatedProteoforms.ReadyToRunTheGamut() && SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
         }
 
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
@@ -139,29 +138,21 @@ namespace ProteoformSuiteGUI
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentalTheoreticalComparison);
-            if (run_when_form_loads && experimentalTheoreticalComparison.ReadyToRunTheGamut()) experimentalTheoreticalComparison.RunTheGamut();
-            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.target_proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
-            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentExperimentComparison);
-            if (run_when_form_loads && experimentExperimentComparison.ReadyToRunTheGamut()) experimentExperimentComparison.RunTheGamut();
-            else if (!experimentExperimentComparison.ReadyToRunTheGamut() && SaveState.lollipop.ee_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(proteoformFamilies);
             proteoformFamilies.initialize_every_time();
-            if (proteoformFamilies.ReadyToRunTheGamut())
-                proteoformFamilies.RunTheGamut();
         }
 
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (run_when_form_loads && quantification.ReadyToRunTheGamut()) quantification.perform_calculations();
             quantification.initialize_every_time();
             showForm(quantification);
         }
@@ -253,7 +244,8 @@ namespace ProteoformSuiteGUI
                     if (d == DialogResult.OK)
                     {
                         SaveState.lollipop.enter_uniprot_ptmlist();
-                        if (loadDeconvolutionResults.ReadyToRunTheGamut()) loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
+                        if (loadDeconvolutionResults.ReadyToRunTheGamut())
+                            loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
                     }
                     else return false;
                 }
@@ -278,8 +270,11 @@ namespace ProteoformSuiteGUI
             }
 
             Cursor = Cursors.WaitCursor;
-            rawExperimentalComponents.load_raw_components(); //also loads the theoretical database, now
-            if (aggregatedProteoforms.ReadyToRunTheGamut()) aggregatedProteoforms.RunTheGamut();
+            foreach (ISweetForm sweet in forms)
+            {
+                if (sweet.ReadyToRunTheGamut())
+                    sweet.RunTheGamut();
+            }
             string timestamp = SaveState.time_stamp();
             ResultsSummaryGenerator.save_all(SaveState.lollipop.results_folder, timestamp);
             save_all_plots(SaveState.lollipop.results_folder, timestamp);

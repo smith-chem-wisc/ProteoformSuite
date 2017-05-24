@@ -339,6 +339,43 @@ namespace ProteoformSuiteInternal
             }
         }
 
+        public void amend_unlocalized_names(string filepath)
+        {
+            if (!File.Exists(filepath))
+                return;
+
+            Dictionary<string, string[]> mod_info = new Dictionary<string, string[]>();
+            using (StreamReader reader = new StreamReader(filepath))
+            {
+                while (true)
+                {
+                    string a = reader.ReadLine();
+                    if (a == null)
+                        break;
+                    string[] line = a.Split('\t');
+                    if (!mod_info.TryGetValue(line[0], out string[] info))
+                        mod_info.Add(line[0], line);
+                }
+            }
+
+            foreach (var mod_unlocalized in unlocalized_lookup)
+            {
+                string[] new_info = new string[] { mod_unlocalized.Key.id, mod_unlocalized.Value.id, mod_unlocalized.Value.ptm_count.ToString(), mod_unlocalized.Value.require_proteoform_without_mod.ToString() };
+                if (mod_info.TryGetValue(mod_unlocalized.Key.id, out string[] x))
+                    mod_info[mod_unlocalized.Key.id] = new_info;
+                else
+                    mod_info.Add(mod_unlocalized.Key.id, new_info);
+            }
+
+            using (StreamWriter writer = new StreamWriter(filepath))
+            {
+                foreach (var unloc in mod_info.Values.OrderBy(x => x[0]))
+                {
+                    writer.WriteLine(String.Join("\t", unloc));
+                }
+            }
+        }
+
         #endregion Unlocalized Mods Public Methods
 
         #region Private Methods

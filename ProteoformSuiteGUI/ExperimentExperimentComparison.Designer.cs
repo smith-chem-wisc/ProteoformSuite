@@ -77,14 +77,14 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tb_noMansUpperBound = new System.Windows.Forms.TextBox();
+            this.tb_noMansLowerBound = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tb_max_accepted_fdr = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
             this.nUD_MaxRetTimeDifference = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.tb_noMansLowerBound = new System.Windows.Forms.TextBox();
-            this.tb_noMansUpperBound = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_EE_Peaks)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
@@ -577,7 +577,7 @@
             this.bt_compare_EE.Name = "bt_compare_EE";
             this.bt_compare_EE.Size = new System.Drawing.Size(804, 23);
             this.bt_compare_EE.TabIndex = 31;
-            this.bt_compare_EE.Text = "Compare Experiment-Experiment Proteoforms";
+            this.bt_compare_EE.Text = "Compare Experimental Proteoforms with Each Other";
             this.bt_compare_EE.UseMnemonic = false;
             this.bt_compare_EE.UseVisualStyleBackColor = true;
             this.bt_compare_EE.Click += new System.EventHandler(this.bt_compare_EE_Click);
@@ -621,6 +621,24 @@
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "No Man\'s Land";
+            // 
+            // tb_noMansUpperBound
+            // 
+            this.tb_noMansUpperBound.Location = new System.Drawing.Point(42, 74);
+            this.tb_noMansUpperBound.Name = "tb_noMansUpperBound";
+            this.tb_noMansUpperBound.ReadOnly = true;
+            this.tb_noMansUpperBound.Size = new System.Drawing.Size(120, 20);
+            this.tb_noMansUpperBound.TabIndex = 21;
+            this.tb_noMansUpperBound.Text = "CH2";
+            // 
+            // tb_noMansLowerBound
+            // 
+            this.tb_noMansLowerBound.Location = new System.Drawing.Point(42, 35);
+            this.tb_noMansLowerBound.Name = "tb_noMansLowerBound";
+            this.tb_noMansLowerBound.ReadOnly = true;
+            this.tb_noMansLowerBound.Size = new System.Drawing.Size(120, 20);
+            this.tb_noMansLowerBound.TabIndex = 20;
+            this.tb_noMansLowerBound.Text = "HPO3";
             // 
             // groupBox1
             // 
@@ -709,24 +727,6 @@
             this.splitContainer3.Size = new System.Drawing.Size(836, 711);
             this.splitContainer3.SplitterDistance = 440;
             this.splitContainer3.TabIndex = 17;
-            // 
-            // tb_noMansLowerBound
-            // 
-            this.tb_noMansLowerBound.Location = new System.Drawing.Point(42, 35);
-            this.tb_noMansLowerBound.Name = "tb_noMansLowerBound";
-            this.tb_noMansLowerBound.ReadOnly = true;
-            this.tb_noMansLowerBound.Size = new System.Drawing.Size(120, 20);
-            this.tb_noMansLowerBound.TabIndex = 20;
-            this.tb_noMansLowerBound.Text = "HPO3";
-            // 
-            // tb_noMansUpperBound
-            // 
-            this.tb_noMansUpperBound.Location = new System.Drawing.Point(42, 74);
-            this.tb_noMansUpperBound.Name = "tb_noMansUpperBound";
-            this.tb_noMansUpperBound.ReadOnly = true;
-            this.tb_noMansUpperBound.Size = new System.Drawing.Size(120, 20);
-            this.tb_noMansUpperBound.TabIndex = 21;
-            this.tb_noMansUpperBound.Text = "CH2";
             // 
             // ExperimentExperimentComparison
             // 

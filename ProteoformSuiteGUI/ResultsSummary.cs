@@ -47,7 +47,7 @@ namespace ProteoformSuiteGUI
             tb_summarySaveFolder.Text = SaveState.lollipop.results_folder;
         }
 
-        public void ClearListsTablesFigures()
+        public void ClearListsTablesFigures(bool x)
         {
             rtb_summary.Text = "";
             tb_summarySaveFolder.Text = "";

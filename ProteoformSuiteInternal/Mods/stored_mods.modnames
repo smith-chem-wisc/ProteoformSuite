@@ -5,27 +5,27 @@ Acetone Artifact (Unconfirmed)	Acetone Artifact	1	False
 Acetyl	Acetyl	1	False
 Acetylation+Methionine	Retained Acetylated Methionine	2	False
 Acetyllysine	Acetyl	1	False
-Acetylserine	Acetylserine	1	False
+Acetylserine	Acetyl	1	False
 Alanine (A)	Alanine (A)	1	False
 Ammonia loss	Ammonia loss	1	True
 Arginine (R)	Arginine (R)	1	False
 Asparagine (N)	Asparagine (N)	1	False
 Aspartic Acid (D)	Aspartic Acid (D)	1	False
-Asymmetric dimethylarginine	Dimethyl	2	False
+Asymmetric dimethylarginine	Methyl, Methyl	2	False
 Bacillosamine on Nxs	Bacillosamine	1	False
 Carbamidomethyl	Carbamidomethyl	1	False
 Carboxymethyl	Carboxymethyl	1	False
 Carboxymethyl+Methionine	Retained Carboxmethylmethionine	2	False
-CHDH	Lipid	1	False
-CHDHminus2methylenes	Lipid	1	False
+CHDH	Lipid (294 Da)	1	False
+CHDHminus2methylenes	Lipid (266 Da)	1	False
 Cysteine (C)	Cysteine (C)	1	False
 Cysteine methyl ester	Methyl	1	False
 Cysteine sulfinic acid (-SO2H)	Cysteine sulfinic acid (-SO2H)	1	False
 Deamidation on N	Deamidation	1	False
 Deamidation on Q	Deamidation	1	False
 Dehydroalanine from Cysteine	Dehydroalanine from Cysteine	1	False
-dHex on S	dHex on S	1	False
-dHex on T	dHex on T	1	False
+dHex on S	dHex	1	False
+dHex on T	dHex	1	False
 dHex(1)Hex(3)HexNAc(2) on Nxs	dHex(1)Hex(3)HexNAc(2)	1	False
 dHex(1)Hex(3)HexNAc(2) on S	dHex(1)Hex(3)HexNAc(2)	1	False
 dHex(1)Hex(3)HexNAc(2) on T	dHex(1)Hex(3)HexNAc(2)	1	False
@@ -45,11 +45,16 @@ Glucuronyl on T	Glucuronyl	1	False
 Glutamic Acid (E)	Glutamic Acid (E)	1	False
 Glutamine (Q)	Glutamine (Q)	1	False
 Glycine (G)	Glycine (G)	1	False
-H-2 O1 ÿon I	H-2 O1	1	False
-H-2 O1 ÿon L	H-2 O1	1	False
-H-2 O1 ÿon P	H-2 O1	1	False
-H-2 O1 ÿon S	H-2 O1	1	False
-H-2 O1 ÿon W	H-2 O1	1	False
+H-2 O1  on I	H-2 O1	1	False
+H-2 O1  on L	H-2 O1	1	False
+H-2 O1  on P	H-2 O1	1	False
+H-2 O1  on S	H-2 O1	1	False
+H-2 O1  on W	H-2 O1	1	False
+H-2 O1 ï¿½on I	H-2 O1	1	False
+H-2 O1 ï¿½on L	H-2 O1	1	False
+H-2 O1 ï¿½on P	H-2 O1	1	False
+H-2 O1 ï¿½on S	H-2 O1	1	False
+H-2 O1 ï¿½on W	H-2 O1	1	False
 Hex	Hex	1	False
 Hex on C	Hex	1	False
 Hex on K	Hex	1	False
@@ -187,9 +192,9 @@ Methyl on K	Methyl	1	False
 Methyl on N	Methyl	1	False
 Methyl on Q	Methyl	1	False
 Methyl on R	Methyl	1	False
-Methyl on S	Methyl	1	False	False
-Methyl on V	Methyl	1	False	False
-Missed Monoisotopic (+1)	Missed Monoisotopic (+1)	1	False	False
+Methyl on S	Methyl	1	False
+Methyl on V	Methyl	1	False
+Missed Monoisotopic (+1)	Missed Monoisotopic (+1)	1	False
 Missed Monoisotopic (-1)	Missed Monoisotopic (-1)	1	False
 Missing Alanine (A)	Missing Alanine (A)	1	False
 Missing Arginine (R)	Missing Arginine (R)	1	False
@@ -214,8 +219,8 @@ Missing Tyrosine (Y)	Missing Tyrosine (Y)	1	False
 Missing Valine (V)	Missing Valine (V)	1	False
 Myristoylation of C	Myristoylation	1	False
 Myristoylation of G	Myristoylation	1	False
-Myristoylation of K	Myristoylation of K	1	False
-N,N,N-trimethylglycine	N,N,N-trimethylglycine	1	False
+Myristoylation of K	Myristoylation	1	False
+N,N,N-trimethylglycine	Methyl, Methyl, Methyl	3	False
 N,N-dimethylproline	Methyl, Methyl	2	False
 N6-(pyridoxal phosphate)lysine	N6-(pyridoxal phosphate)lysine	1	False
 N6,N6,N6-trimethyllysine	Methyl, Methyl, Methyl	3	False
