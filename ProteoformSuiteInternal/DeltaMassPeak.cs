@@ -54,6 +54,10 @@ namespace ProteoformSuiteInternal
                 peak_relation_group_count >= SaveState.lollipop.min_peak_count_ee;
 
             possiblePeakAssignments = new List<PtmSet>();
+            if (Math.Truncate(DeltaMass) == 532)
+            {
+                Environment.CurrentDirectory = Environment.CurrentDirectory;
+            }
             if (SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(DeltaMass, 1), out List<PtmSet> candidates))
             {
                 possiblePeakAssignments = candidates.Where(c => RelationType == ProteoformComparison.ExperimentalTheoretical || RelationType == ProteoformComparison.ExperimentalDecoy ?

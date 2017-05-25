@@ -288,30 +288,38 @@ namespace ProteoformSuiteGUI
 
         private void exportTablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            export_table();
-        }
-
-        private void export_table()
-        {
             List<DataGridView> grid_views = current_form.GetDGVs();
-            if (grid_views != null)
-            {
-                SaveExcelFile(grid_views, (current_form as Form).Name + "_table.xlsx");
-            }
-            else
+
+            if (grid_views == null)
             {
                 MessageBox.Show("There is no table on this page to export. Please navigate to another page with the Results tab.");
+                return;
             }
+            
+            DGVExcelWriter writer = new DGVExcelWriter();
+            writer.ExportToExcel(grid_views, (current_form as Form).Name);
+            SaveExcelFile(writer, (current_form as Form).Name + "_table.xlsx");
         }
 
-        private void SaveExcelFile(List<DataGridView> dgvs, string filename)
+
+        private void exportAllTablesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DGVExcelWriter writer = new DGVExcelWriter();
+            foreach (ISweetForm form in forms)
+            {
+                List<DataGridView> grid_views = form.GetDGVs();
+                writer.ExportToExcel(grid_views, (form as Form).Name);
+            }
+            SaveExcelFile(writer, (current_form as Form).MdiParent.Name + "_table.xlsx");
+        }
+
+        private void SaveExcelFile(DGVExcelWriter writer, string filename)
         {
             saveExcelDialog.FileName = filename;
             DialogResult dr = saveExcelDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                DGVExcelWriter writer = new DGVExcelWriter();
-                writer.ExportToExcel(dgvs, saveExcelDialog.FileName);
+                writer.SaveToExcel(saveExcelDialog.FileName);
                 MessageBox.Show("Successfully exported table.");
             }
             else return;

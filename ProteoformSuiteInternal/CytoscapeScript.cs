@@ -447,7 +447,7 @@ namespace ProteoformSuiteInternal
         {
             //Colors: 0) exp, 1) ptm, 2) theo, 3) pie, 4) gene, 5) annulus, 6) top-down
             { color_scheme_names[0], new List<string> { "#3333FF", "#00CC00", "#FF0000", "#FFFF00", "#DC89BA", "#FF0000", "#897AB9" } },
-            { color_scheme_names[1], new List<string> { "#00C0F3", "#39B54A", "#39B54A", "#FFF56D", "#F173AC", "#FF6B52", "#897AB9" } },
+            { color_scheme_names[1], new List<string> { "#00C0F3", "#39B54A", "#39B54A", "#FFF56D", "#F173AC", "#F37053", "#897AB9" } },
             { color_scheme_names[2], new List<string> { "#2F5E91", "#2D6A00", "#F45512", "#916415", "#916415", "#F45512", "#897AB9" } },
             { color_scheme_names[3], new List<string> { "#5338FF", "#1F8A70", "#FF6533", "#FFE11A", "#FFE11A", "#FF6533", "#897AB9" } },
             { color_scheme_names[4], new List<string> { "#A8E1FF", "#B29162", "#B26276", "#FFF08C", "#FFF08C", "#B26276", "#897AB9" } },
