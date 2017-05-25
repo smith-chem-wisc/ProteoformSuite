@@ -76,7 +76,7 @@ namespace ProteoformSuiteGUI
 
         public List<DataGridView> GetDGVs()
         {
-            return new List<DataGridView>() { dgv_Database };
+            return new List<DataGridView>() { dgv_Database, dgv_unlocalizedModifications };
         }
 
         public void FillDataBaseTable(string table)

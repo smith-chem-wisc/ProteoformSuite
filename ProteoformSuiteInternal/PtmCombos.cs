@@ -105,7 +105,7 @@ namespace ProteoformSuiteInternal
             return sets;
         }
 
-        //Generates all the combinations of a certain length
+        //Generates all the combinations of a certain length, except duplicates
         private static IEnumerable<PtmSet> combinations(List<Ptm> all_ptms, int combination_length, Dictionary<double, int> modification_ranks, int added_ptm_penalization)
         {
             Ptm[] result = new Ptm[combination_length];
@@ -116,7 +116,6 @@ namespace ProteoformSuiteInternal
             {
                 int result_index = stack.Count - 1;
                 int mod_index = stack.Pop();
-                Ptm value = all_ptms[mod_index];
                 while (mod_index < all_ptms.Count)
                 {
                     result[result_index] = all_ptms[mod_index];

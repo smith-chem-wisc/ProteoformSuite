@@ -76,7 +76,7 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return SaveState.lollipop.target_proteoform_community.families.Count <= 0 && SaveState.lollipop.target_proteoform_community.has_e_proteoforms;
+            return SaveState.lollipop.target_proteoform_community.has_e_proteoforms;
         }
 
         public void RunTheGamut()
