@@ -66,7 +66,6 @@
             this.btn_inclusion_list_selected_families = new System.Windows.Forms.Button();
             this.cb_buildAsQuantitative = new System.Windows.Forms.CheckBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.cb_moreOpacity = new System.Windows.Forms.CheckBox();
             this.cb_boldLabel = new System.Windows.Forms.CheckBox();
             this.cb_redBorder = new System.Windows.Forms.CheckBox();
             this.tb_singleton_count = new System.Windows.Forms.TextBox();
@@ -541,26 +540,14 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.cb_moreOpacity);
             this.groupBox5.Controls.Add(this.cb_boldLabel);
             this.groupBox5.Controls.Add(this.cb_redBorder);
-            this.groupBox5.Location = new System.Drawing.Point(280, 133);
+            this.groupBox5.Location = new System.Drawing.Point(280, 151);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(200, 102);
+            this.groupBox5.Size = new System.Drawing.Size(200, 84);
             this.groupBox5.TabIndex = 57;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Highlights for Significant Differences";
-            // 
-            // cb_moreOpacity
-            // 
-            this.cb_moreOpacity.AutoSize = true;
-            this.cb_moreOpacity.Enabled = false;
-            this.cb_moreOpacity.Location = new System.Drawing.Point(21, 76);
-            this.cb_moreOpacity.Name = "cb_moreOpacity";
-            this.cb_moreOpacity.Size = new System.Drawing.Size(96, 17);
-            this.cb_moreOpacity.TabIndex = 58;
-            this.cb_moreOpacity.Text = "Higher Opacity";
-            this.cb_moreOpacity.UseVisualStyleBackColor = true;
             // 
             // cb_boldLabel
             // 
@@ -819,7 +806,6 @@
         private System.Windows.Forms.ComboBox cmbx_edgeLabel;
         private System.Windows.Forms.CheckBox cb_buildAsQuantitative;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.CheckBox cb_moreOpacity;
         private System.Windows.Forms.CheckBox cb_boldLabel;
         private System.Windows.Forms.CheckBox cb_redBorder;
         private System.Windows.Forms.Button btn_inclusion_list_all_families;
