@@ -5,6 +5,7 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayExperimentalProteoform : DisplayObject
     {
+
         #region Public Constructors
 
         public DisplayExperimentalProteoform(ExperimentalProteoform e)
@@ -87,6 +88,16 @@ namespace ProteoformSuiteGUI
                     "";
             }
         }
+
+        public string manual_validation_id
+        {
+            get { return e.manual_validation_id; }
+        }
+
+        public string manual_validation_quant
+        {
+            get { return e.manual_validation_quant; }
+        }
         
         #endregion Public Properties
 
@@ -116,11 +127,14 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(mass_shifted)].HeaderText = "Manually Shifted Mass";
             dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
             dgv.Columns[nameof(gene_name)].HeaderText = "Gene Name";
+            dgv.Columns[nameof(manual_validation_id)].HeaderText = "Abundant Component for Manual Validation of Identification";
+            dgv.Columns[nameof(manual_validation_quant)].HeaderText = "Abundant Component for Manual Validation of Quantification";
 
             //VISIBILITY
             dgv.Columns[nameof(lysine_count)].Visible = SaveState.lollipop.neucode_labeled; 
         }
 
         #endregion
+
     }
 }

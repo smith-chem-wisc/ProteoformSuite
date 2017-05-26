@@ -118,12 +118,11 @@ namespace ProteoformSuiteGUI
 
         public void RunTheGamut()
         {
-            Cursor = Cursors.WaitCursor;
             ClearListsTablesFigures(true);
             SaveState.lollipop.aggregate_proteoforms(SaveState.lollipop.validate_proteoforms, SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, SaveState.lollipop.min_num_CS);
+            SaveState.lollipop.assign_best_components_for_manual_validation(SaveState.lollipop.target_proteoform_community.experimental_proteoforms);
             FillTablesAndCharts();
             updateFiguresOfMerit();
-            Cursor = Cursors.Default;
         }
 
         public List<DataGridView> GetDGVs()

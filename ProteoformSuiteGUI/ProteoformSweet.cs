@@ -265,6 +265,7 @@ namespace ProteoformSuiteGUI
                         SaveState.lollipop.results_folder = temp_folder_path;
                         loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
                     }
+                    else if (dr == DialogResult.Cancel) return false;
                 }
                 else if (d == DialogResult.Cancel) return false;
             }
