@@ -7,6 +7,7 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayInputFile : DisplayObject
     {
+
         #region Public Constructors
 
         public DisplayInputFile(InputFile file)
@@ -139,5 +140,6 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion
+
     }
 }

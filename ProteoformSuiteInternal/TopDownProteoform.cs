@@ -49,6 +49,7 @@ namespace ProteoformSuiteInternal
             this.topdown_hits = hits;
             this.calculate_properties(true);
             this.targeted = root.targeted;
+            this.accession = accession + "_TD1_" + Math.Round(this.theoretical_mass, 2) + "_Da_" + start_index + "to" + stop_index;
             this.lysine_count = sequence.Count(s => s == 'K');
         }
 
@@ -77,7 +78,6 @@ namespace ProteoformSuiteInternal
         {
             this.monoisotopic_mass = topdown_hits.Select(h => (h.corrected_mass - Math.Round(h.corrected_mass - h.theoretical_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.monoisotopic_mass;
-            this.accession = accession+ "_TD1_" + Math.Round(this.theoretical_mass, 2) + "_Da_"  + start_index + "to" + stop_index ;
             if (calculate_agg_RT) this.agg_RT = topdown_hits.Select(h => h.retention_time).Average();
         }
          

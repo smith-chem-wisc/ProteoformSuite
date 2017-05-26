@@ -161,8 +161,12 @@
     <Compile Include="TheoreticalProteoformGroup.cs" />
     <Compile Include="TopDownProteoform.cs" />
     <Compile Include="TransformFunction.cs" />
+    <Compile Include="UnlocalizedModification.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Mods\stored_mods.modnames">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

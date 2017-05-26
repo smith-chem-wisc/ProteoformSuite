@@ -245,7 +245,7 @@ namespace ProteoformSuiteInternal
                     get_proteoform_shared_name(r.connected_proteoforms[1], node_label, double_rounding),
                     delta_mass,
                     edge_label == Lollipop.edge_labels[1] && append_ptmlist ?
-                        delta_mass + " " + String.Join("; ", r.represented_ptmset.ptm_combination.Select(ptm => ptm.modification.id)) :
+                        delta_mass + " " + String.Join("; ", r.represented_ptmset.ptm_combination.Select(ptm => SaveState.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)) :
                         delta_mass
                 );
             }
@@ -410,10 +410,11 @@ namespace ProteoformSuiteInternal
                 ExperimentalProteoform e = p as ExperimentalProteoform;
                 string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + e.accession;
                 if (node_label == Lollipop.node_labels[1] && e.linked_proteoform_references != null && e.linked_proteoform_references.Count > 0)
-                {
-                    name += ((e.linked_proteoform_references.First() as TheoreticalProteoform != null)? ( " " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession ) : ( " " +  (e.linked_proteoform_references.First() as TopDownProteoform).accession)) + " " + (e.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => ptm.modification.id))); 
-                }
-              return name;
+                    name += ((e.linked_proteoform_references.First() as TheoreticalProteoform != null) ? (" " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession) : (" " + (e.linked_proteoform_references.First() as TopDownProteoform).accession))
+                          + " " + (e.ptm_set.ptm_combination.Count == 0 ?
+                            "Unmodified" :
+                            String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => SaveState.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));
+                return name;
             }
 
             else if (p as TheoreticalProteoform != null)

@@ -99,11 +99,11 @@ namespace ProteoformSuiteInternal
                 Parallel.ForEach(newly_identified_experimentals, id_experimental =>
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
-                            foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
-                            {
-                                identified_experimentals.Add(new_e);
-                                tmp_new_experimentals.Add(new_e);
-                            }
+                        foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
+                        {
+                            identified_experimentals.Add(new_e);
+                            tmp_new_experimentals.Add(new_e);
+                        }
                 });
                 newly_identified_experimentals = new List<ExperimentalProteoform>(tmp_new_experimentals);
             }
