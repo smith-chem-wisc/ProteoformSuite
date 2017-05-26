@@ -67,32 +67,36 @@ namespace ProteoformSuiteInternal
 
         public bool Run_TdMzCal(InputFile file, List<TopDownHit> identifications, bool td_file, double mass_tolerance)
         {
+
+            if (identifications.Count < 5) return false;
+
             var trainingPointCounts = new List<int>();
 
             myMsDataFile = ThermoStaticData.LoadAllStaticData(file.complete_path);
             this.mass_tolerance = mass_tolerance;
             DataPointAquisitionResults dataPointAcquisitionResult = null;
-            for (int linearCalibrationRound = 1; linearCalibrationRound < 4 ; linearCalibrationRound++)
+            for (int linearCalibrationRound = 1; ; linearCalibrationRound++)
             {
-                dataPointAcquisitionResult = GetDataPoints(identifications);
-                //if (linearCalibrationRound >= 3 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[linearCalibrationRound - 2])
-                //    break;
-
+                dataPointAcquisitionResult = GetDataPoints(identifications, td_file, file.filename);
+                //go until same # training points as previous round
+                if (linearCalibrationRound >= 2 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[linearCalibrationRound - 2])
+                    break;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
-              //  if (dataPointAcquisitionResult.Ms1List.Count == 0) return false;
                 CalibrationFunction calibrationFunction = CalibrateLinear(file.filename, dataPointAcquisitionResult);
             }
 
+            ////found that this made results worse... maybe too few hits
             //trainingPointCounts = new List<int>();
             //for (int forestCalibrationRound = 1; ; forestCalibrationRound++)
             //{
             //    CalibrationFunction calibrationFunction = CalibrateRF(dataPointAcquisitionResult, file.filename);
-            //    dataPointAcquisitionResult = GetDataPoints(identifications);
+            //    dataPointAcquisitionResult = GetDataPoints(identifications, td_file, file.filename);
             //    if (forestCalibrationRound >= 2 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[forestCalibrationRound - 2])
             //        break;
             //    trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
             //}
-            return true;
+
+           return true;
         }
 
         private CalibrationFunction CalibrateRF(DataPointAquisitionResults res, string filename)
@@ -133,19 +137,19 @@ namespace ProteoformSuiteInternal
 
         public void CalibrateHitsAndComponents(CalibrationFunction bestCf, string filename)
         {
-            Parallel.ForEach(SaveState.lollipop.td_hits_calibration.Where(h => h.filename == filename), hit =>
-             {
-                 hit.mz = hit.mz - bestCf.Predict(new double[] { hit.mz, hit.retention_time, hit.ms1Scan.TIC, hit.ms1Scan.injection_time });
-                 hit.corrected_mass = hit.mz * hit.charge - hit.charge * Lollipop.PROTON_MASS;
-             });
-            Parallel.ForEach(SaveState.lollipop.calibration_components.Where(h => h.input_file.filename == filename), c =>
+            foreach (TopDownHit hit in SaveState.lollipop.td_hits_calibration.Where(h => h.filename == filename))
+            {
+                hit.mz = hit.mz - bestCf.Predict(new double[] { hit.mz, hit.retention_time, hit.ms1Scan.TIC, hit.ms1Scan.injection_time });
+                hit.corrected_mass = hit.mz * hit.charge - hit.charge * Lollipop.PROTON_MASS;
+            }
+            foreach (Component c in SaveState.lollipop.calibration_components.Where(h => h.input_file.filename == filename))
             {
                 MsScan ms1 = SaveState.lollipop.Ms_scans.Where(s => s.filename == filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First();
                 foreach (ChargeState cs in c.charge_states)
                 {
                     cs.mz_centroid = cs.mz_centroid - bestCf.Predict(new double[] { cs.mz_centroid, Convert.ToDouble(c.rt_range.Split('-')[0]), ms1.TIC, ms1.injection_time });
                 }
-            });
+            }
             foreach (var a in myMsDataFile.Where(s => s.MsnOrder == 1))
             {
                 Func<IMzPeak, double> theFunc = x => x.Mz - bestCf.Predict(new double[] { x.Mz, a.RetentionTime, a.TotalIonCurrent, a.InjectionTime ?? double.NaN });
@@ -220,7 +224,7 @@ namespace ProteoformSuiteInternal
             return bestMS1predictor;
         }
 
-        private DataPointAquisitionResults GetDataPoints(List<TopDownHit> identifications)
+        private DataPointAquisitionResults GetDataPoints(List<TopDownHit> identifications, bool td_file, string filename)
         {
             DataPointAquisitionResults res = new DataPointAquisitionResults()
             {
@@ -229,13 +233,26 @@ namespace ProteoformSuiteInternal
 
             // Set of peaks, identified by m/z and retention time. If a peak is in here, it means it has been a part of an accepted identification, and should be rejected
             var peaksAddedFromMS1HashSet = new HashSet<Tuple<double, double>>();
-            foreach(TopDownHit identification in identifications)
+            foreach (TopDownHit identification in identifications)
             {
                 int ms2scanNumber = identification.ms2ScanNumber;
+
+                if (!td_file) //if calibrating across files find component with matching mass and retention time
+                {
+                    Component matching_component = SaveState.lollipop.calibration_components.Where(c => c.input_file.filename == filename
+                && Math.Abs(c.weighted_monoisotopic_mass - identification.reported_mass) < c.weighted_monoisotopic_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance
+                && Math.Abs(Convert.ToDouble(c.rt_range.Split('-')[0]) - identification.retention_time) < (double)SaveState.lollipop.retention_time_tolerance).OrderBy(c => Math.Abs(c.weighted_monoisotopic_mass - identification.reported_mass)).ToList().FirstOrDefault();
+                    if (matching_component == null) continue;
+                    else ms2scanNumber = Convert.ToInt16(matching_component.scan_range.Split('-')[0]);
+                }
+
                 int proteinCharge = identification.charge;
 
                 var SequenceWithChemicalFormulas = identification.GetSequenceWithChemicalFormula();
-                if (SequenceWithChemicalFormulas == null) continue;
+                if (SequenceWithChemicalFormulas == null)
+                {
+                    continue;
+                }
                 Proteomics.Peptide coolPeptide = new Proteomics.Peptide(SequenceWithChemicalFormulas);
 
                 // Calculate isotopic distribution of the full peptide
@@ -255,7 +272,8 @@ namespace ProteoformSuiteInternal
                 res.numMs1MassChargeCombinationsConsidered += numMs1MassChargeCombinationsConsidered;
                 res.numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks += numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
             }
-           return res;
+
+            return res;
         }
 
         private IEnumerable<LabeledMs1DataPoint> SearchMS1Spectra(double[] originalMasses, double[] originalIntensities, int ms2spectrumIndex, int direction, HashSet<Tuple<double, double>> peaksAddedHashSet, int peptideCharge, TopDownHit identification)
@@ -304,7 +322,7 @@ namespace ProteoformSuiteInternal
                         {
                             double theMZ = a.ToMz(chargeToLookAt);
 
-                            var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - (mass_tolerance / identification.charge), theMZ + (mass_tolerance / identification.charge));
+                            var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - (mass_tolerance / identification.charge), theMZ + (mass_tolerance / identification.charge)); //WAS ID.CHARGE
                             if (npwr == 0)
                             {
                                 break;
@@ -361,8 +379,8 @@ namespace ProteoformSuiteInternal
             }
         }
 
-            //READ AND WRITE NEW CALIBRATED TD HITS FILE 
-            public void calibrate_td_hits_file(InputFile file)
+        //READ AND WRITE NEW CALIBRATED TD HITS FILE 
+        public void calibrate_td_hits_file(InputFile file)
         {
             //Copy file to new worksheet
             string old_absolute_path = file.complete_path;
@@ -424,10 +442,12 @@ namespace ProteoformSuiteInternal
                         {
                             Tuple<double, double, int, int> value;
                             if (SaveState.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double>(file.filename, Math.Round(row.Cell(3).GetDouble(), 0)), out value))
+                            {
                                 row.Cell(4).SetValue(value.Item1);
-                            row.Cell(6).SetValue(value.Item2);
-                            row.Cell(7).SetValue(value.Item3);
-                            row.Cell(8).SetValue(value.Item4);
+                                row.Cell(6).SetValue(value.Item2);
+                                row.Cell(7).SetValue(value.Item3);
+                                row.Cell(8).SetValue(value.Item4);
+                            }
                         }
                         else
                         {

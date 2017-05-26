@@ -257,7 +257,7 @@ namespace ProteoformSuiteInternal
                     string gene_name = t.gene_name.get_prefered_name(preferred_gene_label);
                     if (gene_name != null)
                     {
-                        edge_table.Rows.Add
+                        edge_table.Rows.Add 
                         (
                             get_proteoform_shared_name(t, node_label, double_rounding),
                             t.lysine_count,
@@ -409,8 +409,11 @@ namespace ProteoformSuiteInternal
             {
                 ExperimentalProteoform e = p as ExperimentalProteoform;
                 string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + e.accession;
-                if (node_label == Lollipop.node_labels[1] && e.linked_proteoform_references != null && e.linked_proteoform_references.Count > 0) name += " " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession + " " + (e.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => ptm.modification.id)));
-                return name;
+                if (node_label == Lollipop.node_labels[1] && e.linked_proteoform_references != null && e.linked_proteoform_references.Count > 0)
+                {
+                    name += ((e.linked_proteoform_references.First() as TheoreticalProteoform != null)? ( " " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession ) : ( " " +  (e.linked_proteoform_references.First() as TopDownProteoform).accession)) + " " + (e.ptm_set.ptm_combination.Count == 0 ? "Unmodified" : String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => ptm.modification.id))); 
+                }
+              return name;
             }
 
             else if (p as TheoreticalProteoform != null)

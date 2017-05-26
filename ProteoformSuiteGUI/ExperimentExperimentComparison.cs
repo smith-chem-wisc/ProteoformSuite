@@ -370,7 +370,7 @@ namespace ProteoformSuiteGUI
                         {
                             Parallel.ForEach(SaveState.lollipop.ee_peaks.Where(p => p.peak_relation_group_count >= SaveState.lollipop.min_peak_count_ee), peak =>
                             {
-                                peak.Accepted = (peak.DeltaMass - masses.OrderBy(m => Math.Abs(m - peak.DeltaMass)).First() <= SaveState.lollipop.peak_width_base_ee / 2);
+                                peak.Accepted = Math.Abs(peak.DeltaMass - masses.OrderBy(m => Math.Abs(m - peak.DeltaMass)).First()) <= SaveState.lollipop.peak_width_base_ee / 2;
                                 Parallel.ForEach(peak.grouped_relations, r => r.Accepted = peak.Accepted);
                             });
                         }
