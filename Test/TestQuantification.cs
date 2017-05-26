@@ -830,6 +830,7 @@ namespace Test
         [Test]
         public void test_get_repressed_or_induced_proteins()
         {
+            SaveState.lollipop = new Lollipop();
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
@@ -853,6 +854,7 @@ namespace Test
             ConstructorsForTesting.make_relation(ex, hx);
             ProteoformFamily f = new ProteoformFamily(ex);
             f.construct_family();
+            f.identify_experimentals();
             ex.family = f;
             fx.family = f;
             gx.family = f;
@@ -897,9 +899,9 @@ namespace Test
             ex.quant.FDR = 0.4m;
             ex.quant.intensitySum = 2;
             prots = SaveState.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
-            Assert.AreEqual(2, prots.Count);
+            Assert.AreEqual(1, prots.Count); // only taking one ET connection by definition in forming ET relations; only one is used in identify theoreticals
             Assert.True(prots.Select(p => p.Accession).Contains("T1"));
-            Assert.True(prots.Select(p => p.Accession).Contains("T2"));
+            //Assert.True(prots.Select(p => p.Accession).Contains("T2"));
             Assert.False(prots.Select(p => p.Accession).Contains("T3"));
         }
 

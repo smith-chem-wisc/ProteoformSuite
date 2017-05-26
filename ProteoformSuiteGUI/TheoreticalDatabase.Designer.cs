@@ -61,7 +61,12 @@
             this.ckbx_Carbam = new System.Windows.Forms.CheckBox();
             this.ckbx_OxidMeth = new System.Windows.Forms.CheckBox();
             this.splitter1 = new System.Windows.Forms.Splitter();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
+            this.dgv_unlocalizedModifications = new System.Windows.Forms.DataGridView();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btn_saveModNames = new System.Windows.Forms.Button();
+            this.btn_loadModNames = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -71,7 +76,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_NumDecoyDBs)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MaxPTMs)).BeginInit();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+            this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
+            this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Database)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_unlocalizedModifications)).BeginInit();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -84,6 +95,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.btn_downloadUniProtPtmList);
             this.splitContainer1.Panel1.Controls.Add(this.cb_limitLargePtmSets);
             this.splitContainer1.Panel1.Controls.Add(this.label8);
@@ -114,7 +126,7 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.dgv_Database);
+            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
             this.splitContainer1.Panel2.Controls.Add(this.splitter1);
             this.splitContainer1.Size = new System.Drawing.Size(1362, 741);
             this.splitContainer1.SplitterDistance = 452;
@@ -147,7 +159,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 633);
+            this.label8.Location = new System.Drawing.Point(239, 692);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(146, 13);
@@ -156,10 +168,10 @@
             // 
             // tb_totalTheoreticalProteoforms
             // 
-            this.tb_totalTheoreticalProteoforms.Location = new System.Drawing.Point(156, 630);
+            this.tb_totalTheoreticalProteoforms.Location = new System.Drawing.Point(238, 713);
             this.tb_totalTheoreticalProteoforms.Margin = new System.Windows.Forms.Padding(2);
             this.tb_totalTheoreticalProteoforms.Name = "tb_totalTheoreticalProteoforms";
-            this.tb_totalTheoreticalProteoforms.Size = new System.Drawing.Size(108, 20);
+            this.tb_totalTheoreticalProteoforms.Size = new System.Drawing.Size(208, 20);
             this.tb_totalTheoreticalProteoforms.TabIndex = 10;
             // 
             // label7
@@ -184,18 +196,18 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(236, 589);
+            this.label6.Location = new System.Drawing.Point(6, 626);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(59, 13);
+            this.label6.Size = new System.Drawing.Size(78, 13);
             this.label6.TabIndex = 48;
-            this.label6.Text = "Table Filter";
+            this.label6.Text = "Database Filter";
             // 
             // tb_tableFilter
             // 
-            this.tb_tableFilter.Location = new System.Drawing.Point(239, 605);
+            this.tb_tableFilter.Location = new System.Drawing.Point(9, 642);
             this.tb_tableFilter.Name = "tb_tableFilter";
-            this.tb_tableFilter.Size = new System.Drawing.Size(202, 20);
+            this.tb_tableFilter.Size = new System.Drawing.Size(201, 20);
             this.tb_tableFilter.TabIndex = 47;
             this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
             // 
@@ -303,7 +315,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 590);
+            this.label3.Location = new System.Drawing.Point(6, 588);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(102, 13);
@@ -313,10 +325,10 @@
             // cmbx_DisplayWhichDB
             // 
             this.cmbx_DisplayWhichDB.FormattingEnabled = true;
-            this.cmbx_DisplayWhichDB.Location = new System.Drawing.Point(9, 605);
+            this.cmbx_DisplayWhichDB.Location = new System.Drawing.Point(9, 603);
             this.cmbx_DisplayWhichDB.Margin = new System.Windows.Forms.Padding(2);
             this.cmbx_DisplayWhichDB.Name = "cmbx_DisplayWhichDB";
-            this.cmbx_DisplayWhichDB.Size = new System.Drawing.Size(205, 21);
+            this.cmbx_DisplayWhichDB.Size = new System.Drawing.Size(201, 21);
             this.cmbx_DisplayWhichDB.TabIndex = 10;
             this.cmbx_DisplayWhichDB.SelectedIndexChanged += new System.EventHandler(this.cmbx_DisplayWhichDB_SelectedIndexChanged);
             // 
@@ -431,7 +443,7 @@
             this.ckbx_Meth_Cleaved.AutoSize = true;
             this.ckbx_Meth_Cleaved.Checked = true;
             this.ckbx_Meth_Cleaved.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbx_Meth_Cleaved.Location = new System.Drawing.Point(9, 376);
+            this.ckbx_Meth_Cleaved.Location = new System.Drawing.Point(8, 364);
             this.ckbx_Meth_Cleaved.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_Meth_Cleaved.Name = "ckbx_Meth_Cleaved";
             this.ckbx_Meth_Cleaved.Size = new System.Drawing.Size(131, 17);
@@ -445,7 +457,7 @@
             this.ckbx_Carbam.AutoSize = true;
             this.ckbx_Carbam.Checked = true;
             this.ckbx_Carbam.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbx_Carbam.Location = new System.Drawing.Point(9, 350);
+            this.ckbx_Carbam.Location = new System.Drawing.Point(8, 338);
             this.ckbx_Carbam.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_Carbam.Name = "ckbx_Carbam";
             this.ckbx_Carbam.Size = new System.Drawing.Size(157, 17);
@@ -459,7 +471,7 @@
             this.ckbx_OxidMeth.AutoSize = true;
             this.ckbx_OxidMeth.Checked = true;
             this.ckbx_OxidMeth.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ckbx_OxidMeth.Location = new System.Drawing.Point(9, 325);
+            this.ckbx_OxidMeth.Location = new System.Drawing.Point(8, 313);
             this.ckbx_OxidMeth.Margin = new System.Windows.Forms.Padding(2);
             this.ckbx_OxidMeth.Name = "ckbx_OxidMeth";
             this.ckbx_OxidMeth.Size = new System.Drawing.Size(162, 17);
@@ -477,6 +489,24 @@
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
             // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(3, 0);
+            this.splitContainer2.Name = "splitContainer2";
+            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.dgv_Database);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.dgv_unlocalizedModifications);
+            this.splitContainer2.Size = new System.Drawing.Size(900, 737);
+            this.splitContainer2.SplitterDistance = 300;
+            this.splitContainer2.TabIndex = 2;
+            // 
             // dgv_Database
             // 
             this.dgv_Database.AllowUserToAddRows = false;
@@ -484,13 +514,55 @@
             this.dgv_Database.AllowUserToOrderColumns = true;
             this.dgv_Database.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgv_Database.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgv_Database.Location = new System.Drawing.Point(3, 0);
+            this.dgv_Database.Location = new System.Drawing.Point(0, 0);
             this.dgv_Database.Margin = new System.Windows.Forms.Padding(2);
             this.dgv_Database.Name = "dgv_Database";
             this.dgv_Database.ReadOnly = true;
             this.dgv_Database.RowTemplate.Height = 28;
-            this.dgv_Database.Size = new System.Drawing.Size(900, 737);
-            this.dgv_Database.TabIndex = 2;
+            this.dgv_Database.Size = new System.Drawing.Size(900, 300);
+            this.dgv_Database.TabIndex = 3;
+            // 
+            // dgv_unlocalizedModifications
+            // 
+            this.dgv_unlocalizedModifications.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_unlocalizedModifications.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgv_unlocalizedModifications.Location = new System.Drawing.Point(0, 0);
+            this.dgv_unlocalizedModifications.Name = "dgv_unlocalizedModifications";
+            this.dgv_unlocalizedModifications.Size = new System.Drawing.Size(900, 433);
+            this.dgv_unlocalizedModifications.TabIndex = 0;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.btn_loadModNames);
+            this.groupBox2.Controls.Add(this.btn_saveModNames);
+            this.groupBox2.Location = new System.Drawing.Point(238, 598);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(203, 86);
+            this.groupBox2.TabIndex = 53;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Modification Names";
+            // 
+            // btn_saveModNames
+            // 
+            this.btn_saveModNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btn_saveModNames.Location = new System.Drawing.Point(5, 23);
+            this.btn_saveModNames.Name = "btn_saveModNames";
+            this.btn_saveModNames.Size = new System.Drawing.Size(189, 26);
+            this.btn_saveModNames.TabIndex = 34;
+            this.btn_saveModNames.Text = "Save Modification Names";
+            this.btn_saveModNames.UseVisualStyleBackColor = true;
+            this.btn_saveModNames.Click += new System.EventHandler(this.btn_saveModNames_Click);
+            // 
+            // btn_loadModNames
+            // 
+            this.btn_loadModNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btn_loadModNames.Location = new System.Drawing.Point(6, 55);
+            this.btn_loadModNames.Name = "btn_loadModNames";
+            this.btn_loadModNames.Size = new System.Drawing.Size(189, 26);
+            this.btn_loadModNames.TabIndex = 35;
+            this.btn_loadModNames.Text = "Load Modification Names";
+            this.btn_loadModNames.UseVisualStyleBackColor = true;
+            this.btn_loadModNames.Click += new System.EventHandler(this.btn_loadModNames_Click);
             // 
             // TheoreticalDatabase
             // 
@@ -515,7 +587,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MaxPTMs)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+            this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Database)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_unlocalizedModifications)).EndInit();
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -554,6 +632,11 @@
         private System.Windows.Forms.CheckBox cb_limitLargePtmSets;
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Button btn_downloadUniProtPtmList;
+        private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.DataGridView dgv_Database;
+        private System.Windows.Forms.DataGridView dgv_unlocalizedModifications;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.Button btn_loadModNames;
+        private System.Windows.Forms.Button btn_saveModNames;
     }
 }
