@@ -339,6 +339,7 @@ namespace ProteoformSuiteInternal
                         "Total Intensity = " + total_intensity.ToString(),
                         "Aggregated Component Count = " + ep.aggregated_components.Count.ToString(),
                         SaveState.lollipop.neucode_labeled ? "; Lysine Count = " + p.lysine_count : "",
+                        "Abundant Component for Manual Validation of Identification: " + ep.manual_validation_id
                     });
                     if (quantitative && ep.quant.intensitySum > 0)
                     {
@@ -348,8 +349,9 @@ namespace ProteoformSuiteInternal
                             "Log2FC = " + ep.quant.logFoldChange.ToString(),
                             "Variance = " + ep.quant.variance.ToString(),
                             "Significant = " + ep.quant.significant.ToString(),
-                            SaveState.lollipop.numerator_condition + " Quantitative Component Count = " + ep.lt_quant_components.ToString(),
-                            SaveState.lollipop.denominator_condition + " Quantitative Component Count = " + ep.hv_quant_components.ToString(),
+                            SaveState.lollipop.numerator_condition + " Quantitative Component Count = " + ep.lt_quant_components.Count.ToString(),
+                            SaveState.lollipop.denominator_condition + " Quantitative Component Count = " + ep.hv_quant_components.Count.ToString(),
+                            "Abundant Component for Manual Validation of Quantification: " + ep.manual_validation_quant
                         });
                     }
 
@@ -651,7 +653,7 @@ namespace ProteoformSuiteInternal
                         write_discreteMapping(writer, "string", proteoform_type_header, new List<Tuple<string, string>>()
                         {
                             new Tuple<string, string>(quantitative ? "#FFFFFF" : color_schemes[color_scheme][0], experimental_label),
-                            new Tuple<string, string>("#D3D3D3", experimental_notQuantified_label),
+                            new Tuple<string, string>(not_quantified, experimental_notQuantified_label),
                             new Tuple<string, string>(color_schemes[color_scheme][1], modified_theoretical_label),
                             new Tuple<string, string>(color_schemes[color_scheme][2], unmodified_theoretical_label),
                             new Tuple<string, string>(color_schemes[color_scheme][4], gene_name_label)
