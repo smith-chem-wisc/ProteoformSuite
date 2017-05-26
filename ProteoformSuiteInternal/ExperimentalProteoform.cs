@@ -42,7 +42,7 @@ namespace ProteoformSuiteInternal
             quant = new QuantitativeProteoformValues(this);
             this.root = root;
             this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
-            this.calculate_properties();
+            this.calculate_properties(true);
             this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
         }
 
@@ -68,7 +68,7 @@ namespace ProteoformSuiteInternal
 
                 this.root = ncRoot;
                 this.aggregated_components.AddRange(candidate_observations.Where(p => includes(p, this.root)));
-                this.calculate_properties();
+                this.calculate_properties(true);
                 this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
             else
@@ -79,7 +79,7 @@ namespace ProteoformSuiteInternal
 
                 this.root = root;
                 this.aggregated_components.AddRange(candidate_observations.Where(p => includes(p, this.root)));
-                calculate_properties();
+                calculate_properties(true);
                 this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
         }
@@ -154,20 +154,20 @@ namespace ProteoformSuiteInternal
             ////ep.getBiorepAndFractionIntensities(true); //split hv components by biorep and fraction
         }
 
-        public void calculate_properties()
+        public void calculate_properties(bool calculate_agg_rt)
         {
             //if not neucode labeled, the intensity sum of overlapping charge states was calculated with all charge states.
             if (SaveState.lollipop.neucode_labeled)
             {
                 agg_intensity = aggregated_components.Sum(p => p.intensity_sum_olcs);
                 agg_mass = aggregated_components.Sum(p => (p.weighted_monoisotopic_mass - Math.Round(p.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * p.intensity_sum_olcs / agg_intensity); //remove the monoisotopic errors before aggregating masses
-                agg_rt = aggregated_components.Sum(p => p.rt_apex * p.intensity_sum_olcs / agg_intensity);
+                if (calculate_agg_rt) agg_rt = aggregated_components.Sum(p => p.rt_apex * p.intensity_sum_olcs / agg_intensity);
             }
             else
             {
                 agg_intensity = aggregated_components.Sum(p => p.intensity_sum);
                 agg_mass = aggregated_components.Sum(p => (p.weighted_monoisotopic_mass - Math.Round(p.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * p.intensity_sum / agg_intensity); //remove the monoisotopic errors before aggregating masses
-                agg_rt = aggregated_components.Sum(p => p.rt_apex * p.intensity_sum / agg_intensity);
+                if (calculate_agg_rt) agg_rt = aggregated_components.Sum(p => p.rt_apex * p.intensity_sum / agg_intensity);
             }
             if (root is NeuCodePair) lysine_count = ((NeuCodePair)root).lysine_count;
             modified_mass = agg_mass;

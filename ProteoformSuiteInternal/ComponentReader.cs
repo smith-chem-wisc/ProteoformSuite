@@ -41,8 +41,7 @@ namespace ProteoformSuiteInternal
                 List<string> cellStrings = cells[i];
                 if (cellStrings.Count > 7) //component row
                 {
-                    if (i > 1 && raw_components_in_file.Count(c => c.intensity_sum == new_component.intensity_sum && c.scan_range == new_component.scan_range && c.reported_monoisotopic_mass == new_component.reported_monoisotopic_mass) == 0)
-                        add_component(new_component); // here we're adding the previously read component
+                    if (i > 1) add_component(new_component); // here we're adding the previously read component
                     new_component = new Component(cellStrings, file); // starting fresh here with a newly created componet.
                     charge_row_index = 0;
                     scan_range = cellStrings[8];
@@ -57,9 +56,7 @@ namespace ProteoformSuiteInternal
                     else new_component.add_charge_state(cellStrings);
                 }
             }
-            //sometimes weird deconvolution repeats... check
-            if(raw_components_in_file.Count(c => c.intensity_sum == new_component.intensity_sum && c.scan_range == new_component.scan_range && c.reported_monoisotopic_mass == new_component.reported_monoisotopic_mass) == 0)
-                add_component(new_component); //add the final component
+            add_component(new_component); //add the final component
             final_components = remove_missed_monos_and_harmonics ? remove_monoisotopic_duplicates_harmonics_from_same_scan(raw_components_in_file) : raw_components_in_file;
             scan_ranges = new HashSet<string>(final_components.Select(c => c.scan_range).ToList()).ToList();
             return final_components;
@@ -131,6 +128,9 @@ namespace ProteoformSuiteInternal
                 {
                     if (removeThese.Contains(hc))
                         continue;
+
+                    //sometimes repeats from deocnvolution -- remove these (if same scan, mass, intensity)
+                    removeThese.AddRange(someComponents.Where(c => c != hc && c.weighted_monoisotopic_mass == hc.weighted_monoisotopic_mass && c.intensity_sum == hc.intensity_sum));
 
                     List<double> possibleHarmonicList = // 2 missed on the top means up to 4 missed monos on the 2nd harmonic and 6 missed monos on the 3rd harmonic
                         Enumerable.Range(-4, 9).Select(x => (hc.weighted_monoisotopic_mass + ((double)x) * Lollipop.MONOISOTOPIC_UNIT_MASS) / 2d).Concat(

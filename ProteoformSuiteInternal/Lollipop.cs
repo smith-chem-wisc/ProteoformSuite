@@ -29,7 +29,7 @@ namespace ProteoformSuiteInternal
         public const double PROTON_MASS = 1.007276474;
 
         #endregion Constants
-        
+
         #region Input Files
 
         public List<InputFile> input_files = new List<InputFile>();
@@ -149,7 +149,7 @@ namespace ProteoformSuiteInternal
                 }
             }
 
-            if ((calibrate_lock_mass || calibrate_td_results || calibrate_lock_mass) && input_files.Count(f => f.purpose == Purpose.CalibrationIdentification) > 0  && get_files(input_files, Purpose.RawFile).Count() > 0 && get_files(input_files, Purpose.CalibrationIdentification).Any(f => !f.matchingCalibrationFile))
+            if ((calibrate_lock_mass || calibrate_td_results || calibrate_lock_mass) && input_files.Count(f => f.purpose == Purpose.CalibrationIdentification) > 0 && get_files(input_files, Purpose.RawFile).Count() > 0 && get_files(input_files, Purpose.CalibrationIdentification).Any(f => !f.matchingCalibrationFile))
                 return_message += "To calibrate, deconvolution identification files should have the same names as corresponding raw files.";
 
             return return_message;
@@ -263,7 +263,7 @@ namespace ProteoformSuiteInternal
         #region AGGREGATED PROTEOFORMS Public Fields
 
         public ProteoformCommunity target_proteoform_community = new ProteoformCommunity();
-        public Dictionary<string, ProteoformCommunity> decoy_proteoform_communities = new Dictionary<string, ProteoformCommunity> ();
+        public Dictionary<string, ProteoformCommunity> decoy_proteoform_communities = new Dictionary<string, ProteoformCommunity>();
         public string decoy_community_name_prefix = "Decoy_Proteoform_Community_";
         public List<Component> remaining_components = new List<Component>();
         public List<Component> remaining_verification_components = new List<Component>();
@@ -279,6 +279,7 @@ namespace ProteoformSuiteInternal
         public double min_signal_to_noise = 0;
         public int min_left_peaks = 0;
         public int min_right_peaks = 0;
+        public bool merge_by_RT = false;
 
         #endregion AGGREGATED PROTEOFORMS Public Fields
 
@@ -297,6 +298,7 @@ namespace ProteoformSuiteInternal
             List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(raw_neucode_pairs, raw_experimental_components, min_num_CS, min_signal_to_noise, min_left_peaks, min_right_peaks);
             if (two_pass_validation) vetted_proteoforms = vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms);
             else vetted_proteoforms = candidateExperimentalProteoforms;
+            if (merge_by_RT) vetted_proteoforms = merge_experimentals_by_RT(vetted_proteoforms);
             target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
             {
@@ -304,6 +306,23 @@ namespace ProteoformSuiteInternal
             }
             if (neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0) assignQuantificationComponents(vetted_proteoforms, raw_quantification_components);
             return vetted_proteoforms;
+        }
+
+        private List<ExperimentalProteoform> merge_experimentals_by_RT(List<ExperimentalProteoform> vetted_proteoforms)
+        {
+            vetted_proteoforms = vetted_proteoforms.OrderByDescending(p => p.aggregated_components.Count).ToList();
+            List<ExperimentalProteoform> merged_experimentals = new List<ExperimentalProteoform>();
+            while(vetted_proteoforms.Count > 0)
+            {
+                ExperimentalProteoform e = vetted_proteoforms[0];
+                merged_experimentals.Add(e);
+                List<ExperimentalProteoform> matching_RT = vetted_proteoforms.Where(p => p != e && p.tolerable_mass(p.modified_mass, e.modified_mass) && p.lysine_count == e.lysine_count).ToList();
+                e.aggregated_components.AddRange(matching_RT.SelectMany(p => p.aggregated_components));
+                e.calculate_properties(false);
+                matching_RT.Add(e);
+                vetted_proteoforms = vetted_proteoforms.Except(matching_RT).ToList();
+            }
+            return merged_experimentals;
         }
 
         //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
@@ -566,9 +585,9 @@ namespace ProteoformSuiteInternal
         public List<TopDownHit> top_down_hits = new List<TopDownHit>();
         public TopDownReader topdownReader = new TopDownReader();
         public double min_C_score = 3.0d;
-                    //C-score > 40: proteoform is both identified and fully characterized; 
-                    //3 ≤ Cscore≤ 40: proteoform is identified, but only partially characterized; 
-                    //C-score < 3: proteoform is neither identified nor characterized.
+        //C-score > 40: proteoform is both identified and fully characterized; 
+        //3 ≤ Cscore≤ 40: proteoform is identified, but only partially characterized; 
+        //C-score < 3: proteoform is neither identified nor characterized.
 
         public void read_in_td_hits()
         {
@@ -608,11 +627,29 @@ namespace ProteoformSuiteInternal
                 }
                 topdown_proteoforms.Add(new_pf);
             }
-            SaveState.lollipop.target_proteoform_community.topdown_proteoforms = topdown_proteoforms.Where(p => p!= null).ToArray();
+            if (merge_by_RT) topdown_proteoforms = merge_topdowns_by_RT(topdown_proteoforms);
+            SaveState.lollipop.target_proteoform_community.topdown_proteoforms = topdown_proteoforms.Where(p => p != null).ToArray();
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
             {
                 community.topdown_proteoforms = SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Select(e => new TopDownProteoform(e)).ToArray();
             }
+        }
+
+        private List<TopDownProteoform> merge_topdowns_by_RT (List<TopDownProteoform> topdown_proteoforms)
+        {
+            topdown_proteoforms = topdown_proteoforms.OrderByDescending(p => p.topdown_hits.Count).ToList();
+            List<TopDownProteoform> merged_topdowns = new List<TopDownProteoform>();
+            while (topdown_proteoforms.Count > 0)
+            {
+                TopDownProteoform e = topdown_proteoforms[0];
+                merged_topdowns.Add(e);
+                List<TopDownProteoform> matching_RT = topdown_proteoforms.Where(p => p != e && p.targeted == e.targeted && p.uniprot_id == e.uniprot_id && p.sequence == e.sequence && p.topdown_hits.First().same_ptm_hits(e.topdown_hits.First())).ToList();
+                e.topdown_hits.AddRange(matching_RT.SelectMany(p => p.topdown_hits));
+                e.calculate_properties(false);
+                matching_RT.Add(e);
+                topdown_proteoforms = topdown_proteoforms.Except(matching_RT).ToList();
+            }
+            return merged_topdowns;
         }
 
         #endregion TOPDOWN 
@@ -621,19 +658,19 @@ namespace ProteoformSuiteInternal
 
         public string family_build_folder_path = "";
         public int deltaM_edge_display_rounding = 2;
-        public static string[] node_positioning = new string[] 
+        public static string[] node_positioning = new string[]
         {
             "Arbitrary Circle",
             "Mass-Based Spiral",
             "Circle by Mass",
             //"Mass X-Axis" 
         };
-        public static string[] node_labels = new string[] 
+        public static string[] node_labels = new string[]
         {
             "Experimental ID",
             "Inferred Theoretical ID"
         };
-        public static string[] edge_labels = new string[] 
+        public static string[] edge_labels = new string[]
         {
             "Mass Difference",
             "Modification IDs (omits edges with null IDs)"
@@ -643,7 +680,7 @@ namespace ProteoformSuiteInternal
             "Primary, e.g. HOG1",
             "Ordered Locus, e.g. YLR113W"
         };
-        public string[] likely_cleavages = new string[] 
+        public string[] likely_cleavages = new string[]
         {
             "I",
             "L",
@@ -996,8 +1033,8 @@ namespace ProteoformSuiteInternal
             else
             {
                 backgroundProteinsForGoAnalysis = allTheoreticalProteins ?
-                    theoretical_database.expanded_proteins.DistinctBy(pwg => pwg.Accession.Split('_')[0]).ToList() : 
-                    allDetectedProteins ?  
+                    theoretical_database.expanded_proteins.DistinctBy(pwg => pwg.Accession.Split('_')[0]).ToList() :
+                    allDetectedProteins ?
                         observedProteins :
                         quantifiedProteins;
             }
@@ -1045,16 +1082,16 @@ namespace ProteoformSuiteInternal
         #endregion GO-TERMS AND GO-TERM SIGNIFICANCE
 
         #region CALIBRATION
-        public  bool calibrate_lock_mass = false;
-        public  bool calibrate_td_results = true;
+        public bool calibrate_lock_mass = false;
+        public bool calibrate_td_results = true;
         public bool calibrate_intact_with_td_ids = false;
-        public  List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
-        public  List<MsScan> Ms_scans = new List<MsScan>();
-        public  Dictionary<string,bool> td_calibration_functions = new Dictionary<string, bool>();
-        public  List<Correction> correctionFactors = new List<Correction>();
-        public  Dictionary<Tuple<string, double>, Tuple<double, double, int, int>> file_mz_correction = new Dictionary<Tuple<string, double>, Tuple<double, double, int, int>>();
-        public  Dictionary<Tuple<string, int, double>, double> td_hit_correction = new Dictionary<Tuple<string, int, double>, double>();
-        public  List<Component> calibration_components = new List<Component>();
+        public List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
+        public List<MsScan> Ms_scans = new List<MsScan>();
+        public Dictionary<string, bool> td_calibration_functions = new Dictionary<string, bool>();
+        public List<Correction> correctionFactors = new List<Correction>();
+        public Dictionary<Tuple<string, double>, Tuple<double, double, int, int>> file_mz_correction = new Dictionary<Tuple<string, double>, Tuple<double, double, int, int>>();
+        public Dictionary<Tuple<string, int, double>, double> td_hit_correction = new Dictionary<Tuple<string, int, double>, double>();
+        public List<Component> calibration_components = new List<Component>();
 
 
         public void read_in_calibration_td_hits()
@@ -1086,9 +1123,12 @@ namespace ProteoformSuiteInternal
                 }
             }
             Calibration cali = new Calibration();
-            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
+            if (td_calibration_functions.Count > 0)
             {
-                cali.calibrate_td_hits_file(file);
+                foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
+                {
+                    cali.calibrate_td_hits_file(file);
+                }
             }
         }
 
@@ -1110,11 +1150,11 @@ namespace ProteoformSuiteInternal
 
                 if (calibrate_td_results || calibrate_intact_with_td_ids)
                 {
-                    bool calibrated =calibration.Run_TdMzCal(raw_file, td_hits_calibration.Where(h => h.filename == filename && h.score >= 40).ToList(), true, 0.2);
-                    if (calibrated) td_calibration_functions.Add(filename, calibrated);
+                    bool calibrated = calibration.Run_TdMzCal(raw_file, td_hits_calibration.Where(h => h.filename == filename && h.tdResultType == TopDownResultType.TightAbsoluteMass && h.score >= 40).ToList(), true, 0.2);
+                    if (calibrated) td_calibration_functions.Add(filename, true);
                     if (calibrate_intact_with_td_ids)
                     {
-                        calibrated = calibration.Run_TdMzCal(raw_file, td_hits_calibration.Where(h => h.tdResultType == TopDownResultType.TightAbsoluteMass).ToList(), false, 0.2);
+                        calibrated = calibration.Run_TdMzCal(raw_file, td_hits_calibration.Where(h => h.tdResultType == TopDownResultType.TightAbsoluteMass && h.score >= 40).ToList(), false, 0.2);
                         if (calibrated) td_calibration_functions.Add(filename, true);
                     }
                 }
@@ -1125,6 +1165,7 @@ namespace ProteoformSuiteInternal
         double average_averagine = 111.1234625;
         public void determine_component_shift(Calibration calibration, string filename)
         {
+
             Parallel.ForEach(calibration_components.Where(c => c.input_file.filename == filename), c =>
             {
                 if ((!calibrate_td_results && !calibrate_intact_with_td_ids) || td_calibration_functions.ContainsKey(c.input_file.filename))
@@ -1134,7 +1175,7 @@ namespace ProteoformSuiteInternal
                     {
                         //check signal to noise of averagine peak
                         double average_mass = cs.mz_centroid.ToMass(cs.charge_count) / monoisotopic_averagine * average_averagine;
-                        int units_over = Convert.ToInt16(average_mass - cs.mz_centroid.ToMass(cs.charge_count));
+                        int units_over = Convert.ToInt32(average_mass - cs.mz_centroid.ToMass(cs.charge_count));
                         double mz_average = cs.mz_centroid + (units_over * Lollipop.MONOISOTOPIC_UNIT_MASS / cs.charge_count);
                         int index_peak = scan.peak_x.Select((x, i) => new { Index = i, Distance = Math.Abs(mz_average - x) }).OrderBy(x => x.Distance).First().Index;
 
@@ -1142,7 +1183,7 @@ namespace ProteoformSuiteInternal
                         int left_averagine = 0;
                         int peak_over = 1;
                         bool peak_exists = true;
-                        while(peak_exists)
+                        while (peak_exists)
                         {
                             if (scan.peak_x.Count(p => Math.Abs(p - (mz_average - peak_over * Lollipop.MONOISOTOPIC_UNIT_MASS / cs.charge_count)) < .005) >= 1)
                             {
@@ -1176,6 +1217,7 @@ namespace ProteoformSuiteInternal
                         }
                     }
                 }
+
             });
         }
 
