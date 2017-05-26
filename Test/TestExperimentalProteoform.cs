@@ -86,6 +86,7 @@ namespace Test
                 c.intensity_sum = starter_intensity;
                 c.rt_apex = starter_rt;
                 c.accepted = true;
+                c.input_file = new InputFile("fake.txt", Purpose.Identification);
                 components.Add(c);
             }
             return components;
@@ -110,6 +111,7 @@ namespace Test
         [Test]
         public void unlabeled_proteoform_calculate_properties()
         {
+            SaveState.lollipop.min_num_bioreps = 0;
             SaveState.lollipop.neucode_labeled = false;
             List<Component> components = generate_unlabeled_components(starter_mass);
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);

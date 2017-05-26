@@ -13,21 +13,41 @@ namespace ProteoformSuiteInternal
     public class ExperimentalProteoform : Proteoform
     {
 
-        #region Public Properties
+        #region Public Field
 
         public Component root;
+
+        #endregion Public Field
+
+        #region Public Properties
+
         public List<Component> aggregated_components { get; set; } = new List<Component>();
+
         public List<Component> lt_verification_components { get; set; } = new List<Component>();
+
         public List<Component> hv_verification_components { get; set; } = new List<Component>();
+
         public List<Component> lt_quant_components { get; set; } = new List<Component>();
+
         public List<Component> hv_quant_components { get; set; } = new List<Component>();
+
         public List<BiorepIntensity> biorepIntensityList { get; set; } = new List<BiorepIntensity>(); //(bool light = true, int biorep, double intensity)
+
         public QuantitativeProteoformValues quant { get; set; }
+
         public bool accepted { get; set; } = true;
+
         public double agg_mass { get; set; } = 0;
+
         public double agg_intensity { get; set; } = 0;
+
         public double agg_rt { get; set; } = 0;
+
         public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once. 
+
+        public string manual_validation_id { get; set; }
+
+        public string manual_validation_quant { get; set; }
 
         #endregion Public Properties
 
@@ -54,10 +74,9 @@ namespace ProteoformSuiteInternal
         public ExperimentalProteoform(string accession, ExperimentalProteoform temp, List<Component> candidate_observations, bool is_target, bool neucode_labeled) 
             : base(accession) //this is for first mass of aggregate components. uses a temporary component
         {
-            Component root = new Component();
-            NeuCodePair ncRoot = new NeuCodePair();
             if (neucode_labeled)
             {
+                NeuCodePair ncRoot = new NeuCodePair();
                 ncRoot.weighted_monoisotopic_mass = temp.agg_mass;
                 ncRoot.intensity_sum = temp.agg_intensity;
                 ncRoot.rt_apex = temp.agg_rt;
@@ -68,13 +87,15 @@ namespace ProteoformSuiteInternal
                 this.calculate_properties();
                 this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
+
             else
             {
-                root.weighted_monoisotopic_mass = temp.agg_mass;
-                root.intensity_sum = temp.agg_intensity;
-                root.rt_apex = temp.agg_rt;
+                Component cRoot = new Component();
+                cRoot.weighted_monoisotopic_mass = temp.agg_mass;
+                cRoot.intensity_sum = temp.agg_intensity;
+                cRoot.rt_apex = temp.agg_rt;
 
-                this.root = root;
+                this.root = cRoot;
                 this.aggregated_components.AddRange(candidate_observations.Where(p => includes(p, this.root)));
                 calculate_properties();
                 this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
@@ -113,6 +134,17 @@ namespace ProteoformSuiteInternal
             this.hv_quant_components = new List<Component>(e.hv_quant_components);
             this.hv_verification_components = new List<Component>(e.hv_verification_components);
             this.biorepIntensityList = new List<BiorepIntensity>(e.biorepIntensityList);
+            this.manual_validation_id = manual_validation_id;
+            this.manual_validation_quant = manual_validation_quant;
+        }
+
+        public string find_manual_inspection_component(IEnumerable<Component> components)
+        {
+            Component intense = components.OrderByDescending(c => c.intensity_sum).FirstOrDefault();
+            if (intense == null) return "";
+            ChargeState intense_cs = intense.charge_states.OrderByDescending(c => c.intensity).FirstOrDefault();
+            if (intense_cs == null) return "";
+            return "File: " + intense.input_file.filename + "; Scan Range: " + intense.scan_range + "; Charge State m/z (+" + intense_cs.charge_count.ToString() + "): " + intense_cs.mz_centroid + " RT (min): " + intense.rt_apex;
         }
 
         #endregion
@@ -154,28 +186,12 @@ namespace ProteoformSuiteInternal
         public void calculate_properties()
         {
             //if not neucode labeled, the intensity sum of overlapping charge states was calculated with all charge states.
-            if (SaveState.lollipop.neucode_labeled)
-            {
-                agg_intensity = aggregated_components.Sum(p => p.intensity_sum_olcs);
-                agg_mass = aggregated_components.Sum(p => (p.weighted_monoisotopic_mass - Math.Round(p.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * p.intensity_sum_olcs / agg_intensity); //remove the monoisotopic errors before aggregating masses
-                agg_rt = aggregated_components.Sum(p => p.rt_apex * p.intensity_sum_olcs / agg_intensity);
-            }
-            else
-            {
-                agg_intensity = aggregated_components.Sum(p => p.intensity_sum);
-                agg_mass = aggregated_components.Sum(p => (p.weighted_monoisotopic_mass - Math.Round(p.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * p.intensity_sum / agg_intensity); //remove the monoisotopic errors before aggregating masses
-                agg_rt = aggregated_components.Sum(p => p.rt_apex * p.intensity_sum / agg_intensity);
-            }
-            if (root is NeuCodePair) lysine_count = ((NeuCodePair)root).lysine_count;
+            agg_intensity = aggregated_components.Sum(p => SaveState.lollipop.neucode_labeled ? p.intensity_sum_olcs : p.intensity_sum);
+            agg_mass = aggregated_components.Sum(p => (p.weighted_monoisotopic_mass - Math.Round(p.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * (SaveState.lollipop.neucode_labeled ? p.intensity_sum_olcs : p.intensity_sum) / agg_intensity); //remove the monoisotopic errors before aggregating masses
+            agg_rt = aggregated_components.Sum(p => p.rt_apex * (SaveState.lollipop.neucode_labeled ? p.intensity_sum_olcs : p.intensity_sum) / agg_intensity);
+            lysine_count = root as NeuCodePair != null ? ((NeuCodePair)root).lysine_count : lysine_count;
             modified_mass = agg_mass;
-            try
-            {
-                accepted = aggregated_components.Count >= SaveState.lollipop.min_agg_count && aggregated_components.Select(c => c.input_file.biological_replicate).Distinct().Count() >= SaveState.lollipop.min_num_bioreps;
-            }
-            catch
-            {
-                accepted = aggregated_components.Count >= SaveState.lollipop.min_agg_count;
-            } //if testing, no input file for agg components
+            accepted = aggregated_components.Count >= SaveState.lollipop.min_agg_count && aggregated_components.Select(c => c.input_file.biological_replicate).Distinct().Count() >= SaveState.lollipop.min_num_bioreps;
         }
 
         //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on 
@@ -242,7 +258,7 @@ namespace ProteoformSuiteInternal
 
             List<BiorepIntensity> biorepIntensityList = new List<BiorepIntensity>();
             //foreach (string condition in Lollipop.ltConditionsBioReps.Keys)
-            foreach (string condition in ltConditionStrings)
+            foreach (string condition in ltConditionStrings.ToList())
             {
                 foreach (int b in lt_quant_components.Where(c => c.input_file.lt_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())
                 {
@@ -252,7 +268,7 @@ namespace ProteoformSuiteInternal
             if (SaveState.lollipop.neucode_labeled)
             {
                 //foreach (string condition in Lollipop.hvConditionsBioReps.Keys)
-                foreach (string condition in hvConditionStrings)
+                foreach (string condition in hvConditionStrings.ToList())
                 {
                     foreach (int b in hv_quant_components.Where(c => c.input_file.hv_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())
                     {
@@ -270,24 +286,19 @@ namespace ProteoformSuiteInternal
 
         public void shift_masses(int shift, bool neucode_labeled)
         {
-            if (neucode_labeled)
+            foreach (Component c in aggregated_components)
             {
-                foreach (Component c in this.aggregated_components)
+                c.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                if (neucode_labeled)
                 {
-                    ((NeuCodePair)c).manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                     ((NeuCodePair)c).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                     ((NeuCodePair)c).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                 }
             }
-            else //unlabeled
-            {
-                foreach (Component c in this.aggregated_components)
-                {
-                    c.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                }
-            }
+
             this.mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
         }
+
         #endregion Public Methods
 
     }

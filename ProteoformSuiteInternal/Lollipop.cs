@@ -27,7 +27,7 @@ namespace ProteoformSuiteInternal
         public const double PROTON_MASS = 1.007276474;
 
         #endregion Constants
-        
+
         #region Input Files
 
         public List<InputFile> input_files = new List<InputFile>();
@@ -268,7 +268,7 @@ namespace ProteoformSuiteInternal
         #region AGGREGATED PROTEOFORMS Public Fields
 
         public ProteoformCommunity target_proteoform_community = new ProteoformCommunity();
-        public Dictionary<string, ProteoformCommunity> decoy_proteoform_communities = new Dictionary<string, ProteoformCommunity> ();
+        public Dictionary<string, ProteoformCommunity> decoy_proteoform_communities = new Dictionary<string, ProteoformCommunity>();
         public string decoy_community_name_prefix = "Decoy_Proteoform_Community_";
         public List<Component> remaining_components = new List<Component>();
         public List<Component> remaining_verification_components = new List<Component>();
@@ -306,6 +306,15 @@ namespace ProteoformSuiteInternal
             }
             if (neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0) assignQuantificationComponents(vetted_proteoforms, raw_quantification_components);
             return vetted_proteoforms;
+        }
+
+        public void assign_best_components_for_manual_validation(IEnumerable<ExperimentalProteoform> experimental_proteoforms)
+        {
+            foreach (ExperimentalProteoform pf in experimental_proteoforms)
+            {
+                pf.manual_validation_id = pf.find_manual_inspection_component(pf.aggregated_components);
+                pf.manual_validation_quant = pf.find_manual_inspection_component(pf.lt_quant_components.Concat(pf.hv_quant_components));
+            }
         }
 
         //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
@@ -461,7 +470,9 @@ namespace ProteoformSuiteInternal
                 raw_neucode_pairs.Clear();
                 process_neucode_components(raw_neucode_pairs);
             }
-            return aggregate_proteoforms(two_pass_validation, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_num_CS);
+            List<ExperimentalProteoform> new_exps = aggregate_proteoforms(two_pass_validation, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_num_CS);
+            assign_best_components_for_manual_validation(new_exps);
+            return new_exps;
         }
 
         public void clear_aggregation()
