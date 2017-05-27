@@ -117,34 +117,40 @@ namespace ProteoformSuiteInternal
 
         private void copy_aggregate(ExperimentalProteoform e)
         {
-            this.root = e.root;
+            root = e.root;
             //doesn't copy quant on purpose
-            this.agg_intensity = e.agg_intensity;
-            this.agg_mass = e.agg_mass;
-            this.modified_mass = e.modified_mass;
-            this.agg_rt = e.agg_rt;
-            this.lysine_count = e.lysine_count;
-            this.accepted = e.accepted;
-            this.mass_shifted = e.mass_shifted;
-            this.is_target = e.is_target;
-            this.family = e.family;
-            this.aggregated_components = new List<Component>(e.aggregated_components);
-            this.lt_quant_components = new List<Component>(e.lt_quant_components);
-            this.lt_verification_components = new List<Component>(e.lt_verification_components);
-            this.hv_quant_components = new List<Component>(e.hv_quant_components);
-            this.hv_verification_components = new List<Component>(e.hv_verification_components);
-            this.biorepIntensityList = new List<BiorepIntensity>(e.biorepIntensityList);
-            this.manual_validation_id = manual_validation_id;
-            this.manual_validation_quant = manual_validation_quant;
+            agg_intensity = e.agg_intensity;
+            agg_mass = e.agg_mass;
+            modified_mass = e.modified_mass;
+            agg_rt = e.agg_rt;
+            lysine_count = e.lysine_count;
+            accepted = e.accepted;
+            mass_shifted = e.mass_shifted;
+            is_target = e.is_target;
+            family = e.family;
+            aggregated_components = new List<Component>(e.aggregated_components);
+            lt_quant_components = new List<Component>(e.lt_quant_components);
+            lt_verification_components = new List<Component>(e.lt_verification_components);
+            hv_quant_components = new List<Component>(e.hv_quant_components);
+            hv_verification_components = new List<Component>(e.hv_verification_components);
+            biorepIntensityList = new List<BiorepIntensity>(e.biorepIntensityList);
+            manual_validation_id = manual_validation_id;
+            manual_validation_quant = manual_validation_quant;
         }
 
         public string find_manual_inspection_component(IEnumerable<Component> components)
         {
             Component intense = components.OrderByDescending(c => c.intensity_sum).FirstOrDefault();
-            if (intense == null) return "";
+            if (intense == null)
+                return "";
+
             ChargeState intense_cs = intense.charge_states.OrderByDescending(c => c.intensity).FirstOrDefault();
-            if (intense_cs == null) return "";
-            return "File: " + intense.input_file.filename + "; Scan Range: " + intense.scan_range + "; Charge State m/z (+" + intense_cs.charge_count.ToString() + "): " + intense_cs.mz_centroid + " RT (min): " + intense.rt_apex;
+            if (intense_cs == null)
+                return "";
+
+            return "File: " + intense.input_file.filename 
+                + "; Scan Range: " + intense.scan_range 
+                + "; Charge State m/z (+" + intense_cs.charge_count.ToString() + "): " + intense_cs.mz_centroid + " RT (min): " + intense.rt_apex;
         }
 
         #endregion
@@ -153,10 +159,10 @@ namespace ProteoformSuiteInternal
 
         public void aggregate()
         {
-            ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", this.root, new List<Component>(SaveState.lollipop.remaining_components), true); //first pass returns temporary proteoform
+            ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", root, new List<Component>(SaveState.lollipop.remaining_components), true); //first pass returns temporary proteoform
             ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, new List<Component>(SaveState.lollipop.remaining_components), true, SaveState.lollipop.neucode_labeled); //second pass uses temporary protoeform from first pass.
             copy_aggregate(new_pf); //doesn't copy quant on purpose
-            this.root = temp_pf.root; //maintain the original component root
+            root = temp_pf.root; //maintain the original component root
         }
 
         public void verify()
@@ -174,8 +180,10 @@ namespace ProteoformSuiteInternal
         {
             foreach (Component c in SaveState.lollipop.remaining_quantification_components)
             {
-                if (includes_neucode_component(c, this, true)) lt_quant_components.Add(c);
-                if (includes_neucode_component(c, this, false)) hv_quant_components.Add(c);
+                if (includes_neucode_component(c, this, true))
+                    lt_quant_components.Add(c);
+                if (includes_neucode_component(c, this, false))
+                    hv_quant_components.Add(c);
             }
             //lt_quant_components.AddRange(Lollipop.remaining_components.Where(r => this.includes(r, this, true)));
             ////ep.getBiorepAndFractionIntensities(false); //split lt components by biorep and fraction
@@ -189,7 +197,7 @@ namespace ProteoformSuiteInternal
             agg_intensity = aggregated_components.Sum(p => SaveState.lollipop.neucode_labeled ? p.intensity_sum_olcs : p.intensity_sum);
             agg_mass = aggregated_components.Sum(p => (p.weighted_monoisotopic_mass - Math.Round(p.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * (SaveState.lollipop.neucode_labeled ? p.intensity_sum_olcs : p.intensity_sum) / agg_intensity); //remove the monoisotopic errors before aggregating masses
             agg_rt = aggregated_components.Sum(p => p.rt_apex * (SaveState.lollipop.neucode_labeled ? p.intensity_sum_olcs : p.intensity_sum) / agg_intensity);
-            lysine_count = root as NeuCodePair != null ? ((NeuCodePair)root).lysine_count : lysine_count;
+            lysine_count = root as NeuCodePair != null ? (root as NeuCodePair).lysine_count : lysine_count;
             modified_mass = agg_mass;
             accepted = aggregated_components.Count >= SaveState.lollipop.min_agg_count && aggregated_components.Select(c => c.input_file.biological_replicate).Distinct().Count() >= SaveState.lollipop.min_num_bioreps;
         }
@@ -200,17 +208,16 @@ namespace ProteoformSuiteInternal
         //impact of this difference as of 160812. -AC
         public bool includes(Component candidate, Component root)
         {
-            bool does_include = tolerable_rt(candidate, root.rt_apex) && tolerable_mass(candidate, root.weighted_monoisotopic_mass);
-            if (candidate is NeuCodePair) does_include = does_include && tolerable_lysCt((NeuCodePair)candidate, ((NeuCodePair)root).lysine_count);
-            return does_include;
+            return tolerable_rt(candidate, root.rt_apex) && tolerable_mass(candidate, root.weighted_monoisotopic_mass)
+                && (candidate as NeuCodePair == null || tolerable_lysCt(candidate as NeuCodePair, (root as NeuCodePair).lysine_count));
         }
 
         public bool includes_neucode_component(Component candidate, ExperimentalProteoform root, bool light)
         {
-            double corrected_mass = light ? root.agg_mass :
+            double corrected_mass = light ? 
+                root.agg_mass :
                 root.agg_mass + root.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
-            bool does_include = tolerable_rt(candidate, root.agg_rt) && tolerable_mass(candidate, corrected_mass);
-            return does_include;
+            return tolerable_rt(candidate, root.agg_rt) && tolerable_mass(candidate, corrected_mass);
         }
 
         #endregion Aggregation Public Methods
@@ -291,12 +298,12 @@ namespace ProteoformSuiteInternal
                 c.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                 if (neucode_labeled)
                 {
-                    ((NeuCodePair)c).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                    ((NeuCodePair)c).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    (c as NeuCodePair).neuCodeLight.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                    (c as NeuCodePair).neuCodeHeavy.manual_mass_shift += shift * Lollipop.MONOISOTOPIC_UNIT_MASS;
                 }
             }
 
-            this.mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
+            mass_shifted = true; //if shifting multiple peaks @ once, won't shift same E more than once if it's in multiple peaks.
         }
 
         #endregion Public Methods
