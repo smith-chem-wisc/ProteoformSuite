@@ -34,6 +34,7 @@ namespace ProteoformSuiteInternal
                     }
                     lock (dt) dt.Rows.Add(new_row);
                 }
+
                 foreach (DataGridViewColumn col in dgv.Columns)
                 {
                     if (!col.Visible)
@@ -43,7 +44,16 @@ namespace ProteoformSuiteInternal
                 var worksheet = workbook.Worksheets.Add(dt, sheet_prefix.Substring(0, Math.Min(sheet_prefix.Length, 30 - dgv.Name.Length)) + "_" + dgv.Name);
                 foreach (var col in worksheet.Columns())
                 {
-                    col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = Double.TryParse(worksheet.Row(2).Cell(col.ColumnNumber()).Value.ToString(), out double is_number) ? XLCellValues.Number : XLCellValues.Text;
+                    try
+                    {
+                        col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = Double.TryParse(worksheet.Row(2).Cell(col.ColumnNumber()).Value.ToString(), out double is_number) ?
+                            XLCellValues.Number :
+                            XLCellValues.Text;
+                    }
+                    catch
+                    {
+                        col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = XLCellValues.Text;
+                    }
                 }
 
             }

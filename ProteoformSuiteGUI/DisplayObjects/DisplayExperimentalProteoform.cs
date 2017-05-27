@@ -64,6 +64,16 @@ namespace ProteoformSuiteGUI
             get { return e.aggregated_components.Count; }
         }
 
+        public int light_verification_count
+        {
+            get { return e.lt_verification_components.Count; }
+        }
+
+        public int heavy_verification_count
+        {
+            get { return e.hv_verification_components.Count; }
+        }
+
         public int light_observation_count
         {
             get { return e.lt_quant_components.Count; }
@@ -121,6 +131,8 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(agg_intensity)].HeaderText = "Aggregated Intensity";
             dgv.Columns[nameof(agg_rt)].HeaderText = "Aggregated RT";
             dgv.Columns[nameof(observation_count)].HeaderText = "Aggregated Component Count for Identification";
+            dgv.Columns[nameof(heavy_verification_count)].HeaderText = "Heavy Verification Component Count";
+            dgv.Columns[nameof(light_verification_count)].HeaderText = "Light Verification Component Count";
             dgv.Columns[nameof(heavy_observation_count)].HeaderText = "Heavy Quantitative Component Count";
             dgv.Columns[nameof(light_observation_count)].HeaderText = "Light Quantitative Component Count";
             dgv.Columns[nameof(lysine_count)].HeaderText = "Lysine Count";
