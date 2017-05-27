@@ -124,7 +124,7 @@ namespace ProteoformSuiteGUI
 
             //Set parameters
             nud_bkgdShift.ValueChanged -= nud_bkgdShift_ValueChanged;
-            nud_bkgdShift.Value = (decimal)-2.0;
+            nud_bkgdShift.Value = (decimal)-1.8;
             SaveState.lollipop.backgroundShift = nud_bkgdShift.Value;
             nud_bkgdShift.ValueChanged += nud_bkgdShift_ValueChanged;
 

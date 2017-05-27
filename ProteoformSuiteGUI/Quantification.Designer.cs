@@ -152,12 +152,12 @@
             this.gb_quantDataDisplaySelection.Size = new System.Drawing.Size(452, 48);
             this.gb_quantDataDisplaySelection.TabIndex = 5;
             this.gb_quantDataDisplaySelection.TabStop = false;
-            this.gb_quantDataDisplaySelection.Text = "Adjust Background Imputation";
+            this.gb_quantDataDisplaySelection.Text = "Adjust Background Imputation (Units: Std. Dev. of Observed Values)";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(142, 19);
+            this.label5.Location = new System.Drawing.Point(153, 22);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(63, 13);
             this.label5.TabIndex = 7;
@@ -180,7 +180,7 @@
             0,
             0,
             65536});
-            this.nud_bkgdWidth.Location = new System.Drawing.Point(204, 15);
+            this.nud_bkgdWidth.Location = new System.Drawing.Point(220, 18);
             this.nud_bkgdWidth.Maximum = new decimal(new int[] {
             1,
             0,
