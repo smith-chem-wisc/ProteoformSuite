@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -306,11 +307,11 @@ namespace ProteoformSuiteGUI
         private void exportAllTablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DGVExcelWriter writer = new DGVExcelWriter();
-            foreach (ISweetForm form in forms)
+            Parallel.ForEach(forms, form =>
             {
                 List<DataGridView> grid_views = form.GetDGVs();
                 writer.ExportToExcel(grid_views, (form as Form).Name);
-            }
+            });
             SaveExcelFile(writer, (current_form as Form).MdiParent.Name + "_table.xlsx");
         }
 
