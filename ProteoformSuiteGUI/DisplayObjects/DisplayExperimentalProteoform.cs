@@ -104,6 +104,11 @@ namespace ProteoformSuiteGUI
             get { return e.manual_validation_id; }
         }
 
+        public string manual_validation_verification
+        {
+            get { return e.manual_validation_verification; }
+        }
+
         public string manual_validation_quant
         {
             get { return e.manual_validation_quant; }
@@ -140,6 +145,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
             dgv.Columns[nameof(gene_name)].HeaderText = "Gene Name";
             dgv.Columns[nameof(manual_validation_id)].HeaderText = "Abundant Component for Manual Validation of Identification";
+            dgv.Columns[nameof(manual_validation_verification)].HeaderText = "Abundant Component for Manual Validation of Identification Verification";
             dgv.Columns[nameof(manual_validation_quant)].HeaderText = "Abundant Component for Manual Validation of Quantification";
 
             //VISIBILITY

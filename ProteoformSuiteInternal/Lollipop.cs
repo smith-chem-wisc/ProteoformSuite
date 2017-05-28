@@ -317,6 +317,7 @@ namespace ProteoformSuiteInternal
             foreach (ExperimentalProteoform pf in experimental_proteoforms)
             {
                 pf.manual_validation_id = pf.find_manual_inspection_component(pf.aggregated_components);
+                pf.manual_validation_verification = pf.find_manual_inspection_component(pf.lt_verification_components.Concat(pf.hv_verification_components));
                 pf.manual_validation_quant = pf.find_manual_inspection_component(pf.lt_quant_components.Concat(pf.hv_quant_components));
             }
         }
