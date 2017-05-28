@@ -114,12 +114,7 @@ namespace ProteoformSuiteGUI
 
         public void update_figures_of_merit()
         {
-            tb_TotalFamilies.Text = SaveState.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count > 1).ToString();
-            tb_IdentifiedFamilies.Text = SaveState.lollipop.target_proteoform_community.families.Count(f => f.theoretical_proteoforms.Count > 0).ToString();
-            tb_singleton_count.Text = SaveState.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString();
-            tb_identified_experimentals.Text = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null).ToString();
-            if (SaveState.lollipop.decoy_proteoform_communities.Values.SelectMany(v => v.experimental_proteoforms).Count() > 0)
-            tb_identified_decoys.Text = Math.Round(SaveState.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null)), 0).ToString();
+            rtb_proteoformFamilyResults.Text = ResultsSummaryGenerator.proteoform_families_report();
 
             //change selected table names based on # decoy communities
             int decoy_communities = SaveState.lollipop.decoy_proteoform_communities.Count;
@@ -127,6 +122,7 @@ namespace ProteoformSuiteGUI
             {
                if (!cmbx_tableSelector.Items.Contains("Decoy Community " + i)) cmbx_tableSelector.Items.Add("Decoy Community " + i);
             }
+
             //if more items than decoy databases, remove later ones //FIX   
             while(cmbx_tableSelector.Items.Count - 5 - decoy_communities > 0)
             {
