@@ -41,7 +41,12 @@ namespace ProteoformSuiteInternal
                         dt.Columns.Remove(col.HeaderText);
                 }
 
-                var worksheet = workbook.Worksheets.Add(dt, sheet_prefix.Substring(0, Math.Min(sheet_prefix.Length, 30 - dgv.Name.Length)) + "_" + dgv.Name);
+                IXLWorksheet worksheet = null;
+                lock (workbook)
+                {
+                    worksheet = workbook.Worksheets.Add(dt, sheet_prefix.Substring(0, Math.Min(sheet_prefix.Length, 30 - dgv.Name.Length)) + "_" + dgv.Name);
+                }
+
                 foreach (var col in worksheet.Columns())
                 {
                     try
@@ -55,7 +60,6 @@ namespace ProteoformSuiteInternal
                         col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = XLCellValues.Text;
                     }
                 }
-
             }
         }
 
