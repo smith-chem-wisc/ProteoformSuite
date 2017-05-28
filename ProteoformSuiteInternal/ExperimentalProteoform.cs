@@ -47,6 +47,8 @@ namespace ProteoformSuiteInternal
 
         public string manual_validation_id { get; set; }
 
+        public string manual_validation_verification { get; set; }
+
         public string manual_validation_quant { get; set; }
 
         #endregion Public Properties
@@ -134,8 +136,9 @@ namespace ProteoformSuiteInternal
             hv_quant_components = new List<Component>(e.hv_quant_components);
             hv_verification_components = new List<Component>(e.hv_verification_components);
             biorepIntensityList = new List<BiorepIntensity>(e.biorepIntensityList);
-            manual_validation_id = manual_validation_id;
-            manual_validation_quant = manual_validation_quant;
+            manual_validation_id = e.manual_validation_id;
+            manual_validation_verification = e.manual_validation_verification;
+            manual_validation_quant = e.manual_validation_quant;
         }
 
         public string find_manual_inspection_component(IEnumerable<Component> components)
