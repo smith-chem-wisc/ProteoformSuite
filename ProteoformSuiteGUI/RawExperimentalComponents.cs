@@ -32,7 +32,8 @@ namespace ProteoformSuiteGUI
 
             SaveState.lollipop.getBiorepsFractionsList(SaveState.lollipop.input_files); // list of bioreps with a list of fractions for each biorep
             SaveState.lollipop.getObservationParameters(SaveState.lollipop.neucode_labeled, SaveState.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
-            (MdiParent as ProteoformSweet).quantification.InitializeParameterSet();
+            if (SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.Quantification).Count() > 0)
+                (MdiParent as ProteoformSweet).quantification.InitializeParameterSet();
 
             Parallel.Invoke
             (
