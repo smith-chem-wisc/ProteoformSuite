@@ -85,6 +85,14 @@ namespace ProteoformSuiteInternal
                 CalibrationFunction calibrationFunction = CalibrateLinear(file.filename, dataPointAcquisitionResult);
             }
 
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\points.txt"))
+            {
+                foreach (var point in dataPointAcquisitionResult.Ms1List)
+                {
+                    writer.WriteLine(point.Label + "\t" + String.Join("\t", point.Inputs));
+                }
+            }
+
             ////found that this made results worse... maybe too few hits
             //trainingPointCounts = new List<int>();
             //for (int forestCalibrationRound = 1; ; forestCalibrationRound++)
@@ -96,7 +104,7 @@ namespace ProteoformSuiteInternal
             //    trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
             //}
 
-           return true;
+            return true;
         }
 
         private CalibrationFunction CalibrateRF(DataPointAquisitionResults res, string filename)
@@ -235,7 +243,8 @@ namespace ProteoformSuiteInternal
             var peaksAddedFromMS1HashSet = new HashSet<Tuple<double, double>>();
             foreach (TopDownHit identification in identifications)
             {
-                int ms2scanNumber = identification.ms2ScanNumber;
+                List<int> scanNumbers = new List<int>() { identification.ms2ScanNumber };
+                int proteinCharge = identification.charge;
 
                 if (!td_file) //if calibrating across files find component with matching mass and retention time
                 {
@@ -243,10 +252,14 @@ namespace ProteoformSuiteInternal
                 && Math.Abs(c.weighted_monoisotopic_mass - identification.reported_mass) < c.weighted_monoisotopic_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance
                 && Math.Abs(Convert.ToDouble(c.rt_range.Split('-')[0]) - identification.retention_time) < (double)SaveState.lollipop.retention_time_tolerance).OrderBy(c => Math.Abs(c.weighted_monoisotopic_mass - identification.reported_mass)).ToList().FirstOrDefault();
                     if (matching_component == null) continue;
-                    else ms2scanNumber = Convert.ToInt16(matching_component.scan_range.Split('-')[0]);
+                    scanNumbers.Clear();
+                    for(int i = Convert.ToInt16(matching_component.scan_range.Split('-')[0]); i <= Convert.ToInt16(matching_component.scan_range.Split('-')[1]); i++)
+                    {
+                        scanNumbers.Add(i);
+                    }
+                    proteinCharge = matching_component.charge_states.OrderByDescending(c => c.intensity).First().charge_count;
                 }
 
-                int proteinCharge = identification.charge;
 
                 var SequenceWithChemicalFormulas = identification.GetSequenceWithChemicalFormula();
                 if (SequenceWithChemicalFormulas == null)
@@ -267,10 +280,13 @@ namespace ProteoformSuiteInternal
                 numMs1MassChargeCombinationsConsidered = 0;
                 numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks = 0;
 
-                res.Ms1List.AddRange(SearchMS1Spectra(masses, intensities, ms2scanNumber, -1, peaksAddedFromMS1HashSet, identification.charge, identification));
-                res.Ms1List.AddRange(SearchMS1Spectra(masses, intensities, ms2scanNumber, 1, peaksAddedFromMS1HashSet, identification.charge, identification));
-                res.numMs1MassChargeCombinationsConsidered += numMs1MassChargeCombinationsConsidered;
-                res.numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks += numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
+                foreach (int scanNumber in scanNumbers)
+                {
+                    res.Ms1List.AddRange(SearchMS1Spectra(masses, intensities, scanNumber, -1, peaksAddedFromMS1HashSet, proteinCharge, identification));
+                    res.Ms1List.AddRange(SearchMS1Spectra(masses, intensities, scanNumber, 1, peaksAddedFromMS1HashSet, proteinCharge, identification));
+                    res.numMs1MassChargeCombinationsConsidered += numMs1MassChargeCombinationsConsidered;
+                    res.numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks += numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
+                }
             }
 
             return res;
@@ -307,7 +323,7 @@ namespace ProteoformSuiteInternal
                 {
                     bool startingToAddCharges = false;
                     bool continueAddingCharges = false;
-                    int chargeToLookAt = direction > 0 ? identification.charge : (identification.charge - 1);
+                    int chargeToLookAt = direction > 0 ? peptideCharge : (peptideCharge - 1);
                     do
                     {
                         if (originalMasses[0].ToMz(chargeToLookAt) > scanWindowRange.Maximum)

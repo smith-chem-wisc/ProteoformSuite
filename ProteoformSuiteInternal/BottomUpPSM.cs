@@ -17,8 +17,8 @@ namespace ProteoformSuiteInternal
                 return _base_sequence;
             }
         }
-        public int start_residue { get; set; }
-        public int stop_residue { get; set; }
+        public string start_residue { get; set; }
+        public string stop_residue { get; set; }
         public string spectrum { get; set; }
         public string protein_description { get; set; }
         public string protein_accession { get; set; }
@@ -27,7 +27,7 @@ namespace ProteoformSuiteInternal
         public double precursor_mass_error { get; set; }
         public List<Ptm> modifications = new List<Ptm>();
 
-        public BottomUpPSM(string sequence, int start_residue, int stop_residue, List<Ptm> modifications,  string spectrum, string protein_accession, string protein_description, double precursor_mz, int precursor_charge, double precursor_mass_error)
+        public BottomUpPSM(string sequence, string start_residue, string stop_residue, List<Ptm> modifications,  string spectrum, string protein_accession, string protein_description, double precursor_mz, int precursor_charge, double precursor_mass_error)
         {
             this.base_sequence = sequence;
             this.start_residue = start_residue;
