@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Proteomics;
+﻿using Proteomics;
 
 namespace ProteoformSuiteInternal
 {
@@ -15,6 +10,8 @@ namespace ProteoformSuiteInternal
         public double mass { get; set; }
         public string id { get; set; }
         public int ptm_count { get; set; }
+        public bool require_proteoform_without_mod { get; set; }
+        public int ptm_rank { get; set; }
         public ModificationWithMass original_modification { get; set; }
 
         #endregion Public Properties
@@ -27,6 +24,13 @@ namespace ProteoformSuiteInternal
             mass = m.monoisotopicMass;
             id = m.id;
             ptm_count = 1;
+            ptm_rank = SaveState.lollipop.modification_ranks[m.monoisotopicMass];
+            require_proteoform_without_mod = false;
+
+            if (m.modificationType == "FattyAcid" || m.modificationType == "Unlocalized")
+                ptm_rank = SaveState.lollipop.mod_rank_first_quartile / 2;
+            else if (m.modificationType == "Deconvolution Error")
+                ptm_rank = SaveState.lollipop.mod_rank_third_quartile;
         }
 
         #endregion Public Constructor

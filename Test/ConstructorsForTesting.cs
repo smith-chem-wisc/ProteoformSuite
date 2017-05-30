@@ -14,7 +14,7 @@ namespace Test
         //MAKE RELATION
         public static void make_relation(Proteoform p1, Proteoform p2)
         {
-            ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ExperimentalExperimental, 0);
+            ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ExperimentalExperimental, 0, TestContext.CurrentContext.TestDirectory);
             DeltaMassPeak ppp = new DeltaMassPeak(pp, new List<ProteoformRelation> { pp });
             pp.peak = ppp;
             pp.Accepted = true;
@@ -25,7 +25,7 @@ namespace Test
 
         public static ProteoformRelation make_relation(Proteoform p1, Proteoform p2, ProteoformComparison c, double delta_mass)
         {
-            ProteoformRelation pp = new ProteoformRelation(p1, p2, c, delta_mass);
+            ProteoformRelation pp = new ProteoformRelation(p1, p2, c, delta_mass, TestContext.CurrentContext.TestDirectory);
             p1.relationships.Add(pp);
             p2.relationships.Add(pp);
             return pp;

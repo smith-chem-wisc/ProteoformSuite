@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
 {
@@ -33,6 +34,7 @@ namespace ProteoformSuiteGUI
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RawExperimentalComponents));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.dgv_fileList = new System.Windows.Forms.DataGridView();
             this.bt_recalculate = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.rb_displayQuantificationComponents = new System.Windows.Forms.RadioButton();
@@ -40,7 +42,6 @@ namespace ProteoformSuiteGUI
             this.dgv_rawComponents = new System.Windows.Forms.DataGridView();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_chargeStates = new System.Windows.Forms.DataGridView();
-            this.dgv_fileList = new System.Windows.Forms.DataGridView();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -49,13 +50,13 @@ namespace ProteoformSuiteGUI
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_fileList)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_rawComponents)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_fileList)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -100,6 +101,17 @@ namespace ProteoformSuiteGUI
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 0;
             // 
+            // dgv_fileList
+            // 
+            this.dgv_fileList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dgv_fileList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv_fileList.Location = new System.Drawing.Point(0, 3);
+            this.dgv_fileList.Name = "dgv_fileList";
+            this.dgv_fileList.Size = new System.Drawing.Size(187, 207);
+            this.dgv_fileList.TabIndex = 2;
+            // 
             // bt_recalculate
             // 
             this.bt_recalculate.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -109,9 +121,9 @@ namespace ProteoformSuiteGUI
             this.bt_recalculate.Name = "bt_recalculate";
             this.bt_recalculate.Size = new System.Drawing.Size(177, 104);
             this.bt_recalculate.TabIndex = 1;
-            this.bt_recalculate.Text = "Update All Components";
             this.bt_recalculate.UseVisualStyleBackColor = true;
             this.bt_recalculate.Click += new System.EventHandler(this.bt_recalculate_Click);
+            this.bt_recalculate.Text = "Read Raw Components and" + Environment.NewLine + "Collapse Deconvolution Artifacts";
             // 
             // groupBox1
             // 
@@ -188,17 +200,6 @@ namespace ProteoformSuiteGUI
             this.dgv_chargeStates.Size = new System.Drawing.Size(747, 355);
             this.dgv_chargeStates.TabIndex = 0;
             // 
-            // dgv_fileList
-            // 
-            this.dgv_fileList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.dgv_fileList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgv_fileList.Location = new System.Drawing.Point(0, 3);
-            this.dgv_fileList.Name = "dgv_fileList";
-            this.dgv_fileList.Size = new System.Drawing.Size(187, 207);
-            this.dgv_fileList.TabIndex = 2;
-            // 
             // RawExperimentalComponents
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -219,6 +220,7 @@ namespace ProteoformSuiteGUI
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dgv_fileList)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_rawComponents)).EndInit();
@@ -226,7 +228,6 @@ namespace ProteoformSuiteGUI
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_chargeStates)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dgv_fileList)).EndInit();
             this.ResumeLayout(false);
 
         }

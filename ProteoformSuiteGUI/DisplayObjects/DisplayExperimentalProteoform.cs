@@ -5,6 +5,7 @@ namespace ProteoformSuiteGUI
 {
     public class DisplayExperimentalProteoform : DisplayObject
     {
+
         #region Public Constructors
 
         public DisplayExperimentalProteoform(ExperimentalProteoform e)
@@ -63,6 +64,16 @@ namespace ProteoformSuiteGUI
             get { return e.aggregated_components.Count; }
         }
 
+        public int light_verification_count
+        {
+            get { return e.lt_verification_components.Count; }
+        }
+
+        public int heavy_verification_count
+        {
+            get { return e.hv_verification_components.Count; }
+        }
+
         public int light_observation_count
         {
             get { return e.lt_quant_components.Count; }
@@ -87,6 +98,21 @@ namespace ProteoformSuiteGUI
                     "";
             }
         }
+
+        public string manual_validation_id
+        {
+            get { return e.manual_validation_id; }
+        }
+
+        public string manual_validation_verification
+        {
+            get { return e.manual_validation_verification; }
+        }
+
+        public string manual_validation_quant
+        {
+            get { return e.manual_validation_quant; }
+        }
         
         #endregion Public Properties
 
@@ -110,17 +136,23 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(agg_intensity)].HeaderText = "Aggregated Intensity";
             dgv.Columns[nameof(agg_rt)].HeaderText = "Aggregated RT";
             dgv.Columns[nameof(observation_count)].HeaderText = "Aggregated Component Count for Identification";
+            dgv.Columns[nameof(heavy_verification_count)].HeaderText = "Heavy Verification Component Count";
+            dgv.Columns[nameof(light_verification_count)].HeaderText = "Light Verification Component Count";
             dgv.Columns[nameof(heavy_observation_count)].HeaderText = "Heavy Quantitative Component Count";
             dgv.Columns[nameof(light_observation_count)].HeaderText = "Light Quantitative Component Count";
             dgv.Columns[nameof(lysine_count)].HeaderText = "Lysine Count";
             dgv.Columns[nameof(mass_shifted)].HeaderText = "Manually Shifted Mass";
             dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
             dgv.Columns[nameof(gene_name)].HeaderText = "Gene Name";
+            dgv.Columns[nameof(manual_validation_id)].HeaderText = "Abundant Component for Manual Validation of Identification";
+            dgv.Columns[nameof(manual_validation_verification)].HeaderText = "Abundant Component for Manual Validation of Identification Verification";
+            dgv.Columns[nameof(manual_validation_quant)].HeaderText = "Abundant Component for Manual Validation of Quantification";
 
             //VISIBILITY
             dgv.Columns[nameof(lysine_count)].Visible = SaveState.lollipop.neucode_labeled; 
         }
 
         #endregion
+
     }
 }
