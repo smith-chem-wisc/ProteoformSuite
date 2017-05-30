@@ -202,6 +202,7 @@ namespace ProteoformSuiteInternal
                     best_ttd_relation.connected_proteoforms[0].relationships.Add(best_ttd_relation);
                     best_ttd_relation.connected_proteoforms[1].relationships.Add(best_ttd_relation);
                     best_ttd_relation.Accepted = true;
+                    best_ttd_relation.candidate_ptmset = SaveState.lollipop.theoretical_database.possible_ptmset_dictionary[0].OrderBy(m => Math.Abs(m.mass)).First();
                     td_relations.Add(best_ttd_relation);
                 }
                 else

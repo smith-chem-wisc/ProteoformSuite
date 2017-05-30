@@ -127,7 +127,7 @@ namespace ProteoformSuiteInternal
 
         public void enter_uniprot_ptmlist()
         {
-            Loaders.LoadUniprot(Path.Combine(Environment.CurrentDirectory, "ptmlist.txt"));
+            Loaders.LoadUniprot(Path.Combine(Environment.CurrentDirectory, "ptmlist.txt"), null);
             SaveState.lollipop.enter_input_files(new string[] { Path.Combine(Environment.CurrentDirectory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], SaveState.lollipop.input_files);
         }
 
@@ -1112,7 +1112,7 @@ namespace ProteoformSuiteInternal
             foreach (string filename in filenames.Distinct())
             {
                 Calibration calibration = new Calibration();
-                if (calibrate_intact_with_td_ids || input_files.Count(f => f.purpose == Purpose.RawFile && f.filename == filename) == 1)
+                if (input_files.Count(f => f.purpose == Purpose.RawFile && f.filename == filename) == 1)
                 {
                     process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.filename == filename).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
                     get_calibration_points(calibration, filename);

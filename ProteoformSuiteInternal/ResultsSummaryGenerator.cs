@@ -170,7 +170,7 @@ namespace ProteoformSuiteInternal
             results.Columns.Add((SaveState.lollipop.denominator_condition == "" ? "Condition #2" : SaveState.lollipop.denominator_condition) + " Quantified Proteoform Intensity", typeof(double));
             results.Columns.Add("Statistically Significant", typeof(bool));
 
-            foreach (ExperimentalProteoform e in SaveState.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
+            foreach (ExperimentalProteoform e in SaveState.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms).Where(e => e.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) == 0)
                 .Where(e => e.linked_proteoform_references != null)
                 .OrderByDescending(e => e.quant.significant ? 1 : 0)
                 .ThenBy(e => (e.linked_proteoform_references.First() as TheoreticalProteoform).accession)
@@ -191,6 +191,26 @@ namespace ProteoformSuiteInternal
                     e.quant.heavyIntensitySum,
                     e.quant.significant
                 );
+            }
+            foreach(TopDownProteoform td in SaveState.lollipop.target_proteoform_community.topdown_proteoforms)
+            {
+                if (td.linked_proteoform_references != null)
+                {
+                    results.Rows.Add(
+                        td.uniprot_id,
+                        td.accession,
+                        td.linked_proteoform_references.Last().gene_name.ordered_locus,
+                        td.linked_proteoform_references.Last().gene_name.primary,
+                        td.start_index + " to " + td.stop_index,
+                        String.Join("; ", td.ptm_set.ptm_combination.Select(ptm => ptm.modification.id)),
+                        td.modified_mass - td.linked_proteoform_references.Last().modified_mass,
+                        td.agg_RT,
+                        0,
+                        0,
+                        0,
+                        0
+                        );
+                }
             }
 
             StringBuilder result_string = new StringBuilder();

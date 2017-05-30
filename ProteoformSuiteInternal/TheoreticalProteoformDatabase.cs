@@ -48,7 +48,7 @@ namespace ProteoformSuiteInternal
                 return;
 
             //Clear out data from potential previous runs
-            foreach(ProteoformCommunity community in SaveState.lollipop.decoy_proteoform_communities.Values)
+            foreach (ProteoformCommunity community in SaveState.lollipop.decoy_proteoform_communities.Values)
             {
                 community.theoretical_proteoforms = new TheoreticalProteoform[0];
             }
@@ -95,29 +95,38 @@ namespace ProteoformSuiteInternal
 
             //read in BU results if available
             SaveState.lollipop.BottomUpPSMList.Clear();
-            foreach(InputFile file in SaveState.lollipop.input_files.Where(f => f.purpose == Purpose.BottomUp))
+            foreach (InputFile file in SaveState.lollipop.input_files.Where(f => f.purpose == Purpose.BottomUp))
             {
                 SaveState.lollipop.BottomUpPSMList.AddRange(BottomUpReader.ReadBUFile(file.complete_path));
             }
 
-            expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
-            aaIsotopeMassList = new AminoAcidMasses(SaveState.lollipop.carbamidomethylation, SaveState.lollipop.natural_lysine_isotope_abundance, SaveState.lollipop.neucode_light_lysine, SaveState.lollipop.neucode_heavy_lysine).AA_Masses;
-            if (SaveState.lollipop.combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
 
-            expanded_proteins = expanded_proteins.OrderBy(x => x.OneBasedPossibleLocalizedModifications.Count).ToArray(); // Take on harder problems first to use parallelization more effectively
-            process_entries(expanded_proteins, variableModifications);
-            process_decoys(expanded_proteins, variableModifications);
+                expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
+                aaIsotopeMassList = new AminoAcidMasses(SaveState.lollipop.carbamidomethylation, SaveState.lollipop.natural_lysine_isotope_abundance, SaveState.lollipop.neucode_light_lysine, SaveState.lollipop.neucode_heavy_lysine).AA_Masses;
+                if (SaveState.lollipop.combine_identical_sequences) expanded_proteins = group_proteins_by_sequence(expanded_proteins);
 
-            if (SaveState.lollipop.combine_theoretical_proteoforms_byMass)
-            {
-                SaveState.lollipop.target_proteoform_community.theoretical_proteoforms = group_proteoforms_by_mass(SaveState.lollipop.target_proteoform_community.theoretical_proteoforms);
-                foreach (ProteoformCommunity community in SaveState.lollipop.decoy_proteoform_communities.Values)
+                expanded_proteins = expanded_proteins.OrderBy(x => x.OneBasedPossibleLocalizedModifications.Count).ToArray(); // Take on harder problems first to use parallelization more effectively
+                process_entries(expanded_proteins, variableModifications);
+                process_decoys(expanded_proteins, variableModifications);
+
+                if (SaveState.lollipop.combine_theoretical_proteoforms_byMass)
                 {
-                   community.theoretical_proteoforms = group_proteoforms_by_mass(community.theoretical_proteoforms);
+                    SaveState.lollipop.target_proteoform_community.theoretical_proteoforms = group_proteoforms_by_mass(SaveState.lollipop.target_proteoform_community.theoretical_proteoforms);
+                    foreach (ProteoformCommunity community in SaveState.lollipop.decoy_proteoform_communities.Values)
+                    {
+                        community.theoretical_proteoforms = group_proteoforms_by_mass(community.theoretical_proteoforms);
+                    }
                 }
-            }
-        }
 
+                //match up bottom-up PSMs
+                Parallel.ForEach(SaveState.lollipop.BottomUpPSMList, bu_psm =>
+                {
+                    foreach (TheoreticalProteoform t in SaveState.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { SaveState.lollipop.target_proteoform_community }).SelectMany(c => c.theoretical_proteoforms).Where(t => t.accession.Split('_')[0] == bu_psm.protein_accession.Split('|')[1]).ToList())
+                    {
+                        lock (t) t.psm_list.Add(bu_psm);
+                    }
+                });
+        }
         //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
         public Dictionary<double, List<PtmSet>> make_ptmset_dictionary()
         {

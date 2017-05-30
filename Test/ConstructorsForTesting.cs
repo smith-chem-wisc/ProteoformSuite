@@ -104,7 +104,7 @@ namespace Test
         {
             ExperimentalProteoform e = new ExperimentalProteoform(accession, root, is_target);
             e.aggregated_components.AddRange(candidate_observations.Where(p => e.includes(p, e.root)));
-            e.calculate_properties();
+            e.calculate_properties(true);
             if (quantitative_observations.Count > 0)
             {
                 e.lt_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, true)));
