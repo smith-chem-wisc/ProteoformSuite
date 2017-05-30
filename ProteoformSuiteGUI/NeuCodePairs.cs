@@ -33,6 +33,7 @@ namespace ProteoformSuiteGUI
 
         public void RunTheGamut()
         {
+            ClearListsTablesFigures(true);
             GraphLysineCount();
             GraphIntensityRatio();
             FillNeuCodePairsDGV();
@@ -40,19 +41,30 @@ namespace ProteoformSuiteGUI
 
         public void FillTablesAndCharts()
         {
-            if (!ReadyToRunTheGamut()) return;
+            if (!ReadyToRunTheGamut())
+                return;
             GraphLysineCount();
             GraphIntensityRatio();
             FillNeuCodePairsDGV();
         }
 
-        public void ClearListsTablesFigures()
+        public void ClearListsTablesFigures(bool clear_following)
         {
             foreach (var series in ct_IntensityRatio.Series) series.Points.Clear();
             foreach (var series in ct_LysineCount.Series) series.Points.Clear();
 
             dgv_RawExpNeuCodePairs.DataSource = null;
             dgv_RawExpNeuCodePairs.Rows.Clear();
+
+            if (clear_following)
+            {
+                for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
+                {
+                    ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
+                    if (sweet as TheoreticalDatabase == null)
+                        sweet.ClearListsTablesFigures(false);
+                }
+            }
         }
 
         public List<DataGridView> GetDGVs()
@@ -194,7 +206,7 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.min_lysine_ct = KMinAcceptable.Value;
             Parallel.ForEach(SaveState.lollipop.raw_neucode_pairs, p => p.set_accepted());
             dgv_RawExpNeuCodePairs.Refresh();
-            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures(true);
         }
 
         private void KMaxAcceptable_ValueChanged(object sender, EventArgs e)
@@ -202,7 +214,7 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.max_lysine_ct = KMaxAcceptable.Value;
             Parallel.ForEach(SaveState.lollipop.raw_neucode_pairs, p => p.set_accepted());
             dgv_RawExpNeuCodePairs.Refresh();
-            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures(true);
         }
 
         private void IRatMinAcceptable_ValueChanged(object sender, EventArgs e)
@@ -210,7 +222,7 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.min_intensity_ratio = IRatMinAcceptable.Value;
             Parallel.ForEach(SaveState.lollipop.raw_neucode_pairs, p => p.set_accepted());
             dgv_RawExpNeuCodePairs.Refresh();
-            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures(true);
         }
 
         private void IRatMaxAcceptable_ValueChanged(object sender, EventArgs e)
@@ -218,7 +230,7 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.max_intensity_ratio = IRatMaxAcceptable.Value;
             Parallel.ForEach(SaveState.lollipop.raw_neucode_pairs, p => p.set_accepted());
             dgv_RawExpNeuCodePairs.Refresh();
-            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures();
+            ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures(true);
         }
 
         #endregion Private Methods

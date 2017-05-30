@@ -81,6 +81,11 @@ namespace ProteoformSuiteGUI
             get { return qval.testStatistic; }
         }
 
+        public string manual_validation_quant
+        {
+            get { return qval.proteoform.manual_validation_quant; }
+        }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -108,7 +113,8 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(LogFoldChange)].HeaderText = "Log2 Fold Change";
             dgv.Columns[nameof(pValue)].HeaderText = "p-value (by randomization test)";
             dgv.Columns[nameof(TestStatistic)].HeaderText = "Student's t-Test Statistic";
-        } 
+            dgv.Columns[nameof(manual_validation_quant)].HeaderText = "Abundant Component for Manual Validation of Quantification";
+        }
 
         #endregion
 
