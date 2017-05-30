@@ -1,0 +1,47 @@
+%!TEX root = ../proteoform_suite_manual.tex
+%---------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%---------------------------------------------------------------------
+
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{fullpage}
+\usepackage{graphicx}
+\usepackage[justification=justified, singlelinecheck=false]{caption}
+\usepackage{titling}
+\usepackage[style=chem-acs, articletitle=true, maxbibnames=15]{biblatex}
+\usepackage{pdfpages}
+\usepackage{setspace}
+\usepackage{soul}
+\usepackage[hidelinks]{hyperref}
+
+\addbibresource{docs/PSManual.bib}
+
+%----Sorting glossary items
+
+\newcounter{newrule}[section]
+\newenvironment{newrule}[1][]
+{
+\refstepcounter{newrule}
+\par\medskip\noindent\textbf{Rule~\thenewrule.} 
+\rmfamily
+}
+{\medskip}
+
+\usepackage{datatool}% http://ctan.org/pkg/datatool
+\newcommand{\sortitem}[1]{%
+  \DTLnewrow{list}% Create a new entry
+  \DTLnewdbentry{list}{description}{#1}% Add entry as description
+}
+\newenvironment{sortedlist}{%
+  \DTLifdbexists{list}{\DTLcleardb{list}}{\DTLnewdb{list}}% Create new/discard old list
+}{%
+  \DTLsort{description}{list}% Sort list
+  \begin{itemize}%
+    \DTLforeach*{list}{\theDesc=description}{%
+      \item \theDesc}% Print each item
+  \end{itemize}%
+}
+
+%--------
