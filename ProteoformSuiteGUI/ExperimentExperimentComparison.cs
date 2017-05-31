@@ -41,31 +41,16 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return SaveState.lollipop.ee_relations.Count == 0 && SaveState.lollipop.target_proteoform_community.has_e_proteoforms;
+            return SaveState.lollipop.target_proteoform_community.has_e_and_t_proteoforms; // Need the ptm dictionary for peak assignment from theoretical database
         }
 
         public void RunTheGamut()
         {
-            Cursor = Cursors.WaitCursor;
-            SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
+            ClearListsTablesFigures(true);
+            SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true, Environment.CurrentDirectory, true);
             SaveState.lollipop.relate_ef();
             SaveState.lollipop.ee_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.ee_relations, SaveState.lollipop.ef_relations);
-            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
-            ((ProteoformSweet)MdiParent).quantification.ClearListsTablesFigures();
-
-            Parallel.Invoke
-            (
-                () => FillTablesAndCharts(),
-                () => { if (SaveState.lollipop.neucode_labeled) SaveState.lollipop.construct_target_and_decoy_families(); }
-            );
-
-            if (SaveState.lollipop.neucode_labeled)
-            {
-                ((ProteoformSweet)MdiParent).proteoformFamilies.fill_proteoform_families("", -1);
-                ((ProteoformSweet)MdiParent).proteoformFamilies.update_figures_of_merit();
-            }
-
-            Cursor = Cursors.Default;
+            FillTablesAndCharts();
         }
 
         public List<DataGridView> GetDGVs()
@@ -73,7 +58,7 @@ namespace ProteoformSuiteGUI
             return new List<DataGridView> { dgv_EE_Relations, dgv_EE_Peaks };
         }
 
-        public void ClearListsTablesFigures()
+        public void ClearListsTablesFigures(bool clear_following)
         {
             SaveState.lollipop.clear_ee();
 
@@ -87,6 +72,14 @@ namespace ProteoformSuiteGUI
 
             cb_automate_peak_acceptance.Checked = false;
 
+            if (clear_following)
+            {
+                for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
+                {
+                    ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
+                    sweet.ClearListsTablesFigures(false);
+                }
+            }
         }
 
         public void FillTablesAndCharts()
@@ -104,6 +97,15 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
+            //MASS WINDOW
+            nUD_EE_Upper_Bound.Minimum = 0;
+            nUD_EE_Upper_Bound.Maximum = 2000;
+            xMaxEE.Maximum = nUD_EE_Upper_Bound.Maximum;
+            xMinEE.Maximum = nUD_EE_Upper_Bound.Maximum;
+            if (!SaveState.lollipop.neucode_labeled) SaveState.lollipop.ee_max_mass_difference = 150;
+            nUD_EE_Upper_Bound.Value = (decimal)SaveState.lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
+
+            //Other stuff
             yMaxEE.Minimum = 0;
             yMaxEE.Maximum = 1000;
             yMaxEE.Value = 100; // scaling for y-axis maximum in the histogram of all EE pairs
@@ -113,20 +115,10 @@ namespace ProteoformSuiteGUI
             yMinEE.Value = 0; // scaling for y-axis minimum in the histogram of all EE pairs
 
             xMaxEE.Minimum = xMinEE.Value;
-            xMaxEE.Maximum = 500;
             xMaxEE.Value = (decimal)SaveState.lollipop.ee_max_mass_difference; // scaling for x-axis maximum in the histogram of all EE pairs
 
             xMinEE.Minimum = -100;
-            xMinEE.Maximum = xMaxEE.Value;
             xMinEE.Value = 0; // scaling for x-axis minimum in the histogram of all EE pairs
-
-            nUD_NoManLower.Minimum = 00m;
-            nUD_NoManLower.Maximum = 0.49m;
-            nUD_NoManLower.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_lowerBound);
-
-            nUD_NoManUpper.Minimum = 0.50m;
-            nUD_NoManUpper.Maximum = 1.00m;
-            nUD_NoManUpper.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_upperBound);
 
             nUD_PeakWidthBase.Minimum = 0.001m;
             nUD_PeakWidthBase.Maximum = 0.5000m;
@@ -147,12 +139,6 @@ namespace ProteoformSuiteGUI
             tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
             tb_relationTableFilter.Text = "";
             tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
-
-            //MASS WINDOW
-            nUD_EE_Upper_Bound.Minimum = 0;
-            nUD_EE_Upper_Bound.Maximum = 500;
-            if (!SaveState.lollipop.neucode_labeled) SaveState.lollipop.ee_max_mass_difference = 150;
-            nUD_EE_Upper_Bound.Value = (decimal)SaveState.lollipop.ee_max_mass_difference; // maximum mass difference in Da allowed between experimental pair
         }
 
         #endregion Public Methods
@@ -166,14 +152,17 @@ namespace ProteoformSuiteGUI
 
         private void bt_compare_EE_Click(object sender, EventArgs e)
         {
-            if (SaveState.lollipop.target_proteoform_community.has_e_proteoforms && SaveState.lollipop.theoretical_database.all_possible_ptmsets.Count > 0)
+            if (ReadyToRunTheGamut())
             {
-                ClearListsTablesFigures();
+                Cursor = Cursors.WaitCursor;
                 RunTheGamut();
                 xMaxEE.Value = Convert.ToDecimal(SaveState.lollipop.ee_max_mass_difference);
+                Cursor = Cursors.Default;
             }
-            else if (SaveState.lollipop.theoretical_database.all_possible_ptmsets.Count == 0) MessageBox.Show("Go back and load in a theoretical database.");
-            else MessageBox.Show("Go back and aggregate experimental proteoforms.");
+            else if (SaveState.lollipop.target_proteoform_community.has_e_proteoforms)
+                MessageBox.Show("Go back and create the theoretical database.");
+            else
+                MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void update_figures_of_merit()
@@ -243,11 +232,11 @@ namespace ProteoformSuiteGUI
 
         private void GraphEERelations()
         {
-            DisplayUtility.GraphRelationsChart(ct_EE_Histogram, SaveState.lollipop.ee_relations, "relations");
+            DisplayUtility.GraphRelationsChart(ct_EE_Histogram, SaveState.lollipop.ee_relations, "relations", false);
             ct_EE_Histogram.Series["relations"].Enabled = true;
             if (SaveState.lollipop.ef_relations.Count > 0)
             {
-                DisplayUtility.GraphRelationsChart(ct_EE_Histogram, SaveState.lollipop.ef_relations[SaveState.lollipop.decoy_community_name_prefix + "0"], "decoys");
+                DisplayUtility.GraphRelationsChart(ct_EE_Histogram, SaveState.lollipop.ef_relations[SaveState.lollipop.decoy_community_name_prefix + "0"], "decoys", false);
                 ct_EE_Histogram.Series["decoys"].Enabled = false;
                 cb_view_decoy_histogram.Enabled = true;
             }
@@ -319,16 +308,6 @@ namespace ProteoformSuiteGUI
         #endregion Histogram Private Methods
 
         #region Parameters Private Methods
-
-        private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
-        {
-            SaveState.lollipop.no_mans_land_lowerBound = Convert.ToDouble(nUD_NoManLower.Value);
-        }
-
-        private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
-        {
-            SaveState.lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value);
-        }
 
         private void nUD_MaxRetTimeDifference_ValueChanged(object sender, EventArgs e)
         {

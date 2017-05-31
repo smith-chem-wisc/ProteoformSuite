@@ -347,7 +347,7 @@
             this.bt_aggregate.Name = "bt_aggregate";
             this.bt_aggregate.Size = new System.Drawing.Size(372, 23);
             this.bt_aggregate.TabIndex = 2;
-            this.bt_aggregate.Text = "Aggregate";
+            this.bt_aggregate.Text = "Aggregate Proteoform Observations";
             this.bt_aggregate.UseVisualStyleBackColor = true;
             this.bt_aggregate.Click += new System.EventHandler(this.bt_aggregate_Click);
             // 

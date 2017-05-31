@@ -51,12 +51,12 @@ namespace Test
 
             List<ProteoformRelation> theList = new List<ProteoformRelation>();
 
-            theList.Add(new ProteoformRelation(pf1, pf2, relation_type, delta_mass));
-            theList.Add(new ProteoformRelation(pf3, pf4, relation_type2, delta_mass2));
-            theList.Add(new ProteoformRelation(pf5, pf6, relation_type3, delta_mass3));
-            theList.Add(new ProteoformRelation(pf55, pf65, relation_type35, delta_mass35));
+            theList.Add(new ProteoformRelation(pf1, pf2, relation_type, delta_mass, TestContext.CurrentContext.TestDirectory));
+            theList.Add(new ProteoformRelation(pf3, pf4, relation_type2, delta_mass2, TestContext.CurrentContext.TestDirectory));
+            theList.Add(new ProteoformRelation(pf5, pf6, relation_type3, delta_mass3, TestContext.CurrentContext.TestDirectory));
+            theList.Add(new ProteoformRelation(pf55, pf65, relation_type35, delta_mass35, TestContext.CurrentContext.TestDirectory));
 
-            ProteoformRelation base_relation = new ProteoformRelation(pf3, pf4, relation_type2, delta_mass2);
+            ProteoformRelation base_relation = new ProteoformRelation(pf3, pf4, relation_type2, delta_mass2, TestContext.CurrentContext.TestDirectory);
 
             //base_relation.nearby_relations = base_relation.set_nearby_group(theList, theList.Select(r => r.InstanceId).ToList());
             Console.WriteLine("Creating deltaMassPeak");
@@ -73,7 +73,7 @@ namespace Test
             TheoreticalProteoform pf8 = ConstructorsForTesting.make_a_theoretical();
             ProteoformComparison relation_type4 = ProteoformComparison.ExperimentalDecoy;
             double delta_mass4 = 1;
-            ProteoformRelation decoy_relation = new ProteoformRelation(pf7, pf8, relation_type4, delta_mass4);
+            ProteoformRelation decoy_relation = new ProteoformRelation(pf7, pf8, relation_type4, delta_mass4, TestContext.CurrentContext.TestDirectory);
 
             decoy_relations["decoyDatabase1"].Add(decoy_relation);
 
@@ -111,9 +111,9 @@ namespace Test
             ProteoformComparison comparison34 = ProteoformComparison.ExperimentalExperimental;
             ProteoformComparison comparison45 = ProteoformComparison.ExperimentalExperimental;
             ProteoformComparison comparison56 = ProteoformComparison.ExperimentalExperimental;
-            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison34, 0);
-            ProteoformRelation pr3 = new ProteoformRelation(pf4, pf5, comparison45, 0);
-            ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0);
+            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison34, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr3 = new ProteoformRelation(pf4, pf5, comparison45, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0, TestContext.CurrentContext.TestDirectory);
 
             //Test display strings
             Assert.AreEqual("E1", pr2.connected_proteoforms[0].accession);
@@ -154,8 +154,8 @@ namespace Test
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
             ProteoformComparison wrong_comparison = ProteoformComparison.ExperimentalExperimental;
-            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, wrong_comparison, 0);
-            ProteoformRelation pr3 = new ProteoformRelation(pf3, pf4, wrong_comparison, 0);
+            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, wrong_comparison, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr3 = new ProteoformRelation(pf3, pf4, wrong_comparison, 0, TestContext.CurrentContext.TestDirectory);
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr2, pr3 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
             test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
@@ -169,8 +169,8 @@ namespace Test
             ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
             ProteoformComparison comparison = ProteoformComparison.ExperimentalExperimental;
-            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison, 0);
-            ProteoformRelation pr3 = new ProteoformRelation(pf3, pf4, comparison, 0);
+            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr3 = new ProteoformRelation(pf3, pf4, comparison, 0, TestContext.CurrentContext.TestDirectory);
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr2, pr3 };
             Assert.AreEqual(prs, new DeltaMassPeak(pr2, prs).grouped_relations);
         }
@@ -207,10 +207,10 @@ namespace Test
             TheoreticalProteoform pf6 = ConstructorsForTesting.make_a_theoretical();
             TheoreticalProteoform pf7 = ConstructorsForTesting.make_a_theoretical();
             TheoreticalProteoform pf8 = ConstructorsForTesting.make_a_theoretical();
-            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf5, comparison14, 0);
-            ProteoformRelation pr2 = new ProteoformRelation(pf2, pf6, comparison25, 0);
-            ProteoformRelation pr3 = new ProteoformRelation(pf3, pf7, comparison36, 1);
-            ProteoformRelation pr4 = new ProteoformRelation(pf4, pf8, comparison47, 1);
+            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf5, comparison14, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr2 = new ProteoformRelation(pf2, pf6, comparison25, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr3 = new ProteoformRelation(pf3, pf7, comparison36, 1, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr4 = new ProteoformRelation(pf4, pf8, comparison47, 1, TestContext.CurrentContext.TestDirectory);
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1, pr2, pr3, pr4 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
             test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
@@ -273,10 +273,10 @@ namespace Test
             TheoreticalProteoform pf6 = ConstructorsForTesting.make_a_theoretical();
             TheoreticalProteoform pf7 = ConstructorsForTesting.make_a_theoretical();
             TheoreticalProteoform pf8 = ConstructorsForTesting.make_a_theoretical();
-            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf5, comparison14, 0);
-            ProteoformRelation pr2 = new ProteoformRelation(pf2, pf6, comparison25, 0);
-            ProteoformRelation pr3 = new ProteoformRelation(pf3, pf7, comparison36, 1);
-            ProteoformRelation pr4 = new ProteoformRelation(pf4, pf8, comparison47, 1);
+            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf5, comparison14, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr2 = new ProteoformRelation(pf2, pf6, comparison25, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr3 = new ProteoformRelation(pf3, pf7, comparison36, 1, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr4 = new ProteoformRelation(pf4, pf8, comparison47, 1, TestContext.CurrentContext.TestDirectory);
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1, pr2, pr3, pr4 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
             test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
@@ -306,7 +306,7 @@ namespace Test
         public static void accept_peaks_doesnt_crash_with_weird_relation()
         {
             ProteoformCommunity c = new ProteoformCommunity();
-            ProteoformRelation r = new ProteoformRelation(ConstructorsForTesting.ExperimentalProteoform("E1"), ConstructorsForTesting.ExperimentalProteoform("E1"), ProteoformComparison.ExperimentalFalse, 0);
+            ProteoformRelation r = new ProteoformRelation(ConstructorsForTesting.ExperimentalProteoform("E1"), ConstructorsForTesting.ExperimentalProteoform("E1"), ProteoformComparison.ExperimentalFalse, 0, TestContext.CurrentContext.TestDirectory);
             r.outside_no_mans_land = true;
             r.nearby_relations = new List<ProteoformRelation>();
             Assert.Throws<ArgumentException>(() => c.accept_deltaMass_peaks(new List<ProteoformRelation> { r }, new List<ProteoformRelation>()));

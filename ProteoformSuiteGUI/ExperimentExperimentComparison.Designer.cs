@@ -43,8 +43,6 @@
             this.nUD_EE_Upper_Bound = new System.Windows.Forms.NumericUpDown();
             this.nUD_PeakWidthBase = new System.Windows.Forms.NumericUpDown();
             this.nUD_PeakCountMinThreshold = new System.Windows.Forms.NumericUpDown();
-            this.nUD_NoManLower = new System.Windows.Forms.NumericUpDown();
-            this.nUD_NoManUpper = new System.Windows.Forms.NumericUpDown();
             this.yMaxEE = new System.Windows.Forms.NumericUpDown();
             this.xMaxEE = new System.Windows.Forms.NumericUpDown();
             this.yMinEE = new System.Windows.Forms.NumericUpDown();
@@ -79,6 +77,8 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.tb_noMansUpperBound = new System.Windows.Forms.TextBox();
+            this.tb_noMansLowerBound = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.cb_automate_peak_acceptance = new System.Windows.Forms.CheckBox();
             this.tb_max_accepted_fdr = new System.Windows.Forms.TextBox();
@@ -91,8 +91,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakWidthBase)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakCountMinThreshold)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_NoManLower)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_NoManUpper)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yMaxEE)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.xMaxEE)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.yMinEE)).BeginInit();
@@ -190,29 +188,6 @@
             this.nUD_PeakCountMinThreshold.TabIndex = 6;
             this.nUD_PeakCountMinThreshold.ValueChanged += new System.EventHandler(this.nUD_PeakCountMinThreshold_ValueChanged);
             // 
-            // nUD_NoManLower
-            // 
-            this.nUD_NoManLower.DecimalPlaces = 2;
-            this.nUD_NoManLower.Location = new System.Drawing.Point(42, 35);
-            this.nUD_NoManLower.Name = "nUD_NoManLower";
-            this.nUD_NoManLower.Size = new System.Drawing.Size(120, 20);
-            this.nUD_NoManLower.TabIndex = 7;
-            this.nUD_NoManLower.ValueChanged += new System.EventHandler(this.nUD_NoManLower_ValueChanged);
-            // 
-            // nUD_NoManUpper
-            // 
-            this.nUD_NoManUpper.DecimalPlaces = 2;
-            this.nUD_NoManUpper.Location = new System.Drawing.Point(42, 74);
-            this.nUD_NoManUpper.Name = "nUD_NoManUpper";
-            this.nUD_NoManUpper.Size = new System.Drawing.Size(120, 20);
-            this.nUD_NoManUpper.TabIndex = 8;
-            this.nUD_NoManUpper.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            65536});
-            this.nUD_NoManUpper.ValueChanged += new System.EventHandler(this.nUD_NoManUpper_ValueChanged);
-            // 
             // yMaxEE
             // 
             this.yMaxEE.Location = new System.Drawing.Point(62, 18);
@@ -309,18 +284,18 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(-1, 58);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(93, 13);
+            this.label7.Size = new System.Drawing.Size(142, 13);
             this.label7.TabIndex = 19;
-            this.label7.Text = "Upper Bound (Da)";
+            this.label7.Text = "Upper Bound Model Formula";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(-1, 19);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(93, 13);
+            this.label6.Size = new System.Drawing.Size(142, 13);
             this.label6.TabIndex = 18;
-            this.label6.Text = "Lower Bound (Da)";
+            this.label6.Text = "Lower Bound Model Formula";
             // 
             // label4
             // 
@@ -604,7 +579,7 @@
             this.bt_compare_EE.Name = "bt_compare_EE";
             this.bt_compare_EE.Size = new System.Drawing.Size(804, 23);
             this.bt_compare_EE.TabIndex = 31;
-            this.bt_compare_EE.Text = "Compare Experiment-Experiment Proteoforms";
+            this.bt_compare_EE.Text = "Compare Experimental Proteoforms with Each Other";
             this.bt_compare_EE.UseMnemonic = false;
             this.bt_compare_EE.UseVisualStyleBackColor = true;
             this.bt_compare_EE.Click += new System.EventHandler(this.bt_compare_EE_Click);
@@ -638,9 +613,9 @@
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBox2.Controls.Add(this.nUD_NoManUpper);
+            this.groupBox2.Controls.Add(this.tb_noMansUpperBound);
+            this.groupBox2.Controls.Add(this.tb_noMansLowerBound);
             this.groupBox2.Controls.Add(this.label7);
-            this.groupBox2.Controls.Add(this.nUD_NoManLower);
             this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Location = new System.Drawing.Point(12, 219);
             this.groupBox2.Name = "groupBox2";
@@ -648,6 +623,24 @@
             this.groupBox2.TabIndex = 0;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "No Man\'s Land";
+            // 
+            // tb_noMansUpperBound
+            // 
+            this.tb_noMansUpperBound.Location = new System.Drawing.Point(42, 74);
+            this.tb_noMansUpperBound.Name = "tb_noMansUpperBound";
+            this.tb_noMansUpperBound.ReadOnly = true;
+            this.tb_noMansUpperBound.Size = new System.Drawing.Size(120, 20);
+            this.tb_noMansUpperBound.TabIndex = 21;
+            this.tb_noMansUpperBound.Text = "CH2";
+            // 
+            // tb_noMansLowerBound
+            // 
+            this.tb_noMansLowerBound.Location = new System.Drawing.Point(42, 35);
+            this.tb_noMansLowerBound.Name = "tb_noMansLowerBound";
+            this.tb_noMansLowerBound.ReadOnly = true;
+            this.tb_noMansLowerBound.Size = new System.Drawing.Size(120, 20);
+            this.tb_noMansLowerBound.TabIndex = 20;
+            this.tb_noMansLowerBound.Text = "HPO3";
             // 
             // groupBox1
             // 
@@ -763,8 +756,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.nUD_EE_Upper_Bound)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakWidthBase)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_PeakCountMinThreshold)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_NoManLower)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nUD_NoManUpper)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.yMaxEE)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.xMaxEE)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.yMinEE)).EndInit();
@@ -820,8 +811,6 @@
         private System.Windows.Forms.NumericUpDown nUD_EE_Upper_Bound;
         private System.Windows.Forms.NumericUpDown nUD_PeakWidthBase;
         private System.Windows.Forms.NumericUpDown nUD_PeakCountMinThreshold;
-        private System.Windows.Forms.NumericUpDown nUD_NoManLower;
-        private System.Windows.Forms.NumericUpDown nUD_NoManUpper;
         private System.Windows.Forms.NumericUpDown yMaxEE;
         private System.Windows.Forms.NumericUpDown xMaxEE;
         private System.Windows.Forms.NumericUpDown yMinEE;
@@ -863,6 +852,8 @@
         private System.Windows.Forms.TextBox tb_relationTableFilter;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.TextBox tb_peakTableFilter;
+        private System.Windows.Forms.TextBox tb_noMansUpperBound;
+        private System.Windows.Forms.TextBox tb_noMansLowerBound;
     }
 }
 

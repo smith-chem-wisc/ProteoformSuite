@@ -50,10 +50,6 @@
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.tb_identified_decoys = new System.Windows.Forms.TextBox();
-            this.tb_identified_experimentals = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tb_likelyCleavages = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
@@ -66,12 +62,8 @@
             this.btn_inclusion_list_selected_families = new System.Windows.Forms.Button();
             this.cb_buildAsQuantitative = new System.Windows.Forms.CheckBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.cb_moreOpacity = new System.Windows.Forms.CheckBox();
             this.cb_boldLabel = new System.Windows.Forms.CheckBox();
             this.cb_redBorder = new System.Windows.Forms.CheckBox();
-            this.btn_merge = new System.Windows.Forms.Button();
-            this.tb_singleton_count = new System.Windows.Forms.TextBox();
-            this.lb_singletons = new System.Windows.Forms.Label();
             this.nud_decimalRoundingLabels = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.lb_timeStamp = new System.Windows.Forms.Label();
@@ -81,11 +73,8 @@
             this.label_tempFileFolder = new System.Windows.Forms.Label();
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
-            this.tb_IdentifiedFamilies = new System.Windows.Forms.TextBox();
-            this.tb_TotalFamilies = new System.Windows.Forms.TextBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
             this.Families_update = new System.Windows.Forms.Button();
+            this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -335,10 +324,7 @@
             // 
             // splitContainer3.Panel2
             // 
-            this.splitContainer3.Panel2.Controls.Add(this.label13);
-            this.splitContainer3.Panel2.Controls.Add(this.label5);
-            this.splitContainer3.Panel2.Controls.Add(this.tb_identified_decoys);
-            this.splitContainer3.Panel2.Controls.Add(this.tb_identified_experimentals);
+            this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
             this.splitContainer3.Panel2.Controls.Add(this.btn_inclusion_list_all_families);
@@ -346,9 +332,6 @@
             this.splitContainer3.Panel2.Controls.Add(this.btn_inclusion_list_selected_families);
             this.splitContainer3.Panel2.Controls.Add(this.cb_buildAsQuantitative);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox5);
-            this.splitContainer3.Panel2.Controls.Add(this.btn_merge);
-            this.splitContainer3.Panel2.Controls.Add(this.tb_singleton_count);
-            this.splitContainer3.Panel2.Controls.Add(this.lb_singletons);
             this.splitContainer3.Panel2.Controls.Add(this.nud_decimalRoundingLabels);
             this.splitContainer3.Panel2.Controls.Add(this.label1);
             this.splitContainer3.Panel2.Controls.Add(this.lb_timeStamp);
@@ -358,10 +341,6 @@
             this.splitContainer3.Panel2.Controls.Add(this.label_tempFileFolder);
             this.splitContainer3.Panel2.Controls.Add(this.tb_familyBuildFolder);
             this.splitContainer3.Panel2.Controls.Add(this.btn_browseTempFolder);
-            this.splitContainer3.Panel2.Controls.Add(this.tb_IdentifiedFamilies);
-            this.splitContainer3.Panel2.Controls.Add(this.tb_TotalFamilies);
-            this.splitContainer3.Panel2.Controls.Add(this.label8);
-            this.splitContainer3.Panel2.Controls.Add(this.label7);
             this.splitContainer3.Panel2.Controls.Add(this.Families_update);
             this.splitContainer3.Size = new System.Drawing.Size(1180, 513);
             this.splitContainer3.SplitterDistance = 675;
@@ -379,55 +358,13 @@
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(832, 443);
             this.dgv_proteoform_family_members.TabIndex = 3;
             // 
-            // label13
-            // 
-            this.label13.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(374, 372);
-            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(89, 13);
-            this.label13.TabIndex = 66;
-            this.label13.Text = "Identified Decoys";
-            // 
-            // label5
-            // 
-            this.label5.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(376, 348);
-            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(118, 13);
-            this.label5.TabIndex = 65;
-            this.label5.Text = "Identified Experimentals";
-            // 
-            // tb_identified_decoys
-            // 
-            this.tb_identified_decoys.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.tb_identified_decoys.Location = new System.Drawing.Point(286, 369);
-            this.tb_identified_decoys.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_identified_decoys.Name = "tb_identified_decoys";
-            this.tb_identified_decoys.ReadOnly = true;
-            this.tb_identified_decoys.Size = new System.Drawing.Size(86, 20);
-            this.tb_identified_decoys.TabIndex = 64;
-            // 
-            // tb_identified_experimentals
-            // 
-            this.tb_identified_experimentals.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.tb_identified_experimentals.Location = new System.Drawing.Point(286, 345);
-            this.tb_identified_experimentals.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_identified_experimentals.Name = "tb_identified_experimentals";
-            this.tb_identified_experimentals.ReadOnly = true;
-            this.tb_identified_experimentals.Size = new System.Drawing.Size(86, 20);
-            this.tb_identified_experimentals.TabIndex = 63;
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.tb_likelyCleavages);
             this.groupBox2.Controls.Add(this.label12);
             this.groupBox2.Location = new System.Drawing.Point(31, 329);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(239, 79);
+            this.groupBox2.Size = new System.Drawing.Size(239, 54);
             this.groupBox2.TabIndex = 62;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Proteoform Identification Options";
@@ -543,26 +480,14 @@
             // 
             // groupBox5
             // 
-            this.groupBox5.Controls.Add(this.cb_moreOpacity);
             this.groupBox5.Controls.Add(this.cb_boldLabel);
             this.groupBox5.Controls.Add(this.cb_redBorder);
-            this.groupBox5.Location = new System.Drawing.Point(280, 133);
+            this.groupBox5.Location = new System.Drawing.Point(280, 151);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(200, 102);
+            this.groupBox5.Size = new System.Drawing.Size(200, 84);
             this.groupBox5.TabIndex = 57;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Highlights for Significant Differences";
-            // 
-            // cb_moreOpacity
-            // 
-            this.cb_moreOpacity.AutoSize = true;
-            this.cb_moreOpacity.Enabled = false;
-            this.cb_moreOpacity.Location = new System.Drawing.Point(21, 76);
-            this.cb_moreOpacity.Name = "cb_moreOpacity";
-            this.cb_moreOpacity.Size = new System.Drawing.Size(96, 17);
-            this.cb_moreOpacity.TabIndex = 58;
-            this.cb_moreOpacity.Text = "Higher Opacity";
-            this.cb_moreOpacity.UseVisualStyleBackColor = true;
             // 
             // cb_boldLabel
             // 
@@ -589,38 +514,6 @@
             this.cb_redBorder.TabIndex = 56;
             this.cb_redBorder.Text = "Red Node Border";
             this.cb_redBorder.UseVisualStyleBackColor = true;
-            // 
-            // btn_merge
-            // 
-            this.btn_merge.Enabled = false;
-            this.btn_merge.Location = new System.Drawing.Point(75, 212);
-            this.btn_merge.Name = "btn_merge";
-            this.btn_merge.Size = new System.Drawing.Size(195, 23);
-            this.btn_merge.TabIndex = 45;
-            this.btn_merge.Text = "Merge Selected Proteoforms";
-            this.btn_merge.UseVisualStyleBackColor = true;
-            this.btn_merge.Click += new System.EventHandler(this.btn_merge_Click);
-            // 
-            // tb_singleton_count
-            // 
-            this.tb_singleton_count.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.tb_singleton_count.Location = new System.Drawing.Point(280, 455);
-            this.tb_singleton_count.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_singleton_count.Name = "tb_singleton_count";
-            this.tb_singleton_count.ReadOnly = true;
-            this.tb_singleton_count.Size = new System.Drawing.Size(86, 20);
-            this.tb_singleton_count.TabIndex = 44;
-            // 
-            // lb_singletons
-            // 
-            this.lb_singletons.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.lb_singletons.AutoSize = true;
-            this.lb_singletons.Location = new System.Drawing.Point(96, 458);
-            this.lb_singletons.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lb_singletons.Name = "lb_singletons";
-            this.lb_singletons.Size = new System.Drawing.Size(144, 13);
-            this.lb_singletons.TabIndex = 43;
-            this.lb_singletons.Text = "Total Orphans (No Relations)";
             // 
             // nud_decimalRoundingLabels
             // 
@@ -703,48 +596,6 @@
             this.btn_browseTempFolder.UseVisualStyleBackColor = true;
             this.btn_browseTempFolder.Click += new System.EventHandler(this.btn_browseTempFolder_Click);
             // 
-            // tb_IdentifiedFamilies
-            // 
-            this.tb_IdentifiedFamilies.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.tb_IdentifiedFamilies.Location = new System.Drawing.Point(280, 432);
-            this.tb_IdentifiedFamilies.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_IdentifiedFamilies.Name = "tb_IdentifiedFamilies";
-            this.tb_IdentifiedFamilies.ReadOnly = true;
-            this.tb_IdentifiedFamilies.Size = new System.Drawing.Size(86, 20);
-            this.tb_IdentifiedFamilies.TabIndex = 37;
-            // 
-            // tb_TotalFamilies
-            // 
-            this.tb_TotalFamilies.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.tb_TotalFamilies.Location = new System.Drawing.Point(280, 408);
-            this.tb_TotalFamilies.Margin = new System.Windows.Forms.Padding(2);
-            this.tb_TotalFamilies.Name = "tb_TotalFamilies";
-            this.tb_TotalFamilies.ReadOnly = true;
-            this.tb_TotalFamilies.Size = new System.Drawing.Size(86, 20);
-            this.tb_TotalFamilies.TabIndex = 36;
-            // 
-            // label8
-            // 
-            this.label8.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(96, 435);
-            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(90, 13);
-            this.label8.TabIndex = 35;
-            this.label8.Text = "Identified Families";
-            // 
-            // label7
-            // 
-            this.label7.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(96, 411);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(71, 13);
-            this.label7.TabIndex = 34;
-            this.label7.Text = "Total Families";
-            // 
             // Families_update
             // 
             this.Families_update.AllowDrop = true;
@@ -753,10 +604,19 @@
             this.Families_update.Name = "Families_update";
             this.Families_update.Size = new System.Drawing.Size(402, 23);
             this.Families_update.TabIndex = 33;
-            this.Families_update.Text = "Update";
+            this.Families_update.Text = "Construct Families and Identify Proteoforms";
             this.Families_update.UseMnemonic = false;
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
+            // 
+            // rtb_proteoformFamilyResults
+            // 
+            this.rtb_proteoformFamilyResults.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(17, 390);
+            this.rtb_proteoformFamilyResults.Name = "rtb_proteoformFamilyResults";
+            this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(463, 84);
+            this.rtb_proteoformFamilyResults.TabIndex = 63;
+            this.rtb_proteoformFamilyResults.Text = "";
             // 
             // ProteoformFamilies
             // 
@@ -808,19 +668,12 @@
         private System.Windows.Forms.TextBox tb_familyBuildFolder;
         private System.Windows.Forms.Button btn_browseTempFolder;
         private System.Windows.Forms.Button Families_update;
-        private System.Windows.Forms.TextBox tb_IdentifiedFamilies;
-        private System.Windows.Forms.TextBox tb_TotalFamilies;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label lb_timeStamp;
         private System.Windows.Forms.TextBox tb_recentTimeStamp;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown nud_decimalRoundingLabels;
-        private System.Windows.Forms.TextBox tb_singleton_count;
-        private System.Windows.Forms.Label lb_singletons;
         private System.Windows.Forms.ComboBox cmbx_tableSelector;
         private System.Windows.Forms.Label lb_dgv_selection;
-        private System.Windows.Forms.Button btn_merge;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox tb_tableFilter;
         private System.Windows.Forms.Label label4;
@@ -833,7 +686,6 @@
         private System.Windows.Forms.ComboBox cmbx_edgeLabel;
         private System.Windows.Forms.CheckBox cb_buildAsQuantitative;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.CheckBox cb_moreOpacity;
         private System.Windows.Forms.CheckBox cb_boldLabel;
         private System.Windows.Forms.CheckBox cb_redBorder;
         private System.Windows.Forms.Button btn_inclusion_list_all_families;
@@ -850,9 +702,6 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox tb_likelyCleavages;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox tb_identified_decoys;
-        private System.Windows.Forms.TextBox tb_identified_experimentals;
+        private System.Windows.Forms.RichTextBox rtb_proteoformFamilyResults;
     }
 }

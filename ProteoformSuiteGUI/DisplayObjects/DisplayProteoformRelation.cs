@@ -140,6 +140,16 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        public string manual_validation_id_1
+        {
+            get
+            {
+                return connected_proteoforms[0] as ExperimentalProteoform != null ?
+                    ((ExperimentalProteoform)connected_proteoforms[0]).manual_validation_id :
+                    "";
+            }
+        }
+
 
         // For DataGridView display of proteform2
         public double proteoform_mass_2
@@ -187,6 +197,16 @@ namespace ProteoformSuiteGUI
             get
             {
                 return connected_proteoforms[1].accession;
+            }
+        }
+
+        public string manual_validation_id_2
+        {
+            get
+            {
+                return connected_proteoforms[1] as ExperimentalProteoform != null ?
+                    ((ExperimentalProteoform)connected_proteoforms[1]).manual_validation_id :
+                    "";
             }
         }
 
@@ -272,9 +292,11 @@ namespace ProteoformSuiteGUI
                 dgv.Columns[nameof(proteoform_mass_1)].HeaderText = "Experimental Aggregated Proteoform Mass";
                 dgv.Columns[nameof(agg_intensity_1)].HeaderText = "Experimental Aggregated Intensity";
                 dgv.Columns[nameof(agg_RT_1)].HeaderText = "Experimental Aggregated RT";
+                dgv.Columns[nameof(manual_validation_id_1)].HeaderText = "Abundant Exp. Component for Manual Validation";
                 dgv.Columns[nameof(agg_intensity_2)].Visible = false;
                 dgv.Columns[nameof(agg_RT_2)].Visible = false;
                 dgv.Columns[nameof(num_observations_2)].Visible = false;
+                dgv.Columns[nameof(manual_validation_id_2)].Visible = false;
                 dgv.Columns[nameof(RelationType)].Visible = false;
             }
 
@@ -291,16 +313,35 @@ namespace ProteoformSuiteGUI
                 dgv.Columns[nameof(accession_2)].HeaderText = "Light Experimental Accession";
                 dgv.Columns[nameof(proteoform_mass_1)].HeaderText = "Heavy Experimental Aggregated Mass";
                 dgv.Columns[nameof(proteoform_mass_2)].HeaderText = "Light Experimental Aggregated Mass";
+                dgv.Columns[nameof(manual_validation_id_1)].HeaderText = "Heavy Abundant Exp. Component for Manual Validation";
+                dgv.Columns[nameof(manual_validation_id_2)].HeaderText = "Light Abundant Exp. Component for Manual Validation";
+                dgv.Columns[nameof(RelationType)].Visible = false;
                 dgv.Columns[nameof(Name)].Visible = false;
                 dgv.Columns[nameof(Fragment)].Visible = false;
             }
 
             //ProteoformFamilies formatting
-            dgv.Columns[nameof(RelationType)].HeaderText = "Relation Type";
+            if (!mask_experimental && !mask_theoretical)
+            {
+                dgv.Columns[nameof(num_observations_2)].HeaderText = "Number Observations #2";
+                dgv.Columns[nameof(num_observations_1)].HeaderText = "Number Observations #1";
+                dgv.Columns[nameof(agg_intensity_2)].HeaderText = "Intensity #2";
+                dgv.Columns[nameof(agg_intensity_1)].HeaderText = "Intensity #1";
+                dgv.Columns[nameof(agg_RT_1)].HeaderText = "Aggregated RT #1";
+                dgv.Columns[nameof(agg_RT_2)].HeaderText = "Aggregated RT #2";
+                dgv.Columns[nameof(accession_1)].HeaderText = "Accession #1";
+                dgv.Columns[nameof(accession_2)].HeaderText = "Accession #2";
+                dgv.Columns[nameof(proteoform_mass_1)].HeaderText = "Proteoform Mass #1";
+                dgv.Columns[nameof(proteoform_mass_2)].HeaderText = "Proteoform Mass #2";
+                dgv.Columns[nameof(manual_validation_id_1)].HeaderText = "Abundant Exp. Component for Manual Validation #1";
+                dgv.Columns[nameof(manual_validation_id_2)].HeaderText = "Abundant Exp. Component for Manual Validation #2";
+                dgv.Columns[nameof(RelationType)].HeaderText = "Relation Type";
+            }
 
             //making these columns invisible
             dgv.Columns[nameof(LysineCount)].Visible = SaveState.lollipop.neucode_labeled;
         } 
         #endregion
+
     }
 }

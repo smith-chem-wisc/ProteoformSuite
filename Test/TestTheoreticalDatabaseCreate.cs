@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using UsefulProteomicsDatabases;
 
 namespace Test
 {
@@ -235,6 +236,62 @@ namespace Test
             Assert.AreEqual(3, psg.GeneNames.Count());
             Assert.AreEqual("T3_3G", psg.Accession);
             Assert.True(psg.IsContaminant);
+        }
+
+
+        [Test]
+        public void test_not_ready_to_make_db_doesnt_crash()
+        {
+            TheoreticalProteoformDatabase tpd = new TheoreticalProteoformDatabase();
+            tpd.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+        }
+
+        [Test]
+        public void group_by_mass()
+        {
+            TheoreticalProteoformDatabase tpd = new TheoreticalProteoformDatabase();
+            List<TheoreticalProteoform> pfs_with_mass_redundancy = new List<TheoreticalProteoform>
+            {
+                ConstructorsForTesting.make_a_theoretical("", 100.0, 1), // bundled
+                ConstructorsForTesting.make_a_theoretical("", 100.0, 1), // bundled
+                ConstructorsForTesting.make_a_theoretical("", 100.1, 1), // different mass
+                ConstructorsForTesting.make_a_theoretical("", 100.0, 2) // still gets bundled even if different lysine count
+            };
+            TheoreticalProteoformGroup[] x = tpd.group_proteoforms_by_mass(pfs_with_mass_redundancy);
+            Assert.AreEqual(2, x.Length);
+        }
+
+        [Test]
+        public void save_unlocalized_doesntcrash()
+        {
+            TheoreticalProteoformDatabase tpd = new TheoreticalProteoformDatabase();
+            tpd.save_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfghjkl", "fake.txt")); // directory doesn't exist
+        }
+
+        [Test]
+        public void load_unlocalized_doesntcrash()
+        {
+            TheoreticalProteoformDatabase tpd = new TheoreticalProteoformDatabase();
+            tpd.load_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "asdfghjkl", "fake.txt"));
+        }
+
+        [Test]
+        public void load_save_unlocalized()
+        {
+            TheoreticalProteoformDatabase tpd = new TheoreticalProteoformDatabase();
+            tpd.ready_to_make_database(TestContext.CurrentContext.TestDirectory);
+            List<ModificationWithMass> mods = PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "variable.txt")).OfType<ModificationWithMass>().ToList();
+            SaveState.lollipop.modification_ranks = mods.ToDictionary(m => m.monoisotopicMass, m => -1);
+            tpd.unlocalized_lookup = tpd.make_unlocalized_lookup(mods);
+            tpd.load_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "stored_mods.modnames"));
+            tpd.save_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "fake_stored_mods.modnames"));
+            Assert.AreNotEqual(mods.First().id, tpd.unlocalized_lookup.Values.First().id);
+
+            //Test amending
+            mods.AddRange(PtmListLoader.ReadModsFromFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "intact_mods.txt")).OfType<ModificationWithMass>());
+            SaveState.lollipop.modification_ranks = mods.DistinctBy(m => m.monoisotopicMass).ToDictionary(m => m.monoisotopicMass, m => -1);
+            tpd.unlocalized_lookup = tpd.make_unlocalized_lookup(mods.OfType<ModificationWithMass>());
+            tpd.amend_unlocalized_names(Path.Combine(TestContext.CurrentContext.TestDirectory, "Mods", "fake_stored_mods.modnames"));
         }
     }
 }

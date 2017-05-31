@@ -35,7 +35,7 @@ namespace ProteoformSuiteInternal
 
         #region BUILDING RELATIONSHIPS
 
-        public List<ProteoformRelation> relate(ExperimentalProteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type, bool accepted_only)
+        public List<ProteoformRelation> relate(ExperimentalProteoform[] pfs1, Proteoform[] pfs2, ProteoformComparison relation_type, bool accepted_only, string current_directory, bool limit_et_relations)
         {
             if (accepted_only)
                 pfs1 = pfs1.Where(pf1 => pf1.accepted).ToArray();
@@ -56,10 +56,10 @@ namespace ProteoformSuiteInternal
                         pf1.gene_name = null;
                     }
 
-                    if (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy)
+                    if (limit_et_relations && (relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy))
                     {
                         ProteoformRelation best_relation = pf1.candidate_relatives
-                            .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass))
+                            .Select(pf2 => new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass, current_directory))
                             .Where(r => r.candidate_ptmset != null) // don't consider unassignable relations for ET
                             .OrderBy(r => r.candidate_ptmset.ptm_rank_sum + Math.Abs(Math.Abs(r.candidate_ptmset.mass) - Math.Abs(r.DeltaMass)) * 10E-6) // get the best explanation for the experimental observation
                             .FirstOrDefault();
@@ -74,7 +74,7 @@ namespace ProteoformSuiteInternal
             List<ProteoformRelation> relations =
                 (from pf1 in pfs1
                  from pf2 in pf1.candidate_relatives
-                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass)).ToList();
+                 select new ProteoformRelation(pf1, pf2, relation_type, pf1.modified_mass - pf2.modified_mass, Environment.CurrentDirectory)).ToList();
 
             return count_nearby_relations(relations);  //putative counts include no-mans land
         }
@@ -119,7 +119,7 @@ namespace ProteoformSuiteInternal
 
         public List<ProteoformRelation> relate_ef(ExperimentalProteoform[] pfs1, ExperimentalProteoform[] pfs2)
         {
-            List<ProteoformRelation> all_ef_relations = relate(pfs1, pfs2, ProteoformComparison.ExperimentalFalse, true);
+            List<ProteoformRelation> all_ef_relations = relate(pfs1, pfs2, ProteoformComparison.ExperimentalFalse, true, Environment.CurrentDirectory, true);
             ProteoformRelation[] to_shuffle = new List<ProteoformRelation>(all_ef_relations).ToArray();
             to_shuffle.Shuffle();
             return to_shuffle.Take(SaveState.lollipop.ee_relations.Count).ToList();
@@ -146,7 +146,7 @@ namespace ProteoformSuiteInternal
                         && (Math.Abs(ep.agg_rt - topdown.agg_RT) <= Convert.ToDouble(SaveState.lollipop.retention_time_tolerance))).ToList();
                         foreach (ExperimentalProteoform e in matching_e)
                         {
-                            all_td_relations.Add(new ProteoformRelation(topdown, e, ProteoformComparison.ExperimentalTopDown, (e.modified_mass - mass)));
+                            all_td_relations.Add(new ProteoformRelation(topdown, e, ProteoformComparison.ExperimentalTopDown, (e.modified_mass - mass), Environment.CurrentDirectory));
                         }
                 }
                 //add the best td relation
@@ -176,7 +176,7 @@ namespace ProteoformSuiteInternal
                 //if accession the same, or uniprot ID the same, or same sequence (take into account cleaved methionine)
                 List<TheoreticalProteoform> candidate_theoreticals = theoreticals.Where(t => t.name.Split(';').Contains(topdown.uniprot_id)).ToList();
 
-                List<ProteoformRelation> possible_ttd_relations = candidate_theoreticals.Select(t => new ProteoformRelation(t, topdown, ProteoformComparison.TheoreticalTopDown, topdown.theoretical_mass - t.modified_mass)).ToList();
+                List<ProteoformRelation> possible_ttd_relations = candidate_theoreticals.Select(t => new ProteoformRelation(t, topdown, ProteoformComparison.TheoreticalTopDown, topdown.theoretical_mass - t.modified_mass, Environment.CurrentDirectory)).ToList();
                 ProteoformRelation best_ttd_relation;
                 foreach (ProteoformRelation relation in possible_ttd_relations)
                 {

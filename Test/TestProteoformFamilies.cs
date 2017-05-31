@@ -25,7 +25,7 @@ namespace Test
             TheoreticalProteoform pf2 = ConstructorsForTesting.make_a_theoretical();
             pf2.name = "T1";
             ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
-            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
+            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0, TestContext.CurrentContext.TestDirectory);
             pr1.Accepted = true;
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
@@ -110,10 +110,10 @@ namespace Test
             ProteoformComparison comparison45 = ProteoformComparison.ExperimentalExperimental;
             ProteoformComparison comparison56 = ProteoformComparison.ExperimentalExperimental;
             ProteoformComparison comparison67 = ProteoformComparison.ExperimentalExperimental;
-            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison34, 0);
-            ProteoformRelation pr3 = new ProteoformRelation(pf4, pf5, comparison45, 19); //not accepted
-            ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0);
-            ProteoformRelation pr5 = new ProteoformRelation(pf6, pf7, comparison67, 0);
+            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison34, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr3 = new ProteoformRelation(pf4, pf5, comparison45, 19, TestContext.CurrentContext.TestDirectory); //not accepted
+            ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr5 = new ProteoformRelation(pf6, pf7, comparison67, 0, TestContext.CurrentContext.TestDirectory);
 
             List<ProteoformRelation> prs2 = new List<ProteoformRelation> { pr2, pr3, pr4, pr5 }.OrderBy(r => r.DeltaMass).ToList();
             foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2, prs2.Select(r => r.InstanceId).ToList());
@@ -159,7 +159,7 @@ namespace Test
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
             TheoreticalProteoformGroup pf2 = new TheoreticalProteoformGroup(new List<TheoreticalProteoform> { t });
             ProteoformComparison comparison = ProteoformComparison.ExperimentalTheoretical;
-            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0);
+            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf2, comparison, 0, TestContext.CurrentContext.TestDirectory);
             pr1.Accepted = true;
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
@@ -341,8 +341,8 @@ namespace Test
             SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].experimental_proteoforms = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
             SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + "0"].theoretical_proteoforms = new TheoreticalProteoform[1] { decoy1 };
 
-            SaveState.lollipop.et_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true);
-            SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
+            SaveState.lollipop.et_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);
+            SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true, TestContext.CurrentContext.TestDirectory, true);
             SaveState.lollipop.relate_ed();
             SaveState.lollipop.relate_ef();
             foreach (ProteoformRelation pr in SaveState.lollipop.et_relations) pr.set_nearby_group(SaveState.lollipop.et_relations, SaveState.lollipop.et_relations.Select(r => r.InstanceId).ToList());
@@ -364,7 +364,7 @@ namespace Test
             //peak is accepted --> relation should be accepted, peak added to relation
             SaveState.lollipop.clear_et();
             SaveState.lollipop.min_peak_count_et = 1;
-            SaveState.lollipop.et_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true);
+            SaveState.lollipop.et_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);
             SaveState.lollipop.relate_ed();
             foreach (ProteoformRelation pr in SaveState.lollipop.et_relations) pr.set_nearby_group(SaveState.lollipop.et_relations, SaveState.lollipop.et_relations.Select(r => r.InstanceId).ToList());
             foreach (ProteoformRelation pr in SaveState.lollipop.ee_relations) pr.set_nearby_group(SaveState.lollipop.ee_relations, SaveState.lollipop.ee_relations.Select(r => r.InstanceId).ToList());
@@ -382,7 +382,7 @@ namespace Test
             //one peak accepted --> one of the EF relations falls into range of peak and should be accepted
             SaveState.lollipop.clear_ee();
             SaveState.lollipop.min_peak_count_ee = 1;
-            SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true);
+            SaveState.lollipop.ee_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms, ProteoformComparison.ExperimentalExperimental, true, TestContext.CurrentContext.TestDirectory, true);
             SaveState.lollipop.relate_ef();
             SaveState.lollipop.ee_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.ee_relations, SaveState.lollipop.ef_relations);
             Assert.AreEqual(3, SaveState.lollipop.ee_peaks.Count(p => p.Accepted));

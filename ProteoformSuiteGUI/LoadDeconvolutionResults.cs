@@ -17,7 +17,6 @@ namespace ProteoformSuiteGUI
         {
             InitializeComponent();
             populate_file_lists();
-            ProteoformSweet.run_when_form_loads = cb_run_when_load.Checked;
         }
 
         #endregion Public Constructor
@@ -36,7 +35,7 @@ namespace ProteoformSuiteGUI
             return null;
         }
 
-        public void ClearListsTablesFigures()
+        public void ClearListsTablesFigures(bool clear_following)
         {
             SaveState.lollipop.results_folder = "";
             tb_resultsFolder.Text = "";
@@ -315,11 +314,6 @@ namespace ProteoformSuiteGUI
         private void bt_clearResults_Click(object sender, EventArgs e)
         {
             ((ProteoformSweet)MdiParent).clear_lists();
-        }
-
-        private void cb_run_when_load_CheckedChanged(object sender, EventArgs e)
-        {
-            ProteoformSweet.run_when_form_loads = cb_run_when_load.Checked;
         }
 
         private void btn_stepThrough_Click(object sender, EventArgs e)

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -25,6 +26,7 @@ namespace ProteoformSuiteGUI
         public Quantification quantification = new Quantification();
         public TopDown topDown = new TopDown();
         public ResultsSummary resultsSummary = new ResultsSummary();
+        public List<ISweetForm> forms = new List<ISweetForm>();
         public static bool run_when_form_loads;
 
         #endregion Public Fields
@@ -37,7 +39,6 @@ namespace ProteoformSuiteGUI
         OpenFileDialog openResults = new OpenFileDialog();
         SaveFileDialog saveResults = new SaveFileDialog();
         SaveFileDialog saveExcelDialog = new SaveFileDialog();
-        List<ISweetForm> forms;
         ISweetForm current_form;
 
         #endregion Private Fields
@@ -117,20 +118,19 @@ namespace ProteoformSuiteGUI
         private void rawExperimentalProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(rawExperimentalComponents);
-            rawExperimentalComponents.initialize_every_time();
+            rawExperimentalComponents.InitializeParameterSet();
         }
 
         private void neuCodeProteoformPairsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(neuCodePairs);
-            if (neuCodePairs.ReadyToRunTheGamut()) neuCodePairs.RunTheGamut();
+            if (neuCodePairs.ReadyToRunTheGamut())
+                neuCodePairs.RunTheGamut(); // There's no update/run button in NeuCodePairs, so just fill the tables
         }
 
         private void aggregatedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(aggregatedProteoforms);
-            if (run_when_form_loads && aggregatedProteoforms.ReadyToRunTheGamut()) aggregatedProteoforms.RunTheGamut();
-            else if (!aggregatedProteoforms.ReadyToRunTheGamut() && SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Length <= 0) MessageBox.Show("Go back and load in deconvolution results.");
         }
 
         private void theoreticalProteoformDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
@@ -142,24 +142,17 @@ namespace ProteoformSuiteGUI
         private void experimentTheoreticalComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentalTheoreticalComparison);
-            if (run_when_form_loads && experimentalTheoreticalComparison.ReadyToRunTheGamut()) experimentalTheoreticalComparison.RunTheGamut();
-            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.target_proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
-            else if (!experimentalTheoreticalComparison.ReadyToRunTheGamut() && SaveState.lollipop.et_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void experimentExperimentComparisonToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(experimentExperimentComparison);
-            if (run_when_form_loads && experimentExperimentComparison.ReadyToRunTheGamut()) experimentExperimentComparison.RunTheGamut();
-            else if (!experimentExperimentComparison.ReadyToRunTheGamut() && SaveState.lollipop.ee_relations.Count == 0) MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         private void proteoformFamilyAssignmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(proteoformFamilies);
             proteoformFamilies.initialize_every_time();
-            if (proteoformFamilies.ReadyToRunTheGamut())
-                proteoformFamilies.RunTheGamut();
         }
         private void topdownResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -170,7 +163,6 @@ namespace ProteoformSuiteGUI
 
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (run_when_form_loads && quantification.ReadyToRunTheGamut()) quantification.perform_calculations();
             quantification.initialize_every_time();
             showForm(quantification);
         }
@@ -262,7 +254,8 @@ namespace ProteoformSuiteGUI
                     if (d == DialogResult.OK)
                     {
                         SaveState.lollipop.enter_uniprot_ptmlist();
-                        if (loadDeconvolutionResults.ReadyToRunTheGamut()) loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
+                        if (loadDeconvolutionResults.ReadyToRunTheGamut())
+                            loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
                     }
                     else return false;
                 }
@@ -282,13 +275,17 @@ namespace ProteoformSuiteGUI
                         SaveState.lollipop.results_folder = temp_folder_path;
                         loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
                     }
+                    else if (dr == DialogResult.Cancel) return false;
                 }
                 else if (d == DialogResult.Cancel) return false;
             }
 
             Cursor = Cursors.WaitCursor;
-            rawExperimentalComponents.load_raw_components(); //also loads the theoretical database, now
-            if (aggregatedProteoforms.ReadyToRunTheGamut()) aggregatedProteoforms.RunTheGamut();
+            foreach (ISweetForm sweet in forms)
+            {
+                if (sweet.ReadyToRunTheGamut())
+                    sweet.RunTheGamut();
+            }
             string timestamp = SaveState.time_stamp();
             ResultsSummaryGenerator.save_all(SaveState.lollipop.results_folder, timestamp);
             save_all_plots(SaveState.lollipop.results_folder, timestamp);
@@ -302,30 +299,38 @@ namespace ProteoformSuiteGUI
 
         private void exportTablesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            export_table();
-        }
-
-        private void export_table()
-        {
             List<DataGridView> grid_views = current_form.GetDGVs();
-            if (grid_views != null)
-            {
-                SaveExcelFile(grid_views, (current_form as Form).Name + "_table.xlsx");
-            }
-            else
+
+            if (grid_views == null)
             {
                 MessageBox.Show("There is no table on this page to export. Please navigate to another page with the Results tab.");
+                return;
             }
+            
+            DGVExcelWriter writer = new DGVExcelWriter();
+            writer.ExportToExcel(grid_views, (current_form as Form).Name);
+            SaveExcelFile(writer, (current_form as Form).Name + "_table.xlsx");
         }
 
-        private void SaveExcelFile(List<DataGridView> dgvs, string filename)
+
+        private void exportAllTablesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DGVExcelWriter writer = new DGVExcelWriter();
+            Parallel.ForEach(forms, form =>
+            {
+                List<DataGridView> grid_views = form.GetDGVs();
+                writer.ExportToExcel(grid_views, (form as Form).Name);
+            });
+            SaveExcelFile(writer, (current_form as Form).MdiParent.Name + "_table.xlsx");
+        }
+
+        private void SaveExcelFile(DGVExcelWriter writer, string filename)
         {
             saveExcelDialog.FileName = filename;
             DialogResult dr = saveExcelDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                DGVExcelWriter writer = new DGVExcelWriter();
-                writer.ExportToExcel(dgvs, saveExcelDialog.FileName);
+                writer.SaveToExcel(saveExcelDialog.FileName);
                 MessageBox.Show("Successfully exported table.");
             }
             else return;
