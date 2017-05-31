@@ -39,6 +39,8 @@ namespace ProteoformSuiteInternal
 
         public double agg_mass { get; set; } = 0;
 
+        public double agg_mass_without_neuCodeCorrection { get; set; } = 0;
+
         public double agg_intensity { get; set; } = 0;
 
         public double agg_rt { get; set; } = 0;
@@ -123,6 +125,7 @@ namespace ProteoformSuiteInternal
             //doesn't copy quant on purpose
             agg_intensity = e.agg_intensity;
             agg_mass = e.agg_mass;
+            agg_mass_without_neuCodeCorrection = e.agg_mass_without_neuCodeCorrection;
             modified_mass = e.modified_mass;
             agg_rt = e.agg_rt;
             lysine_count = e.lysine_count;
@@ -197,9 +200,10 @@ namespace ProteoformSuiteInternal
         public void calculate_properties()
         {
             //if not neucode labeled, the intensity sum of overlapping charge states was calculated with all charge states.
-            agg_intensity = aggregated_components.Sum(p => SaveState.lollipop.neucode_labeled ? p.intensity_sum_olcs : p.intensity_sum);
-            agg_mass = aggregated_components.Sum(p => (p.weighted_monoisotopic_mass - Math.Round(p.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * (SaveState.lollipop.neucode_labeled ? p.intensity_sum_olcs : p.intensity_sum) / agg_intensity); //remove the monoisotopic errors before aggregating masses
-            agg_rt = aggregated_components.Sum(p => p.rt_apex * (SaveState.lollipop.neucode_labeled ? p.intensity_sum_olcs : p.intensity_sum) / agg_intensity);
+            agg_intensity = aggregated_components.Sum(c => SaveState.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum);
+            agg_mass = aggregated_components.Sum(c => (c.weighted_monoisotopic_mass - Math.Round(c.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * (SaveState.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum) / agg_intensity); //remove the monoisotopic errors before aggregating masses
+            agg_mass_without_neuCodeCorrection = aggregated_components.Sum(c => (c.weighted_monoisotopic_mass - c.neuCodeCorrection - Math.Round(c.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * (SaveState.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum) / agg_intensity); //remove the monoisotopic errors before aggregating masses
+            agg_rt = aggregated_components.Sum(c => c.rt_apex * (SaveState.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum) / agg_intensity);
             lysine_count = root as NeuCodePair != null ? (root as NeuCodePair).lysine_count : lysine_count;
             modified_mass = agg_mass;
             accepted = aggregated_components.Count >= SaveState.lollipop.min_agg_count && aggregated_components.Select(c => c.input_file.biological_replicate).Distinct().Count() >= SaveState.lollipop.min_num_bioreps;
@@ -218,8 +222,8 @@ namespace ProteoformSuiteInternal
         public bool includes_neucode_component(Component candidate, ExperimentalProteoform root, bool light)
         {
             double corrected_mass = light ? 
-                root.agg_mass :
-                root.agg_mass + root.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
+                root.agg_mass_without_neuCodeCorrection :
+                root.agg_mass_without_neuCodeCorrection + root.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
             return tolerable_rt(candidate, root.agg_rt) && tolerable_mass(candidate, corrected_mass);
         }
 

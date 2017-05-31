@@ -26,12 +26,12 @@ namespace ProteoformSuiteGUI
 
         public string id_light
         {
-            get { return c.id_light; }
+            get { return c.neuCodeLight.id; }
         }
 
         public string id_heavy
         {
-            get { return c.id_heavy; }
+            get { return c.neuCodeHeavy.id; }
         }
 
         public double intensity_ratio

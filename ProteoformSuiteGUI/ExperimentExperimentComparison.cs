@@ -204,6 +204,7 @@ namespace ProteoformSuiteGUI
             dgv_EE_Peaks.Refresh();
             dgv_EE_Relations.Refresh();
             update_figures_of_merit();
+            (MdiParent as ProteoformSweet).proteoformFamilies.ClearListsTablesFigures(true);
         }
 
         #endregion EE Peak List Private Methods
@@ -271,6 +272,7 @@ namespace ProteoformSuiteGUI
             StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = SaveState.lollipop.min_peak_count_ee };
             ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
             update_figures_of_merit();
+            (MdiParent as ProteoformSweet).proteoformFamilies.ClearListsTablesFigures(true);
         }
 
         private void xMaxEE_ValueChanged(object sender, EventArgs e) // scaling for x-axis maximum in the histogram of all EE pairs
@@ -297,7 +299,8 @@ namespace ProteoformSuiteGUI
         {
             if (cb_Graph_lowerThreshold.Checked)
                 ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(new StripLine() { BorderColor = Color.Red, IntervalOffset = Convert.ToDouble(nUD_PeakCountMinThreshold.Value) });
-            else if (!cb_Graph_lowerThreshold.Checked) ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
+            else
+                ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
         }
 
         #endregion Histogram Private Methods
