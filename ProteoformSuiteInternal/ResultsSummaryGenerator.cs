@@ -204,7 +204,7 @@ namespace ProteoformSuiteInternal
 
                 for (int start = 0; start < combined_bioreps.Count; start++)
                 {
-                    int exp_prots_with_these_bioreps = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(combined_bioreps[start]));
+                    int exp_prots_with_these_bioreps = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(combined_bioreps[start]) && e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Distinct().Count() == 1);
                     report += exp_prots_with_these_bioreps + "\tExperimental Proteoforms Observed in " + condition + ", Biological Replicates #" + combined_bioreps[start].ToString() + Environment.NewLine;
 
                     for (int end = start; end < combined_bioreps.Count; end++)
@@ -212,7 +212,7 @@ namespace ProteoformSuiteInternal
                         for (int between = end; between > start; between--)
                         {
                             List<int> bioreps_of_interest = new List<int> { start }.Concat(Enumerable.Range(between, end - between + 1)).Distinct().Select(idx => combined_bioreps[idx]).ToList();
-                            exp_prots_with_these_bioreps = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => bioreps_of_interest.All(x => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(x)));
+                            exp_prots_with_these_bioreps = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => bioreps_of_interest.All(x => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(x)) && e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Distinct().Count() == bioreps_of_interest.Distinct().Count());
                             report += exp_prots_with_these_bioreps + "\tExperimental Proteoforms Observed in " + condition + ", Biological Replicates #" + String.Join(" #", bioreps_of_interest) + Environment.NewLine;
                         }
                     }
