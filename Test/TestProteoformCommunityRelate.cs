@@ -515,19 +515,19 @@ namespace Test
             Assert.IsTrue(r1.outside_no_mans_land);
             ProteoformRelation r2 = new ProteoformRelation(e, e, ee, 0.016, TestContext.CurrentContext.TestDirectory);
             Assert.IsFalse(r2.outside_no_mans_land);
-            ProteoformRelation r3 = new ProteoformRelation(e, e, ee, -0.966, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation r3 = new ProteoformRelation(e, e, ee, -0.967, TestContext.CurrentContext.TestDirectory);
             Assert.IsTrue(r3.outside_no_mans_land);
-            ProteoformRelation r4 = new ProteoformRelation(e, e, ee, -0.965, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation r4 = new ProteoformRelation(e, e, ee, -0.966, TestContext.CurrentContext.TestDirectory);
             Assert.IsFalse(r4.outside_no_mans_land);
 
             // Larger masses, larger tolerance
-            ProteoformRelation r5 = new ProteoformRelation(e, e, ee, 200.23, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation r5 = new ProteoformRelation(e, e, ee, 200.22, TestContext.CurrentContext.TestDirectory);
             Assert.IsTrue(r5.outside_no_mans_land);
-            ProteoformRelation r6 = new ProteoformRelation(e, e, ee, 200.24, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation r6 = new ProteoformRelation(e, e, ee, 200.23, TestContext.CurrentContext.TestDirectory);
             Assert.IsFalse(r6.outside_no_mans_land);
-            ProteoformRelation r7 = new ProteoformRelation(e, e, ee, 200.89, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation r7 = new ProteoformRelation(e, e, ee, 200.92, TestContext.CurrentContext.TestDirectory);
             Assert.IsTrue(r7.outside_no_mans_land);
-            ProteoformRelation r8 = new ProteoformRelation(e, e, ee, 200.88, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation r8 = new ProteoformRelation(e, e, ee, 200.91, TestContext.CurrentContext.TestDirectory);
             Assert.IsFalse(r8.outside_no_mans_land);
         }
     }
