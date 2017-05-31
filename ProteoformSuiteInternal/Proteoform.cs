@@ -84,35 +84,43 @@ namespace ProteoformSuiteInternal
             foreach (ProteoformRelation r in relationships.Where(r => r.Accepted).Distinct().ToList())
             {
                 Proteoform e = r.connected_proteoforms.OfType<ExperimentalProteoform>().FirstOrDefault(p => p != this);
-                if (e == null)
+                if (e == null) //check if TD 
                 {
-                    r.connected_proteoforms.OfType<TopDownProteoform>().FirstOrDefault(p => p != this);
-                    if (e == null) continue; // Looking at an ET pair, expecting an EE pair
+                    if (this as ExperimentalProteoform == null) //don't want to go E --> TD only T --> TD 
+                    {
+                        e = r.connected_proteoforms.OfType<TopDownProteoform>().FirstOrDefault(p => p != this);
+                        if (e == null) continue; //on TD looking at T
+                    }
+                    else continue;
                 }
-
+    
+            
                 double mass_tolerance = modified_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
                 int sign = Math.Sign(e.modified_mass - modified_mass);
                  //if peak is null (topdown relation) use relation deltamass. Otherwise, use peak delta mass. 
                 double deltaM = r.peak == null? r.DeltaMass : Math.Sign(r.peak.DeltaMass) < 0 ? r.peak.DeltaMass : sign * r.peak.DeltaMass; // give EE relations the correct sign, but don't switch negative ET relation deltaM's
-                Proteoform theoretical_base = (this as TheoreticalProteoform != null || this as TopDownProteoform != null) ?
-                    this : //Theoetical or topdown starting point
+                TheoreticalProteoform theoretical_base = this as TheoreticalProteoform != null ?
+                    this as TheoreticalProteoform : //Theoretical starting point
                     (linked_proteoform_references.First() as TheoreticalProteoform != null ?
                         linked_proteoform_references.First() as TheoreticalProteoform : //Experimental with theoretical reference
                         null); //Experimental without theoretical reference
-                string theoretical_base_sequence = theoretical_base == null ? "" : (theoretical_base is TopDownProteoform) ? ((TopDownProteoform)theoretical_base).sequence : ((TheoreticalProteoform)theoretical_base).sequence;
-                PtmSet best_addition = e as TopDownProteoform != null ? r.candidate_ptmset : generate_possible_added_ptmsets(r.peak == null ? new List<PtmSet> { r.candidate_ptmset } : r.peak.possiblePeakAssignments, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, theoretical_base_sequence, 1)
+                string theoretical_base_sequence = theoretical_base != null ? theoretical_base.sequence : "";
+                PtmSet best_addition = (this as TopDownProteoform != null || e as TopDownProteoform != null) ? r.candidate_ptmset : generate_possible_added_ptmsets(r.peak.possiblePeakAssignments, deltaM, mass_tolerance, all_mods_with_mass, theoretical_base, theoretical_base_sequence, 1)
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
 
                 ModificationWithMass best_loss = null;
-                foreach (ModificationWithMass m in all_mods_with_mass)
+                if (!(this as TopDownProteoform != null || e as TopDownProteoform != null))
                 {
-                    bool within_loss_tolerance = deltaM >= -m.monoisotopicMass - mass_tolerance && deltaM <= -m.monoisotopicMass + mass_tolerance;
-                    bool can_be_removed = this.ptm_set.ptm_combination.Select(ptm => ptm.modification).Contains(m);
-                    bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-m.monoisotopicMass)) < Math.Abs(deltaM - (-best_loss.monoisotopicMass)); 
-                    if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
+                    foreach (ModificationWithMass m in all_mods_with_mass)
                     {
-                        best_loss = m;
+                        bool within_loss_tolerance = deltaM >= -m.monoisotopicMass - mass_tolerance && deltaM <= -m.monoisotopicMass + mass_tolerance;
+                        bool can_be_removed = this.ptm_set.ptm_combination.Select(ptm => ptm.modification).Contains(m);
+                        bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-m.monoisotopicMass)) < Math.Abs(deltaM - (-best_loss.monoisotopicMass));
+                        if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
+                        {
+                            best_loss = m;
+                        }
                     }
                 }
 
@@ -131,7 +139,7 @@ namespace ProteoformSuiteInternal
                     new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Concat(best_addition.ptm_combination).Where(ptm => ptm.modification.monoisotopicMass != 0).ToList()));
                 lock (r) lock (e)
                         assign_pf_identity(e, this, with_mod_change, r, sign, best_loss != null ? new PtmSet(new List<Ptm> { new Ptm(-1, best_loss) }) : best_addition);
-                if (e as ExperimentalProteoform != null) identified.Add(e as ExperimentalProteoform);
+                identified.Add(e);
             }
             return identified;
         }

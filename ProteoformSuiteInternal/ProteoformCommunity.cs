@@ -202,7 +202,7 @@ namespace ProteoformSuiteInternal
                     best_ttd_relation.connected_proteoforms[0].relationships.Add(best_ttd_relation);
                     best_ttd_relation.connected_proteoforms[1].relationships.Add(best_ttd_relation);
                     best_ttd_relation.Accepted = true;
-                    best_ttd_relation.candidate_ptmset = SaveState.lollipop.theoretical_database.possible_ptmset_dictionary[0].OrderBy(m => Math.Abs(m.mass)).First();
+                    if (best_ttd_relation.candidate_ptmset == null) best_ttd_relation.candidate_ptmset = SaveState.lollipop.theoretical_database.possible_ptmset_dictionary[0].OrderBy(m => Math.Abs(m.mass)).First();
                     td_relations.Add(best_ttd_relation);
                 }
                 else
@@ -414,6 +414,12 @@ namespace ProteoformSuiteInternal
             {
                 p.family = null;
                 p.ptm_set = new PtmSet(new List<Ptm>());
+                p.linked_proteoform_references = null;
+                p.gene_name = null;
+            }
+            foreach(Proteoform p in topdown_proteoforms)
+            {
+                p.family = null;
                 p.linked_proteoform_references = null;
                 p.gene_name = null;
             }
