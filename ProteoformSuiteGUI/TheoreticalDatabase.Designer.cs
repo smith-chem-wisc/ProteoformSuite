@@ -30,6 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TheoreticalDatabase));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.tb_modTableFilter = new System.Windows.Forms.TextBox();
+            this.btn_loadModNames = new System.Windows.Forms.Button();
+            this.btn_saveModNames = new System.Windows.Forms.Button();
             this.btn_downloadUniProtPtmList = new System.Windows.Forms.Button();
             this.cb_limitLargePtmSets = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
@@ -60,17 +65,16 @@
             this.ckbx_Meth_Cleaved = new System.Windows.Forms.CheckBox();
             this.ckbx_Carbam = new System.Windows.Forms.CheckBox();
             this.ckbx_OxidMeth = new System.Windows.Forms.CheckBox();
-            this.splitter1 = new System.Windows.Forms.Splitter();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.dgv_Database = new System.Windows.Forms.DataGridView();
             this.dgv_unlocalizedModifications = new System.Windows.Forms.DataGridView();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.btn_saveModNames = new System.Windows.Forms.Button();
-            this.btn_loadModNames = new System.Windows.Forms.Button();
+            this.splitter1 = new System.Windows.Forms.Splitter();
+            this.btn_amendModNames = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MinPeptideLength)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_NumDecoyDBs)).BeginInit();
@@ -82,7 +86,6 @@
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Database)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_unlocalizedModifications)).BeginInit();
-            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -133,6 +136,60 @@
             this.splitContainer1.SplitterWidth = 3;
             this.splitContainer1.TabIndex = 0;
             // 
+            // groupBox2
+            // 
+            this.groupBox2.Controls.Add(this.btn_amendModNames);
+            this.groupBox2.Controls.Add(this.label5);
+            this.groupBox2.Controls.Add(this.tb_modTableFilter);
+            this.groupBox2.Controls.Add(this.btn_loadModNames);
+            this.groupBox2.Controls.Add(this.btn_saveModNames);
+            this.groupBox2.Location = new System.Drawing.Point(238, 534);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(203, 150);
+            this.groupBox2.TabIndex = 53;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Modification Names";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(5, 108);
+            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(119, 13);
+            this.label5.TabIndex = 55;
+            this.label5.Text = "Modification Table Filter";
+            // 
+            // tb_modTableFilter
+            // 
+            this.tb_modTableFilter.Location = new System.Drawing.Point(6, 124);
+            this.tb_modTableFilter.Name = "tb_modTableFilter";
+            this.tb_modTableFilter.Size = new System.Drawing.Size(188, 20);
+            this.tb_modTableFilter.TabIndex = 54;
+            this.tb_modTableFilter.TextChanged += new System.EventHandler(this.tb_modTableFilter_TextChanged);
+            // 
+            // btn_loadModNames
+            // 
+            this.btn_loadModNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btn_loadModNames.Location = new System.Drawing.Point(6, 79);
+            this.btn_loadModNames.Name = "btn_loadModNames";
+            this.btn_loadModNames.Size = new System.Drawing.Size(189, 26);
+            this.btn_loadModNames.TabIndex = 35;
+            this.btn_loadModNames.Text = "Load Modification Names";
+            this.btn_loadModNames.UseVisualStyleBackColor = true;
+            this.btn_loadModNames.Click += new System.EventHandler(this.btn_loadModNames_Click);
+            // 
+            // btn_saveModNames
+            // 
+            this.btn_saveModNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btn_saveModNames.Location = new System.Drawing.Point(5, 19);
+            this.btn_saveModNames.Name = "btn_saveModNames";
+            this.btn_saveModNames.Size = new System.Drawing.Size(189, 26);
+            this.btn_saveModNames.TabIndex = 34;
+            this.btn_saveModNames.Text = "Save Modification Names";
+            this.btn_saveModNames.UseVisualStyleBackColor = true;
+            this.btn_saveModNames.Click += new System.EventHandler(this.btn_saveModNames_Click);
+            // 
             // btn_downloadUniProtPtmList
             // 
             this.btn_downloadUniProtPtmList.Location = new System.Drawing.Point(156, 236);
@@ -148,7 +205,7 @@
             this.cb_limitLargePtmSets.AutoSize = true;
             this.cb_limitLargePtmSets.Checked = true;
             this.cb_limitLargePtmSets.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_limitLargePtmSets.Location = new System.Drawing.Point(217, 511);
+            this.cb_limitLargePtmSets.Location = new System.Drawing.Point(230, 511);
             this.cb_limitLargePtmSets.Name = "cb_limitLargePtmSets";
             this.cb_limitLargePtmSets.Size = new System.Drawing.Size(216, 17);
             this.cb_limitLargePtmSets.TabIndex = 51;
@@ -480,15 +537,6 @@
             this.ckbx_OxidMeth.UseVisualStyleBackColor = true;
             this.ckbx_OxidMeth.CheckedChanged += new System.EventHandler(this.ckbx_OxidMeth_CheckedChanged);
             // 
-            // splitter1
-            // 
-            this.splitter1.Location = new System.Drawing.Point(0, 0);
-            this.splitter1.Name = "splitter1";
-            this.splitter1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.splitter1.Size = new System.Drawing.Size(3, 737);
-            this.splitter1.TabIndex = 1;
-            this.splitter1.TabStop = false;
-            // 
             // splitContainer2
             // 
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -531,38 +579,25 @@
             this.dgv_unlocalizedModifications.Size = new System.Drawing.Size(900, 433);
             this.dgv_unlocalizedModifications.TabIndex = 0;
             // 
-            // groupBox2
+            // splitter1
             // 
-            this.groupBox2.Controls.Add(this.btn_loadModNames);
-            this.groupBox2.Controls.Add(this.btn_saveModNames);
-            this.groupBox2.Location = new System.Drawing.Point(238, 598);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(203, 86);
-            this.groupBox2.TabIndex = 53;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Modification Names";
+            this.splitter1.Location = new System.Drawing.Point(0, 0);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.splitter1.Size = new System.Drawing.Size(3, 737);
+            this.splitter1.TabIndex = 1;
+            this.splitter1.TabStop = false;
             // 
-            // btn_saveModNames
+            // btn_amendModNames
             // 
-            this.btn_saveModNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.btn_saveModNames.Location = new System.Drawing.Point(5, 23);
-            this.btn_saveModNames.Name = "btn_saveModNames";
-            this.btn_saveModNames.Size = new System.Drawing.Size(189, 26);
-            this.btn_saveModNames.TabIndex = 34;
-            this.btn_saveModNames.Text = "Save Modification Names";
-            this.btn_saveModNames.UseVisualStyleBackColor = true;
-            this.btn_saveModNames.Click += new System.EventHandler(this.btn_saveModNames_Click);
-            // 
-            // btn_loadModNames
-            // 
-            this.btn_loadModNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.btn_loadModNames.Location = new System.Drawing.Point(6, 55);
-            this.btn_loadModNames.Name = "btn_loadModNames";
-            this.btn_loadModNames.Size = new System.Drawing.Size(189, 26);
-            this.btn_loadModNames.TabIndex = 35;
-            this.btn_loadModNames.Text = "Load Modification Names";
-            this.btn_loadModNames.UseVisualStyleBackColor = true;
-            this.btn_loadModNames.Click += new System.EventHandler(this.btn_loadModNames_Click);
+            this.btn_amendModNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btn_amendModNames.Location = new System.Drawing.Point(4, 49);
+            this.btn_amendModNames.Name = "btn_amendModNames";
+            this.btn_amendModNames.Size = new System.Drawing.Size(189, 26);
+            this.btn_amendModNames.TabIndex = 56;
+            this.btn_amendModNames.Text = "Amend Stored Mod Names";
+            this.btn_amendModNames.UseVisualStyleBackColor = true;
+            this.btn_amendModNames.Click += new System.EventHandler(this.btn_amendModNames_Click);
             // 
             // TheoreticalDatabase
             // 
@@ -581,6 +616,8 @@
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_loadFiles)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_MinPeptideLength)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nUD_NumDecoyDBs)).EndInit();
@@ -593,7 +630,6 @@
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv_Database)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_unlocalizedModifications)).EndInit();
-            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -638,5 +674,8 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button btn_loadModNames;
         private System.Windows.Forms.Button btn_saveModNames;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox tb_modTableFilter;
+        private System.Windows.Forms.Button btn_amendModNames;
     }
 }

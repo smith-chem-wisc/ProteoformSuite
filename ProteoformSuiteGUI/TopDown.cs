@@ -52,7 +52,7 @@ namespace ProteoformSuiteGUI
 
         public void RunTheGamut()
         {
-            ClearListsTablesFigures();
+            ClearListsTablesFigures(true);
             AggregateTdHits();
             if (SaveState.lollipop.topdownReader.topdown_ptms.Count > 0)
             {
@@ -74,7 +74,7 @@ namespace ProteoformSuiteGUI
             FillTablesAndCharts();
         }
 
-        public void ClearListsTablesFigures()
+        public void ClearListsTablesFigures(bool clear_following)
         {
             SaveState.lollipop.td_relations.Clear();
             SaveState.lollipop.topdownReader.topdown_ptms.Clear();
@@ -85,11 +85,20 @@ namespace ProteoformSuiteGUI
                 foreach (Proteoform p in community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.TheoreticalTopDown);
                 foreach (Proteoform p in community.topdown_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTopDown || r.RelationType == ProteoformComparison.TheoreticalTopDown);
             }
-            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
             dgv_TD_proteoforms.DataSource = null;
             dgv_TD_proteoforms.Rows.Clear();
             tb_exp_proteoforms.Text = "";
             tb_tdProteoforms.Text = "";
+            
+            if (clear_following)
+            {
+                for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
+                {
+                    ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
+                    if (sweet as ExperimentExperimentComparison == null)
+                        sweet.ClearListsTablesFigures(false);
+                }
+            }
         }
 
         public bool ReadyToRunTheGamut()

@@ -1,0 +1,56 @@
+%!TEX root = ../proteoform_suite_manual.tex
+%---------------------------------------------------------------------
+%	QUANTIFICATION
+%---------------------------------------------------------------------
+
+\section{Quantification}
+Using 1:1 NeuCode ratio for quant, and having bundled those observations into experimental proteoforms using mass and retention time, we can now do relative quantification of the 
+
+\subsection{Requirements for Quantification}
+\begin{itemize}
+	\item Minimum bioreps from any single condition, explain
+	\item Minimum bioreps from any condition, explain
+	\item Minimum bioreps from each condition, explain
+	\item Only these are considered for imputation, quantification
+\end{itemize}
+
+\subsection{Adjusting Background Imputation}
+\begin{itemize}
+	\item Example plot, what you're looking for, namely that the ``background projected'' is neatly in the shoulder of the observed gaussian
+	\item Background shift, explained (stdevs from observed mean)
+	\item Background Width, explained (stdevs)
+\end{itemize}
+
+\subsection{Volcano Plot}
+\begin{itemize}
+	\item Example plot, what you're looking for
+	\item What to change if it looks awry
+\end{itemize}
+
+\subsection{FDR Determination by Permutation Analysis}
+using Tusher et al. methodology (cite)
+\begin{itemize}
+	\item Example plot, what you're looking for (steep, levels off, steep -- significant, insigificant, significant)
+	\item How to adjust the offset to change which values are accepted. How to do that, namely, just isolating that middle portion of the line.
+\end{itemize}
+
+\subsection{GO Term Analysis}
+What the three categories of GO terms are. GO terms are interdependent because of heirarchy. We use a dependent p-value analysis (benjimini-yekeulti, cite). We are required to use protein-level GO terms because there are no proteoform-level ones, although PTMs and the like surely affect the function of the molecules.
+\begin{itemize}
+	\item How to choose a background GO term set.
+	\item Quantified set is the most conservative, considers only those meeting quant requirements. Often gives no results.
+	\item Detected set is all identified proteoforms
+	\item Can specify a flat file with UniProt accession numbers on each line for a custom background list. These must be included in the theoretical database.
+	\item Theoretical set. All theoretical proteoforms. This is very liberal and gives many significant results.
+\end{itemize}
+
+\subsection{Cytoscape Displays}
+\begin{itemize}
+	\item Example visualization (quant, with pie charts)
+	\item How the annuls and bolded text is used to highlight significant differences. Checkboxes available if that's not desired.
+	\item Build all families, explain
+	\item Build all families w/ significant change, explain
+	\item Build selected families, explain
+	\item Build all families with significant go terms, explain
+	\item Build all families with Selected go terms, explain
+\end{itemize}

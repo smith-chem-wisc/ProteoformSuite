@@ -62,11 +62,14 @@ namespace ProteoformSuiteGUI
         {
             SaveState.lollipop.missed_lysines = nUD_Missed_Ks.Value;
         }
+
         private void bt_aggregate_Click(object sender, EventArgs e)
         {
-            if (SaveState.lollipop.neucode_labeled && SaveState.lollipop.raw_neucode_pairs.Count > 0 || SaveState.lollipop.raw_experimental_components.Count > 0)
+            if (ReadyToRunTheGamut())
             {
+                Cursor = Cursors.WaitCursor;
                 RunTheGamut();
+                Cursor = Cursors.Default;
             }
             else if (SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Length <= 0)
             {
@@ -129,25 +132,16 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Length <= 0
-                && (SaveState.lollipop.neucode_labeled && SaveState.lollipop.raw_neucode_pairs.Count > 0 || SaveState.lollipop.raw_experimental_components.Count > 0);
+            return SaveState.lollipop.neucode_labeled && SaveState.lollipop.raw_neucode_pairs.Count > 0 || SaveState.lollipop.raw_experimental_components.Count > 0;
         }
 
         public void RunTheGamut()
         {
-            Cursor = Cursors.WaitCursor;
-            ClearListsTablesFigures();
+            ClearListsTablesFigures(true);
             SaveState.lollipop.aggregate_proteoforms(SaveState.lollipop.validate_proteoforms, SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, SaveState.lollipop.min_num_CS, SaveState.lollipop.min_signal_to_noise, SaveState.lollipop.min_left_peaks, SaveState.lollipop.min_right_peaks);
+            SaveState.lollipop.assign_best_components_for_manual_validation(SaveState.lollipop.target_proteoform_community.experimental_proteoforms);
             FillTablesAndCharts();
-            if (SaveState.lollipop.neucode_labeled && SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length > 0)
-            {
-                ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.RunTheGamut();
-                ((ProteoformSweet)MdiParent).experimentExperimentComparison.RunTheGamut();
-                if (((ProteoformSweet)MdiParent).quantification.ReadyToRunTheGamut()) ((ProteoformSweet)MdiParent).quantification.perform_calculations();
-            }
-
             updateFiguresOfMerit();
-            Cursor = Cursors.Default;
         }
 
         public List<DataGridView> GetDGVs()
@@ -177,17 +171,21 @@ namespace ProteoformSuiteGUI
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
         }
 
-        public void ClearListsTablesFigures()
+        public void ClearListsTablesFigures(bool clear_following)
         {
+            if (clear_following)
+            {
+                for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
+                {
+                    ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
+                    if (sweet as TheoreticalDatabase == null)
+                        sweet.ClearListsTablesFigures(false);
+                }
+            }
+
             SaveState.lollipop.clear_aggregation();
             dgv_AcceptNeuCdLtProteoforms.DataSource = null;
             dgv_AcceptNeuCdLtProteoforms.Rows.Clear();
-
-            ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsTablesFigures();
-            ((ProteoformSweet)MdiParent).quantification.ClearListsTablesFigures();
-            ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsTablesFigures();
-            ((ProteoformSweet)MdiParent).topDown.ClearListsTablesFigures();
-            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
         }
 
         #endregion Public Methods

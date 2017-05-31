@@ -30,9 +30,9 @@ namespace ProteoformSuiteGUI
             get { return m.original_modification.id; }
         }
 
-        public string Mass
+        public double Mass
         {
-            get { return m.mass.ToString(); }
+            get { return m.mass; }
         }
 
         public string ID
@@ -45,6 +45,18 @@ namespace ProteoformSuiteGUI
         {
             get { return m.ptm_count; }
             set { m.ptm_count = value; }
+        }
+
+        public bool require_proteoform_without_mod
+        {
+            get { return m.require_proteoform_without_mod; }
+            set { m.require_proteoform_without_mod = value; }
+        }
+
+        public int PtmRank
+        {
+            get { return m.ptm_rank; }
+            set { m.ptm_rank = value; }
         }
 
         #endregion Public Properties
@@ -61,6 +73,8 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(OriginalID)].HeaderText = "Original ID";
             dgv.Columns[nameof(ID)].HeaderText = "New ID";
             dgv.Columns[nameof(PtmCount)].HeaderText = "Num. PTMs Represented";
+            dgv.Columns[nameof(require_proteoform_without_mod)].HeaderText = "Require Proteoform Without This Modification";
+            dgv.Columns[nameof(PtmRank)].HeaderText = "Frequency-Based Rank of PTM Mass";
 
             //EDITABILITY
             dgv.Columns[nameof(OriginalID)].ReadOnly = true;

@@ -5,6 +5,7 @@ namespace ProteoformSuiteInternal
 {
     public class ChargeState
     {
+
         #region Public Properties
 
         public int charge_count { get; set; } //value from deconv 4.0
@@ -45,7 +46,7 @@ namespace ProteoformSuiteInternal
 
         public double correct_calculated_mass() // the correction is a linear shift to m/z
         {
-            return (this.charge_count * this.mz_centroid - this.charge_count * 1.00727645D);//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
+            return (charge_count * mz_centroid - charge_count * 1.00727645D);//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
         }
 
         public ChargeState mergeTheseChargeStates(ChargeState csToMerge)
@@ -64,6 +65,8 @@ namespace ProteoformSuiteInternal
         {
             return String.Join("\t", new List<string> { charge_count.ToString(), intensity.ToString() });
         }
+
         #endregion Public Methods
+
     }
 }

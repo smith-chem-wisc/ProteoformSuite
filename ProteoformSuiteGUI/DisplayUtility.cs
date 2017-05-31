@@ -59,15 +59,22 @@ namespace ProteoformSuiteGUI
             { }
         }
 
-        public static void GraphRelationsChart(Chart ct, List<ProteoformRelation> relations, string series)
+        public static void GraphRelationsChart(Chart ct, List<ProteoformRelation> relations, string series, bool gaps_zeroed)
         {
             ct.Series[series].Points.Clear();
             ct.Series[series].XValueMember = "delta_mass";
             ct.Series[series].YValueMembers = "nearby_relations_count";
             List<ProteoformRelation> relations_ordered = relations.OrderByDescending(r => r.DeltaMass).ToList();
-            foreach (ProteoformRelation relation in relations_ordered)
+            for (int i = 0; i < relations_ordered.Count; i++)
             {
+                ProteoformRelation relation = relations_ordered[i];
+                ProteoformRelation next_relation = relations_ordered[i];
                 ct.Series[series].Points.AddXY(relation.DeltaMass, relation.nearby_relations_count);
+                if (gaps_zeroed)
+                {
+                    ct.Series[series].Points.AddXY(relation.DeltaMass + 1e-5, 1e-5);
+                    ct.Series[series].Points.AddXY(relation.DeltaMass - 1e-5, 1e-5);
+                }
             }
             ct.ChartAreas[0].AxisX.Title = "Delta Mass (Da)";
             ct.ChartAreas[0].AxisY.Title = "Nearby Count";

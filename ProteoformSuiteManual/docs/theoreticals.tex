@@ -1,0 +1,58 @@
+%!TEX root = ../proteoform_suite_manual.tex
+%---------------------------------------------------------------------
+%	THEORETICAL DATABASE
+%---------------------------------------------------------------------
+
+\section{Theoretical Database}
+
+\subsection{Theoretical Proteoforms}
+overview of what's going on here (generating expected theoretical proteoforms from xmls and ptmlists)
+\begin{itemize}
+	\item data table column overview
+	\item Types to exclude (MT tag in ptmlist)
+	\item Max number of PTMs to include
+	\item minimum length?
+	\item Combining sequence-identical proteins (why)
+	\item Combining mass-identical proteoforms (why)	
+	\item Option to limit combinatorial expansion (limit triples) and why do that
+\end{itemize}
+
+\subsection{Decoy Databases}
+decoy databases and why they're important; 
+\begin{itemize}
+	\item how we're generating them
+	\item specifying number of decoy databases. When would you want more? 
+	\item Max number of PTMs to include
+	\item Option to limit combinatorial expansion (limit triples) and why do that
+\end{itemize}
+
+\subsection{Fixed and Variable Modifications}
+\begin{itemize}
+	\item Variable oxidation
+	\item Fixed carbamidomethylation
+	\item cleaved N-met (fixed)
+\end{itemize}
+
+\subsection{Isotope Composition}
+\begin{itemize}
+	\item Natural (unlabeled)
+	\item NeuCode Light (used for 2:1, light:heavy)
+	\item NeuCode Heavy (used for 2:1, heavy:light? untested. note likely implications if used for analysis.)
+\end{itemize}
+
+\subsection{Modification Options}
+Proteoforms are identified considering the likelihood that a mass difference is represented by a PTM set. The frequency of each mod is used to assess this. The display names and the likelihood of each mod can be customized. 
+\begin{itemize}
+	\item Types to exclude (MT tag in ptmlist), why you'd want to do that (e.g. mods that are for tryptic peptides)
+	\item Customizing modification names for cytoscape output and otherwise
+	\item Saving custom mod names, amending stored mod names (probably more of the latter)
+	\item How mod rank heuristics are computed, why you'd want to change them
+	\item Notes on column headers
+\end{itemize}
+
+\subsection{Eliminating Modification in PTM list from identifications}
+\begin{itemize}
+	\item Set mod rank high (necessary?)
+	\item Set mod proteoform requirement to yes (reject PTM sets with that mass)
+	\item Unaccept peaks for mass differences near that singular mass (reject singular PTM)
+\end{itemize}

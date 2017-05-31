@@ -75,20 +75,20 @@ namespace ProteoformSuiteInternal
 
         public static string write_cytoscape_script(List<ProteoformFamily> families, List<ProteoformFamily> all_families,
             string folder_path, string file_prefix, string time_stamp,
-            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace, bool quantitative_moreOpacity,
+            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
             bool gene_centric_families, string prefered_gene_label)
         {
             return write_script(families, all_families,
                 folder_path, file_prefix, time_stamp,
-                quantitative, quantitative_redBorder, quantitative_boldFace, quantitative_moreOpacity,
+                quantitative, quantitative_redBorder, quantitative_boldFace,
                 color_scheme, edge_label, node_label, node_label_position, node_position, double_rounding,
                 gene_centric_families, prefered_gene_label);
         }
 
         public static string write_cytoscape_script(object[] stuff, List<ProteoformFamily> all_families,
             string folder_path, string file_prefix, string time_stamp,
-            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace, bool quantitative_moreOpacity,
+            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
             bool gene_centric_families, string prefered_gene_label)
         {
@@ -107,7 +107,7 @@ namespace ProteoformSuiteInternal
 
             return write_script(families, all_families,
                 folder_path, file_prefix, time_stamp,
-                quantitative, quantitative_redBorder, quantitative_boldFace, quantitative_moreOpacity,
+                quantitative, quantitative_redBorder, quantitative_boldFace,
                 color_scheme, edge_label, node_label, node_label_position, node_position, double_rounding,
                 gene_centric_families, prefered_gene_label);
         }
@@ -118,7 +118,7 @@ namespace ProteoformSuiteInternal
 
         private static string write_script(List<ProteoformFamily> families, List<ProteoformFamily> all_families,
             string folder_path, string file_prefix, string time_stamp,
-            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace, bool quantitative_moreOpacity,
+            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace,
             string color_scheme, string edge_label, string node_label, string node_label_position, string node_position, int double_rounding,
             bool gene_centric_families, string preferred_gene_label)
         {
@@ -152,7 +152,7 @@ namespace ProteoformSuiteInternal
             File.WriteAllText(nodes_path, node_table);
             File.WriteAllText(script_path, script);
             write_styles(all_families, styles_path, style_name, time_stamp,
-                edge_label, node_label, node_label_position, color_scheme, quantitative, quantitative_redBorder, quantitative_moreOpacity, quantitative_boldFace);
+                edge_label, node_label, node_label_position, color_scheme, quantitative, quantitative_redBorder, quantitative_boldFace);
 
             string selected_family_string = "Finished building selected famil";
             selected_family_string += families.Count == 1 ? "y :" : "ies :#";
@@ -341,6 +341,8 @@ namespace ProteoformSuiteInternal
                         "Total Intensity = " + total_intensity.ToString(),
                         "Aggregated Component Count = " + ep.aggregated_components.Count.ToString(),
                         SaveState.lollipop.neucode_labeled ? "; Lysine Count = " + p.lysine_count : "",
+                        "Abundant Component for Manual Validation of Identification: " + ep.manual_validation_id,
+                        "Abundant Component for Manual Validation of Identification Validation: " + ep.manual_validation_verification
                     });
                     if (quantitative && ep.quant.intensitySum > 0)
                     {
@@ -350,8 +352,9 @@ namespace ProteoformSuiteInternal
                             "Log2FC = " + ep.quant.logFoldChange.ToString(),
                             "Variance = " + ep.quant.variance.ToString(),
                             "Significant = " + ep.quant.significant.ToString(),
-                            SaveState.lollipop.numerator_condition + " Quantitative Component Count = " + ep.lt_quant_components.ToString(),
-                            SaveState.lollipop.denominator_condition + " Quantitative Component Count = " + ep.hv_quant_components.ToString(),
+                            SaveState.lollipop.numerator_condition + " Quantitative Component Count = " + ep.lt_quant_components.Count.ToString(),
+                            SaveState.lollipop.denominator_condition + " Quantitative Component Count = " + ep.hv_quant_components.Count.ToString(),
+                            "Abundant Component for Manual Validation of Quantification: " + ep.manual_validation_quant
                         });
                     }
 
@@ -456,13 +459,13 @@ namespace ProteoformSuiteInternal
         
         public static Dictionary<string, List<string>> color_schemes = new Dictionary<string, List<string>>
         {
-            //Colors: exp, ptm, theo, pie, gene
-            { color_scheme_names[0], new List<string> { "#3333FF", "#00CC00", "#FF0000", "#FFFF00", "#DC89BA" } },
-            { color_scheme_names[1], new List<string> { "#6ACCE6", "#7EC67E", "#7EC67E", "#F0EE89", "#DC89BA" } },
-            { color_scheme_names[2], new List<string> { "#2F5E91", "#2D6A00", "#F45512", "#916415", "#916415" } },
-            { color_scheme_names[3], new List<string> { "#5338FF", "#1F8A70", "#FF6533", "#FFE11A", "#FFE11A" } },
-            { color_scheme_names[4], new List<string> { "#A8E1FF", "#B29162", "#B26276", "#FFF08C", "#FFF08C" } },
-            { color_scheme_names[5], new List<string> { "#3D8A99", "#979C9C", "#963C4B", "#F2EBC7", "#F2EBC7" } }
+            //Colors: 0) exp, 1) ptm, 2) theo, 3) pie, 4) gene, 5) annulus, 6) top-down
+            { color_scheme_names[0], new List<string> { "#3333FF", "#00CC00", "#FF0000", "#FFFF00", "#DC89BA", "#FF0000", "#897AB9" } },
+            { color_scheme_names[1], new List<string> { "#00C0F3", "#39B54A", "#39B54A", "#FFF56D", "#F173AC", "#F37053", "#897AB9" } },
+            { color_scheme_names[2], new List<string> { "#2F5E91", "#2D6A00", "#F45512", "#916415", "#916415", "#F45512", "#897AB9" } },
+            { color_scheme_names[3], new List<string> { "#5338FF", "#1F8A70", "#FF6533", "#FFE11A", "#FFE11A", "#FF6533", "#897AB9" } },
+            { color_scheme_names[4], new List<string> { "#A8E1FF", "#B29162", "#B26276", "#FFF08C", "#FFF08C", "#B26276", "#897AB9" } },
+            { color_scheme_names[5], new List<string> { "#3D8A99", "#979C9C", "#963C4B", "#F2EBC7", "#F2EBC7", "#963C4B", "#897AB9" } }
         };
 
         public static string not_quantified = "#D3D3D3";
@@ -593,7 +596,7 @@ namespace ProteoformSuiteInternal
 
         public static void write_styles(List<ProteoformFamily> all_families, string styles_path, string style_name, string time_stamp,
             string edge_label, string node_label, string node_label_position, string color_scheme,
-            bool quantitative, bool quantitative_redBorder, bool quantitative_moreOpacity, bool quantitative_boldFace)
+            bool quantitative, bool quantitative_redBorder, bool quantitative_boldFace)
         {
             XmlWriterSettings xmlWriterSettings = new XmlWriterSettings()
             {
@@ -641,6 +644,7 @@ namespace ProteoformSuiteInternal
                     writer.WriteStartElement("visualProperty");
                     writer.WriteAttributeString("name", style.Key);
 
+
                     //Defaults
                     if (style.Key == "NODE_LABEL_POSITION")
                     {
@@ -649,21 +653,29 @@ namespace ProteoformSuiteInternal
                         writer.WriteEndElement();
                         continue;
                     }
-                    else writer.WriteAttributeString("default", style.Value);
+                    else
+                    {
+                        writer.WriteAttributeString("default", style.Value);
+                    }
+
 
                     //Discrete and continuous mapping
                     if (style.Key == "NODE_FILL_COLOR")
+                    {
                         write_discreteMapping(writer, "string", proteoform_type_header, new List<Tuple<string, string>>()
                         {
                             new Tuple<string, string>(quantitative ? "#FFFFFF" : color_schemes[color_scheme][0], experimental_label),
-                            new Tuple<string, string>("#D3D3D3", experimental_notQuantified_label),
+                            new Tuple<string, string>(not_quantified, experimental_notQuantified_label),
                             new Tuple<string, string>(color_schemes[color_scheme][1], modified_theoretical_label),
                             new Tuple<string, string>(color_schemes[color_scheme][2], unmodified_theoretical_label),
-                            new Tuple<string, string>(color_schemes[color_scheme][3], gene_name_label),
-                            new Tuple<string, string>(color_schemes[color_scheme].Last(), td_label)
-                            //new Tuple<string, string>(color_schemes[color_scheme].Last(), transcript_name_label)
+                            new Tuple<string, string>(color_schemes[color_scheme][6], td_label),
+                            new Tuple<string, string>(color_schemes[color_scheme][4], gene_name_label)
+                            //new Tuple<string, string>(color_schemes[color_scheme][4], transcript_name_label)
                         });
+                    }
+
                     if (style.Key == "NODE_SHAPE")
+                    {
                         write_discreteMapping(writer, "string", proteoform_type_header, new List<Tuple<string, string>>()
                         {
                             new Tuple<string, string>("ELLIPSE", experimental_label),
@@ -673,47 +685,74 @@ namespace ProteoformSuiteInternal
                             new Tuple<string, string>("RECTANGLE", gene_name_label)
                             //new Tuple<string, string>("DIAMOND", transcript_name_label)
                         });
-                    if (style.Key == "NODE_LABEL_COLOR") write_passthrough(writer, "string", "shared name");
-                    if (style.Key == "NODE_LABEL") write_passthrough(writer, "string", "name");
+                    }
+
+                    if (style.Key == "NODE_LABEL_COLOR")
+                    {
+                        write_passthrough(writer, "string", "shared name");
+                    }
+
+                    if (style.Key == "NODE_LABEL")
+                    {
+                        write_passthrough(writer, "string", "name");
+                    }
+
                     if (style.Key == "NODE_SIZE")
+                    {
                         write_continuousMapping(writer, "float", size_header, new List<Tuple<string, string, string, string>>()
                         {
                             new Tuple<string, string, string, string>("1.0", "20.0", "20.0", "1.0"),
                             new Tuple<string, string, string, string>("300.0", "1.0", "300.0", max_total_intensity.ToString()) //max node size should be set to the total intensity of the proteoform
                         });
-                    if (style.Key == "NODE_CUSTOMGRAPHICS_1" && quantitative) write_passthrough(writer, "string", piechart_header);
+                    }
+
+                    if (style.Key == "NODE_CUSTOMGRAPHICS_1" && quantitative)
+                    {
+                        write_passthrough(writer, "string", piechart_header);
+                    }
+
                     if (style.Key == "NODE_BORDER_WIDTH" && quantitative && quantitative_redBorder)
+                    {
                         write_discreteMapping(writer, "boolean", significant_header, new List<Tuple<string, string>>()
                         {
                             new Tuple<string, string>("7.0", "True")
                         });
+                    }
+
                     if (style.Key == "NODE_BORDER_PAINT" && quantitative && quantitative_redBorder)
+                    {
                         write_discreteMapping(writer, "boolean", significant_header, new List<Tuple<string, string>>()
                         {
                             new Tuple<string, string>("#FFFFFF", "False"),
-                            new Tuple<string, string>("#FF0033", "True")
+                            new Tuple<string, string>(color_schemes[color_scheme][5], "True")
                         });
-                    if (style.Key == "NODE_TRANSPARENCY" && quantitative && quantitative_moreOpacity)
+                    }
+
+                    if (style.Key == "NODE_BORDER_TRANSPARENCY" && quantitative && quantitative_redBorder)
+                    {
                         write_discreteMapping(writer, "boolean", significant_header, new List<Tuple<string, string>>()
                         {
                             new Tuple<string, string>("255", "True"),
-                            new Tuple<string, string>("127", "False")
                         });
-                    if (style.Key == "NODE_BORDER_TRANSPARENCY" && quantitative && quantitative_moreOpacity)
-                        write_discreteMapping(writer, "boolean", significant_header, new List<Tuple<string, string>>()
-                        {
-                            new Tuple<string, string>("255", "True"),
-                            new Tuple<string, string>("127", "False")
-                        });
+                    }
+
                     if (style.Key == "NODE_LABEL_FONT_FACE" && quantitative && quantitative_boldFace)
+                    {
                         write_discreteMapping(writer, "boolean", significant_header, new List<Tuple<string, string>>()
                         {
                             new Tuple<string, string>("Dialog.bold,plain,14", "True"),
                         });
-                    if (style.Key == "NODE_TOOLTIP") write_passthrough(writer, "string", tooltip_header);
+                    }
+
+                    if (style.Key == "NODE_TOOLTIP")
+                    {
+                        write_passthrough(writer, "string", tooltip_header);
+                    }
+
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();
+
 
                 //EDGE PROPERTIES
                 writer.WriteStartElement("edge");
@@ -727,14 +766,23 @@ namespace ProteoformSuiteInternal
                     writer.WriteStartElement("visualProperty");
                     writer.WriteAttributeString("name", style.Key);
                     writer.WriteAttributeString("default", style.Value);
-                    if (style.Key == "EDGE_LABEL" && edge_label == Lollipop.edge_labels[0]) write_passthrough(writer, "string", delta_mass_header);
-                    if (style.Key == "EDGE_LABEL" && edge_label == Lollipop.edge_labels[1]) write_passthrough(writer, "string", edge_ptm_header);
+
+                    if (style.Key == "EDGE_LABEL" && edge_label == Lollipop.edge_labels[0])
+                    {
+                        write_passthrough(writer, "string", delta_mass_header);
+                    }
+
+                    if (style.Key == "EDGE_LABEL" && edge_label == Lollipop.edge_labels[1])
+                    {
+                        write_passthrough(writer, "string", edge_ptm_header);
+                    }
+
                     writer.WriteEndElement();
                 }
                 writer.WriteEndElement();
 
                 //OTHER PROPERTIES
-
+                //  none, currently
 
                 writer.WriteEndElement();
                 writer.WriteEndElement();
