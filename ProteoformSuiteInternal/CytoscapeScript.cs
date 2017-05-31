@@ -410,7 +410,7 @@ namespace ProteoformSuiteInternal
                 ExperimentalProteoform e = p as ExperimentalProteoform;
                 string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + e.accession;
                 if (node_label == Lollipop.node_labels[1] && e.linked_proteoform_references != null && e.linked_proteoform_references.Count > 0)
-                    name += ((e.linked_proteoform_references.First() as TheoreticalProteoform != null) ? (" " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession) : (" " + (e.linked_proteoform_references.First() as TopDownProteoform).accession))
+                    name += " " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession
                           + " " + (e.ptm_set.ptm_combination.Count == 0 ?
                             "Unmodified" :
                             String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => SaveState.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));

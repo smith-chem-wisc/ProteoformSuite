@@ -192,25 +192,22 @@ namespace ProteoformSuiteInternal
                     e.quant.significant
                 );
             }
-            foreach(TopDownProteoform td in SaveState.lollipop.target_proteoform_community.topdown_proteoforms)
+            foreach (TopDownProteoform td in SaveState.lollipop.target_proteoform_community.topdown_proteoforms)
             {
-                if (td.linked_proteoform_references != null)
-                {
-                    results.Rows.Add(
-                        td.uniprot_id,
-                        td.accession,
-                        td.linked_proteoform_references.Last().gene_name.ordered_locus,
-                        td.linked_proteoform_references.Last().gene_name.primary,
-                        td.start_index + " to " + td.stop_index,
-                        String.Join("; ", td.ptm_set.ptm_combination.Select(ptm => ptm.modification.id)),
-                        td.modified_mass - td.linked_proteoform_references.Last().modified_mass,
-                        td.agg_RT,
-                        0,
-                        0,
-                        0,
-                        0
-                        );
-                }
+                results.Rows.Add(
+                   (td.linked_proteoform_references.First() as TheoreticalProteoform).accession,
+                    td.accession,
+                    td.linked_proteoform_references.Last().gene_name.ordered_locus,
+                    td.linked_proteoform_references.Last().gene_name.primary,
+                    td.start_index + " to " + td.stop_index,
+                    String.Join("; ", td.ptm_set.ptm_combination.Select(ptm => ptm.modification.id)),
+                    td.modified_mass - td.linked_proteoform_references.Last().modified_mass,
+                    td.agg_RT,
+                    0,
+                    0,
+                    0,
+                    0
+                    );
             }
 
             StringBuilder result_string = new StringBuilder();

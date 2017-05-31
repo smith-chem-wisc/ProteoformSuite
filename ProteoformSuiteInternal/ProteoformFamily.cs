@@ -71,19 +71,10 @@ namespace ProteoformSuiteInternal
         public void identify_experimentals()
         {
             HashSet<Proteoform> identified_experimentals = new HashSet<Proteoform>(); //identified experimentals are topdown proteoforms or experimental proteoforms
-            //Parallel.ForEach(topdown_proteoforms, t =>
-            //{
-            //    lock (identified_experimentals)
-            //        foreach (ExperimentalProteoform e in t.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
-            //        {
-            //            identified_experimentals.Add(e);
-            //        }
-            //});
-
             Parallel.ForEach(theoretical_proteoforms, t =>
             {
                 lock (identified_experimentals)
-                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
+                    foreach (Proteoform e in t.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
                     {
                         identified_experimentals.Add(e);
                     }
