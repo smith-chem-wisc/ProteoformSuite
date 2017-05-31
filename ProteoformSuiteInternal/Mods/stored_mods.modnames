@@ -17,7 +17,7 @@ Carbamidomethyl	Carbamidomethyl	1	False
 Carboxymethyl	Carboxymethyl	1	False
 Carboxymethyl+Methionine	Retained Carboxmethylmethionine	2	False
 CHDH	Lipid (294 Da)	1	False
-CHDHminus2methylenes	Lipid (266 Da)	1	False
+CHDHminus2methylenes	Hydrogen Dodecyl Sulfate	1	False
 Cysteine (C)	Cysteine (C)	1	False
 Cysteine methyl ester	Methyl	1	False
 Cysteine sulfinic acid (-SO2H)	Cysteine sulfinic acid (-SO2H)	1	False
@@ -176,6 +176,7 @@ HexNAc(1)NeuAc(1) on T	HexNAc(1)NeuAc(1)	1	False
 HexNAc(2) on S	HexNAc(2)	1	False
 HexNAc(2) on T	HexNAc(2)	1	False
 Histidine (H)	Histidine (H)	1	False
+Hydrogen Dodecyl Sulfate	Hydrogen Dodecyl Sulfate	1	False
 Hypusine	Hypusine	1	False
 Isoleucine (I)	Isoleucine (I)	1	False
 Leucine (L)	Leucine (L)	1	False
