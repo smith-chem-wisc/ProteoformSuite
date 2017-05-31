@@ -277,6 +277,16 @@ namespace ProteoformSuiteGUI
             dgv_ET_Peak_List.Refresh();
         }
 
+        private void ET_Peak_List_DirtyStateChanged(object sender, EventArgs e)
+        {
+            relationUtility.peak_acceptability_change(dgv_ET_Peak_List);
+            Parallel.ForEach(SaveState.lollipop.ed_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
+            dgv_ET_Relations.Refresh();
+            dgv_ET_Peak_List.Refresh();
+            update_figures_of_merit();
+            (MdiParent as ProteoformSweet).proteoformFamilies.ClearListsTablesFigures(true);
+        }
+
         #endregion ET Peak List Private Methods
 
         #region Histogram Private Methods
@@ -424,6 +434,7 @@ namespace ProteoformSuiteGUI
             StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = SaveState.lollipop.min_peak_count_et };
             ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
             update_figures_of_merit();
+            (MdiParent as ProteoformSweet).proteoformFamilies.ClearListsTablesFigures(true);
         }
 
         #endregion Parameters Private Methods
@@ -444,15 +455,6 @@ namespace ProteoformSuiteGUI
         {
             if (e.Button == MouseButtons.Left)
                 DisplayUtility.tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_peakList, ct_ET_peakList_prevPosition);
-        }
-
-        private void ET_Peak_List_DirtyStateChanged(object sender, EventArgs e)
-        {
-            relationUtility.peak_acceptability_change(dgv_ET_Peak_List);
-            Parallel.ForEach(SaveState.lollipop.ed_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
-            dgv_ET_Relations.Refresh();
-            dgv_ET_Peak_List.Refresh();
-            update_figures_of_merit();
         }
 
         #endregion Tooltip Private Methods
