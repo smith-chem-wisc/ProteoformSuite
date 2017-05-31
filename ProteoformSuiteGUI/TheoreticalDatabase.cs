@@ -168,6 +168,7 @@ namespace ProteoformSuiteGUI
         
         public void FillTablesAndCharts()
         {
+            reload_database_list();
             DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
             initialize_table_bindinglist();
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
