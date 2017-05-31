@@ -278,8 +278,9 @@ namespace ProteoformSuiteInternal
                     e.quant.significant
                 );
             }
-            foreach (TopDownProteoform td in SaveState.lollipop.target_proteoform_community.topdown_proteoforms)
+            foreach (TopDownProteoform td in SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Where(t => t.linked_proteoform_references != null))
             {
+
                 results.Rows.Add(
                    (td.linked_proteoform_references.First() as TheoreticalProteoform).accession,
                     td.accession,
