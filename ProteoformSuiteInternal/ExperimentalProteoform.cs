@@ -39,8 +39,6 @@ namespace ProteoformSuiteInternal
 
         public double agg_mass { get; set; } = 0;
 
-        public double agg_mass_without_neuCodeCorrection { get; set; } = 0;
-
         public double agg_intensity { get; set; } = 0;
 
         public double agg_rt { get; set; } = 0;
@@ -125,7 +123,6 @@ namespace ProteoformSuiteInternal
             //doesn't copy quant on purpose
             agg_intensity = e.agg_intensity;
             agg_mass = e.agg_mass;
-            agg_mass_without_neuCodeCorrection = e.agg_mass_without_neuCodeCorrection;
             modified_mass = e.modified_mass;
             agg_rt = e.agg_rt;
             lysine_count = e.lysine_count;
@@ -191,6 +188,7 @@ namespace ProteoformSuiteInternal
                 if (includes_neucode_component(c, this, false))
                     hv_quant_components.Add(c);
             }
+
             //lt_quant_components.AddRange(Lollipop.remaining_components.Where(r => this.includes(r, this, true)));
             ////ep.getBiorepAndFractionIntensities(false); //split lt components by biorep and fraction
             //hv_quant_components.AddRange(Lollipop.remaining_components.Where(r => this.includes(r, this, false)));
@@ -202,7 +200,6 @@ namespace ProteoformSuiteInternal
             //if not neucode labeled, the intensity sum of overlapping charge states was calculated with all charge states.
             agg_intensity = aggregated_components.Sum(c => SaveState.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum);
             agg_mass = aggregated_components.Sum(c => (c.weighted_monoisotopic_mass - Math.Round(c.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * (SaveState.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum) / agg_intensity); //remove the monoisotopic errors before aggregating masses
-            agg_mass_without_neuCodeCorrection = aggregated_components.Sum(c => (c.weighted_monoisotopic_mass - c.neuCodeCorrection - Math.Round(c.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * (SaveState.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum) / agg_intensity); //remove the monoisotopic errors before aggregating masses
             agg_rt = aggregated_components.Sum(c => c.rt_apex * (SaveState.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum) / agg_intensity);
             lysine_count = root as NeuCodePair != null ? (root as NeuCodePair).lysine_count : lysine_count;
             modified_mass = agg_mass;
@@ -221,9 +218,9 @@ namespace ProteoformSuiteInternal
 
         public bool includes_neucode_component(Component candidate, ExperimentalProteoform root, bool light)
         {
-            double corrected_mass = light ? 
-                root.agg_mass_without_neuCodeCorrection :
-                root.agg_mass_without_neuCodeCorrection + root.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
+            double corrected_mass = light ?
+                root.agg_mass :
+                root.agg_mass + root.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT;
             return tolerable_rt(candidate, root.agg_rt) && tolerable_mass(candidate, corrected_mass);
         }
 
@@ -256,7 +253,8 @@ namespace ProteoformSuiteInternal
                 double low = shifted_mass - mass_tolerance;
                 double high = shifted_mass + mass_tolerance;
                 bool tolerable_mass = candidate.weighted_monoisotopic_mass >= low && candidate.weighted_monoisotopic_mass <= high;
-                if (tolerable_mass) return true; //Return a true result immediately; acts as an OR between these conditions
+                if (tolerable_mass)
+                    return true; //Return a true result immediately; acts as an OR between these conditions
             }
             return false;
         }
@@ -271,7 +269,6 @@ namespace ProteoformSuiteInternal
             quant = new QuantitativeProteoformValues(this); //Reset quantitation if starting over from biorep requirements
 
             List<BiorepIntensity> biorepIntensityList = new List<BiorepIntensity>();
-            //foreach (string condition in Lollipop.ltConditionsBioReps.Keys)
             foreach (string condition in ltConditionStrings.ToList())
             {
                 foreach (int b in lt_quant_components.Where(c => c.input_file.lt_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())
@@ -279,9 +276,9 @@ namespace ProteoformSuiteInternal
                     biorepIntensityList.Add(new BiorepIntensity(true, false, b, condition, lt_quant_components.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum)));
                 }
             }
+
             if (SaveState.lollipop.neucode_labeled)
             {
-                //foreach (string condition in Lollipop.hvConditionsBioReps.Keys)
                 foreach (string condition in hvConditionStrings.ToList())
                 {
                     foreach (int b in hv_quant_components.Where(c => c.input_file.hv_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())

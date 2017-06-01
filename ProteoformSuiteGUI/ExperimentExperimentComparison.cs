@@ -120,9 +120,11 @@ namespace ProteoformSuiteGUI
             nUD_PeakWidthBase.Maximum = 0.5000m;
             nUD_PeakWidthBase.Value = Convert.ToDecimal(SaveState.lollipop.peak_width_base_ee);
 
+            nUD_PeakCountMinThreshold.ValueChanged -= nUD_PeakCountMinThreshold_ValueChanged;
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
             nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(SaveState.lollipop.min_peak_count_ee);
+            nUD_PeakCountMinThreshold.ValueChanged += nUD_PeakCountMinThreshold_ValueChanged;
 
             nUD_MaxRetTimeDifference.Minimum = 0;
             nUD_MaxRetTimeDifference.Maximum = 60;
