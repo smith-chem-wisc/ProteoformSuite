@@ -129,9 +129,11 @@ namespace ProteoformSuiteGUI
             nUD_PeakWidthBase.Maximum = 0.5000m;
             nUD_PeakWidthBase.Value = Convert.ToDecimal(SaveState.lollipop.peak_width_base_et); // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
 
+            nUD_PeakCountMinThreshold.ValueChanged -= nUD_PeakCountMinThreshold_ValueChanged;
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
             nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(SaveState.lollipop.min_peak_count_et); // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
+            nUD_PeakCountMinThreshold.ValueChanged += nUD_PeakCountMinThreshold_ValueChanged;
 
             tb_peakTableFilter.TextChanged -= tb_peakTableFilter_TextChanged;
             tb_peakTableFilter.Text = "";
@@ -275,6 +277,16 @@ namespace ProteoformSuiteGUI
                     break;
             }
             dgv_ET_Peak_List.Refresh();
+        }
+
+        private void ET_Peak_List_DirtyStateChanged(object sender, EventArgs e)
+        {
+            relationUtility.peak_acceptability_change(dgv_ET_Peak_List);
+            Parallel.ForEach(SaveState.lollipop.ed_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
+            dgv_ET_Relations.Refresh();
+            dgv_ET_Peak_List.Refresh();
+            update_figures_of_merit();
+            (MdiParent as ProteoformSweet).proteoformFamilies.ClearListsTablesFigures(true);
         }
 
         #endregion ET Peak List Private Methods
@@ -424,6 +436,7 @@ namespace ProteoformSuiteGUI
             StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = SaveState.lollipop.min_peak_count_et };
             ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
             update_figures_of_merit();
+            (MdiParent as ProteoformSweet).proteoformFamilies.ClearListsTablesFigures(true);
         }
 
         #endregion Parameters Private Methods
@@ -444,15 +457,6 @@ namespace ProteoformSuiteGUI
         {
             if (e.Button == MouseButtons.Left)
                 DisplayUtility.tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_peakList, ct_ET_peakList_prevPosition);
-        }
-
-        private void ET_Peak_List_DirtyStateChanged(object sender, EventArgs e)
-        {
-            relationUtility.peak_acceptability_change(dgv_ET_Peak_List);
-            Parallel.ForEach(SaveState.lollipop.ed_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
-            dgv_ET_Relations.Refresh();
-            dgv_ET_Peak_List.Refresh();
-            update_figures_of_merit();
         }
 
         #endregion Tooltip Private Methods
