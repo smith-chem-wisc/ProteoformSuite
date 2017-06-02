@@ -316,6 +316,11 @@ namespace ProteoformSuiteInternal
                     string node_type = String.Equals(p.ptm_description, "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
                     node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity, "", layout_rank);
                 }
+                if (p as TopDownProteoform != null)
+                {
+                    string node_type = td_label;
+                    node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity, "", layout_rank);
+                }
 
                 if (p as ExperimentalProteoform != null)
                 {
@@ -626,9 +631,9 @@ namespace ProteoformSuiteInternal
                 writer.WriteEndElement();
 
                 //NODE PROPERTIES
-                double max_total_intensity = all_families.SelectMany(f => f.experimental_proteoforms).Count() == 0 ? 1e6 : quantitative?
-                    (double)all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.quant.intensitySum) :
-                    all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity);
+                double max_total_intensity = quantitative ?
+                   (double)all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.quant.intensitySum) :
+                   all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity);
                 writer.WriteStartElement("node");
                 writer.WriteStartElement("dependency");
                 writer.WriteAttributeString("name", "nodeCustomGraphicsSizeSync");

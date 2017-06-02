@@ -173,6 +173,9 @@
     <Content Include="Mods\amino_acids.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Mods\custom_adducts.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Mods\intact_mods.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

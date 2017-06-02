@@ -83,15 +83,16 @@ namespace ProteoformSuiteInternal
                     break;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
                 CalibrationFunction calibrationFunction = CalibrateLinear(file.filename, dataPointAcquisitionResult);
-            }
 
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\points.txt"))
-            {
-                foreach (var point in dataPointAcquisitionResult.Ms1List)
+                using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\points" + linearCalibrationRound + ".txt"))
                 {
-                    writer.WriteLine(point.Label + "\t" + String.Join("\t", point.Inputs));
+                    foreach (var point in dataPointAcquisitionResult.Ms1List)
+                    {
+                        writer.WriteLine( String.Join("\t", point.Inputs) + "\t" + point.Label);
+                    }
                 }
             }
+
 
             ////found that this made results worse... maybe too few hits
             //trainingPointCounts = new List<int>();
@@ -102,7 +103,15 @@ namespace ProteoformSuiteInternal
             //    if (forestCalibrationRound >= 2 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[forestCalibrationRound - 2])
             //        break;
             //    trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
+            //    using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\points" + forestCalibrationRound + ".txt"))
+            //    {
+            //        foreach (var point in dataPointAcquisitionResult.Ms1List)
+            //        {
+            //            writer.WriteLine(point.Label + "\t" + String.Join("\t", point.Inputs));
+            //        }
+            //    }
             //}
+
 
             return true;
         }
@@ -337,7 +346,7 @@ namespace ProteoformSuiteInternal
                         foreach (double a in originalMasses)
                         {
                             double theMZ = a.ToMz(chargeToLookAt);
-
+                            mass_tolerance = identification.reported_mass - identification.theoretical_mass - Math.Round(identification.reported_mass - identification.theoretical_mass, 0) * 2;
                             var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - (mass_tolerance / identification.charge), theMZ + (mass_tolerance / identification.charge)); //WAS ID.CHARGE
                             if (npwr == 0)
                             {
