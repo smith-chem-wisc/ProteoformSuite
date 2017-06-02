@@ -76,6 +76,7 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsTablesFigures(bool clear_following)
         {
+            SaveState.lollipop.top_down_hits.Clear();
             SaveState.lollipop.td_relations.Clear();
             SaveState.lollipop.topdownReader.topdown_ptms.Clear();
             foreach (ProteoformCommunity community in SaveState.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { SaveState.lollipop.target_proteoform_community }))
@@ -118,7 +119,7 @@ namespace ProteoformSuiteGUI
 
         private void AggregateTdHits()
         {
-            if (SaveState.lollipop.top_down_hits.Count == 0) SaveState.lollipop.read_in_td_hits();
+             SaveState.lollipop.read_in_td_hits();
             if (SaveState.lollipop.top_down_hits.Count > 0)
             {
                 SaveState.lollipop.AggregateTdHits();

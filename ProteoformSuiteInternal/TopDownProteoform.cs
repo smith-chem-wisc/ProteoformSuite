@@ -49,7 +49,7 @@ namespace ProteoformSuiteInternal
             this.topdown_hits = hits;
             this.calculate_properties(true);
             this.targeted = root.targeted;
-            this.accession = accession + "_TD1_" + Math.Round(this.theoretical_mass, 2) + "_Da_" + start_index + "to" + stop_index;
+            this.accession = accession + "_TD1_" + Math.Round(this.modified_mass, 2) + "_Da_" + start_index + "to" + stop_index;
             this.lysine_count = sequence.Count(s => s == 'K');
         }
 
