@@ -214,26 +214,29 @@ namespace ProteoformSuiteInternal
                 foreach (Component higher_component in higher_mass_components)
                 {
                     lock (lower_component) lock (higher_component) // Turns out the LINQ queries in here, especially for overlapping_charge_states, aren't thread safe
+                    {
+                        double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
+                        if (mass_difference < 6)
                         {
-                            double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
-                            if (mass_difference < 6)
+                            List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList();
+                            List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList();
+                            List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
+                            lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                            higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                            double lower_intensity = lower_component.intensity_sum_olcs;
+                            double higher_intensity = higher_component.intensity_sum_olcs;
+                            bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
+                            if (lower_intensity > 0 && higher_intensity > 0)
                             {
-                                List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList();
-                                List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList();
-                                List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
-                                double lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                                double higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                                bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
-                                if (lower_intensity > 0 && higher_intensity > 0)
-                                {
-                                    NeuCodePair pair = lower_intensity > higher_intensity ?
-                                        new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
-                                        new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
+                                NeuCodePair pair = lower_intensity > higher_intensity ?
+                                    new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
+                                    new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
 
-                                    lock (pairsInScanRange) pairsInScanRange.Add(pair);
-                                }
+                                lock (pairsInScanRange)
+                                    pairsInScanRange.Add(pair);
                             }
                         }
+                    }
                 }
             });
 
@@ -244,14 +247,15 @@ namespace ProteoformSuiteInternal
                 lock (destination)
                 {
                     if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + MONOISOTOPIC_UNIT_MASS // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
-                        && !destination.Any(p => p.id_heavy == pair.id_light && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity, is probably correct, and that that component should not get reuused as a light.)
+                        && !destination.Any(p => p.neuCodeHeavy.id == pair.neuCodeLight.id && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity, is probably correct, and that that component should not get reuused as a light.)
                     {
                         destination.Add(pair);
                     }
 
                     else
                     {
-                        lock (pairsInScanRange) pairsInScanRange.Remove(pair);
+                        lock (pairsInScanRange)
+                            pairsInScanRange.Remove(pair);
                     }
                 }
             }
@@ -1142,7 +1146,7 @@ namespace ProteoformSuiteInternal
         public bool calibrate_td_results = true;
         public bool calibrate_intact_with_td_ids = false;
         public List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
-        public List<MsScan> Ms_scans = new List<MsScan>();
+        public Dictionary<Tuple<string, double>, MsScan> ms_scans = new Dictionary<Tuple<string, double>, MsScan>();
         public Dictionary<string, bool> td_calibration_functions = new Dictionary<string, bool>();
         public List<Correction> correctionFactors = new List<Correction>();
         public Dictionary<Tuple<string, double>, Tuple<double, double, int, int>> file_mz_correction = new Dictionary<Tuple<string, double>, Tuple<double, double, int, int>>();
@@ -1196,12 +1200,12 @@ namespace ProteoformSuiteInternal
             {
                 //get calibration points
                 InputFile raw_file = raw_files.First();
-                Ms_scans = RawFileReader.get_ms_scans(filename, raw_file.complete_path);
+                ms_scans = RawFileReader.get_ms_scans(ms_scans, filename, raw_file.complete_path);
 
                 if (calibrate_lock_mass)
                 {
                     calibration.raw_lock_mass(filename, raw_file.complete_path);
-                    correctionFactors.AddRange(Correction.CorrectionFactorInterpolation(Ms_scans.Where(s => s.filename == filename).Select(s => (new Correction(s.filename, s.scan_number, s.lock_mass_shift)))));
+                    correctionFactors.AddRange(Correction.CorrectionFactorInterpolation(ms_scans.Values.Where(s => s.filename == filename).Select(s => (new Correction(s.filename, s.scan_number, s.lock_mass_shift)))));
                 }
 
                 if (calibrate_td_results || calibrate_intact_with_td_ids)
@@ -1221,54 +1225,19 @@ namespace ProteoformSuiteInternal
         double average_averagine = 111.1234625;
         public void determine_component_shift(Calibration calibration, string filename)
         {
-
             Parallel.ForEach(calibration_components.Where(c => c.input_file.filename == filename), c =>
             {
                 if ((!calibrate_td_results && !calibrate_intact_with_td_ids) || td_calibration_functions.ContainsKey(c.input_file.filename))
                 {
-                    MsScan scan = Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).First();
                     foreach (ChargeState cs in c.charge_states)
                     {
-                        //check signal to noise of averagine peak
-                        double average_mass = cs.mz_centroid.ToMass(cs.charge_count) / monoisotopic_averagine * average_averagine;
-                        int units_over = Convert.ToInt32(average_mass - cs.mz_centroid.ToMass(cs.charge_count));
-                        double mz_average = cs.mz_centroid + (units_over * Lollipop.MONOISOTOPIC_UNIT_MASS / cs.charge_count);
-                        int index_peak = scan.peak_x.Select((x, i) => new { Index = i, Distance = Math.Abs(mz_average - x) }).OrderBy(x => x.Distance).First().Index;
-
-                        //also check and see how many isotopic peaks over from averagine on either side eixist
-                        int left_averagine = 0;
-                        int peak_over = 1;
-                        bool peak_exists = true;
-                        while (peak_exists)
-                        {
-                            if (scan.peak_x.Count(p => Math.Abs(p - (mz_average - peak_over * Lollipop.MONOISOTOPIC_UNIT_MASS / cs.charge_count)) < .005) >= 1)
-                            {
-                                left_averagine++;
-                                peak_over++;
-                            }
-                            else peak_exists = false;
-                        }
-
-                        int right_averagine = 0;
-                        peak_over = 1;
-                        peak_exists = true;
-                        while (peak_exists)
-                        {
-                            if (scan.peak_x.Count(p => Math.Abs(p - (mz_average + peak_over * Lollipop.MONOISOTOPIC_UNIT_MASS / cs.charge_count)) < .005) >= 1)
-                            {
-                                right_averagine++;
-                                peak_over++;
-                            }
-                            else peak_exists = false;
-                        }
-                        MsScan ms1 = Ms_scans.Where(s => s.filename == c.input_file.filename && s.scan_number == Convert.ToInt16(c.scan_range.Split('-')[0])).FirstOrDefault();
                         double corrected_mz = (calibrate_td_results || calibrate_intact_with_td_ids) ? cs.mz_centroid : cs.mz_centroid - calibration.get_correction_factor(c.input_file.filename, c.scan_range);
                         var key = new Tuple<string, double>(c.input_file.filename, Math.Round(cs.intensity, 0));
                         lock (file_mz_correction)
                         {
                             if (!file_mz_correction.ContainsKey(key))
                             {
-                                file_mz_correction.Add(key, new Tuple<double, double, int, int>(corrected_mz, scan.peak_y[index_peak] / scan.noises[index_peak], left_averagine, right_averagine));
+                                file_mz_correction.Add(key, new Tuple<double, double, int, int>(corrected_mz, 0, 0, 0));
                             }
                         }
                     }

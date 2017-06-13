@@ -300,10 +300,10 @@ namespace ProteoformSuiteInternal
                 case 0: //arbitrary circle
                 case 2: //mass circle
                 default:
-                    layout_order = families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().Concat(theoreticals).OrderBy(p => p.modified_mass);
+                    layout_order = families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().Concat(theoreticals).Concat(families.SelectMany(f => f.topdown_proteoforms)).OrderBy(p => p.modified_mass);
                     break;
                 case 1: //mass-based spiral
-                    layout_order = theoreticals.OrderByDescending(p => p.modified_mass).OfType<Proteoform>().Concat(families.SelectMany(f => f.experimental_proteoforms).OrderBy(p => p.modified_mass));
+                    layout_order = theoreticals.OrderByDescending(p => p.modified_mass).OfType<Proteoform>().Concat(families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().Concat(families.SelectMany(f => f.topdown_proteoforms)).OrderBy(p => p.modified_mass));
                     break;
             }
 
@@ -631,9 +631,9 @@ namespace ProteoformSuiteInternal
                 writer.WriteEndElement();
 
                 //NODE PROPERTIES
-                double max_total_intensity = quantitative ?
+                double max_total_intensity = all_families.SelectMany(f => f.experimental_proteoforms).Count() > 0 ? ( quantitative ?
                    (double)all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.quant.intensitySum) :
-                   all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity);
+                   all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity)) : 1e6;
                 writer.WriteStartElement("node");
                 writer.WriteStartElement("dependency");
                 writer.WriteAttributeString("name", "nodeCustomGraphicsSizeSync");

@@ -154,13 +154,22 @@ namespace ProteoformSuiteInternal
             report += ambiguous_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Ambiguous Families" + Environment.NewLine;
             report += unidentified_families.Count.ToString() + "\tUnidentified Families (Correspond to no " + (ProteoformCommunity.gene_centric_families ? "gene" : "UniProt accession") + ")" + Environment.NewLine;
             report += unidentified_families.Sum(f => f.experimental_proteoforms.Count).ToString() + "\tExperimental Proteoforms in Unidentified Families" + Environment.NewLine;
-            int components_in_fams = identified_families.Concat(ambiguous_families).Concat(unidentified_families).Sum(f => f.experimental_proteoforms.Sum(e => e.lt_verification_components.Count + e.hv_verification_components.Count));
-            report += components_in_fams + "\tRaw Experimental Components in Families" + Environment.NewLine;
-            report += SaveState.lollipop.raw_experimental_components.Count > 0 ? 
-                Math.Round(100 * ((double)components_in_fams / (double)SaveState.lollipop.raw_experimental_components.Count), 2) + "\t% of Raw Experimental Components in Families" + Environment.NewLine :
-                "N/A\t% of Raw Experimental Components in Families" + Environment.NewLine;
             report += SaveState.lollipop.target_proteoform_community.families.Count(f => f.proteoforms.Count == 1).ToString() + "\tOrphaned Experimental Proteoforms (Not joined with another proteoform)" + Environment.NewLine;
             report += Environment.NewLine;
+
+            int raw_components_in_fams = identified_families.Concat(ambiguous_families).Concat(unidentified_families).Sum(f => f.experimental_proteoforms.Sum(e => e.lt_verification_components.Count + e.hv_verification_components.Count));
+            report += raw_components_in_fams + "\tRaw Experimental Components in Families" + Environment.NewLine;
+            report += SaveState.lollipop.raw_experimental_components.Count > 0 ?
+                Math.Round(100 * ((double)raw_components_in_fams / (double)SaveState.lollipop.raw_experimental_components.Count), 2) + "\t% of Raw Experimental Components in Families" + Environment.NewLine :
+                "N/A\t% of Raw Experimental Components in Families" + Environment.NewLine;
+
+            int raw_quant_components_in_fams = identified_families.Concat(ambiguous_families).Concat(unidentified_families).Sum(f => f.experimental_proteoforms.Sum(e => e.lt_quant_components.Count + e.hv_quant_components.Count));
+            report += raw_quant_components_in_fams + "\tRaw Quantitative Components in Families" + Environment.NewLine;
+            report += SaveState.lollipop.raw_experimental_components.Count > 0 ?
+                Math.Round(100 * ((double)raw_quant_components_in_fams / (double)SaveState.lollipop.raw_experimental_components.Count), 2) + "\t% of Raw Quantitative Components in Families" + Environment.NewLine :
+                "N/A\t% of Raw Quantitative Components in Families" + Environment.NewLine;
+            report += Environment.NewLine;
+
 
             int identified_exp_proteoforms = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && e.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) == 0);
             double avg_identified_decoy_proteoforms = SaveState.lollipop.decoy_proteoform_communities.Count > 0 ?
@@ -204,16 +213,20 @@ namespace ProteoformSuiteInternal
 
                 for (int start = 0; start < combined_bioreps.Count; start++)
                 {
-                    int exp_prots_with_these_bioreps = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(combined_bioreps[start]) && e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Distinct().Count() == 1);
-                    report += exp_prots_with_these_bioreps + "\tExperimental Proteoforms Observed in " + condition + ", Biological Replicates #" + combined_bioreps[start].ToString() + Environment.NewLine;
+                    int exp_prots_with_these_bioreps = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(combined_bioreps[start]));
+                    int exp_prots_with_these_bioreps_exclusive = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(combined_bioreps[start]) && e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Distinct().Count() == 1);
+                    report += exp_prots_with_these_bioreps + "\tExperimental Proteoforms Observed in " + condition + ", Biological Replicate #" + combined_bioreps[start].ToString() + Environment.NewLine;
+                    report += exp_prots_with_these_bioreps_exclusive + "\tExperimental Proteoforms Observed Exclusively in " + condition + ", Biological Replicate #" + combined_bioreps[start].ToString() + Environment.NewLine;
 
                     for (int end = start; end < combined_bioreps.Count; end++)
                     {
                         for (int between = end; between > start; between--)
                         {
                             List<int> bioreps_of_interest = new List<int> { start }.Concat(Enumerable.Range(between, end - between + 1)).Distinct().Select(idx => combined_bioreps[idx]).ToList();
-                            exp_prots_with_these_bioreps = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => bioreps_of_interest.All(x => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(x)) && e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Distinct().Count() == bioreps_of_interest.Distinct().Count());
+                            exp_prots_with_these_bioreps = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => bioreps_of_interest.All(x => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(x)));
+                            exp_prots_with_these_bioreps_exclusive = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => bioreps_of_interest.All(x => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(x)) && e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Distinct().Count() == bioreps_of_interest.Distinct().Count());
                             report += exp_prots_with_these_bioreps + "\tExperimental Proteoforms Observed in " + condition + ", Biological Replicates #" + String.Join(" #", bioreps_of_interest) + Environment.NewLine;
+                            report += exp_prots_with_these_bioreps_exclusive + "\tExperimental Proteoforms Observed Exclusively in " + condition + ", Biological Replicates #" + String.Join(" #", bioreps_of_interest) + Environment.NewLine;
                         }
                     }
                 }
@@ -237,7 +250,6 @@ namespace ProteoformSuiteInternal
         {
             return "GO Terms of Significance (Benjimini-Yekeulti p-value < " + SaveState.lollipop.minProteoformFDR.ToString() + "): " + Environment.NewLine
                 + String.Join(Environment.NewLine, SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.minProteoformFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
-
         }
 
         public static string results_dataframe()

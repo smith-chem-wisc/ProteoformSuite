@@ -33,7 +33,7 @@ namespace ProteoformSuiteInternal
                     ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" : 
                         this is TopDownProteoform ?
-                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => ptm.modification.id + "@" + ptm.position)) :
+                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => ptm.position > 0 ? ptm.modification.id + "@" + ptm.position  : SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id)) :
                         String.Join("; ", ptm_set.ptm_combination.Select(ptm => SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id));
             }
         }

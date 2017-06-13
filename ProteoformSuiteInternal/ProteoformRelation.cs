@@ -96,9 +96,12 @@ namespace ProteoformSuiteInternal
                     .FirstOrDefault();
             }
 
-            // Start the model (0 Da) at the mass defect of CH2 or HPO3 itself
-            double low_decimal_bound = ((CH2.MonoisotopicMass - Math.Truncate(CH2.MonoisotopicMass)) / CH2.MonoisotopicMass) * (Math.Abs(delta_mass) <= CH2.MonoisotopicMass ? CH2.MonoisotopicMass : Math.Abs(delta_mass));
-            double high_decimal_bound = 1 + ((HPO3.MonoisotopicMass - Math.Ceiling(HPO3.MonoisotopicMass)) / HPO3.MonoisotopicMass) * (Math.Abs(delta_mass) <= HPO3.MonoisotopicMass ? HPO3.MonoisotopicMass : Math.Abs(delta_mass));
+            // Start the model (0 Da) at the mass defect of CH2 or HPO3 itself, allowing the peak width tolerance on either side
+            double half_peak_width = RelationType == ProteoformComparison.ExperimentalTheoretical || RelationType == ProteoformComparison.ExperimentalDecoy ?
+                SaveState.lollipop.peak_width_base_et / 2 :
+                SaveState.lollipop.peak_width_base_ee / 2;
+            double low_decimal_bound = half_peak_width + ((CH2.MonoisotopicMass - Math.Truncate(CH2.MonoisotopicMass)) / CH2.MonoisotopicMass) * (Math.Abs(delta_mass) <= CH2.MonoisotopicMass ? CH2.MonoisotopicMass : Math.Abs(delta_mass));
+            double high_decimal_bound = 1 - half_peak_width + ((HPO3.MonoisotopicMass - Math.Ceiling(HPO3.MonoisotopicMass)) / HPO3.MonoisotopicMass) * (Math.Abs(delta_mass) <= HPO3.MonoisotopicMass ? HPO3.MonoisotopicMass : Math.Abs(delta_mass));
             double delta_mass_decimal = Math.Abs(delta_mass - Math.Truncate(delta_mass));
 
             outside_no_mans_land = delta_mass_decimal <= low_decimal_bound || delta_mass_decimal >= high_decimal_bound 

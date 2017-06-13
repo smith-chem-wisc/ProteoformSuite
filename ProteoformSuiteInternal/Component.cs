@@ -7,7 +7,17 @@ namespace ProteoformSuiteInternal
 {
     public class Component : IBiorepable
     {
-        #region Properties
+
+        #region Private Fields
+
+        private double _manual_mass_shift = 0;
+        private int _num_charge_states = 0;
+        private double _intensity_sum = 0;
+        private double _weighted_monoisotopic_mass = 0;
+
+        #endregion Private Fields
+
+        #region Public Properties
 
         public InputFile input_file { get; set; }
         public string id { get; set; } // deconvolution 4.0 assigns a component id. This is made unique by appending the inputFile id.
@@ -22,7 +32,14 @@ namespace ProteoformSuiteInternal
         public double rt_apex { get; set; }
         public List<ChargeState> charge_states { get; set; } = new List<ChargeState>();
         public List<Component> incorporated_missed_monoisotopics = new List<Component>();
-        private double _manual_mass_shift { get; set; } = 0; // added or substracted from weighted monoisotopic mass. This value is adjusted manually after observing ET histograms. Eventually also after see EE histograms. 
+        public double neuCodeCorrection { get; set; } = 0;
+        public bool calculating_properties { get; set; } = false;
+        public int num_detected_intervals { get; set; }
+        public bool accepted { get; set; }
+
+        /// <summary>
+        /// Added or substracted from weighted monoisotopic mass. This value is adjusted manually after observing ET histograms. Eventually also after see EE histograms.
+        /// </summary>
         public double manual_mass_shift
         {
             get { return _manual_mass_shift; }
@@ -32,9 +49,7 @@ namespace ProteoformSuiteInternal
                 calculate_properties();
             }
         }
-        public double neuCodeCorrection { get; set; } = 0;
 
-        private int _num_charge_states { get; set; } = 0;
         public int num_charge_states
         {
             get
@@ -50,8 +65,10 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        private double _intensity_sum { get; set; } = 0;
-        public double intensity_sum //intensity sum for all charge states. Different value than what is reported by deconv 4.0 for some reason
+        /// <summary>
+        /// intensity sum for all charge states. Different value than what is reported by deconv 4.0 for some reason
+        /// </summary>
+        public double intensity_sum
         {
             get
             {
@@ -66,7 +83,9 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        private double _weighted_monoisotopic_mass { get; set; } = 0;
+        /// <summary>
+        /// this is computed as the weighted sum of charge state masses.
+        /// </summary>
         public double weighted_monoisotopic_mass
         {
             get
@@ -80,15 +99,9 @@ namespace ProteoformSuiteInternal
                 else
                     _weighted_monoisotopic_mass = value;
             }
-        } //this is computed as the weighted sum of charge state masses.
+        } 
 
-        public bool calculating_properties { get; set; } = false;
-        public double max_signal_to_noise { get; set; }
-        
-        public int num_detected_intervals { get; set; }
-        public bool accepted { get; set; }
-
-        #endregion Properties
+        #endregion Public Properties
     
         #region Constructors
 
@@ -146,25 +159,24 @@ namespace ProteoformSuiteInternal
         #region Public Methods
         public void add_charge_state(List<string> charge_row)
         {
-            this.charge_states.Add(new ChargeState(charge_row));
+            charge_states.Add(new ChargeState(charge_row));
         }
 
         public void calculate_properties()
         {
             if (charge_states.Count > 0)
             {
-                this.calculating_properties = true;
-                this.intensity_sum = charge_states.Sum(cs => cs.intensity);
-                this.weighted_monoisotopic_mass = this.charge_states.Sum(charge_state => charge_state.intensity / this.intensity_sum * charge_state.calculated_mass) + manual_mass_shift + neuCodeCorrection;
-                this.num_charge_states = charge_states.Count;
-                this.calculating_properties = false;
+                calculating_properties = true;
+                intensity_sum = charge_states.Sum(cs => cs.intensity);
+                weighted_monoisotopic_mass = charge_states.Sum(charge_state => charge_state.intensity / intensity_sum * charge_state.calculated_mass) + manual_mass_shift + neuCodeCorrection;
+                num_charge_states = charge_states.Count;
+                calculating_properties = false;
             }
         }
 
-        public double calculate_sum_intensity_olcs(List<int> charges_to_sum)
+        public void calculate_sum_intensity_olcs(IEnumerable<int> charges_to_sum)
         {
-            this.intensity_sum_olcs = this.charge_states.Where(cs => charges_to_sum.Contains(cs.charge_count)).Sum(charge_state => charge_state.intensity);
-            return this.intensity_sum_olcs;
+            intensity_sum_olcs = charge_states.Where(cs => charges_to_sum.Contains(cs.charge_count)).Sum(charge_state => charge_state.intensity);
         }
 
         public Component mergeTheseComponents(Component cpToMerge) //this method is used just after initial read of components to get rid of missed monoisotopics in the same scan.
