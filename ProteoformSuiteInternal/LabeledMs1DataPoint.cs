@@ -10,22 +10,22 @@ namespace ProteoformSuiteInternal
     public class LabeledMs1DataPoint : IHasInputsAndOutputs
     {
         public readonly double mz;
-        public readonly double rt;
+        public readonly double retentionTime;
         public readonly double totalIonCurrent;
         public readonly double injectionTime;
         public readonly TopDownHit identification;
         public double Label { get; private set; }
         public double[] Inputs { get; private set; }
 
-        public LabeledMs1DataPoint(double mz, double rt, double totalIonCurrent, double? injectionTime, double label, TopDownHit identification)
+        public LabeledMs1DataPoint(double mz, double retentionTime, double totalIonCurrent, double? injectionTime, double label, TopDownHit identification)
         {
             this.mz = mz;
-            this.rt = rt;
+            this.retentionTime = retentionTime;
             this.totalIonCurrent = totalIonCurrent;
             this.injectionTime = injectionTime ?? double.NaN;
             this.Label = label;
             this.identification = identification;
-            Inputs = new double[] { mz, rt, totalIonCurrent, this.injectionTime };
+            Inputs = new double[] { mz, retentionTime, totalIonCurrent, this.injectionTime };
         }
     }
 }

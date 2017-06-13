@@ -134,9 +134,9 @@ namespace ProteoformSuiteInternal
             foreach (TopDownProteoform topdown in topdowns)
             {
                 List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
-                double mass = topdown.monoisotopic_mass;
+                double mass = topdown.modified_mass;
 
-                foreach (int m in missed_monoisotopics_range)
+                for(int m = -1; m <=1; m++) //look for one missed mono on either side
                 {
                         double shift = m * Lollipop.MONOISOTOPIC_UNIT_MASS;
                         double mass_tol = (mass + shift) / 1000000 * Convert.ToInt32(SaveState.lollipop.mass_tolerance) / 2;

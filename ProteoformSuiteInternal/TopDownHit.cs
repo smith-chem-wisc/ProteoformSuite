@@ -24,7 +24,6 @@ namespace ProteoformSuiteInternal
         public string name { get; set; }
 
         public double reported_mass { get; set; } //reported in TD results file
-        public double corrected_mass { get; set; } //calibrated mass
 
         public int charge { get; set; }
         public double mass_error { get; set; }
@@ -46,7 +45,6 @@ namespace ProteoformSuiteInternal
             this.stop_index = stop_index;
             this.ptm_list = modifications;
             this.reported_mass = reported_mass;
-            this.corrected_mass = reported_mass;
             this.theoretical_mass = TheoreticalProteoform.CalculateProteoformMass(sequence, aaIsotopeMassList) + ptm_list.Sum(p => p.modification.monoisotopicMass);
             this.ms2ScanNumber = scan;
             this.retention_time = retention_time;

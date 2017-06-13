@@ -182,7 +182,7 @@ namespace ProteoformSuiteGUI
 
             int length = p.sequence.Length + 1;
 
-            foreach (Ptm ptm in p.ptm_set.ptm_combination)
+            foreach (Ptm ptm in p.ptm_set.ptm_combination.Where(m => m.position > 0))
             {
                 int i;
                 try { i = mods.IndexOf(ptm.modification.id); }
@@ -192,20 +192,12 @@ namespace ProteoformSuiteGUI
                 rtb_sequence.SelectionStart = ptm.position - 1;
                 rtb_sequence.SelectionLength = 1;
                 rtb_sequence.SelectionColor = color;
-            }
-
-            foreach (string description in p.ptm_set.ptm_combination.Select(ptm => ptm.modification.id).Distinct())
-            {
-                int i;
-                try { i = mods.IndexOf(description); }
-                catch { i = 0; }
-                Color color = colors[i];
-
-                rtb_sequence.AppendText("\n" + description);
+          
+                rtb_sequence.AppendText("\n" + ptm.modification.id);
                 rtb_sequence.SelectionStart = length;
-                rtb_sequence.SelectionLength = description.Length + 1;
+                rtb_sequence.SelectionLength = ptm.modification.id.Length + 1;
                 rtb_sequence.SelectionColor = colors[i];
-                length += description.Length + 1;
+                length += ptm.modification.id.Length + 1;
             }
         }
 

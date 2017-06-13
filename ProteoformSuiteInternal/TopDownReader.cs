@@ -26,6 +26,7 @@ namespace ProteoformSuiteInternal
             //get ptms on proteoform -- check for mods. IF not in database, make new topdown mod, show Warning message. 
             foreach (List<string> cellStrings in cells)
             {
+                bool add_topdown_hit = true; //if PTM or accession not found, will not add (show warning)
                 TopDownResultType tdResultType = (cellStrings[15] == "BioMarker") ? TopDownResultType.Biomarker : TopDownResultType.TightAbsoluteMass;
                 List<Ptm> ptm_list = new List<Ptm>(); // if nothing gets added, an empty ptmlist is passed to the topdownhit constructor.
                 //N-term modifications
@@ -48,6 +49,7 @@ namespace ProteoformSuiteInternal
                             { 
                                topdown_ptms.Add(new ModificationWithMass("N-terminal acetylation", null, motif , ModificationSites.NTerminus, 0, null, new List<double>(), new List<double>(), null));
                             }
+                            add_topdown_hit = false;
                         }
                     }
                 }
@@ -71,6 +73,7 @@ namespace ProteoformSuiteInternal
                             ModificationWithMass new_ptm = topdown_ptms.Where(m => m.id == resid).FirstOrDefault();
                             if (new_ptm == null) //if not in topdown_ptms list, add it (will show in warning)
                                 topdown_ptms.Add( new ModificationWithMass(resid, null, motif, ModificationSites.Any, 0, null, new List<double>(), new List<double>(), null));
+                            add_topdown_hit = false;
                         }
                     }
                 }
@@ -101,16 +104,16 @@ namespace ProteoformSuiteInternal
                 //cellStrings[21]=E-value
                 //cellStrings[22]=C-score
                 //cellStrings[23]=% Cleavages
-                try
+
+                if (add_topdown_hit)
                 {
                     TopDownHit td_hit = new TopDownHit(aaIsotopeMassList, file, tdResultType, cellStrings[2], cellStrings[1], cellStrings[3], cellStrings[4],
                     Convert.ToInt16(cellStrings[5]), Convert.ToInt16(cellStrings[6]), ptm_list, Convert.ToDouble(cellStrings[16]), Convert.ToDouble(cellStrings[12]),
                     Convert.ToInt16(cellStrings[17]), Convert.ToDouble(cellStrings[18]), cellStrings[14].Split('.')[0], file.targeted_td_result, Convert.ToDouble(cellStrings[22]));
                     td_hits.Add(td_hit);
                 }
-                catch { }
             }
             return td_hits;
         }
     }
-} 
+}
