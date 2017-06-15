@@ -43,7 +43,6 @@
             this.dgv_loadFiles3 = new System.Windows.Forms.DataGridView();
             this.btn_fullRun = new System.Windows.Forms.Button();
             this.bt_clearResults = new System.Windows.Forms.Button();
-            this.cb_run_when_load = new System.Windows.Forms.CheckBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.lb_filter3 = new System.Windows.Forms.Label();
             this.tb_filter3 = new System.Windows.Forms.TextBox();
@@ -74,9 +73,9 @@
             // 
             this.groupBox1.Controls.Add(this.rb_unlabeled);
             this.groupBox1.Controls.Add(this.rb_neucode);
-            this.groupBox1.Location = new System.Drawing.Point(13, 610);
+            this.groupBox1.Location = new System.Drawing.Point(13, 569);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(213, 114);
+            this.groupBox1.Size = new System.Drawing.Size(213, 155);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Proteoform Identification Results";
@@ -224,17 +223,6 @@
             this.bt_clearResults.UseVisualStyleBackColor = true;
             this.bt_clearResults.Click += new System.EventHandler(this.bt_clearResults_Click);
             // 
-            // cb_run_when_load
-            // 
-            this.cb_run_when_load.AutoSize = true;
-            this.cb_run_when_load.Location = new System.Drawing.Point(16, 587);
-            this.cb_run_when_load.Name = "cb_run_when_load";
-            this.cb_run_when_load.Size = new System.Drawing.Size(157, 17);
-            this.cb_run_when_load.TabIndex = 27;
-            this.cb_run_when_load.Text = "Process when loading page";
-            this.cb_run_when_load.UseVisualStyleBackColor = true;
-            this.cb_run_when_load.CheckedChanged += new System.EventHandler(this.cb_run_when_load_CheckedChanged);
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.lb_filter3);
@@ -337,7 +325,7 @@
             this.groupBox4.Controls.Add(this.rb_standardOptions);
             this.groupBox4.Location = new System.Drawing.Point(232, 569);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(210, 43);
+            this.groupBox4.Size = new System.Drawing.Size(442, 43);
             this.groupBox4.TabIndex = 35;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Load Options";
@@ -372,7 +360,7 @@
             this.btn_stepThrough.Name = "btn_stepThrough";
             this.btn_stepThrough.Size = new System.Drawing.Size(156, 92);
             this.btn_stepThrough.TabIndex = 36;
-            this.btn_stepThrough.Text = "Step Through Processes";
+            this.btn_stepThrough.Text = "Step Through Processing";
             this.btn_stepThrough.UseVisualStyleBackColor = true;
             this.btn_stepThrough.Click += new System.EventHandler(this.btn_stepThrough_Click);
             // 
@@ -416,7 +404,6 @@
             this.Controls.Add(this.cmb_loadTable2);
             this.Controls.Add(this.cmb_loadTable1);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.cb_run_when_load);
             this.Controls.Add(this.bt_clearResults);
             this.Controls.Add(this.btn_fullRun);
             this.Controls.Add(this.dgv_loadFiles3);
@@ -444,7 +431,6 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -464,7 +450,6 @@
         private System.Windows.Forms.DataGridView dgv_loadFiles3;
         private System.Windows.Forms.Button btn_fullRun;
         private System.Windows.Forms.Button bt_clearResults;
-        private System.Windows.Forms.CheckBox cb_run_when_load;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label lb_filter2;
         private System.Windows.Forms.Label lb_filter1;

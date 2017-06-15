@@ -1,49 +1,70 @@
-﻿using System;
+﻿using ClosedXML.Excel;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Office.Interop.Excel;
-using Excel = Microsoft.Office.Interop.Excel;
-using System.Windows.Forms;
-using ClosedXML.Excel;
 using System.Data;
-
+using System.Windows.Forms;
 
 namespace ProteoformSuiteInternal
 {
     class DGVExcelWriter
     {
-        public void ExportToExcel(List<DataGridView> dgvs, string filename)
+
+        private XLWorkbook workbook = new XLWorkbook();
+
+        public void ExportToExcel(List<DataGridView> dgvs, string sheet_prefix)
         {
-            var workbook = new XLWorkbook();
+            if (dgvs == null)
+                return;
+
             foreach (DataGridView dgv in dgvs)
             {
-                System.Data.DataTable dt = new System.Data.DataTable();
+                DataTable dt = new DataTable();
                 foreach (DataGridViewColumn col in dgv.Columns)
                 {
                     dt.Columns.Add(col.HeaderText);
-
                 }
+
                 foreach(DataGridViewRow row in dgv.Rows)
                 {
                     DataRow new_row = dt.NewRow();
                     foreach (DataGridViewCell cell in row.Cells)
                     {
-                        if (dgv.Columns[cell.ColumnIndex].Visible) new_row[cell.ColumnIndex] = (cell.Value == null  || cell.Value.ToString() == "NaN")? "" : cell.Value;
+                        if (dgv.Columns[cell.ColumnIndex].Visible)
+                            new_row[cell.ColumnIndex] = cell.Value == null || cell.Value.ToString() == "NaN" ? "" : cell.Value;
                     }
                     lock (dt) dt.Rows.Add(new_row);
                 }
-                foreach (DataGridViewColumn col in dgv.Columns) { if (!col.Visible) dt.Columns.Remove(col.HeaderText); }
 
-                var worksheet = workbook.Worksheets.Add(dt, dgv.Name);
-                foreach (var col in worksheet.Columns())
+                foreach (DataGridViewColumn col in dgv.Columns)
                 {
-                    double is_number;
-                    col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = Double.TryParse(worksheet.Row(2).Cell(col.ColumnNumber()).Value.ToString(), out is_number) ? XLCellValues.Number : XLCellValues.Text;
+                    if (!col.Visible)
+                        dt.Columns.Remove(col.HeaderText);
                 }
 
+                IXLWorksheet worksheet = null;
+                lock (workbook)
+                {
+                    worksheet = workbook.Worksheets.Add(dt, sheet_prefix.Substring(0, Math.Min(sheet_prefix.Length, 30 - dgv.Name.Length)) + "_" + dgv.Name);
+                }
+
+                foreach (var col in worksheet.Columns())
+                {
+                    try
+                    {
+                        col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = Double.TryParse(worksheet.Row(2).Cell(col.ColumnNumber()).Value.ToString(), out double is_number) ?
+                            XLCellValues.Number :
+                            XLCellValues.Text;
+                    }
+                    catch
+                    {
+                        col.Cells(2, worksheet.LastRowUsed().RowNumber()).DataType = XLCellValues.Text;
+                    }
+                }
             }
+        }
+
+        public void SaveToExcel(string filename)
+        {
             workbook.SaveAs(filename);
         }
     }

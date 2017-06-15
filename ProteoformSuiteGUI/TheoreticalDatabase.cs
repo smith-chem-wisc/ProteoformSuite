@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
@@ -44,7 +45,9 @@ namespace ProteoformSuiteGUI
 
         private void btn_Make_Databases_Click(object sender, EventArgs e)
         {
+            Cursor = Cursors.WaitCursor;
             RunTheGamut();
+            Cursor = Cursors.Default;
         }
 
         private void cmbx_DisplayWhichDB_SelectedIndexChanged(object sender, EventArgs e)
@@ -67,13 +70,13 @@ namespace ProteoformSuiteGUI
         public void load_dgv()
         {
             DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
-            this.initialize_table_bindinglist();
+            initialize_table_bindinglist();
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
         public List<DataGridView> GetDGVs()
         {
-            return new List<DataGridView>() { dgv_Database };
+            return new List<DataGridView>() { dgv_Database, dgv_unlocalizedModifications };
         }
 
         public void FillDataBaseTable(string table)
@@ -85,33 +88,23 @@ namespace ProteoformSuiteGUI
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
-        public void make_databases()
-        {
-            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
-            ((ProteoformSweet)MdiParent).experimentalTheoreticalComparison.ClearListsTablesFigures();
-            ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsTablesFigures();
-            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
-            tb_totalTheoreticalProteoforms.Text = SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
-        }
-
         public void initialize_table_bindinglist()
         {
             List<string> databases = new List<string> { "Target" };
             if (SaveState.lollipop.decoy_proteoform_communities.Keys.Count > 0)
-            foreach (string name in SaveState.lollipop.decoy_proteoform_communities.Keys)
+            {
+                foreach (string name in SaveState.lollipop.decoy_proteoform_communities.Keys)
+                {
                     databases.Add(name);
-            cmbx_DisplayWhichDB.DataSource = new BindingList<string>(databases.ToList());
+                }
+            }
+            cmbx_DisplayWhichDB.DataSource = new BindingList<string>(databases);
         }
 
         public void InitializeParameterSet()
         {
-            if (SaveState.lollipop.neucode_labeled)
-                btn_NeuCode_Lt.Checked = true;
-            else
-            {
-                btn_NeuCode_Lt.Checked = false;
-                btn_NaturalIsotopes.Checked = true;
-            }
+            btn_NeuCode_Lt.Checked = SaveState.lollipop.neucode_labeled;
+            btn_NaturalIsotopes.Checked = !SaveState.lollipop.neucode_labeled;
 
             nUD_MaxPTMs.Minimum = 0;
             nUD_MaxPTMs.Maximum = 5;
@@ -133,15 +126,20 @@ namespace ProteoformSuiteGUI
             tb_tableFilter.TextChanged -= tb_tableFilter_TextChanged;
             tb_tableFilter.Text = "";
             tb_tableFilter.TextChanged += tb_tableFilter_TextChanged;
+
+            tb_modTableFilter.TextChanged -= tb_modTableFilter_TextChanged;
+            tb_modTableFilter.Text = "";
+            tb_modTableFilter.TextChanged += tb_modTableFilter_TextChanged;
+
             tb_totalTheoreticalProteoforms.Text = SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
         }
 
         public void RunTheGamut()
         {
-            Cursor = Cursors.WaitCursor;
-            make_databases();
+            ClearListsTablesFigures(true);
+            SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
+            tb_totalTheoreticalProteoforms.Text = SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
             FillTablesAndCharts();
-            Cursor = Cursors.Default;
         }
 
         public bool ReadyToRunTheGamut()
@@ -149,19 +147,33 @@ namespace ProteoformSuiteGUI
             return SaveState.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory);
         }
 
-        public void ClearListsTablesFigures()
+        public void ClearListsTablesFigures(bool clear_following)
         {
             dgv_Database.DataSource = null;
             dgv_Database.Rows.Clear();
             dgv_loadFiles.DataSource = null;
             dgv_loadFiles.Rows.Clear();
+            dgv_unlocalizedModifications.DataSource = null;
+            dgv_unlocalizedModifications.Rows.Clear();
+
+            if (clear_following)
+            {
+                for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
+                {
+                    ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
+                    sweet.ClearListsTablesFigures(false);
+                }
+            }
         }
         
         public void FillTablesAndCharts()
         {
+            reload_database_list();
             DisplayUtility.FillDataGridView(dgv_Database, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Select(t => new DisplayTheoreticalProteoform(t)));
             initialize_table_bindinglist();
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
+            DisplayUtility.FillDataGridView(dgv_unlocalizedModifications, SaveState.lollipop.theoretical_database.unlocalized_lookup.Values.Select(m => new DisplayUnlocalizedModification(m)));
+            DisplayUnlocalizedModification.FormatUnlocalizedModificationTable(dgv_unlocalizedModifications);
         }
 
         #endregion Public Methods
@@ -283,6 +295,14 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.mod_types_to_exclude = substituteWhitespace.Replace(tb_modTypesToExclude.Text, "").Split(',');
         }
 
+        private void btn_downloadUniProtPtmList_Click(object sender, EventArgs e)
+        {
+            SaveState.lollipop.enter_uniprot_ptmlist();
+            DisplayUtility.FillDataGridView(dgv_loadFiles, SaveState.lollipop.get_files(SaveState.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
+            DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
+            btn_downloadUniProtPtmList.Enabled = false;
+        }
+
         #endregion LOAD DATABASES GRID VIEW Private Methods
 
         #region ADD/CLEAR Private Methods
@@ -313,12 +333,51 @@ namespace ProteoformSuiteGUI
 
         #endregion ADD/CLEAR Private Methods
 
-        private void btn_downloadUniProtPtmList_Click(object sender, EventArgs e)
+        #region Modification Names Private Methods
+
+        private void btn_saveModNames_Click(object sender, EventArgs e)
         {
-            SaveState.lollipop.enter_uniprot_ptmlist();
-            DisplayUtility.FillDataGridView(dgv_loadFiles, SaveState.lollipop.get_files(SaveState.lollipop.input_files, Lollipop.file_types[cmb_loadTable.SelectedIndex]).Select(f => new DisplayInputFile(f)));
-            DisplayInputFile.FormatInputFileTable(dgv_loadFiles, Lollipop.file_types[cmb_loadTable.SelectedIndex]);
-            btn_downloadUniProtPtmList.Enabled = false;
+            SaveFileDialog d = new SaveFileDialog();
+            d.Title = "Modification Names";
+            d.Filter = "Modification Names (*.modnames) | *.modnames";
+
+            if (d.ShowDialog() != DialogResult.OK)
+                return;
+
+            SaveState.lollipop.theoretical_database.save_unlocalized_names(d.FileName);
         }
+
+        private void btn_amendModNames_Click(object sender, EventArgs e)
+        {
+            SaveState.lollipop.theoretical_database.amend_unlocalized_names(Path.Combine(Environment.CurrentDirectory, "Mods", "stored_mods.modnames"));
+            MessageBox.Show("Successfully amended stored modification names.", "Amend Stored Mod Names");
+        }
+
+        private void btn_loadModNames_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog d = new OpenFileDialog();
+            d.Title = "Modification Names";
+            d.Filter = "Modification Names (*.modnames) | *.modnames";
+            d.Multiselect = false;
+
+            if (d.ShowDialog() != DialogResult.OK)
+                return;
+
+            SaveState.lollipop.theoretical_database.load_unlocalized_names(d.FileName);
+            DisplayUtility.FillDataGridView(dgv_unlocalizedModifications, SaveState.lollipop.theoretical_database.unlocalized_lookup.Values.Select(m => new DisplayUnlocalizedModification(m)));
+            DisplayUnlocalizedModification.FormatUnlocalizedModificationTable(dgv_unlocalizedModifications);
+        }
+
+        private void tb_modTableFilter_TextChanged(object sender, EventArgs e)
+        {
+            IEnumerable<object> selected_unmods = tb_modTableFilter.Text == "" ?
+                SaveState.lollipop.theoretical_database.unlocalized_lookup.Values :
+                ExtensionMethods.filter(SaveState.lollipop.theoretical_database.unlocalized_lookup.Values, tb_modTableFilter.Text);
+            DisplayUtility.FillDataGridView(dgv_unlocalizedModifications, selected_unmods.OfType<UnlocalizedModification>().Select(u => new DisplayUnlocalizedModification(u)));
+            DisplayUnlocalizedModification.FormatUnlocalizedModificationTable(dgv_unlocalizedModifications);
+        }
+
+        #endregion Modification Names Private Methods
+
     }
 }

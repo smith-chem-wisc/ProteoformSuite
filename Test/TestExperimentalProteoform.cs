@@ -52,7 +52,7 @@ namespace Test
         public static List<Component> generate_neucode_quantitative_components()
         {
             List<Component> components = new List<Component>();
-            InputFile inFile = new ProteoformSuiteInternal.InputFile("somepath", Labeling.NeuCode, Purpose.Quantification);
+            InputFile inFile = new InputFile("somepath", Labeling.NeuCode, Purpose.Quantification);
 
             Component light = new Component();
             Component heavy = new Component();
@@ -86,6 +86,7 @@ namespace Test
                 c.intensity_sum = starter_intensity;
                 c.rt_apex = starter_rt;
                 c.accepted = true;
+                c.input_file = new InputFile("fake.txt", Purpose.Identification);
                 components.Add(c);
             }
             return components;
@@ -110,6 +111,7 @@ namespace Test
         [Test]
         public void unlabeled_proteoform_calculate_properties()
         {
+            SaveState.lollipop.min_num_bioreps = 0;
             SaveState.lollipop.neucode_labeled = false;
             List<Component> components = generate_unlabeled_components(starter_mass);
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
@@ -270,6 +272,9 @@ namespace Test
             // in bounds highest monoisotopic error
             components[1].weighted_monoisotopic_mass = max_monoisotopic_mass + max_monoisotopic_mass / 1000000 * Convert.ToDouble(SaveState.lollipop.mass_tolerance);
             e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
+            e.manual_validation_id = "something";
+            e.manual_validation_quant = "something";
+            e.manual_validation_verification = "something";
             ExperimentalProteoform f = new ExperimentalProteoform(e);
             Assert.AreEqual(e.root, f.root);
             Assert.AreEqual(e.agg_intensity, f.agg_intensity);
@@ -282,6 +287,9 @@ namespace Test
             Assert.AreEqual(e.mass_shifted, f.mass_shifted);
             Assert.AreEqual(e.is_target, f.is_target);
             Assert.AreEqual(e.family, f.family);
+            Assert.AreEqual(e.manual_validation_id, f.manual_validation_id);
+            Assert.AreEqual(e.manual_validation_quant, f.manual_validation_quant);
+            Assert.AreEqual(e.manual_validation_verification, f.manual_validation_verification);
             Assert.AreNotEqual(e.aggregated_components.GetHashCode(), f.aggregated_components.GetHashCode());
             Assert.AreEqual(e.aggregated_components.Count, f.aggregated_components.Count);
             Assert.AreNotEqual(e.lt_quant_components.GetHashCode(), f.lt_quant_components.GetHashCode());

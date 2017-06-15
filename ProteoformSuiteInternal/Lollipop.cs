@@ -27,7 +27,7 @@ namespace ProteoformSuiteInternal
         public const double PROTON_MASS = 1.007276474;
 
         #endregion Constants
-        
+
         #region Input Files
 
         public List<InputFile> input_files = new List<InputFile>();
@@ -219,26 +219,29 @@ namespace ProteoformSuiteInternal
                 foreach (Component higher_component in higher_mass_components)
                 {
                     lock (lower_component) lock (higher_component) // Turns out the LINQ queries in here, especially for overlapping_charge_states, aren't thread safe
+                    {
+                        double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
+                        if (mass_difference < 6)
                         {
-                            double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
-                            if (mass_difference < 6)
+                            List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList();
+                            List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList();
+                            List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
+                            lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                            higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                            double lower_intensity = lower_component.intensity_sum_olcs;
+                            double higher_intensity = higher_component.intensity_sum_olcs;
+                            bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
+                            if (lower_intensity > 0 && higher_intensity > 0)
                             {
-                                List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList();
-                                List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList();
-                                List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
-                                double lower_intensity = lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                                double higher_intensity = higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                                bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
-                                if (lower_intensity > 0 && higher_intensity > 0)
-                                {
-                                    NeuCodePair pair = lower_intensity > higher_intensity ?
-                                        new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
-                                        new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
+                                NeuCodePair pair = lower_intensity > higher_intensity ?
+                                    new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
+                                    new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
 
-                                    lock (pairsInScanRange) pairsInScanRange.Add(pair);
-                                }
+                                lock (pairsInScanRange)
+                                    pairsInScanRange.Add(pair);
                             }
                         }
+                    }
                 }
             });
 
@@ -249,14 +252,15 @@ namespace ProteoformSuiteInternal
                 lock (destination)
                 {
                     if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + MONOISOTOPIC_UNIT_MASS // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
-                        && !destination.Any(p => p.id_heavy == pair.id_light && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity, is probably correct, and that that component should not get reuused as a light.)
+                        && !destination.Any(p => p.neuCodeHeavy.id == pair.neuCodeLight.id && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity, is probably correct, and that that component should not get reuused as a light.)
                     {
                         destination.Add(pair);
                     }
 
                     else
                     {
-                        lock (pairsInScanRange) pairsInScanRange.Remove(pair);
+                        lock (pairsInScanRange)
+                            pairsInScanRange.Remove(pair);
                     }
                 }
             }
@@ -268,7 +272,7 @@ namespace ProteoformSuiteInternal
         #region AGGREGATED PROTEOFORMS Public Fields
 
         public ProteoformCommunity target_proteoform_community = new ProteoformCommunity();
-        public Dictionary<string, ProteoformCommunity> decoy_proteoform_communities = new Dictionary<string, ProteoformCommunity> ();
+        public Dictionary<string, ProteoformCommunity> decoy_proteoform_communities = new Dictionary<string, ProteoformCommunity>();
         public string decoy_community_name_prefix = "Decoy_Proteoform_Community_";
         public List<Component> remaining_components = new List<Component>();
         public List<Component> remaining_verification_components = new List<Component>();
@@ -297,15 +301,29 @@ namespace ProteoformSuiteInternal
         public List<ExperimentalProteoform> aggregate_proteoforms(bool two_pass_validation, IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS)
         {
             List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(raw_neucode_pairs, raw_experimental_components, min_num_CS);
-            if (two_pass_validation) vetted_proteoforms = vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms);
-            else vetted_proteoforms = candidateExperimentalProteoforms;
+            vetted_proteoforms = two_pass_validation ?
+                vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms) :
+                candidateExperimentalProteoforms;
             target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
             {
                 community.experimental_proteoforms = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
             }
-            if (neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0) assignQuantificationComponents(vetted_proteoforms, raw_quantification_components);
+            if (neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0)
+            {
+                assignQuantificationComponents(vetted_proteoforms, raw_quantification_components);
+            }
             return vetted_proteoforms;
+        }
+
+        public void assign_best_components_for_manual_validation(IEnumerable<ExperimentalProteoform> experimental_proteoforms)
+        {
+            foreach (ExperimentalProteoform pf in experimental_proteoforms)
+            {
+                pf.manual_validation_id = pf.find_manual_inspection_component(pf.aggregated_components);
+                pf.manual_validation_verification = pf.find_manual_inspection_component(pf.lt_verification_components.Concat(pf.hv_verification_components));
+                pf.manual_validation_quant = pf.find_manual_inspection_component(pf.lt_quant_components.Concat(pf.hv_quant_components));
+            }
         }
 
         //Rooting each experimental proteoform is handled in addition of each NeuCode pair.
@@ -346,7 +364,11 @@ namespace ProteoformSuiteInternal
                 root = find_next_root(remaining_components, running);
             }
 
-            for (int i = 0; i < candidateExperimentalProteoforms.Count; i++) candidateExperimentalProteoforms[i].accession = "E" + i;
+            for (int i = 0; i < candidateExperimentalProteoforms.Count; i++)
+            {
+                candidateExperimentalProteoforms[i].accession = "E" + i;
+            }
+
             return candidateExperimentalProteoforms;
         }
 
@@ -461,7 +483,9 @@ namespace ProteoformSuiteInternal
                 raw_neucode_pairs.Clear();
                 process_neucode_components(raw_neucode_pairs);
             }
-            return aggregate_proteoforms(two_pass_validation, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_num_CS);
+            List<ExperimentalProteoform> new_exps = aggregate_proteoforms(two_pass_validation, raw_neucode_pairs, raw_experimental_components, raw_quantification_components, min_num_CS);
+            assign_best_components_for_manual_validation(new_exps);
+            return new_exps;
         }
 
         public void clear_aggregation()
@@ -528,14 +552,17 @@ namespace ProteoformSuiteInternal
             for (int i = 0; i < SaveState.lollipop.decoy_proteoform_communities.Count; i++)
             {
                 string key = decoy_community_name_prefix + i;
-                SaveState.lollipop.ed_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true));
-                if (i == 0) ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
+                SaveState.lollipop.ed_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true, Environment.CurrentDirectory, true));
+                if (i == 0)
+                    ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
             }
 
-            foreach (ProteoformRelation mass_difference in ed_relations.Values.SelectMany(v => v))
+            foreach (ProteoformRelation mass_difference in ed_relations.Values.SelectMany(v => v).ToList())
             {
                 foreach (Proteoform p in mass_difference.connected_proteoforms)
-                p.relationships.Add(mass_difference);
+                {
+                    p.relationships.Add(mass_difference);
+                }
             }
         }
 
@@ -546,13 +573,16 @@ namespace ProteoformSuiteInternal
             {
                 string key = decoy_community_name_prefix + i;
                 SaveState.lollipop.ef_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate_ef(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms));
-                if (i == 0) ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ef_relations[key]); //count from first decoy database (for histogram)
+                if (i == 0)
+                    ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ef_relations[key]); //count from first decoy database (for histogram)
             }
 
-            foreach (ProteoformRelation mass_difference in ef_relations.Values.SelectMany(v => v))
+            foreach (ProteoformRelation mass_difference in ef_relations.Values.SelectMany(v => v).ToList())
             {
                 foreach (Proteoform p in mass_difference.connected_proteoforms)
+                {
                     p.relationships.Add(mass_difference);
+                }
             }
         }
 
@@ -561,7 +591,9 @@ namespace ProteoformSuiteInternal
         #region PROTEOFORM FAMILIES Public Fields
 
         public string family_build_folder_path = "";
+
         public int deltaM_edge_display_rounding = 2;
+
         public static string[] node_positioning = new string[] 
         {
             "Arbitrary Circle",
@@ -569,21 +601,25 @@ namespace ProteoformSuiteInternal
             "Circle by Mass",
             //"Mass X-Axis" 
         };
+
         public static string[] node_labels = new string[] 
         {
             "Experimental ID",
             "Inferred Theoretical ID"
         };
+
         public static string[] edge_labels = new string[] 
         {
             "Mass Difference",
             "Modification IDs (omits edges with null IDs)"
         };
+
         public static List<string> gene_name_labels = new List<string>
         {
             "Primary, e.g. HOG1",
             "Ordered Locus, e.g. YLR113W"
         };
+
         public string[] likely_cleavages = new string[] 
         {
             "I",
@@ -614,7 +650,9 @@ namespace ProteoformSuiteInternal
 
         public void getBiorepsFractionsList(List<InputFile> input_files)  //this should be moved to the appropriate location. somewhere at the start of raw component/end of load component.
         {
-            if (!input_files.Any(f => f.purpose == Purpose.Quantification)) return;
+            if (!input_files.Any(f => f.purpose == Purpose.Quantification))
+                return;
+
             quantBioFracCombos = new Dictionary<int, List<int>>();
             List<int> bioreps = input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
             List<int> fractions = new List<int>();
@@ -629,7 +667,9 @@ namespace ProteoformSuiteInternal
 
         public void getObservationParameters(bool neucode_labeled, List<InputFile> input_files) //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
         {
-            if (!input_files.Any(f => f.purpose == Purpose.Quantification)) return;
+            if (!input_files.Any(f => f.purpose == Purpose.Quantification))
+                return;
+
             List<string> ltConditions = get_files(input_files, Purpose.Quantification).Select(f => f.lt_condition).Distinct().ToList();
             List<string> hvConditions = neucode_labeled ?
                 get_files(input_files, Purpose.Quantification).Select(f => f.hv_condition).Distinct().ToList() :
@@ -656,15 +696,18 @@ namespace ProteoformSuiteInternal
             condition_count = ltConditions.Count + hvConditions.Count;
 
             int minLt = ltConditionsBioReps.Values.Min(v => v.Count);
-            int minHv = 0;
-            if (hvConditionsBioReps.Values.Count() > 0)
-            {
-                minHv = hvConditionsBioReps.Values.Min(v => v.Count);
-                countOfBioRepsInOneCondition = Math.Min(minLt, minHv);
-            }
-            else
-                countOfBioRepsInOneCondition = minLt;
-            minBiorepsWithObservations = countOfBioRepsInOneCondition > 0 ? countOfBioRepsInOneCondition : 1;
+
+            int minHv = hvConditionsBioReps.Values.Count > 0 ?
+                hvConditionsBioReps.Values.Min(v => v.Count) :
+                0;
+
+            countOfBioRepsInOneCondition = hvConditionsBioReps.Values.Count > 0 ?
+                Math.Min(minLt, minHv) :
+                minLt;
+
+            minBiorepsWithObservations = countOfBioRepsInOneCondition > 0 ? 
+                countOfBioRepsInOneCondition : 
+                1;
         }
 
         #endregion QUANTIFICATION SETUP
@@ -714,22 +757,35 @@ namespace ProteoformSuiteInternal
 
         public void quantify()
         {
+
             IEnumerable<string> ltconditions = ltConditionsBioReps.Keys;
             IEnumerable<string> hvconditions = hvConditionsBioReps.Keys;
             List<string> conditions = ltconditions.Concat(hvconditions).Distinct().ToList();
 
             computeBiorepIntensities(target_proteoform_community.experimental_proteoforms, ltconditions, hvconditions);
+
             defineAllObservedIntensityDistribution(target_proteoform_community.experimental_proteoforms, logIntensityHistogram);
+
             satisfactoryProteoforms = determineProteoformsMeetingCriteria(conditions, target_proteoform_community.experimental_proteoforms, observation_requirement, minBiorepsWithObservations);
+
             defineSelectObservedIntensityDistribution(satisfactoryProteoforms, logSelectIntensityHistogram);
+
             defineBackgroundIntensityDistribution(neucode_labeled, quantBioFracCombos, satisfactoryProteoforms, backgroundShift, backgroundWidth);
+
             computeProteoformTestStatistics(neucode_labeled, satisfactoryProteoforms, bkgdAverageIntensity, bkgdStDev, numerator_condition, denominator_condition, sKnot_minFoldChange);
+
             computeSortedTestStatistics(satisfactoryProteoforms);
+
             offsetFDR = computeFoldChangeFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics, satisfactoryProteoforms, permutedTestStatistics, offsetTestStatistics);
+
             computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, sortedProteoformTestStatistics, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity);
+
             observedProteins = getProteins(target_proteoform_community.experimental_proteoforms.Where(x => x.accepted));
+
             quantifiedProteins = getProteins(satisfactoryProteoforms);
+
             inducedOrRepressedProteins = getInducedOrRepressedProteins(satisfactoryProteoforms, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity);
+
         }
 
         public void computeBiorepIntensities(IEnumerable<ExperimentalProteoform> experimental_proteoforms, IEnumerable<string> ltconditions, IEnumerable<string> hvconditions)
@@ -879,8 +935,8 @@ namespace ProteoformSuiteInternal
         public List<ProteinWithGoTerms> getInducedOrRepressedProteins(IEnumerable<ExperimentalProteoform> satisfactoryProteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
         {
             return getInterestingProteoforms(satisfactoryProteoforms, minProteoformAbsLogFoldChange, maxProteoformFDR, minProteoformIntensity)
-                .Select(p => p.family)
-                .SelectMany(pf => pf.theoretical_proteoforms)
+                .Where(pf => pf.linked_proteoform_references != null && pf.linked_proteoform_references.FirstOrDefault() as TheoreticalProteoform != null)
+                .Select(pf => pf.linked_proteoform_references.First() as TheoreticalProteoform)
                 .SelectMany(t => t.ExpandedProteinList)
                 .DistinctBy(pwg => pwg.Accession.Split('_')[0])
                 .ToList();

@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Chemistry;
+using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
+using UsefulProteomicsDatabases;
 
 namespace ProteoformSuiteInternal
 {
@@ -31,6 +34,8 @@ namespace ProteoformSuiteInternal
         public Proteoform[] connected_proteoforms = new Proteoform[2];
         public PtmSet candidate_ptmset = null;
         public PtmSet represented_ptmset = null;
+        private static ChemicalFormula CH2 = null;
+        private static ChemicalFormula HPO3 = null;
 
         #endregion Fields
 
@@ -39,7 +44,7 @@ namespace ProteoformSuiteInternal
         public int InstanceId { get; set; }
         public double DeltaMass { get; set; }
         public DeltaMassPeak peak { get; set; }
-        public List<ProteoformRelation> nearby_relations { get; set; }
+        public List<ProteoformRelation> nearby_relations { get; set; } // cleared after accepting peaks
         public int nearby_relations_count { get; set; } // count is the "running sum"; relations are not saved
         public bool outside_no_mans_land { get; set; }
         public int lysine_count { get; set; }
@@ -55,7 +60,7 @@ namespace ProteoformSuiteInternal
 
         #region Public Constructors
 
-        public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass)
+        public ProteoformRelation(Proteoform pf1, Proteoform pf2, ProteoformComparison relation_type, double delta_mass, string current_directory)
         {
             connected_proteoforms[0] = pf1;
             connected_proteoforms[1] = pf2;
@@ -64,13 +69,21 @@ namespace ProteoformSuiteInternal
             InstanceId = instanceCounter;
             lock (SaveState.lollipop) instanceCounter += 1; //Not thread safe
 
+            if (CH2 == null || HPO3 == null)
+            {
+                Loaders.LoadElements(Path.Combine(current_directory, "elements.dat"));
+                CH2 = ChemicalFormula.ParseFormula("C1 H2");
+                HPO3 = ChemicalFormula.ParseFormula("H1 O3 P1");
+            }
+
             if (SaveState.lollipop.neucode_labeled)
             {
                 lysine_count = pf1.lysine_count;
             }
 
             if ((relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy) 
-                && SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out List<PtmSet> candidate_sets))
+                && SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out List<PtmSet> candidate_sets)
+                && pf2 as TheoreticalProteoform != null)
             {
                 TheoreticalProteoform t = pf2 as TheoreticalProteoform;
                 double mass_tolerance = t.modified_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
@@ -80,9 +93,16 @@ namespace ProteoformSuiteInternal
                     .FirstOrDefault();
             }
 
-            outside_no_mans_land =
-                Math.Abs(delta_mass - Math.Truncate(delta_mass)) >= SaveState.lollipop.no_mans_land_upperBound ||
-                Math.Abs(delta_mass - Math.Truncate(delta_mass)) <= SaveState.lollipop.no_mans_land_lowerBound;
+            // Start the model (0 Da) at the mass defect of CH2 or HPO3 itself, allowing the peak width tolerance on either side
+            double half_peak_width = RelationType == ProteoformComparison.ExperimentalTheoretical || RelationType == ProteoformComparison.ExperimentalDecoy ?
+                SaveState.lollipop.peak_width_base_et / 2 :
+                SaveState.lollipop.peak_width_base_ee / 2;
+            double low_decimal_bound = half_peak_width + ((CH2.MonoisotopicMass - Math.Truncate(CH2.MonoisotopicMass)) / CH2.MonoisotopicMass) * (Math.Abs(delta_mass) <= CH2.MonoisotopicMass ? CH2.MonoisotopicMass : Math.Abs(delta_mass));
+            double high_decimal_bound = 1 - half_peak_width + ((HPO3.MonoisotopicMass - Math.Ceiling(HPO3.MonoisotopicMass)) / HPO3.MonoisotopicMass) * (Math.Abs(delta_mass) <= HPO3.MonoisotopicMass ? HPO3.MonoisotopicMass : Math.Abs(delta_mass));
+            double delta_mass_decimal = Math.Abs(delta_mass - Math.Truncate(delta_mass));
+
+            outside_no_mans_land = delta_mass_decimal <= low_decimal_bound || delta_mass_decimal >= high_decimal_bound 
+                || high_decimal_bound <= low_decimal_bound;
         }
 
         #endregion Public Constructors
