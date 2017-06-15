@@ -167,7 +167,7 @@ namespace Test
             SaveState.lollipop.neucode_labeled = true;
             test_community.experimental_proteoforms = new ExperimentalProteoform[] {
                 ConstructorsForTesting. ExperimentalProteoform("A1", 1000.0, 1, true),
-                ConstructorsForTesting. ExperimentalProteoform("A2", 1000.0, 2, true),
+                ConstructorsForTesting. ExperimentalProteoform("A2", 1000.0, 5, true),
                 ConstructorsForTesting. ExperimentalProteoform("A3", 1000.0, 1, true),
                 ConstructorsForTesting. ExperimentalProteoform("A4", 1000.0, 2, true)
             };
@@ -179,7 +179,7 @@ namespace Test
             Assert.False(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[1], ProteoformComparison.ExperimentalExperimental));
             Assert.True(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[2], ProteoformComparison.ExperimentalExperimental));
             Assert.False(test_community.allowed_relation(test_community.experimental_proteoforms[0], test_community.experimental_proteoforms[3], ProteoformComparison.ExperimentalExperimental));
-            Assert.AreEqual(4, unequal_relations.Count);
+            Assert.AreEqual(2, unequal_relations.Count); //only 2 relations are > 3 lysines apart
 
             //Two equal, two unequal lysine count. But one each has mass_difference > 250, so no relations
             test_community = new ProteoformCommunity();
