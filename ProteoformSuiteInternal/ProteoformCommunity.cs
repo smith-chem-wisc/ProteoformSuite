@@ -99,7 +99,7 @@ namespace ProteoformSuiteInternal
                     return pf1.modified_mass >= pf2.modified_mass
                         && pf1 != pf2
                         && (pf1.modified_mass - pf2.modified_mass <= SaveState.lollipop.ee_max_mass_difference)
-                        && (!SaveState.lollipop.neucode_labeled || pf1.lysine_count != pf2.lysine_count)
+                        && (!SaveState.lollipop.neucode_labeled || Math.Abs(pf1.lysine_count - pf2.lysine_count) > SaveState.lollipop.missed_lysines)
                         && (SaveState.lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) > SaveState.lollipop.ee_max_RetentionTime_difference * 2)
                         && (!SaveState.lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) < SaveState.lollipop.ee_max_RetentionTime_difference);
 
