@@ -112,24 +112,17 @@ namespace ProteoformSuiteInternal
 
             CalibrationFunction bestMS1predictor = new IdentityCalibrationFunction();
             double bestMS1MSE = bestMS1predictor.GetMSE(testList1);
-            List<bool[]> boolStuffms1 = new List<bool[]>
-            {
-                new bool[] {true, true, false, false},
-                new bool[] {true, true, true, true},
-            };
             if (trainList1.Count > 0)
-                foreach (var boolStuff in boolStuffms1)
+            {
+                var ms1regressorRF = new RandomForestCalibrationFunction(40, 10, new bool[] { true, true });
+                ms1regressorRF.Train(trainList1);
+                var MS1mse = ms1regressorRF.GetMSE(testList1);
+                if (MS1mse < bestMS1MSE)
                 {
-                    var ms1regressorRF = new RandomForestCalibrationFunction(40, 10, boolStuff);
-                    ms1regressorRF.Train(trainList1);
-                    var MS1mse = ms1regressorRF.GetMSE(testList1);
-                    if (MS1mse < bestMS1MSE)
-                    {
-                        bestMS1MSE = MS1mse;
-                        bestMS1predictor = ms1regressorRF;
-                    }
+                    bestMS1MSE = MS1mse;
+                    bestMS1predictor = ms1regressorRF;
                 }
-
+            }
             CalibrationFunction bestCf = bestMS1predictor;
 
             CalibrateHitsAndComponents(bestCf, filename);
@@ -141,7 +134,7 @@ namespace ProteoformSuiteInternal
         {
             foreach (TopDownHit hit in SaveState.lollipop.td_hits_calibration.Where(h => h.filename == filename))
             {
-                hit.mz = hit.mz - bestCf.Predict(new double[] { hit.mz, hit.ms1Scan.retention_time, hit.ms1Scan.TIC, hit.ms1Scan.injection_time });
+                hit.mz = hit.mz - bestCf.Predict(new double[] { hit.mz, hit.ms1Scan.retention_time, });
             }
             foreach (Component c in SaveState.lollipop.calibration_components.Where(h => h.input_file.filename == filename))
             {
@@ -156,12 +149,12 @@ namespace ProteoformSuiteInternal
                         scan = myMsDataFile.GetOneBasedScan(scanNumber);
                         ms1Scan = scan.MsnOrder == 1;
                     }
-                    cs.mz_centroid = cs.mz_centroid - bestCf.Predict(new double[] { cs.mz_centroid, scan.RetentionTime, scan.TotalIonCurrent, scan.InjectionTime ?? double.NaN });
+                    cs.mz_centroid = cs.mz_centroid - bestCf.Predict(new double[] { cs.mz_centroid, scan.RetentionTime});
                 }
             }
             foreach (var a in myMsDataFile.Where(s => s.MsnOrder == 1))
             {
-                Func<IMzPeak, double> theFunc = x => x.Mz - bestCf.Predict(new double[] { x.Mz, a.RetentionTime, a.TotalIonCurrent, a.InjectionTime ?? double.NaN });
+                Func<IMzPeak, double> theFunc = x => x.Mz - bestCf.Predict(new double[] { x.Mz, a.RetentionTime});
                 a.TransformByApplyingFunctionToSpectra(theFunc);
             }
         }
@@ -359,7 +352,7 @@ namespace ProteoformSuiteInternal
                             {
                                 peaksAddedHashSet.Add(theTuple);
                                 highestKnownChargeForThisPeptide = Math.Max(highestKnownChargeForThisPeptide, chargeToLookAt);
-                                trainingPointsToAverage.Add(new LabeledMs1DataPoint(closestPeakMZ, double.NaN, double.NaN, double.NaN, closestPeakMZ - theMZ, null));
+                                trainingPointsToAverage.Add(new LabeledMs1DataPoint(closestPeakMZ, double.NaN, closestPeakMZ - theMZ, null));
                             }
                             else
                                 break;
@@ -384,8 +377,6 @@ namespace ProteoformSuiteInternal
                             countForThisScan++;
                             yield return new LabeledMs1DataPoint(trainingPointsToAverage.Select(b => b.mz).Average(),
                                                                  fullMS1scan.RetentionTime,
-                                                                 fullMS1scan.TotalIonCurrent,
-                                                                 fullMS1scan.InjectionTime,
                                                                  trainingPointsToAverage.Select(b => b.Label).Median(),
                                                                  identification);
                         }
