@@ -32,7 +32,7 @@ namespace ProteoformSuiteInternal
                     "Unknown" : 
                     ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" :
-                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => ptm.modification.id));
+                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id));
             }
         }
 
@@ -98,15 +98,17 @@ namespace ProteoformSuiteInternal
                     .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(x.mass - deltaM) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
 
-                ModificationWithMass best_loss = null;
-                foreach (ModificationWithMass m in all_mods_with_mass)
+                PtmSet best_loss = null;
+                foreach (PtmSet set in all_possible_ptmsets)
                 {
-                    bool within_loss_tolerance = deltaM >= -m.monoisotopicMass - mass_tolerance && deltaM <= -m.monoisotopicMass + mass_tolerance;
-                    bool can_be_removed = this.ptm_set.ptm_combination.Select(ptm => ptm.modification).Contains(m);
-                    bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-m.monoisotopicMass)) < Math.Abs(deltaM - (-best_loss.monoisotopicMass));
+                    bool within_loss_tolerance = deltaM >= -set.mass - mass_tolerance && deltaM <= -set.mass + mass_tolerance;
+                    var these_mods = this.ptm_set.ptm_combination.Select(ptm => ptm.modification);
+                    var those_mods = set.ptm_combination.Select(ptm => ptm.modification); // all must be in the current set to remove them
+                    bool can_be_removed = those_mods.All(m => these_mods.Contains(m));
+                    bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-set.mass)) < Math.Abs(deltaM - (-best_loss.mass));
                     if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)
                     {
-                        best_loss = m;
+                        best_loss = set;
                     }
                 }
 
@@ -120,11 +122,24 @@ namespace ProteoformSuiteInternal
                 if (best_addition == null && best_loss == null)
                     continue;
 
-                PtmSet with_mod_change = best_loss != null ?
-                    new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Where(ptm => !ptm.modification.Equals(best_loss)))) :
-                    new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Concat(best_addition.ptm_combination).Where(ptm => ptm.modification.monoisotopicMass != 0).ToList()));
+                // Make the new ptmset with ptms removed or added
+                PtmSet with_mod_change = null;
+                if (best_loss == null)
+                {
+                    with_mod_change = new PtmSet(new List<Ptm>(this.ptm_set.ptm_combination.Concat(best_addition.ptm_combination).Where(ptm => ptm.modification.monoisotopicMass != 0).ToList()));
+                }
+                else
+                {
+                    List<Ptm> new_combo = new List<Ptm>(this.ptm_set.ptm_combination);
+                    foreach (Ptm ptm in best_loss.ptm_combination)
+                    {
+                        new_combo.Remove(new_combo.FirstOrDefault(asdf => asdf.modification == ptm.modification));
+                    }
+                    with_mod_change = new PtmSet(new_combo);
+                }
+
                 lock (r) lock (e)
-                        assign_pf_identity(e, this, with_mod_change, r, sign, best_loss != null ? new PtmSet(new List<Ptm> { new Ptm(-1, best_loss) }) : best_addition);
+                    assign_pf_identity(e, this, with_mod_change, r, sign, best_loss != null ? best_loss : best_addition);
                 identified.Add(e);
             }
             return identified;
@@ -142,13 +157,15 @@ namespace ProteoformSuiteInternal
             {
                 List<ModificationWithMass> mods_in_set = set.ptm_combination.Select(ptm => ptm.modification).ToList();
 
-                int rank_sum = additional_ptm_penalty * (set.ptm_combination.Count - 1); // penalize additional PTMs
+                int rank_sum = additional_ptm_penalty * (set.ptm_combination.Sum(m => SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m.modification, out UnlocalizedModification x) ? x.ptm_count : 1) - 1); // penalize additional PTMs
 
                 foreach (ModificationWithMass m in mods_in_set)
                 {
+                    int mod_rank = SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification u) ? u.ptm_rank : SaveState.lollipop.modification_ranks[m.monoisotopicMass];
+
                     if (m.monoisotopicMass == 0)
                     {
-                        rank_sum += SaveState.lollipop.modification_ranks[m.monoisotopicMass];
+                        rank_sum += mod_rank;
                         continue;
                     }
 
@@ -157,7 +174,8 @@ namespace ProteoformSuiteInternal
                     bool motif_matches_c_terminus = c_terminal_degraded_aas < theoretical_base_sequence.Length && m.motif.Motif == theoretical_base_sequence[theoretical_base_sequence.Length - c_terminal_degraded_aas - 1].ToString();
                     bool cannot_be_degradation = !motif_matches_n_terminus && !motif_matches_c_terminus;
                     if (m.modificationType == "Missing" && cannot_be_degradation
-                        || m.modificationType == "AminoAcid" && !could_be_m_retention)
+                        || m.modificationType == "AminoAcid" && !could_be_m_retention
+                        || u != null ? u.require_proteoform_without_mod : false && set.ptm_combination.Count > 1)
                     {
                         rank_sum = Int32.MaxValue;
                         break;
@@ -173,19 +191,17 @@ namespace ProteoformSuiteInternal
                     // In order of likelihood:
                     // 1. First, we observe I/L/A cleavage to be the most common, 
                     // 1. "Fatty Acid" is a list of modifications prevalent in yeast or bacterial analysis, 
-                    // 1. and unlocalized modifications are a subset of modifications in the intact_mods.txt list that should be included in intact analysis
+                    // 1. and unlocalized modifications are a subset of modifications in the intact_mods.txt list that should be included in intact analysis (handled in unlocalized modification)
                     // 2. Second, other degradations and methionine cleavage are weighted mid-level
-                    // 3. Missed monoisotopic errors are considered, but weighted towards the bottom. This should allow missed monoisotopics with common modifications like oxidation, but not rare ones.
-                    if (likely_cleavage_site || m.modificationType == "FattyAcid" || m.modificationType == "Unlocalized")  
+                    // 3. Missed monoisotopic errors are considered, but weighted towards the bottom. This should allow missed monoisotopics with common modifications like oxidation, but not rare ones.  (handled in unlocalized modification)
+                    if (likely_cleavage_site)  
                         rank_sum += SaveState.lollipop.mod_rank_first_quartile / 2;
                     else if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation)
                         rank_sum += SaveState.lollipop.mod_rank_second_quartile;
-                    else if (m.modificationType == "Deconvolution Error")
-                        rank_sum += SaveState.lollipop.mod_rank_third_quartile;
                     else
                         rank_sum += known_mods.Concat(SaveState.lollipop.theoretical_database.variableModifications).Contains(m) ?
-                            SaveState.lollipop.modification_ranks[m.monoisotopicMass] :
-                            SaveState.lollipop.modification_ranks[m.monoisotopicMass] + SaveState.lollipop.mod_rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
+                            mod_rank :
+                            mod_rank + SaveState.lollipop.mod_rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
                 }
 
                 if (rank_sum <= SaveState.lollipop.mod_rank_sum_threshold)

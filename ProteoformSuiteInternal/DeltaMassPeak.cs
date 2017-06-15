@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
@@ -54,15 +53,16 @@ namespace ProteoformSuiteInternal
                 peak_relation_group_count >= SaveState.lollipop.min_peak_count_et :
                 peak_relation_group_count >= SaveState.lollipop.min_peak_count_ee;
 
-            List<PtmSet> candidates;
-            if (SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(DeltaMass, 1), out candidates))
+            possiblePeakAssignments = new List<PtmSet>();
+            if (SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(DeltaMass, 1), out List<PtmSet> candidates))
             {
                 possiblePeakAssignments = candidates.Where(c => RelationType == ProteoformComparison.ExperimentalTheoretical || RelationType == ProteoformComparison.ExperimentalDecoy ?
-                        Math.Abs(DeltaMass - c.mass) <= 0.05 :
-                        Math.Abs(Math.Abs(DeltaMass) - Math.Abs(c.mass)) <= 0.05).ToList();
+                    Math.Abs(DeltaMass - c.mass) <= 0.05 :
+                    Math.Abs(Math.Abs(DeltaMass) - Math.Abs(c.mass)) <= 0.05).ToList();
             }
-            else possiblePeakAssignments = new List<PtmSet>();
-            possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.Select(ptmset => String.Join(";", ptmset.ptm_combination.Select(m => m.modification.id)))) + "]";
+            possiblePeakAssignments_string = "[" + String.Join("][", possiblePeakAssignments.Select(ptmset => 
+                String.Join(";", ptmset.ptm_combination.Select(ptm => 
+                    SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id))).Distinct()) + "]";
         }
 
         #endregion Public Constructor

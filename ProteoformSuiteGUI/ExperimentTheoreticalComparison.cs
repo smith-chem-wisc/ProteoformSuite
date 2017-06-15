@@ -17,6 +17,7 @@ namespace ProteoformSuiteGUI
 
         private RelationUtility relationUtility;
         private List<DisplayProteoformRelation> displayRelations = new List<DisplayProteoformRelation>();
+        private List<ProteoformRelation> et_histogram_from_unmod = new List<ProteoformRelation>();
 
         #endregion Private Fields
 
@@ -39,18 +40,16 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return SaveState.lollipop.et_relations.Count == 0 && SaveState.lollipop.target_proteoform_community.has_e_and_t_proteoforms;
+            return SaveState.lollipop.target_proteoform_community.has_e_and_t_proteoforms;
         }
 
         public void RunTheGamut()
         {
-            Cursor = Cursors.WaitCursor;
-            SaveState.lollipop.et_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true);
+            ClearListsTablesFigures(true);
+            SaveState.lollipop.et_relations = SaveState.lollipop.target_proteoform_community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, true);
             SaveState.lollipop.relate_ed();
             SaveState.lollipop.et_peaks = SaveState.lollipop.target_proteoform_community.accept_deltaMass_peaks(SaveState.lollipop.et_relations, SaveState.lollipop.ed_relations);
-            ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
             FillTablesAndCharts();
-            Cursor = Cursors.Default;
         }
 
         public void FillTablesAndCharts()
@@ -71,9 +70,10 @@ namespace ProteoformSuiteGUI
             return new List<DataGridView>() { dgv_ET_Relations, dgv_ET_Peak_List };
         }
 
-        public void ClearListsTablesFigures()
+        public void ClearListsTablesFigures(bool clear_following)
         {
             SaveState.lollipop.clear_et();
+            et_histogram_from_unmod.Clear();
 
             foreach (var series in ct_ET_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_ET_peakList.Series) series.Points.Clear();
@@ -82,10 +82,33 @@ namespace ProteoformSuiteGUI
             dgv_ET_Peak_List.DataSource = null;
             dgv_ET_Relations.Rows.Clear();
             dgv_ET_Peak_List.Rows.Clear();
+
+            if (clear_following)
+            {
+                for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
+                {
+                    ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
+                    if (sweet as ExperimentExperimentComparison == null)
+                        sweet.ClearListsTablesFigures(false);
+                }
+            }
         }
 
         public void InitializeParameterSet()
         {
+            //MASS WINDOW
+            //only do this if ET hasn't already been run
+            nUD_ET_Lower_Bound.Minimum = -2000;
+            nUD_ET_Lower_Bound.Maximum = 0;
+            if (!SaveState.lollipop.neucode_labeled) SaveState.lollipop.et_low_mass_difference = -50;
+            nUD_ET_Lower_Bound.Value = Convert.ToDecimal(SaveState.lollipop.et_low_mass_difference); // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
+
+            nUD_ET_Upper_Bound.Minimum = 0;
+            nUD_ET_Upper_Bound.Maximum = 2000;
+            if (!SaveState.lollipop.neucode_labeled) SaveState.lollipop.et_high_mass_difference = 150;
+            nUD_ET_Upper_Bound.Value = Convert.ToDecimal(SaveState.lollipop.et_high_mass_difference); // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
+
+            //Other stuff
             yMaxET.Minimum = 0;
             yMaxET.Maximum = 1000;
             yMaxET.Value = 100; // scaling for y-axis of displayed ET Histogram of all ET pairs
@@ -95,28 +118,22 @@ namespace ProteoformSuiteGUI
             yMinET.Value = 0; // scaling for y-axis of displayed ET Histogram of all ET pairs
 
             xMaxET.Minimum = xMinET.Value;
-            xMaxET.Maximum = 500;
+            xMaxET.Maximum = nUD_ET_Upper_Bound.Maximum;
             xMaxET.Value = nUD_ET_Upper_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
             xMinET.Minimum = -500;
             xMinET.Maximum = xMaxET.Value;
             xMinET.Value = nUD_ET_Lower_Bound.Value; // scaling for x-axis of displayed ET Histogram of all ET pairs
 
-            nUD_NoManLower.Minimum = 00m;
-            nUD_NoManLower.Maximum = 0.49m;
-            nUD_NoManLower.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_lowerBound); // lower bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
-
-            nUD_NoManUpper.Minimum = 0.50m;
-            nUD_NoManUpper.Maximum = 1.00m;
-            nUD_NoManUpper.Value = Convert.ToDecimal(SaveState.lollipop.no_mans_land_upperBound); // upper bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
-
             nUD_PeakWidthBase.Minimum = 0.001m;
             nUD_PeakWidthBase.Maximum = 0.5000m;
             nUD_PeakWidthBase.Value = Convert.ToDecimal(SaveState.lollipop.peak_width_base_et); // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
 
+            nUD_PeakCountMinThreshold.ValueChanged -= nUD_PeakCountMinThreshold_ValueChanged;
             nUD_PeakCountMinThreshold.Minimum = 0;
             nUD_PeakCountMinThreshold.Maximum = 1000;
             nUD_PeakCountMinThreshold.Value = Convert.ToDecimal(SaveState.lollipop.min_peak_count_et); // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.
+            nUD_PeakCountMinThreshold.ValueChanged += nUD_PeakCountMinThreshold_ValueChanged;
 
             tb_peakTableFilter.TextChanged -= tb_peakTableFilter_TextChanged;
             tb_peakTableFilter.Text = "";
@@ -125,18 +142,6 @@ namespace ProteoformSuiteGUI
             tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
             tb_relationTableFilter.Text = "";
             tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
-
-            //MASS WINDOW
-            //only do this if ET hasn't already been run
-            nUD_ET_Lower_Bound.Minimum = -500;
-            nUD_ET_Lower_Bound.Maximum = 0;
-            if (!SaveState.lollipop.neucode_labeled) SaveState.lollipop.et_low_mass_difference = -50;
-            nUD_ET_Lower_Bound.Value = Convert.ToDecimal(SaveState.lollipop.et_low_mass_difference); // maximum delta mass for theoretical proteoform that has mass LOWER than the experimental protoform mass
-
-            nUD_ET_Upper_Bound.Minimum = 0;
-            nUD_ET_Upper_Bound.Maximum = 500;
-            if (!SaveState.lollipop.neucode_labeled) SaveState.lollipop.et_high_mass_difference = 150;
-            nUD_ET_Upper_Bound.Value = Convert.ToDecimal(SaveState.lollipop.et_high_mass_difference); // maximum delta mass for theoretical proteoform that has mass HIGHER than the experimental protoform mass
         }
 
         #endregion Public Methods
@@ -150,16 +155,19 @@ namespace ProteoformSuiteGUI
 
         private void bt_compare_et_Click(object sender, EventArgs e)
         {
-            if (SaveState.lollipop.target_proteoform_community.has_e_and_t_proteoforms)
+            if (ReadyToRunTheGamut())
             {
+                Cursor = Cursors.WaitCursor;
                 shift_masses();
-                ClearListsTablesFigures();
                 RunTheGamut();
                 xMaxET.Value = (decimal)SaveState.lollipop.et_high_mass_difference;
                 xMinET.Value = (decimal)SaveState.lollipop.et_low_mass_difference;
+                Cursor = Cursors.Default;
             }
-            else if (SaveState.lollipop.target_proteoform_community.has_e_proteoforms) MessageBox.Show("Go back and create a theoretical database.");
-            else MessageBox.Show("Go back and aggregate experimental proteoforms.");
+            else if (SaveState.lollipop.target_proteoform_community.has_e_proteoforms)
+                MessageBox.Show("Go back and create a theoretical database.");
+            else
+                MessageBox.Show("Go back and aggregate experimental proteoforms.");
         }
 
         //shifts any mass shifts that have been changed from 0 in dgv
@@ -182,10 +190,7 @@ namespace ProteoformSuiteGUI
                     }
                     peak.shift_experimental_masses(int_mass_shifter, SaveState.lollipop.neucode_labeled);
                 }
-                ((ProteoformSweet)MdiParent).aggregatedProteoforms.ClearListsTablesFigures();
-                ((ProteoformSweet)MdiParent).experimentExperimentComparison.ClearListsTablesFigures();
-                ((ProteoformSweet)MdiParent).proteoformFamilies.ClearListsTablesFigures();
-                ((ProteoformSweet)MdiParent).quantification.ClearListsTablesFigures();
+                ClearListsTablesFigures(true);
                 SaveState.lollipop.regroup_components(SaveState.lollipop.neucode_labeled, SaveState.lollipop.validate_proteoforms, SaveState.lollipop.input_files, SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, SaveState.lollipop.min_num_CS);
             }
         }
@@ -274,6 +279,16 @@ namespace ProteoformSuiteGUI
             dgv_ET_Peak_List.Refresh();
         }
 
+        private void ET_Peak_List_DirtyStateChanged(object sender, EventArgs e)
+        {
+            relationUtility.peak_acceptability_change(dgv_ET_Peak_List);
+            Parallel.ForEach(SaveState.lollipop.ed_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
+            dgv_ET_Relations.Refresh();
+            dgv_ET_Peak_List.Refresh();
+            update_figures_of_merit();
+            (MdiParent as ProteoformSweet).proteoformFamilies.ClearListsTablesFigures(true);
+        }
+
         #endregion ET Peak List Private Methods
 
         #region Histogram Private Methods
@@ -295,11 +310,11 @@ namespace ProteoformSuiteGUI
 
         private void GraphETRelations()
         {
-            DisplayUtility.GraphRelationsChart(ct_ET_Histogram, SaveState.lollipop.et_relations, "relations");
+            DisplayUtility.GraphRelationsChart(ct_ET_Histogram, SaveState.lollipop.et_relations, "relations", true);
             ct_ET_Histogram.Series["relations"].Enabled = true;
             if (SaveState.lollipop.ed_relations.Count > 0)
             {
-                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, SaveState.lollipop.ed_relations[SaveState.lollipop.decoy_community_name_prefix + "0"], "decoys");
+                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, SaveState.lollipop.ed_relations[SaveState.lollipop.decoy_community_name_prefix + "0"], "decoys", true);
                 ct_ET_Histogram.Series["decoys"].Enabled = false;
                 cb_view_decoy_histogram.Enabled = true;
             }
@@ -356,20 +371,48 @@ namespace ProteoformSuiteGUI
             else if (!cb_Graph_lowerThreshold.Checked) ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Clear();
         }
 
+        //Special histogram counting relations of mass difference from unmodified
+        private void cb_discoveryHistogram_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cb_discoveryHistogram.Checked)
+            {
+                Cursor = Cursors.WaitCursor;
+                if (et_histogram_from_unmod.Count == 0)
+                {
+                    ProteoformCommunity community = new ProteoformCommunity();
+                    et_histogram_from_unmod = community.relate(SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Where(ex => ex.accepted).ToArray(), SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.ptm_set.mass == 0).Select(t => new Proteoform(t.accession, t.unmodified_mass, t.lysine_count, t.is_target)).ToArray(), ProteoformComparison.ExperimentalTheoretical, false, Environment.CurrentDirectory, false);
+                }
+                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, et_histogram_from_unmod, "relations", true);
+
+                // Show the raw relations in the table
+                tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
+                tb_relationTableFilter.Text = "";
+                tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
+
+                displayRelations = et_histogram_from_unmod.Select(r => new DisplayProteoformRelation(r)).ToList();
+                DisplayUtility.FillDataGridView(dgv_ET_Relations, displayRelations);
+
+                // Get rid of the stripline by default
+                cb_Graph_lowerThreshold.Checked = false;
+                Cursor = Cursors.Default;
+            }
+            else
+            {
+                DisplayUtility.GraphRelationsChart(ct_ET_Histogram, SaveState.lollipop.et_relations, "relations", true);
+                FillETRelationsGridView();
+                cb_Graph_lowerThreshold.Checked = true;
+                tb_relationTableFilter.TextChanged -= tb_relationTableFilter_TextChanged;
+                tb_relationTableFilter.Text = "";
+                tb_relationTableFilter.TextChanged += tb_relationTableFilter_TextChanged;
+            }
+        }
+
         #endregion Histogram Private Methods
 
         #region Parameters Private Methods
 
         // bound for the range of decimal values that is impossible to achieve chemically. these would be artifacts
-        private void nUD_NoManLower_ValueChanged(object sender, EventArgs e)
-        {
-            SaveState.lollipop.no_mans_land_lowerBound = Convert.ToDouble(nUD_NoManLower.Value);
-        }
-
-        private void nUD_NoManUpper_ValueChanged(object sender, EventArgs e)
-        {
-            SaveState.lollipop.no_mans_land_upperBound = Convert.ToDouble(nUD_NoManUpper.Value);
-        }
+        // not modifiable currently
 
         // bin size used for including individual ET pairs in one 'Peak Center Mass' and peak with for one ET peak
         private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e)
@@ -393,6 +436,7 @@ namespace ProteoformSuiteGUI
             StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = SaveState.lollipop.min_peak_count_et };
             ct_ET_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
             update_figures_of_merit();
+            (MdiParent as ProteoformSweet).proteoformFamilies.ClearListsTablesFigures(true);
         }
 
         #endregion Parameters Private Methods
@@ -413,15 +457,6 @@ namespace ProteoformSuiteGUI
         {
             if (e.Button == MouseButtons.Left)
                 DisplayUtility.tooltip_graph_display(ct_ET_peakList_tt, e, ct_ET_peakList, ct_ET_peakList_prevPosition);
-        }
-
-        private void ET_Peak_List_DirtyStateChanged(object sender, EventArgs e)
-        {
-            relationUtility.peak_acceptability_change(dgv_ET_Peak_List);
-            Parallel.ForEach(SaveState.lollipop.ed_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
-            dgv_ET_Relations.Refresh();
-            dgv_ET_Peak_List.Refresh();
-            update_figures_of_merit();
         }
 
         #endregion Tooltip Private Methods
