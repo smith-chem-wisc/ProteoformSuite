@@ -612,10 +612,13 @@ namespace ProteoformSuiteInternal
 
 
         #region TOPDOWN 
-
+        public double min_RT_td = 40.0;
+        public double max_RT_td = 90.0;
+        public double min_score_td = 3.0;
+        public bool biomarker = true;
+        public bool tight_abs_mass = true;
         public List<TopDownHit> top_down_hits = new List<TopDownHit>();
         public TopDownReader topdownReader = new TopDownReader();
-        public double min_C_score = 3.0d;
         //C-score > 40: proteoform is both identified and fully characterized; 
         //3 ≤ Cscore≤ 40: proteoform is identified, but only partially characterized; 
         //C-score < 3: proteoform is neither identified nor characterized.
@@ -633,7 +636,7 @@ namespace ProteoformSuiteInternal
             //group hits into topdown proteoforms by accession/theoretical AND observed mass
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
             //TopDownHit[] remaining_td_hits = new TopDownHit[0];
-            List<TopDownHit> remaining_td_hits = top_down_hits.Where(h => h.score > min_C_score).OrderByDescending(h => h.score).ToList();
+            List<TopDownHit> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && h.retention_time >= min_RT_td && h.retention_time <= max_RT_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
 
             List<TopDownProteoform> first_aggregation = new List<TopDownProteoform>();
             //aggregate to td hit w/ highest c-score as root - 1st average for retention time
@@ -643,7 +646,6 @@ namespace ProteoformSuiteInternal
                 //find topdownhits within RT tol --> first average
                 double first_RT_average = remaining_td_hits.Where(h => h.targeted == root.targeted && Math.Abs(h.retention_time - root.retention_time) <= Convert.ToDouble(retention_time_tolerance) && h.accession == root.accession && h.sequence == root.sequence && h.same_ptm_hits(root)).Select(h => h.retention_time).Average();
                 List<TopDownHit> hits_to_aggregate = remaining_td_hits.Where(h => h.targeted == root.targeted && Math.Abs(h.retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance) && h.accession == root.accession && h.sequence == root.sequence && h.same_ptm_hits(root)).OrderByDescending(h => h.score).ToList();
-                //List<TopDownHit> hits_to_aggregate = remaining_td_hits.Where(h => h.targeted == root.targeted && Math.Abs(h.retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance) && h.accession == root.accession && h.sequence == root.sequence).OrderByDescending(h => h.score).ToList();
                 root = hits_to_aggregate[0];
                 //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
                 TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, hits_to_aggregate);

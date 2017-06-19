@@ -248,5 +248,30 @@ namespace ProteoformSuiteGUI
             else if (cmbx_td_or_e_proteoforms.SelectedItem.ToString() == "Experimental Proteoforms" && SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Length > 0)
             DisplayUtility.FillDataGridView(dgv_TD_proteoforms, SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Where(exp => exp.accepted).ToList());
         }
+
+        private void nUD_min_RT_td_ValueChanged(object sender, EventArgs e)
+        {
+            SaveState.lollipop.min_RT_td = Convert.ToDouble(nUD_min_RT_td.Value);
+        }
+
+        private void nUD_max_RT_td_ValueChanged(object sender, EventArgs e)
+        {
+            SaveState.lollipop.max_RT_td = Convert.ToDouble(nUD_max_RT_td.Value);
+        }
+
+        private void nUD_min_score_td_ValueChanged(object sender, EventArgs e)
+        {
+            SaveState.lollipop.min_score_td = Convert.ToDouble(nUD_min_score_td.Value);
+        }
+
+        private void cb_tight_abs_mass_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveState.lollipop.tight_abs_mass = cb_tight_abs_mass.Checked;
+        }
+
+        private void cb_biomarker_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveState.lollipop.biomarker = cb_biomarker.Checked;
+        }
     }
 }
