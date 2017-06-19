@@ -96,6 +96,10 @@ namespace ProteoformSuiteInternal
             for (int r = 0; r < sequence.Length; r++)
             {
                 sbsequence.Append(sequence[r]);
+                if (SaveState.lollipop.carbamidomethylation && sequence[r] == 'C')
+                {
+                    sbsequence.Append("[H3C2N1O1]");
+                }
                 // variable modification on this residue
                 ModificationWithMass residue_variable_mod = ptm_list.Where(p => p.position == r + 2).Select(m => m.modification).FirstOrDefault();
                 if (residue_variable_mod != null)
@@ -128,7 +132,7 @@ namespace ProteoformSuiteInternal
     public enum TopDownResultType
     {
         Biomarker,
-        TightAbsoluteMass
+        TightAbsoluteMass,
     }
 
 }
