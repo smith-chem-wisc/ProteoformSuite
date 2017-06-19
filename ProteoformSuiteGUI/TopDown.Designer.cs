@@ -41,6 +41,14 @@
             this.bt_td_relations = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.tb_tdProteoforms = new System.Windows.Forms.TextBox();
+            this.nUD_min_RT_td = new System.Windows.Forms.NumericUpDown();
+            this.nUD_max_RT_td = new System.Windows.Forms.NumericUpDown();
+            this.nUD_min_score_td = new System.Windows.Forms.NumericUpDown();
+            this.cb_tight_abs_mass = new System.Windows.Forms.CheckBox();
+            this.cb_biomarker = new System.Windows.Forms.CheckBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -55,6 +63,9 @@
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_RT_td)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_max_RT_td)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_score_td)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -130,6 +141,14 @@
             // 
             // splitContainer3.Panel1
             // 
+            this.splitContainer3.Panel1.Controls.Add(this.label5);
+            this.splitContainer3.Panel1.Controls.Add(this.label4);
+            this.splitContainer3.Panel1.Controls.Add(this.label3);
+            this.splitContainer3.Panel1.Controls.Add(this.cb_biomarker);
+            this.splitContainer3.Panel1.Controls.Add(this.cb_tight_abs_mass);
+            this.splitContainer3.Panel1.Controls.Add(this.nUD_min_score_td);
+            this.splitContainer3.Panel1.Controls.Add(this.nUD_max_RT_td);
+            this.splitContainer3.Panel1.Controls.Add(this.nUD_min_RT_td);
             this.splitContainer3.Panel1.Controls.Add(this.bt_targeted_td_relations);
             this.splitContainer3.Panel1.Controls.Add(this.cmbx_td_or_e_proteoforms);
             this.splitContainer3.Panel1.Controls.Add(this.label2);
@@ -207,6 +226,101 @@
             this.tb_tdProteoforms.Size = new System.Drawing.Size(100, 20);
             this.tb_tdProteoforms.TabIndex = 0;
             // 
+            // nUD_min_RT_td
+            // 
+            this.nUD_min_RT_td.DecimalPlaces = 1;
+            this.nUD_min_RT_td.Location = new System.Drawing.Point(565, 5);
+            this.nUD_min_RT_td.Name = "nUD_min_RT_td";
+            this.nUD_min_RT_td.Size = new System.Drawing.Size(75, 20);
+            this.nUD_min_RT_td.TabIndex = 3;
+            this.nUD_min_RT_td.Value = new decimal(new int[] {
+            40,
+            0,
+            0,
+            0});
+            this.nUD_min_RT_td.ValueChanged += new System.EventHandler(this.nUD_min_RT_td_ValueChanged);
+            // 
+            // nUD_max_RT_td
+            // 
+            this.nUD_max_RT_td.DecimalPlaces = 1;
+            this.nUD_max_RT_td.Location = new System.Drawing.Point(565, 26);
+            this.nUD_max_RT_td.Name = "nUD_max_RT_td";
+            this.nUD_max_RT_td.Size = new System.Drawing.Size(75, 20);
+            this.nUD_max_RT_td.TabIndex = 8;
+            this.nUD_max_RT_td.Value = new decimal(new int[] {
+            90,
+            0,
+            0,
+            0});
+            this.nUD_max_RT_td.ValueChanged += new System.EventHandler(this.nUD_max_RT_td_ValueChanged);
+            // 
+            // nUD_min_score_td
+            // 
+            this.nUD_min_score_td.DecimalPlaces = 1;
+            this.nUD_min_score_td.Location = new System.Drawing.Point(565, 50);
+            this.nUD_min_score_td.Name = "nUD_min_score_td";
+            this.nUD_min_score_td.Size = new System.Drawing.Size(75, 20);
+            this.nUD_min_score_td.TabIndex = 9;
+            this.nUD_min_score_td.Value = new decimal(new int[] {
+            3,
+            0,
+            0,
+            0});
+            this.nUD_min_score_td.ValueChanged += new System.EventHandler(this.nUD_min_score_td_ValueChanged);
+            // 
+            // cb_tight_abs_mass
+            // 
+            this.cb_tight_abs_mass.AutoSize = true;
+            this.cb_tight_abs_mass.Checked = true;
+            this.cb_tight_abs_mass.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_tight_abs_mass.Location = new System.Drawing.Point(757, 7);
+            this.cb_tight_abs_mass.Name = "cb_tight_abs_mass";
+            this.cb_tight_abs_mass.Size = new System.Drawing.Size(122, 17);
+            this.cb_tight_abs_mass.TabIndex = 10;
+            this.cb_tight_abs_mass.Text = "Tight Absolute Mass";
+            this.cb_tight_abs_mass.UseVisualStyleBackColor = true;
+            this.cb_tight_abs_mass.CheckedChanged += new System.EventHandler(this.cb_tight_abs_mass_CheckedChanged);
+            // 
+            // cb_biomarker
+            // 
+            this.cb_biomarker.AutoSize = true;
+            this.cb_biomarker.Checked = true;
+            this.cb_biomarker.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_biomarker.Location = new System.Drawing.Point(757, 28);
+            this.cb_biomarker.Name = "cb_biomarker";
+            this.cb_biomarker.Size = new System.Drawing.Size(73, 17);
+            this.cb_biomarker.TabIndex = 11;
+            this.cb_biomarker.Text = "Biomarker";
+            this.cb_biomarker.UseVisualStyleBackColor = true;
+            this.cb_biomarker.CheckedChanged += new System.EventHandler(this.cb_biomarker_CheckedChanged);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(646, 7);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(102, 13);
+            this.label3.TabIndex = 12;
+            this.label3.Text = "Min. Retention Time";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(646, 28);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(105, 13);
+            this.label4.TabIndex = 13;
+            this.label4.Text = "Max. Retention Time";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(646, 52);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(68, 13);
+            this.label5.TabIndex = 14;
+            this.label5.Text = "Min. C-Score";
+            // 
             // TopDown
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -231,6 +345,9 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_RT_td)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_max_RT_td)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nUD_min_score_td)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -250,5 +367,13 @@
         private System.Windows.Forms.TextBox tb_exp_proteoforms;
         private System.Windows.Forms.ComboBox cmbx_td_or_e_proteoforms;
         private System.Windows.Forms.Button bt_targeted_td_relations;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.CheckBox cb_biomarker;
+        private System.Windows.Forms.CheckBox cb_tight_abs_mass;
+        private System.Windows.Forms.NumericUpDown nUD_min_score_td;
+        private System.Windows.Forms.NumericUpDown nUD_max_RT_td;
+        private System.Windows.Forms.NumericUpDown nUD_min_RT_td;
     }
 }

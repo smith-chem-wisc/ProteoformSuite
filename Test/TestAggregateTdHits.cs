@@ -26,6 +26,7 @@ namespace Test
                 t.accession = "accession";
                 t.sequence = "sequence";
                 t.ptm_list = new List<Ptm>();
+                t.tdResultType = TopDownResultType.TightAbsoluteMass;
                 tdhList.Add(t);
             }
             SaveState.lollipop.top_down_hits = tdhList;
@@ -72,6 +73,7 @@ namespace Test
         [Test]
         public void TestDoubleAverage()
         {
+            SaveState.lollipop.min_RT_td = 0;
             List<TopDownHit> tdhList = new List<TopDownHit>();
             for (int i = 0; i < 10; i++)
             {
@@ -82,6 +84,7 @@ namespace Test
                 t.accession = "accession";
                 t.sequence = "sequence";
                 t.ptm_list = new List<Ptm>();
+                t.tdResultType = TopDownResultType.TightAbsoluteMass;
                 tdhList.Add(t);
             }
 
