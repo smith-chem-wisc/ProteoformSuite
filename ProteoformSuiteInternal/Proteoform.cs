@@ -138,7 +138,7 @@ namespace ProteoformSuiteInternal
 
                 //reset in case previously set as true...
                 if (e as ExperimentalProteoform != null) (e as ExperimentalProteoform).adduct = false;
-                if (e as ExperimentalProteoform != null && best_addition != null & best_addition.ptm_combination.Count(p => p.modification.id != "Sulfate Adduct" && p.modification.id != "Acetone Artifact (Unconfirmed)" && p.modification.id != "Hydrogen Dodecyl Sulfate") == 0)
+                if (e as ExperimentalProteoform != null && best_addition != null && best_addition.ptm_combination.Count(p => p.modification.id != "Sulfate Adduct" && p.modification.id != "Acetone Artifact (Unconfirmed)" && p.modification.id != "Hydrogen Dodecyl Sulfate") == 0)
                 {
                     (e as ExperimentalProteoform).adduct = true;
                 }
