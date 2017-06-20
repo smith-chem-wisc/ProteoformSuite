@@ -394,6 +394,12 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.likely_cleavages = tb_likelyCleavages.Text.Split(',');
         }
 
+        private void cb_count_adducts_as_id_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveState.lollipop.count_adducts_as_identifications = cb_count_adducts_as_id.Checked;
+            update_figures_of_merit();
+        }
+
         #endregion Private Methods
     }
 }

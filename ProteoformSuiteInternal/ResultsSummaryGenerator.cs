@@ -171,9 +171,9 @@ namespace ProteoformSuiteInternal
             report += Environment.NewLine;
 
 
-            int identified_exp_proteoforms = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && e.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) == 0);
+            int identified_exp_proteoforms = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (!SaveState.lollipop.count_adducts_as_identifications || !e.adduct) && e.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) == 0);
             double avg_identified_decoy_proteoforms = SaveState.lollipop.decoy_proteoform_communities.Count > 0 ?
-                SaveState.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && e.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) == 0)) : 
+                SaveState.lollipop.decoy_proteoform_communities.Average(v => v.Value.experimental_proteoforms.Count(e => e.linked_proteoform_references != null && (!SaveState.lollipop.count_adducts_as_identifications || !e.adduct) && e.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) == 0)) : 
                 -1;
             report += identified_exp_proteoforms.ToString() + "\tIdentified Experimental Proteoforms" + Environment.NewLine;
             report += (avg_identified_decoy_proteoforms > 0 ? Math.Round(avg_identified_decoy_proteoforms, 2).ToString() : "N/A")

@@ -689,6 +689,7 @@ namespace ProteoformSuiteInternal
 
         #region PROTEOFORM FAMILIES Public Fields
 
+        public bool count_adducts_as_identifications = false;
         public string family_build_folder_path = "";
 
         public int deltaM_edge_display_rounding = 2;
