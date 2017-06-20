@@ -136,6 +136,13 @@ namespace ProteoformSuiteInternal
                 if (best_addition == null && best_loss == null)
                     continue;
 
+                //reset in case previously set as true...
+                if (e as ExperimentalProteoform != null) (e as ExperimentalProteoform).adduct = false;
+                if (e as ExperimentalProteoform != null && best_addition != null & best_addition.ptm_combination.Count(p => p.modification.id != "Sulfate Adduct" && p.modification.id != "Acetone Artifact (Unconfirmed)" && p.modification.id != "Hydrogen Dodecyl Sulfate") == 0)
+                {
+                    (e as ExperimentalProteoform).adduct = true;
+                }
+
                 // Make the new ptmset with ptms removed or added
                 PtmSet with_mod_change = null;
                 if (best_loss == null)

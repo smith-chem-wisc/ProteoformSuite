@@ -21,6 +21,8 @@ namespace ProteoformSuiteInternal
 
         #region Public Properties
 
+        public bool adduct = false;
+
         public List<Component> aggregated_components { get; set; } = new List<Component>();
 
         public List<Component> lt_verification_components { get; set; } = new List<Component>();
