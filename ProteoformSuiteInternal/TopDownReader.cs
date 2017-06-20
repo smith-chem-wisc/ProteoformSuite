@@ -27,8 +27,8 @@ namespace ProteoformSuiteInternal
             foreach (List<string> cellStrings in cells)
             {
                 bool add_topdown_hit = true; //if PTM or accession not found, will not add (show warning)
-                TopDownResultType tdResultType = (cellStrings[15] == "BioMarker") ? TopDownResultType.Biomarker : (cellStrings[15] == "Tight Absolute Mass") ? TopDownResultType.TightAbsoluteMass : 0;
-                if (tdResultType == 0) continue; //uknown result type! 
+                TopDownResultType tdResultType = (cellStrings[15] == "BioMarker") ? TopDownResultType.Biomarker : ((cellStrings[15] == "Tight Absolute Mass") ? TopDownResultType.TightAbsoluteMass : TopDownResultType.Unknown);
+                if (tdResultType == TopDownResultType.Unknown) continue; //uknown result type! 
                 List<Ptm> ptm_list = new List<Ptm>(); // if nothing gets added, an empty ptmlist is passed to the topdownhit constructor.
                 //N-term modifications
                 if (cellStrings[10].Length > 0) //N Terminal Modification Code

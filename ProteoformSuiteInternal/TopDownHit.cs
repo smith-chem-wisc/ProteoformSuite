@@ -133,6 +133,7 @@ namespace ProteoformSuiteInternal
     {
         Biomarker,
         TightAbsoluteMass,
+        Unknown //not read in if unknown...
     }
 
 }
