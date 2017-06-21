@@ -17,6 +17,7 @@ namespace ProteoformSuiteInternal
         public double monoisotopic_mass { get; set; } //calibrated mass
         public double theoretical_mass { get; set; }
         public double agg_RT { get; set; }
+        public List<double> RTs = new List<double>();
         public TopDownHit root;
         public List<TopDownHit> topdown_hits;
         public int etd_match_count { get { return relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).ToList().Count; } }
@@ -78,7 +79,11 @@ namespace ProteoformSuiteInternal
         {
             this.monoisotopic_mass = topdown_hits.Select(h => (h.reported_mass - Math.Round(h.reported_mass - h.theoretical_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.monoisotopic_mass;
-            if (calculate_agg_RT) this.agg_RT = topdown_hits.Select(h => h.retention_time).Average();
+            if (calculate_agg_RT)
+            {
+                this.agg_RT = topdown_hits.Select(h => h.retention_time).Average();
+                RTs = new List<double>() { agg_RT };
+            }
         }
          
         private bool tolerable_rt(TopDownHit candidate, double rt)

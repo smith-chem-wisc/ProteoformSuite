@@ -136,13 +136,6 @@ namespace ProteoformSuiteInternal
                 if (best_addition == null && best_loss == null)
                     continue;
 
-                //reset in case previously set as true...
-                if (e as ExperimentalProteoform != null) (e as ExperimentalProteoform).adduct = false;
-                if (e as ExperimentalProteoform != null && best_addition != null && best_addition.ptm_combination.Count(p => p.modification.id != "Sulfate Adduct" && p.modification.id != "Acetone Artifact (Unconfirmed)" && p.modification.id != "Hydrogen Dodecyl Sulfate") == 0)
-                {
-                    (e as ExperimentalProteoform).adduct = true;
-                }
-
                 // Make the new ptmset with ptms removed or added
                 PtmSet with_mod_change = null;
                 if (best_loss == null)
@@ -252,8 +245,19 @@ namespace ProteoformSuiteInternal
                 if (r.RelationType == ProteoformComparison.ExperimentalExperimental) r.DeltaMass *= sign;
             }
 
+
+
+
             if (e.linked_proteoform_references == null)
             {
+                //reset in case previously set as true...
+                if (e as ExperimentalProteoform != null) (e as ExperimentalProteoform).adduct = false;
+                if (e as ExperimentalProteoform != null && change != null && change.ptm_combination.Count != 0 && change.ptm_combination.Count(p => p.modification.id != "Sulfate Adduct" && p.modification.id != "Acetone Artifact (Unconfirmed)" && p.modification.id != "Hydrogen Dodecyl Sulfate") == 0)
+                {
+                    (e as ExperimentalProteoform).adduct = true;
+                }
+
+
                 e.linked_proteoform_references = new List<Proteoform>(this.linked_proteoform_references);
                 e.linked_proteoform_references.Add(this);
                 e.ptm_set = set;

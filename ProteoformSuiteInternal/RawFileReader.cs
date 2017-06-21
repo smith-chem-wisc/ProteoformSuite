@@ -16,7 +16,7 @@ namespace ProteoformSuiteInternal
     public class RawFileReader
     {
         //GET MS SCANS
-        public static Dictionary<Tuple<string, double>, MsScan> get_ms_scans(Dictionary<Tuple<string, double>, MsScan> ms_scans, string filename, string raw_file_path)
+        public static Dictionary<Tuple<string, double>, MsScan> get_ms_scans(bool use_rt, Dictionary<Tuple<string, double>, MsScan> ms_scans, string filename, string raw_file_path)
         {
             ThermoStaticData myMsDataFile = ThermoStaticData.LoadAllStaticData(raw_file_path);
             Parallel.ForEach(myMsDataFile, spectrum =>
@@ -25,7 +25,7 @@ namespace ProteoformSuiteInternal
                 if (scan.ms_order == 2) scan.precursor_mz = (spectrum as ThermoScanWithPrecursor).IsolationMz;
                 lock (ms_scans)
                 {
-                    ms_scans.Add((new Tuple<string, double>(filename, scan.retention_time)), scan);
+                    ms_scans.Add((new Tuple<string, double>(filename, use_rt? scan.retention_time: scan.scan_number)), scan);
                 }
             });
             //set charge, mz, intensity, find MS1 numbers
@@ -39,30 +39,46 @@ namespace ProteoformSuiteInternal
             return ms_scans;
         }
 
-        public static void check_fragmented_experimentals(List<InputFile> files)
+        public static bool check_fragmented_experimentals(List<InputFile> files)
         {
             Dictionary<Tuple<string, double>, MsScan> ms_scans = new Dictionary<Tuple<string, double>, MsScan>();
             foreach (InputFile file in files)
-                ms_scans = get_ms_scans(ms_scans, file.filename, file.complete_path);
-            Parallel.ForEach(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, e =>
+                ms_scans = get_ms_scans(false, ms_scans, file.filename, file.complete_path);
+           foreach(ExperimentalProteoform e in SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => e.linked_proteoform_references != null && (SaveState.lollipop.count_adducts_as_identifications || !e.adduct) && e.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) == 0))
             {
                 foreach (Component comp in e.aggregated_components)
                 {
-                    if (!e.fragmented)
+                    foreach (ChargeState cs in comp.charge_states)
                     {
-
-                        foreach (ChargeState cs in comp.charge_states)
+                        if (!e.fragmented)
                         {
-                            //if isolation m/z is less than 1.5 m/z away and rt is within 5 minutes, consider fragmented
-                            if (ms_scans.Values.Count(s => s.ms_order == 2 && Math.Abs(cs.mz_centroid - s.precursor_mz) <= 1.5 && Math.Abs(s.retention_time - Convert.ToDouble(comp.rt_range.Split('-')[0])) < 5) > 0)
+                            bool in_range = true;
+                            double scan_num = Convert.ToDouble(comp.scan_range.Split('-')[0]);
+                            do
                             {
-                                e.fragmented = true;
-                                break;
-                            }
+                                MsScan scan;
+                                lock (ms_scans)
+                                {
+                                    string filename = comp.input_file.filename.Contains("_calibrated") ? comp.input_file.filename.Substring(0, comp.input_file.filename.IndexOf("_calibrated")) : comp.input_file.filename;
+                                    if (!ms_scans.TryGetValue(new Tuple<string, double>(filename, scan_num), out scan)) return false;
+                                }
+
+                                if (scan.ms_order == 2 && Math.Abs(cs.mz_centroid - scan.precursor_mz) <= 1.5)
+                                {
+                                    e.fragmented = true;
+                                    break;
+                                }
+                                else
+                                {
+                                    if (scan.ms_order == 1 && scan.scan_number > Convert.ToDouble(comp.scan_range.Split('-')[1])) in_range = false;
+                                }
+                                scan_num++;
+                            } while (in_range);
                         }
                     }
                 }
-            });
+            }
+            return true;
         }
     }
 }

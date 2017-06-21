@@ -76,6 +76,8 @@
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.Families_update = new System.Windows.Forms.Button();
             this.cb_count_adducts_as_id = new System.Windows.Forms.CheckBox();
+            this.bt_check_id_exp_fragmented = new System.Windows.Forms.Button();
+            this.bt_check_id_experimentals_TD = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -325,6 +327,8 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.Controls.Add(this.bt_check_id_experimentals_TD);
+            this.splitContainer3.Panel2.Controls.Add(this.bt_check_id_exp_fragmented);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
@@ -631,6 +635,26 @@
             this.cb_count_adducts_as_id.UseVisualStyleBackColor = true;
             this.cb_count_adducts_as_id.CheckedChanged += new System.EventHandler(this.cb_count_adducts_as_id_CheckedChanged);
             // 
+            // bt_check_id_exp_fragmented
+            // 
+            this.bt_check_id_exp_fragmented.Location = new System.Drawing.Point(286, 333);
+            this.bt_check_id_exp_fragmented.Name = "bt_check_id_exp_fragmented";
+            this.bt_check_id_exp_fragmented.Size = new System.Drawing.Size(195, 23);
+            this.bt_check_id_exp_fragmented.TabIndex = 64;
+            this.bt_check_id_exp_fragmented.Text = "Check ID\'d Experimentals Fragmented";
+            this.bt_check_id_exp_fragmented.UseVisualStyleBackColor = true;
+            this.bt_check_id_exp_fragmented.Click += new System.EventHandler(this.bt_check_id_exp_fragmented_Click);
+            // 
+            // bt_check_id_experimentals_TD
+            // 
+            this.bt_check_id_experimentals_TD.Location = new System.Drawing.Point(286, 360);
+            this.bt_check_id_experimentals_TD.Name = "bt_check_id_experimentals_TD";
+            this.bt_check_id_experimentals_TD.Size = new System.Drawing.Size(195, 23);
+            this.bt_check_id_experimentals_TD.TabIndex = 65;
+            this.bt_check_id_experimentals_TD.Text = "Check ID\'d Experimentals TD";
+            this.bt_check_id_experimentals_TD.UseVisualStyleBackColor = true;
+            this.bt_check_id_experimentals_TD.Click += new System.EventHandler(this.bt_check_id_experimentals_TD_Click);
+            // 
             // ProteoformFamilies
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -717,5 +741,7 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.RichTextBox rtb_proteoformFamilyResults;
         private System.Windows.Forms.CheckBox cb_count_adducts_as_id;
+        private System.Windows.Forms.Button bt_check_id_experimentals_TD;
+        private System.Windows.Forms.Button bt_check_id_exp_fragmented;
     }
 }

@@ -328,6 +328,7 @@ namespace ProteoformSuiteInternal
                 List<ExperimentalProteoform> matching_RT = vetted_proteoforms.Where(p => p != e && p.tolerable_mass(p.modified_mass, e.modified_mass) && p.lysine_count == e.lysine_count).ToList();
                 e.aggregated_components.AddRange(matching_RT.SelectMany(p => p.aggregated_components));
                 e.calculate_properties(false);
+                e.RTs.AddRange(matching_RT.Select(p => p.agg_rt));
                 matching_RT.Add(e);
                 vetted_proteoforms = vetted_proteoforms.Except(matching_RT).ToList();
             }
@@ -631,7 +632,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public void AggregateTdHits()
+        public List<TopDownProteoform> AggregateTdHits(List<TopDownHit> top_down_hits)
         {
             //group hits into topdown proteoforms by accession/theoretical AND observed mass
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
@@ -661,11 +662,7 @@ namespace ProteoformSuiteInternal
                 topdown_proteoforms.Add(new_pf);
             }
             if (merge_by_RT) topdown_proteoforms = merge_topdowns_by_RT(topdown_proteoforms);
-            SaveState.lollipop.target_proteoform_community.topdown_proteoforms = topdown_proteoforms.Where(p => p != null).ToArray();
-            foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
-            {
-                community.topdown_proteoforms = SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Select(e => new TopDownProteoform(e)).ToArray();
-            }
+            return topdown_proteoforms;
         }
 
         private List<TopDownProteoform> merge_topdowns_by_RT (List<TopDownProteoform> topdown_proteoforms)
@@ -679,6 +676,7 @@ namespace ProteoformSuiteInternal
                 List<TopDownProteoform> matching_RT = topdown_proteoforms.Where(p => p != e && p.targeted == e.targeted && p.uniprot_id == e.uniprot_id && p.sequence == e.sequence && p.topdown_hits.First().same_ptm_hits(e.topdown_hits.First())).ToList();
                 e.topdown_hits.AddRange(matching_RT.SelectMany(p => p.topdown_hits));
                 e.calculate_properties(false);
+                e.RTs.AddRange(matching_RT.Select(p => p.agg_RT));
                 matching_RT.Add(e);
                 topdown_proteoforms = topdown_proteoforms.Except(matching_RT).ToList();
             }
@@ -1203,7 +1201,7 @@ namespace ProteoformSuiteInternal
             {
                 //get calibration points
                 InputFile raw_file = raw_files.First();
-                ms_scans = RawFileReader.get_ms_scans(ms_scans, filename, raw_file.complete_path);
+                ms_scans = RawFileReader.get_ms_scans(true, ms_scans, filename, raw_file.complete_path);
 
                 if (calibrate_lock_mass)
                 {
