@@ -122,7 +122,14 @@ namespace ProteoformSuiteGUI
              SaveState.lollipop.read_in_td_hits();
             if (SaveState.lollipop.top_down_hits.Count > 0)
             {
-                SaveState.lollipop.AggregateTdHits();
+                List<TopDownProteoform> topdown_proteoforms = SaveState.lollipop.AggregateTdHits(SaveState.lollipop.top_down_hits);
+
+                SaveState.lollipop.target_proteoform_community.topdown_proteoforms = topdown_proteoforms.Where(p => p != null).ToArray();
+                foreach (ProteoformCommunity community in SaveState.lollipop.decoy_proteoform_communities.Values)
+                {
+                    community.topdown_proteoforms = SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Select(e => new TopDownProteoform(e)).ToArray();
+                }
+
                 bt_targeted_td_relations.Enabled = (SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Where(p => p.targeted).Count() > 0);
                 tb_tdProteoforms.Text = SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count(p => !p.targeted).ToString();
             }

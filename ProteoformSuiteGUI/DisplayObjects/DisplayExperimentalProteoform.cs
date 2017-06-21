@@ -1,5 +1,6 @@
 ﻿using ProteoformSuiteInternal;
 using System.Windows.Forms;
+using System;
 
 namespace ProteoformSuiteGUI
 {
@@ -39,9 +40,9 @@ namespace ProteoformSuiteGUI
             get { return e.agg_intensity; }
         }
 
-        public double agg_rt
+        public string RTs
         {
-            get { return e.agg_rt; }
+            get { return string.Join(", ", e.RTs); }
         }
 
         public double lysine_count
@@ -128,13 +129,12 @@ namespace ProteoformSuiteGUI
             //NUMBER FORMATS
             dgv.Columns[nameof(agg_mass)].DefaultCellStyle.Format = "0.####";
             dgv.Columns[nameof(agg_intensity)].DefaultCellStyle.Format = "0.####";
-            dgv.Columns[nameof(agg_rt)].DefaultCellStyle.Format = "0.##";
 
             //HEADERS
             dgv.Columns[nameof(Accession)].HeaderText = "Experimental Proteoform ID";
             dgv.Columns[nameof(agg_mass)].HeaderText = "Aggregated Mass";
             dgv.Columns[nameof(agg_intensity)].HeaderText = "Aggregated Intensity";
-            dgv.Columns[nameof(agg_rt)].HeaderText = "Aggregated RT";
+            dgv.Columns[nameof(RTs)].HeaderText = "Aggregated RTs";
             dgv.Columns[nameof(observation_count)].HeaderText = "Aggregated Component Count for Identification";
             dgv.Columns[nameof(heavy_verification_count)].HeaderText = "Heavy Verification Component Count";
             dgv.Columns[nameof(light_verification_count)].HeaderText = "Light Verification Component Count";
