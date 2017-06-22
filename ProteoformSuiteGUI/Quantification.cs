@@ -76,6 +76,8 @@ namespace ProteoformSuiteGUI
             plotObservedVsExpectedRelativeDifference();
             DisplayUtility.FillDataGridView(dgv_quantification_results, SaveState.lollipop.qVals.Select(q => new DisplayQuantitativeValues(q)));
             DisplayQuantitativeValues.FormatGridView(dgv_quantification_results);
+            tb_avgIntensity.Text = Math.Round(SaveState.lollipop.selectAverageIntensity, 1).ToString();
+            tb_stdevIntensity.Text = Math.Round(SaveState.lollipop.selectStDev, 3).ToString();
             volcanoPlot();
             plotBiorepIntensities();
             updateGoTermsTable();
@@ -577,6 +579,8 @@ namespace ProteoformSuiteGUI
         {
             ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
         }
+
+        private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
 
         #endregion Cytoscape Visualization Private Methods
 
