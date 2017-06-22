@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TheoreticalDatabase));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btn_amendModNames = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.tb_modTableFilter = new System.Windows.Forms.TextBox();
             this.btn_loadModNames = new System.Windows.Forms.Button();
@@ -69,7 +70,6 @@
             this.dgv_Database = new System.Windows.Forms.DataGridView();
             this.dgv_unlocalizedModifications = new System.Windows.Forms.DataGridView();
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.btn_amendModNames = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -149,6 +149,17 @@
             this.groupBox2.TabIndex = 53;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Modification Names";
+            // 
+            // btn_amendModNames
+            // 
+            this.btn_amendModNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btn_amendModNames.Location = new System.Drawing.Point(4, 49);
+            this.btn_amendModNames.Name = "btn_amendModNames";
+            this.btn_amendModNames.Size = new System.Drawing.Size(189, 26);
+            this.btn_amendModNames.TabIndex = 56;
+            this.btn_amendModNames.Text = "Amend Stored Mod Names";
+            this.btn_amendModNames.UseVisualStyleBackColor = true;
+            this.btn_amendModNames.Click += new System.EventHandler(this.btn_amendModNames_Click);
             // 
             // label5
             // 
@@ -270,13 +281,15 @@
             // 
             // cmb_loadTable
             // 
+            this.cmb_loadTable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmb_loadTable.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmb_loadTable.FormattingEnabled = true;
             this.cmb_loadTable.Location = new System.Drawing.Point(11, 10);
             this.cmb_loadTable.Name = "cmb_loadTable";
             this.cmb_loadTable.Size = new System.Drawing.Size(429, 28);
             this.cmb_loadTable.TabIndex = 34;
-            this.cmb_loadTable.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable_SelectedIndexChanged);
+            this.cmb_loadTable.SelectedIndexChanged += new System.EventHandler(this.cmbx_DisplayWhichDB_SelectedIndexChanged);
+            this.cmb_loadTable.TextChanged += new System.EventHandler(this.cmb_empty_TextChanged);
             // 
             // dgv_loadFiles
             // 
@@ -381,6 +394,7 @@
             // 
             // cmbx_DisplayWhichDB
             // 
+            this.cmbx_DisplayWhichDB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_DisplayWhichDB.FormattingEnabled = true;
             this.cmbx_DisplayWhichDB.Location = new System.Drawing.Point(9, 603);
             this.cmbx_DisplayWhichDB.Margin = new System.Windows.Forms.Padding(2);
@@ -388,6 +402,7 @@
             this.cmbx_DisplayWhichDB.Size = new System.Drawing.Size(201, 21);
             this.cmbx_DisplayWhichDB.TabIndex = 10;
             this.cmbx_DisplayWhichDB.SelectedIndexChanged += new System.EventHandler(this.cmbx_DisplayWhichDB_SelectedIndexChanged);
+            this.cmbx_DisplayWhichDB.TextChanged += new System.EventHandler(this.cmb_empty_TextChanged);
             // 
             // label2
             // 
@@ -587,17 +602,6 @@
             this.splitter1.Size = new System.Drawing.Size(3, 737);
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
-            // 
-            // btn_amendModNames
-            // 
-            this.btn_amendModNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.btn_amendModNames.Location = new System.Drawing.Point(4, 49);
-            this.btn_amendModNames.Name = "btn_amendModNames";
-            this.btn_amendModNames.Size = new System.Drawing.Size(189, 26);
-            this.btn_amendModNames.TabIndex = 56;
-            this.btn_amendModNames.Text = "Amend Stored Mod Names";
-            this.btn_amendModNames.UseVisualStyleBackColor = true;
-            this.btn_amendModNames.Click += new System.EventHandler(this.btn_amendModNames_Click);
             // 
             // TheoreticalDatabase
             // 

@@ -81,6 +81,9 @@
             this.splitContainer15 = new System.Windows.Forms.SplitContainer();
             this.splitContainer16 = new System.Windows.Forms.SplitContainer();
             this.yMinKCt = new System.Windows.Forms.NumericUpDown();
+            this.splitContainer24 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer25 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer26 = new System.Windows.Forms.SplitContainer();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -184,6 +187,18 @@
             this.splitContainer16.Panel1.SuspendLayout();
             this.splitContainer16.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.yMinKCt)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer24)).BeginInit();
+            this.splitContainer24.Panel1.SuspendLayout();
+            this.splitContainer24.Panel2.SuspendLayout();
+            this.splitContainer24.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer25)).BeginInit();
+            this.splitContainer25.Panel1.SuspendLayout();
+            this.splitContainer25.Panel2.SuspendLayout();
+            this.splitContainer25.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer26)).BeginInit();
+            this.splitContainer26.Panel1.SuspendLayout();
+            this.splitContainer26.Panel2.SuspendLayout();
+            this.splitContainer26.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -278,6 +293,7 @@
             this.ct_LysineCount.Size = new System.Drawing.Size(737, 393);
             this.ct_LysineCount.TabIndex = 0;
             this.ct_LysineCount.Text = "chart1";
+            this.ct_LysineCount.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_LysineCount_MouseClick);
             // 
             // splitContainer5
             // 
@@ -401,6 +417,7 @@
             this.KMinAcceptable.Name = "KMinAcceptable";
             this.KMinAcceptable.Size = new System.Drawing.Size(234, 20);
             this.KMinAcceptable.TabIndex = 12;
+            this.KMinAcceptable.ValueChanged += new System.EventHandler(this.KMinAcceptable_ValueChanged);
             // 
             // KMaxAcceptable
             // 
@@ -421,6 +438,7 @@
             this.KMaxAcceptable.Name = "KMaxAcceptable";
             this.KMaxAcceptable.Size = new System.Drawing.Size(234, 20);
             this.KMaxAcceptable.TabIndex = 12;
+            this.KMaxAcceptable.ValueChanged += new System.EventHandler(this.KMaxAcceptable_ValueChanged);
             // 
             // splitContainer4
             // 
@@ -463,6 +481,7 @@
             this.ct_IntensityRatio.Size = new System.Drawing.Size(846, 392);
             this.ct_IntensityRatio.TabIndex = 1;
             this.ct_IntensityRatio.Text = "chart1";
+            this.ct_IntensityRatio.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_IntensityRatio_MouseClick);
             // 
             // splitContainer9
             // 
@@ -483,10 +502,7 @@
             // groupBox1
             // 
             this.groupBox1.AutoSize = true;
-            this.groupBox1.Controls.Add(this.IRatMaxAcceptable);
-            this.groupBox1.Controls.Add(this.label3);
-            this.groupBox1.Controls.Add(this.IRatMinAcceptable);
-            this.groupBox1.Controls.Add(this.label4);
+            this.groupBox1.Controls.Add(this.splitContainer24);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
@@ -500,12 +516,13 @@
             // IRatMaxAcceptable
             // 
             this.IRatMaxAcceptable.DecimalPlaces = 2;
+            this.IRatMaxAcceptable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.IRatMaxAcceptable.Increment = new decimal(new int[] {
             5,
             0,
             0,
             131072});
-            this.IRatMaxAcceptable.Location = new System.Drawing.Point(69, 40);
+            this.IRatMaxAcceptable.Location = new System.Drawing.Point(0, 0);
             this.IRatMaxAcceptable.Margin = new System.Windows.Forms.Padding(2);
             this.IRatMaxAcceptable.Minimum = new decimal(new int[] {
             100,
@@ -513,13 +530,15 @@
             0,
             -2147483648});
             this.IRatMaxAcceptable.Name = "IRatMaxAcceptable";
-            this.IRatMaxAcceptable.Size = new System.Drawing.Size(80, 20);
+            this.IRatMaxAcceptable.Size = new System.Drawing.Size(234, 20);
             this.IRatMaxAcceptable.TabIndex = 7;
+            this.IRatMaxAcceptable.ValueChanged += new System.EventHandler(this.IRatMaxAcceptable_ValueChanged);
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(5, 44);
+            this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label3.Location = new System.Drawing.Point(0, 0);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(61, 13);
@@ -529,12 +548,13 @@
             // IRatMinAcceptable
             // 
             this.IRatMinAcceptable.DecimalPlaces = 2;
+            this.IRatMinAcceptable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.IRatMinAcceptable.Increment = new decimal(new int[] {
             5,
             0,
             0,
             131072});
-            this.IRatMinAcceptable.Location = new System.Drawing.Point(69, 16);
+            this.IRatMinAcceptable.Location = new System.Drawing.Point(0, 0);
             this.IRatMinAcceptable.Margin = new System.Windows.Forms.Padding(2);
             this.IRatMinAcceptable.Minimum = new decimal(new int[] {
             100,
@@ -542,13 +562,15 @@
             0,
             -2147483648});
             this.IRatMinAcceptable.Name = "IRatMinAcceptable";
-            this.IRatMinAcceptable.Size = new System.Drawing.Size(80, 20);
+            this.IRatMinAcceptable.Size = new System.Drawing.Size(234, 20);
             this.IRatMinAcceptable.TabIndex = 5;
+            this.IRatMinAcceptable.ValueChanged += new System.EventHandler(this.IRatMinAcceptable_ValueChanged);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(5, 19);
+            this.label4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label4.Location = new System.Drawing.Point(0, 0);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(58, 13);
@@ -635,6 +657,7 @@
             this.yMaxIRat.Name = "yMaxIRat";
             this.yMaxIRat.Size = new System.Drawing.Size(140, 20);
             this.yMaxIRat.TabIndex = 11;
+            this.yMaxIRat.ValueChanged += new System.EventHandler(this.yMaxIRat_ValueChanged);
             // 
             // splitContainer12
             // 
@@ -671,6 +694,7 @@
             this.xMinIRat.Name = "xMinIRat";
             this.xMinIRat.Size = new System.Drawing.Size(205, 20);
             this.xMinIRat.TabIndex = 12;
+            this.xMinIRat.ValueChanged += new System.EventHandler(this.xMinIRat_ValueChanged);
             // 
             // xMaxIRat
             // 
@@ -685,6 +709,7 @@
             this.xMaxIRat.Name = "xMaxIRat";
             this.xMaxIRat.Size = new System.Drawing.Size(204, 20);
             this.xMaxIRat.TabIndex = 13;
+            this.xMaxIRat.ValueChanged += new System.EventHandler(this.xMaxIRat_ValueChanged);
             // 
             // splitContainer19
             // 
@@ -724,6 +749,7 @@
             this.yMinIRat.Name = "yMinIRat";
             this.yMinIRat.Size = new System.Drawing.Size(145, 20);
             this.yMinIRat.TabIndex = 12;
+            this.yMinIRat.ValueChanged += new System.EventHandler(this.yMinIRat_ValueChanged);
             // 
             // groupBox2
             // 
@@ -806,6 +832,7 @@
             this.yMaxKCt.Name = "yMaxKCt";
             this.yMaxKCt.Size = new System.Drawing.Size(116, 20);
             this.yMaxKCt.TabIndex = 7;
+            this.yMaxKCt.ValueChanged += new System.EventHandler(this.yMaxKCt_ValueChanged);
             // 
             // splitContainer8
             // 
@@ -843,6 +870,7 @@
             this.xMinKCt.Name = "xMinKCt";
             this.xMinKCt.Size = new System.Drawing.Size(185, 20);
             this.xMinKCt.TabIndex = 8;
+            this.xMinKCt.ValueChanged += new System.EventHandler(this.xMinKCt_ValueChanged);
             // 
             // xMaxKCt
             // 
@@ -858,6 +886,7 @@
             this.xMaxKCt.Name = "xMaxKCt";
             this.xMaxKCt.Size = new System.Drawing.Size(181, 20);
             this.xMaxKCt.TabIndex = 9;
+            this.xMaxKCt.ValueChanged += new System.EventHandler(this.xMaxKCt_ValueChanged);
             // 
             // splitContainer15
             // 
@@ -898,6 +927,58 @@
             this.yMinKCt.Name = "yMinKCt";
             this.yMinKCt.Size = new System.Drawing.Size(118, 20);
             this.yMinKCt.TabIndex = 8;
+            this.yMinKCt.ValueChanged += new System.EventHandler(this.yMinKCt_ValueChanged);
+            // 
+            // splitContainer24
+            // 
+            this.splitContainer24.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer24.Location = new System.Drawing.Point(2, 15);
+            this.splitContainer24.Name = "splitContainer24";
+            // 
+            // splitContainer24.Panel1
+            // 
+            this.splitContainer24.Panel1.Controls.Add(this.splitContainer25);
+            // 
+            // splitContainer24.Panel2
+            // 
+            this.splitContainer24.Panel2.Controls.Add(this.splitContainer26);
+            this.splitContainer24.Size = new System.Drawing.Size(419, 87);
+            this.splitContainer24.SplitterDistance = 136;
+            this.splitContainer24.TabIndex = 2;
+            // 
+            // splitContainer25
+            // 
+            this.splitContainer25.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer25.Name = "splitContainer25";
+            this.splitContainer25.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer25.Panel1
+            // 
+            this.splitContainer25.Panel1.Controls.Add(this.label4);
+            // 
+            // splitContainer25.Panel2
+            // 
+            this.splitContainer25.Panel2.Controls.Add(this.label3);
+            this.splitContainer25.Size = new System.Drawing.Size(116, 86);
+            this.splitContainer25.SplitterDistance = 25;
+            this.splitContainer25.TabIndex = 0;
+            // 
+            // splitContainer26
+            // 
+            this.splitContainer26.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer26.Name = "splitContainer26";
+            this.splitContainer26.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer26.Panel1
+            // 
+            this.splitContainer26.Panel1.Controls.Add(this.IRatMinAcceptable);
+            // 
+            // splitContainer26.Panel2
+            // 
+            this.splitContainer26.Panel2.Controls.Add(this.IRatMaxAcceptable);
+            this.splitContainer26.Size = new System.Drawing.Size(234, 86);
+            this.splitContainer26.SplitterDistance = 26;
+            this.splitContainer26.TabIndex = 0;
             // 
             // NeuCodePairs
             // 
@@ -959,7 +1040,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer9)).EndInit();
             this.splitContainer9.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.IRatMaxAcceptable)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.IRatMinAcceptable)).EndInit();
             this.groupBox3.ResumeLayout(false);
@@ -1020,6 +1100,20 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer16)).EndInit();
             this.splitContainer16.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.yMinKCt)).EndInit();
+            this.splitContainer24.Panel1.ResumeLayout(false);
+            this.splitContainer24.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer24)).EndInit();
+            this.splitContainer24.ResumeLayout(false);
+            this.splitContainer25.Panel1.ResumeLayout(false);
+            this.splitContainer25.Panel1.PerformLayout();
+            this.splitContainer25.Panel2.ResumeLayout(false);
+            this.splitContainer25.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer25)).EndInit();
+            this.splitContainer25.ResumeLayout(false);
+            this.splitContainer26.Panel1.ResumeLayout(false);
+            this.splitContainer26.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer26)).EndInit();
+            this.splitContainer26.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -1072,5 +1166,8 @@
         private System.Windows.Forms.SplitContainer splitContainer15;
         private System.Windows.Forms.SplitContainer splitContainer16;
         private System.Windows.Forms.NumericUpDown yMinKCt;
+        private System.Windows.Forms.SplitContainer splitContainer24;
+        private System.Windows.Forms.SplitContainer splitContainer25;
+        private System.Windows.Forms.SplitContainer splitContainer26;
     }
 }
