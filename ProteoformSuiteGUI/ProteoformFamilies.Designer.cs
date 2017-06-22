@@ -201,6 +201,7 @@
             this.cmbx_geneLabel.Name = "cmbx_geneLabel";
             this.cmbx_geneLabel.Size = new System.Drawing.Size(121, 21);
             this.cmbx_geneLabel.TabIndex = 49;
+            this.cmbx_geneLabel.SelectedIndexChanged += new System.EventHandler(this.cmbx_geneLabel_SelectedIndexChanged);
             this.cmbx_geneLabel.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // label9
