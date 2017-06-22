@@ -64,9 +64,11 @@
             this.btn_refreshCalculation = new System.Windows.Forms.Button();
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.splitContainer15 = new System.Windows.Forms.SplitContainer();
+            this.cmbx_ratioNumerator = new System.Windows.Forms.ComboBox();
+            this.splitContainer16 = new System.Windows.Forms.SplitContainer();
             this.label6 = new System.Windows.Forms.Label();
             this.cmbx_ratioDenominator = new System.Windows.Forms.ComboBox();
-            this.cmbx_ratioNumerator = new System.Windows.Forms.ComboBox();
             this.splitContainer9 = new System.Windows.Forms.SplitContainer();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.label15 = new System.Windows.Forms.Label();
@@ -100,6 +102,7 @@
             this.splitContainer14 = new System.Windows.Forms.SplitContainer();
             this.btn_buildFamiliesWithSignificantChange = new System.Windows.Forms.Button();
             this.btn_buildFamiliesAllGO = new System.Windows.Forms.Button();
+            this.cb_geneCentric = new System.Windows.Forms.CheckBox();
             this.btn_buildFromSelectedGoTerms = new System.Windows.Forms.Button();
             this.lb_timeStamp = new System.Windows.Forms.Label();
             this.tb_recentTimeStamp = new System.Windows.Forms.TextBox();
@@ -110,7 +113,6 @@
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.cmbx_nodeLabel = new System.Windows.Forms.ComboBox();
-            this.cb_geneCentric = new System.Windows.Forms.CheckBox();
             this.label14 = new System.Windows.Forms.Label();
             this.cmbx_geneLabel = new System.Windows.Forms.ComboBox();
             this.label11 = new System.Windows.Forms.Label();
@@ -165,6 +167,14 @@
             this.splitContainer8.Panel2.SuspendLayout();
             this.splitContainer8.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer15)).BeginInit();
+            this.splitContainer15.Panel1.SuspendLayout();
+            this.splitContainer15.Panel2.SuspendLayout();
+            this.splitContainer15.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer16)).BeginInit();
+            this.splitContainer16.Panel1.SuspendLayout();
+            this.splitContainer16.Panel2.SuspendLayout();
+            this.splitContainer16.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer9)).BeginInit();
             this.splitContainer9.Panel1.SuspendLayout();
             this.splitContainer9.Panel2.SuspendLayout();
@@ -297,14 +307,18 @@
             0,
             0,
             0});
+            this.nud_minObservations.ValueChanged += new System.EventHandler(this.nud_minObservations_ValueChanged);
             // 
             // cmbx_observationsTypeRequired
             // 
+            this.cmbx_observationsTypeRequired.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_observationsTypeRequired.FormattingEnabled = true;
             this.cmbx_observationsTypeRequired.Location = new System.Drawing.Point(77, 19);
             this.cmbx_observationsTypeRequired.Name = "cmbx_observationsTypeRequired";
             this.cmbx_observationsTypeRequired.Size = new System.Drawing.Size(369, 21);
             this.cmbx_observationsTypeRequired.TabIndex = 0;
+            this.cmbx_observationsTypeRequired.SelectedIndexChanged += new System.EventHandler(this.cmbx_observationsTypeRequired_SelectedIndexChanged);
+            this.cmbx_observationsTypeRequired.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // splitContainer5
             // 
@@ -424,6 +438,7 @@
             0,
             0,
             65536});
+            this.nud_bkgdWidth.ValueChanged += new System.EventHandler(this.nud_bkgdWidth_ValueChanged);
             // 
             // nud_bkgdShift
             // 
@@ -452,6 +467,7 @@
             0,
             0,
             -2147418112});
+            this.nud_bkgdShift.ValueChanged += new System.EventHandler(this.nud_bkgdShift_ValueChanged);
             // 
             // ct_proteoformIntensities
             // 
@@ -554,6 +570,7 @@
             this.btn_refreshCalculation.TabIndex = 32;
             this.btn_refreshCalculation.Text = "Refresh Calculations";
             this.btn_refreshCalculation.UseVisualStyleBackColor = true;
+            this.btn_refreshCalculation.Click += new System.EventHandler(this.btn_refreshCalculation_Click);
             // 
             // splitContainer8
             // 
@@ -570,48 +587,89 @@
             // 
             this.splitContainer8.Panel2.Controls.Add(this.splitContainer9);
             this.splitContainer8.Size = new System.Drawing.Size(485, 503);
-            this.splitContainer8.SplitterDistance = 60;
+            this.splitContainer8.SplitterDistance = 54;
             this.splitContainer8.TabIndex = 0;
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.label6);
-            this.groupBox2.Controls.Add(this.cmbx_ratioDenominator);
-            this.groupBox2.Controls.Add(this.cmbx_ratioNumerator);
+            this.groupBox2.Controls.Add(this.splitContainer15);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(485, 60);
+            this.groupBox2.Size = new System.Drawing.Size(485, 54);
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Ratio";
             // 
+            // splitContainer15
+            // 
+            this.splitContainer15.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer15.Location = new System.Drawing.Point(3, 16);
+            this.splitContainer15.Name = "splitContainer15";
+            // 
+            // splitContainer15.Panel1
+            // 
+            this.splitContainer15.Panel1.Controls.Add(this.cmbx_ratioNumerator);
+            // 
+            // splitContainer15.Panel2
+            // 
+            this.splitContainer15.Panel2.Controls.Add(this.splitContainer16);
+            this.splitContainer15.Size = new System.Drawing.Size(479, 35);
+            this.splitContainer15.SplitterDistance = 203;
+            this.splitContainer15.TabIndex = 0;
+            // 
+            // cmbx_ratioNumerator
+            // 
+            this.cmbx_ratioNumerator.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmbx_ratioNumerator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbx_ratioNumerator.Enabled = false;
+            this.cmbx_ratioNumerator.FormattingEnabled = true;
+            this.cmbx_ratioNumerator.Location = new System.Drawing.Point(0, 0);
+            this.cmbx_ratioNumerator.Name = "cmbx_ratioNumerator";
+            this.cmbx_ratioNumerator.Size = new System.Drawing.Size(203, 21);
+            this.cmbx_ratioNumerator.TabIndex = 4;
+            this.cmbx_ratioNumerator.SelectedIndexChanged += new System.EventHandler(this.cmbx_ratioNumerator_SelectedIndexChanged);
+            this.cmbx_ratioNumerator.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
+            // 
+            // splitContainer16
+            // 
+            this.splitContainer16.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer16.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer16.Name = "splitContainer16";
+            // 
+            // splitContainer16.Panel1
+            // 
+            this.splitContainer16.Panel1.Controls.Add(this.label6);
+            // 
+            // splitContainer16.Panel2
+            // 
+            this.splitContainer16.Panel2.Controls.Add(this.cmbx_ratioDenominator);
+            this.splitContainer16.Size = new System.Drawing.Size(272, 35);
+            this.splitContainer16.SplitterDistance = 53;
+            this.splitContainer16.TabIndex = 0;
+            // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(200, 20);
+            this.label6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label6.Location = new System.Drawing.Point(0, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(49, 13);
-            this.label6.TabIndex = 2;
+            this.label6.TabIndex = 6;
             this.label6.Text = "divide by";
             // 
             // cmbx_ratioDenominator
             // 
+            this.cmbx_ratioDenominator.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmbx_ratioDenominator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_ratioDenominator.Enabled = false;
             this.cmbx_ratioDenominator.FormattingEnabled = true;
-            this.cmbx_ratioDenominator.Location = new System.Drawing.Point(281, 17);
+            this.cmbx_ratioDenominator.Location = new System.Drawing.Point(0, 0);
             this.cmbx_ratioDenominator.Name = "cmbx_ratioDenominator";
-            this.cmbx_ratioDenominator.Size = new System.Drawing.Size(162, 21);
-            this.cmbx_ratioDenominator.TabIndex = 1;
-            // 
-            // cmbx_ratioNumerator
-            // 
-            this.cmbx_ratioNumerator.Enabled = false;
-            this.cmbx_ratioNumerator.FormattingEnabled = true;
-            this.cmbx_ratioNumerator.Location = new System.Drawing.Point(17, 17);
-            this.cmbx_ratioNumerator.Name = "cmbx_ratioNumerator";
-            this.cmbx_ratioNumerator.Size = new System.Drawing.Size(162, 21);
-            this.cmbx_ratioNumerator.TabIndex = 0;
+            this.cmbx_ratioDenominator.Size = new System.Drawing.Size(215, 21);
+            this.cmbx_ratioDenominator.TabIndex = 5;
+            this.cmbx_ratioDenominator.SelectedIndexChanged += new System.EventHandler(this.cmbx_ratioDenominator_SelectedIndexChanged);
+            this.cmbx_ratioDenominator.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // splitContainer9
             // 
@@ -627,7 +685,7 @@
             // splitContainer9.Panel2
             // 
             this.splitContainer9.Panel2.Controls.Add(this.ct_relativeDifference);
-            this.splitContainer9.Size = new System.Drawing.Size(485, 439);
+            this.splitContainer9.Size = new System.Drawing.Size(485, 445);
             this.splitContainer9.SplitterDistance = 47;
             this.splitContainer9.TabIndex = 0;
             // 
@@ -690,6 +748,7 @@
             this.nud_Offset.Name = "nud_Offset";
             this.nud_Offset.Size = new System.Drawing.Size(60, 20);
             this.nud_Offset.TabIndex = 2;
+            this.nud_Offset.ValueChanged += new System.EventHandler(this.nud_Offset_ValueChanged);
             // 
             // label12
             // 
@@ -717,6 +776,7 @@
             this.nud_sKnot_minFoldChange.Name = "nud_sKnot_minFoldChange";
             this.nud_sKnot_minFoldChange.Size = new System.Drawing.Size(66, 20);
             this.nud_sKnot_minFoldChange.TabIndex = 0;
+            this.nud_sKnot_minFoldChange.ValueChanged += new System.EventHandler(this.nud_sKnot_minFoldChange_ValueChanged);
             // 
             // ct_relativeDifference
             // 
@@ -737,7 +797,7 @@
             this.ct_relativeDifference.Series.Add(series4);
             this.ct_relativeDifference.Series.Add(series5);
             this.ct_relativeDifference.Series.Add(series6);
-            this.ct_relativeDifference.Size = new System.Drawing.Size(485, 388);
+            this.ct_relativeDifference.Size = new System.Drawing.Size(485, 394);
             this.ct_relativeDifference.TabIndex = 30;
             this.ct_relativeDifference.Text = "Observed vs. Expected Relative Difference";
             // 
@@ -791,12 +851,15 @@
             // cmbx_goAspect
             // 
             this.cmbx_goAspect.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmbx_goAspect.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_goAspect.FormattingEnabled = true;
             this.cmbx_goAspect.Location = new System.Drawing.Point(0, 0);
             this.cmbx_goAspect.Margin = new System.Windows.Forms.Padding(2);
             this.cmbx_goAspect.Name = "cmbx_goAspect";
             this.cmbx_goAspect.Size = new System.Drawing.Size(477, 21);
             this.cmbx_goAspect.TabIndex = 23;
+            this.cmbx_goAspect.SelectedIndexChanged += new System.EventHandler(this.cmbx_goAspect_SelectedIndexChanged);
+            this.cmbx_goAspect.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // splitContainer12
             // 
@@ -970,6 +1033,7 @@
             this.rb_detectedSampleSet.TabStop = true;
             this.rb_detectedSampleSet.Text = "Detected Sample Set";
             this.rb_detectedSampleSet.UseVisualStyleBackColor = true;
+            this.rb_detectedSampleSet.CheckedChanged += new System.EventHandler(this.rb_detectedSampleSet_CheckedChanged);
             // 
             // btn_customBackgroundBrowse
             // 
@@ -981,6 +1045,7 @@
             this.btn_customBackgroundBrowse.TabIndex = 18;
             this.btn_customBackgroundBrowse.Text = "Browse";
             this.btn_customBackgroundBrowse.UseVisualStyleBackColor = true;
+            this.btn_customBackgroundBrowse.Click += new System.EventHandler(this.btn_customBackgroundBrowse_Click);
             // 
             // tb_goTermCustomBackground
             // 
@@ -1000,6 +1065,7 @@
             this.rb_customBackgroundSet.TabStop = true;
             this.rb_customBackgroundSet.Text = "Protein List (Text File)";
             this.rb_customBackgroundSet.UseVisualStyleBackColor = true;
+            this.rb_customBackgroundSet.CheckedChanged += new System.EventHandler(this.rb_customBackgroundSet_CheckedChanged);
             // 
             // rb_allTheoreticalProteins
             // 
@@ -1011,6 +1077,7 @@
             this.rb_allTheoreticalProteins.TabStop = true;
             this.rb_allTheoreticalProteins.Text = "Theoretical Set";
             this.rb_allTheoreticalProteins.UseVisualStyleBackColor = true;
+            this.rb_allTheoreticalProteins.CheckedChanged += new System.EventHandler(this.rb_allTheoreticalProteins_CheckedChanged);
             // 
             // rb_quantifiedSampleSet
             // 
@@ -1022,6 +1089,7 @@
             this.rb_quantifiedSampleSet.TabStop = true;
             this.rb_quantifiedSampleSet.Text = "Quantified Sample Set";
             this.rb_quantifiedSampleSet.UseVisualStyleBackColor = true;
+            this.rb_quantifiedSampleSet.CheckedChanged += new System.EventHandler(this.rb_quantifiedSampleSet_CheckedChanged);
             // 
             // groupBox4
             // 
@@ -1083,6 +1151,7 @@
             this.btn_buildFamiliesWithSignificantChange.TabIndex = 85;
             this.btn_buildFamiliesWithSignificantChange.Text = "Build All Quantified Families w/ Significant Change";
             this.btn_buildFamiliesWithSignificantChange.UseVisualStyleBackColor = true;
+            this.btn_buildFamiliesWithSignificantChange.Click += new System.EventHandler(this.btn_buildFamiliesWithSignificantChange_Click);
             // 
             // btn_buildFamiliesAllGO
             // 
@@ -1093,6 +1162,21 @@
             this.btn_buildFamiliesAllGO.TabIndex = 84;
             this.btn_buildFamiliesAllGO.Text = "Build Families with All GO Terms Above Thresholds";
             this.btn_buildFamiliesAllGO.UseVisualStyleBackColor = true;
+            this.btn_buildFamiliesAllGO.Click += new System.EventHandler(this.btn_buildFamiliesAllGO_Click);
+            // 
+            // cb_geneCentric
+            // 
+            this.cb_geneCentric.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.cb_geneCentric.AutoSize = true;
+            this.cb_geneCentric.Checked = true;
+            this.cb_geneCentric.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_geneCentric.Location = new System.Drawing.Point(68, 127);
+            this.cb_geneCentric.Name = "cb_geneCentric";
+            this.cb_geneCentric.Size = new System.Drawing.Size(154, 17);
+            this.cb_geneCentric.TabIndex = 100;
+            this.cb_geneCentric.Text = "Build Gene-Centric Families";
+            this.cb_geneCentric.UseVisualStyleBackColor = true;
+            this.cb_geneCentric.CheckedChanged += new System.EventHandler(this.cb_geneCentric_CheckedChanged);
             // 
             // btn_buildFromSelectedGoTerms
             // 
@@ -1103,6 +1187,7 @@
             this.btn_buildFromSelectedGoTerms.TabIndex = 81;
             this.btn_buildFromSelectedGoTerms.Text = "Build Families with Selected GO Terms";
             this.btn_buildFromSelectedGoTerms.UseVisualStyleBackColor = true;
+            this.btn_buildFromSelectedGoTerms.Click += new System.EventHandler(this.btn_buildFromSelectedGoTerms_Click);
             // 
             // lb_timeStamp
             // 
@@ -1132,6 +1217,7 @@
             this.btn_buildSelectedQuantFamilies.TabIndex = 69;
             this.btn_buildSelectedQuantFamilies.Text = "Build Selected Quantified Families";
             this.btn_buildSelectedQuantFamilies.UseVisualStyleBackColor = true;
+            this.btn_buildSelectedQuantFamilies.Click += new System.EventHandler(this.btn_buildSelectedQuantFamilies_Click);
             // 
             // btn_buildAllFamilies
             // 
@@ -1142,6 +1228,7 @@
             this.btn_buildAllFamilies.TabIndex = 68;
             this.btn_buildAllFamilies.Text = "Build All Quantified Families";
             this.btn_buildAllFamilies.UseVisualStyleBackColor = true;
+            this.btn_buildAllFamilies.Click += new System.EventHandler(this.btn_buildAllQuantifiedFamilies_Click);
             // 
             // label_tempFileFolder
             // 
@@ -1160,6 +1247,7 @@
             this.tb_familyBuildFolder.Name = "tb_familyBuildFolder";
             this.tb_familyBuildFolder.Size = new System.Drawing.Size(100, 20);
             this.tb_familyBuildFolder.TabIndex = 66;
+            this.tb_familyBuildFolder.TextChanged += new System.EventHandler(this.tb_familyBuildFolder_TextChanged);
             // 
             // btn_browseTempFolder
             // 
@@ -1170,6 +1258,7 @@
             this.btn_browseTempFolder.TabIndex = 65;
             this.btn_browseTempFolder.Text = "Browse";
             this.btn_browseTempFolder.UseVisualStyleBackColor = true;
+            this.btn_browseTempFolder.Click += new System.EventHandler(this.btn_browseTempFolder_Click);
             // 
             // label7
             // 
@@ -1184,24 +1273,13 @@
             // 
             // cmbx_nodeLabel
             // 
+            this.cmbx_nodeLabel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_nodeLabel.FormattingEnabled = true;
             this.cmbx_nodeLabel.Location = new System.Drawing.Point(4, 95);
             this.cmbx_nodeLabel.Name = "cmbx_nodeLabel";
             this.cmbx_nodeLabel.Size = new System.Drawing.Size(75, 21);
             this.cmbx_nodeLabel.TabIndex = 101;
-            // 
-            // cb_geneCentric
-            // 
-            this.cb_geneCentric.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.cb_geneCentric.AutoSize = true;
-            this.cb_geneCentric.Checked = true;
-            this.cb_geneCentric.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_geneCentric.Location = new System.Drawing.Point(68, 127);
-            this.cb_geneCentric.Name = "cb_geneCentric";
-            this.cb_geneCentric.Size = new System.Drawing.Size(154, 17);
-            this.cb_geneCentric.TabIndex = 100;
-            this.cb_geneCentric.Text = "Build Gene-Centric Families";
-            this.cb_geneCentric.UseVisualStyleBackColor = true;
+            this.cmbx_nodeLabel.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // label14
             // 
@@ -1216,11 +1294,14 @@
             // 
             // cmbx_geneLabel
             // 
+            this.cmbx_geneLabel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_geneLabel.FormattingEnabled = true;
             this.cmbx_geneLabel.Location = new System.Drawing.Point(4, 148);
             this.cmbx_geneLabel.Name = "cmbx_geneLabel";
             this.cmbx_geneLabel.Size = new System.Drawing.Size(75, 21);
             this.cmbx_geneLabel.TabIndex = 93;
+            this.cmbx_geneLabel.SelectedIndexChanged += new System.EventHandler(this.cmbx_geneLabel_SelectedIndexChanged);
+            this.cmbx_geneLabel.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // label11
             // 
@@ -1235,11 +1316,13 @@
             // 
             // cmbx_edgeLabel
             // 
+            this.cmbx_edgeLabel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_edgeLabel.FormattingEnabled = true;
             this.cmbx_edgeLabel.Location = new System.Drawing.Point(4, 121);
             this.cmbx_edgeLabel.Name = "cmbx_edgeLabel";
             this.cmbx_edgeLabel.Size = new System.Drawing.Size(75, 21);
             this.cmbx_edgeLabel.TabIndex = 98;
+            this.cmbx_edgeLabel.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // groupBox5
             // 
@@ -1306,27 +1389,33 @@
             // 
             // cmbx_nodeLabelPositioning
             // 
+            this.cmbx_nodeLabelPositioning.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_nodeLabelPositioning.FormattingEnabled = true;
             this.cmbx_nodeLabelPositioning.Location = new System.Drawing.Point(4, 67);
             this.cmbx_nodeLabelPositioning.Name = "cmbx_nodeLabelPositioning";
             this.cmbx_nodeLabelPositioning.Size = new System.Drawing.Size(75, 21);
             this.cmbx_nodeLabelPositioning.TabIndex = 91;
+            this.cmbx_nodeLabelPositioning.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // cmbx_nodeLayout
             // 
+            this.cmbx_nodeLayout.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_nodeLayout.FormattingEnabled = true;
             this.cmbx_nodeLayout.Location = new System.Drawing.Point(4, 40);
             this.cmbx_nodeLayout.Name = "cmbx_nodeLayout";
             this.cmbx_nodeLayout.Size = new System.Drawing.Size(75, 21);
             this.cmbx_nodeLayout.TabIndex = 90;
+            this.cmbx_nodeLayout.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // cmbx_colorScheme
             // 
+            this.cmbx_colorScheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_colorScheme.FormattingEnabled = true;
             this.cmbx_colorScheme.Location = new System.Drawing.Point(4, 13);
             this.cmbx_colorScheme.Name = "cmbx_colorScheme";
             this.cmbx_colorScheme.Size = new System.Drawing.Size(75, 21);
             this.cmbx_colorScheme.TabIndex = 89;
+            this.cmbx_colorScheme.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // Quantification
             // 
@@ -1383,7 +1472,15 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer8)).EndInit();
             this.splitContainer8.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
+            this.splitContainer15.Panel1.ResumeLayout(false);
+            this.splitContainer15.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer15)).EndInit();
+            this.splitContainer15.ResumeLayout(false);
+            this.splitContainer16.Panel1.ResumeLayout(false);
+            this.splitContainer16.Panel1.PerformLayout();
+            this.splitContainer16.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer16)).EndInit();
+            this.splitContainer16.ResumeLayout(false);
             this.splitContainer9.Panel1.ResumeLayout(false);
             this.splitContainer9.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer9)).EndInit();
@@ -1462,9 +1559,6 @@
         public System.Windows.Forms.DataVisualization.Charting.Chart ct_volcano_logFold_logP;
         private System.Windows.Forms.Button btn_refreshCalculation;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.ComboBox cmbx_ratioDenominator;
-        private System.Windows.Forms.ComboBox cmbx_ratioNumerator;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.TextBox tb_FDR;
@@ -1517,5 +1611,10 @@
         private System.Windows.Forms.ComboBox cmbx_nodeLabelPositioning;
         private System.Windows.Forms.ComboBox cmbx_nodeLayout;
         private System.Windows.Forms.ComboBox cmbx_colorScheme;
+        private System.Windows.Forms.SplitContainer splitContainer15;
+        private System.Windows.Forms.ComboBox cmbx_ratioNumerator;
+        private System.Windows.Forms.SplitContainer splitContainer16;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.ComboBox cmbx_ratioDenominator;
     }
 }

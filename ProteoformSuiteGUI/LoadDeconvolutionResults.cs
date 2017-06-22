@@ -362,12 +362,24 @@ namespace ProteoformSuiteGUI
             lb_filter2.Text = cmb_loadTable1.SelectedItem.ToString();
         }
 
-        private void cmb_LoadTable3_SelectedIndexChanged(object sender, EventArgs e)
+        private void cmb_loadTable3_SelectedIndexChanged(object sender, EventArgs e)
         {
             DisplayUtility.FillDataGridView(dgv_loadFiles3, SaveState.lollipop.get_files(SaveState.lollipop.input_files, Lollipop.file_types[cmb_loadTable3.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles3, Lollipop.file_types[cmb_loadTable3.SelectedIndex]);
             lb_filter3.Text = cmb_loadTable1.SelectedItem.ToString();
         }
+
+        //Do nothing when text changes
+        private void cmb_loadTable1_TextChanged(object sender, EventArgs e) { }
+        private void cmb_loadTable2_TextChanged(object sender, EventArgs e) { }
+        private void cmb_loadTable3_TextChanged(object sender, EventArgs e) { }
+
+
         #endregion CHANGED TABLE SELECTION Private Methods
+
+        private void rb_unlabeled_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

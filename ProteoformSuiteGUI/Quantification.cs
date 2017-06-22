@@ -580,6 +580,8 @@ namespace ProteoformSuiteGUI
             ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
         }
 
+        private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
+
         #endregion Cytoscape Visualization Private Methods
 
     }

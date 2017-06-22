@@ -393,7 +393,8 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.likely_cleavages = tb_likelyCleavages.Text.Split(',');
         }
 
-        #endregion Private Methods
+        private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
 
+        #endregion Private Methods
     }
 }
