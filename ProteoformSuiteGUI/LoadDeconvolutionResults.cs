@@ -369,6 +369,5 @@ namespace ProteoformSuiteGUI
             lb_filter3.Text = cmb_loadTable1.SelectedItem.ToString();
         }
         #endregion CHANGED TABLE SELECTION Private Methods
-
     }
 }
