@@ -63,6 +63,8 @@ namespace ProteoformSuiteGUI
             DisplayTheoreticalProteoform.FormatTheoreticalProteoformTable(dgv_Database);
         }
 
+        private void cmb_empty_TextChanged(object sender, EventArgs e) { }
+
         #endregion Private Methods
 
         #region Public Methods
@@ -244,12 +246,6 @@ namespace ProteoformSuiteGUI
 
         #region LOAD DATABASES GRID VIEW Private Methods
 
-        private void cmb_loadTable_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (cmb_loadTable.SelectedIndex != 2) MessageBox.Show("Use the Load Deconvolution Results page to load data.");
-            cmb_loadTable.SelectedIndex = 2;
-        }
-
         private void dgv_loadFiles_DragDrop(object sender, DragEventArgs e)
         {
             drag_drop(e, cmb_loadTable, dgv_loadFiles);
@@ -378,6 +374,5 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Modification Names Private Methods
-
     }
 }

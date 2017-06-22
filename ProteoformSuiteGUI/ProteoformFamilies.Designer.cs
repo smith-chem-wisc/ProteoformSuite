@@ -50,6 +50,7 @@
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
+            this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tb_likelyCleavages = new System.Windows.Forms.TextBox();
             this.label12 = new System.Windows.Forms.Label();
@@ -74,7 +75,6 @@
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.Families_update = new System.Windows.Forms.Button();
-            this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -174,11 +174,13 @@
             // 
             // cmbx_nodeLabel
             // 
+            this.cmbx_nodeLabel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_nodeLabel.FormattingEnabled = true;
             this.cmbx_nodeLabel.Location = new System.Drawing.Point(7, 165);
             this.cmbx_nodeLabel.Name = "cmbx_nodeLabel";
             this.cmbx_nodeLabel.Size = new System.Drawing.Size(121, 21);
             this.cmbx_nodeLabel.TabIndex = 51;
+            this.cmbx_nodeLabel.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // label10
             // 
@@ -193,12 +195,14 @@
             // 
             // cmbx_geneLabel
             // 
+            this.cmbx_geneLabel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_geneLabel.FormattingEnabled = true;
             this.cmbx_geneLabel.Location = new System.Drawing.Point(6, 244);
             this.cmbx_geneLabel.Name = "cmbx_geneLabel";
             this.cmbx_geneLabel.Size = new System.Drawing.Size(121, 21);
             this.cmbx_geneLabel.TabIndex = 49;
             this.cmbx_geneLabel.SelectedIndexChanged += new System.EventHandler(this.cmbx_geneLabel_SelectedIndexChanged);
+            this.cmbx_geneLabel.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // label9
             // 
@@ -213,11 +217,13 @@
             // 
             // cmbx_edgeLabel
             // 
+            this.cmbx_edgeLabel.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_edgeLabel.FormattingEnabled = true;
             this.cmbx_edgeLabel.Location = new System.Drawing.Point(7, 193);
             this.cmbx_edgeLabel.Name = "cmbx_edgeLabel";
             this.cmbx_edgeLabel.Size = new System.Drawing.Size(121, 21);
             this.cmbx_edgeLabel.TabIndex = 47;
+            this.cmbx_edgeLabel.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // label6
             // 
@@ -271,27 +277,33 @@
             // 
             // cmbx_nodeLabelPositioning
             // 
+            this.cmbx_nodeLabelPositioning.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_nodeLabelPositioning.FormattingEnabled = true;
             this.cmbx_nodeLabelPositioning.Location = new System.Drawing.Point(7, 138);
             this.cmbx_nodeLabelPositioning.Name = "cmbx_nodeLabelPositioning";
             this.cmbx_nodeLabelPositioning.Size = new System.Drawing.Size(121, 21);
             this.cmbx_nodeLabelPositioning.TabIndex = 38;
+            this.cmbx_nodeLabelPositioning.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // cmbx_nodeLayout
             // 
+            this.cmbx_nodeLayout.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_nodeLayout.FormattingEnabled = true;
             this.cmbx_nodeLayout.Location = new System.Drawing.Point(7, 111);
             this.cmbx_nodeLayout.Name = "cmbx_nodeLayout";
             this.cmbx_nodeLayout.Size = new System.Drawing.Size(121, 21);
             this.cmbx_nodeLayout.TabIndex = 37;
+            this.cmbx_nodeLayout.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // cmbx_colorScheme
             // 
+            this.cmbx_colorScheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_colorScheme.FormattingEnabled = true;
             this.cmbx_colorScheme.Location = new System.Drawing.Point(7, 84);
             this.cmbx_colorScheme.Name = "cmbx_colorScheme";
             this.cmbx_colorScheme.Size = new System.Drawing.Size(121, 21);
             this.cmbx_colorScheme.TabIndex = 36;
+            this.cmbx_colorScheme.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // lb_dgv_selection
             // 
@@ -305,12 +317,14 @@
             // 
             // cmbx_tableSelector
             // 
+            this.cmbx_tableSelector.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_tableSelector.FormattingEnabled = true;
             this.cmbx_tableSelector.Location = new System.Drawing.Point(7, 10);
             this.cmbx_tableSelector.Name = "cmbx_tableSelector";
             this.cmbx_tableSelector.Size = new System.Drawing.Size(121, 21);
             this.cmbx_tableSelector.TabIndex = 5;
             this.cmbx_tableSelector.SelectedIndexChanged += new System.EventHandler(this.cmbx_tableSelector_SelectedIndexChanged);
+            this.cmbx_tableSelector.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // splitContainer3
             // 
@@ -357,6 +371,15 @@
             this.dgv_proteoform_family_members.Name = "dgv_proteoform_family_members";
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(675, 513);
             this.dgv_proteoform_family_members.TabIndex = 3;
+            // 
+            // rtb_proteoformFamilyResults
+            // 
+            this.rtb_proteoformFamilyResults.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(17, 390);
+            this.rtb_proteoformFamilyResults.Name = "rtb_proteoformFamilyResults";
+            this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(463, 84);
+            this.rtb_proteoformFamilyResults.TabIndex = 63;
+            this.rtb_proteoformFamilyResults.Text = "";
             // 
             // groupBox2
             // 
@@ -608,15 +631,6 @@
             this.Families_update.UseMnemonic = false;
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
-            // 
-            // rtb_proteoformFamilyResults
-            // 
-            this.rtb_proteoformFamilyResults.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(17, 390);
-            this.rtb_proteoformFamilyResults.Name = "rtb_proteoformFamilyResults";
-            this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(463, 84);
-            this.rtb_proteoformFamilyResults.TabIndex = 63;
-            this.rtb_proteoformFamilyResults.Text = "";
             // 
             // ProteoformFamilies
             // 
