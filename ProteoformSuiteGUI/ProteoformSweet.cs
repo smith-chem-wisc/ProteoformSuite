@@ -15,16 +15,16 @@ namespace ProteoformSuiteGUI
 
         #region Public Fields
 
-        public LoadDeconvolutionResults loadDeconvolutionResults;
-        public RawExperimentalComponents rawExperimentalComponents;
-        public NeuCodePairs neuCodePairs;
-        public AggregatedProteoforms aggregatedProteoforms;
-        public TheoreticalDatabase theoreticalDatabase;
-        public ExperimentTheoreticalComparison experimentalTheoreticalComparison;
-        public ExperimentExperimentComparison experimentExperimentComparison;
-        public ProteoformFamilies proteoformFamilies;
-        public Quantification quantification;
-        public ResultsSummary resultsSummary;
+        public LoadDeconvolutionResults loadDeconvolutionResults = new LoadDeconvolutionResults();
+        public RawExperimentalComponents rawExperimentalComponents = new RawExperimentalComponents();
+        public NeuCodePairs neuCodePairs = new NeuCodePairs();
+        public AggregatedProteoforms aggregatedProteoforms = new AggregatedProteoforms();
+        public TheoreticalDatabase theoreticalDatabase = new TheoreticalDatabase();
+        public ExperimentTheoreticalComparison experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
+        public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
+        public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
+        public Quantification quantification = new Quantification();
+        public ResultsSummary resultsSummary = new ResultsSummary();
         public List<ISweetForm> forms = new List<ISweetForm>();
         public static bool run_when_form_loads;
 
@@ -67,17 +67,6 @@ namespace ProteoformSuiteGUI
 
         private void InitializeForms()
         {
-            loadDeconvolutionResults = new LoadDeconvolutionResults();
-            rawExperimentalComponents = new RawExperimentalComponents();
-            neuCodePairs = new NeuCodePairs();
-            aggregatedProteoforms = new AggregatedProteoforms();
-            theoreticalDatabase = new TheoreticalDatabase();
-            experimentalTheoreticalComparison = new ExperimentTheoreticalComparison();
-            experimentExperimentComparison = new ExperimentExperimentComparison();
-            proteoformFamilies = new ProteoformFamilies();
-            quantification = new Quantification();
-            resultsSummary = new ResultsSummary();
-
             forms = new List<ISweetForm>
             {
                 loadDeconvolutionResults,
