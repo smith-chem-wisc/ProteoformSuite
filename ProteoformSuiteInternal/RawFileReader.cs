@@ -63,7 +63,7 @@ namespace ProteoformSuiteInternal
                                     if (!ms_scans.TryGetValue(new Tuple<string, double>(filename, scan_num), out scan)) return false;
                                 }
 
-                                if (scan.ms_order == 2 && Math.Abs(cs.mz_centroid - scan.precursor_mz) <= 1.5)
+                                if (scan.ms_order == 2 && Math.Abs(cs.mz_centroid - scan.precursor_mz) <= 10)
                                 {
                                     e.fragmented = true;
                                     break;

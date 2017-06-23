@@ -70,24 +70,46 @@ namespace ProteoformSuiteInternal
 
         public void identify_experimentals()
         {
+
             HashSet<Proteoform> identified_experimentals = new HashSet<Proteoform>(); //identified experimentals are topdown proteoforms or experimental proteoforms
-            Parallel.ForEach(theoretical_proteoforms, t =>
+            foreach(TheoreticalProteoform t in theoretical_proteoforms)
             {
                 lock (identified_experimentals)
                     foreach (Proteoform e in t.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
                     {
                         identified_experimentals.Add(e);
                     }
-            });
+            }
 
-            //Continue looking for new experimental identifications until no more remain to be identified
-            List<Proteoform> newly_identified_experimentals = new List<Proteoform>(identified_experimentals);
+            //Continue looking for new topdown identifications until no more remain to be identified
+            //begin with highest scoring topdown proteoform...
+            List<Proteoform> newly_identified_experimentals = new List<Proteoform>(identified_experimentals.Where(p => (p as TopDownProteoform) != null).OrderByDescending(p => (p as TopDownProteoform).topdown_hits.Max(h => h.score)));
             int last_identified_count = identified_experimentals.Count - 1;
             while (newly_identified_experimentals.Count > 0 && identified_experimentals.Count > last_identified_count)
             {
                 last_identified_count = identified_experimentals.Count;
                 HashSet<Proteoform> tmp_new_experimentals = new HashSet<Proteoform>();
-                Parallel.ForEach(newly_identified_experimentals, id_experimental =>
+                foreach (Proteoform id_experimental in newly_identified_experimentals)
+                {
+                    lock (identified_experimentals) lock (tmp_new_experimentals)
+                            foreach (Proteoform new_e in id_experimental.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
+                            {
+                                identified_experimentals.Add(new_e);
+                                tmp_new_experimentals.Add(new_e);
+                            }
+                }
+                newly_identified_experimentals = new List<Proteoform>(tmp_new_experimentals);
+            }
+
+
+            //Continue looking for new experimental identifications until no more remain to be identified
+            newly_identified_experimentals = new List<Proteoform>(identified_experimentals.Where(p => (p as ExperimentalProteoform) != null));
+            last_identified_count = identified_experimentals.Count - 1;
+            while (newly_identified_experimentals.Count > 0 && identified_experimentals.Count > last_identified_count)
+            {
+                last_identified_count = identified_experimentals.Count;
+                HashSet<Proteoform> tmp_new_experimentals = new HashSet<Proteoform>();
+                foreach(Proteoform id_experimental in newly_identified_experimentals)
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
                         foreach (Proteoform new_e in id_experimental.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
@@ -95,7 +117,7 @@ namespace ProteoformSuiteInternal
                             identified_experimentals.Add(new_e);
                             tmp_new_experimentals.Add(new_e);
                         }
-                });
+                }
                 newly_identified_experimentals = new List<Proteoform>(tmp_new_experimentals);
             }
         }
