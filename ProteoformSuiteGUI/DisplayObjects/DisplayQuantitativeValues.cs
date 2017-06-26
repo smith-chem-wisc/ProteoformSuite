@@ -81,6 +81,11 @@ namespace ProteoformSuiteGUI
             get { return qval.testStatistic; }
         }
 
+        public decimal AvgPermutedTestStatistic
+        {
+            get { return qval.correspondingAvgPermutedTestStatistic; }
+        }
+
         public string manual_validation_quant
         {
             get { return qval.proteoform.manual_validation_quant; }
@@ -103,7 +108,8 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(IntensitySum)].DefaultCellStyle.Format = "0.##";
             dgv.Columns[nameof(LogFoldChange)].DefaultCellStyle.Format = "0.####";
             dgv.Columns[nameof(pValue)].DefaultCellStyle.Format = "E2";
-            dgv.Columns[nameof(TestStatistic)].DefaultCellStyle.Format = "0.###";
+            dgv.Columns[nameof(TestStatistic)].DefaultCellStyle.Format = "0.#####";
+            dgv.Columns[nameof(AvgPermutedTestStatistic)].DefaultCellStyle.Format = "0.#####";
 
             //HEADERS
             dgv.Columns[nameof(GeneName)].HeaderText = "Gene Name";
@@ -113,6 +119,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(LogFoldChange)].HeaderText = "Log2 Fold Change";
             dgv.Columns[nameof(pValue)].HeaderText = "p-value (by randomization test)";
             dgv.Columns[nameof(TestStatistic)].HeaderText = "Student's t-Test Statistic";
+            dgv.Columns[nameof(AvgPermutedTestStatistic)].HeaderText = "Corresponding Avg. Permuted Student's t-Test Statistic";
             dgv.Columns[nameof(manual_validation_quant)].HeaderText = "Abundant Component for Manual Validation of Quantification";
         }
 

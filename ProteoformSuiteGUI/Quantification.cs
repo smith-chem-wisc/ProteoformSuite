@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using System.IO;
 
 namespace ProteoformSuiteGUI
 {
@@ -223,10 +223,18 @@ namespace ProteoformSuiteGUI
             ct_relativeDifference.Series["positiveOffset"].ChartType = SeriesChartType.Line;
             ct_relativeDifference.Series.Add("negativeOffset");
             ct_relativeDifference.Series["negativeOffset"].ChartType = SeriesChartType.Line;
-            ct_relativeDifference.ChartAreas[0].AxisX.Title = "expected relative difference dE(i)";
-            ct_relativeDifference.ChartAreas[0].AxisY.Title = "observed relative difference d(i)";
+            ct_relativeDifference.ChartAreas[0].AxisX.Title = "Expected Relative Difference dE(i)";
+            ct_relativeDifference.ChartAreas[0].AxisY.Title = "Observed Relative Difference d(i)";
 
             ct_relativeDifference.Series["obsVSexp"].Points.DataBindXY(SaveState.lollipop.sortedAvgPermutationTestStatistics.ToList(), SaveState.lollipop.sortedProteoformTestStatistics.ToList());
+
+            if (SaveState.lollipop.sortedAvgPermutationTestStatistics.Count > 0 && SaveState.lollipop.sortedProteoformTestStatistics.Count > 0)
+            {
+                ct_relativeDifference.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(SaveState.lollipop.sortedAvgPermutationTestStatistics.First()));
+                ct_relativeDifference.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(SaveState.lollipop.sortedAvgPermutationTestStatistics.Last()));
+                ct_relativeDifference.ChartAreas[0].AxisY.Minimum = Math.Min(Convert.ToDouble(Math.Floor(negativeOffsetFunction(SaveState.lollipop.sortedProteoformTestStatistics.First()))), Convert.ToDouble(Math.Floor(SaveState.lollipop.sortedProteoformTestStatistics.First())));
+                ct_relativeDifference.ChartAreas[0].AxisY.Maximum = Math.Max(Convert.ToDouble(Math.Ceiling(positiveOffsetFunction(SaveState.lollipop.sortedProteoformTestStatistics.Last()))), Convert.ToDouble(Math.Ceiling(SaveState.lollipop.sortedProteoformTestStatistics.Last())));
+            }
 
             plotObservedVsExpectedOffsets();
         }
@@ -252,10 +260,13 @@ namespace ProteoformSuiteGUI
                 ct_relativeDifference.Series["negativeOffset"].Points.AddXY(xValue, negativeOffsetFunction(xValue));
             }
 
-            ct_relativeDifference.ChartAreas[0].AxisX.Minimum = -10;
-            ct_relativeDifference.ChartAreas[0].AxisX.Maximum = 10;
-            ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -10;
-            ct_relativeDifference.ChartAreas[0].AxisY.Maximum = 10;
+            if (SaveState.lollipop.sortedAvgPermutationTestStatistics.Count <= 0 && SaveState.lollipop.sortedProteoformTestStatistics.Count <= 0)
+            {
+                ct_relativeDifference.ChartAreas[0].AxisX.Minimum = -10;
+                ct_relativeDifference.ChartAreas[0].AxisX.Maximum = 10;
+                ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -10;
+                ct_relativeDifference.ChartAreas[0].AxisY.Maximum = 10;
+            }
 
             tb_FDR.Text = SaveState.lollipop.offsetFDR.ToString();
         }
@@ -276,8 +287,8 @@ namespace ProteoformSuiteGUI
             ct_proteoformIntensities.Series["Background Projected"].ChartType = SeriesChartType.Line; // this is a gaussian line representing the distribution of missing values.
             ct_proteoformIntensities.Series.Add("Fit + Projected");
             ct_proteoformIntensities.Series["Fit + Projected"].ChartType = SeriesChartType.Line; // this is the sum of the gaussians for observed and missing values
-            ct_proteoformIntensities.ChartAreas[0].AxisX.Title = "log Intensity (base 2)";
-            ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "count";
+            ct_proteoformIntensities.ChartAreas[0].AxisX.Title = "Log (Base 2) Intensity";
+            ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "Count";
 
 
             foreach (KeyValuePair<decimal, int> entry in SaveState.lollipop.logSelectIntensityHistogram)
@@ -299,12 +310,20 @@ namespace ProteoformSuiteGUI
             ct_volcano_logFold_logP.Series.Add("logFold_logP");
             ct_volcano_logFold_logP.Series["logFold_logP"].ChartType = SeriesChartType.Point; // these are the actual experimental proteoform intensities
 
-            ct_proteoformIntensities.ChartAreas[0].AxisX.Title = "log (base 2) fold change (light/heavy)";
-            ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "log (base 10) pValue";
+            ct_volcano_logFold_logP.ChartAreas[0].AxisX.Title = "Log (Base 2) Fold Change (" + SaveState.lollipop.numerator_condition + "/" + SaveState.lollipop.denominator_condition + ")";
+            ct_volcano_logFold_logP.ChartAreas[0].AxisY.Title = "Log (Base 10) p-Value";
 
             foreach (QuantitativeProteoformValues qValue in SaveState.lollipop.qVals)
             {
                 ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10((double)qValue.pValue));
+            }
+
+            if (SaveState.lollipop.qVals.Count > 0)
+            {
+                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(SaveState.lollipop.qVals.Min(q => q.logFoldChange)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(SaveState.lollipop.qVals.Max(q => q.logFoldChange)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Minimum = Math.Floor(SaveState.lollipop.qVals.Min(q => -Math.Log10((double)q.pValue)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = Math.Ceiling(SaveState.lollipop.qVals.Max(q => -Math.Log10((double)q.pValue)));
             }
         }
 
@@ -458,7 +477,7 @@ namespace ProteoformSuiteGUI
             fileOpen.Filter = "Protein accession list (*.txt)|*.txt";
             fileOpen.FileName = "";
             DialogResult dr = this.fileOpen.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK && File.Exists(fileOpen.FileName))
+            if (dr == DialogResult.OK && File.Exists(fileOpen.FileName))
             {
                 SaveState.lollipop.backgroundProteinsList = fileOpen.FileName;
                 tb_goTermCustomBackground.Text = fileOpen.FileName;
