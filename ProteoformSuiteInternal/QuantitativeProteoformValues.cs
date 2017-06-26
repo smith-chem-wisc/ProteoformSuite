@@ -26,6 +26,7 @@ namespace ProteoformSuiteInternal
         public decimal pValue { get; set; } = 0;
         public bool significant { get; set; } = false;
         public decimal testStatistic { get; set; }
+        public decimal correspondingAvgPermutedTestStatistic { get; set; }
         public List<decimal> permutedTestStatistics { get; set; }
         public decimal FDR { get; set; } = 0;
 
