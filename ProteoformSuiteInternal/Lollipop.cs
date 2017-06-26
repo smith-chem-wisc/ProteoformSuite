@@ -897,6 +897,11 @@ namespace ProteoformSuiteInternal
             sortedAvgPermutationTestStatistics = satisfactoryProteoforms.Select(eP => eP.quant.permutedTestStatistics.Average()).ToList();
             sortedProteoformTestStatistics.Sort();
             sortedAvgPermutationTestStatistics.Sort();
+            int ct = 0;
+            foreach (ExperimentalProteoform p in satisfactoryProteoforms.OrderBy(eP => eP.quant.testStatistic).ToList())
+            {
+                p.quant.correspondingAvgPermutedTestStatistic = sortedAvgPermutationTestStatistics[ct++];
+            }
         }
 
         public decimal computeFoldChangeFDR(List<decimal> sortedAvgPermutationTestStatistics, List<decimal> sortedProteoformTestStatistics, List<ExperimentalProteoform> satisfactoryProteoforms, IEnumerable<decimal> permutedTestStatistics, decimal offsetTestStatistics)
