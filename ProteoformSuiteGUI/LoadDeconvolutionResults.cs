@@ -74,6 +74,7 @@ namespace ProteoformSuiteGUI
             }
 
             match_files();
+            populate_file_lists();
         }
 
         private void match_files()

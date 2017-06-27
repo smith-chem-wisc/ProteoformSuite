@@ -43,12 +43,12 @@ namespace ProteoformSuiteGUI
 
         public decimal LightIntensitySum
         {
-            get { return qval.lightIntensitySum; }
+            get { return qval.numeratorIntensitySum; }
         }
 
         public decimal HeavyIntensitySum
         {
-            get { return qval.heavyIntensitySum; }
+            get { return qval.denominatorIntensitySum; }
         }
 
         public decimal IntensitySum

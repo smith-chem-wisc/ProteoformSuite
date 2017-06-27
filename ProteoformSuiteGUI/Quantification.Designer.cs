@@ -622,7 +622,6 @@
             // 
             this.cmbx_ratioNumerator.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbx_ratioNumerator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbx_ratioNumerator.Enabled = false;
             this.cmbx_ratioNumerator.FormattingEnabled = true;
             this.cmbx_ratioNumerator.Location = new System.Drawing.Point(0, 0);
             this.cmbx_ratioNumerator.Name = "cmbx_ratioNumerator";
@@ -662,7 +661,6 @@
             // 
             this.cmbx_ratioDenominator.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbx_ratioDenominator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbx_ratioDenominator.Enabled = false;
             this.cmbx_ratioDenominator.FormattingEnabled = true;
             this.cmbx_ratioDenominator.Location = new System.Drawing.Point(0, 0);
             this.cmbx_ratioDenominator.Name = "cmbx_ratioDenominator";

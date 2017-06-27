@@ -357,7 +357,7 @@ namespace ProteoformSuiteInternal
                     }
 
                     if (quantitative && ep.quant.intensitySum != 0)
-                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.lightIntensitySum).ToString(), ((double)ep.quant.heavyIntensitySum).ToString(), ep.quant.significant.ToString(), get_piechart_string(color_scheme));
+                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.numeratorIntensitySum).ToString(), ((double)ep.quant.denominatorIntensitySum).ToString(), ep.quant.significant.ToString(), get_piechart_string(color_scheme));
                     else if (quantitative)
                         node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, "", "", "", "");
                     else

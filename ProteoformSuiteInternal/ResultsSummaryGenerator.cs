@@ -200,7 +200,7 @@ namespace ProteoformSuiteInternal
             report += Environment.NewLine;
 
             // Venn Diagram of quantifiable proteoforms
-            List<string> conditions = SaveState.lollipop.ltConditionsBioReps.Keys.Concat(SaveState.lollipop.hvConditionsBioReps.Keys).ToList();
+            List<string> conditions = SaveState.lollipop.ltConditionsBioReps.Keys.Concat(SaveState.lollipop.hvConditionsBioReps.Keys).Distinct().ToList();
             foreach (string condition in conditions)
             {
                 SaveState.lollipop.ltConditionsBioReps.TryGetValue(condition, out List<int> ltbioreps);
@@ -287,8 +287,8 @@ namespace ProteoformSuiteInternal
                     e.modified_mass - e.linked_proteoform_references.Last().modified_mass,
                     e.agg_rt,
                     e.agg_intensity,
-                    e.quant.lightIntensitySum,
-                    e.quant.heavyIntensitySum,
+                    e.quant.numeratorIntensitySum,
+                    e.quant.denominatorIntensitySum,
                     e.quant.significant
                 );
             }

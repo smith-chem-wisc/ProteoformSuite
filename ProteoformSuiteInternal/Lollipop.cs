@@ -639,6 +639,7 @@ namespace ProteoformSuiteInternal
 
         public int countOfBioRepsInOneCondition; //need this in quantification to select which proteoforms to perform calculations on.
         public int condition_count;
+        public Dictionary<string, List<int>> conditionsBioReps = new Dictionary<string, List<int>>();
         public Dictionary<string, List<int>> ltConditionsBioReps = new Dictionary<string, List<int>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
         public Dictionary<string, List<int>> hvConditionsBioReps = new Dictionary<string, List<int>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
         public Dictionary<int, List<int>> quantBioFracCombos; //this dictionary has an integer list of bioreps with an integer list of observed fractions. this way we can be missing reps and fractions.
@@ -658,9 +659,7 @@ namespace ProteoformSuiteInternal
             List<int> fractions = new List<int>();
             foreach (int b in bioreps)
             {
-                fractions = input_files.Where(q => q.purpose == Purpose.Quantification).Where(rep => rep.biological_replicate == b).Select(f => f.fraction).ToList();
-                if (fractions != null)
-                    fractions = fractions.Distinct().ToList();
+                //fractions = input_files.Where(q => q.purpose == Purpose.Quantification).Where(rep => rep.biological_replicate == b).Select(f => f.fraction).Distinct().ToList();
                 quantBioFracCombos.Add(b, fractions);
             }
         }
@@ -674,22 +673,25 @@ namespace ProteoformSuiteInternal
             List<string> hvConditions = neucode_labeled ?
                 get_files(input_files, Purpose.Quantification).Select(f => f.hv_condition).Distinct().ToList() :
                 new List<string>();
+            conditionsBioReps.Clear();
             ltConditionsBioReps.Clear();
             hvConditionsBioReps.Clear();
 
+            foreach (string condition in ltConditions.Concat(hvConditions).Distinct().ToList())
+            {
+                List<int> bioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition || f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                conditionsBioReps.Add(condition, bioreps);
+            }
+
             foreach (string condition in ltConditions)
             {
-                //ltConditionsBioReps.Add(condition, get_files(Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).ToList().Distinct().Count()); // this gives the count of bioreps in the specified condition
-                List<int> bioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).ToList();
-                bioreps = bioreps.Distinct().ToList();
+                List<int> bioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 ltConditionsBioReps.Add(condition, bioreps);
             }
 
             foreach (string condition in hvConditions)
             {
-                //hvConditionsBioReps.Add(condition, get_files(Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).ToList().Distinct().Count()); // this gives the count of bioreps in the specified condition
-                List<int> bioreps = get_files(input_files, Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).ToList();
-                bioreps = bioreps.Distinct().ToList();
+                List<int> bioreps = get_files(input_files, Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 hvConditionsBioReps.Add(condition, bioreps);
             }
 
@@ -701,13 +703,8 @@ namespace ProteoformSuiteInternal
                 hvConditionsBioReps.Values.Min(v => v.Count) :
                 0;
 
-            countOfBioRepsInOneCondition = hvConditionsBioReps.Values.Count > 0 ?
-                Math.Min(minLt, minHv) :
-                minLt;
-
-            minBiorepsWithObservations = countOfBioRepsInOneCondition > 0 ? 
-                countOfBioRepsInOneCondition : 
-                1;
+            countOfBioRepsInOneCondition = conditionsBioReps.Min(kv => kv.Value.Count);
+            minBiorepsWithObservations = countOfBioRepsInOneCondition > 0 ? countOfBioRepsInOneCondition : 1;
         }
 
         #endregion QUANTIFICATION SETUP

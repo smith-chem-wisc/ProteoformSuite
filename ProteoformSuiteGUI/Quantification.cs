@@ -358,6 +358,11 @@ namespace ProteoformSuiteGUI
         private void cmbx_observationsTypeRequired_SelectedIndexChanged(object sender, EventArgs e)
         {
             SaveState.lollipop.observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
+            if (SaveState.lollipop.observation_requirement == Lollipop.observation_requirement_possibilities[1]) // From any condition
+                nud_minObservations.Maximum = SaveState.lollipop.conditionsBioReps.Sum(kv => kv.Value.Count);
+            else
+                nud_minObservations.Maximum = SaveState.lollipop.countOfBioRepsInOneCondition;
+            nud_minObservations.Value = nud_minObservations.Maximum;
         }
 
         private void nud_minObservations_ValueChanged(object sender, EventArgs e)
