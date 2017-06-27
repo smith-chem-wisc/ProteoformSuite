@@ -83,7 +83,7 @@ namespace ProteoformSuiteInternal
 
             //Continue looking for new topdown identifications until no more remain to be identified
             //begin with highest scoring topdown proteoform...
-            List<Proteoform> newly_identified_experimentals = new List<Proteoform>(identified_experimentals.Where(p => (p as TopDownProteoform) != null).OrderByDescending(p => (p as TopDownProteoform).topdown_hits.Max(h => h.score)));
+            List<Proteoform> newly_identified_experimentals = new List<Proteoform>(identified_experimentals.Where(p => (p as TopDownProteoform) != null)).OrderBy(p => p.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) > 0 ? p.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).First().DeltaMass - p.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).First().candidate_ptmset.mass : 1e6).ToList() ;
             int last_identified_count = identified_experimentals.Count - 1;
             while (newly_identified_experimentals.Count > 0 && identified_experimentals.Count > last_identified_count)
             {
@@ -119,6 +119,15 @@ namespace ProteoformSuiteInternal
                         }
                 }
                 newly_identified_experimentals = new List<Proteoform>(tmp_new_experimentals);
+            }
+
+            if (SaveState.lollipop.remove_bad_relations && gene_names.Select(g => g.ordered_locus).Distinct().Count() > 0 && proteoforms.Count > 1)
+            {
+                foreach (ProteoformRelation bad_relation in relations.Where(r => r.connected_proteoforms[0].linked_proteoform_references == null || r.connected_proteoforms[1].linked_proteoform_references == null))
+                {
+                    bad_relation.Accepted = false;
+                    relations = relations.Except(new List<ProteoformRelation> { bad_relation }).ToList();
+                }
             }
         }
 

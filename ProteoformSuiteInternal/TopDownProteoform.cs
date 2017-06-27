@@ -65,12 +65,13 @@ namespace ProteoformSuiteInternal
             this.start_index = t.start_index;
             this.theoretical_mass = t.theoretical_mass;
             this.stop_index = t.stop_index;
-            this.topdown_hits = t.topdown_hits;
+            this.topdown_hits = t.topdown_hits.Select(h => new TopDownHit(h)).ToList();
             this.monoisotopic_mass = t.monoisotopic_mass;
-            this.modified_mass = this.monoisotopic_mass;
+            this.modified_mass = t.monoisotopic_mass;
             this.accession = t.accession;
             this.agg_RT = t.agg_RT;
             this.targeted = t.targeted;
+            this.RTs = t.RTs;
             this.lysine_count = t.lysine_count;
         }
 

@@ -84,6 +84,11 @@ namespace ProteoformSuiteGUI
         {
             ClearListsTablesFigures(true);
             SaveState.lollipop.construct_target_and_decoy_families();
+            if (SaveState.lollipop.remove_bad_relations)
+            {
+                ClearListsTablesFigures(true);
+                SaveState.lollipop.construct_target_and_decoy_families();
+            }
             cmbx_tableSelector.SelectedIndex = 0;
             tb_tableFilter.Text = "";
             FillTablesAndCharts();
@@ -400,6 +405,11 @@ namespace ProteoformSuiteGUI
             update_figures_of_merit();
         }
 
+        private void cb_remove_bad_relations_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveState.lollipop.remove_bad_relations = cb_remove_bad_relations.Checked;
+        }
+
         private void bt_check_id_exp_fragmented_Click(object sender, EventArgs e)
         {
             MessageBox.Show("Please select all corresponding raw files.");
@@ -472,8 +482,7 @@ namespace ProteoformSuiteGUI
             else return;
         }
 
+
         #endregion Private Methods
-
-
     }
 }

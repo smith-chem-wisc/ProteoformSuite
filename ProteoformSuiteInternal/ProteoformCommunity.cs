@@ -244,7 +244,6 @@ namespace ProteoformSuiteInternal
                         }
                     }
                 }
-
             }
             return td_relations;
         }
