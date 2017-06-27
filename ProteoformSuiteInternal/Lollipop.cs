@@ -637,13 +637,22 @@ namespace ProteoformSuiteInternal
             //group hits into topdown proteoforms by accession/theoretical AND observed mass
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
             //TopDownHit[] remaining_td_hits = new TopDownHit[0];
-            List<TopDownHit> remaining_td_hits = top_down_hits.Where(h => h.score >= min_score_td && h.retention_time >= min_RT_td && h.retention_time <= max_RT_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
+            List<TopDownHit> unprocessed_td_hits = top_down_hits.Where(h => h.score >= min_score_td && h.retention_time >= min_RT_td && h.retention_time <= max_RT_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
+
+            List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
+            while(unprocessed_td_hits.Count > 0)
+            {
+                TopDownHit root = unprocessed_td_hits[0];
+                remaining_td_hits.Add(root);
+                unprocessed_td_hits = unprocessed_td_hits.Except(unprocessed_td_hits.Where(h => h.pvalue == root.pvalue && h.ms2ScanNumber == root.ms2ScanNumber && h.filename == root.filename)).ToList();
+            }
 
             List<TopDownProteoform> first_aggregation = new List<TopDownProteoform>();
             //aggregate to td hit w/ highest c-score as root - 1st average for retention time
             while (remaining_td_hits.Count > 0)
             {
                 TopDownHit root = remaining_td_hits[0];
+                //ambiguous results - only include higher scoring one (if same scan, file, and p-value)
                 //find topdownhits within RT tol --> first average
                 double first_RT_average = remaining_td_hits.Where(h => h.targeted == root.targeted && Math.Abs(h.retention_time - root.retention_time) <= Convert.ToDouble(retention_time_tolerance) && h.accession == root.accession && h.sequence == root.sequence && h.same_ptm_hits(root)).Select(h => h.retention_time).Average();
                 List<TopDownHit> hits_to_aggregate = remaining_td_hits.Where(h => h.targeted == root.targeted && Math.Abs(h.retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance) && h.accession == root.accession && h.sequence == root.sequence && h.same_ptm_hits(root)).OrderByDescending(h => h.score).ToList();
@@ -653,11 +662,11 @@ namespace ProteoformSuiteInternal
                 remaining_td_hits = remaining_td_hits.Except(new_pf.topdown_hits).ToList();
 
                 //could have cases where topdown proteoforms same accession, mass, diff PTMs --> need a diff accession
-                if (topdown_proteoforms.Select(t => t.accession).Contains(new_pf.accession))
+                int count = topdown_proteoforms.Count(t => t.accession.Contains(new_pf.accession));
+                if (count > 0)
                 {
                     string[] old_accession = new_pf.accession.Split('_');
-                    int num = Convert.ToInt16(old_accession[1].ElementAt(2).ToString()) + 1;
-                    new_pf.accession = old_accession[0] + "_TD" + num + "_" + old_accession[2] + old_accession[3] + "_" + old_accession[4];
+                    new_pf.accession = old_accession[0] + "_TD" + count + "_" + old_accession[2] + old_accession[3] + "_" + old_accession[4];
                 }
                 topdown_proteoforms.Add(new_pf);
             }
@@ -686,7 +695,7 @@ namespace ProteoformSuiteInternal
         #endregion TOPDOWN 
 
         #region PROTEOFORM FAMILIES Public Fields
-
+        public bool remove_bad_relations = false;
         public bool count_adducts_as_identifications = false;
         public string family_build_folder_path = "";
 

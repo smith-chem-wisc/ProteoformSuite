@@ -22,6 +22,7 @@ namespace ProteoformSuiteInternal
         public double theoretical_mass { get; set; }
         public string accession { get; set; }
         public string name { get; set; }
+        public double pvalue { get; set; }
 
         public double reported_mass { get; set; } //reported in TD results file
 
@@ -33,7 +34,7 @@ namespace ProteoformSuiteInternal
         public TopDownResultType tdResultType { get; set; }
         public InputFile file { get; set; }
 
-        public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, bool targeted, double score)
+        public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, bool targeted, double pvalue, double score)
         {
             this.file = file;
             this.tdResultType = tdResultType;
@@ -51,6 +52,28 @@ namespace ProteoformSuiteInternal
             this.filename = filename;
             this.targeted = targeted;
             this.score = score;
+            this.pvalue = pvalue;
+        }
+
+        public TopDownHit(TopDownHit h)
+        {
+            this.file = h.file;
+            this.tdResultType = h.tdResultType;
+            this.accession = h.accession;
+            this.uniprot_id = h.uniprot_id;
+            this.name = h.name;
+            this.sequence = h.sequence;
+            this.start_index = h.start_index;
+            this.stop_index = h.stop_index;
+            this.ptm_list = h.ptm_list;
+            this.reported_mass = h.reported_mass;
+            this.theoretical_mass = h.theoretical_mass;
+            this.ms2ScanNumber = h.ms2ScanNumber; ;
+            this.retention_time = h.retention_time;
+            this.filename = h.filename;
+            this.targeted = h.targeted;
+            this.pvalue = pvalue;
+            this.score = h.score;
         }
 
         public TopDownHit()
