@@ -106,17 +106,19 @@ namespace Test
             Assert.AreEqual(4, e1.biorepIntensityList.Count);
             Assert.AreEqual(2, e1.biorepIntensityList.Count(b => b.biorep == 1));
             Assert.AreEqual(2, e1.biorepIntensityList.Count(b => b.biorep == 2));
-            Assert.AreEqual(2, e1.biorepIntensityList.Count(b => b.light == true));
-            Assert.AreEqual(2, e1.biorepIntensityList.Count(b => b.light == false));
+            //Assert.AreEqual(2, e1.biorepIntensityList.Count(b => b.light == true));
+            //Assert.AreEqual(2, e1.biorepIntensityList.Count(b => b.light == false));
 
             SaveState.lollipop.getBiorepsFractionsList(SaveState.lollipop.input_files);
+            SaveState.lollipop.numerator_condition = SaveState.lollipop.ltConditionsBioReps.Keys.First();
+            SaveState.lollipop.denominator_condition = SaveState.lollipop.hvConditionsBioReps.Keys.First();
 
             SaveState.lollipop.computeProteoformTestStatistics(true, new List<ExperimentalProteoform> { e1 }, (decimal)10.000, (decimal)10.000, "", "", 1);
 
-            Assert.AreEqual(2, e1.quant.lightBiorepIntensities.Count);
-            Assert.AreEqual(2, e1.quant.heavyBiorepIntensities.Count);
-            Assert.AreEqual(200d, e1.quant.lightBiorepIntensities.Sum(i => i.intensity));
-            Assert.AreEqual(105d, e1.quant.heavyBiorepIntensities.Sum(i => i.intensity));
+            Assert.AreEqual(2, e1.quant.numeratorBiorepIntensities.Count);
+            Assert.AreEqual(2, e1.quant.denominatorBiorepIntensities.Count);
+            Assert.AreEqual(200d, e1.quant.numeratorBiorepIntensities.Sum(i => i.intensity));
+            Assert.AreEqual(105d, e1.quant.denominatorBiorepIntensities.Sum(i => i.intensity));
             Assert.AreEqual(305d, e1.quant.intensitySum);
             Assert.AreEqual(0.929610672108602M, e1.quant.logFoldChange);
             Assert.AreEqual(0.0379131331237966M, e1.quant.variance);
@@ -148,22 +150,22 @@ namespace Test
             Assert.AreEqual(2, e2.biorepIntensityList.Count(b => b.biorep == 2));
             Assert.AreEqual(2, e2.biorepIntensityList.Count(b => b.biorep == 3));
             Assert.AreEqual(2, e2.biorepIntensityList.Count(b => b.biorep == 4));
-            Assert.AreEqual(2 * 2, e2.biorepIntensityList.Count(b => b.light));
-            Assert.AreEqual(2 * 2, e2.biorepIntensityList.Count(b => !b.light));
+            //Assert.AreEqual(2 * 2, e2.biorepIntensityList.Count(b => b.light));
+            //Assert.AreEqual(2 * 2, e2.biorepIntensityList.Count(b => !b.light));
 
             SaveState.lollipop.getBiorepsFractionsList(SaveState.lollipop.input_files);
 
             SaveState.lollipop.computeProteoformTestStatistics(true, new List<ExperimentalProteoform> { e2 }, (decimal)10.000, (decimal)10.000, "", "", 1);
 
-            Assert.AreEqual(4, e2.quant.lightBiorepIntensities.Count);
-            Assert.AreEqual(4, e2.quant.heavyBiorepIntensities.Count);
-            Assert.AreEqual(298d, e2.quant.lightBiorepIntensities.Sum(i => i.intensity));
-            Assert.AreEqual(307d, e2.quant.heavyBiorepIntensities.Sum(i => i.intensity));
+            Assert.AreEqual(4, e2.quant.numeratorBiorepIntensities.Count);
+            Assert.AreEqual(4, e2.quant.denominatorBiorepIntensities.Count);
+            Assert.AreEqual(298d, e2.quant.numeratorBiorepIntensities.Sum(i => i.intensity));
+            Assert.AreEqual(307d, e2.quant.denominatorBiorepIntensities.Sum(i => i.intensity));
             Assert.AreEqual(605d, e2.quant.intensitySum);
             Assert.AreEqual(-0.0429263249080178M, e2.quant.logFoldChange);
             Assert.AreEqual(1.97538639776822M, e2.quant.variance);
             Assert.True(0 <= e2.quant.pValue && e2.quant.pValue <= 1);
-            Assert.AreEqual(0.410m, Math.Round(e2.quant.getProteinLevelStdDev(e2.quant.lightBiorepIntensities, e2.quant.heavyBiorepIntensities), 3));
+            Assert.AreEqual(0.410m, Math.Round(e2.quant.getProteinLevelStdDev(e2.quant.numeratorBiorepIntensities, e2.quant.denominatorBiorepIntensities), 3));
             Assert.AreEqual(-0.03045m, Math.Round(e2.quant.testStatistic, 5));
             Assert.AreEqual(e2.quant.permutedTestStatistics.Count, SaveState.lollipop.permutedTestStatistics.Count());
         }
@@ -172,7 +174,7 @@ namespace Test
         public void proteinLevelStDev_divide_by_zero_crash()
         {
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
-            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
+            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, 1, "", 0) };
             Assert.True(e.quant.getProteinLevelStdDev(singleton_list, singleton_list) > 0);
         }
 
@@ -180,7 +182,7 @@ namespace Test
         public void quant_variance_without_imputation_aka_unequal_list_lengths()
         {
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
-            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
+            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, 1, "", 0) };
             List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
             {
@@ -196,7 +198,7 @@ namespace Test
         public void quant_permuations_without_imputation_aka_unequal_list_lengths()
         {
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
-            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
+            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, 1, "", 0) };
             List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
             {
@@ -212,7 +214,7 @@ namespace Test
         public void quant_pvalue_without_imputation_aka_unequal_list_lengths()
         {
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
-            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, false, 1, "", 0) };
+            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, 1, "", 0) };
             List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
             {
@@ -334,8 +336,8 @@ namespace Test
 
             public DummyBiorepable(InputFile inFile, double intSum)
             {
-                this.input_file = inFile;
-                this.intensity_sum = intSum;
+                input_file = inFile;
+                intensity_sum = intSum;
             }
         }
 
@@ -353,24 +355,39 @@ namespace Test
             }
 
             List<BiorepIntensity> bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db,db,lightConditions,heavyConditions);
-
             Assert.AreEqual(2, bril.Count());
 
             for (int i = 0; i < 6; i++)
             {
                 db.Add(new DummyBiorepable(ConstructorsForTesting.InputFile("path.txt", Labeling.NeuCode, Purpose.Quantification, "light", "heavy", 2, -1, -1), 2d));
             }
-
             bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, db, lightConditions, heavyConditions);
-
             Assert.AreEqual(4, bril.Count());
 
             SaveState.lollipop.neucode_labeled = false;
-
-            bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, db, lightConditions, heavyConditions);
-
+            bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, new List<DummyBiorepable>(), lightConditions, heavyConditions);
             Assert.AreEqual(2, bril.Count());
+        }
 
+        [Test]
+        public void testmixedbiorepintensity()
+        {
+            SaveState.lollipop.neucode_labeled = true;
+            List<string> lightConditions = new List<string> { "light", "heavy" };
+            List<string> heavyConditions = new List<string> { "heavy", "light" };
+
+            List<DummyBiorepable> db = new List<DummyBiorepable>();
+            for (int i = 0; i < 4; i++)
+            {
+                db.Add(new DummyBiorepable(ConstructorsForTesting.InputFile("path.txt", Labeling.NeuCode, Purpose.Quantification, "light", "heavy", 1, -1, -1), 1d));
+            }
+            for (int i = 0; i < 2; i++)
+            {
+                db.Add(new DummyBiorepable(ConstructorsForTesting.InputFile("path.txt", Labeling.NeuCode, Purpose.Quantification, "heavy", "light", 1, -1, -1), 1d));
+            }
+
+            List<BiorepIntensity> bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, db, lightConditions, heavyConditions);
+            Assert.AreEqual(2, bril.Count());
         }
 
         [Test]
@@ -446,7 +463,7 @@ namespace Test
 
             for (int i = 0; i < 10000; i++)
             {
-                briList.Add(QuantitativeProteoformValues.add_biorep_intensity((decimal)Math.Log((double)100, 2), (decimal)Math.Log((double)5, 2), 1, "key", true));
+                briList.Add(QuantitativeProteoformValues.add_biorep_intensity((decimal)Math.Log((double)100, 2), (decimal)Math.Log((double)5, 2), 1, "key"));
             }
 
             List<double> allIntensity = briList.Select(b => b.intensity).ToList();
@@ -461,40 +478,38 @@ namespace Test
         [Test]
         public void test_imputedIntensities()
         {
-            Dictionary<string, List<int>> observedConditions = new Dictionary<string, List<int>>();
-            observedConditions.Add("light", new List<int> { 0, 1, 2 });
             List<BiorepIntensity> briList = new List<BiorepIntensity>();
-            briList.AddRange(QuantitativeProteoformValues.imputedIntensities(true,briList,(decimal)Math.Log(100d,2), (decimal)Math.Log(5d, 2),observedConditions));
+            briList.AddRange(QuantitativeProteoformValues.imputedIntensities(briList,(decimal)Math.Log(100d,2), (decimal)Math.Log(5d, 2), "light", new List<int> { 0, 1, 2 }));
             Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 3);//we started with no real observations but there were three observed bioreps in the experiment. Therefore we need 3 imputed bioreps
             Assert.AreEqual(briList[0].condition, "light");
-            Assert.AreEqual(briList[0].light, true);
+            //Assert.AreEqual(briList[0].light, true);
             Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(0), true);
             Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(1), true);
             Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(2), true);
 
             briList.Clear();
-            briList.Add(new BiorepIntensity(true, false, 0, "light", 1000d));
-            briList.AddRange(QuantitativeProteoformValues.imputedIntensities(true, briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), observedConditions));
+            briList.Add(new BiorepIntensity(false, 0, "light", 1000d));
+            briList.AddRange(QuantitativeProteoformValues.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<int> { 0, 1, 2 }));
 
             Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 2);//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
             Assert.AreEqual(briList.Where(b => b.imputed == false).ToList().Count(), 1);//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
             Assert.AreEqual(briList[0].condition, "light");
-            Assert.AreEqual(briList[0].light, true);
+            //Assert.AreEqual(briList[0].light, true);
             Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(0), true);
             Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(1), true);
             Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(2), true);
 
 
             briList.Clear();
-            briList.Add(new BiorepIntensity(true, false, 0, "light", 1000d));
-            briList.Add(new BiorepIntensity(true, false, 1, "light", 2000d));
-            briList.Add(new BiorepIntensity(true, false, 2, "light", 3000d));
-            briList.AddRange(QuantitativeProteoformValues.imputedIntensities(true, briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), observedConditions));
+            briList.Add(new BiorepIntensity(false, 0, "light", 1000d));
+            briList.Add(new BiorepIntensity(false, 1, "light", 2000d));
+            briList.Add(new BiorepIntensity(false, 2, "light", 3000d));
+            briList.AddRange(QuantitativeProteoformValues.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<int> { 0, 1, 2 }));
 
             Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 0);//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
             Assert.AreEqual(briList.Where(b => b.imputed == false).ToList().Count(), 3);//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
             Assert.AreEqual(briList[0].condition, "light");
-            Assert.AreEqual(briList[0].light, true);
+            //Assert.AreEqual(briList[0].light, true);
             Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(0), true);
             Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(1), true);
             Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(2), true);
@@ -507,10 +522,10 @@ namespace Test
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             
             //Each biorepIntensity has a unique combination of light/heavy + condition + biorep, since that's how they're made in the program
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "first", 0));
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "second", 0));
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, false, i, "first", 0));
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, false, i, "second", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, i, "second", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, i, "second", 0));
 
             double log2_intensity = 0.06; //rounds up
             foreach(BiorepIntensity b in e.biorepIntensityList)
@@ -541,10 +556,8 @@ namespace Test
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
 
             //Each biorepIntensity has a unique combination of light/heavy + condition + biorep, since that's how they're made in the program
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "first", 0));
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(true, false, i, "second", 0));
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, false, i, "first", 0));
-            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, false, i, "second", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, i, "first", 0));
+            e.biorepIntensityList.AddRange(from i in Enumerable.Range(1, 3) select new BiorepIntensity(false, i, "second", 0));
 
             double log2_intensity = 1.06; //rounds up
             foreach (BiorepIntensity b in e.biorepIntensityList)
@@ -560,10 +573,10 @@ namespace Test
             //ALL INTENSITIES
             //Test the standard deviation and other calculations
             SaveState.lollipop.defineAllObservedIntensityDistribution(exps, histogram); // creates the histogram again, checking that it's cleared, too
-            Assert.AreEqual(1m, SaveState.lollipop.observedGaussianArea);
-            Assert.AreEqual(1.35m, SaveState.lollipop.observedAverageIntensity);
-            Assert.AreEqual(0.171m, Math.Round(SaveState.lollipop.observedStDev, 3));
-            Assert.AreEqual(2.34m, Math.Round(SaveState.lollipop.observedGaussianHeight, 2));
+            Assert.AreEqual(0.4m, SaveState.lollipop.observedGaussianArea);
+            Assert.AreEqual(1.2m, SaveState.lollipop.observedAverageIntensity);
+            Assert.AreEqual(0.082m, Math.Round(SaveState.lollipop.observedStDev, 3));
+            Assert.AreEqual(1.95m, Math.Round(SaveState.lollipop.observedGaussianHeight, 2));
 
             //The rest of the calculations should be based off of selected, so setting those to zero
             SaveState.lollipop.observedGaussianArea = 0;
@@ -573,23 +586,23 @@ namespace Test
 
             //SELECTED INTENSITIES
             SaveState.lollipop.defineSelectObservedIntensityDistribution(exps, histogram);
-            Assert.AreEqual(1m, SaveState.lollipop.selectGaussianArea);
-            Assert.AreEqual(1.35m, SaveState.lollipop.selectAverageIntensity);
-            Assert.AreEqual(0.171m, Math.Round(SaveState.lollipop.selectStDev, 3));
-            Assert.AreEqual(2.34m, Math.Round(SaveState.lollipop.selectGaussianHeight, 2)); //shouldn't this be calculated with the selectStDev? changed from //selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
+            Assert.AreEqual(0.4m, SaveState.lollipop.selectGaussianArea);
+            Assert.AreEqual(1.2m, SaveState.lollipop.selectAverageIntensity);
+            Assert.AreEqual(0.082m, Math.Round(SaveState.lollipop.selectStDev, 3));
+            Assert.AreEqual(1.95m, Math.Round(SaveState.lollipop.selectGaussianHeight, 2)); //shouldn't this be calculated with the selectStDev? changed from //selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
 
             //SELECTED BACKGROUND
-            SaveState.lollipop.condition_count = e.biorepIntensityList.Select(b => b.condition + b.light.ToString()).Distinct().Count();
+            SaveState.lollipop.condition_count = e.biorepIntensityList.Select(b => b.condition).Distinct().Count();
             Dictionary<int, List<int>> qBioFractions = e.biorepIntensityList.Select(b => b.biorep).Distinct().ToDictionary(b => b, b => new List<int>());
             SaveState.lollipop.defineBackgroundIntensityDistribution(false, qBioFractions, exps, -2, 0.5m);
-            Assert.AreEqual(1.01m, Math.Round(SaveState.lollipop.bkgdAverageIntensity, 2));
-            Assert.AreEqual(0.085m, Math.Round(SaveState.lollipop.bkgdStDev, 3));
+            Assert.AreEqual(1.04m, Math.Round(SaveState.lollipop.bkgdAverageIntensity, 2));
+            Assert.AreEqual(0.041m, Math.Round(SaveState.lollipop.bkgdStDev, 3));
             Assert.AreEqual(0, Math.Round(SaveState.lollipop.bkgdGaussianHeight, 2));
 
             //unlabeled works similarly
             SaveState.lollipop.defineBackgroundIntensityDistribution(true, qBioFractions, exps, -2, 0.5m);
-            Assert.AreEqual(1.01m, Math.Round(SaveState.lollipop.bkgdAverageIntensity, 2));
-            Assert.AreEqual(0.085m, Math.Round(SaveState.lollipop.bkgdStDev, 3));
+            Assert.AreEqual(1.04m, Math.Round(SaveState.lollipop.bkgdAverageIntensity, 2));
+            Assert.AreEqual(0.041m, Math.Round(SaveState.lollipop.bkgdStDev, 3));
             Assert.AreEqual(0, Math.Round(SaveState.lollipop.bkgdGaussianHeight, 2));
         }
 
@@ -601,7 +614,7 @@ namespace Test
             string fromeach = "From Each Condition";
 
             List<string> conditions = new List<string> { "s", "ns" };
-            BiorepIntensity b1 = new BiorepIntensity(false, false, 1, conditions[0], 0);
+            BiorepIntensity b1 = new BiorepIntensity(false, 1, conditions[0], 0);
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ConstructorsForTesting.ExperimentalProteoform("E") };
             exps[0].biorepIntensityList.Add(b1);
             List<ExperimentalProteoform> exps_out = new List<ExperimentalProteoform>();
@@ -634,7 +647,7 @@ namespace Test
             Assert.AreEqual(0, exps_out.Count);
 
 
-            BiorepIntensity b2 = new BiorepIntensity(false, false, 100, conditions[1], 0);
+            BiorepIntensity b2 = new BiorepIntensity(false, 100, conditions[1], 0);
             exps[0].biorepIntensityList.Add(b2);
 
             //One biorep in each condition passes for-each-conditon test
@@ -669,10 +682,10 @@ namespace Test
 
 
             //NOT JUST COUNTING BIOREP INTENSITIES, BUT RATHER BIOREPS WITH OBSERVATIONS
-            BiorepIntensity b3 = new BiorepIntensity(false, false, 1, conditions[0], 0);
-            BiorepIntensity b4 = new BiorepIntensity(false, false, 1, conditions[0], 0);
-            BiorepIntensity b5 = new BiorepIntensity(false, false, 1, conditions[0], 0);
-            BiorepIntensity b6 = new BiorepIntensity(false, false, 1, conditions[0], 0);
+            BiorepIntensity b3 = new BiorepIntensity(false, 1, conditions[0], 0);
+            BiorepIntensity b4 = new BiorepIntensity(false, 1, conditions[0], 0);
+            BiorepIntensity b5 = new BiorepIntensity(false, 1, conditions[0], 0);
+            BiorepIntensity b6 = new BiorepIntensity(false, 1, conditions[0], 0);
             exps[0].biorepIntensityList = new List<BiorepIntensity> { b3, b4, b5, b6 };
             exps_out = SaveState.lollipop.determineProteoformsMeetingCriteria(conditions, exps, anysingle, 2);
             Assert.AreEqual(0, exps_out.Count);
@@ -683,10 +696,10 @@ namespace Test
             exps_out = SaveState.lollipop.determineProteoformsMeetingCriteria(conditions, exps, fromeach, 2);
             Assert.AreEqual(0, exps_out.Count);
 
-            BiorepIntensity b7 = new BiorepIntensity(false, false, 1, conditions[1], 0);
-            BiorepIntensity b8 = new BiorepIntensity(false, false, 1, conditions[1], 0);
-            BiorepIntensity b9 = new BiorepIntensity(false, false, 1, conditions[1], 0);
-            BiorepIntensity b10 = new BiorepIntensity(false, false, 1, conditions[1], 0);
+            BiorepIntensity b7 = new BiorepIntensity(false, 1, conditions[1], 0);
+            BiorepIntensity b8 = new BiorepIntensity(false, 1, conditions[1], 0);
+            BiorepIntensity b9 = new BiorepIntensity(false, 1, conditions[1], 0);
+            BiorepIntensity b10 = new BiorepIntensity(false, 1, conditions[1], 0);
             exps[0].biorepIntensityList.Add(b7);
             exps[0].biorepIntensityList.Add(b8);
             exps[0].biorepIntensityList.Add(b9);

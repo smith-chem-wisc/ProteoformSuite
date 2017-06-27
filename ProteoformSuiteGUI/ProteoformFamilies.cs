@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Chemistry;
+using ProteoformSuiteInternal;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using ProteoformSuiteInternal;
-using System.Windows.Forms;
 using System.IO;
-using Chemistry;
+using System.Linq;
+using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
 {
