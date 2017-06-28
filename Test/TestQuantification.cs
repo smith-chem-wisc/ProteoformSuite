@@ -409,7 +409,7 @@ namespace Test
             }
 
             SaveState.lollipop.computeSortedTestStatistics(satisfactoryProteoforms);
-            SaveState.lollipop.computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, SaveState.lollipop.sortedProteoformTestStatistics, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.minProteoformFDR, SaveState.lollipop.minProteoformIntensity);
+            SaveState.lollipop.computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, SaveState.lollipop.permutedTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics,  SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.maxGoTermFDR, SaveState.lollipop.minProteoformIntensity);
 
             //testStatistic = 0.2m;
             Assert.AreEqual(1.125, satisfactoryProteoforms[2].quant.FDR);
@@ -450,7 +450,7 @@ namespace Test
             //First below 6.18 is 6
             //One permuted value passes each time, the nine
             //Eight values in the set {0,1,2,3,4,5,6,7,8,9} pass the two cutoffs, 6 and 9
-            Assert.AreEqual((double)1 / (double)8, SaveState.lollipop.computeFoldChangeFDR(SaveState.lollipop.sortedAvgPermutationTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics, satisfactoryProteoforms, satisfactoryProteoforms.SelectMany(e => e.quant.permutedTestStatistics), 1));
+            Assert.AreEqual((double)1 / (double)8, SaveState.lollipop.computeFoldChangeFDR(SaveState.lollipop.sortedAvgPermutationTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics, satisfactoryProteoforms, satisfactoryProteoforms.SelectMany(e => e.quant.permutedTestStatistics).ToList(), 1));
 
             SaveState.lollipop.satisfactoryProteoforms = satisfactoryProteoforms;
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
@@ -778,7 +778,7 @@ namespace Test
         public void test_computeExperimentalProteoformFDR()
         {
             decimal testStatistic = 0.001m;
-            List<List<decimal>> permutedTestStatistics = new List<List<decimal>>();
+            List<decimal> permutedTestStatistics = new List<decimal>();
             int satisfactoryProteoformsCount = 100;
             List<decimal> sortedProteoformTestStatistics = new List<decimal>();
 
@@ -792,7 +792,7 @@ namespace Test
                     if (j != 0)
                         pts.Add(0.1m / (decimal)j);
                 }
-                permutedTestStatistics.Add(pts);
+                permutedTestStatistics.AddRange(pts);
             }
             Assert.AreEqual(0.4m, QuantitativeProteoformValues.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics, satisfactoryProteoformsCount, sortedProteoformTestStatistics));
             satisfactoryProteoformsCount++;

@@ -66,6 +66,11 @@ namespace ProteoformSuiteGUI
             get { return qval.variance; }
         }
 
+        public decimal Scatter
+        {
+            get { return qval.scatter; }
+        }
+
         public decimal pValue
         {
             get { return qval.pValue; }
@@ -83,7 +88,7 @@ namespace ProteoformSuiteGUI
 
         public decimal AvgPermutedTestStatistic
         {
-            get { return qval.correspondingAvgPermutedTestStatistic; }
+            get { return qval.correspondingAveragePermutedTestStatistic; }
         }
 
         public string manual_validation_quant

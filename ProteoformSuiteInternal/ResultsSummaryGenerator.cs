@@ -47,7 +47,7 @@ namespace ProteoformSuiteInternal
                     ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
                 message += Environment.NewLine;
 
-                message += CytoscapeScript.write_cytoscape_script(SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.minProteoformFDR, SaveState.lollipop.minProteoformIntensity).Distinct().ToList(), SaveState.lollipop.target_proteoform_community.families,
+                message += CytoscapeScript.write_cytoscape_script(SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.maxGoTermFDR, SaveState.lollipop.minProteoformIntensity).Distinct().ToList(), SaveState.lollipop.target_proteoform_community.families,
                     SaveState.lollipop.results_folder, "SignificantChanges_", timestamp,
                     true, 
                     true, true, 
@@ -56,7 +56,7 @@ namespace ProteoformSuiteInternal
                 message += Environment.NewLine;
             }
 
-            foreach (GoTermNumber gtn in SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.minProteoformFDR).ToList())
+            foreach (GoTermNumber gtn in SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.maxGoTermFDR).ToList())
             {
                 message += CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { gtn }, SaveState.lollipop.target_proteoform_community.families,
                     SaveState.lollipop.results_folder, gtn.Aspect.ToString() + gtn.Description.Replace(" ", "_") + "_", timestamp,
@@ -191,12 +191,12 @@ namespace ProteoformSuiteInternal
             string report = "";
 
             report += SaveState.lollipop.satisfactoryProteoforms.Count.ToString() + "\tQuantified Experimental Proteoforms (Threshold for Quantification: " + SaveState.lollipop.minBiorepsWithObservations.ToString() + " = " + SaveState.lollipop.observation_requirement + ")" + Environment.NewLine;
-            report += SaveState.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + SaveState.lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + SaveState.lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + SaveState.lollipop.minProteoformFDR.ToString() + ")" + Environment.NewLine;
+            report += SaveState.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + SaveState.lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + SaveState.lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + SaveState.lollipop.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
             report += SaveState.lollipop.selectAverageIntensity.ToString() + "\tAverage Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
             report += SaveState.lollipop.selectStDev.ToString() + "\tIntensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
-            report += SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.minProteoformFDR, SaveState.lollipop.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
+            report += SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.maxGoTermFDR, SaveState.lollipop.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
             report += SaveState.lollipop.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
-            report += SaveState.lollipop.goTermNumbers.Count(g => g.by < (double)SaveState.lollipop.minProteoformFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + SaveState.lollipop.minProteoformFDR.ToString() + "): " + Environment.NewLine;
+            report += SaveState.lollipop.goTermNumbers.Count(g => g.by < (double)SaveState.lollipop.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + SaveState.lollipop.maxGoTermFDR.ToString() + "): " + Environment.NewLine;
             report += Environment.NewLine;
 
             // Venn Diagram of quantifiable proteoforms
@@ -250,8 +250,8 @@ namespace ProteoformSuiteInternal
 
         public static string go_terms_of_significance()
         {
-            return "GO Terms of Significance (Benjimini-Yekeulti p-value < " + SaveState.lollipop.minProteoformFDR.ToString() + "): " + Environment.NewLine
-                + String.Join(Environment.NewLine, SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.minProteoformFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            return "GO Terms of Significance (Benjimini-Yekeulti p-value < " + SaveState.lollipop.maxGoTermFDR.ToString() + "): " + Environment.NewLine
+                + String.Join(Environment.NewLine, SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.maxGoTermFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
         }
 
         public static string results_dataframe()
