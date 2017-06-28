@@ -35,6 +35,7 @@
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -48,6 +49,10 @@
             this.cmbx_observationsTypeRequired = new System.Windows.Forms.ComboBox();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.gb_quantDataDisplaySelection = new System.Windows.Forms.GroupBox();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.rb_intensitiesBefore = new System.Windows.Forms.RadioButton();
+            this.rb_intensitiesAfter = new System.Windows.Forms.RadioButton();
+            this.rb_intensitiesProjected = new System.Windows.Forms.RadioButton();
             this.tb_stdevIntensity = new System.Windows.Forms.TextBox();
             this.tb_avgIntensity = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
@@ -71,6 +76,11 @@
             this.cmbx_ratioDenominator = new System.Windows.Forms.ComboBox();
             this.splitContainer9 = new System.Windows.Forms.SplitContainer();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.nud_localFdrCutoff = new System.Windows.Forms.NumericUpDown();
+            this.cb_useLocalFdrCutoff = new System.Windows.Forms.CheckBox();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.rb_displayObsVsScatter = new System.Windows.Forms.RadioButton();
+            this.rb_displayObsVsExp = new System.Windows.Forms.RadioButton();
             this.label15 = new System.Windows.Forms.Label();
             this.tb_FDR = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
@@ -146,6 +156,7 @@
             this.splitContainer5.Panel2.SuspendLayout();
             this.splitContainer5.SuspendLayout();
             this.gb_quantDataDisplaySelection.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_proteoformIntensities)).BeginInit();
@@ -180,6 +191,8 @@
             this.splitContainer9.Panel2.SuspendLayout();
             this.splitContainer9.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_localFdrCutoff)).BeginInit();
+            this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Offset)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_sKnot_minFoldChange)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_relativeDifference)).BeginInit();
@@ -341,6 +354,7 @@
             // gb_quantDataDisplaySelection
             // 
             this.gb_quantDataDisplaySelection.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.gb_quantDataDisplaySelection.Controls.Add(this.groupBox7);
             this.gb_quantDataDisplaySelection.Controls.Add(this.tb_stdevIntensity);
             this.gb_quantDataDisplaySelection.Controls.Add(this.tb_avgIntensity);
             this.gb_quantDataDisplaySelection.Controls.Add(this.label16);
@@ -357,46 +371,94 @@
             this.gb_quantDataDisplaySelection.Size = new System.Drawing.Size(484, 78);
             this.gb_quantDataDisplaySelection.TabIndex = 20;
             this.gb_quantDataDisplaySelection.TabStop = false;
-            this.gb_quantDataDisplaySelection.Text = "Adjust Background Imputation (Units: Std. Dev. of Selected Pf Intensities)";
+            this.gb_quantDataDisplaySelection.Text = "Imputation from Background. (Shift and width are multiples of observed log2 inten" +
+    "sity std. dev.)";
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.rb_intensitiesBefore);
+            this.groupBox7.Controls.Add(this.rb_intensitiesAfter);
+            this.groupBox7.Controls.Add(this.rb_intensitiesProjected);
+            this.groupBox7.Location = new System.Drawing.Point(13, 43);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(224, 33);
+            this.groupBox7.TabIndex = 12;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Intensity Distribution Chart Selection";
+            // 
+            // rb_intensitiesBefore
+            // 
+            this.rb_intensitiesBefore.AutoSize = true;
+            this.rb_intensitiesBefore.Location = new System.Drawing.Point(6, 13);
+            this.rb_intensitiesBefore.Name = "rb_intensitiesBefore";
+            this.rb_intensitiesBefore.Size = new System.Drawing.Size(56, 17);
+            this.rb_intensitiesBefore.TabIndex = 0;
+            this.rb_intensitiesBefore.Text = "Before";
+            this.rb_intensitiesBefore.UseVisualStyleBackColor = true;
+            this.rb_intensitiesBefore.CheckedChanged += new System.EventHandler(this.rb_intensitiesBefore_CheckedChanged);
+            // 
+            // rb_intensitiesAfter
+            // 
+            this.rb_intensitiesAfter.AutoSize = true;
+            this.rb_intensitiesAfter.Location = new System.Drawing.Point(171, 13);
+            this.rb_intensitiesAfter.Name = "rb_intensitiesAfter";
+            this.rb_intensitiesAfter.Size = new System.Drawing.Size(47, 17);
+            this.rb_intensitiesAfter.TabIndex = 2;
+            this.rb_intensitiesAfter.Text = "After";
+            this.rb_intensitiesAfter.UseVisualStyleBackColor = true;
+            this.rb_intensitiesAfter.CheckedChanged += new System.EventHandler(this.rb_intensitiesAfter_CheckedChanged);
+            // 
+            // rb_intensitiesProjected
+            // 
+            this.rb_intensitiesProjected.AutoSize = true;
+            this.rb_intensitiesProjected.Checked = true;
+            this.rb_intensitiesProjected.Location = new System.Drawing.Point(81, 13);
+            this.rb_intensitiesProjected.Name = "rb_intensitiesProjected";
+            this.rb_intensitiesProjected.Size = new System.Drawing.Size(70, 17);
+            this.rb_intensitiesProjected.TabIndex = 1;
+            this.rb_intensitiesProjected.TabStop = true;
+            this.rb_intensitiesProjected.Text = "Projected";
+            this.rb_intensitiesProjected.UseVisualStyleBackColor = true;
+            this.rb_intensitiesProjected.CheckedChanged += new System.EventHandler(this.rb_intensitiesProjected_CheckedChanged);
             // 
             // tb_stdevIntensity
             // 
-            this.tb_stdevIntensity.Location = new System.Drawing.Point(297, 17);
+            this.tb_stdevIntensity.Location = new System.Drawing.Point(370, 17);
             this.tb_stdevIntensity.Name = "tb_stdevIntensity";
             this.tb_stdevIntensity.ReadOnly = true;
-            this.tb_stdevIntensity.Size = new System.Drawing.Size(100, 20);
+            this.tb_stdevIntensity.Size = new System.Drawing.Size(109, 20);
             this.tb_stdevIntensity.TabIndex = 11;
             // 
             // tb_avgIntensity
             // 
-            this.tb_avgIntensity.Location = new System.Drawing.Point(91, 18);
+            this.tb_avgIntensity.Location = new System.Drawing.Point(121, 18);
             this.tb_avgIntensity.Name = "tb_avgIntensity";
             this.tb_avgIntensity.ReadOnly = true;
-            this.tb_avgIntensity.Size = new System.Drawing.Size(100, 20);
+            this.tb_avgIntensity.Size = new System.Drawing.Size(78, 20);
             this.tb_avgIntensity.TabIndex = 10;
             // 
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(203, 22);
+            this.label16.Location = new System.Drawing.Point(243, 20);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(88, 13);
+            this.label16.Size = new System.Drawing.Size(121, 13);
             this.label16.TabIndex = 9;
-            this.label16.Text = "Std Dev Intensity";
+            this.label16.Text = "Std. Dev. Log2 Intensity";
             // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(16, 21);
+            this.label17.Location = new System.Drawing.Point(17, 21);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(68, 13);
+            this.label17.Size = new System.Drawing.Size(98, 13);
             this.label17.TabIndex = 8;
-            this.label17.Text = "Avg Intensity";
+            this.label17.Text = "Avg. Log2 Intensity";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(315, 55);
+            this.label5.Location = new System.Drawing.Point(362, 52);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(63, 13);
             this.label5.TabIndex = 7;
@@ -405,7 +467,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(185, 55);
+            this.label4.Location = new System.Drawing.Point(246, 52);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(56, 13);
             this.label4.TabIndex = 6;
@@ -419,7 +481,7 @@
             0,
             0,
             65536});
-            this.nud_bkgdWidth.Location = new System.Drawing.Point(382, 51);
+            this.nud_bkgdWidth.Location = new System.Drawing.Point(431, 48);
             this.nud_bkgdWidth.Maximum = new decimal(new int[] {
             1,
             0,
@@ -448,7 +510,7 @@
             0,
             0,
             65536});
-            this.nud_bkgdShift.Location = new System.Drawing.Point(247, 52);
+            this.nud_bkgdShift.Location = new System.Drawing.Point(308, 48);
             this.nud_bkgdShift.Maximum = new decimal(new int[] {
             0,
             0,
@@ -491,6 +553,7 @@
             this.ct_proteoformIntensities.Size = new System.Drawing.Size(484, 445);
             this.ct_proteoformIntensities.TabIndex = 25;
             this.ct_proteoformIntensities.Text = "log2_intensity";
+            this.ct_proteoformIntensities.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_proteoformIntensities_MouseClick);
             // 
             // splitContainer2
             // 
@@ -537,11 +600,13 @@
             this.ct_volcano_logFold_logP.Name = "ct_volcano_logFold_logP";
             series3.ChartArea = "ChartArea1";
             series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series3.Legend = "Legend1";
             series3.Name = "Series1";
             this.ct_volcano_logFold_logP.Series.Add(series3);
             this.ct_volcano_logFold_logP.Size = new System.Drawing.Size(485, 309);
             this.ct_volcano_logFold_logP.TabIndex = 21;
             this.ct_volcano_logFold_logP.Text = "Volcano";
+            this.ct_volcano_logFold_logP.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_volcano_logFold_logP_MouseClick);
             // 
             // splitContainer7
             // 
@@ -558,7 +623,7 @@
             // 
             this.splitContainer7.Panel2.Controls.Add(this.splitContainer8);
             this.splitContainer7.Size = new System.Drawing.Size(485, 548);
-            this.splitContainer7.SplitterDistance = 41;
+            this.splitContainer7.SplitterDistance = 37;
             this.splitContainer7.TabIndex = 0;
             // 
             // btn_refreshCalculation
@@ -566,7 +631,7 @@
             this.btn_refreshCalculation.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_refreshCalculation.Location = new System.Drawing.Point(0, 0);
             this.btn_refreshCalculation.Name = "btn_refreshCalculation";
-            this.btn_refreshCalculation.Size = new System.Drawing.Size(485, 41);
+            this.btn_refreshCalculation.Size = new System.Drawing.Size(485, 37);
             this.btn_refreshCalculation.TabIndex = 32;
             this.btn_refreshCalculation.Text = "Refresh Calculations";
             this.btn_refreshCalculation.UseVisualStyleBackColor = true;
@@ -586,8 +651,8 @@
             // splitContainer8.Panel2
             // 
             this.splitContainer8.Panel2.Controls.Add(this.splitContainer9);
-            this.splitContainer8.Size = new System.Drawing.Size(485, 503);
-            this.splitContainer8.SplitterDistance = 54;
+            this.splitContainer8.Size = new System.Drawing.Size(485, 507);
+            this.splitContainer8.SplitterDistance = 42;
             this.splitContainer8.TabIndex = 0;
             // 
             // groupBox2
@@ -596,7 +661,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(485, 54);
+            this.groupBox2.Size = new System.Drawing.Size(485, 42);
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Ratio";
@@ -614,7 +679,7 @@
             // splitContainer15.Panel2
             // 
             this.splitContainer15.Panel2.Controls.Add(this.splitContainer16);
-            this.splitContainer15.Size = new System.Drawing.Size(479, 35);
+            this.splitContainer15.Size = new System.Drawing.Size(479, 23);
             this.splitContainer15.SplitterDistance = 203;
             this.splitContainer15.TabIndex = 0;
             // 
@@ -643,7 +708,7 @@
             // splitContainer16.Panel2
             // 
             this.splitContainer16.Panel2.Controls.Add(this.cmbx_ratioDenominator);
-            this.splitContainer16.Size = new System.Drawing.Size(272, 35);
+            this.splitContainer16.Size = new System.Drawing.Size(272, 23);
             this.splitContainer16.SplitterDistance = 53;
             this.splitContainer16.TabIndex = 0;
             // 
@@ -683,12 +748,15 @@
             // splitContainer9.Panel2
             // 
             this.splitContainer9.Panel2.Controls.Add(this.ct_relativeDifference);
-            this.splitContainer9.Size = new System.Drawing.Size(485, 445);
-            this.splitContainer9.SplitterDistance = 47;
+            this.splitContainer9.Size = new System.Drawing.Size(485, 461);
+            this.splitContainer9.SplitterDistance = 112;
             this.splitContainer9.TabIndex = 0;
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.nud_localFdrCutoff);
+            this.groupBox6.Controls.Add(this.cb_useLocalFdrCutoff);
+            this.groupBox6.Controls.Add(this.groupBox3);
             this.groupBox6.Controls.Add(this.label15);
             this.groupBox6.Controls.Add(this.tb_FDR);
             this.groupBox6.Controls.Add(this.label13);
@@ -698,15 +766,80 @@
             this.groupBox6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox6.Location = new System.Drawing.Point(0, 0);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(485, 47);
+            this.groupBox6.Size = new System.Drawing.Size(485, 112);
             this.groupBox6.TabIndex = 31;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "FDR Determination Via Permutation";
             // 
+            // nud_localFdrCutoff
+            // 
+            this.nud_localFdrCutoff.DecimalPlaces = 3;
+            this.nud_localFdrCutoff.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
+            this.nud_localFdrCutoff.Location = new System.Drawing.Point(410, 77);
+            this.nud_localFdrCutoff.Maximum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.nud_localFdrCutoff.Name = "nud_localFdrCutoff";
+            this.nud_localFdrCutoff.Size = new System.Drawing.Size(69, 20);
+            this.nud_localFdrCutoff.TabIndex = 10;
+            this.nud_localFdrCutoff.ValueChanged += new System.EventHandler(this.nud_localFdrCutoff_ValueChanged);
+            // 
+            // cb_useLocalFdrCutoff
+            // 
+            this.cb_useLocalFdrCutoff.AutoSize = true;
+            this.cb_useLocalFdrCutoff.Location = new System.Drawing.Point(271, 80);
+            this.cb_useLocalFdrCutoff.Name = "cb_useLocalFdrCutoff";
+            this.cb_useLocalFdrCutoff.Size = new System.Drawing.Size(133, 17);
+            this.cb_useLocalFdrCutoff.TabIndex = 9;
+            this.cb_useLocalFdrCutoff.Text = "Use Local FDR Cutoff:";
+            this.cb_useLocalFdrCutoff.UseVisualStyleBackColor = true;
+            this.cb_useLocalFdrCutoff.CheckedChanged += new System.EventHandler(this.cb_useLocalFdrCutoff_CheckedChanged);
+            // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.rb_displayObsVsScatter);
+            this.groupBox3.Controls.Add(this.rb_displayObsVsExp);
+            this.groupBox3.Location = new System.Drawing.Point(10, 21);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(191, 59);
+            this.groupBox3.TabIndex = 8;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Relative Difference Chart Selection";
+            // 
+            // rb_displayObsVsScatter
+            // 
+            this.rb_displayObsVsScatter.AutoSize = true;
+            this.rb_displayObsVsScatter.Location = new System.Drawing.Point(17, 34);
+            this.rb_displayObsVsScatter.Name = "rb_displayObsVsScatter";
+            this.rb_displayObsVsScatter.Size = new System.Drawing.Size(125, 17);
+            this.rb_displayObsVsScatter.TabIndex = 1;
+            this.rb_displayObsVsScatter.Text = "Observed vs. Scatter";
+            this.rb_displayObsVsScatter.UseVisualStyleBackColor = true;
+            this.rb_displayObsVsScatter.CheckedChanged += new System.EventHandler(this.rb_displayObsVsScatter_CheckedChanged);
+            // 
+            // rb_displayObsVsExp
+            // 
+            this.rb_displayObsVsExp.AutoSize = true;
+            this.rb_displayObsVsExp.Checked = true;
+            this.rb_displayObsVsExp.Location = new System.Drawing.Point(17, 17);
+            this.rb_displayObsVsExp.Name = "rb_displayObsVsExp";
+            this.rb_displayObsVsExp.Size = new System.Drawing.Size(136, 17);
+            this.rb_displayObsVsExp.TabIndex = 0;
+            this.rb_displayObsVsExp.TabStop = true;
+            this.rb_displayObsVsExp.Text = "Observed vs. Expected";
+            this.rb_displayObsVsExp.UseVisualStyleBackColor = true;
+            this.rb_displayObsVsExp.CheckedChanged += new System.EventHandler(this.rb_displayObsVsExp_CheckedChanged);
+            // 
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(344, 22);
+            this.label15.Location = new System.Drawing.Point(375, 18);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(29, 13);
             this.label15.TabIndex = 7;
@@ -714,19 +847,19 @@
             // 
             // tb_FDR
             // 
-            this.tb_FDR.Location = new System.Drawing.Point(379, 19);
+            this.tb_FDR.Location = new System.Drawing.Point(410, 15);
             this.tb_FDR.Name = "tb_FDR";
-            this.tb_FDR.Size = new System.Drawing.Size(64, 20);
+            this.tb_FDR.Size = new System.Drawing.Size(69, 20);
             this.tb_FDR.TabIndex = 6;
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(203, 22);
+            this.label13.Location = new System.Drawing.Point(211, 18);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(35, 13);
+            this.label13.Size = new System.Drawing.Size(96, 13);
             this.label13.TabIndex = 3;
-            this.label13.Text = "Offset";
+            this.label13.Text = "Significance Offset";
             // 
             // nud_Offset
             // 
@@ -737,7 +870,7 @@
             0,
             65536});
             this.nud_Offset.InterceptArrowKeys = false;
-            this.nud_Offset.Location = new System.Drawing.Point(244, 19);
+            this.nud_Offset.Location = new System.Drawing.Point(313, 16);
             this.nud_Offset.Maximum = new decimal(new int[] {
             5,
             0,
@@ -751,11 +884,11 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(7, 22);
+            this.label12.Location = new System.Drawing.Point(19, 89);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(20, 13);
+            this.label12.Size = new System.Drawing.Size(104, 13);
             this.label12.TabIndex = 1;
-            this.label12.Text = "S0";
+            this.label12.Text = "s₀ (Scatter Constant)";
             // 
             // nud_sKnot_minFoldChange
             // 
@@ -765,14 +898,14 @@
             0,
             0,
             65536});
-            this.nud_sKnot_minFoldChange.Location = new System.Drawing.Point(33, 20);
+            this.nud_sKnot_minFoldChange.Location = new System.Drawing.Point(129, 86);
             this.nud_sKnot_minFoldChange.Maximum = new decimal(new int[] {
             5,
             0,
             0,
             0});
             this.nud_sKnot_minFoldChange.Name = "nud_sKnot_minFoldChange";
-            this.nud_sKnot_minFoldChange.Size = new System.Drawing.Size(66, 20);
+            this.nud_sKnot_minFoldChange.Size = new System.Drawing.Size(60, 20);
             this.nud_sKnot_minFoldChange.TabIndex = 0;
             this.nud_sKnot_minFoldChange.ValueChanged += new System.EventHandler(this.nud_sKnot_minFoldChange_ValueChanged);
             // 
@@ -781,23 +914,29 @@
             chartArea3.Name = "ChartArea1";
             this.ct_relativeDifference.ChartAreas.Add(chartArea3);
             this.ct_relativeDifference.Dock = System.Windows.Forms.DockStyle.Fill;
+            legend2.Name = "Legend1";
+            this.ct_relativeDifference.Legends.Add(legend2);
             this.ct_relativeDifference.Location = new System.Drawing.Point(0, 0);
             this.ct_relativeDifference.Name = "ct_relativeDifference";
             series4.ChartArea = "ChartArea1";
             series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series4.Legend = "Legend1";
             series4.Name = "obsVSexp";
             series5.ChartArea = "ChartArea1";
             series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series5.Legend = "Legend1";
             series5.Name = "positiveOffset";
             series6.ChartArea = "ChartArea1";
             series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series6.Legend = "Legend1";
             series6.Name = "negativeOffset";
             this.ct_relativeDifference.Series.Add(series4);
             this.ct_relativeDifference.Series.Add(series5);
             this.ct_relativeDifference.Series.Add(series6);
-            this.ct_relativeDifference.Size = new System.Drawing.Size(485, 394);
+            this.ct_relativeDifference.Size = new System.Drawing.Size(485, 345);
             this.ct_relativeDifference.TabIndex = 30;
             this.ct_relativeDifference.Text = "Observed vs. Expected Relative Difference";
+            this.ct_relativeDifference.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_relativeDifference_MouseClick);
             // 
             // splitContainer10
             // 
@@ -916,7 +1055,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 78);
+            this.label3.Location = new System.Drawing.Point(18, 79);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(55, 13);
@@ -930,7 +1069,7 @@
             0,
             0,
             0});
-            this.nud_intensity.Location = new System.Drawing.Point(71, 77);
+            this.nud_intensity.Location = new System.Drawing.Point(91, 77);
             this.nud_intensity.Margin = new System.Windows.Forms.Padding(2);
             this.nud_intensity.Maximum = new decimal(new int[] {
             -727379968,
@@ -944,7 +1083,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(17, 52);
+            this.label2.Location = new System.Drawing.Point(18, 52);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(45, 13);
@@ -959,7 +1098,7 @@
             0,
             0,
             65536});
-            this.nud_ratio.Location = new System.Drawing.Point(71, 51);
+            this.nud_ratio.Location = new System.Drawing.Point(91, 48);
             this.nud_ratio.Margin = new System.Windows.Forms.Padding(2);
             this.nud_ratio.Maximum = new decimal(new int[] {
             50,
@@ -978,12 +1117,12 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 26);
+            this.label1.Location = new System.Drawing.Point(4, 25);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(38, 13);
+            this.label1.Size = new System.Drawing.Size(100, 13);
             this.label1.TabIndex = 1;
-            this.label1.Text = "FDR <";
+            this.label1.Text = "Corrected p-value <";
             // 
             // nud_FDR
             // 
@@ -993,7 +1132,7 @@
             0,
             0,
             131072});
-            this.nud_FDR.Location = new System.Drawing.Point(71, 25);
+            this.nud_FDR.Location = new System.Drawing.Point(108, 24);
             this.nud_FDR.Margin = new System.Windows.Forms.Padding(2);
             this.nud_FDR.Maximum = new decimal(new int[] {
             1,
@@ -1001,7 +1140,7 @@
             0,
             0});
             this.nud_FDR.Name = "nud_FDR";
-            this.nud_FDR.Size = new System.Drawing.Size(80, 20);
+            this.nud_FDR.Size = new System.Drawing.Size(63, 20);
             this.nud_FDR.TabIndex = 0;
             // 
             // gb_backgroundGoTerms
@@ -1449,6 +1588,8 @@
             this.splitContainer5.ResumeLayout(false);
             this.gb_quantDataDisplaySelection.ResumeLayout(false);
             this.gb_quantDataDisplaySelection.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdShift)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_proteoformIntensities)).EndInit();
@@ -1485,6 +1626,9 @@
             this.splitContainer9.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_localFdrCutoff)).EndInit();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Offset)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_sKnot_minFoldChange)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_relativeDifference)).EndInit();
@@ -1614,5 +1758,14 @@
         private System.Windows.Forms.SplitContainer splitContainer16;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox cmbx_ratioDenominator;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.RadioButton rb_displayObsVsScatter;
+        private System.Windows.Forms.RadioButton rb_displayObsVsExp;
+        private System.Windows.Forms.NumericUpDown nud_localFdrCutoff;
+        private System.Windows.Forms.CheckBox cb_useLocalFdrCutoff;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.RadioButton rb_intensitiesBefore;
+        private System.Windows.Forms.RadioButton rb_intensitiesAfter;
+        private System.Windows.Forms.RadioButton rb_intensitiesProjected;
     }
 }

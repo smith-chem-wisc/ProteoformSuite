@@ -594,7 +594,7 @@ namespace ProteoformSuiteInternal
 
         public int deltaM_edge_display_rounding = 2;
 
-        public static string[] node_positioning = new string[] 
+        public static string[] node_positioning = new string[]
         {
             "Arbitrary Circle",
             "Mass-Based Spiral",
@@ -602,13 +602,13 @@ namespace ProteoformSuiteInternal
             //"Mass X-Axis" 
         };
 
-        public static string[] node_labels = new string[] 
+        public static string[] node_labels = new string[]
         {
             "Experimental ID",
             "Inferred Theoretical ID"
         };
 
-        public static string[] edge_labels = new string[] 
+        public static string[] edge_labels = new string[]
         {
             "Mass Difference",
             "Modification IDs (omits edges with null IDs)"
@@ -620,7 +620,7 @@ namespace ProteoformSuiteInternal
             "Ordered Locus, e.g. YLR113W"
         };
 
-        public string[] likely_cleavages = new string[] 
+        public string[] likely_cleavages = new string[]
         {
             "I",
             "L",
@@ -695,7 +695,7 @@ namespace ProteoformSuiteInternal
                 hvConditionsBioReps.Add(condition, bioreps);
             }
 
-            condition_count = ltConditions.Count + hvConditions.Count;
+            condition_count = conditionsBioReps.Count;
 
             int minLt = ltConditionsBioReps.Values.Min(v => v.Count);
 
@@ -713,6 +713,7 @@ namespace ProteoformSuiteInternal
 
         public SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>();
         public SortedDictionary<decimal, int> logSelectIntensityHistogram = new SortedDictionary<decimal, int>();
+        public SortedDictionary<decimal, int> logSelectIntensityWithImputationHistogram = new SortedDictionary<decimal, int>();
 
         public string numerator_condition = "";
         public string denominator_condition = "";
@@ -739,14 +740,14 @@ namespace ProteoformSuiteInternal
         public List<decimal> sortedProteoformTestStatistics = new List<decimal>();
         public List<decimal> sortedAvgPermutationTestStatistics = new List<decimal>();
         public decimal offsetTestStatistics = 1m;
-        //public decimal negativeOffsetTestStatistics = -1m;
-        public decimal offsetFDR;
+        public double relativeDifferenceFDR;
         public List<ProteinWithGoTerms> observedProteins = new List<ProteinWithGoTerms>(); //This is the complete list of observed proteins
         public List<ProteinWithGoTerms> quantifiedProteins = new List<ProteinWithGoTerms>(); //This is the complete list of proteins that were quantified and included in any accepted proteoform family
         public List<ProteinWithGoTerms> inducedOrRepressedProteins = new List<ProteinWithGoTerms>(); //This is the list of proteins from proteoforms that underwent significant induction or repression
         public decimal minProteoformIntensity = 500000m;
         public decimal minProteoformFoldChange = 1m;
-        public decimal minProteoformFDR = 0.05m;
+        public bool useLocalFdrCutoff = false;
+        public decimal localFdrCutoff = 1;
 
         #endregion QUANTIFICATION Public Fields
 
@@ -771,17 +772,19 @@ namespace ProteoformSuiteInternal
 
             computeProteoformTestStatistics(neucode_labeled, satisfactoryProteoforms, bkgdAverageIntensity, bkgdStDev, numerator_condition, denominator_condition, sKnot_minFoldChange);
 
+            define_intensity_distribution(satisfactoryProteoforms, logSelectIntensityWithImputationHistogram);
+
             computeSortedTestStatistics(satisfactoryProteoforms);
 
-            offsetFDR = computeFoldChangeFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics, satisfactoryProteoforms, permutedTestStatistics, offsetTestStatistics);
+            relativeDifferenceFDR = computeFoldChangeFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics, satisfactoryProteoforms, permutedTestStatistics, offsetTestStatistics);
 
-            computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, sortedProteoformTestStatistics, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity);
+            computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, permutedTestStatistics, sortedProteoformTestStatistics, minProteoformFoldChange, maxGoTermFDR, minProteoformIntensity);
 
             observedProteins = getProteins(target_proteoform_community.experimental_proteoforms.Where(x => x.accepted));
 
             quantifiedProteins = getProteins(satisfactoryProteoforms);
 
-            inducedOrRepressedProteins = getInducedOrRepressedProteins(satisfactoryProteoforms, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity);
+            inducedOrRepressedProteins = getInducedOrRepressedProteins(satisfactoryProteoforms, minProteoformFoldChange, maxGoTermFDR, minProteoformIntensity);
 
         }
 
@@ -891,37 +894,64 @@ namespace ProteoformSuiteInternal
         public void computeSortedTestStatistics(List<ExperimentalProteoform> satisfactoryProteoforms)
         {
             sortedProteoformTestStatistics = satisfactoryProteoforms.Select(eP => eP.quant.testStatistic).ToList();
-            sortedAvgPermutationTestStatistics = satisfactoryProteoforms.Select(eP => eP.quant.permutedTestStatistics.Average()).ToList();
+            sortedAvgPermutationTestStatistics = satisfactoryProteoforms.Select(eP => eP.quant.averagePermutedTestStatistic).ToList();
             sortedProteoformTestStatistics.Sort();
             sortedAvgPermutationTestStatistics.Sort();
             int ct = 0;
             foreach (ExperimentalProteoform p in satisfactoryProteoforms.OrderBy(eP => eP.quant.testStatistic).ToList())
             {
-                p.quant.correspondingAvgPermutedTestStatistic = sortedAvgPermutationTestStatistics[ct++];
+                p.quant.correspondingAveragePermutedTestStatistic = sortedAvgPermutationTestStatistics[ct++];
             }
         }
 
-        public decimal computeFoldChangeFDR(List<decimal> sortedAvgPermutationTestStatistics, List<decimal> sortedProteoformTestStatistics, List<ExperimentalProteoform> satisfactoryProteoforms, IEnumerable<decimal> permutedTestStatistics, decimal offsetTestStatistics)
+        public double computeFoldChangeFDR(List<decimal> sortedAvgPermutationTestStatistics, List<decimal> sortedProteoformTestStatistics, List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> permutedTestStatistics, decimal significanceTestStatOffset)
         {
-            decimal minimumPositivePassingTestStatistic = sortedProteoformTestStatistics[Enumerable.Range(0, sortedAvgPermutationTestStatistics.Count).FirstOrDefault(i => sortedProteoformTestStatistics[i] >= sortedAvgPermutationTestStatistics[i] + offsetTestStatistics)]; //first time the test statistic exceeds the cap so we're good.
-            decimal minimumNegativePassingTestStatistic = sortedProteoformTestStatistics[Enumerable.Range(0, sortedAvgPermutationTestStatistics.Count).LastOrDefault(i => sortedProteoformTestStatistics[i] <= sortedAvgPermutationTestStatistics[i] - offsetTestStatistics)]; //last time the test statistic is below the minimum
+            decimal minimumPassingNegativeTestStatistic = Decimal.MinValue;
+            decimal minimumPassingPositiveTestStatisitic = Decimal.MaxValue;
 
-            int totalFalsePermutedPositiveValues = permutedTestStatistics.Count(p => p >= minimumPositivePassingTestStatistic);
-            int totalFalsePermutedNegativeValues = permutedTestStatistics.Count(p => p <= minimumNegativePassingTestStatistic);
+            for (int i = 0; i < satisfactoryProteoforms.Count; i++)
+            {
+                decimal lower_threshold = sortedAvgPermutationTestStatistics[i] - significanceTestStatOffset;
+                decimal higher_threshold = sortedAvgPermutationTestStatistics[i] + significanceTestStatOffset;
+                if (sortedProteoformTestStatistics[i] <= lower_threshold)
+                    minimumPassingNegativeTestStatistic = sortedProteoformTestStatistics[i]; // last one below
+                if (sortedProteoformTestStatistics[i] >= higher_threshold)
+                {
+                    minimumPassingPositiveTestStatisitic = sortedProteoformTestStatistics[i]; //first one above
+                    break;
+                }
+            }
 
-            decimal averagePermuted = (decimal)(totalFalsePermutedPositiveValues + totalFalsePermutedNegativeValues) / (decimal)satisfactoryProteoforms.Count;
-            return averagePermuted / ((decimal)(sortedProteoformTestStatistics.Count(s => s >= minimumPositivePassingTestStatistic) + sortedProteoformTestStatistics.Count(s => s <= minimumNegativePassingTestStatistic)));
+            double avgFalsePermutedPassingProteoforms = (double)permutedTestStatistics.Count(v => v <= minimumPassingNegativeTestStatistic || minimumPassingPositiveTestStatisitic <= v) / (double)permutedTestStatistics.Count * (double)satisfactoryProteoforms.Count;
+            int totalPassingProteoforms = 0;
+
+            foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
+            {
+                pf.quant.significant = pf.quant.testStatistic <= minimumPassingNegativeTestStatistic || minimumPassingPositiveTestStatisitic <= pf.quant.testStatistic;
+                totalPassingProteoforms += Convert.ToInt32(pf.quant.significant);
+            }
+
+            if (totalPassingProteoforms == 0)
+                return Double.NaN;
+
+            double fdr = (double)avgFalsePermutedPassingProteoforms / (double)totalPassingProteoforms;
+            return fdr;
         }
 
-
-        public void computeIndividualExperimentalProteoformFDRs(List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> sortedProteoformTestStatistics, decimal minProteoformFoldChange, decimal minProteoformFDR, decimal minProteoformIntensity)
+        public void computeIndividualExperimentalProteoformFDRs(List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> permutedTestStatistics, List<decimal> sortedProteoformTestStatistics, decimal minProteoformFoldChange, decimal minProteoformFDR, decimal minProteoformIntensity)
         {
-            List<List<decimal>> permutedTestStatistics = satisfactoryProteoforms.Select(eP => eP.quant.permutedTestStatistics).ToList();
             Parallel.ForEach(satisfactoryProteoforms, eP =>
             {
                 eP.quant.FDR = QuantitativeProteoformValues.computeExperimentalProteoformFDR(eP.quant.testStatistic, permutedTestStatistics, satisfactoryProteoforms.Count, sortedProteoformTestStatistics);
-                eP.quant.significant = Math.Abs(eP.quant.logFoldChange) > minProteoformFoldChange && eP.quant.FDR < minProteoformFDR && eP.quant.intensitySum > minProteoformIntensity;
             });
+        }
+
+        public void reestablishSignficance()
+        {
+            if (!useLocalFdrCutoff)
+                relativeDifferenceFDR = computeFoldChangeFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics, satisfactoryProteoforms, permutedTestStatistics, offsetTestStatistics);
+            else
+                Parallel.ForEach(satisfactoryProteoforms, eP => { eP.quant.significant = eP.quant.FDR <= localFdrCutoff; });
         }
 
         public List<ProteinWithGoTerms> getProteins(IEnumerable<ExperimentalProteoform> proteoforms) // these are all observed proteins in any of the proteoform families.
@@ -965,9 +995,9 @@ namespace ProteoformSuiteInternal
 
         public IEnumerable<ExperimentalProteoform> getInterestingProteoforms(IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
         {
-            return proteoforms.Where(
-                p => Math.Abs(p.quant.logFoldChange) > minProteoformAbsLogFoldChange
-                && p.quant.FDR < maxProteoformFDR
+            return proteoforms.Where(p => 
+                p.quant.significant
+                && Math.Abs(p.quant.logFoldChange) > minProteoformAbsLogFoldChange
                 && p.quant.intensitySum > minProteoformIntensity);
         }
 
@@ -979,6 +1009,7 @@ namespace ProteoformSuiteInternal
         public bool allTheoreticalProteins = false; // this sets the group used for background. True if all Proteins in the theoretical database are used. False if only proteins observed in the study are used.
         public bool allDetectedProteins = false; // this sets the group used for background. True if all Proteins in the theoretical database are used. False if only proteins observed in the study are used.
         public string backgroundProteinsList = "";
+        public decimal maxGoTermFDR = 0.05m;
 
         #endregion GO-TERMS AND GO-TERM SIGNIFICANCE Public Fields
 

@@ -23,11 +23,13 @@ namespace ProteoformSuiteInternal
         public decimal intensitySum { get; set; } = 0;
         public decimal logFoldChange { get; set; } = 0;
         public decimal variance { get; set; } = 0;
+        public decimal scatter { get; set; } = 0;
         public decimal pValue { get; set; } = 0;
         public bool significant { get; set; } = false;
         public decimal testStatistic { get; set; }
-        public decimal correspondingAvgPermutedTestStatistic { get; set; }
         public List<decimal> permutedTestStatistics { get; set; }
+        public decimal averagePermutedTestStatistic { get; set; }
+        public decimal correspondingAveragePermutedTestStatistic { get; set; }
         public decimal FDR { get; set; } = 0;
 
         #endregion Public Properties
@@ -66,27 +68,27 @@ namespace ProteoformSuiteInternal
             logFoldChange = (decimal)Math.Log((double)numeratorIntensitySum / (double)denominatorIntensitySum, 2);
             variance = Variance(logFoldChange, allNumeratorIntensities, allDenominatorIntensities);
             pValue = PValue(logFoldChange, allNumeratorIntensities, allDenominatorIntensities);
-            decimal proteinLevelStdDev = getProteinLevelStdDev(allNumeratorIntensities, allDenominatorIntensities); //this is log2 bases
-            testStatistic = getSingleTestStatistic(allNumeratorIntensities, allDenominatorIntensities, proteinLevelStdDev, sKnot);
-            permutedTestStatistics = getPermutedTestStatistics(allNumeratorIntensities, allDenominatorIntensities, proteinLevelStdDev, sKnot);
+            scatter = getProteinLevelStdDev(allNumeratorIntensities, allDenominatorIntensities); //this is log2 bases
+            testStatistic = getSingleTestStatistic(allNumeratorIntensities, allDenominatorIntensities, scatter, sKnot);
+            permutedTestStatistics = getPermutedTestStatistics(allNumeratorIntensities, allDenominatorIntensities, scatter, sKnot);
+            averagePermutedTestStatistic = permutedTestStatistics.Average();
         }
 
-        public static decimal computeExperimentalProteoformFDR(decimal testStatistic, List<List<decimal>> permutedTestStatistics, int satisfactoryProteoformsCount, List<decimal> sortedProteoformTestStatistics)
+        public static decimal computeExperimentalProteoformFDR(decimal testStatistic, List<decimal> permutedTestStatistics, int satisfactoryProteoformsCount, List<decimal> sortedProteoformTestStatistics)
         {
             decimal minimumPositivePassingTestStatistic = Math.Abs(testStatistic);
             decimal minimumNegativePassingTestStatistic = -minimumPositivePassingTestStatistic;
 
-            int totalFalsePermutedPositiveValues = 0;
-            int totalFalsePermutedNegativeValues = 0;
+            List<decimal> orderedps = permutedTestStatistics.OrderBy(x => x).ToList();
+            List<decimal> orderedps2 = permutedTestStatistics.OrderByDescending(x => x).ToList();
 
-            foreach (List<decimal> pts in permutedTestStatistics)
-            {
-                totalFalsePermutedPositiveValues += pts.Count(p => p >= minimumPositivePassingTestStatistic);
-                totalFalsePermutedNegativeValues += pts.Count(p => p <= minimumNegativePassingTestStatistic);
-            }
+            int totalFalsePermutedPassingValues = permutedTestStatistics.Count(v => v <= minimumNegativePassingTestStatistic || minimumPositivePassingTestStatistic <= v);
+            decimal averagePermutedPassing = (decimal)totalFalsePermutedPassingValues / (decimal)permutedTestStatistics.Count * (decimal)satisfactoryProteoformsCount;
 
-            decimal avergePermuted = (decimal)(totalFalsePermutedPositiveValues + totalFalsePermutedNegativeValues) / (decimal)satisfactoryProteoformsCount;
-            return avergePermuted / ((decimal)(sortedProteoformTestStatistics.Count(s => s >= minimumPositivePassingTestStatistic) + sortedProteoformTestStatistics.Count(s => s <= minimumNegativePassingTestStatistic)));
+            int totalRealPassing = sortedProteoformTestStatistics.Count(stat => stat <= minimumNegativePassingTestStatistic || minimumPositivePassingTestStatistic <= stat);
+
+            decimal fdr = averagePermutedPassing / (decimal)totalRealPassing;
+            return fdr;
         }
 
         public static List<BiorepIntensity> imputedIntensities(List<BiorepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev, string condition, List<int> bioreps)
@@ -161,21 +163,19 @@ namespace ProteoformSuiteInternal
         public List<decimal> getPermutedTestStatistics(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators, decimal protproteinLevelStdDevein, decimal sKnot)
         {
             List<decimal> pst = new List<decimal>();
-            int numeratorCount = allNumerators.Count;
-            int denominatorCount = allDenominators.Count;
-            List<int> arr = Enumerable.Range(0, numeratorCount + denominatorCount).ToList();
-            var result = ExtensionMethods.Combinations(arr, numeratorCount);
+            List<int> arr = Enumerable.Range(0, allNumerators.Count + allDenominators.Count).ToList();
+            var result = ExtensionMethods.Combinations(arr, allNumerators.Count);
 
             List<BiorepIntensity> allBiorepIntensities = new List<BiorepIntensity>(allNumerators.Concat(allDenominators));
 
-            int last = numeratorCount;
-            if (numeratorCount != denominatorCount) // This shouldn't happen because imputation forces these lists to be the same length
+            int last = allNumerators.Count;
+            if (allNumerators.Count != allDenominators.Count) // This shouldn't happen because imputation forces these lists to be the same length
             {
-                last += denominatorCount;
+                last += allDenominators.Count;
                 throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for the numerator and denominator at this point.");
             }
 
-            for (int i = 0; i < last; i++)
+            for (int i = 1; i < last + 1; i++)
             {
                 List<BiorepIntensity> numeratorlist = new List<BiorepIntensity>();
                 List<BiorepIntensity> denominatorlist = new List<BiorepIntensity>();
