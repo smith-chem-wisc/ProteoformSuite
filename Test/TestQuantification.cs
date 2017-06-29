@@ -165,7 +165,7 @@ namespace Test
             Assert.AreEqual(-0.0429263249080178M, e2.quant.logFoldChange);
             Assert.AreEqual(1.97538639776822M, e2.quant.variance);
             Assert.True(0 <= e2.quant.pValue && e2.quant.pValue <= 1);
-            Assert.AreEqual(0.410m, Math.Round(e2.quant.getProteinLevelStdDev(e2.quant.numeratorBiorepIntensities, e2.quant.denominatorBiorepIntensities), 3));
+            Assert.AreEqual(0.410m, Math.Round(e2.quant.StdDev(e2.quant.numeratorBiorepIntensities, e2.quant.denominatorBiorepIntensities), 3));
             Assert.AreEqual(-0.03045m, Math.Round(e2.quant.testStatistic, 5));
             Assert.AreEqual(e2.quant.permutedTestStatistics.Count, SaveState.lollipop.permutedTestStatistics.Count());
         }
@@ -175,7 +175,7 @@ namespace Test
         {
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, 1, "", 0) };
-            Assert.True(e.quant.getProteinLevelStdDev(singleton_list, singleton_list) > 0);
+            Assert.True(e.quant.StdDev(singleton_list, singleton_list) > 0);
         }
 
         [Test]
@@ -202,12 +202,32 @@ namespace Test
             List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
             {
-                e.quant.getPermutedTestStatistics(shorter_list, singleton_list, 0, 1);
+                e.quant.getBalancedPermutedTestStatistics(shorter_list, singleton_list, 0, 1);
             }
             catch (ArgumentException ex)
             {
                 Assert.NotNull(ex.Message);
             }
+        }
+
+        [Test]
+        public void quant_balanced_permutation_works_with_3_or_4()
+        {
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
+            BiorepIntensity b1 = new BiorepIntensity(false, 1, "c1", 1);
+            BiorepIntensity b2 = new BiorepIntensity(false, 2, "c1", 2);
+            BiorepIntensity b3 = new BiorepIntensity(false, 3, "c1", 3);
+            BiorepIntensity b4 = new BiorepIntensity(false, 4, "c1", 4);
+            BiorepIntensity b5 = new BiorepIntensity(false, 1, "c2", 1);
+            BiorepIntensity b6 = new BiorepIntensity(false, 2, "c2", 2);
+            BiorepIntensity b7 = new BiorepIntensity(false, 3, "c2", 3);
+            BiorepIntensity b8 = new BiorepIntensity(false, 4, "c2", 4);
+            List<BiorepIntensity> triple_list1 = new List<BiorepIntensity> { b1, b2, b3 };
+            List<BiorepIntensity> triple_list2 = new List<BiorepIntensity> { b5, b6, b7 };
+            Assert.AreEqual(9, e.quant.getBalancedPermutedTestStatistics(triple_list1, triple_list2, 0, 1).Count);
+            List<BiorepIntensity> quad_list1 = new List<BiorepIntensity> { b1, b2, b3, b4 };
+            List<BiorepIntensity> quad_list2 = new List<BiorepIntensity> { b5, b6, b7, b8 };
+            Assert.AreEqual(36, e.quant.getBalancedPermutedTestStatistics(quad_list1, quad_list2, 0, 1).Count);
         }
 
         [Test]
@@ -319,7 +339,7 @@ namespace Test
         {
             var resultOne = ExtensionMethods.Combinations(new List<int> { 1, 2, 3, 4, 5, 6 }, 2);
             Assert.AreEqual(15, resultOne.Count());
-            var resultTwo = ExtensionMethods.Combinations(new List<int> { 1}, 1);
+            var resultTwo = ExtensionMethods.Combinations(new List<int> { 1 }, 1);
             Assert.AreEqual(1, resultTwo.Count());
             var resultThree = ExtensionMethods.Combinations(new List<int> { 1, 2, 3, 4, 5, 6 }, 6);
             Assert.AreEqual(1, resultThree.Count());
@@ -450,7 +470,7 @@ namespace Test
             //First below 6.18 is 6
             //One permuted value passes each time, the nine
             //Eight values in the set {0,1,2,3,4,5,6,7,8,9} pass the two cutoffs, 6 and 9
-            Assert.AreEqual((double)1 / (double)8, SaveState.lollipop.computeFoldChangeFDR(SaveState.lollipop.sortedAvgPermutationTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics, satisfactoryProteoforms, satisfactoryProteoforms.SelectMany(e => e.quant.permutedTestStatistics).ToList(), 1));
+            Assert.AreEqual((double)1 / (double)8, SaveState.lollipop.computeRelativeDifferenceFDR(SaveState.lollipop.sortedAvgPermutationTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics, satisfactoryProteoforms, satisfactoryProteoforms.SelectMany(e => e.quant.permutedTestStatistics).ToList(), 1));
 
             SaveState.lollipop.satisfactoryProteoforms = satisfactoryProteoforms;
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
