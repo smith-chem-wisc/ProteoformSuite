@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TheoreticalDatabase));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btn_amendModNames = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
             this.tb_modTableFilter = new System.Windows.Forms.TextBox();
             this.btn_loadModNames = new System.Windows.Forms.Button();
@@ -69,7 +70,7 @@
             this.dgv_Database = new System.Windows.Forms.DataGridView();
             this.dgv_unlocalizedModifications = new System.Windows.Forms.DataGridView();
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.btn_amendModNames = new System.Windows.Forms.Button();
+            this.cb_reduced_disulfide = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -98,6 +99,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.cb_reduced_disulfide);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.btn_downloadUniProtPtmList);
             this.splitContainer1.Panel1.Controls.Add(this.cb_limitLargePtmSets);
@@ -149,6 +151,17 @@
             this.groupBox2.TabIndex = 53;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Modification Names";
+            // 
+            // btn_amendModNames
+            // 
+            this.btn_amendModNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.btn_amendModNames.Location = new System.Drawing.Point(4, 49);
+            this.btn_amendModNames.Name = "btn_amendModNames";
+            this.btn_amendModNames.Size = new System.Drawing.Size(189, 26);
+            this.btn_amendModNames.TabIndex = 56;
+            this.btn_amendModNames.Text = "Amend Stored Mod Names";
+            this.btn_amendModNames.UseVisualStyleBackColor = true;
+            this.btn_amendModNames.Click += new System.EventHandler(this.btn_amendModNames_Click);
             // 
             // label5
             // 
@@ -588,16 +601,18 @@
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
             // 
-            // btn_amendModNames
+            // cb_reduced_disulfide
             // 
-            this.btn_amendModNames.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
-            this.btn_amendModNames.Location = new System.Drawing.Point(4, 49);
-            this.btn_amendModNames.Name = "btn_amendModNames";
-            this.btn_amendModNames.Size = new System.Drawing.Size(189, 26);
-            this.btn_amendModNames.TabIndex = 56;
-            this.btn_amendModNames.Text = "Amend Stored Mod Names";
-            this.btn_amendModNames.UseVisualStyleBackColor = true;
-            this.btn_amendModNames.Click += new System.EventHandler(this.btn_amendModNames_Click);
+            this.cb_reduced_disulfide.AutoSize = true;
+            this.cb_reduced_disulfide.Checked = true;
+            this.cb_reduced_disulfide.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_reduced_disulfide.Location = new System.Drawing.Point(7, 283);
+            this.cb_reduced_disulfide.Name = "cb_reduced_disulfide";
+            this.cb_reduced_disulfide.Size = new System.Drawing.Size(146, 17);
+            this.cb_reduced_disulfide.TabIndex = 54;
+            this.cb_reduced_disulfide.Text = "Reduced Disulfide Bonds";
+            this.cb_reduced_disulfide.UseVisualStyleBackColor = true;
+            this.cb_reduced_disulfide.CheckedChanged += new System.EventHandler(this.cb_reduced_disulfide_CheckedChanged);
             // 
             // TheoreticalDatabase
             // 
@@ -677,5 +692,6 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tb_modTableFilter;
         private System.Windows.Forms.Button btn_amendModNames;
+        private System.Windows.Forms.CheckBox cb_reduced_disulfide;
     }
 }

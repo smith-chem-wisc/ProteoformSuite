@@ -170,7 +170,6 @@ namespace ProteoformSuiteInternal
 
             CalibrationFunction bestMS1predictor = new IdentityCalibrationFunction();
             double bestMS1MSE = bestMS1predictor.GetMSE(testList1);
-
             {
                 var ms1regressor = new ConstantCalibrationFunction();
                 var ms2regressor = new ConstantCalibrationFunction();

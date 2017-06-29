@@ -43,7 +43,7 @@ namespace ProteoformSuiteInternal
         public Labeling label { get; set; }
 
 
-        // For quantitation files
+        // For quantitation files or calibration
         public int biological_replicate { get; set; } = 1;
 
         public int fraction { get; set; } = 1;

@@ -109,15 +109,15 @@ namespace ProteoformSuiteInternal
             {
                 last_identified_count = identified_experimentals.Count;
                 HashSet<Proteoform> tmp_new_experimentals = new HashSet<Proteoform>();
-                foreach(Proteoform id_experimental in newly_identified_experimentals)
+                Parallel.ForEach(newly_identified_experimentals, id_experimental =>
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
-                        foreach (Proteoform new_e in id_experimental.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
-                        {
-                            identified_experimentals.Add(new_e);
-                            tmp_new_experimentals.Add(new_e);
-                        }
-                }
+                            foreach (Proteoform new_e in id_experimental.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
+                            {
+                                identified_experimentals.Add(new_e);
+                                tmp_new_experimentals.Add(new_e);
+                            }
+                });
                 newly_identified_experimentals = new List<Proteoform>(tmp_new_experimentals);
             }
 
@@ -126,7 +126,7 @@ namespace ProteoformSuiteInternal
                 foreach (ProteoformRelation bad_relation in relations.Where(r => r.connected_proteoforms[0].linked_proteoform_references == null || r.connected_proteoforms[1].linked_proteoform_references == null))
                 {
                     bad_relation.Accepted = false;
-                    relations = relations.Except(new List<ProteoformRelation> { bad_relation }).ToList();
+                    //if remove bad relations, reconstruct proteoform families so nodes won't be joined into this family... 
                 }
             }
         }
