@@ -240,6 +240,11 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.theoretical_database.limit_triples_and_greater = cb_limitLargePtmSets.Checked;
         }
 
+        private void cb_reduced_disulfide_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveState.lollipop.reduced_disulfides = cb_reduced_disulfide.Checked;
+        }
+
         #endregion CHECKBOXES Private Methods
 
         #region LOAD DATABASES GRID VIEW Private Methods
@@ -378,6 +383,7 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Modification Names Private Methods
+
 
     }
 }

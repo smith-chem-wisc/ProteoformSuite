@@ -25,7 +25,7 @@ namespace ProteoformSuiteInternal
         public int TD_proteoforms { get { return relationships.Count(r => r.RelationType == ProteoformComparison.TheoreticalTopDown); } }
         public bool contaminant { get; set; }
         public List<GoTerm> goTerms { get; private set; }
-
+        public List<DisulfideBond> disulfide_bonds { get; set; }
         #endregion Public Properties
 
         #region Public Constructor
@@ -48,7 +48,8 @@ namespace ProteoformSuiteInternal
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
             if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
-            psm_list = SaveState.lollipop.BottomUpPSMList.Where(p => p.protein_accession == this.accession.Split('_')[0]).ToList(); //TODO: th
+            psm_list = SaveState.lollipop.BottomUpPSMList.Where(p => p.protein_accession == this.accession.Split('_')[0]).ToList(); //TODO: proteoform parsimony
+            this.disulfide_bonds = expanded_protein_list.First().DisulfideBonds.Where(d => d.OneBasedBeginPosition >= this.begin && d.OneBasedBeginPosition <= this.end).ToList();
         }
 
         #endregion Public Constructor

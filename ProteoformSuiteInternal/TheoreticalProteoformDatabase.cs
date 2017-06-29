@@ -17,6 +17,7 @@ namespace ProteoformSuiteInternal
         //Protein
         public Dictionary<InputFile, Protein[]> theoretical_proteins = new Dictionary<InputFile, Protein[]>();
         public ProteinWithGoTerms[] expanded_proteins = new ProteinWithGoTerms[0];
+        public Dictionary<int, Dictionary<string, List<TheoreticalProteoform>>> theoreticals_by_accession = new Dictionary<int, Dictionary<string, List<TheoreticalProteoform>>>(); //key is decoy database, -100 for theoretical, key is accession, value is theoretical proteoforms w/ that accession
 
         //Modifications
         public Dictionary<string, List<Modification>> uniprotModifications = new Dictionary<string, List<Modification>>();
@@ -53,7 +54,7 @@ namespace ProteoformSuiteInternal
                 community.theoretical_proteoforms = new TheoreticalProteoform[0];
             }
             theoretical_proteins.Clear();
-
+            theoreticals_by_accession.Clear();
             //Read the UniProt-XML and ptmlist
             List<ModificationWithLocation> all_known_modifications = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
             uniprotModifications = make_modification_dictionary(all_known_modifications);
@@ -227,7 +228,7 @@ namespace ProteoformSuiteInternal
                     new int?[] { begin + startPosAfterCleavage },
                     new int?[] { end },
                     new string[] { SaveState.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full" },
-                    p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
+                    p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms, p.DisulfideBonds));
 
                 //Add fragments
                 List<ProteolysisProduct> products = p.ProteolysisProducts.ToList();
@@ -254,7 +255,7 @@ namespace ProteoformSuiteInternal
                             new int?[] { feature_begin },
                             new int?[] { feature_end },
                             new string[] { feature_type },
-                            p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
+                            p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms, p.DisulfideBonds));
                 }
                 expanded_prots.AddRange(new_prots);
             }
@@ -399,7 +400,12 @@ namespace ProteoformSuiteInternal
         private void process_entries(IEnumerable<ProteinWithGoTerms> expanded_proteins, IEnumerable<ModificationWithMass> variableModifications)
         {
             List<TheoreticalProteoform> theoretical_proteoforms = new List<TheoreticalProteoform>();
+            theoreticals_by_accession.Add(-100, new Dictionary<string, List<TheoreticalProteoform>>());
             Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.Accession, theoretical_proteoforms, -100, variableModifications));
+            if (!SaveState.lollipop.reduced_disulfides)
+            {
+                add_disulfide_bonds(theoretical_proteoforms, -100);
+            }
             SaveState.lollipop.target_proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
         }
 
@@ -409,6 +415,7 @@ namespace ProteoformSuiteInternal
             Parallel.For(0, SaveState.lollipop.decoy_databases, decoyNumber =>
             {
                 List<TheoreticalProteoform> decoy_proteoforms = new List<TheoreticalProteoform>();
+                theoreticals_by_accession.Add(decoyNumber, new Dictionary<string, List<TheoreticalProteoform>>());
                 string giantProtein = GetOneGiantProtein(expanded_proteins, SaveState.lollipop.methionine_cleavage); //Concatenate a giant protein out of all protein read from the UniProt-XML, and construct target and decoy proteoform databases
                 ProteinWithGoTerms[] shuffled_proteins = new ProteinWithGoTerms[expanded_proteins.Length];
                 Array.Copy(expanded_proteins, shuffled_proteins, expanded_proteins.Length);
@@ -422,6 +429,11 @@ namespace ProteoformSuiteInternal
                     EnterTheoreticalProteformFamily(hunk, p, p.Accession + "_DECOY_" + decoyNumber, decoy_proteoforms, decoyNumber, variableModifications);
                 });
 
+                if (!SaveState.lollipop.reduced_disulfides)
+                {
+                    add_disulfide_bonds(decoy_proteoforms, decoyNumber);
+                }
+
                 lock (SaveState.lollipop.decoy_proteoform_communities)
                 {
                     SaveState.lollipop.decoy_proteoform_communities.Add(SaveState.lollipop.decoy_community_name_prefix + decoyNumber, new ProteoformCommunity());
@@ -431,6 +443,77 @@ namespace ProteoformSuiteInternal
                 }
             });
         }
+
+
+        private void add_disulfide_bonds(List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number)
+        {
+            List<TheoreticalProteoform> new_theoreticals = new List<TheoreticalProteoform>();
+            Parallel.ForEach(theoretical_proteoforms, theoretical1 =>
+            {
+                List<List<DisulfideBond>> possible_disulfide_bonds = get_possible_disulfide_bonds(theoretical1);
+                int i = 1;
+                foreach (List<DisulfideBond> bond_list in possible_disulfide_bonds)
+                {
+                    List<TheoreticalProteoform> theoreticals = new List<TheoreticalProteoform>();
+                    string description = theoretical1.description;
+                    foreach (DisulfideBond disulfide_bond in bond_list)
+                    {
+                        lock (theoreticals_by_accession)
+                        {
+                            List<TheoreticalProteoform> bonded = theoreticals_by_accession[decoy_number][theoretical1.accession.Split('_')[0]].Where(t => t.begin > theoretical1.end &&
+                                 !theoreticals.Contains(t) && disulfide_bond.OneBasedEndPosition >= t.begin && disulfide_bond.OneBasedEndPosition <= t.end).ToList();
+                            if (bonded != null) theoreticals.AddRange(bonded);
+                        }
+                        description += " DS at " + disulfide_bond.OneBasedBeginPosition + " to " + disulfide_bond.OneBasedEndPosition;
+                    }
+                    double mass = theoretical1.unmodified_mass;
+                    foreach (TheoreticalProteoform theoretical2 in theoreticals)
+                    {
+                        List<DisulfideBond> more_bonds =  theoretical2.disulfide_bonds.Where(b => b.OneBasedBeginPosition >= theoretical2.begin && b.OneBasedEndPosition <= theoretical2.end &&
+                        !bond_list.Select(d => d.OneBasedBeginPosition).Contains(b.OneBasedBeginPosition) && !bond_list.Select(d => d.OneBasedEndPosition).Contains(b.OneBasedEndPosition)).ToList();
+                        foreach(DisulfideBond bond in more_bonds)
+                        {
+                            bond_list.Add(bond);
+                            description += " DS at " + bond.OneBasedBeginPosition + " to " + bond.OneBasedEndPosition;
+                        }
+                        mass += theoretical1 != theoretical2 ? theoretical2.unmodified_mass : 0;
+                    }
+                    mass -= 2.01565 * bond_list.Count();
+                    TheoreticalProteoform new_theoretical = new TheoreticalProteoform(
+                        theoretical1.accession + "_DS" + i,
+                        description,
+                        theoretical1.ExpandedProteinList,
+                        mass,
+                        theoretical1.lysine_count,
+                        new PtmSet(theoreticals.Where(t2 => t2 != theoretical1).SelectMany(t => t.ptm_set.ptm_combination).Concat(theoretical1.ptm_set.ptm_combination).ToList()),
+                        decoy_number < 0,
+                        theoreticals.Concat(new List<TheoreticalProteoform>() { theoretical1 }).Any(t => t.contaminant),
+                        new Dictionary<InputFile, Protein[]>());
+
+                    lock (new_theoreticals) new_theoreticals.Add(new_theoretical);
+                    i++;
+                }
+            });
+            theoretical_proteoforms.AddRange(new_theoreticals);
+            foreach (TheoreticalProteoform new_theoretical in new_theoreticals)
+            {
+                theoreticals_by_accession[decoy_number][new_theoretical.accession.Split('_')[0]].Add(new_theoretical);
+            }
+        }
+
+        private List<List<DisulfideBond>> get_possible_disulfide_bonds(TheoreticalProteoform theoretical)
+        {
+            List<DisulfideBond> bonds_in_range = theoretical.disulfide_bonds.Where(b => b.OneBasedBeginPosition >= theoretical.begin && b.OneBasedBeginPosition <= theoretical.end).ToList();
+            List<List<DisulfideBond>> possible_disulfide_bonds = new List<List<DisulfideBond>>();
+            foreach(DisulfideBond bond in bonds_in_range)
+            {
+                List<DisulfideBond> new_bond_list = bonds_in_range.Where(b => b.OneBasedBeginPosition != bond.OneBasedBeginPosition && b.OneBasedEndPosition != bond.OneBasedEndPosition).ToList();
+                new_bond_list.Add(bond);
+                if (possible_disulfide_bonds.Count(list => list.All(new_bond_list.Contains)) == 0) possible_disulfide_bonds.Add(new_bond_list);
+            }
+            return possible_disulfide_bonds.Distinct().ToList();
+        }
+
 
         private void EnterTheoreticalProteformFamily(string seq, ProteinWithGoTerms prot, string accession, List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number, IEnumerable<ModificationWithMass> variableModifications)
         {
@@ -459,18 +542,23 @@ namespace ProteoformSuiteInternal
             int ptm_set_counter = 1;
             foreach (PtmSet ptm_set in unique_ptm_groups)
             {
-                lock (theoretical_proteoforms) theoretical_proteoforms.Add(
-                    new TheoreticalProteoform(
-                        accession + "_P" + ptm_set_counter.ToString(),
-                        prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
-                        new List<ProteinWithGoTerms> { prot },
-                        unmodified_mass,
-                        lysine_count,
-                        ptm_set,
-                        decoy_number < 0,
-                        check_contaminants,
-                        theoretical_proteins)
-                    );
+                TheoreticalProteoform new_theoretical = new TheoreticalProteoform(
+                    accession + "_P" + ptm_set_counter.ToString(),
+                    prot.FullDescription + "_P" + ptm_set_counter.ToString() + (decoy_number < 0 ? "" : "_DECOY_" + decoy_number.ToString()),
+                    new List<ProteinWithGoTerms> { prot },
+                    unmodified_mass,
+                    lysine_count,
+                    ptm_set,
+                    decoy_number < 0,
+                    check_contaminants,
+                    theoretical_proteins);
+
+                lock (theoreticals_by_accession)
+                {
+                    if (theoreticals_by_accession[decoy_number].ContainsKey(new_theoretical.accession.Split('_')[0])) theoreticals_by_accession[decoy_number][new_theoretical.accession.Split('_')[0]].Add(new_theoretical);
+                    else theoreticals_by_accession[decoy_number].Add(new_theoretical.accession.Split('_')[0], new List<TheoreticalProteoform>() { new_theoretical });
+                }
+                lock (theoretical_proteoforms) theoretical_proteoforms.Add(new_theoretical);
                 ptm_set_counter++;
             }
         }
