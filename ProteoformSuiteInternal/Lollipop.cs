@@ -747,7 +747,7 @@ namespace ProteoformSuiteInternal
         public decimal minProteoformIntensity = 500000m;
         public decimal minProteoformFoldChange = 1m;
         public bool useLocalFdrCutoff = false;
-        public decimal localFdrCutoff = 1;
+        public decimal localFdrCutoff = 0.05m;
 
         #endregion QUANTIFICATION Public Fields
 
@@ -772,11 +772,11 @@ namespace ProteoformSuiteInternal
 
             computeProteoformTestStatistics(neucode_labeled, satisfactoryProteoforms, bkgdAverageIntensity, bkgdStDev, numerator_condition, denominator_condition, sKnot_minFoldChange);
 
-            define_intensity_distribution(satisfactoryProteoforms, logSelectIntensityWithImputationHistogram);
+            define_intensity_distribution(satisfactoryProteoforms.SelectMany(pf => pf.biorepIntensityList.Concat(pf.quant.numeratorImputedIntensities).Concat(pf.quant.denominatorImputedIntensities)).ToList(), logSelectIntensityWithImputationHistogram);
 
             computeSortedTestStatistics(satisfactoryProteoforms);
 
-            relativeDifferenceFDR = computeFoldChangeFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics, satisfactoryProteoforms, permutedTestStatistics, offsetTestStatistics);
+            relativeDifferenceFDR = computeRelativeDifferenceFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics, satisfactoryProteoforms, permutedTestStatistics, offsetTestStatistics);
 
             computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, permutedTestStatistics, sortedProteoformTestStatistics, minProteoformFoldChange, maxGoTermFDR, minProteoformIntensity);
 
@@ -807,7 +807,7 @@ namespace ProteoformSuiteInternal
 
         public void defineAllObservedIntensityDistribution(IEnumerable<ExperimentalProteoform> experimental_proteoforms, SortedDictionary<decimal, int> logIntensityHistogram) // the distribution of all observed experimental proteoform biorep intensities
         {
-            IEnumerable<decimal> allIntensities = define_intensity_distribution(experimental_proteoforms, logIntensityHistogram).Where(i => i > 1); //these are log2 values
+            IEnumerable<decimal> allIntensities = define_intensity_distribution(experimental_proteoforms.SelectMany(pf => pf.biorepIntensityList), logIntensityHistogram).Where(i => i > 1); //these are log2 values
             observedAverageIntensity = allIntensities.Average();
             observedStDev = (decimal)Math.Sqrt(allIntensities.Average(v => Math.Pow((double)(v - observedAverageIntensity), 2))); //population stdev calculation, rather than sample
             observedGaussianArea = get_gaussian_area(logIntensityHistogram);
@@ -816,20 +816,19 @@ namespace ProteoformSuiteInternal
 
         public void defineSelectObservedIntensityDistribution(IEnumerable<ExperimentalProteoform> satisfactory_proteoforms, SortedDictionary<decimal, int> logSelectIntensityHistogram)
         {
-            IEnumerable<decimal> allRoundedIntensities = define_intensity_distribution(satisfactory_proteoforms, logSelectIntensityHistogram).Where(i => i > 1); //these are log2 values
+            IEnumerable<decimal> allRoundedIntensities = define_intensity_distribution(satisfactory_proteoforms.SelectMany(pf => pf.biorepIntensityList), logSelectIntensityHistogram).Where(i => i > 1); //these are log2 values
             selectAverageIntensity = allRoundedIntensities.Average();
             selectStDev = (decimal)Math.Sqrt(allRoundedIntensities.Average(v => Math.Pow((double)(v - selectAverageIntensity), 2))); //population stdev calculation, rather than sample
             selectGaussianArea = get_gaussian_area(logSelectIntensityHistogram);
             selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)selectStDev, 2));
         }
 
-        public List<decimal> define_intensity_distribution(IEnumerable<ExperimentalProteoform> proteoforms, SortedDictionary<decimal, int> histogram)
+        public List<decimal> define_intensity_distribution(IEnumerable<BiorepIntensity> intensities, SortedDictionary<decimal, int> histogram)
         {
             histogram.Clear();
 
             List<decimal> rounded_intensities = (
-                from p in proteoforms
-                from i in p.biorepIntensityList
+                from i in intensities
                 select Math.Round((decimal)Math.Log(i.intensity, 2), 1))
                 .ToList();
 
@@ -904,7 +903,34 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public double computeFoldChangeFDR(List<decimal> sortedAvgPermutationTestStatistics, List<decimal> sortedProteoformTestStatistics, List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> permutedTestStatistics, decimal significanceTestStatOffset)
+        /// <summary>
+        /// Calculates the FDR and establishes significance for proteoforms with a method published by Tusher, et al. (2001)
+        /// 
+        /// First, thresholds are established on either side of the line where the test statistic is equal to the average permuted test statistic of the same rank.
+        /// Every proteoform test statistic that passes that threshold is considered significant.
+        /// 
+        /// The average number of proteoforms that pass by chance is used to calculate the FDR. 
+        /// This calculated as the proportion of all permuted tests that pass the thresholds, times the number of proteoforms quantified.
+        /// The denominator is the number of proteoforms that passed. 
+        /// Thus, the FDR is (# pfs passing by chance / # pfs passing).
+        /// </summary>
+        /// <param name="sortedAvgPermutationTestStatistics">
+        /// The averages of test statistics calculated from permuted intensities for each proteoform. These are sorted independently of the real proteoform test statistics.
+        /// </param>
+        /// <param name="sortedProteoformTestStatistics">
+        /// The test statistics calculated for each proteoform. These are sorted independently of the avg permuted test statistics.
+        /// </param>
+        /// <param name="satisfactoryProteoforms">
+        /// All proteoforms selected for quantification.
+        /// </param>
+        /// <param name="permutedTestStatistics">
+        /// All test statistics calculated from permuted proteoform intensities.
+        /// </param>
+        /// <param name="significanceTestStatOffset">
+        /// Offset from the line where the proteoform test statistsic is equal to the average permuted test statistic: d(i) = dE(i). This is used as a threshold for significance for positive or negative test statistics. 
+        /// </param>
+        /// <returns></returns>
+        public double computeRelativeDifferenceFDR(List<decimal> sortedAvgPermutationTestStatistics, List<decimal> sortedProteoformTestStatistics, List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> permutedTestStatistics, decimal significanceTestStatOffset)
         {
             decimal minimumPassingNegativeTestStatistic = Decimal.MinValue;
             decimal minimumPassingPositiveTestStatisitic = Decimal.MaxValue;
@@ -949,7 +975,7 @@ namespace ProteoformSuiteInternal
         public void reestablishSignficance()
         {
             if (!useLocalFdrCutoff)
-                relativeDifferenceFDR = computeFoldChangeFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics, satisfactoryProteoforms, permutedTestStatistics, offsetTestStatistics);
+                relativeDifferenceFDR = computeRelativeDifferenceFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics, satisfactoryProteoforms, permutedTestStatistics, offsetTestStatistics);
             else
                 Parallel.ForEach(satisfactoryProteoforms, eP => { eP.quant.significant = eP.quant.FDR <= localFdrCutoff; });
         }

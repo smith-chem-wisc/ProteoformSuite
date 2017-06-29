@@ -82,6 +82,7 @@ namespace ProteoformSuiteGUI
             DisplayQuantitativeValues.FormatGridView(dgv_quantification_results);
             tb_avgIntensity.Text = Math.Round(SaveState.lollipop.selectAverageIntensity, 1).ToString();
             tb_stdevIntensity.Text = Math.Round(SaveState.lollipop.selectStDev, 3).ToString();
+            tb_FDR.Text = Math.Round(SaveState.lollipop.relativeDifferenceFDR, 4).ToString();
             volcanoPlot();
             plotBiorepIntensities();
             updateGoTermsTable();
@@ -524,14 +525,14 @@ namespace ProteoformSuiteGUI
         private void plotBiorepIntensities()
         {
             ct_proteoformIntensities.Series.Clear();
-            ct_proteoformIntensities.Series.Add(rb_intensitiesAfter.Checked ? "Observed and Imputed Intensities" : "Observed Intensities");
-            ct_proteoformIntensities.Series[rb_intensitiesAfter.Checked ? "Observed and Imputed Intensities" : "Observed Intensities"].ChartType = SeriesChartType.Point; // these are the actual experimental proteoform intensities
-            ct_proteoformIntensities.Series.Add("Observed Fit");
-            ct_proteoformIntensities.Series["Observed Fit"].ChartType = SeriesChartType.Line; // this is a gaussian best fit to the experimental proteoform intensities.
+            ct_proteoformIntensities.Series.Add("Intensities");
+            ct_proteoformIntensities.Series["Intensities"].ChartType = SeriesChartType.Point; // these are the actual experimental proteoform intensities
+            ct_proteoformIntensities.Series.Add("Fit");
+            ct_proteoformIntensities.Series["Fit"].ChartType = SeriesChartType.Line; // this is a gaussian best fit to the experimental proteoform intensities.
             if (rb_intensitiesProjected.Checked)
             {
-                ct_proteoformIntensities.Series.Add("Background Projected");
-                ct_proteoformIntensities.Series["Background Projected"].ChartType = SeriesChartType.Line; // this is a gaussian line representing the distribution of missing values.
+                ct_proteoformIntensities.Series.Add("Bkgd. Projected");
+                ct_proteoformIntensities.Series["Bkgd. Projected"].ChartType = SeriesChartType.Line; // this is a gaussian line representing the distribution of missing values.
                 ct_proteoformIntensities.Series.Add("Fit + Projected");
                 ct_proteoformIntensities.Series["Fit + Projected"].ChartType = SeriesChartType.Line; // this is the sum of the gaussians for observed and missing values
             }
@@ -540,15 +541,16 @@ namespace ProteoformSuiteGUI
 
             foreach (KeyValuePair<decimal, int> entry in rb_intensitiesAfter.Checked ? SaveState.lollipop.logSelectIntensityWithImputationHistogram : SaveState.lollipop.logSelectIntensityHistogram)
             {
-                ct_proteoformIntensities.Series[rb_intensitiesAfter.Checked ? "Observed and Imputed Intensities" : "Observed Intensities"].Points.AddXY(entry.Key, entry.Value);
+                ct_proteoformIntensities.Series["Intensities"].Points.AddXY(entry.Key, entry.Value);
 
                 double gaussIntensity = ((double)SaveState.lollipop.selectGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)SaveState.lollipop.selectAverageIntensity), 2) / (2d * Math.Pow((double)SaveState.lollipop.selectStDev, 2)));
                 double bkgd_gaussIntensity = ((double)SaveState.lollipop.bkgdGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)SaveState.lollipop.bkgdAverageIntensity), 2) / (2d * Math.Pow((double)SaveState.lollipop.bkgdStDev, 2)));
                 double sumIntensity = gaussIntensity + bkgd_gaussIntensity;
-                ct_proteoformIntensities.Series["Observed Fit"].Points.AddXY(entry.Key, gaussIntensity);
+                ct_proteoformIntensities.Series["Fit"].Points.AddXY(entry.Key, gaussIntensity);
+
                 if (rb_intensitiesProjected.Checked)
                 {
-                    ct_proteoformIntensities.Series["Background Projected"].Points.AddXY(entry.Key, bkgd_gaussIntensity);
+                    ct_proteoformIntensities.Series["Bkgd. Projected"].Points.AddXY(entry.Key, bkgd_gaussIntensity);
                     ct_proteoformIntensities.Series["Fit + Projected"].Points.AddXY(entry.Key, sumIntensity);
                 }
             }

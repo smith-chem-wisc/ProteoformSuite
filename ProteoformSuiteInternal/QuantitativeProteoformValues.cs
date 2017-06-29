@@ -27,9 +27,9 @@ namespace ProteoformSuiteInternal
         public decimal pValue { get; set; } = 0;
         public bool significant { get; set; } = false;
         public decimal testStatistic { get; set; }
-        public List<decimal> permutedTestStatistics { get; set; }
-        public decimal averagePermutedTestStatistic { get; set; }
-        public decimal correspondingAveragePermutedTestStatistic { get; set; }
+        public List<decimal> permutedTestStatistics { get; set; } // Balanced permutation test statistics
+        public decimal averagePermutedTestStatistic { get; set; } // Average for balanced permutations
+        public decimal correspondingAveragePermutedTestStatistic { get; set; } // Corresponding value from Tusher plot
         public decimal FDR { get; set; } = 0;
 
         #endregion Public Properties
@@ -68,26 +68,35 @@ namespace ProteoformSuiteInternal
             logFoldChange = (decimal)Math.Log((double)numeratorIntensitySum / (double)denominatorIntensitySum, 2);
             variance = Variance(logFoldChange, allNumeratorIntensities, allDenominatorIntensities);
             pValue = PValue(logFoldChange, allNumeratorIntensities, allDenominatorIntensities);
-            scatter = getProteinLevelStdDev(allNumeratorIntensities, allDenominatorIntensities); //this is log2 bases
+            scatter = StdDev(allNumeratorIntensities, allDenominatorIntensities); //this is log2 bases
             testStatistic = getSingleTestStatistic(allNumeratorIntensities, allDenominatorIntensities, scatter, sKnot);
-            permutedTestStatistics = getPermutedTestStatistics(allNumeratorIntensities, allDenominatorIntensities, scatter, sKnot);
+            permutedTestStatistics = getBalancedPermutedTestStatistics(allNumeratorIntensities, allDenominatorIntensities, scatter, sKnot);
             averagePermutedTestStatistic = permutedTestStatistics.Average();
         }
 
+        /// <summary>
+        /// Calculates a q-value for this proteoform by dividing the estimated number of pfs that pass given the balanced permutations by the real pfs that pass.
+        /// The threshold for passing is drawn at the test statistic for this proteoform.
+        /// To calculate the "estimated number of pfs that pass given balanced permutations," I multiply the proportion of passing permuations by the number of pfs.
+        /// 
+        /// This calculation is an extension of the relative difference method presented in the Tusher et al. paper.
+        /// </summary>
+        /// <param name="testStatistic"></param>
+        /// <param name="permutedTestStatistics"></param>
+        /// <param name="satisfactoryProteoformsCount"></param>
+        /// <param name="sortedProteoformTestStatistics"></param>
+        /// <returns></returns>
         public static decimal computeExperimentalProteoformFDR(decimal testStatistic, List<decimal> permutedTestStatistics, int satisfactoryProteoformsCount, List<decimal> sortedProteoformTestStatistics)
         {
             decimal minimumPositivePassingTestStatistic = Math.Abs(testStatistic);
             decimal minimumNegativePassingTestStatistic = -minimumPositivePassingTestStatistic;
-
-            List<decimal> orderedps = permutedTestStatistics.OrderBy(x => x).ToList();
-            List<decimal> orderedps2 = permutedTestStatistics.OrderByDescending(x => x).ToList();
 
             int totalFalsePermutedPassingValues = permutedTestStatistics.Count(v => v <= minimumNegativePassingTestStatistic || minimumPositivePassingTestStatistic <= v);
             decimal averagePermutedPassing = (decimal)totalFalsePermutedPassingValues / (decimal)permutedTestStatistics.Count * (decimal)satisfactoryProteoformsCount;
 
             int totalRealPassing = sortedProteoformTestStatistics.Count(stat => stat <= minimumNegativePassingTestStatistic || minimumPositivePassingTestStatistic <= stat);
 
-            decimal fdr = averagePermutedPassing / (decimal)totalRealPassing;
+            decimal fdr = averagePermutedPassing / (decimal)totalRealPassing; // real passing will always be above zero because this proteoform always passes
             return fdr;
         }
 
@@ -96,17 +105,24 @@ namespace ProteoformSuiteInternal
             //bkgdAverageIntensity is log base 2
             //bkgdStDev is log base 2
 
-            List<BiorepIntensity> imputedBioreps = new List<BiorepIntensity>();
-            foreach (int biorep in bioreps)
-            {
-                // no bioreps observed from this conditon at all OR this condtion was observed but this biorep was not
-                if (!observedBioreps.Select(k => k.condition).Contains(condition) || 
-                    !observedBioreps.Where(l => l.condition == condition).Select(b => b.biorep).Contains(biorep))
-                        imputedBioreps.Add(add_biorep_intensity(bkgdAverageIntensity, bkgdStDev, biorep, condition));
-            }
-            return imputedBioreps;
+            return (
+                from biorep in bioreps
+                where !observedBioreps.Select(k => k.condition).Contains(condition) || // no bioreps observed from this conditon at all 
+                    !observedBioreps.Where(l => l.condition == condition).Select(b => b.biorep).Contains(biorep) // OR this condtion was observed but this biorep was not
+                select add_biorep_intensity(bkgdAverageIntensity, bkgdStDev, biorep, condition))
+                .ToList();
         }
 
+        /// <summary>
+        /// Computes an intensity from a background distribution of intensity I and standard deviation s.
+        /// The standard normal distribution of mean 0 and variance 1 is computed from two random numbers distributed uniformly on (0, 1).
+        /// Then, a number from that distribution, x, is used to calculate the imputed intensity: I + s * x
+        /// </summary>
+        /// <param name="bkgdAverageIntensity"></param>
+        /// <param name="bkgdStDev"></param>
+        /// <param name="biorep"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public static BiorepIntensity add_biorep_intensity(decimal bkgdAverageIntensity, decimal bkgdStDev, int biorep, string key)
         {
             //bkgdAverageIntensity is coming in as a log 2 number
@@ -140,7 +156,14 @@ namespace ProteoformSuiteInternal
             return (decimal)Math.Pow((double)squaredVariance, 0.5);
         }
 
-        public decimal getProteinLevelStdDev(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators)
+        /// <summary>
+        /// Calculates the pooled standard deviation across the two conditions for this proteoform.
+        /// This is known as the "scatter s(i)" in the Tusher et al. paper.
+        /// </summary>
+        /// <param name="allNumerators"></param>
+        /// <param name="allDenominators"></param>
+        /// <returns></returns>
+        public decimal StdDev(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators)
         {
             if ((allNumerators.Count + allDenominators.Count) == 2)
                 return 1000000m;
@@ -154,39 +177,73 @@ namespace ProteoformSuiteInternal
             return stdev;
         }
 
+        /// <summary>
+        /// This is the relative difference from Tusher, et al. (2001)
+        /// d(i) = { Average(measurement x from state I) - Average(measurement x from state U) } / { (pooled std dev from I and U) - s_knot }
+        /// </summary>
+        /// <param name="allNumerators"></param>
+        /// <param name="allDenominators"></param>
+        /// <param name="proteinLevelStdDev"></param>
+        /// <param name="sKnot">
+        /// A constant intended to "minimize the coefficient of variation"
+        /// </param>
+        /// <returns></returns>
         public decimal getSingleTestStatistic(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators, decimal proteinLevelStdDev, decimal sKnot)
         {
             double t = (Math.Log(allNumerators.Average(l => l.intensity), 2) - Math.Log(allDenominators.Average(h => h.intensity), 2)) / ((double)(proteinLevelStdDev + sKnot));
             return (decimal)t;
         }
 
-        public List<decimal> getPermutedTestStatistics(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators, decimal protproteinLevelStdDevein, decimal sKnot)
+        /// <summary>
+        /// Gets the test statistics for all balanced permutations of the intensity sums for this proteoform. 
+        /// A balanced permutation has n/2 (integer division) values from the original set.
+        /// Because positional permutations yield the same test statistic, only unique sets of permuted values are considered.
+        /// 
+        /// Example 1 (triples):
+        /// Normal: 1, 2, 3 | Stress: 4, 5, 6
+        /// Nine balanced permutations for normal (technically these are "nearly balanced")
+        /// *4*, 2, 3
+        /// *5*, 2, 3
+        /// *6*, 2, 3
+        /// 1, *4*, 3
+        /// 1, *5*, 3
+        /// 1, *6*, 3
+        /// 1, 2, *4*
+        /// 1, 2, *5*
+        /// 1, 2, *6*
+        /// 
+        /// Example 2 (quadruples, like in Tusher et al.):
+        /// Normal: 1, 2, 3, 4 | Stress: 5, 6, 7, 8
+        /// Thirty-six balanced permutations for normal
+        /// *5*, *6*, 3, 4 ;; 1, *5*, *6*, 4 ;; 1, 2, *5*, *6* ;; *5*, 2, *6*, 4 ;; *5*, 2, 3 *6* ;; 1, *5*, 3, *6*
+        /// *5*, *7*, 3, 4 ;; 1, *5*, *7*, 4 ;; 1, 2, *5*, *7* ;; *5*, 2, *7*, 4 ;; *5*, 2, 3 *7* ;; 1, *5*, 3, *7*
+        /// *5*, *8*, 3, 4 ;; 1, *5*, *8*, 4 ;; 1, 2, *5*, *8* ;; *5*, 2, *8*, 4 ;; *5*, 2, 3 *8* ;; 1, *5*, 3, *8*
+        /// *6*, *7*, 3, 4 ;; 1, *6*, *7*, 4 ;; 1, 2, *6*, *7* ;; *6*, 2, *7*, 4 ;; *6*, 2, 3 *7* ;; 1, *6*, 3, *7*
+        /// *6*, *8*, 3, 4 ;; 1, *6*, *8*, 4 ;; 1, 2, *6*, *8* ;; *6*, 2, *8*, 4 ;; *6*, 2, 3 *8* ;; 1, *6*, 3, *8*
+        /// *7*, *8*, 3, 4 ;; 1, *7*, *8*, 4 ;; 1, 2, *7*, *8* ;; *7*, 2, *8*, 4 ;; *7*, 2, 3 *8* ;; 1, *7*, 3, *8*
+        /// </summary>
+        /// <param name="allNumerators"></param>
+        /// <param name="allDenominators"></param>
+        /// <param name="protproteinLevelStdDevein"></param>
+        /// <param name="sKnot"></param>
+        /// <returns></returns>
+        public List<decimal> getBalancedPermutedTestStatistics(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators, decimal protproteinLevelStdDevein, decimal sKnot)
         {
-            List<decimal> pst = new List<decimal>();
-            List<int> arr = Enumerable.Range(0, allNumerators.Count + allDenominators.Count).ToList();
-            var result = ExtensionMethods.Combinations(arr, allNumerators.Count);
+            if (allNumerators.Count != allDenominators.Count) // This shouldn't happen because imputation forces these lists to be the same length
+                throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for the numerator and denominator at this point.");
 
             List<BiorepIntensity> allBiorepIntensities = new List<BiorepIntensity>(allNumerators.Concat(allDenominators));
-
-            int last = allNumerators.Count;
-            if (allNumerators.Count != allDenominators.Count) // This shouldn't happen because imputation forces these lists to be the same length
+            List<int> arr = Enumerable.Range(0, allBiorepIntensities.Count).ToList();
+            List<HashSet<int>> permutations = new List<HashSet<int>>(ExtensionMethods.Combinations(arr, allNumerators.Count).Select(list => new HashSet<int>(list))); // using hash sets gets rid of positional permuations, even though it seems Combinations doesn't produce those
+            List<HashSet<int>> balanced_permutations = permutations.Where(p => p.Count(i => i >= allNumerators.Count) == allNumerators.Count / 2).ToList(); // integer division is intended with (allNumerators.Count / 2) to check the number of denominator entries
+            List<decimal> balanced_permuted_test_statistics = new List<decimal>();
+            foreach (var permuation in balanced_permutations)
             {
-                last += allDenominators.Count;
-                throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for the numerator and denominator at this point.");
+                List<BiorepIntensity> numerators = permuation.Select(i => allBiorepIntensities[i]).ToList();
+                List<BiorepIntensity> denominators = allBiorepIntensities.Except(numerators).ToList();
+                balanced_permuted_test_statistics.Add(getSingleTestStatistic(numerators, denominators, protproteinLevelStdDevein, sKnot));
             }
-
-            for (int i = 1; i < last + 1; i++)
-            {
-                List<BiorepIntensity> numeratorlist = new List<BiorepIntensity>();
-                List<BiorepIntensity> denominatorlist = new List<BiorepIntensity>();
-                foreach (int index in result.ElementAt(i))
-                {
-                    numeratorlist.Add(allBiorepIntensities[index]);
-                }
-                denominatorlist = allBiorepIntensities.Except(numeratorlist).ToList();
-                pst.Add(getSingleTestStatistic(numeratorlist, denominatorlist, protproteinLevelStdDevein, sKnot)); //adding the test statistic for each combo
-            }
-            return pst;
+            return balanced_permuted_test_statistics;
         }
 
         public decimal PValue(decimal logFoldChange, List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators)
@@ -194,22 +251,22 @@ namespace ProteoformSuiteInternal
             if (allNumerators.Count != allDenominators.Count)
                 throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for NeuCode light and heavy at this point.");
 
-            int maxPermutations = 10000;
-            ConcurrentBag<decimal> permutedRatios = new ConcurrentBag<decimal>();
+            int maxRandomizations = 10000;
+            ConcurrentBag<decimal> randomizedRatios = new ConcurrentBag<decimal>();
 
-            Parallel.For(0, maxPermutations, i =>
+            Parallel.For(0, maxRandomizations, i =>
             {
                 List<double> combined = allNumerators.Select(j => j.intensity).Concat(allDenominators.Select(j => j.intensity)).ToList();
                 combined.Shuffle();
                 double numerator = combined.Take(allNumerators.Count).Sum();
                 double denominator = combined.Skip(allNumerators.Count).Take(allDenominators.Count).Sum();
                 decimal someRatio = (decimal)Math.Log(numerator / denominator, 2);
-                permutedRatios.Add(someRatio);
+                randomizedRatios.Add(someRatio);
             });
 
             decimal pValue = logFoldChange > 0 ?
-                (decimal)(1M / maxPermutations) + (decimal)permutedRatios.Count(x => x > logFoldChange) / (decimal)permutedRatios.Count : //adding a slight positive shift so that later logarithms don't produce fault
-                (decimal)(1M / maxPermutations) + (decimal)permutedRatios.Count(x => x < logFoldChange) / (decimal)permutedRatios.Count; //adding a slight positive shift so that later logarithms don't produce fault
+                (decimal)(1M / maxRandomizations) + (decimal)randomizedRatios.Count(x => x > logFoldChange) / (decimal)randomizedRatios.Count : //adding a slight positive shift so that later logarithms don't produce fault
+                (decimal)(1M / maxRandomizations) + (decimal)randomizedRatios.Count(x => x < logFoldChange) / (decimal)randomizedRatios.Count; //adding a slight positive shift so that later logarithms don't produce fault
 
             return pValue;
         }
