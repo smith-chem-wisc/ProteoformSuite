@@ -332,20 +332,30 @@ namespace ProteoformSuiteGUI
             ct_relativeDifference.ChartAreas[0].AxisX.Title = "Expected Relative Difference dE(i)";
             ct_relativeDifference.ChartAreas[0].AxisY.Title = "Observed Relative Difference d(i)";
 
+            int max_test_stat_unit = 0;
             foreach (ExperimentalProteoform pf in SaveState.lollipop.satisfactoryProteoforms)
             {
                 if (pf.quant.significant)
                     ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.correspondingAveragePermutedTestStatistic, pf.quant.testStatistic);
                 else
                     ct_relativeDifference.Series["Quantified"].Points.AddXY(pf.quant.correspondingAveragePermutedTestStatistic, pf.quant.testStatistic);
+                if (Math.Ceiling(Math.Abs(pf.quant.correspondingAveragePermutedTestStatistic)) > max_test_stat_unit)
+                    max_test_stat_unit = (int)Math.Ceiling(Math.Abs(pf.quant.correspondingAveragePermutedTestStatistic));
+                if (Math.Ceiling(Math.Abs(pf.quant.testStatistic)) > max_test_stat_unit)
+                    max_test_stat_unit = (int)Math.Ceiling(Math.Abs(pf.quant.testStatistic));
             }
 
             if (SaveState.lollipop.sortedAvgPermutationTestStatistics.Count > 0 && SaveState.lollipop.sortedProteoformTestStatistics.Count > 0)
             {
-                ct_relativeDifference.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(SaveState.lollipop.sortedAvgPermutationTestStatistics.First()));
-                ct_relativeDifference.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(SaveState.lollipop.sortedAvgPermutationTestStatistics.Last()));
-                ct_relativeDifference.ChartAreas[0].AxisY.Minimum = Math.Min(Convert.ToDouble(Math.Floor(negativeOffsetFunction(SaveState.lollipop.sortedAvgPermutationTestStatistics.First()))), Convert.ToDouble(Math.Floor(SaveState.lollipop.sortedProteoformTestStatistics.First())));
-                ct_relativeDifference.ChartAreas[0].AxisY.Maximum = Math.Max(Convert.ToDouble(Math.Ceiling(positiveOffsetFunction(SaveState.lollipop.sortedAvgPermutationTestStatistics.Last()))), Convert.ToDouble(Math.Ceiling(SaveState.lollipop.sortedProteoformTestStatistics.Last())));
+                //ct_relativeDifference.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(SaveState.lollipop.sortedAvgPermutationTestStatistics.First()));
+                //ct_relativeDifference.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(SaveState.lollipop.sortedAvgPermutationTestStatistics.Last()));
+                //ct_relativeDifference.ChartAreas[0].AxisY.Minimum = Math.Min(Convert.ToDouble(Math.Floor(negativeOffsetFunction(SaveState.lollipop.sortedAvgPermutationTestStatistics.First()))), Convert.ToDouble(Math.Floor(SaveState.lollipop.sortedProteoformTestStatistics.First())));
+                //ct_relativeDifference.ChartAreas[0].AxisY.Maximum = Math.Max(Convert.ToDouble(Math.Ceiling(positiveOffsetFunction(SaveState.lollipop.sortedAvgPermutationTestStatistics.Last()))), Convert.ToDouble(Math.Ceiling(SaveState.lollipop.sortedProteoformTestStatistics.Last())));
+                ct_relativeDifference.ChartAreas[0].AxisX.Minimum = -max_test_stat_unit;
+                ct_relativeDifference.ChartAreas[0].AxisX.Maximum = max_test_stat_unit;
+                ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -max_test_stat_unit;
+                ct_relativeDifference.ChartAreas[0].AxisY.Maximum = max_test_stat_unit;
+
             }
 
             plotObservedVsExpectedOffsets();

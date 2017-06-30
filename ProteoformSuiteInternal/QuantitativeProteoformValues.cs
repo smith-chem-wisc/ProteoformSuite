@@ -131,7 +131,7 @@ namespace ProteoformSuiteInternal
             double u1 = ExtensionMethods.RandomNumber(); //these are uniform(0,1) random doubles
             double u2 = ExtensionMethods.RandomNumber();
             double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-            double intensity = Math.Pow(2, (double)bkgdAverageIntensity) + (Math.Pow(2, (double)bkgdStDev) * randStdNormal);
+            double intensity = Math.Pow(2, (double)bkgdAverageIntensity + (double)bkgdStDev * randStdNormal);
             return new BiorepIntensity(true, biorep, key, intensity);//random normal(mean,stdDev^2)
         }
 
