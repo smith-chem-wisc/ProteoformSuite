@@ -104,6 +104,7 @@ namespace Test
         public void TestUnabeledProteoformCommunityRelate_EE()
         {
             SaveState.lollipop.neucode_labeled = false;
+            SaveState.lollipop.ee_max_mass_difference = 250;
 
             // Two proteoforms; mass difference < 250 -- return 1
             ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("A1", 1000.0, -1, true);

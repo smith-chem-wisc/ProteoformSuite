@@ -128,11 +128,11 @@ namespace ProteoformSuiteInternal
             //bkgdAverageIntensity is coming in as a log 2 number
             //bkgdStDev is coming in as a log 2 number
 
-            double u1 = ExtensionMethods.RandomNumber(); //these are uniform(0,1) random doubles
+            double u1 = ExtensionMethods.RandomNumber(); // these are uniform(0,1) random doubles
             double u2 = ExtensionMethods.RandomNumber();
-            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-            double intensity = Math.Pow(2, (double)bkgdAverageIntensity + (double)bkgdStDev * randStdNormal);
-            return new BiorepIntensity(true, biorep, key, intensity);//random normal(mean,stdDev^2)
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); // random normal(0,1) -- normal(mean,variance)
+            double intensity = Math.Pow(2, (double)bkgdAverageIntensity + (double)bkgdStDev * randStdNormal); // std dev is calculated for log intensities, so convert to linear after adding I + s * x
+            return new BiorepIntensity(true, biorep, key, intensity); // random normal(mean,stdDev^2)
         }
 
         public decimal Variance(decimal logFoldChange, List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators)
