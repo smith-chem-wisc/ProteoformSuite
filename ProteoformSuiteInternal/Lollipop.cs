@@ -528,7 +528,7 @@ namespace ProteoformSuiteInternal
 
         #region ET,ED,EE,EF COMPARISONS Public Fields
 
-        public double ee_max_mass_difference = 350;
+        public double ee_max_mass_difference = 1100;
         public double ee_max_RetentionTime_difference = 2.5;
         public double et_low_mass_difference = -300;
         public double et_high_mass_difference = 350;
@@ -536,7 +536,7 @@ namespace ProteoformSuiteInternal
         public double no_mans_land_upperBound = 0.88;
         public double peak_width_base_et = 0.03; //need to be separate so you can change one and not other. 
         public double peak_width_base_ee = 0.03;
-        public double min_peak_count_et = 5;
+        public double min_peak_count_et = 4;
         public double min_peak_count_ee = 10;
         public int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
         public List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
@@ -717,13 +717,17 @@ namespace ProteoformSuiteInternal
 
         public string numerator_condition = "";
         public string denominator_condition = "";
-        public decimal observedAverageIntensity; //log base 2
+        public decimal allObservedAverageIntensity; //log base 2
+        public decimal allObservedStDev;
+        public decimal allObservedGaussianArea;
+        public decimal allObservedGaussianHeight;
         public decimal selectAverageIntensity; //log base 2
-        public decimal observedStDev;
         public decimal selectStDev;
-        public decimal observedGaussianArea;
         public decimal selectGaussianArea;
-        public decimal observedGaussianHeight;
+        public decimal selectWithImputationAverageIntensity;
+        public decimal selectWithImputationStDev;
+        public decimal selectWithImputationGaussianArea;
+        public decimal selectWithImputationGaussianHeight;
         public decimal bkgdAverageIntensity; //log base 2
         public decimal bkgdStDev;
         public decimal bkgdGaussianHeight;
@@ -744,8 +748,6 @@ namespace ProteoformSuiteInternal
         public List<ProteinWithGoTerms> observedProteins = new List<ProteinWithGoTerms>(); //This is the complete list of observed proteins
         public List<ProteinWithGoTerms> quantifiedProteins = new List<ProteinWithGoTerms>(); //This is the complete list of proteins that were quantified and included in any accepted proteoform family
         public List<ProteinWithGoTerms> inducedOrRepressedProteins = new List<ProteinWithGoTerms>(); //This is the list of proteins from proteoforms that underwent significant induction or repression
-        public decimal minProteoformIntensity = 500000m;
-        public decimal minProteoformFoldChange = 1m;
         public bool useLocalFdrCutoff = false;
         public decimal localFdrCutoff = 0.05m;
 
@@ -772,13 +774,13 @@ namespace ProteoformSuiteInternal
 
             computeProteoformTestStatistics(neucode_labeled, satisfactoryProteoforms, bkgdAverageIntensity, bkgdStDev, numerator_condition, denominator_condition, sKnot_minFoldChange);
 
-            define_intensity_distribution(satisfactoryProteoforms.SelectMany(pf => pf.biorepIntensityList.Concat(pf.quant.numeratorImputedIntensities).Concat(pf.quant.denominatorImputedIntensities)).ToList(), logSelectIntensityWithImputationHistogram);
+            defineSelectObservedWithImputedIntensityDistribution(satisfactoryProteoforms, logSelectIntensityWithImputationHistogram);
 
             computeSortedTestStatistics(satisfactoryProteoforms);
 
             relativeDifferenceFDR = computeRelativeDifferenceFDR(sortedAvgPermutationTestStatistics, sortedProteoformTestStatistics, satisfactoryProteoforms, permutedTestStatistics, offsetTestStatistics);
 
-            computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, permutedTestStatistics, sortedProteoformTestStatistics, minProteoformFoldChange, maxGoTermFDR, minProteoformIntensity);
+            computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, permutedTestStatistics, sortedProteoformTestStatistics);
 
             observedProteins = getProteins(target_proteoform_community.experimental_proteoforms.Where(x => x.accepted));
 
@@ -808,10 +810,10 @@ namespace ProteoformSuiteInternal
         public void defineAllObservedIntensityDistribution(IEnumerable<ExperimentalProteoform> experimental_proteoforms, SortedDictionary<decimal, int> logIntensityHistogram) // the distribution of all observed experimental proteoform biorep intensities
         {
             IEnumerable<decimal> allIntensities = define_intensity_distribution(experimental_proteoforms.SelectMany(pf => pf.biorepIntensityList), logIntensityHistogram).Where(i => i > 1); //these are log2 values
-            observedAverageIntensity = allIntensities.Average();
-            observedStDev = (decimal)Math.Sqrt(allIntensities.Average(v => Math.Pow((double)(v - observedAverageIntensity), 2))); //population stdev calculation, rather than sample
-            observedGaussianArea = get_gaussian_area(logIntensityHistogram);
-            observedGaussianHeight = observedGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
+            allObservedAverageIntensity = allIntensities.Average();
+            allObservedStDev = (decimal)Math.Sqrt(allIntensities.Average(v => Math.Pow((double)(v - allObservedAverageIntensity), 2))); //population stdev calculation, rather than sample
+            allObservedGaussianArea = get_gaussian_area(logIntensityHistogram);
+            allObservedGaussianHeight = allObservedGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)allObservedStDev, 2));
         }
 
         public void defineSelectObservedIntensityDistribution(IEnumerable<ExperimentalProteoform> satisfactory_proteoforms, SortedDictionary<decimal, int> logSelectIntensityHistogram)
@@ -821,6 +823,15 @@ namespace ProteoformSuiteInternal
             selectStDev = (decimal)Math.Sqrt(allRoundedIntensities.Average(v => Math.Pow((double)(v - selectAverageIntensity), 2))); //population stdev calculation, rather than sample
             selectGaussianArea = get_gaussian_area(logSelectIntensityHistogram);
             selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)selectStDev, 2));
+        }
+
+        public void defineSelectObservedWithImputedIntensityDistribution(IEnumerable<ExperimentalProteoform> satisfactory_proteoforms, SortedDictionary<decimal, int> logSelectIntensityHistogram)
+        {
+            IEnumerable<decimal> allRoundedIntensities = define_intensity_distribution(satisfactoryProteoforms.SelectMany(pf => pf.biorepIntensityList.Concat(pf.quant.numeratorImputedIntensities).Concat(pf.quant.denominatorImputedIntensities)).ToList(), logSelectIntensityWithImputationHistogram);
+            selectWithImputationAverageIntensity = allRoundedIntensities.Average();
+            selectWithImputationStDev = (decimal)Math.Sqrt(allRoundedIntensities.Average(v => Math.Pow((double)(v - selectAverageIntensity), 2))); //population stdev calculation, rather than sample
+            selectWithImputationGaussianArea = get_gaussian_area(logSelectIntensityHistogram);
+            selectWithImputationGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)selectStDev, 2));
         }
 
         public List<decimal> define_intensity_distribution(IEnumerable<BiorepIntensity> intensities, SortedDictionary<decimal, int> histogram)
@@ -964,7 +975,7 @@ namespace ProteoformSuiteInternal
             return fdr;
         }
 
-        public void computeIndividualExperimentalProteoformFDRs(List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> permutedTestStatistics, List<decimal> sortedProteoformTestStatistics, decimal minProteoformFoldChange, decimal minProteoformFDR, decimal minProteoformIntensity)
+        public void computeIndividualExperimentalProteoformFDRs(List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> permutedTestStatistics, List<decimal> sortedProteoformTestStatistics)
         {
             Parallel.ForEach(satisfactoryProteoforms, eP =>
             {
@@ -1036,6 +1047,8 @@ namespace ProteoformSuiteInternal
         public bool allDetectedProteins = false; // this sets the group used for background. True if all Proteins in the theoretical database are used. False if only proteins observed in the study are used.
         public string backgroundProteinsList = "";
         public decimal maxGoTermFDR = 0.05m;
+        public decimal minProteoformIntensity = 0; // 500000m;
+        public decimal minProteoformFoldChange = 0; // 1m;
 
         #endregion GO-TERMS AND GO-TERM SIGNIFICANCE Public Fields
 

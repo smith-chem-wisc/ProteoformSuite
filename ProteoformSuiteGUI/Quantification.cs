@@ -496,6 +496,7 @@ namespace ProteoformSuiteGUI
             if (rb_displayObsVsExp.Checked)
                 plotObservedVsExpectedRelativeDifference();
         }
+    
 
         private void cb_useLocalFdrCutoff_CheckedChanged(object sender, EventArgs e)
         {
@@ -549,11 +550,26 @@ namespace ProteoformSuiteGUI
             ct_proteoformIntensities.ChartAreas[0].AxisX.Title = "Log (Base 2) Intensity";
             ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "Count";
 
-            foreach (KeyValuePair<decimal, int> entry in rb_intensitiesAfter.Checked ? SaveState.lollipop.logSelectIntensityWithImputationHistogram : SaveState.lollipop.logSelectIntensityHistogram)
+            foreach (KeyValuePair<decimal, int> entry in rb_intensitiesAfter.Checked ? 
+                SaveState.lollipop.logSelectIntensityWithImputationHistogram : 
+                rb_intensitiesBefore.Checked || rb_intensitiesProjected.Checked ? SaveState.lollipop.logSelectIntensityHistogram :
+                    SaveState.lollipop.logIntensityHistogram)
             {
                 ct_proteoformIntensities.Series["Intensities"].Points.AddXY(entry.Key, entry.Value);
 
-                double gaussIntensity = ((double)SaveState.lollipop.selectGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)SaveState.lollipop.selectAverageIntensity), 2) / (2d * Math.Pow((double)SaveState.lollipop.selectStDev, 2)));
+                decimal gaussian_height = rb_intensitiesAfter.Checked ?
+                    SaveState.lollipop.selectWithImputationGaussianHeight :
+                    rb_intensitiesBefore.Checked || rb_intensitiesProjected.Checked ? SaveState.lollipop.selectWithImputationGaussianHeight :
+                        SaveState.lollipop.allObservedGaussianHeight;
+                decimal average_intensity = rb_intensitiesAfter.Checked ?
+                    SaveState.lollipop.selectWithImputationAverageIntensity :
+                    rb_intensitiesBefore.Checked || rb_intensitiesProjected.Checked ? SaveState.lollipop.selectWithImputationAverageIntensity :
+                        SaveState.lollipop.allObservedAverageIntensity;
+                decimal std_dev = rb_intensitiesAfter.Checked ?
+                    SaveState.lollipop.selectWithImputationStDev :
+                    rb_intensitiesBefore.Checked || rb_intensitiesProjected.Checked ? SaveState.lollipop.selectWithImputationStDev :
+                        SaveState.lollipop.allObservedStDev;
+                double gaussIntensity = ((double)gaussian_height) * Math.Exp(-Math.Pow(((double)entry.Key - (double)average_intensity), 2) / (2d * Math.Pow((double)std_dev, 2)));
                 double bkgd_gaussIntensity = ((double)SaveState.lollipop.bkgdGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)SaveState.lollipop.bkgdAverageIntensity), 2) / (2d * Math.Pow((double)SaveState.lollipop.bkgdStDev, 2)));
                 double sumIntensity = gaussIntensity + bkgd_gaussIntensity;
                 ct_proteoformIntensities.Series["Fit"].Points.AddXY(entry.Key, gaussIntensity);
@@ -581,6 +597,12 @@ namespace ProteoformSuiteGUI
         private void rb_intensitiesAfter_CheckedChanged(object sender, EventArgs e)
         {
             if (rb_intensitiesAfter.Checked)
+                plotBiorepIntensities();
+        }
+
+        private void rb_displayAllObserved_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_displayAllObserved.Checked)
                 plotBiorepIntensities();
         }
 

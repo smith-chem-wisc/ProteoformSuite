@@ -414,6 +414,7 @@ namespace Test
         public void testComputeIndividualProteoformFDR()
         {
             List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>();
+            List<decimal> permutedTestStats = new List<decimal>();
 
             for (int i = 0; i < 10; i++)
             {
@@ -426,16 +427,50 @@ namespace Test
                 e.quant.testStatistic = ((decimal)i/10);
                 e.quant.permutedTestStatistics = onepst;
                 satisfactoryProteoforms.Add(e);
+                permutedTestStats.AddRange(onepst);
             }
 
             SaveState.lollipop.computeSortedTestStatistics(satisfactoryProteoforms);
-            SaveState.lollipop.computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, SaveState.lollipop.permutedTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics,  SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.maxGoTermFDR, SaveState.lollipop.minProteoformIntensity);
+            SaveState.lollipop.computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, permutedTestStats, SaveState.lollipop.sortedProteoformTestStatistics);
 
             //testStatistic = 0.2m;
             Assert.AreEqual(1.125, satisfactoryProteoforms[2].quant.FDR);
 
             //testStatistic = 0.8m;
             Assert.AreEqual(4.5, satisfactoryProteoforms[8].quant.FDR);
+        }
+
+        [Test]
+        public void test_computeExperimentalProteoformFDR()
+        {
+            decimal testStatistic = 2m;
+            List<decimal> permutedTestStatistics = new List<decimal>();
+            int satisfactoryProteoformsCount = 10;
+            List<decimal> sortedProteoformTestStatistics = new List<decimal>();
+
+            for (int i = 1; i <= satisfactoryProteoformsCount; i++)
+            {
+                sortedProteoformTestStatistics.Add(5m / (decimal)i);
+                List<decimal> pts = new List<decimal>();
+
+                for (int j = -2; j <= 2; j++)
+                {
+                    if (j != 0)
+                        pts.Add(j);
+                }
+                permutedTestStatistics.AddRange(pts);
+            }
+
+            // 10 experimental proteoforms
+            // test statistics: { 5, 2.5, 1.25 ..., 1 }
+            // permuted test statistics for each: {-2, -1, 1, 2}
+            // lower threshold is -2; upper threshold is 2
+            // 2 permuted test statistics pass each of 10 times, therefore 20 permuted test statistics pass
+            // estimated passing false proteoforms = 20 permuted test statistics pass / 40 total test statistics * 10 proteoforms = 5 proteoforms
+            // 2 proteoform test statistic passes
+            // FDR = 50 / 2 = 25
+            Assert.AreEqual(2.5m, QuantitativeProteoformValues.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics, satisfactoryProteoformsCount, sortedProteoformTestStatistics));
+            satisfactoryProteoformsCount++;
         }
 
         [Test]
@@ -454,6 +489,7 @@ namespace Test
                 }
                 e.quant.testStatistic = ((decimal)i);
                 e.quant.permutedTestStatistics = onepst;
+                e.quant.averagePermutedTestStatistic = onepst.Average();
                 satisfactoryProteoforms.Add(e);
             }
 
@@ -465,11 +501,12 @@ namespace Test
             Assert.IsTrue(sorted_check1.SequenceEqual(SaveState.lollipop.sortedProteoformTestStatistics));
             Assert.IsTrue(sorted_check2.SequenceEqual(SaveState.lollipop.sortedAvgPermutationTestStatistics));
 
-            //Average permuted of the set {0,0,0,0,0,0,0,0,0,9} is 7.18 for each
-            //First passing above 8.18 is 9
-            //First below 6.18 is 6
-            //One permuted value passes each time, the nine
-            //Eight values in the set {0,1,2,3,4,5,6,7,8,9} pass the two cutoffs, 6 and 9
+            //Vertical line on the Tusher plot with all average permuted test statistics the same (7.18)
+            //Average permuted of the set {0,0,0,0,0,0,0,0,0,9} is 7.18 for each of 10 proteoforms
+            //First passing above 7.18 + 1 = 8.18 is 9
+            //First below 7.18 - 1 = 6.18 is 6
+            //One permuted value passes each of 10 times, the nine (numerator = 10 permuted passing / 100 permuted total * 10 proteoforms = 1)
+            //Eight values in the set {0,1,2,3,4,5,6,7,8,9} pass the two cutoffs, 6 and 9 (denominator = 8 passing proteoforms)
             Assert.AreEqual((double)1 / (double)8, SaveState.lollipop.computeRelativeDifferenceFDR(SaveState.lollipop.sortedAvgPermutationTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics, satisfactoryProteoforms, satisfactoryProteoforms.SelectMany(e => e.quant.permutedTestStatistics).ToList(), 1));
 
             SaveState.lollipop.satisfactoryProteoforms = satisfactoryProteoforms;
@@ -481,18 +518,18 @@ namespace Test
         {
             List<BiorepIntensity> briList = new List<BiorepIntensity>();
 
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < 100000; i++)
             {
-                briList.Add(QuantitativeProteoformValues.add_biorep_intensity((decimal)Math.Log((double)100, 2), (decimal)Math.Log((double)5, 2), 1, "key"));
+                briList.Add(QuantitativeProteoformValues.add_biorep_intensity(20m, 1m, 1, "key")); // based on log 2 intensities
             }
 
             List<double> allIntensity = briList.Select(b => b.intensity).ToList();
-            double average = allIntensity.Average();
-            double sum = allIntensity.Sum(d => Math.Pow(d - average, 2));
-            double stdev = Math.Sqrt(sum / (allIntensity.Count() - 1));
+            double log_average = allIntensity.Average(i => Math.Log(i, 2));
+            double log_sum = allIntensity.Sum(d => Math.Pow(Math.Log(d, 2) - log_average, 2));
+            double log_stdev = Math.Sqrt(log_sum / (allIntensity.Count - 1));
 
-            Assert.AreEqual(100d, Math.Round(average));
-            Assert.AreEqual(5d, Math.Round(stdev));
+            Assert.AreEqual(20.00d, Math.Round(log_average, 2));
+            Assert.AreEqual(1.00d, Math.Round(log_stdev, 2));
         }
 
         [Test]
@@ -555,7 +592,7 @@ namespace Test
             }
 
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { e };
-            List<decimal> rounded_intensities = SaveState.lollipop.define_intensity_distribution(exps, histogram);
+            List<decimal> rounded_intensities = SaveState.lollipop.define_intensity_distribution(exps.SelectMany(p => p.biorepIntensityList), histogram);
 
             //12 intensity values, bundled in twos; therefore 6 rounded values
             Assert.AreEqual(12, rounded_intensities.Count);
@@ -587,22 +624,22 @@ namespace Test
             }
 
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { e };
-            List<decimal> rounded_intensities = SaveState.lollipop.define_intensity_distribution(exps, histogram);
+            List<decimal> rounded_intensities = SaveState.lollipop.define_intensity_distribution(exps.SelectMany(p => p.biorepIntensityList), histogram);
             SaveState.lollipop.get_gaussian_area(histogram);
 
             //ALL INTENSITIES
             //Test the standard deviation and other calculations
             SaveState.lollipop.defineAllObservedIntensityDistribution(exps, histogram); // creates the histogram again, checking that it's cleared, too
-            Assert.AreEqual(0.4m, SaveState.lollipop.observedGaussianArea);
-            Assert.AreEqual(1.2m, SaveState.lollipop.observedAverageIntensity);
-            Assert.AreEqual(0.082m, Math.Round(SaveState.lollipop.observedStDev, 3));
-            Assert.AreEqual(1.95m, Math.Round(SaveState.lollipop.observedGaussianHeight, 2));
+            Assert.AreEqual(0.4m, SaveState.lollipop.allObservedGaussianArea);
+            Assert.AreEqual(1.2m, SaveState.lollipop.allObservedAverageIntensity);
+            Assert.AreEqual(0.082m, Math.Round(SaveState.lollipop.allObservedStDev, 3));
+            Assert.AreEqual(1.95m, Math.Round(SaveState.lollipop.allObservedGaussianHeight, 2));
 
             //The rest of the calculations should be based off of selected, so setting those to zero
-            SaveState.lollipop.observedGaussianArea = 0;
-            SaveState.lollipop.observedAverageIntensity = 0;
-            SaveState.lollipop.observedStDev = 0;
-            SaveState.lollipop.observedGaussianHeight = 0;
+            SaveState.lollipop.allObservedGaussianArea = 0;
+            SaveState.lollipop.allObservedAverageIntensity = 0;
+            SaveState.lollipop.allObservedStDev = 0;
+            SaveState.lollipop.allObservedGaussianHeight = 0;
 
             //SELECTED INTENSITIES
             SaveState.lollipop.defineSelectObservedIntensityDistribution(exps, histogram);
@@ -795,30 +832,6 @@ namespace Test
         }
 
         [Test]
-        public void test_computeExperimentalProteoformFDR()
-        {
-            decimal testStatistic = 0.001m;
-            List<decimal> permutedTestStatistics = new List<decimal>();
-            int satisfactoryProteoformsCount = 100;
-            List<decimal> sortedProteoformTestStatistics = new List<decimal>();
-
-            for (int i = 1; i <= satisfactoryProteoformsCount; i++)
-            {
-                sortedProteoformTestStatistics.Add(0.01m / (decimal)i);
-                List<decimal> pts = new List<decimal>();
-
-                for (int j = -2; j <= 2; j++)
-                {
-                    if (j != 0)
-                        pts.Add(0.1m / (decimal)j);
-                }
-                permutedTestStatistics.AddRange(pts);
-            }
-            Assert.AreEqual(0.4m, QuantitativeProteoformValues.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics, satisfactoryProteoformsCount, sortedProteoformTestStatistics));
-            satisfactoryProteoformsCount++;
-        }
-
-        [Test]
         public void test_get_observed_proteins()
         {
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new int?[] { 0 }, new int?[] { 0 }, new string[] { "" }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
@@ -896,39 +909,39 @@ namespace Test
 
             //Nothing passing, but one thing passing for each
             ex.quant.logFoldChange = 12;
-            ex.quant.FDR = 1;
+            ex.quant.significant = false;
             ex.quant.intensitySum = 0;
             fx.quant.logFoldChange = -12;
-            fx.quant.FDR = 1;
+            fx.quant.significant = false;;
             fx.quant.intensitySum = 0;
             gx.quant.logFoldChange = 8;
-            gx.quant.FDR = 0.4m;
+            gx.quant.significant = true;
             gx.quant.intensitySum = 0;
             hx.quant.logFoldChange = 8;
-            hx.quant.FDR = 1;
+            hx.quant.significant = false;;
             hx.quant.intensitySum = 2;
             List<ProteinWithGoTerms> prots = SaveState.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex,fx,gx }, 10, 0.5m, 1);
             Assert.AreEqual(0, prots.Count);
 
             //Nothing passing, but two things passing for each
             ex.quant.logFoldChange = 12;
-            ex.quant.FDR = 0.4m;
+            ex.quant.significant = true;
             ex.quant.intensitySum = 0;
             fx.quant.logFoldChange = -12;
-            fx.quant.FDR = 0.4m;
+            fx.quant.significant = true;
             fx.quant.intensitySum = 0;
             gx.quant.logFoldChange = 8;
-            gx.quant.FDR = 0.4m;
+            gx.quant.significant = true;
             gx.quant.intensitySum = 2;
             hx.quant.logFoldChange = 12;
-            hx.quant.FDR = 1;
+            hx.quant.significant = false;;
             hx.quant.intensitySum = 2;
             prots = SaveState.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
             Assert.AreEqual(0, prots.Count);
 
             //Passing
             ex.quant.logFoldChange = 12;
-            ex.quant.FDR = 0.4m;
+            ex.quant.significant = true;
             ex.quant.intensitySum = 2;
             prots = SaveState.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
             Assert.AreEqual(1, prots.Count); // only taking one ET connection by definition in forming ET relations; only one is used in identify theoreticals
@@ -945,10 +958,10 @@ namespace Test
             ExperimentalProteoform gx = ConstructorsForTesting.ExperimentalProteoform("E3");
             ExperimentalProteoform hx = ConstructorsForTesting.ExperimentalProteoform("E4");
             ex.quant.logFoldChange = 12;
-            ex.quant.FDR = 0.4m;
+            ex.quant.significant = true;
             ex.quant.intensitySum = 2;
             fx.quant.logFoldChange = 12;
-            fx.quant.FDR = 0.4m;
+            fx.quant.significant = true;
             fx.quant.intensitySum = 2;
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
             List<ExperimentalProteoform> interesting = SaveState.lollipop.getInterestingProteoforms(exps, 10, 0.5m, 1).ToList();
@@ -974,10 +987,10 @@ namespace Test
             ExperimentalProteoform gx = ConstructorsForTesting.ExperimentalProteoform("E3");
             ExperimentalProteoform hx = ConstructorsForTesting.ExperimentalProteoform("E4");
             ex.quant.logFoldChange = 12;
-            ex.quant.FDR = 0.4m;
+            ex.quant.significant = true;
             ex.quant.intensitySum = 2;
             fx.quant.logFoldChange = 12;
-            fx.quant.FDR = 0.4m;
+            fx.quant.significant = true;
             fx.quant.intensitySum = 2;
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
             ConstructorsForTesting.make_relation(gx, v);

@@ -136,6 +136,7 @@
             this.cmbx_nodeLabelPositioning = new System.Windows.Forms.ComboBox();
             this.cmbx_nodeLayout = new System.Windows.Forms.ComboBox();
             this.cmbx_colorScheme = new System.Windows.Forms.ComboBox();
+            this.rb_displayAllObserved = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -348,7 +349,7 @@
             // 
             this.splitContainer5.Panel2.Controls.Add(this.ct_proteoformIntensities);
             this.splitContainer5.Size = new System.Drawing.Size(484, 527);
-            this.splitContainer5.SplitterDistance = 78;
+            this.splitContainer5.SplitterDistance = 100;
             this.splitContainer5.TabIndex = 0;
             // 
             // gb_quantDataDisplaySelection
@@ -368,7 +369,7 @@
             this.gb_quantDataDisplaySelection.Margin = new System.Windows.Forms.Padding(2);
             this.gb_quantDataDisplaySelection.Name = "gb_quantDataDisplaySelection";
             this.gb_quantDataDisplaySelection.Padding = new System.Windows.Forms.Padding(2);
-            this.gb_quantDataDisplaySelection.Size = new System.Drawing.Size(484, 78);
+            this.gb_quantDataDisplaySelection.Size = new System.Drawing.Size(484, 100);
             this.gb_quantDataDisplaySelection.TabIndex = 20;
             this.gb_quantDataDisplaySelection.TabStop = false;
             this.gb_quantDataDisplaySelection.Text = "Imputation from Background. (Shift and width are multiples of observed log2 inten" +
@@ -376,12 +377,13 @@
             // 
             // groupBox7
             // 
+            this.groupBox7.Controls.Add(this.rb_displayAllObserved);
             this.groupBox7.Controls.Add(this.rb_intensitiesBefore);
             this.groupBox7.Controls.Add(this.rb_intensitiesAfter);
             this.groupBox7.Controls.Add(this.rb_intensitiesProjected);
-            this.groupBox7.Location = new System.Drawing.Point(13, 43);
+            this.groupBox7.Location = new System.Drawing.Point(13, 39);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(224, 33);
+            this.groupBox7.Size = new System.Drawing.Size(195, 57);
             this.groupBox7.TabIndex = 12;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Intensity Distribution Chart Selection";
@@ -389,7 +391,7 @@
             // rb_intensitiesBefore
             // 
             this.rb_intensitiesBefore.AutoSize = true;
-            this.rb_intensitiesBefore.Location = new System.Drawing.Point(6, 13);
+            this.rb_intensitiesBefore.Location = new System.Drawing.Point(5, 36);
             this.rb_intensitiesBefore.Name = "rb_intensitiesBefore";
             this.rb_intensitiesBefore.Size = new System.Drawing.Size(56, 17);
             this.rb_intensitiesBefore.TabIndex = 0;
@@ -400,7 +402,7 @@
             // rb_intensitiesAfter
             // 
             this.rb_intensitiesAfter.AutoSize = true;
-            this.rb_intensitiesAfter.Location = new System.Drawing.Point(171, 13);
+            this.rb_intensitiesAfter.Location = new System.Drawing.Point(142, 36);
             this.rb_intensitiesAfter.Name = "rb_intensitiesAfter";
             this.rb_intensitiesAfter.Size = new System.Drawing.Size(47, 17);
             this.rb_intensitiesAfter.TabIndex = 2;
@@ -412,7 +414,7 @@
             // 
             this.rb_intensitiesProjected.AutoSize = true;
             this.rb_intensitiesProjected.Checked = true;
-            this.rb_intensitiesProjected.Location = new System.Drawing.Point(81, 13);
+            this.rb_intensitiesProjected.Location = new System.Drawing.Point(66, 36);
             this.rb_intensitiesProjected.Name = "rb_intensitiesProjected";
             this.rb_intensitiesProjected.Size = new System.Drawing.Size(70, 17);
             this.rb_intensitiesProjected.TabIndex = 1;
@@ -423,15 +425,15 @@
             // 
             // tb_stdevIntensity
             // 
-            this.tb_stdevIntensity.Location = new System.Drawing.Point(370, 17);
+            this.tb_stdevIntensity.Location = new System.Drawing.Point(397, 17);
             this.tb_stdevIntensity.Name = "tb_stdevIntensity";
             this.tb_stdevIntensity.ReadOnly = true;
-            this.tb_stdevIntensity.Size = new System.Drawing.Size(109, 20);
+            this.tb_stdevIntensity.Size = new System.Drawing.Size(82, 20);
             this.tb_stdevIntensity.TabIndex = 11;
             // 
             // tb_avgIntensity
             // 
-            this.tb_avgIntensity.Location = new System.Drawing.Point(121, 18);
+            this.tb_avgIntensity.Location = new System.Drawing.Point(186, 17);
             this.tb_avgIntensity.Name = "tb_avgIntensity";
             this.tb_avgIntensity.ReadOnly = true;
             this.tb_avgIntensity.Size = new System.Drawing.Size(78, 20);
@@ -440,7 +442,7 @@
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(243, 20);
+            this.label16.Location = new System.Drawing.Point(270, 20);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(121, 13);
             this.label16.TabIndex = 9;
@@ -449,7 +451,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(17, 21);
+            this.label17.Location = new System.Drawing.Point(82, 20);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(98, 13);
             this.label17.TabIndex = 8;
@@ -467,7 +469,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(246, 52);
+            this.label4.Location = new System.Drawing.Point(369, 78);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(56, 13);
             this.label4.TabIndex = 6;
@@ -510,7 +512,7 @@
             0,
             0,
             65536});
-            this.nud_bkgdShift.Location = new System.Drawing.Point(308, 48);
+            this.nud_bkgdShift.Location = new System.Drawing.Point(431, 74);
             this.nud_bkgdShift.Maximum = new decimal(new int[] {
             0,
             0,
@@ -550,7 +552,7 @@
             series2.Name = "Series2";
             this.ct_proteoformIntensities.Series.Add(series1);
             this.ct_proteoformIntensities.Series.Add(series2);
-            this.ct_proteoformIntensities.Size = new System.Drawing.Size(484, 445);
+            this.ct_proteoformIntensities.Size = new System.Drawing.Size(484, 423);
             this.ct_proteoformIntensities.TabIndex = 25;
             this.ct_proteoformIntensities.Text = "log2_intensity";
             this.ct_proteoformIntensities.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_proteoformIntensities_MouseClick);
@@ -1554,6 +1556,17 @@
             this.cmbx_colorScheme.TabIndex = 89;
             this.cmbx_colorScheme.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
+            // rb_displayAllObserved
+            // 
+            this.rb_displayAllObserved.AutoSize = true;
+            this.rb_displayAllObserved.Location = new System.Drawing.Point(6, 15);
+            this.rb_displayAllObserved.Name = "rb_displayAllObserved";
+            this.rb_displayAllObserved.Size = new System.Drawing.Size(85, 17);
+            this.rb_displayAllObserved.TabIndex = 3;
+            this.rb_displayAllObserved.Text = "All Observed";
+            this.rb_displayAllObserved.UseVisualStyleBackColor = true;
+            this.rb_displayAllObserved.CheckedChanged += new System.EventHandler(this.rb_displayAllObserved_CheckedChanged);
+            // 
             // Quantification
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1767,5 +1780,6 @@
         private System.Windows.Forms.RadioButton rb_intensitiesBefore;
         private System.Windows.Forms.RadioButton rb_intensitiesAfter;
         private System.Windows.Forms.RadioButton rb_intensitiesProjected;
+        private System.Windows.Forms.RadioButton rb_displayAllObserved;
     }
 }
