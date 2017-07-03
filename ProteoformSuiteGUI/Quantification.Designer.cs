@@ -49,10 +49,8 @@
             this.cmbx_observationsTypeRequired = new System.Windows.Forms.ComboBox();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.gb_quantDataDisplaySelection = new System.Windows.Forms.GroupBox();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.rb_intensitiesBefore = new System.Windows.Forms.RadioButton();
-            this.rb_intensitiesAfter = new System.Windows.Forms.RadioButton();
-            this.rb_intensitiesProjected = new System.Windows.Forms.RadioButton();
+            this.label18 = new System.Windows.Forms.Label();
+            this.cmbx_intensityDistributionChartSelection = new System.Windows.Forms.ComboBox();
             this.tb_stdevIntensity = new System.Windows.Forms.TextBox();
             this.tb_avgIntensity = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
@@ -76,11 +74,10 @@
             this.cmbx_ratioDenominator = new System.Windows.Forms.ComboBox();
             this.splitContainer9 = new System.Windows.Forms.SplitContainer();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.cmbx_relativeDifferenceChartSelection = new System.Windows.Forms.ComboBox();
             this.nud_localFdrCutoff = new System.Windows.Forms.NumericUpDown();
             this.cb_useLocalFdrCutoff = new System.Windows.Forms.CheckBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.rb_displayObsVsScatter = new System.Windows.Forms.RadioButton();
-            this.rb_displayObsVsExp = new System.Windows.Forms.RadioButton();
             this.label15 = new System.Windows.Forms.Label();
             this.tb_FDR = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
@@ -136,7 +133,7 @@
             this.cmbx_nodeLabelPositioning = new System.Windows.Forms.ComboBox();
             this.cmbx_nodeLayout = new System.Windows.Forms.ComboBox();
             this.cmbx_colorScheme = new System.Windows.Forms.ComboBox();
-            this.rb_displayAllObserved = new System.Windows.Forms.RadioButton();
+            this.cb_testStatsWithLogIntensities = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -157,7 +154,6 @@
             this.splitContainer5.Panel2.SuspendLayout();
             this.splitContainer5.SuspendLayout();
             this.gb_quantDataDisplaySelection.SuspendLayout();
-            this.groupBox7.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdShift)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_proteoformIntensities)).BeginInit();
@@ -193,7 +189,6 @@
             this.splitContainer9.SuspendLayout();
             this.groupBox6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_localFdrCutoff)).BeginInit();
-            this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Offset)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_sKnot_minFoldChange)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_relativeDifference)).BeginInit();
@@ -355,7 +350,8 @@
             // gb_quantDataDisplaySelection
             // 
             this.gb_quantDataDisplaySelection.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.gb_quantDataDisplaySelection.Controls.Add(this.groupBox7);
+            this.gb_quantDataDisplaySelection.Controls.Add(this.label18);
+            this.gb_quantDataDisplaySelection.Controls.Add(this.cmbx_intensityDistributionChartSelection);
             this.gb_quantDataDisplaySelection.Controls.Add(this.tb_stdevIntensity);
             this.gb_quantDataDisplaySelection.Controls.Add(this.tb_avgIntensity);
             this.gb_quantDataDisplaySelection.Controls.Add(this.label16);
@@ -375,53 +371,25 @@
             this.gb_quantDataDisplaySelection.Text = "Imputation from Background. (Shift and width are multiples of observed log2 inten" +
     "sity std. dev.)";
             // 
-            // groupBox7
+            // label18
             // 
-            this.groupBox7.Controls.Add(this.rb_displayAllObserved);
-            this.groupBox7.Controls.Add(this.rb_intensitiesBefore);
-            this.groupBox7.Controls.Add(this.rb_intensitiesAfter);
-            this.groupBox7.Controls.Add(this.rb_intensitiesProjected);
-            this.groupBox7.Location = new System.Drawing.Point(13, 39);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(195, 57);
-            this.groupBox7.TabIndex = 12;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Intensity Distribution Chart Selection";
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(15, 48);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(176, 13);
+            this.label18.TabIndex = 14;
+            this.label18.Text = "Intensity Distribution Chart Selection";
             // 
-            // rb_intensitiesBefore
+            // cmbx_intensityDistributionChartSelection
             // 
-            this.rb_intensitiesBefore.AutoSize = true;
-            this.rb_intensitiesBefore.Location = new System.Drawing.Point(5, 36);
-            this.rb_intensitiesBefore.Name = "rb_intensitiesBefore";
-            this.rb_intensitiesBefore.Size = new System.Drawing.Size(56, 17);
-            this.rb_intensitiesBefore.TabIndex = 0;
-            this.rb_intensitiesBefore.Text = "Before";
-            this.rb_intensitiesBefore.UseVisualStyleBackColor = true;
-            this.rb_intensitiesBefore.CheckedChanged += new System.EventHandler(this.rb_intensitiesBefore_CheckedChanged);
-            // 
-            // rb_intensitiesAfter
-            // 
-            this.rb_intensitiesAfter.AutoSize = true;
-            this.rb_intensitiesAfter.Location = new System.Drawing.Point(142, 36);
-            this.rb_intensitiesAfter.Name = "rb_intensitiesAfter";
-            this.rb_intensitiesAfter.Size = new System.Drawing.Size(47, 17);
-            this.rb_intensitiesAfter.TabIndex = 2;
-            this.rb_intensitiesAfter.Text = "After";
-            this.rb_intensitiesAfter.UseVisualStyleBackColor = true;
-            this.rb_intensitiesAfter.CheckedChanged += new System.EventHandler(this.rb_intensitiesAfter_CheckedChanged);
-            // 
-            // rb_intensitiesProjected
-            // 
-            this.rb_intensitiesProjected.AutoSize = true;
-            this.rb_intensitiesProjected.Checked = true;
-            this.rb_intensitiesProjected.Location = new System.Drawing.Point(66, 36);
-            this.rb_intensitiesProjected.Name = "rb_intensitiesProjected";
-            this.rb_intensitiesProjected.Size = new System.Drawing.Size(70, 17);
-            this.rb_intensitiesProjected.TabIndex = 1;
-            this.rb_intensitiesProjected.TabStop = true;
-            this.rb_intensitiesProjected.Text = "Projected";
-            this.rb_intensitiesProjected.UseVisualStyleBackColor = true;
-            this.rb_intensitiesProjected.CheckedChanged += new System.EventHandler(this.rb_intensitiesProjected_CheckedChanged);
+            this.cmbx_intensityDistributionChartSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbx_intensityDistributionChartSelection.FormattingEnabled = true;
+            this.cmbx_intensityDistributionChartSelection.Location = new System.Drawing.Point(18, 66);
+            this.cmbx_intensityDistributionChartSelection.Name = "cmbx_intensityDistributionChartSelection";
+            this.cmbx_intensityDistributionChartSelection.Size = new System.Drawing.Size(246, 21);
+            this.cmbx_intensityDistributionChartSelection.TabIndex = 13;
+            this.cmbx_intensityDistributionChartSelection.SelectedIndexChanged += new System.EventHandler(this.cmbx_intensityDistributionChartSelection_SelectedIndexChanged);
+            this.cmbx_intensityDistributionChartSelection.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // tb_stdevIntensity
             // 
@@ -756,9 +724,11 @@
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.cb_testStatsWithLogIntensities);
+            this.groupBox6.Controls.Add(this.label19);
+            this.groupBox6.Controls.Add(this.cmbx_relativeDifferenceChartSelection);
             this.groupBox6.Controls.Add(this.nud_localFdrCutoff);
             this.groupBox6.Controls.Add(this.cb_useLocalFdrCutoff);
-            this.groupBox6.Controls.Add(this.groupBox3);
             this.groupBox6.Controls.Add(this.label15);
             this.groupBox6.Controls.Add(this.tb_FDR);
             this.groupBox6.Controls.Add(this.label13);
@@ -772,6 +742,26 @@
             this.groupBox6.TabIndex = 31;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "FDR Determination Via Permutation";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(6, 18);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(173, 13);
+            this.label19.TabIndex = 12;
+            this.label19.Text = "Relative Difference Chart Selection";
+            // 
+            // cmbx_relativeDifferenceChartSelection
+            // 
+            this.cmbx_relativeDifferenceChartSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbx_relativeDifferenceChartSelection.FormattingEnabled = true;
+            this.cmbx_relativeDifferenceChartSelection.Location = new System.Drawing.Point(9, 34);
+            this.cmbx_relativeDifferenceChartSelection.Name = "cmbx_relativeDifferenceChartSelection";
+            this.cmbx_relativeDifferenceChartSelection.Size = new System.Drawing.Size(197, 21);
+            this.cmbx_relativeDifferenceChartSelection.TabIndex = 11;
+            this.cmbx_relativeDifferenceChartSelection.SelectedIndexChanged += new System.EventHandler(this.cmbx_relativeDifferenceChartSelection_SelectedIndexChanged);
+            this.cmbx_relativeDifferenceChartSelection.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // nud_localFdrCutoff
             // 
@@ -795,48 +785,13 @@
             // cb_useLocalFdrCutoff
             // 
             this.cb_useLocalFdrCutoff.AutoSize = true;
-            this.cb_useLocalFdrCutoff.Location = new System.Drawing.Point(271, 80);
+            this.cb_useLocalFdrCutoff.Location = new System.Drawing.Point(246, 80);
             this.cb_useLocalFdrCutoff.Name = "cb_useLocalFdrCutoff";
             this.cb_useLocalFdrCutoff.Size = new System.Drawing.Size(133, 17);
             this.cb_useLocalFdrCutoff.TabIndex = 9;
             this.cb_useLocalFdrCutoff.Text = "Use Local FDR Cutoff:";
             this.cb_useLocalFdrCutoff.UseVisualStyleBackColor = true;
             this.cb_useLocalFdrCutoff.CheckedChanged += new System.EventHandler(this.cb_useLocalFdrCutoff_CheckedChanged);
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.rb_displayObsVsScatter);
-            this.groupBox3.Controls.Add(this.rb_displayObsVsExp);
-            this.groupBox3.Location = new System.Drawing.Point(10, 21);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(191, 59);
-            this.groupBox3.TabIndex = 8;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Relative Difference Chart Selection";
-            // 
-            // rb_displayObsVsScatter
-            // 
-            this.rb_displayObsVsScatter.AutoSize = true;
-            this.rb_displayObsVsScatter.Location = new System.Drawing.Point(17, 34);
-            this.rb_displayObsVsScatter.Name = "rb_displayObsVsScatter";
-            this.rb_displayObsVsScatter.Size = new System.Drawing.Size(125, 17);
-            this.rb_displayObsVsScatter.TabIndex = 1;
-            this.rb_displayObsVsScatter.Text = "Observed vs. Scatter";
-            this.rb_displayObsVsScatter.UseVisualStyleBackColor = true;
-            this.rb_displayObsVsScatter.CheckedChanged += new System.EventHandler(this.rb_displayObsVsScatter_CheckedChanged);
-            // 
-            // rb_displayObsVsExp
-            // 
-            this.rb_displayObsVsExp.AutoSize = true;
-            this.rb_displayObsVsExp.Checked = true;
-            this.rb_displayObsVsExp.Location = new System.Drawing.Point(17, 17);
-            this.rb_displayObsVsExp.Name = "rb_displayObsVsExp";
-            this.rb_displayObsVsExp.Size = new System.Drawing.Size(136, 17);
-            this.rb_displayObsVsExp.TabIndex = 0;
-            this.rb_displayObsVsExp.TabStop = true;
-            this.rb_displayObsVsExp.Text = "Observed vs. Expected";
-            this.rb_displayObsVsExp.UseVisualStyleBackColor = true;
-            this.rb_displayObsVsExp.CheckedChanged += new System.EventHandler(this.rb_displayObsVsExp_CheckedChanged);
             // 
             // label15
             // 
@@ -1556,16 +1511,16 @@
             this.cmbx_colorScheme.TabIndex = 89;
             this.cmbx_colorScheme.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
-            // rb_displayAllObserved
+            // cb_testStatsWithLogIntensities
             // 
-            this.rb_displayAllObserved.AutoSize = true;
-            this.rb_displayAllObserved.Location = new System.Drawing.Point(6, 15);
-            this.rb_displayAllObserved.Name = "rb_displayAllObserved";
-            this.rb_displayAllObserved.Size = new System.Drawing.Size(85, 17);
-            this.rb_displayAllObserved.TabIndex = 3;
-            this.rb_displayAllObserved.Text = "All Observed";
-            this.rb_displayAllObserved.UseVisualStyleBackColor = true;
-            this.rb_displayAllObserved.CheckedChanged += new System.EventHandler(this.rb_displayAllObserved_CheckedChanged);
+            this.cb_testStatsWithLogIntensities.AutoSize = true;
+            this.cb_testStatsWithLogIntensities.Location = new System.Drawing.Point(246, 57);
+            this.cb_testStatsWithLogIntensities.Name = "cb_testStatsWithLogIntensities";
+            this.cb_testStatsWithLogIntensities.Size = new System.Drawing.Size(233, 17);
+            this.cb_testStatsWithLogIntensities.TabIndex = 13;
+            this.cb_testStatsWithLogIntensities.Text = "Compute Test Statistics With Log Intensities";
+            this.cb_testStatsWithLogIntensities.UseVisualStyleBackColor = true;
+            this.cb_testStatsWithLogIntensities.CheckedChanged += new System.EventHandler(this.cb_testStatsWithLogIntensities_CheckedChanged);
             // 
             // Quantification
             // 
@@ -1601,8 +1556,6 @@
             this.splitContainer5.ResumeLayout(false);
             this.gb_quantDataDisplaySelection.ResumeLayout(false);
             this.gb_quantDataDisplaySelection.PerformLayout();
-            this.groupBox7.ResumeLayout(false);
-            this.groupBox7.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_bkgdShift)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_proteoformIntensities)).EndInit();
@@ -1640,8 +1593,6 @@
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_localFdrCutoff)).EndInit();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Offset)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_sKnot_minFoldChange)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_relativeDifference)).EndInit();
@@ -1771,15 +1722,12 @@
         private System.Windows.Forms.SplitContainer splitContainer16;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox cmbx_ratioDenominator;
-        private System.Windows.Forms.GroupBox groupBox3;
-        private System.Windows.Forms.RadioButton rb_displayObsVsScatter;
-        private System.Windows.Forms.RadioButton rb_displayObsVsExp;
         private System.Windows.Forms.NumericUpDown nud_localFdrCutoff;
         private System.Windows.Forms.CheckBox cb_useLocalFdrCutoff;
-        private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.RadioButton rb_intensitiesBefore;
-        private System.Windows.Forms.RadioButton rb_intensitiesAfter;
-        private System.Windows.Forms.RadioButton rb_intensitiesProjected;
-        private System.Windows.Forms.RadioButton rb_displayAllObserved;
+        private System.Windows.Forms.ComboBox cmbx_intensityDistributionChartSelection;
+        private System.Windows.Forms.ComboBox cmbx_relativeDifferenceChartSelection;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.CheckBox cb_testStatsWithLogIntensities;
     }
 }
