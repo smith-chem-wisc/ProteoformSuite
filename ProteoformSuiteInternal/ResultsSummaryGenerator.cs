@@ -91,6 +91,13 @@ namespace ProteoformSuiteInternal
                 loaded_files_report();
         }
 
+        public static void save_biological_replicate_intensities(string filename, bool include_imputation, List<ExperimentalProteoform> proteoforms)
+        {
+            using (StreamWriter writer = new StreamWriter(filename))
+                writer.Write(biological_replicate_intensities(proteoforms, include_imputation));
+        }
+
+
         public static string loaded_files_report()
         {
             string header = "DECONVOLUTION RESULTS FILES AND PROTEIN DATABASE FILES" + Environment.NewLine;
@@ -291,6 +298,93 @@ namespace ProteoformSuiteInternal
                     e.quant.denominatorIntensitySum,
                     e.quant.significant
                 );
+            }
+
+            StringBuilder result_string = new StringBuilder();
+            string header = "";
+            foreach (DataColumn column in results.Columns)
+            {
+                header += column.ColumnName + "\t";
+            }
+            result_string.AppendLine(header);
+            foreach (DataRow row in results.Rows)
+            {
+                result_string.AppendLine(String.Join("\t", row.ItemArray));
+            }
+            return result_string.ToString();
+        }
+
+        public static string biological_replicate_intensities(List<ExperimentalProteoform> proteoforms, bool include_imputation)
+        {
+            DataTable results = new DataTable();
+            results.Columns.Add("Proteoform ID", typeof(string));
+            foreach (KeyValuePair<string, List<int>> condition_bioreps in SaveState.lollipop.conditionsBioReps)
+            {
+                foreach (int biorep in condition_bioreps.Value)
+                {
+                    results.Columns.Add(condition_bioreps.Key + "_" + biorep.ToString(), typeof(double));
+                }
+            }
+
+            foreach (ExperimentalProteoform pf in proteoforms)
+            {
+                List<double> condition_biorep_intensities = new List<double>();
+                foreach (KeyValuePair<string, List<int>> condition_bioreps in SaveState.lollipop.conditionsBioReps)
+                {
+                    if (condition_bioreps.Key != SaveState.lollipop.numerator_condition && condition_bioreps.Key != SaveState.lollipop.denominator_condition)
+                        continue;
+                    else if (condition_bioreps.Key == SaveState.lollipop.numerator_condition && pf.quant.numeratorBiorepIntensities == null)
+                    {
+                        foreach (int biorep in condition_bioreps.Value)
+                        {
+                            condition_biorep_intensities.Add(Double.NaN);
+                        }
+                    }
+                    else if (condition_bioreps.Key == SaveState.lollipop.denominator_condition && pf.quant.denominatorBiorepIntensities == null)
+                    {
+                        foreach (int biorep in condition_bioreps.Value)
+                        {
+                            condition_biorep_intensities.Add(Double.NaN);
+                        }
+                    }
+                    else
+                    {
+                        List<BiorepIntensity> numerator = include_imputation ? pf.quant.numeratorBiorepIntensities.Concat(pf.quant.numeratorImputedIntensities == null ? new List<BiorepIntensity>() : pf.quant.numeratorImputedIntensities).ToList() : pf.quant.numeratorBiorepIntensities;
+                        List<BiorepIntensity> denominator = include_imputation ? pf.quant.denominatorBiorepIntensities.Concat(pf.quant.denominatorImputedIntensities == null ? new List<BiorepIntensity>() : pf.quant.denominatorBiorepIntensities).ToList() : pf.quant.denominatorBiorepIntensities;
+
+                        foreach (int biorep in condition_bioreps.Value)
+                        {
+                            if (condition_bioreps.Key == SaveState.lollipop.numerator_condition)
+                            {
+                                BiorepIntensity br = numerator.FirstOrDefault(x => x.biorep == biorep);
+                                if (br == null)
+                                    condition_biorep_intensities.Add(Double.NaN);
+                                else
+                                    condition_biorep_intensities.Add((double)br.intensity);
+                            }
+                            if (condition_bioreps.Key == SaveState.lollipop.denominator_condition)
+                            {
+                                BiorepIntensity br = denominator.FirstOrDefault(x => x.biorep == biorep);
+                                if (br == null)
+                                    condition_biorep_intensities.Add(Double.NaN);
+                                else
+                                    condition_biorep_intensities.Add((double)br.intensity);
+                            }
+                        }
+                    }
+                }
+
+                DataRow row = results.NewRow();
+                row["Proteoform ID"] = pf.accession;
+                int ct = 0;
+                foreach (KeyValuePair<string, List<int>> condition_bioreps in SaveState.lollipop.conditionsBioReps)
+                {
+                    foreach (int biorep in condition_bioreps.Value)
+                    {
+                        row[condition_bioreps.Key + "_" + biorep.ToString()] = condition_biorep_intensities[ct++];
+                    }
+                }
+                results.Rows.Add(row);
             }
 
             StringBuilder result_string = new StringBuilder();
