@@ -741,6 +741,7 @@ namespace ProteoformSuiteInternal
         public decimal selectGaussianHeight;
         public List<QuantitativeProteoformValues> qVals = new List<QuantitativeProteoformValues>();
         public decimal sKnot_minFoldChange = 1m;
+        public bool testStatisticsWithLogIntensities = false;
         public List<decimal> sortedProteoformTestStatistics = new List<decimal>();
         public List<decimal> sortedAvgPermutationTestStatistics = new List<decimal>();
         public decimal offsetTestStatistics = 1m;
@@ -898,17 +899,17 @@ namespace ProteoformSuiteInternal
                 eP.quant.determine_biorep_intensities_and_test_statistics(neucode_labeled, eP.biorepIntensityList, bkgdAverageIntensity, bkgdStDev, numerator_condition, denominator_condition, sKnot_minFoldChange);
             }
             qVals = satisfactoryProteoforms.Where(eP => eP.accepted == true).Select(e => e.quant).ToList();
-            permutedTestStatistics = satisfactoryProteoforms.SelectMany(eP => eP.quant.permutedTestStatistics).ToList();
+            permutedTestStatistics = satisfactoryProteoforms.SelectMany(eP => testStatisticsWithLogIntensities ? eP.quant.permutedTestStatistics_log : eP.quant.permutedTestStatistics_linear).ToList();
         }
 
         public void computeSortedTestStatistics(List<ExperimentalProteoform> satisfactoryProteoforms)
         {
-            sortedProteoformTestStatistics = satisfactoryProteoforms.Select(eP => eP.quant.testStatistic).ToList();
-            sortedAvgPermutationTestStatistics = satisfactoryProteoforms.Select(eP => eP.quant.averagePermutedTestStatistic).ToList();
+            sortedProteoformTestStatistics = satisfactoryProteoforms.Select(eP => testStatisticsWithLogIntensities ? eP.quant.testStatistic_log : eP.quant.testStatistic_linear).ToList();
+            sortedAvgPermutationTestStatistics = satisfactoryProteoforms.Select(eP => testStatisticsWithLogIntensities ? eP.quant.averagePermutedTestStatistic_log : eP.quant.averagePermutedTestStatistic_linear).ToList();
             sortedProteoformTestStatistics.Sort();
             sortedAvgPermutationTestStatistics.Sort();
             int ct = 0;
-            foreach (ExperimentalProteoform p in satisfactoryProteoforms.OrderBy(eP => eP.quant.testStatistic).ToList())
+            foreach (ExperimentalProteoform p in satisfactoryProteoforms.OrderBy(eP => testStatisticsWithLogIntensities ? eP.quant.testStatistic_log : eP.quant.testStatistic_linear).ToList())
             {
                 p.quant.correspondingAveragePermutedTestStatistic = sortedAvgPermutationTestStatistics[ct++];
             }
@@ -964,7 +965,8 @@ namespace ProteoformSuiteInternal
 
             foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
             {
-                pf.quant.significant = pf.quant.testStatistic <= minimumPassingNegativeTestStatistic || minimumPassingPositiveTestStatisitic <= pf.quant.testStatistic;
+                decimal test_statistic = testStatisticsWithLogIntensities ? pf.quant.testStatistic_log : pf.quant.testStatistic_linear;
+                pf.quant.significant = test_statistic <= minimumPassingNegativeTestStatistic || minimumPassingPositiveTestStatisitic <= test_statistic;
                 totalPassingProteoforms += Convert.ToInt32(pf.quant.significant);
             }
 
@@ -979,7 +981,7 @@ namespace ProteoformSuiteInternal
         {
             Parallel.ForEach(satisfactoryProteoforms, eP =>
             {
-                eP.quant.FDR = QuantitativeProteoformValues.computeExperimentalProteoformFDR(eP.quant.testStatistic, permutedTestStatistics, satisfactoryProteoforms.Count, sortedProteoformTestStatistics);
+                eP.quant.FDR = QuantitativeProteoformValues.computeExperimentalProteoformFDR(testStatisticsWithLogIntensities ? eP.quant.testStatistic_log : eP.quant.testStatistic_linear, permutedTestStatistics, satisfactoryProteoforms.Count, sortedProteoformTestStatistics);
             });
         }
 
