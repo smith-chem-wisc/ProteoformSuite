@@ -40,9 +40,9 @@ namespace ProteoformSuiteGUI
             get { return e.agg_intensity; }
         }
 
-        public string RTs
+        public double agg_rt
         {
-            get { return string.Join(", ", e.RTs); }
+            get { return e.agg_rt; }
         }
 
         public double lysine_count
@@ -134,7 +134,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(Accession)].HeaderText = "Experimental Proteoform ID";
             dgv.Columns[nameof(agg_mass)].HeaderText = "Aggregated Mass";
             dgv.Columns[nameof(agg_intensity)].HeaderText = "Aggregated Intensity";
-            dgv.Columns[nameof(RTs)].HeaderText = "Aggregated RTs";
+            dgv.Columns[nameof(agg_rt)].HeaderText = "Aggregated Retention Time";
             dgv.Columns[nameof(observation_count)].HeaderText = "Aggregated Component Count for Identification";
             dgv.Columns[nameof(heavy_verification_count)].HeaderText = "Heavy Verification Component Count";
             dgv.Columns[nameof(light_verification_count)].HeaderText = "Light Verification Component Count";

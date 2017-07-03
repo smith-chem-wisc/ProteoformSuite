@@ -45,8 +45,6 @@ namespace ProteoformSuiteInternal
 
         public double agg_rt { get; set; } = 0;
 
-        public List<double> RTs = new List<double>();
-
         public List<double> all_RTs { get; set; } = new List<double>();
 
         public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once. 
@@ -73,7 +71,7 @@ namespace ProteoformSuiteInternal
             quant = new QuantitativeProteoformValues(this);
             this.root = root;
             this.aggregated_components.AddRange(candidate_observations.Where(p => this.includes(p, this.root)));
-            this.calculate_properties(true);
+            this.calculate_properties();
             this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
         }
 
@@ -98,7 +96,7 @@ namespace ProteoformSuiteInternal
 
                 this.root = ncRoot;
                 this.aggregated_components.AddRange(candidate_observations.Where(p => includes(p, this.root)));
-                this.calculate_properties(true);
+                this.calculate_properties();
                 this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
 
@@ -111,7 +109,7 @@ namespace ProteoformSuiteInternal
 
                 this.root = cRoot;
                 this.aggregated_components.AddRange(candidate_observations.Where(p => includes(p, this.root)));
-                calculate_properties(true);
+                calculate_properties();
                 this.root = this.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault(); //reset root to component with max intensity
             }
         }
@@ -137,7 +135,6 @@ namespace ProteoformSuiteInternal
             agg_mass = e.agg_mass;
             modified_mass = e.modified_mass;
             agg_rt = e.agg_rt;
-            RTs = e.RTs;
             lysine_count = e.lysine_count;
             accepted = e.accepted;
             mass_shifted = e.mass_shifted;
@@ -209,17 +206,13 @@ namespace ProteoformSuiteInternal
             ////ep.getBiorepAndFractionIntensities(true); //split hv components by biorep and fraction
         }
 
-        public void calculate_properties(bool calculate_agg_rt)
+        public void calculate_properties()
         {
             //if not neucode labeled, the intensity sum of overlapping charge states was calculated with all charge states.
             agg_intensity = aggregated_components.Sum(p => SaveState.lollipop.neucode_labeled ? p.intensity_sum_olcs : p.intensity_sum);
             agg_mass = aggregated_components.Sum(p => (p.weighted_monoisotopic_mass - Math.Round(p.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * (SaveState.lollipop.neucode_labeled ? p.intensity_sum_olcs : p.intensity_sum) / agg_intensity); //remove the monoisotopic errors before aggregating masses
-            if (calculate_agg_rt)
-            {
-                agg_rt = aggregated_components.Sum(p => p.rt_apex * (SaveState.lollipop.neucode_labeled ? p.intensity_sum_olcs : p.intensity_sum) / agg_intensity);
-                RTs = new List<double>() { agg_rt };
-            }
-                lysine_count = root as NeuCodePair != null ? (root as NeuCodePair).lysine_count : lysine_count;
+            agg_rt = aggregated_components.Sum(p => p.rt_apex * (SaveState.lollipop.neucode_labeled ? p.intensity_sum_olcs : p.intensity_sum) / agg_intensity);
+            lysine_count = root as NeuCodePair != null ? (root as NeuCodePair).lysine_count : lysine_count;
             modified_mass = agg_mass;
             accepted = aggregated_components.Count >= SaveState.lollipop.min_agg_count && aggregated_components.Select(c => c.input_file.biological_replicate).Distinct().Count() >= SaveState.lollipop.min_num_bioreps;
         }

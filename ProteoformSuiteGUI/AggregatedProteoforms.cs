@@ -82,11 +82,6 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.min_agg_count = Convert.ToInt16(nUD_min_agg_count.Value);
         }
 
-        private void cb_merge_RT_CheckedChanged(object sender, EventArgs e)
-        {
-            SaveState.lollipop.merge_by_RT = cb_merge_RT.Checked;
-        }
-
         private void nUD_min_num_CS_ValueChanged(object sender, EventArgs e)
         {
             SaveState.lollipop.min_num_CS = Convert.ToInt16(nUD_min_num_CS.Value);

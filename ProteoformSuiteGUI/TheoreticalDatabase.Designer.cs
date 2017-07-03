@@ -283,13 +283,15 @@
             // 
             // cmb_loadTable
             // 
+            this.cmb_loadTable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmb_loadTable.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.cmb_loadTable.FormattingEnabled = true;
             this.cmb_loadTable.Location = new System.Drawing.Point(11, 10);
             this.cmb_loadTable.Name = "cmb_loadTable";
             this.cmb_loadTable.Size = new System.Drawing.Size(429, 28);
             this.cmb_loadTable.TabIndex = 34;
-            this.cmb_loadTable.SelectedIndexChanged += new System.EventHandler(this.cmb_loadTable_SelectedIndexChanged);
+            this.cmb_loadTable.SelectedIndexChanged += new System.EventHandler(this.cmbx_DisplayWhichDB_SelectedIndexChanged);
+            this.cmb_loadTable.TextChanged += new System.EventHandler(this.cmb_empty_TextChanged);
             // 
             // dgv_loadFiles
             // 
@@ -394,6 +396,7 @@
             // 
             // cmbx_DisplayWhichDB
             // 
+            this.cmbx_DisplayWhichDB.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbx_DisplayWhichDB.FormattingEnabled = true;
             this.cmbx_DisplayWhichDB.Location = new System.Drawing.Point(9, 603);
             this.cmbx_DisplayWhichDB.Margin = new System.Windows.Forms.Padding(2);
@@ -401,6 +404,7 @@
             this.cmbx_DisplayWhichDB.Size = new System.Drawing.Size(201, 21);
             this.cmbx_DisplayWhichDB.TabIndex = 10;
             this.cmbx_DisplayWhichDB.SelectedIndexChanged += new System.EventHandler(this.cmbx_DisplayWhichDB_SelectedIndexChanged);
+            this.cmbx_DisplayWhichDB.TextChanged += new System.EventHandler(this.cmb_empty_TextChanged);
             // 
             // label2
             // 

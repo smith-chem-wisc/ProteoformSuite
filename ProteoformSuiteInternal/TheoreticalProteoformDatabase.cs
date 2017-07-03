@@ -404,7 +404,7 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.Accession, theoretical_proteoforms, -100, variableModifications));
             if (!SaveState.lollipop.reduced_disulfides)
             {
-                add_disulfide_bonds(theoretical_proteoforms, -100);
+                theoretical_proteoforms = add_disulfide_bonds(theoretical_proteoforms, -100);
             }
             SaveState.lollipop.target_proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
         }
@@ -431,7 +431,7 @@ namespace ProteoformSuiteInternal
 
                 if (!SaveState.lollipop.reduced_disulfides)
                 {
-                    add_disulfide_bonds(decoy_proteoforms, decoyNumber);
+                    decoy_proteoforms = add_disulfide_bonds(decoy_proteoforms, decoyNumber);
                 }
 
                 lock (SaveState.lollipop.decoy_proteoform_communities)
@@ -444,9 +444,10 @@ namespace ProteoformSuiteInternal
             });
         }
 
-
-        private void add_disulfide_bonds(List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number)
+        private List<TheoreticalProteoform> theoreticals_to_remove = new List<TheoreticalProteoform> ();
+        private List<TheoreticalProteoform> add_disulfide_bonds(List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number)
         {
+            theoreticals_to_remove.Clear();
             List<TheoreticalProteoform> new_theoreticals = new List<TheoreticalProteoform>();
             Parallel.ForEach(theoretical_proteoforms, theoretical1 =>
             {
@@ -454,8 +455,7 @@ namespace ProteoformSuiteInternal
                 int i = 1;
                 foreach (List<DisulfideBond> bond_list in possible_disulfide_bonds)
                 {
-                    List<TheoreticalProteoform> theoreticals = new List<TheoreticalProteoform>();
-                    string description = theoretical1.description;
+                    List<TheoreticalProteoform> theoreticals = new List<TheoreticalProteoform>() { theoretical1 };
                     foreach (DisulfideBond disulfide_bond in bond_list)
                     {
                         lock (theoreticals_by_accession)
@@ -464,34 +464,47 @@ namespace ProteoformSuiteInternal
                                  !theoreticals.Contains(t) && disulfide_bond.OneBasedEndPosition >= t.begin && disulfide_bond.OneBasedEndPosition <= t.end).ToList();
                             if (bonded != null) theoreticals.AddRange(bonded);
                         }
-                        description += " DS at " + disulfide_bond.OneBasedBeginPosition + " to " + disulfide_bond.OneBasedEndPosition;
                     }
-                    double mass = theoretical1.unmodified_mass;
-                    foreach (TheoreticalProteoform theoretical2 in theoreticals)
+                    List<Tuple<int, List<TheoreticalProteoform>>> possible_bonded_fragments = get_possible_bonded_fragments(theoreticals, bond_list);
+                    foreach (var possible_theoretical in possible_bonded_fragments)
                     {
-                        List<DisulfideBond> more_bonds =  theoretical2.disulfide_bonds.Where(b => b.OneBasedBeginPosition >= theoretical2.begin && b.OneBasedEndPosition <= theoretical2.end &&
-                        !bond_list.Select(d => d.OneBasedBeginPosition).Contains(b.OneBasedBeginPosition) && !bond_list.Select(d => d.OneBasedEndPosition).Contains(b.OneBasedEndPosition)).ToList();
-                        foreach(DisulfideBond bond in more_bonds)
-                        {
-                            bond_list.Add(bond);
-                            description += " DS at " + bond.OneBasedBeginPosition + " to " + bond.OneBasedEndPosition;
-                        }
-                        mass += theoretical1 != theoretical2 ? theoretical2.unmodified_mass : 0;
-                    }
-                    mass -= 2.01565 * bond_list.Count();
-                    TheoreticalProteoform new_theoretical = new TheoreticalProteoform(
-                        theoretical1.accession + "_DS" + i,
-                        description,
-                        theoretical1.ExpandedProteinList,
-                        mass,
-                        theoretical1.lysine_count,
-                        new PtmSet(theoreticals.Where(t2 => t2 != theoretical1).SelectMany(t => t.ptm_set.ptm_combination).Concat(theoretical1.ptm_set.ptm_combination).ToList()),
-                        decoy_number < 0,
-                        theoreticals.Concat(new List<TheoreticalProteoform>() { theoretical1 }).Any(t => t.contaminant),
-                        new Dictionary<InputFile, Protein[]>());
 
-                    lock (new_theoreticals) new_theoreticals.Add(new_theoretical);
-                    i++;
+                        int num_bonds = possible_theoretical.Item1;
+                        double mass = theoretical1.unmodified_mass;
+                        string description = theoretical1.description + "| Fragments: " + theoretical1.begin + " to " + theoretical1.end;
+                        foreach (TheoreticalProteoform theoretical2 in possible_theoretical.Item2)
+                        {
+                            List<DisulfideBond> more_bonds = theoretical2.disulfide_bonds.Where(b => b.OneBasedBeginPosition >= theoretical2.begin && b.OneBasedEndPosition <= theoretical2.end &&
+                           !bond_list.Select(d => d.OneBasedBeginPosition).Contains(b.OneBasedBeginPosition) && !bond_list.Select(d => d.OneBasedEndPosition).Contains(b.OneBasedEndPosition)).ToList();
+                            foreach (DisulfideBond bond in more_bonds)
+                            {
+                                num_bonds++;
+                            }
+                            if (theoretical2 != theoretical1)
+                            {
+                                description += ", " + theoretical2.begin + " to " + theoretical2.end;
+                                mass += theoretical2.unmodified_mass;
+                            }
+                            lock (theoreticals_to_remove)
+                            {
+                                if (!theoreticals_to_remove.Contains(theoretical2)) theoreticals_to_remove.Add(theoretical2);
+                            }
+                        }
+
+                        TheoreticalProteoform new_theoretical = new TheoreticalProteoform(
+                            theoretical1.accession + "_DS" + i,
+                            description,
+                            theoretical1.ExpandedProteinList,
+                            mass - 2.01565 * num_bonds,
+                            theoretical1.lysine_count,
+                            new PtmSet(possible_theoretical.Item2.Where(t2 => t2 != theoretical1).SelectMany(t => t.ptm_set.ptm_combination).Concat(theoretical1.ptm_set.ptm_combination).ToList()),
+                            decoy_number < 0,
+                            theoreticals.Concat(new List<TheoreticalProteoform>() { theoretical1 }).Any(t => t.contaminant),
+                            new Dictionary<InputFile, Protein[]>());
+
+                        lock (new_theoreticals) new_theoreticals.Add(new_theoretical);
+                        i++;
+                    }
                 }
             });
             theoretical_proteoforms.AddRange(new_theoreticals);
@@ -499,6 +512,12 @@ namespace ProteoformSuiteInternal
             {
                 theoreticals_by_accession[decoy_number][new_theoretical.accession.Split('_')[0]].Add(new_theoretical);
             }
+            theoretical_proteoforms = theoretical_proteoforms.Except(theoreticals_to_remove).ToList();
+            Parallel.ForEach(theoreticals_to_remove, t =>
+            {
+                theoreticals_by_accession[decoy_number][t.accession.Split('_')[0]] = theoreticals_by_accession[decoy_number][t.accession.Split('_')[0]].Except(new List<TheoreticalProteoform>() { t }).ToList();
+            });
+            return theoretical_proteoforms;
         }
 
         private List<List<DisulfideBond>> get_possible_disulfide_bonds(TheoreticalProteoform theoretical)
@@ -512,6 +531,19 @@ namespace ProteoformSuiteInternal
                 if (possible_disulfide_bonds.Count(list => list.All(new_bond_list.Contains)) == 0) possible_disulfide_bonds.Add(new_bond_list);
             }
             return possible_disulfide_bonds.Distinct().ToList();
+        }
+
+        private List<Tuple<int, List<TheoreticalProteoform>>> get_possible_bonded_fragments(List<TheoreticalProteoform> theoreticals, List<DisulfideBond> bonds)
+        {
+            List<Tuple<int, List<TheoreticalProteoform>>> possible_bonded_fragments = new List<Tuple<int, List<TheoreticalProteoform>>>();
+            foreach(TheoreticalProteoform t in theoreticals)
+            {
+                List<TheoreticalProteoform> possible_fragments = theoreticals.Where(p => p.begin > t.end && p.end < t.begin).ToList();
+                possible_fragments.Add(t);
+                int bond_count = bonds.Count(b => possible_fragments.Any(p => b.OneBasedBeginPosition >= p.begin && b.OneBasedEndPosition <= p.end));
+                if (possible_bonded_fragments.Select(i => i.Item2).Count(list => list.All(possible_fragments.Contains)) == 0) possible_bonded_fragments.Add(new Tuple<int, List<TheoreticalProteoform>> (bond_count, possible_fragments));
+            }
+            return possible_bonded_fragments;
         }
 
 

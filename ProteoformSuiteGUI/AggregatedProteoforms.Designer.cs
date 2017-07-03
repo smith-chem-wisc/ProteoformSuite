@@ -58,7 +58,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.dgv_AcceptNeuCdLtProteoforms = new System.Windows.Forms.DataGridView();
-            this.cb_merge_RT = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgv_AggregatedProteoforms)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -126,7 +125,6 @@
             // 
             // splitContainer2.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.cb_merge_RT);
             this.splitContainer2.Panel1.Controls.Add(this.nUD_min_right_peaks);
             this.splitContainer2.Panel1.Controls.Add(this.nUD_min_left_peaks);
             this.splitContainer2.Panel1.Controls.Add(this.label11);
@@ -483,17 +481,6 @@
             this.dgv_AcceptNeuCdLtProteoforms.Size = new System.Drawing.Size(1012, 328);
             this.dgv_AcceptNeuCdLtProteoforms.TabIndex = 0;
             // 
-            // cb_merge_RT
-            // 
-            this.cb_merge_RT.Location = new System.Drawing.Point(139, 242);
-            this.cb_merge_RT.Name = "cb_merge_RT";
-            this.cb_merge_RT.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.cb_merge_RT.Size = new System.Drawing.Size(157, 17);
-            this.cb_merge_RT.TabIndex = 58;
-            this.cb_merge_RT.Text = "Merge by Retention Time";
-            this.cb_merge_RT.UseVisualStyleBackColor = true;
-            this.cb_merge_RT.CheckedChanged += new System.EventHandler(this.cb_merge_RT_CheckedChanged);
-            // 
             // AggregatedProteoforms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -561,6 +548,5 @@
         private System.Windows.Forms.NumericUpDown nUD_min_right_peaks;
         private System.Windows.Forms.NumericUpDown nUD_min_left_peaks;
         private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.CheckBox cb_merge_RT;
     }
 }
