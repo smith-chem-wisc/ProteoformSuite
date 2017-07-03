@@ -179,10 +179,10 @@ namespace ProteoformSuiteInternal
                 return 1000000m;
 
             decimal a = (decimal)((1d / (double)allNumerators.Count + 1d / (double)allDenominators.Count) / ((double)allNumerators.Count + (double)allDenominators.Count - 2d));
-            double log2NumeratorAvg = Math.Log(allNumerators.Average(l => l.intensity), 2);
-            double log2DenominatorAvg = Math.Log(allDenominators.Average(l => l.intensity), 2);
-            decimal numeratorSumSquares = allNumerators.Sum(l => (decimal)Math.Pow(Math.Log(l.intensity, 2) - log2NumeratorAvg, 2d));
-            decimal denominatorSumSquares = allDenominators.Sum(h => (decimal)Math.Pow(Math.Log(h.intensity, 2) - log2DenominatorAvg, 2d));
+            double Avglog2Numerator = allNumerators.Average(l => Math.Log(l.intensity, 2));
+            double Avglog2Denominator = allDenominators.Average(l => Math.Log(l.intensity, 2));
+            decimal numeratorSumSquares = allNumerators.Sum(l => (decimal)Math.Pow(Math.Log(l.intensity, 2) - Avglog2Numerator, 2d));
+            decimal denominatorSumSquares = allDenominators.Sum(h => (decimal)Math.Pow(Math.Log(h.intensity, 2) - Avglog2Denominator, 2d));
             decimal stdev = (decimal)Math.Sqrt((double)((numeratorSumSquares + denominatorSumSquares) * a));
             return stdev;
         }
@@ -229,14 +229,14 @@ namespace ProteoformSuiteInternal
         /// </summary>
         /// <param name="allNumerators"></param>
         /// <param name="allDenominators"></param>
-        /// <param name="proteinLevelStdDev"></param>
+        /// <param name="pooledStdDev"></param>
         /// <param name="sKnot">
         /// A constant intended to "minimize the coefficient of variation"
         /// </param>
         /// <returns></returns>
-        public decimal getSingleTestStatistic_linear(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators, decimal proteinLevelStdDev, decimal sKnot)
+        public decimal getSingleTestStatistic_linear(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators, decimal pooledStdDev, decimal sKnot)
         {
-            double t = (allNumerators.Average(l => l.intensity) - allDenominators.Average(h => h.intensity)) / ((double)(proteinLevelStdDev + sKnot));
+            double t = (allNumerators.Average(l => l.intensity) - allDenominators.Average(h => h.intensity)) / ((double)(pooledStdDev + sKnot));
             return (decimal)t;
         }
 
