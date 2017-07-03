@@ -95,35 +95,18 @@ namespace ProteoformSuiteInternal
                         && pf1 != pf2
                         && (!SaveState.lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
                         && pf1.modified_mass - pf2.modified_mass <= SaveState.lollipop.ee_max_mass_difference
-                        && allowed_RT(pf1, pf2, SaveState.lollipop.ee_max_RetentionTime_difference);
+                        && Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2 as ExperimentalProteoform).agg_rt) <= SaveState.lollipop.ee_max_RetentionTime_difference;
 
                 case (ProteoformComparison.ExperimentalFalse):
                     return pf1.modified_mass >= pf2.modified_mass
                         && pf1 != pf2
                         && (pf1.modified_mass - pf2.modified_mass <= SaveState.lollipop.ee_max_mass_difference)
                         && (!SaveState.lollipop.neucode_labeled || Math.Abs(pf1.lysine_count - pf2.lysine_count) > SaveState.lollipop.missed_lysines)
-                        && (SaveState.lollipop.neucode_labeled || !allowed_RT(pf1, pf2, 2 * SaveState.lollipop.ee_max_RetentionTime_difference))
-                        && (!SaveState.lollipop.neucode_labeled || allowed_RT(pf1, pf2, SaveState.lollipop.ee_max_RetentionTime_difference));
+                        && (SaveState.lollipop.neucode_labeled || Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2 as ExperimentalProteoform).agg_rt) > SaveState.lollipop.ee_max_RetentionTime_difference)
+                        && (!SaveState.lollipop.neucode_labeled || Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2 as ExperimentalProteoform).agg_rt) <= SaveState.lollipop.ee_max_RetentionTime_difference);
                 default:
                     return false;
             }
-        }
-
-        public bool allowed_RT(Proteoform pf1, Proteoform pf2, double maxRT)
-        {
-            List<double> RTs1 = pf1 as ExperimentalProteoform != null ? (pf1 as ExperimentalProteoform).RTs : (pf1 as TopDownProteoform).RTs;
-            List<double> RTs2 = pf2 as ExperimentalProteoform != null ? (pf2 as ExperimentalProteoform).RTs : (pf2 as TopDownProteoform).RTs;
-            foreach (double RT1 in RTs1)
-            {
-                foreach (double RT2 in RTs2)
-                {
-                    if (Math.Abs(RT1 - RT2) < maxRT)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
         }
 
         public static List<ProteoformRelation> count_nearby_relations(List<ProteoformRelation> all_relations)
@@ -202,7 +185,7 @@ namespace ProteoformSuiteInternal
                     double low = mass + shift - mass_tol;
                     double high = mass + shift + mass_tol;
                     List<ExperimentalProteoform> matching_e = experimentals.Where(ep => ep.modified_mass >= low && ep.modified_mass <= high
-                        && allowed_RT(topdown, ep, Convert.ToDouble(SaveState.lollipop.retention_time_tolerance))).ToList();
+                        && Math.Abs(ep.agg_rt - topdown.agg_RT) <= Convert.ToDouble(SaveState.lollipop.retention_time_tolerance)).ToList();
                     foreach (ExperimentalProteoform e in matching_e)
                     {
                         all_td_relations.Add(new ProteoformRelation(topdown, e, ProteoformComparison.ExperimentalTopDown, (e.modified_mass - mass), Environment.CurrentDirectory));

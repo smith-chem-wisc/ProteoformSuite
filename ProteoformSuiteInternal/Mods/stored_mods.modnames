@@ -16,7 +16,7 @@ Bacillosamine on Nxs	Bacillosamine	1	False
 Carbamidomethyl	Carbamidomethyl	1	False
 Carboxymethyl	Carboxymethyl	1	False
 Carboxymethyl+Methionine	Retained Carboxmethylmethionine	2	False
-CHDH	Lipid (294 Da)	1	False
+CHDH	Hydrogen Tetradecyl Sulfate	1	False
 CHDHminus2methylenes	Hydrogen Dodecyl Sulfate	1	False
 Cysteine (C)	Cysteine (C)	1	False
 Cysteine methyl ester	Methyl	1	False

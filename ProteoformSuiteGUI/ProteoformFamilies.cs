@@ -468,7 +468,7 @@ namespace ProteoformSuiteGUI
                             double low = exp.modified_mass + shift - mass_tol;
                             double high = exp.modified_mass + shift + mass_tol;
                             if (topdowns.Count(t => t.modified_mass >= low && t.modified_mass <= high
-                             && SaveState.lollipop.target_proteoform_community.allowed_RT(t, exp, Convert.ToDouble(SaveState.lollipop.retention_time_tolerance))) > 0)
+                             && Math.Abs(t.agg_RT - exp.agg_rt) <= Convert.ToDouble(SaveState.lollipop.retention_time_tolerance)) > 0)
                             {
                                 exp.topdown_identified = true;
                                 break;
@@ -482,6 +482,8 @@ namespace ProteoformSuiteGUI
             else return;
         }
 
+
+        private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
 
         #endregion Private Methods
     }

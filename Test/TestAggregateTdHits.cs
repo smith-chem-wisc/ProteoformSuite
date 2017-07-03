@@ -22,15 +22,16 @@ namespace Test
                 TopDownHit t = new TopDownHit();
                 t.score = (10 + Convert.ToDouble(i));
                 t.targeted = true;
-                t.retention_time = 10d;
+                t.retention_time = 50d;
                 t.accession = "accession";
                 t.sequence = "sequence";
                 t.ptm_list = new List<Ptm>();
                 t.tdResultType = TopDownResultType.TightAbsoluteMass;
                 tdhList.Add(t);
+                t.pvalue = 1 / (i + 1);
             }
             SaveState.lollipop.top_down_hits = tdhList;
-            SaveState.lollipop.AggregateTdHits();
+            SaveState.lollipop.target_proteoform_community.topdown_proteoforms = SaveState.lollipop.AggregateTdHits(SaveState.lollipop.top_down_hits).ToArray();
 
             int count = SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count();
             Assert.AreEqual(1, count); //both topdown hits should aggregate to a single proteoform
@@ -40,7 +41,7 @@ namespace Test
             //Test no aggregation outside retention time range
             tdhList[1].retention_time += Convert.ToDouble(SaveState.lollipop.retention_time_tolerance + 1);
             SaveState.lollipop.top_down_hits = tdhList;
-            SaveState.lollipop.AggregateTdHits();
+            SaveState.lollipop.target_proteoform_community.topdown_proteoforms = SaveState.lollipop.AggregateTdHits(SaveState.lollipop.top_down_hits).ToArray();
 
             Assert.AreEqual(2, SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count()); //both topdown hits should aggregate to a single proteoform
 
@@ -49,7 +50,7 @@ namespace Test
             tdhList[1].retention_time = 10d;
             tdhList[1].sequence = "differentSequence";
             SaveState.lollipop.top_down_hits = tdhList;
-            SaveState.lollipop.AggregateTdHits();
+            SaveState.lollipop.AggregateTdHits(SaveState.lollipop.top_down_hits);
 
             Assert.AreEqual(2, SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count()); //both topdown hits should aggregate to a single proteoform
 
@@ -57,7 +58,7 @@ namespace Test
             tdhList[1].sequence = "sequence";
             tdhList[1].accession = "differentAccession";
             SaveState.lollipop.top_down_hits = tdhList;
-            SaveState.lollipop.AggregateTdHits();
+            SaveState.lollipop.AggregateTdHits(SaveState.lollipop.top_down_hits);
 
             Assert.AreEqual(2, SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count()); //both topdown hits should aggregate to a single proteoform
 
@@ -65,7 +66,7 @@ namespace Test
             tdhList[1].accession = "accession";
             tdhList[1].ptm_list.Add(new Ptm()); 
             SaveState.lollipop.top_down_hits = tdhList;
-            SaveState.lollipop.AggregateTdHits();
+            SaveState.lollipop.AggregateTdHits(SaveState.lollipop.top_down_hits);
 
             Assert.AreEqual(2, SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count()); //both topdown hits should aggregate to a single proteoform
         }
@@ -80,24 +81,25 @@ namespace Test
                 TopDownHit t = new TopDownHit();
                 t.score = (10 + Convert.ToDouble(i));
                 t.targeted = true;
-                t.retention_time = 10d;
+                t.retention_time = 50;
                 t.accession = "accession";
                 t.sequence = "sequence";
+                t.pvalue = (double) 1 / (i + 1);
                 t.ptm_list = new List<Ptm>();
                 t.tdResultType = TopDownResultType.TightAbsoluteMass;
                 tdhList.Add(t);
             }
 
-            tdhList[9].retention_time = 12d;
+            tdhList[9].retention_time = 52;
 
             SaveState.lollipop.top_down_hits = tdhList;
-            SaveState.lollipop.AggregateTdHits();
+            SaveState.lollipop.target_proteoform_community.topdown_proteoforms = SaveState.lollipop.AggregateTdHits(SaveState.lollipop.top_down_hits).ToArray();
 
             int count = SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count();
             Assert.AreEqual(1, count); //all topdown hits should aggregate to a single proteoform
             Assert.AreEqual(19, SaveState.lollipop.target_proteoform_community.topdown_proteoforms[0].root.score);  //higher scoring topdown hit should be root.
             Assert.AreEqual(10, SaveState.lollipop.target_proteoform_community.topdown_proteoforms[0].topdown_hits.Count());  //higher scoring topdown hit should be root.
-            Assert.IsTrue(SaveState.lollipop.target_proteoform_community.topdown_proteoforms[0].agg_RT < 12d);
+            Assert.IsTrue(SaveState.lollipop.target_proteoform_community.topdown_proteoforms[0].agg_RT < 52);
         }
     }
 }

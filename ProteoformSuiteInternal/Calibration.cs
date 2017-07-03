@@ -17,48 +17,7 @@ namespace ProteoformSuiteInternal
     {
         //parameters
         public double fineResolution = 0.1;
-
-        //RAW LOCK MASS 
-        public void raw_lock_mass(string filename, string raw_file_path)
-        {
-            var tol = .01;
-            var Compound1 = new Peptide("NNNNN");
-            var regularMZ = IsotopicDistribution.GetDistribution(Compound1.GetChemicalFormula(), 0.1, 0.001).Masses.Select(b => b.ToMz(1)).ToList();
-            var withAmmoniaLoss = Compound1.GetChemicalFormula();
-            withAmmoniaLoss.Add(ChemicalFormula.ParseFormula("N-1H-2"));
-            var withAmmoniaLossMZ = IsotopicDistribution.GetDistribution(withAmmoniaLoss, 0.1, 0.001).Masses.Select(b => b.ToMz(1)).ToList();
-            var deamidated = Compound1.GetChemicalFormula();
-            deamidated.Add(ChemicalFormula.ParseFormula("H-1N-1O"));
-            var deamidatedMZ = IsotopicDistribution.GetDistribution(deamidated, 0.1, 0.001).Masses.Select(b => b.ToMz(1)).ToList();
-
-            List<List<double>> allDistributions = new List<List<double>>() { regularMZ, withAmmoniaLossMZ, deamidatedMZ };
-            using (ThermoDynamicData myMsDataFile = ThermoDynamicData.InitiateDynamicConnection(raw_file_path))
-            {
-                foreach (var scan in myMsDataFile)
-                {
-                    if (scan.MsnOrder == 1)
-                    {
-                        double bestIntensity = 0;
-                        double monoError = double.NaN;
-                        foreach (var dist in allDistributions)
-                        {
-                            ThermoMzPeak monoisotopicPeak = null;
-                            try { monoisotopicPeak = scan.MassSpectrum.Extract(dist[0] - tol, dist[0] + tol).OrderByDescending(p => p.Y).First(); }
-                            catch { }
-                            if (monoisotopicPeak != null && bestIntensity < monoisotopicPeak.Intensity)
-                            {
-                                bestIntensity = monoisotopicPeak.Intensity;
-                                monoError = monoisotopicPeak.Mz - dist[0];
-                            }
-                        }
-                        MsScan get_scan = SaveState.lollipop.ms_scans[new Tuple<string, double>(filename, scan.RetentionTime)];
-                        get_scan.lock_mass_shift = monoError;
-                    }
-                }
-            }
-        }
-
-
+    
         //CALIBRATION WITH TD HITS
         private int numMs1MassChargeCombinationsConsidered;
         private int numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
@@ -149,12 +108,12 @@ namespace ProteoformSuiteInternal
                         scan = myMsDataFile.GetOneBasedScan(scanNumber);
                         ms1Scan = scan.MsnOrder == 1;
                     }
-                    cs.mz_centroid = cs.mz_centroid - bestCf.Predict(new double[] { cs.mz_centroid, scan.RetentionTime});
+                    cs.mz_centroid = cs.mz_centroid - bestCf.Predict(new double[] { cs.mz_centroid, scan.RetentionTime });
                 }
             }
             foreach (var a in myMsDataFile.Where(s => s.MsnOrder == 1))
             {
-                Func<IMzPeak, double> theFunc = x => x.Mz - bestCf.Predict(new double[] { x.Mz, a.RetentionTime});
+                Func<IMzPeak, double> theFunc = x => x.Mz - bestCf.Predict(new double[] { x.Mz, a.RetentionTime });
                 a.TransformByApplyingFunctionToSpectra(theFunc);
             }
         }
@@ -242,9 +201,9 @@ namespace ProteoformSuiteInternal
                 if (!td_file) //if calibrating across files find component with matching mass and retention time
                 {
                     Component matching_component = SaveState.lollipop.calibration_components.Where(c => c.input_file.filename == filename
-                && Math.Abs(c.weighted_monoisotopic_mass - identification.reported_mass) < c.weighted_monoisotopic_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance
-                && Math.Abs(Convert.ToDouble(c.rt_range.Split('-')[0]) - identification.retention_time) < (double)SaveState.lollipop.retention_time_tolerance).OrderBy(c => Math.Abs(c.weighted_monoisotopic_mass - identification.reported_mass)).ToList().FirstOrDefault();
-                    if (matching_component == null) continue;
+                && Math.Abs(c.weighted_monoisotopic_mass - (SaveState.lollipop.neucode_labeled ? identification.mz.ToMass(identification.charge) - identification.sequence.Count(s => s == 'K') * 128.094963 + identification.sequence.Count(s => s == 'K') * 136.109162 : identification.mz.ToMass(identification.charge))) < mass_tolerance
+                && Math.Abs(Convert.ToDouble(c.rt_range.Split('-')[0]) - identification.retention_time) < (double)SaveState.lollipop.retention_time_tolerance).OrderBy(c => Math.Abs(c.weighted_monoisotopic_mass - (SaveState.lollipop.neucode_labeled ? identification.mz.ToMass(identification.charge) - identification.sequence.Count(s => s == 'K') * 128.094963 + identification.sequence.Count(s => s == 'K') * 136.109162 : identification.mz.ToMass(identification.charge)))).FirstOrDefault();     
+                if (matching_component == null) continue;
                     scanNumbers.Clear();
                     for (int i = Convert.ToInt16(matching_component.scan_range.Split('-')[0]); i <= Convert.ToInt16(matching_component.scan_range.Split('-')[1]); i++)
                     {
@@ -281,8 +240,7 @@ namespace ProteoformSuiteInternal
                     res.numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks += numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
                 }
             }
-
-            return res;
+                return res;
         }
 
         private IEnumerable<LabeledMs1DataPoint> SearchMS1Spectra(double[] originalMasses, double[] originalIntensities, int ms2spectrumIndex, int direction, HashSet<Tuple<double, int>> peaksAddedHashSet, int peptideCharge, TopDownHit identification)
@@ -330,7 +288,10 @@ namespace ProteoformSuiteInternal
                         foreach (double a in originalMasses)
                         {
                             double theMZ = a.ToMz(chargeToLookAt);
-                            mass_tolerance = 0.2;
+                            if (SaveState.lollipop.neucode_labeled)
+                            {
+                                theMZ = theMZ - (((identification.sequence.Count(s => s == 'K') * 128.094963) / chargeToLookAt ) + ((identification.sequence.Count(s => s == 'K') * 136.109162) / chargeToLookAt));
+                            }
                             var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - (mass_tolerance / identification.charge), theMZ + (mass_tolerance / identification.charge)); //WAS ID.CHARGE
                             if (npwr == 0)
                             {
@@ -427,7 +388,7 @@ namespace ProteoformSuiteInternal
         //READ AND WRITE NEW CALIBRATED RAW EXPERIMENTAL COMPONENTS FILE
         public void calibrate_components_in_xlsx(InputFile file)
         {
-            if ((!SaveState.lollipop.calibrate_td_results && !SaveState.lollipop.calibrate_intact_with_td_ids) || SaveState.lollipop.td_calibration_functions.ContainsKey(file.filename))
+            if (SaveState.lollipop.td_calibration_functions.ContainsKey(file.filename))
             {
                 //Copy file to new worksheet
                 string old_absolute_path = file.complete_path;
@@ -452,9 +413,9 @@ namespace ProteoformSuiteInternal
                             if (SaveState.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double>(file.filename, Math.Round(row.Cell(3).GetDouble(), 0)), out value))
                             {
                                 row.Cell(4).SetValue(value.Item1);
-                                row.Cell(6).SetValue(value.Item2);
-                                row.Cell(7).SetValue(value.Item3);
-                                row.Cell(8).SetValue(value.Item4);
+                               // row.Cell(6).SetValue(value.Item2);
+                               // row.Cell(7).SetValue(value.Item3);
+                               // row.Cell(8).SetValue(value.Item4);
                             }
                         }
                         else
@@ -467,30 +428,6 @@ namespace ProteoformSuiteInternal
                 });
                 workbook.Save();
             }
-        }
-
-        public double get_correction_factor(string filename, string scan_range)
-        {
-            if (SaveState.lollipop.correctionFactors == null) return 0D;
-            int[] scans = new int[2] { 0, 0 };
-            try
-            {
-                scans = Array.ConvertAll<string, int>(scan_range.Split('-').ToArray(), int.Parse);
-            }
-            catch
-            { }
-
-            if (scans[0] <= 0 || scans[1] <= 0) return 0D;
-
-            IEnumerable<double> allCorrectionFactors =
-                (from s in SaveState.lollipop.correctionFactors
-                 where s.file_name == filename
-                 where s.scan_number >= scans[0]
-                 where s.scan_number <= scans[1]
-                 select s.correction).ToList();
-
-            if (allCorrectionFactors.Count() <= 0) return 0D;
-            return allCorrectionFactors.Average();
         }
     }
 }

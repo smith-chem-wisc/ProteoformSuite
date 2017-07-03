@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using System.IO;
 
 namespace ProteoformSuiteGUI
 {
@@ -97,6 +98,10 @@ namespace ProteoformSuiteGUI
         {
             populate_file_lists();
         }
+        private void rb_topdown_CheckedChanged(object sender, EventArgs e)
+        {
+            populate_file_lists();
+        }
 
         private void populate_file_lists()
         {
@@ -110,22 +115,16 @@ namespace ProteoformSuiteGUI
             cmb_loadTable2.SelectedIndex = 1;
             cmb_loadTable3.SelectedIndex = 2;
             bt_calibrate.Visible = false;
-            cb_lockmass.Visible = false;
-            cb_tdhits.Visible = false;
-            cb_td_hits_diff_file.Visible = false;
 
             if (rb_chemicalCalibration.Checked)
             {
                 bt_calibrate.Visible = true;
-                cb_lockmass.Visible = true;
-                cb_tdhits.Visible = true;
-                cb_td_hits_diff_file.Visible = true;
                 cmb_loadTable1.SelectedIndex = 3;
                 cmb_loadTable2.SelectedIndex = 4;
                 cmb_loadTable3.SelectedIndex = 5;
             }
 
-            else if (rb_advanced_user.Checked)
+            else if (rb_topdown.Checked)
             {
                 cmb_loadTable1.SelectedIndex = 0;
                 cmb_loadTable2.SelectedIndex = 6;
@@ -374,7 +373,7 @@ namespace ProteoformSuiteGUI
             lb_filter2.Text = cmb_loadTable1.SelectedItem.ToString();
         }
 
-        private void cmb_LoadTable3_SelectedIndexChanged(object sender, EventArgs e)
+        private void cmb_loadTable3_SelectedIndexChanged(object sender, EventArgs e)
         {
             DisplayUtility.FillDataGridView(dgv_loadFiles3, SaveState.lollipop.get_files(SaveState.lollipop.input_files, Lollipop.file_types[cmb_loadTable3.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv_loadFiles3, Lollipop.file_types[cmb_loadTable3.SelectedIndex]);
@@ -383,42 +382,34 @@ namespace ProteoformSuiteGUI
 
         private void bt_calibrate_Click(object sender, EventArgs e)
         {
-            if (!cb_tdhits.Checked && !cb_lockmass.Checked && !cb_td_hits_diff_file.Checked) { MessageBox.Show("Please select at least one calibration method."); return; }
             if (SaveState.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() == 0)
             {
                 MessageBox.Show("Please enter raw files to calibrate."); return;
             }
-            if (cb_tdhits.Checked || cb_td_hits_diff_file.Checked)
+            if (SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
             {
-                if (SaveState.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationTopDown).Count() == 0)
-                { MessageBox.Show("Please enter top-down results files to calibrate."); return; }
-                if (SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
-                {
-                    MessageBox.Show("First create a theoretical proteoform database. On the Results tab, select Theoretical Proteoform Database.");
-                    return;
-                }
-                else  SaveState.lollipop.read_in_calibration_td_hits();
+                MessageBox.Show("First create a theoretical proteoform database. On the Results tab, select Theoretical Proteoform Database.");
+                return;
             }
-            SaveState.lollipop.calibrate_files();
-            MessageBox.Show("Successfully calibrated files.");
-        }
-
-        private void cb_tdhits_CheckedChanged(object sender, EventArgs e)
-        {
-            SaveState.lollipop.calibrate_td_results = cb_tdhits.Checked;
-            if (cb_tdhits.Checked) cb_td_hits_diff_file.Checked = false;
-        }
-
-        private void cb_lockmass_CheckedChanged(object sender, EventArgs e)
-        {
-            SaveState.lollipop.calibrate_lock_mass = cb_lockmass.Checked;
-        }
-
-        private void cb_td_hits_diff_file_CheckedChanged(object sender, EventArgs e)
-        {
-            SaveState.lollipop.calibrate_intact_with_td_ids = cb_td_hits_diff_file.Checked;
-            if (cb_td_hits_diff_file.Checked) cb_tdhits.Checked = false;
+            MessageBox.Show("Please select file with descriptions of filename, biological replicate, fraction, and technical replicate #'s.");
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = "File Descriptions";
+            openFileDialog.Filter = ".tsv Files (*.tsv) | *.tsv";
+            openFileDialog.Multiselect = false;
+            DialogResult dr = openFileDialog.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                SaveState.lollipop.file_descriptions = File.ReadAllLines(openFileDialog.FileName);
+            }
+            else return;
+            SaveState.lollipop.read_in_calibration_td_hits();
+            MessageBox.Show(SaveState.lollipop.calibrate_files());
         }
         #endregion CHANGED TABLE SELECTION Private Methods
+
+        //Do nothing when text changes
+        private void cmb_loadTable1_TextChanged(object sender, EventArgs e) { }
+        private void cmb_loadTable2_TextChanged(object sender, EventArgs e) { }
+        private void cmb_loadTable3_TextChanged(object sender, EventArgs e) { }
     }
 }

@@ -33,7 +33,7 @@ namespace ProteoformSuiteGUI
 
         public void RunTheGamut()
         {
-            ClearListsTablesFigures(true);
+            //ClearListsTablesFigures(true); No need to clear tables for graphing and filling tables
             GraphLysineCount();
             GraphIntensityRatio();
             FillNeuCodePairsDGV();

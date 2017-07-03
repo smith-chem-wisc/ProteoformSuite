@@ -23,9 +23,7 @@ namespace ProteoformSuiteInternal
         public string accession { get; set; }
         public string name { get; set; }
         public double pvalue { get; set; }
-
         public double reported_mass { get; set; } //reported in TD results file
-
         public int charge { get; set; }
         public double mass_error { get; set; }
         public double mz { get; set; }
@@ -33,6 +31,9 @@ namespace ProteoformSuiteInternal
         public double score { get; set; }//C-score
         public TopDownResultType tdResultType { get; set; }
         public InputFile file { get; set; }
+        public int biological_replicate { get; set; } = 0;
+        public int technical_replicate { get; set; } = 0;
+        public int fraction { get; set; } = 0;
 
         public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, bool targeted, double pvalue, double score)
         {

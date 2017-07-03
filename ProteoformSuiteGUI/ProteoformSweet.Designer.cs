@@ -32,6 +32,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportTablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportAllTablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,7 +51,6 @@
             this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.exportAllTablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -85,6 +85,13 @@
             this.exportTablesToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
             this.exportTablesToolStripMenuItem.Text = "Export Table";
             this.exportTablesToolStripMenuItem.Click += new System.EventHandler(this.exportTablesToolStripMenuItem_Click);
+            // 
+            // exportAllTablesToolStripMenuItem
+            // 
+            this.exportAllTablesToolStripMenuItem.Name = "exportAllTablesToolStripMenuItem";
+            this.exportAllTablesToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.exportAllTablesToolStripMenuItem.Text = "Export All Tables";
+            this.exportAllTablesToolStripMenuItem.Click += new System.EventHandler(this.exportAllTablesToolStripMenuItem_Click);
             // 
             // printToolStripMenuItem
             // 
@@ -226,17 +233,10 @@
             this.loadRunToolStripMenuItem.Text = "Load && Run";
             this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
             // 
-            // exportAllTablesToolStripMenuItem
-            // 
-            this.exportAllTablesToolStripMenuItem.Name = "exportAllTablesToolStripMenuItem";
-            this.exportAllTablesToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.exportAllTablesToolStripMenuItem.Text = "Export All Tables";
-            this.exportAllTablesToolStripMenuItem.Click += new System.EventHandler(this.exportAllTablesToolStripMenuItem_Click);
-            // 
             // ProteoformSweet
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
