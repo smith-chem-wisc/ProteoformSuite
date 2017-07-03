@@ -202,7 +202,7 @@ namespace Test
             List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
             {
-                e.quant.getBalancedPermutedTestStatistics(shorter_list, singleton_list, 0, 1, e.quant.getSingleTestStatistic_log);
+                e.quant.getBalancedPermutedTestStatistics(shorter_list, singleton_list, 0, e.quant.getSingleTestStatistic_log, e.quant.StdDev_log);
             }
             catch (ArgumentException ex)
             {
@@ -224,10 +224,10 @@ namespace Test
             BiorepIntensity b8 = new BiorepIntensity(false, 4, "c2", 4);
             List<BiorepIntensity> triple_list1 = new List<BiorepIntensity> { b1, b2, b3 };
             List<BiorepIntensity> triple_list2 = new List<BiorepIntensity> { b5, b6, b7 };
-            Assert.AreEqual(9, e.quant.getBalancedPermutedTestStatistics(triple_list1, triple_list2, 0, 1, e.quant.getSingleTestStatistic_log).Count);
+            Assert.AreEqual(9, e.quant.getBalancedPermutedTestStatistics(triple_list1, triple_list2, 0, e.quant.getSingleTestStatistic_log, e.quant.StdDev_log).Count);
             List<BiorepIntensity> quad_list1 = new List<BiorepIntensity> { b1, b2, b3, b4 };
             List<BiorepIntensity> quad_list2 = new List<BiorepIntensity> { b5, b6, b7, b8 };
-            Assert.AreEqual(36, e.quant.getBalancedPermutedTestStatistics(quad_list1, quad_list2, 0, 1, e.quant.getSingleTestStatistic_log).Count);
+            Assert.AreEqual(36, e.quant.getBalancedPermutedTestStatistics(quad_list1, quad_list2, 0, e.quant.getSingleTestStatistic_log, e.quant.StdDev_log).Count);
         }
 
         [Test]

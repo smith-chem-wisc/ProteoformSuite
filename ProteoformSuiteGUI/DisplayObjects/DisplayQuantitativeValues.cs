@@ -1,4 +1,7 @@
 ﻿using ProteoformSuiteInternal;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
@@ -41,12 +44,12 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        public decimal LightIntensitySum
+        public decimal NumeratorIntensitySum
         {
             get { return qval.numeratorIntensitySum; }
         }
-
-        public decimal HeavyIntensitySum
+        
+        public decimal DenominatorIntensitySum
         {
             get { return qval.denominatorIntensitySum; }
         }
@@ -113,8 +116,8 @@ namespace ProteoformSuiteGUI
             dgv.ReadOnly = true;
 
             //NUMBER FORMAT
-            dgv.Columns[nameof(LightIntensitySum)].DefaultCellStyle.Format = "0.##";
-            dgv.Columns[nameof(HeavyIntensitySum)].DefaultCellStyle.Format = "0.##";
+            dgv.Columns[nameof(NumeratorIntensitySum)].DefaultCellStyle.Format = "0.##";
+            dgv.Columns[nameof(DenominatorIntensitySum)].DefaultCellStyle.Format = "0.##";
             dgv.Columns[nameof(IntensitySum)].DefaultCellStyle.Format = "0.##";
             dgv.Columns[nameof(LogFoldChange)].DefaultCellStyle.Format = "0.####";
             dgv.Columns[nameof(pValue)].DefaultCellStyle.Format = "E2";
@@ -124,8 +127,8 @@ namespace ProteoformSuiteGUI
 
             //HEADERS
             dgv.Columns[nameof(GeneName)].HeaderText = "Gene Name";
-            dgv.Columns[nameof(LightIntensitySum)].HeaderText = "Light Intensity Sum";
-            dgv.Columns[nameof(HeavyIntensitySum)].HeaderText = "Heavy Intensity Sum";
+            dgv.Columns[nameof(NumeratorIntensitySum)].HeaderText = "Light Intensity Sum";
+            dgv.Columns[nameof(DenominatorIntensitySum)].HeaderText = "Heavy Intensity Sum";
             dgv.Columns[nameof(IntensitySum)].HeaderText = "Intensity Sum";
             dgv.Columns[nameof(LogFoldChange)].HeaderText = "Log2 Fold Change";
             dgv.Columns[nameof(pValue)].HeaderText = "p-value (by randomization test)";
