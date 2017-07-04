@@ -21,7 +21,6 @@ namespace ProteoformSuiteInternal
         public List<TopDownHit> topdown_hits;
         public int etd_match_count { get { return relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).ToList().Count; } }
         public int ttd_match_count { get { return relationships.Where(r => r.RelationType == ProteoformComparison.TheoreticalTopDown).ToList().Count; } }
-        public bool targeted { get; set; } = false;
         public int observations { get { return topdown_hits.Count; } }
         public int bottom_up_PSMs
         {
@@ -48,7 +47,6 @@ namespace ProteoformSuiteInternal
             this.stop_index = root.stop_index;
             this.topdown_hits = hits;
             this.calculate_properties();
-            this.targeted = root.targeted;
             this.accession = accession + "_TD1_" + Math.Round(this.modified_mass, 2) + "_Da_" + start_index + "to" + stop_index;
             this.lysine_count = sequence.Count(s => s == 'K');
         }
@@ -69,7 +67,6 @@ namespace ProteoformSuiteInternal
             this.modified_mass = t.monoisotopic_mass;
             this.accession = t.accession;
             this.agg_RT = t.agg_RT;
-            this.targeted = t.targeted;
             this.lysine_count = t.lysine_count;
         }
 
@@ -87,7 +84,7 @@ namespace ProteoformSuiteInternal
                 candidate.retention_time <= rt + Convert.ToDouble(SaveState.lollipop.retention_time_tolerance);
         }
 
-        public bool same_ptms(TheoreticalProteoform theo)
+        public bool same_ptms(Proteoform theo)
         {                   
             //equal numbers of each type of modification
             if (this.ptm_set.ptm_combination.Count == theo.ptm_set.ptm_combination.Count)

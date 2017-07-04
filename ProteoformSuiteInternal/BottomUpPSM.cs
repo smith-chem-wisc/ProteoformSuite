@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Chemistry;
 
 namespace ProteoformSuiteInternal
 {
@@ -26,8 +27,17 @@ namespace ProteoformSuiteInternal
         public int precursor_charge { get; set; }
         public double precursor_mass_error { get; set; }
         public List<Ptm> modifications = new List<Ptm>();
+        public string ptm_descriptions { get
+            {
+                return
+                   modifications == null || modifications.Count == 0 ?
+                       "Unmodified" :
+                       String.Join("; ", modifications.Select(ptm => ptm.position > 0 ? ptm.modification.id + "@" + ptm.position : SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id));
 
-        public BottomUpPSM(string sequence, string start_residue, string stop_residue, List<Ptm> modifications,  string spectrum, string protein_accession, string protein_description, double precursor_mz, int precursor_charge, double precursor_mass_error)
+            }
+        }
+
+        public BottomUpPSM(string sequence, string start_residue, string stop_residue, List<Ptm> modifications,  string spectrum, string protein_accession, string protein_description, double precursor_mz, int precursor_charge, double theoretical_precursor_mz)
         {
             this.base_sequence = sequence;
             this.start_residue = start_residue;
@@ -37,7 +47,7 @@ namespace ProteoformSuiteInternal
             this.protein_description = protein_description;
             this.precursor_mz = precursor_mz;
             this.precursor_charge = precursor_charge;
-            this.precursor_mass_error = precursor_mass_error;
+            this.precursor_mass_error = precursor_mz.ToMass(precursor_charge) - theoretical_precursor_mz.ToMass(precursor_charge);
             this.modifications = modifications;
         }
     }

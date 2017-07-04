@@ -59,7 +59,6 @@ namespace ProteoformSuiteInternal
         public bool ContaminantDB { get; set; } = false;
 
         //For top-down files
-        public bool targeted_td_result { get; set; } = false;
 
         #endregion Public Properties
 

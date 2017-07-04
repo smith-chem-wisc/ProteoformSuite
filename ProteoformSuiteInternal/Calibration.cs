@@ -34,7 +34,7 @@ namespace ProteoformSuiteInternal
             myMsDataFile = ThermoStaticData.LoadAllStaticData(file.complete_path);
             this.mass_tolerance = mass_tolerance;
             DataPointAquisitionResults dataPointAcquisitionResult = null;
-
+            Parallel.ForEach(identifications, h => h.mz = h.reported_mass.ToMz(h.charge)); //need to reset m/z in case same td hits used for multiple calibration raw files... 
             for (int linearCalibrationRound = 1; ; linearCalibrationRound++)
             {
                 dataPointAcquisitionResult = GetDataPoints(identifications, td_file, file.filename);
@@ -42,7 +42,6 @@ namespace ProteoformSuiteInternal
                 if (linearCalibrationRound >= 2 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[linearCalibrationRound - 2])
                     break;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
-
                 CalibrateLinear(false, file.filename, dataPointAcquisitionResult.Ms1List);
             }
 
@@ -56,6 +55,13 @@ namespace ProteoformSuiteInternal
                 if (forestCalibrationRound >= 2 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[forestCalibrationRound - 2])
                     break;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
+            }
+
+            //calibrate topdown hits if this is topdown file....
+            foreach (TopDownHit hit in identifications.Where(h => h.filename == file.filename))
+            {
+                Tuple<string, int, double> key = new Tuple<string, int, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);
+                if (!SaveState.lollipop.td_hit_correction.ContainsKey(key)) lock (SaveState.lollipop.td_hit_correction) SaveState.lollipop.td_hit_correction.Add(key, hit.mz.ToMass(hit.charge));
             }
             return true;
         }
@@ -93,7 +99,9 @@ namespace ProteoformSuiteInternal
         {
             foreach (TopDownHit hit in SaveState.lollipop.td_hits_calibration.Where(h => h.filename == filename))
             {
-                hit.mz = hit.mz - bestCf.Predict(new double[] { hit.mz, hit.ms1Scan.retention_time, });
+                int scanNum = hit.ms2ScanNumber;
+                while (myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
+                hit.mz = hit.mz - bestCf.Predict(new double[] { hit.mz, myMsDataFile.GetOneBasedScan(scanNum).RetentionTime });
             }
             foreach (Component c in SaveState.lollipop.calibration_components.Where(h => h.input_file.filename == filename))
             {

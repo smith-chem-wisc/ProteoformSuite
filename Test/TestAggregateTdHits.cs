@@ -21,7 +21,6 @@ namespace Test
             {
                 TopDownHit t = new TopDownHit();
                 t.score = (10 + Convert.ToDouble(i));
-                t.targeted = true;
                 t.retention_time = 50d;
                 t.accession = "accession";
                 t.sequence = "sequence";
@@ -80,7 +79,6 @@ namespace Test
             {
                 TopDownHit t = new TopDownHit();
                 t.score = (10 + Convert.ToDouble(i));
-                t.targeted = true;
                 t.retention_time = 50;
                 t.accession = "accession";
                 t.sequence = "sequence";

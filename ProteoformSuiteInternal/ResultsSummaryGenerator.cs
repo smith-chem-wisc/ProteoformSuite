@@ -313,13 +313,6 @@ namespace ProteoformSuiteInternal
                     0
                     );
             }
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\eProteoformfilenames"))
-            {
-                foreach(ExperimentalProteoform e in SaveState.lollipop.target_proteoform_community.experimental_proteoforms)
-                {
-                    writer.WriteLine(e.accession + "\t" + String.Join(";", e.aggregated_components.Select(c => c.input_file.filename)));
-                }
-            }
 
 
                 StringBuilder result_string = new StringBuilder();

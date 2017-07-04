@@ -51,6 +51,7 @@
             this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.identifiedProteoformsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -119,6 +120,7 @@
             this.experimentExperimentComparisonToolStripMenuItem,
             this.topdownResultsToolStripMenuItem,
             this.proteoformFamilyAssignmentToolStripMenuItem,
+            this.identifiedProteoformsToolStripMenuItem,
             this.quantificationToolStripMenuItem,
             this.resultsSummaryToolStripMenuItem});
             this.resultsToolStripMenuItem.Name = "resultsToolStripMenuItem";
@@ -233,6 +235,13 @@
             this.loadRunToolStripMenuItem.Text = "Load && Run";
             this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
             // 
+            // identifiedProteoformsToolStripMenuItem
+            // 
+            this.identifiedProteoformsToolStripMenuItem.Name = "identifiedProteoformsToolStripMenuItem";
+            this.identifiedProteoformsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.identifiedProteoformsToolStripMenuItem.Text = "Identified Proteoforms";
+            this.identifiedProteoformsToolStripMenuItem.Click += new System.EventHandler(this.identifiedProteoformsToolStripMenuItem_Click);
+            // 
             // ProteoformSweet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -279,6 +288,7 @@
         private System.Windows.Forms.ToolStripMenuItem loadSettingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem topdownResultsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportAllTablesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem identifiedProteoformsToolStripMenuItem;
     }
 }
 
