@@ -1,6 +1,7 @@
 ﻿using ProteoformSuiteInternal;
 using System.Windows.Forms;
 using System;
+using System.Linq;
 
 namespace ProteoformSuiteGUI
 {
@@ -100,6 +101,26 @@ namespace ProteoformSuiteGUI
             }
         }
 
+        public string theoretical_accession
+        {
+            get
+            {
+                return e.linked_proteoform_references != null ?
+                   (e.linked_proteoform_references[0] as TheoreticalProteoform).accession:
+                    "";
+            }
+        }
+
+        public string fragment
+        {
+            get
+            {
+                return e.linked_proteoform_references != null ?
+                   (e.linked_proteoform_references[0] as TheoreticalProteoform).fragment :
+                    "";
+            }
+        }
+
         public string manual_validation_id
         {
             get { return e.manual_validation_id; }
@@ -113,6 +134,33 @@ namespace ProteoformSuiteGUI
         public string manual_validation_quant
         {
             get { return e.manual_validation_quant; }
+        }
+
+        //needs to be at same time and mass
+        public int etd_relations
+        {
+            get { return e.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown); }
+        }
+
+        public int other_topdown
+        {
+            get
+            {
+                return e.linked_proteoform_references != null ?
+                SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.gene_name == e.gene_name && !t.relationships.SelectMany(r => r.connected_proteoforms).Contains(e) &&
+                Math.Abs(t.modified_mass - e.modified_mass) < (double)SaveState.lollipop.mass_tolerance) :
+                0;
+            }
+        }
+
+        public int bottomup_PSMs
+        {
+            get
+            {
+                return e.linked_proteoform_references != null ?
+                           e.family.theoretical_proteoforms.Where(t => t.gene_name == e.gene_name).SelectMany(t => t.psm_list).Count() :
+                           0;
+            }
         }
         
         #endregion Public Properties
@@ -147,9 +195,54 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(manual_validation_id)].HeaderText = "Abundant Component for Manual Validation of Identification";
             dgv.Columns[nameof(manual_validation_verification)].HeaderText = "Abundant Component for Manual Validation of Identification Verification";
             dgv.Columns[nameof(manual_validation_quant)].HeaderText = "Abundant Component for Manual Validation of Quantification";
+            dgv.Columns[nameof(theoretical_accession)].HeaderText = "Theoretical Accession";
+            dgv.Columns[nameof(fragment)].HeaderText = "Fragment";
 
             //VISIBILITY
-            dgv.Columns[nameof(lysine_count)].Visible = SaveState.lollipop.neucode_labeled; 
+            dgv.Columns[nameof(lysine_count)].Visible = SaveState.lollipop.neucode_labeled;
+            dgv.Columns[nameof(etd_relations)].Visible = false;
+            dgv.Columns[nameof(other_topdown)].Visible = false;
+            dgv.Columns[nameof(bottomup_PSMs)].Visible = false;
+        }
+
+        public static void FormatIdentifiedProteoformTable(DataGridView dgv)
+        {
+            if (dgv.Columns.Count <= 0) return;
+
+            dgv.AllowUserToAddRows = false;
+            dgv.ReadOnly = true;
+
+            //NUMBER FORMATS
+            dgv.Columns[nameof(agg_mass)].DefaultCellStyle.Format = "0.####";
+            dgv.Columns[nameof(agg_intensity)].DefaultCellStyle.Format = "0.####";
+
+            //HEADERS
+            dgv.Columns[nameof(Accession)].HeaderText = "Experimental Proteoform ID";
+            dgv.Columns[nameof(agg_mass)].HeaderText = "Aggregated Mass";
+            dgv.Columns[nameof(agg_intensity)].HeaderText = "Aggregated Intensity";
+            dgv.Columns[nameof(agg_rt)].HeaderText = "Aggregated Retention Time";
+            dgv.Columns[nameof(observation_count)].HeaderText = "Aggregated Component Count for Identification";
+            dgv.Columns[nameof(lysine_count)].HeaderText = "Lysine Count";
+            dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
+            dgv.Columns[nameof(gene_name)].HeaderText = "Gene Name";
+            dgv.Columns[nameof(manual_validation_id)].HeaderText = "Abundant Component for Manual Validation of Identification";
+            dgv.Columns[nameof(theoretical_accession)].HeaderText = "Theoretical Accession";
+            dgv.Columns[nameof(fragment)].HeaderText = "Fragment";
+            dgv.Columns[nameof(etd_relations)].HeaderText = "Experiment-TopDown Relation Count";
+            dgv.Columns[nameof(other_topdown)].HeaderText = "Other TopDown Proteoforms With Same Gene Name and Mass";
+            dgv.Columns[nameof(bottomup_PSMs)].HeaderText = "BottomUp PSMs Count";
+
+            //VISIBILITY
+            dgv.Columns[nameof(lysine_count)].Visible = SaveState.lollipop.neucode_labeled;
+            dgv.Columns[nameof(heavy_verification_count)].Visible = false;
+            dgv.Columns[nameof(light_verification_count)].Visible = false;
+            dgv.Columns[nameof(heavy_observation_count)].Visible = false;
+            dgv.Columns[nameof(light_observation_count)].Visible = false;
+            dgv.Columns[nameof(manual_validation_verification)].Visible = false;
+            dgv.Columns[nameof(manual_validation_quant)].Visible = false;
+            dgv.Columns[nameof(mass_shifted)].Visible = false;
+            dgv.Columns[nameof(Accepted)].Visible = false;
+
         }
 
         #endregion

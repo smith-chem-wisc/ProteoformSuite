@@ -20,7 +20,6 @@ namespace Test
         public void testFindRawNeuCodePairsMethod()
         {
             //reading in test excel file, process raw components before testing neucode pairs.
-            SaveState.lollipop.correctionFactors = null;
             SaveState.lollipop.raw_experimental_components.Clear();
             Func<InputFile, IEnumerable<Component>> componentReader = c => new ComponentReader().read_components_from_xlsx(c, true);
             InputFile noisy = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "noisy.xlsx"), Labeling.NeuCode, Purpose.Identification);

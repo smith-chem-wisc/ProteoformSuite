@@ -10,7 +10,6 @@ namespace ProteoformSuiteInternal
 
     public class TopDownHit
     {
-        public MsScan ms1Scan { get; set; }
         public int ms2ScanNumber { get; set; }
         public double retention_time { get; set; }
         public string filename { get; set; }
@@ -27,7 +26,6 @@ namespace ProteoformSuiteInternal
         public int charge { get; set; }
         public double mass_error { get; set; }
         public double mz { get; set; }
-        public bool targeted { get; set; }
         public double score { get; set; }//C-score
         public TopDownResultType tdResultType { get; set; }
         public InputFile file { get; set; }
@@ -35,7 +33,7 @@ namespace ProteoformSuiteInternal
         public int technical_replicate { get; set; } = 0;
         public int fraction { get; set; } = 0;
 
-        public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, bool targeted, double pvalue, double score)
+        public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double pvalue, double score)
         {
             this.file = file;
             this.tdResultType = tdResultType;
@@ -51,7 +49,6 @@ namespace ProteoformSuiteInternal
             this.ms2ScanNumber = scan;
             this.retention_time = retention_time;
             this.filename = filename;
-            this.targeted = targeted;
             this.score = score;
             this.pvalue = pvalue;
         }
@@ -72,7 +69,6 @@ namespace ProteoformSuiteInternal
             this.ms2ScanNumber = h.ms2ScanNumber; ;
             this.retention_time = h.retention_time;
             this.filename = h.filename;
-            this.targeted = h.targeted;
             this.pvalue = pvalue;
             this.score = h.score;
         }

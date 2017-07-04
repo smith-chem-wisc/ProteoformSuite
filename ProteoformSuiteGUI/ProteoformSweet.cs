@@ -25,9 +25,9 @@ namespace ProteoformSuiteGUI
         public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
         public Quantification quantification = new Quantification();
         public TopDown topDown = new TopDown();
+        public IdentifiedProteoforms identifiedProteoforms = new IdentifiedProteoforms();
         public ResultsSummary resultsSummary = new ResultsSummary();
         public List<ISweetForm> forms = new List<ISweetForm>();
-        public static bool run_when_form_loads;
 
         #endregion Public Fields
 
@@ -79,6 +79,7 @@ namespace ProteoformSuiteGUI
                 experimentalTheoreticalComparison,
                 experimentExperimentComparison,
                 topDown,
+                identifiedProteoforms,
                 proteoformFamilies,
                 quantification,
                 resultsSummary
@@ -157,9 +158,13 @@ namespace ProteoformSuiteGUI
         private void topdownResultsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             showForm(topDown);
-            if (run_when_form_loads) topDown.load_topdown();
         }
 
+        private void identifiedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(identifiedProteoforms);
+            if (identifiedProteoforms.ReadyToRunTheGamut()) identifiedProteoforms.RunTheGamut();
+        }
 
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -174,6 +179,7 @@ namespace ProteoformSuiteGUI
             showForm(resultsSummary);
         }
 
+    
         #endregion RESULTS TOOL STRIP Private Methods
 
         #region FILE TOOL STRIP Private Methods

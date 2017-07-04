@@ -127,7 +127,7 @@ namespace ProteoformSuiteInternal
                 //match up bottom-up PSMs
                 Parallel.ForEach(SaveState.lollipop.BottomUpPSMList, bu_psm =>
                 {
-                    foreach (TheoreticalProteoform t in SaveState.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { SaveState.lollipop.target_proteoform_community }).SelectMany(c => c.theoretical_proteoforms).Where(t => t.accession.Split('_')[0] == bu_psm.protein_accession.Split('|')[1]).ToList())
+                    foreach (TheoreticalProteoform t in SaveState.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { SaveState.lollipop.target_proteoform_community }).SelectMany(c => c.theoretical_proteoforms).Where(t => t.accession.Split('_')[0] == bu_psm.protein_accession).ToList())
                     {
                         lock (t) t.psm_list.Add(bu_psm);
                     }

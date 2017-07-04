@@ -318,7 +318,7 @@ namespace ProteoformSuiteInternal
             clean_up_td_relations();
             List<Proteoform> proteoforms = new List<Proteoform>();
             proteoforms.AddRange(this.experimental_proteoforms.Where(e => e.accepted).ToList());
-            proteoforms.AddRange(topdown_proteoforms.Where(t => !t.targeted).ToList()); //want to include families with no E proteoforms, only topdown proteoforms. For now, only non-targeted topdown proteoforms
+            proteoforms.AddRange(topdown_proteoforms); //want to include families with no E proteoforms, only topdown proteoforms. For now, only non-targeted topdown proteoforms
             Stack<Proteoform> remaining = new Stack<Proteoform>(proteoforms);
             List<ProteoformFamily> running_families = new List<ProteoformFamily>();
             List<Proteoform> running = new List<Proteoform>();

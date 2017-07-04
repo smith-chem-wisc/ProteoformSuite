@@ -83,7 +83,6 @@ namespace Test
         [Test]
         public void one_match_one_doesnt()
         {
-            SaveState.lollipop.calibrate_lock_mass = true;
             InputFile c = new InputFile("fake1.txt", Purpose.RawFile);
             InputFile i = new InputFile("fake1.txt", Purpose.CalibrationIdentification);
             InputFile a = new InputFile("fake2.txt", Purpose.CalibrationIdentification);
