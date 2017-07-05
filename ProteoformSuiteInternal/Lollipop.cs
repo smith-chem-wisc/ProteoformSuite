@@ -50,11 +50,11 @@ namespace ProteoformSuiteInternal
             "Proteoform Identification Results (.xlsx)",
             "Proteoform Quantification Results (.xlsx)",
             "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
+            "ProSight Top-Down Results (.xlsx)",
+            "Bottom-Up Results MzIdentML (.mzid)",
             "Uncalibrated Proteoform Identification Results (.xlsx)",
             "Raw Files (.raw)",
-             "Uncalibrated ProSight Top-Down Results (.xlsx)",
-            "ProSight Top-Down Results (.xlsx)",
-            "Bottom-Up Results MzIdentML (.mzid)"
+             "Uncalibrated ProSight Top-Down Results (.xlsx)"
         };
 
         public static List<string>[] acceptable_extensions = new List<string>[]
@@ -63,10 +63,11 @@ namespace ProteoformSuiteInternal
             new List<string> { ".xlsx" },
             new List<string> { ".xml", ".gz", ".fasta", ".txt" },
             new List<string> { ".xlsx" },
+            new List<string> { ".mzid" },
+            new List<string> { ".xlsx" },
             new List<string> {".raw"},
-            new List<string> { ".xlsx" },
-            new List<string> { ".xlsx" },
-            new List<string> { ".mzid" }
+            new List<string> { ".xlsx" }
+
         };
 
         public static string[] file_filters = new string[]
@@ -75,10 +76,11 @@ namespace ProteoformSuiteInternal
             "Excel Files (*.xlsx) | *.xlsx",
             "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
             "Excel Files (*.xlsx) | *.xlsx",
+            "MZIdentML Files (*.mzid) | *.mzid",
+            "Excel Files (*.xlsx) | *.xlsx",
             "Raw Files (*.raw) | *.raw",
             "Excel Files (*.xlsx) | *.xlsx",
-            "Excel Files (*.xlsx) | *.xlsx",
-            "MZIdentML Files (*.mzid) | *.mzid"
+  
         };
 
         public static List<Purpose>[] file_types = new List<Purpose>[]
@@ -86,11 +88,12 @@ namespace ProteoformSuiteInternal
             new List<Purpose> { Purpose.Identification },
             new List<Purpose> { Purpose.Quantification },
             new List<Purpose> { Purpose.ProteinDatabase, Purpose.PtmList },
+            new List<Purpose> { Purpose.TopDown },
+            new List<Purpose> { Purpose.BottomUp },
             new List<Purpose> { Purpose.CalibrationIdentification },
             new List<Purpose> {Purpose.RawFile },
-            new List<Purpose> { Purpose.CalibrationTopDown },
-            new List<Purpose> { Purpose.TopDown },
-            new List<Purpose> { Purpose.BottomUp }
+            new List<Purpose> { Purpose.CalibrationTopDown }
+
         };
 
         public void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, List<Purpose> purposes, List<InputFile> destination)
