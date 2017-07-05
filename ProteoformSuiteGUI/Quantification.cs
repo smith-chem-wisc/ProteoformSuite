@@ -408,7 +408,6 @@ namespace ProteoformSuiteGUI
         {
             int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
 
-            ct_relativeDifference.ChartAreas[0].AxisX.IsLogarithmic = false;
             ct_relativeDifference.Series.Clear();
             ct_relativeDifference.Series.Add("Quantified");
             ct_relativeDifference.Series["Quantified"].ChartType = SeriesChartType.Point;
@@ -423,20 +422,18 @@ namespace ProteoformSuiteGUI
 
             foreach (ExperimentalProteoform pf in SaveState.lollipop.satisfactoryProteoforms)
             {
-                decimal scatter = SaveState.lollipop.testStatisticsWithLogIntensities ? pf.quant.scatter : pf.quant.scatter;
-                decimal test_statistic = SaveState.lollipop.testStatisticsWithLogIntensities ? pf.quant.testStatistic : pf.quant.testStatistic;
                 if (pf.quant.significant)
-                    ct_relativeDifference.Series["Significant"].Points.AddXY(scatter, test_statistic);
+                    ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.scatter, pf.quant.testStatistic);
                 else
-                    ct_relativeDifference.Series["Quantified"].Points.AddXY(scatter, test_statistic);
+                    ct_relativeDifference.Series["Quantified"].Points.AddXY(pf.quant.scatter, pf.quant.testStatistic);
 
-                if (scatter < min_scatter) min_scatter = scatter;
-                if (scatter > max_scatter) max_scatter = scatter;
-                if (Math.Abs(test_statistic) > max_stat) max_stat = Math.Abs(test_statistic);
+                if (pf.quant.scatter < min_scatter) min_scatter = pf.quant.scatter;
+                if (pf.quant.scatter > max_scatter) max_scatter = pf.quant.scatter;
+                if (Math.Abs(pf.quant.testStatistic) > max_stat) max_stat = Math.Abs(pf.quant.testStatistic);
             }
 
-            ct_relativeDifference.ChartAreas[0].AxisX.IsLogarithmic = true;
             ct_relativeDifference.ChartAreas[0].AxisX.Minimum = 1;
+            ct_relativeDifference.ChartAreas[0].AxisX.IsLogarithmic = true;
             ct_relativeDifference.ChartAreas[0].AxisX.Maximum = Math.Pow(Math.Ceiling(Math.Log10((double)max_scatter)), 10);
             ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -(double)Math.Ceiling(max_stat);
             ct_relativeDifference.ChartAreas[0].AxisY.Maximum = (double)Math.Ceiling(max_stat);
