@@ -154,6 +154,8 @@ namespace Test
             //Assert.AreEqual(2 * 2, e2.biorepIntensityList.Count(b => !b.light));
 
             SaveState.lollipop.getBiorepsFractionsList(SaveState.lollipop.input_files);
+            SaveState.lollipop.numerator_condition = "light";
+            SaveState.lollipop.denominator_condition = "heavy";
 
             SaveState.lollipop.computeProteoformTestStatistics(true, new List<ExperimentalProteoform> { e2 }, (decimal)10.000, (decimal)10.000, "", "", 1);
 
@@ -165,9 +167,9 @@ namespace Test
             Assert.AreEqual(-0.0429263249080178M, e2.quant.logFoldChange);
             Assert.AreEqual(1.97538639776822M, e2.quant.variance);
             Assert.True(0 <= e2.quant.pValue && e2.quant.pValue <= 1);
-            Assert.AreEqual(0.410m, Math.Round(e2.quant.StdDev_log(e2.quant.numeratorBiorepIntensities, e2.quant.denominatorBiorepIntensities), 3));
-            Assert.AreEqual(-0.03045m, Math.Round(e2.quant.testStatistic_log, 5));
-            Assert.AreEqual(e2.quant.permutedTestStatistics_log.Count, SaveState.lollipop.permutedTestStatistics.Count());
+            Assert.AreEqual(20.338m, Math.Round(e2.quant.StdDev(e2.quant.numeratorBiorepIntensities, e2.quant.denominatorBiorepIntensities), 3));
+            Assert.AreEqual(-0.10544m, Math.Round(e2.quant.testStatistic, 5));
+            Assert.AreEqual(e2.quant.permutedTestStatistics.Count, SaveState.lollipop.permutedTestStatistics.Count());
         }
 
         [Test]
@@ -175,7 +177,7 @@ namespace Test
         {
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, 1, "", 0) };
-            Assert.True(e.quant.StdDev_log(singleton_list, singleton_list) > 0);
+            Assert.True(e.quant.StdDev(singleton_list, singleton_list) > 0);
         }
 
         [Test]
@@ -202,7 +204,7 @@ namespace Test
             List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
             try
             {
-                e.quant.getBalancedPermutedTestStatistics(shorter_list, singleton_list, 0, e.quant.getSingleTestStatistic_log, e.quant.StdDev_log);
+                e.quant.getBalancedPermutedTestStatistics(shorter_list, singleton_list, 0, e.quant.getSingleTestStatistic, e.quant.StdDev);
             }
             catch (ArgumentException ex)
             {
@@ -224,10 +226,16 @@ namespace Test
             BiorepIntensity b8 = new BiorepIntensity(false, 4, "c2", 4);
             List<BiorepIntensity> triple_list1 = new List<BiorepIntensity> { b1, b2, b3 };
             List<BiorepIntensity> triple_list2 = new List<BiorepIntensity> { b5, b6, b7 };
-            Assert.AreEqual(9, e.quant.getBalancedPermutedTestStatistics(triple_list1, triple_list2, 0, e.quant.getSingleTestStatistic_log, e.quant.StdDev_log).Count);
+            List<decimal> perms = e.quant.getBalancedPermutedTestStatistics(triple_list1, triple_list2, 1, e.quant.getSingleTestStatistic, e.quant.StdDev);
+            Assert.AreEqual(9, perms.Count);
+            Assert.AreEqual(3, perms.Count(v => v == 0));
+            Assert.AreEqual(2, perms.Count(v => Math.Round(v, 4) == -0.3820m));
+            Assert.AreEqual(2, perms.Count(v => Math.Round(v, 4) == 0.3820m));
+            Assert.AreEqual(1, perms.Count(v => Math.Round(v, 4) == -0.9062m));
+            Assert.AreEqual(1, perms.Count(v => Math.Round(v, 4) == 0.9062m));
             List<BiorepIntensity> quad_list1 = new List<BiorepIntensity> { b1, b2, b3, b4 };
             List<BiorepIntensity> quad_list2 = new List<BiorepIntensity> { b5, b6, b7, b8 };
-            Assert.AreEqual(36, e.quant.getBalancedPermutedTestStatistics(quad_list1, quad_list2, 0, e.quant.getSingleTestStatistic_log, e.quant.StdDev_log).Count);
+            Assert.AreEqual(36, e.quant.getBalancedPermutedTestStatistics(quad_list1, quad_list2, 1, e.quant.getSingleTestStatistic, e.quant.StdDev).Count);
         }
 
         [Test]
@@ -424,8 +432,8 @@ namespace Test
                 {
                     onepst.Add((decimal)j);
                 }
-                e.quant.testStatistic_log = ((decimal)i/10);
-                e.quant.permutedTestStatistics_log = onepst;
+                e.quant.testStatistic = ((decimal)i/10);
+                e.quant.permutedTestStatistics = onepst;
                 satisfactoryProteoforms.Add(e);
                 permutedTestStats.AddRange(onepst);
             }
@@ -487,9 +495,9 @@ namespace Test
                     if (j == 9) onepst.Add(9);
                     else onepst.Add((decimal)7); //making it asymmetrical
                 }
-                e.quant.testStatistic_log = ((decimal)i);
-                e.quant.permutedTestStatistics_log = onepst;
-                e.quant.averagePermutedTestStatistic_log = onepst.Average();
+                e.quant.testStatistic = ((decimal)i);
+                e.quant.permutedTestStatistics = onepst;
+                e.quant.averagePermutedTestStatistic = onepst.Average();
                 satisfactoryProteoforms.Add(e);
             }
 
@@ -507,7 +515,7 @@ namespace Test
             //First below 7.18 - 1 = 6.18 is 6
             //One permuted value passes each of 10 times, the nine (numerator = 10 permuted passing / 100 permuted total * 10 proteoforms = 1)
             //Eight values in the set {0,1,2,3,4,5,6,7,8,9} pass the two cutoffs, 6 and 9 (denominator = 8 passing proteoforms)
-            Assert.AreEqual((double)1 / (double)8, SaveState.lollipop.computeRelativeDifferenceFDR(SaveState.lollipop.sortedAvgPermutationTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics, satisfactoryProteoforms, satisfactoryProteoforms.SelectMany(e => e.quant.permutedTestStatistics_log).ToList(), 1));
+            Assert.AreEqual((double)1 / (double)8, SaveState.lollipop.computeRelativeDifferenceFDR(SaveState.lollipop.sortedAvgPermutationTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics, satisfactoryProteoforms, satisfactoryProteoforms.SelectMany(e => e.quant.permutedTestStatistics).ToList(), 1));
 
             SaveState.lollipop.satisfactoryProteoforms = satisfactoryProteoforms;
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
@@ -536,40 +544,40 @@ namespace Test
         public void test_imputedIntensities()
         {
             List<BiorepIntensity> briList = new List<BiorepIntensity>();
-            briList.AddRange(QuantitativeProteoformValues.imputedIntensities(briList,(decimal)Math.Log(100d,2), (decimal)Math.Log(5d, 2), "light", new List<int> { 0, 1, 2 }));
-            Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 3);//we started with no real observations but there were three observed bioreps in the experiment. Therefore we need 3 imputed bioreps
-            Assert.AreEqual(briList[0].condition, "light");
-            //Assert.AreEqual(briList[0].light, true);
-            Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(0), true);
-            Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(1), true);
-            Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(2), true);
+            List<BiorepIntensity> imputed = QuantitativeProteoformValues.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<int> { 0, 1, 2 });
+            //we started with no real observations but there were three observed bioreps in the experiment. Therefore, we need 0 imputed bioreps.
+            Assert.AreEqual(3, imputed.Count(b => b.imputed));
+            Assert.AreEqual("light", imputed[0].condition);
+            Assert.AreEqual(true, imputed.Any(b => b.condition == "light" && b.biorep == 0));
+            Assert.AreEqual(true, imputed.Any(b => b.condition == "light" && b.biorep == 1));
+            Assert.AreEqual(true, imputed.Any(b => b.condition == "light" && b.biorep == 2));
 
-            briList.Clear();
+            imputed.Clear();
             briList.Add(new BiorepIntensity(false, 0, "light", 1000d));
-            briList.AddRange(QuantitativeProteoformValues.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<int> { 0, 1, 2 }));
+            imputed.AddRange(QuantitativeProteoformValues.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<int> { 0, 1, 2 }));
 
-            Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 2);//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
-            Assert.AreEqual(briList.Where(b => b.imputed == false).ToList().Count(), 1);//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
-            Assert.AreEqual(briList[0].condition, "light");
-            //Assert.AreEqual(briList[0].light, true);
-            Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(0), true);
-            Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(1), true);
-            Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(2), true);
+            Assert.AreEqual(2, imputed.Count(b => b.imputed));//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
+            Assert.AreEqual(0, imputed.Count(b => !b.imputed));//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
+            Assert.AreEqual(1, briList.Count(b => !b.imputed));//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
+            Assert.AreEqual("light", imputed[0].condition);
+            Assert.AreEqual(false, imputed.Any(b => b.biorep == 0));
+            Assert.AreEqual(true, imputed.Any(b => b.biorep == 1));
+            Assert.AreEqual(true, imputed.Any(b => b.biorep == 2));
 
-
+            imputed.Clear();
             briList.Clear();
             briList.Add(new BiorepIntensity(false, 0, "light", 1000d));
             briList.Add(new BiorepIntensity(false, 1, "light", 2000d));
             briList.Add(new BiorepIntensity(false, 2, "light", 3000d));
-            briList.AddRange(QuantitativeProteoformValues.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<int> { 0, 1, 2 }));
+            imputed.AddRange(QuantitativeProteoformValues.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<int> { 0, 1, 2 }));
 
-            Assert.AreEqual(briList.Where(b => b.imputed == true).ToList().Count(), 0);//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
-            Assert.AreEqual(briList.Where(b => b.imputed == false).ToList().Count(), 3);//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
-            Assert.AreEqual(briList[0].condition, "light");
-            //Assert.AreEqual(briList[0].light, true);
-            Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(0), true);
-            Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(1), true);
-            Assert.AreEqual(briList.Select(b => b.biorep).ToList().Contains(2), true);
+            Assert.AreEqual(0, imputed.Count(b => b.imputed));//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
+            Assert.AreEqual(0, imputed.Count(b => !b.imputed));//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
+            Assert.AreEqual(3, briList.Count(b => !b.imputed));//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
+            Assert.IsEmpty(imputed);
+            Assert.AreEqual(false, imputed.Any(b => b.biorep == 0));
+            Assert.AreEqual(false, imputed.Any(b => b.biorep == 1));
+            Assert.AreEqual(false, imputed.Any(b => b.biorep == 2));
         } 
 
         [Test]

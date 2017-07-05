@@ -74,10 +74,14 @@ namespace ProteoformSuiteGUI
 
         public void FillTablesAndCharts()
         {
-            if (new int[] { 0, 2 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+            if (cb_useLocalFdrCutoff.Checked)
+                plotObservedRelativeDifferenceVsFdr();
+            else if (new int[] { 0 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
                 plotObservedVsExpectedRelativeDifference();
-            if (new int[] { 1, 3 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+            else if (new int[] { 1 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
                 plotObservedRelativeDifferenceVsScatter();
+            else if (new int[] { 2 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotAllPermutedTestStatistics();
             DisplayUtility.FillDataGridView(dgv_quantification_results, SaveState.lollipop.qVals.Select(q => new DisplayQuantitativeValues(q)));
             DisplayQuantitativeValues.FormatGridView(dgv_quantification_results);
             tb_avgIntensity.Text = Math.Round(SaveState.lollipop.selectAverageIntensity, 1).ToString();
@@ -348,12 +352,14 @@ namespace ProteoformSuiteGUI
         {
             "Observed vs. Expected",
             "Observed vs. Scatter",
+            "All Permuted vs. Average Permuted"
         };
 
         private void plotObservedVsExpectedRelativeDifference()
         {
             int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
 
+            ct_relativeDifference.ChartAreas[0].AxisX.IsLogarithmic = false;
             ct_relativeDifference.Series.Clear();
             ct_relativeDifference.Series.Add("Quantified");
             ct_relativeDifference.Series["Quantified"].ChartType = SeriesChartType.Point;
@@ -371,7 +377,7 @@ namespace ProteoformSuiteGUI
             int max_test_stat_unit = 0;
             foreach (ExperimentalProteoform pf in SaveState.lollipop.satisfactoryProteoforms)
             {
-                decimal test_statistic = SaveState.lollipop.testStatisticsWithLogIntensities ? pf.quant.testStatistic_log : pf.quant.testStatistic_linear;
+                decimal test_statistic = SaveState.lollipop.testStatisticsWithLogIntensities ? pf.quant.testStatistic : pf.quant.testStatistic;
                 if (pf.quant.significant)
                     ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.correspondingAveragePermutedTestStatistic, test_statistic);
                 else
@@ -402,6 +408,7 @@ namespace ProteoformSuiteGUI
         {
             int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
 
+            ct_relativeDifference.ChartAreas[0].AxisX.IsLogarithmic = false;
             ct_relativeDifference.Series.Clear();
             ct_relativeDifference.Series.Add("Quantified");
             ct_relativeDifference.Series["Quantified"].ChartType = SeriesChartType.Point;
@@ -416,8 +423,8 @@ namespace ProteoformSuiteGUI
 
             foreach (ExperimentalProteoform pf in SaveState.lollipop.satisfactoryProteoforms)
             {
-                decimal scatter = SaveState.lollipop.testStatisticsWithLogIntensities ? pf.quant.scatter_log : pf.quant.scatter_linear;
-                decimal test_statistic = SaveState.lollipop.testStatisticsWithLogIntensities ? pf.quant.testStatistic_log : pf.quant.testStatistic_linear;
+                decimal scatter = SaveState.lollipop.testStatisticsWithLogIntensities ? pf.quant.scatter : pf.quant.scatter;
+                decimal test_statistic = SaveState.lollipop.testStatisticsWithLogIntensities ? pf.quant.testStatistic : pf.quant.testStatistic;
                 if (pf.quant.significant)
                     ct_relativeDifference.Series["Significant"].Points.AddXY(scatter, test_statistic);
                 else
@@ -435,6 +442,43 @@ namespace ProteoformSuiteGUI
             ct_relativeDifference.ChartAreas[0].AxisY.Maximum = (double)Math.Ceiling(max_stat);
         }
 
+        private void plotAllPermutedTestStatistics()
+        {
+            int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
+
+            ct_relativeDifference.ChartAreas[0].AxisX.IsLogarithmic = false;
+            ct_relativeDifference.Series.Clear();
+            ct_relativeDifference.Series.Add("Permuted");
+            ct_relativeDifference.Series["Permuted"].ChartType = SeriesChartType.Point;
+            ct_relativeDifference.Series.Add("Passing Permuted");
+            ct_relativeDifference.Series["Passing Permuted"].ChartType = SeriesChartType.Point;
+            ct_relativeDifference.ChartAreas[0].AxisX.Title = "Expected Relative Difference dE(i)";
+            ct_relativeDifference.ChartAreas[0].AxisY.Title = "Observed Relative Difference d(i)";
+
+            int max_test_stat_unit = 0;
+            foreach (ExperimentalProteoform pf in SaveState.lollipop.satisfactoryProteoforms)
+            {
+                foreach (decimal test_statistic in pf.quant.permutedTestStatistics)
+                {
+                    if (test_statistic <= SaveState.lollipop.minimumPassingNegativeTestStatistic || SaveState.lollipop.minimumPassingPositiveTestStatisitic <= test_statistic)
+                        ct_relativeDifference.Series["Passing Permuted"].Points.AddXY(pf.quant.averagePermutedTestStatistic, test_statistic);
+                    else
+                        ct_relativeDifference.Series["Permuted"].Points.AddXY(pf.quant.averagePermutedTestStatistic, test_statistic);
+                    if (Math.Ceiling(Math.Abs(pf.quant.averagePermutedTestStatistic)) > max_test_stat_unit)
+                        max_test_stat_unit = (int)Math.Ceiling(Math.Abs(pf.quant.averagePermutedTestStatistic));
+                    if (Math.Ceiling(Math.Abs(test_statistic)) > max_test_stat_unit)
+                        max_test_stat_unit = (int)Math.Ceiling(Math.Abs(test_statistic));
+                }
+            }
+
+            if (SaveState.lollipop.sortedAvgPermutationTestStatistics.Count > 0 && SaveState.lollipop.sortedProteoformTestStatistics.Count > 0)
+            {
+                ct_relativeDifference.ChartAreas[0].AxisX.Minimum = -max_test_stat_unit;
+                ct_relativeDifference.ChartAreas[0].AxisX.Maximum = max_test_stat_unit;
+                ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -max_test_stat_unit;
+                ct_relativeDifference.ChartAreas[0].AxisY.Maximum = max_test_stat_unit;
+            }
+        }
 
         private void cmbx_relativeDifferenceChartSelection_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -444,12 +488,15 @@ namespace ProteoformSuiteGUI
                 plotObservedVsExpectedRelativeDifference();
             else if (new int[] { 1 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
                 plotObservedRelativeDifferenceVsScatter();
+            else if (new int[] { 2 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotAllPermutedTestStatistics();
         }
 
         private void plotObservedRelativeDifferenceVsFdr()
         {
             int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
 
+            ct_relativeDifference.ChartAreas[0].AxisX.IsLogarithmic = false;
             ct_relativeDifference.Series.Clear();
             ct_relativeDifference.Series.Add("Quantified");
             ct_relativeDifference.Series["Quantified"].ChartType = SeriesChartType.Point;
@@ -465,7 +512,7 @@ namespace ProteoformSuiteGUI
 
             foreach (ExperimentalProteoform pf in SaveState.lollipop.satisfactoryProteoforms)
             {
-                decimal test_statistic = SaveState.lollipop.testStatisticsWithLogIntensities ? pf.quant.testStatistic_log : pf.quant.testStatistic_linear;
+                decimal test_statistic = SaveState.lollipop.testStatisticsWithLogIntensities ? pf.quant.testStatistic : pf.quant.testStatistic;
                 if (pf.quant.significant)
                     ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.FDR, test_statistic);
                 else
@@ -473,8 +520,8 @@ namespace ProteoformSuiteGUI
 
                 if (pf.quant.FDR < min_fdr) min_fdr = pf.quant.FDR;
                 if (pf.quant.FDR > max_fdr) max_fdr = pf.quant.FDR;
-                if (pf.quant.testStatistic_log < min_stat) min_stat = test_statistic;
-                if (pf.quant.testStatistic_log > max_stat) max_stat = test_statistic;
+                if (pf.quant.testStatistic < min_stat) min_stat = test_statistic;
+                if (pf.quant.testStatistic > max_stat) max_stat = test_statistic;
             }
 
             ct_relativeDifference.ChartAreas[0].AxisX.Minimum = (double)Math.Floor(min_fdr);
@@ -496,14 +543,6 @@ namespace ProteoformSuiteGUI
                 ct_relativeDifference.Series["Negative Offset"].Points.AddXY(xvalue, negativeOffsetFunction(xvalue));
             }
 
-            if (SaveState.lollipop.sortedAvgPermutationTestStatistics.Count <= 0 && SaveState.lollipop.sortedProteoformTestStatistics.Count <= 0)
-            {
-                ct_relativeDifference.ChartAreas[0].AxisX.Minimum = -10;
-                ct_relativeDifference.ChartAreas[0].AxisX.Maximum = 10;
-                ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -10;
-                ct_relativeDifference.ChartAreas[0].AxisY.Maximum = 10;
-            }
-
             tb_FDR.Text = Math.Round(SaveState.lollipop.relativeDifferenceFDR, 4).ToString();
         }
 
@@ -513,10 +552,14 @@ namespace ProteoformSuiteGUI
             if (SaveState.lollipop.satisfactoryProteoforms.Count <= 0)
                 return;
             SaveState.lollipop.reestablishSignficance();
-            if (new int[] { 0 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+            if (cb_useLocalFdrCutoff.Checked)
+                plotObservedRelativeDifferenceVsFdr();
+            else if (new int[] { 0 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
                 plotObservedVsExpectedRelativeDifference();
-            if (new int[] { 1 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+            else if (new int[] { 1 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
                 plotObservedRelativeDifferenceVsScatter();
+            else if (new int[] { 2 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotAllPermutedTestStatistics();
             volcanoPlot();
             tb_FDR.Text = Math.Round(SaveState.lollipop.relativeDifferenceFDR, 4).ToString();
         }
@@ -546,10 +589,12 @@ namespace ProteoformSuiteGUI
 
             if (cb_useLocalFdrCutoff.Checked)
                 plotObservedRelativeDifferenceVsFdr();
-            else if (new int[] { 0, 2 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+            else if (new int[] { 0 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
                 plotObservedVsExpectedRelativeDifference();
-            else if (new int[] { 1, 3 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+            else if (new int[] { 1 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
                 plotObservedRelativeDifferenceVsScatter();
+            else if (new int[] { 2 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotAllPermutedTestStatistics();
 
             nud_Offset.Enabled = !cb_useLocalFdrCutoff.Checked;
             nud_localFdrCutoff.Enabled = cb_useLocalFdrCutoff.Checked;
