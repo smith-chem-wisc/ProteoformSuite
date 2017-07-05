@@ -142,10 +142,10 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
             tb_totalTheoreticalProteoforms.Text = SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
             FillTablesAndCharts();
-            if (BottomUpReader.bottom_up_PTMs.Count > 0)
+            if (BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
             {
                 MessageBox.Show("Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
-                    String.Join("\n", BottomUpReader.bottom_up_PTMs.Select(b => b.accession)));
+                    String.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary));
             }
         }
 

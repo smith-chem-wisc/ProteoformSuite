@@ -32,9 +32,11 @@ namespace ProteoformSuiteInternal
         public int biological_replicate { get; set; } = 0;
         public int technical_replicate { get; set; } = 0;
         public int fraction { get; set; } = 0;
+        public string pfr { get; set; }
 
-        public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double pvalue, double score)
+        public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string pfr, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double pvalue, double score)
         {
+            this.pfr = pfr;
             this.file = file;
             this.tdResultType = tdResultType;
             this.accession = accession;
@@ -76,20 +78,6 @@ namespace ProteoformSuiteInternal
         public TopDownHit()
         {
 
-        }
-
-        public bool same_ptm_hits(TopDownHit root)
-        {
-            if (this.ptm_list.Count == root.ptm_list.Count)
-            {
-                foreach (Ptm mod in this.ptm_list)
-                {
-                    if (root.ptm_list.Where(p => p.modification == mod.modification && p.position == mod.position).Count() == 1) continue;
-                    else return false;
-                }
-                return true;
-            }
-            else return false;
         }
 
         public double get_mass_error(double theoretical, double observed)

@@ -151,8 +151,8 @@ namespace ProteoformSuiteGUI
             {
                 dgv_TD_family.DataSource = null;
 
-                    TopDownProteoform p = (TopDownProteoform)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem;
-                    if (p.relationships != null)
+                TopDownProteoform p = (TopDownProteoform)((DisplayObject)this.dgv_TD_proteoforms.Rows[e.RowIndex].DataBoundItem).display_object;
+                if (p.relationships != null)
                     {
                         DisplayUtility.FillDataGridView(dgv_TD_family, p.relationships.Select(r => new DisplayProteoformRelation(r)));  //show T-TD and E-TD relations
                         DisplayProteoformRelation.FormatRelationsGridView(dgv_TD_family, false, false);

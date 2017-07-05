@@ -20,7 +20,7 @@ MM   42.010565
 MT   Unlocalized
 CF   H2 C2 O1
 //
-ID   Carbamidomethyl
+ID   Carbamidomethyl of C
 TG   K
 PP   Anywhere.
 MM   57.021464

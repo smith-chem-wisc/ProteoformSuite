@@ -11,43 +11,42 @@ namespace ProteoformSuiteInternal
 {
     public class BottomUpReader
     {
-        public static List<ModificationWithMass> bottom_up_PTMs = new List<ModificationWithMass>(); //PTMs from BU file that did not match to any PTMs in uniprotModifications dictionary, added to warning
+        public static List<string> bottom_up_PTMs_not_in_dictionary = new List<string>(); //PTMs from BU file that did not match to any PTMs in uniprotModifications dictionary, added to warning
         //READING IN BOTTOM-UP MORPHEUS FILE
         public static List<BottomUpPSM> ReadBUFile(string filename)
         {
-            bottom_up_PTMs.Clear();
+            bottom_up_PTMs_not_in_dictionary.Clear();
             List<BottomUpPSM> psm_list = new List<BottomUpPSM>();
             var identifications = new MzidIdentifications(filename);
             Parallel.For(0, identifications.Count, sirIndex =>
             {
                 for (int siiIndex = 0; siiIndex < identifications.NumPSMsFromScan(sirIndex); siiIndex++)
                 {
+                    bool add_psm = true;
                     if (identifications.IsDecoy(sirIndex, siiIndex) || identifications.QValue(sirIndex, siiIndex) < 0 || identifications.QValue(sirIndex, siiIndex) >= 0.01) continue;
                     List<Ptm> modifications = new List<Ptm>();
                     for (int p = 0; p < identifications.NumModifications(sirIndex, siiIndex); p++)
                     {
-                        ModificationWithMass mod = SaveState.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id == identifications.ModificationAcession(sirIndex, siiIndex, p)).FirstOrDefault();
+                        double modMass = identifications.ModificationMass(sirIndex, siiIndex, p);
+                        ModificationWithMass mod = null;
+                        List<PtmSet> set;
+                        SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(modMass, 0), out set);
+                        if (set != null) mod = set.Where(m => m.ptm_combination.Count == 1).Select(m => m.ptm_combination.First().modification).Where(m => m.id == identifications.ModificationValue(sirIndex, siiIndex, p)).FirstOrDefault();
                         if (mod != null) modifications.Add(new Ptm(identifications.ModificationLocation(sirIndex, siiIndex, p), mod));
                         else
                         {
-                            ModificationMotif motif = null;
-                            int position = identifications.ModificationLocation(sirIndex, siiIndex, p) - 1;
-                            if (position > 1)
+                            add_psm = false;
+                            string mod_id = identifications.ModificationValue(sirIndex, siiIndex, p);
+                            lock (bottom_up_PTMs_not_in_dictionary)
                             {
-                                ModificationMotif.TryGetMotif(identifications.PeptideSequenceWithoutModifications(sirIndex, siiIndex)[position -1].ToString(), out motif);
+                                if (!bottom_up_PTMs_not_in_dictionary.Contains(mod_id)) bottom_up_PTMs_not_in_dictionary.Add(mod_id);
                             }
-                            ModificationWithMass new_ptm;
-                            lock (bottom_up_PTMs) new_ptm = bottom_up_PTMs.Where(m => m.id == identifications.ModificationAcession(sirIndex, siiIndex, p)).FirstOrDefault();
-                            if (new_ptm == null) //if not in bottom_up_PTMs list, add it (GUI will show in warning)
-                                {
-                                new_ptm = new ModificationWithMass(identifications.ModificationAcession(sirIndex, siiIndex, p), null, motif, ModificationSites.Any, 0, null, new List<double>(), new List<double>(), null);
-                                lock (bottom_up_PTMs) bottom_up_PTMs.Add(new_ptm);
-                                modifications.Add(new Ptm(identifications.ModificationLocation(sirIndex, siiIndex, p), new_ptm));
-                            }
-
                         }
                     }
-                    lock (psm_list) psm_list.Add(new BottomUpPSM(identifications.PeptideSequenceWithoutModifications(sirIndex, siiIndex), identifications.StartResidueInProtein(sirIndex, siiIndex), identifications.EndResidueInProtein(sirIndex, siiIndex), modifications, identifications.Ms2SpectrumID(sirIndex), identifications.ProteinAccession(sirIndex, siiIndex), identifications.ProteinFullName(sirIndex, siiIndex), identifications.ExperimentalMassToCharge(sirIndex, siiIndex), identifications.ChargeState(sirIndex, siiIndex), identifications.CalculatedMassToCharge(sirIndex, siiIndex)));
+                    if (add_psm)
+                    {
+                        lock (psm_list) psm_list.Add(new BottomUpPSM(identifications.PeptideSequenceWithoutModifications(sirIndex, siiIndex), identifications.StartResidueInProtein(sirIndex, siiIndex), identifications.EndResidueInProtein(sirIndex, siiIndex), modifications, identifications.Ms2SpectrumID(sirIndex), identifications.ProteinAccession(sirIndex, siiIndex), identifications.ProteinFullName(sirIndex, siiIndex), identifications.ExperimentalMassToCharge(sirIndex, siiIndex), identifications.ChargeState(sirIndex, siiIndex), identifications.CalculatedMassToCharge(sirIndex, siiIndex)));
+                    }
                 }
             });
             return psm_list;

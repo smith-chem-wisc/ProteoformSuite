@@ -10,6 +10,7 @@ namespace ProteoformSuiteInternal
     public class TopDownProteoform : Proteoform
     {
         public string uniprot_id { get; set; }
+        public string pfr { get; set; }
         public string name { get; set; }
         public string sequence { get; set; }
         public int start_index { get; set; } //position one based
@@ -39,6 +40,7 @@ namespace ProteoformSuiteInternal
             this.linked_proteoform_references = new LinkedList<Proteoform>().ToList();
             this.root = root;
             this.name = root.name;
+            this.pfr = root.pfr;
             this.ptm_set = new PtmSet(root.ptm_list);
             this.uniprot_id = root.uniprot_id;
             this.sequence = root.sequence;

@@ -30,8 +30,8 @@ namespace ProteoformSuiteInternal
             description = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.description));
             name = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.name));
             fragment = String.Join(";", theoreticals_with_contaminants_first.Select(t => t.fragment));
-            accessionList = theoreticals_with_contaminants_first.Select(p => p.accession).ToList();
             contaminant = theoreticals_with_contaminants_first.FirstOrDefault().contaminant;
+            psm_list = theoreticals_with_contaminants_first.SelectMany(p => p.psm_list).ToList();
         }
 
         #endregion Public Constructor

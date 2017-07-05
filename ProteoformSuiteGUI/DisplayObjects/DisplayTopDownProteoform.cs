@@ -49,6 +49,11 @@ namespace ProteoformSuiteGUI
             get { return t.stop_index; }
         }
 
+        public string pfr
+        {
+            get { return t.pfr; }
+        }
+
         public double modified_mass
         {
             get { return t.modified_mass; }
@@ -62,6 +67,11 @@ namespace ProteoformSuiteGUI
         public int bottomUpPSMcount
         {
             get { return t.bottom_up_PSMs;  }
+        }
+
+        public double retentionTime
+        {
+            get { return t.agg_RT; }
         }
 
         #endregion Public Properties
@@ -81,6 +91,8 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(ptm_description)].HeaderText = "PTM Description";
             dgv.Columns[nameof(modified_mass)].HeaderText = "Modified Mass";
             dgv.Columns[nameof(bottomUpPSMcount)].HeaderText = "Bottom-Up PSM Count";
+            dgv.Columns[nameof(retentionTime)].HeaderText = "Retention Time";
+            dgv.Columns[nameof(pfr)].HeaderText = "PFR";
             dgv.AllowUserToAddRows = false;
         }
 
