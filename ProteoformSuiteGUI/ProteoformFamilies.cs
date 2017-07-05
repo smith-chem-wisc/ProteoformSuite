@@ -30,6 +30,8 @@ namespace ProteoformSuiteGUI
             tb_familyBuildFolder.Text = SaveState.lollipop.family_build_folder_path;
             nud_decimalRoundingLabels.Value = Convert.ToDecimal(SaveState.lollipop.deltaM_edge_display_rounding);
             cb_buildAsQuantitative.Enabled = SaveState.lollipop.qVals.Count > 0;
+            cb_include_td_nodes.Enabled = SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Length > 0;
+            cb_include_td_nodes.Checked = cb_include_td_nodes.Enabled;
             cb_buildAsQuantitative.Checked = false;
             cmbx_geneLabel.SelectedIndex = Lollipop.gene_name_labels.IndexOf(ProteoformCommunity.preferred_gene_label);
             cb_geneCentric.Checked = ProteoformCommunity.gene_centric_families;
@@ -392,6 +394,11 @@ namespace ProteoformSuiteGUI
         private void cb_geneCentric_CheckedChanged(object sender, EventArgs e)
         {
             ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
+        }
+
+        private void cb_include_td_nodes_CheckedChanged(object sender, EventArgs e)
+        {
+            ProteoformCommunity.include_td_nodes = cb_include_td_nodes.Checked;
         }
 
         private void tb_likelyCleavages_TextChanged(object sender, EventArgs e)

@@ -38,7 +38,7 @@ namespace ProteoformSuiteInternal
                             }
                             ModificationWithMass new_ptm;
                             lock (bottom_up_PTMs) new_ptm = bottom_up_PTMs.Where(m => m.id == identifications.ModificationAcession(sirIndex, siiIndex, p)).FirstOrDefault();
-                            if (new_ptm == null) //if not in bottom_up_PTMs list, add it (will show in warning)
+                            if (new_ptm == null) //if not in bottom_up_PTMs list, add it (GUI will show in warning)
                                 {
                                 new_ptm = new ModificationWithMass(identifications.ModificationAcession(sirIndex, siiIndex, p), null, motif, ModificationSites.Any, 0, null, new List<double>(), new List<double>(), null);
                                 lock (bottom_up_PTMs) bottom_up_PTMs.Add(new_ptm);

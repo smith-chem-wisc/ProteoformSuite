@@ -312,13 +312,19 @@ namespace ProteoformSuiteInternal
         #region CONSTRUCTING FAMILIES
 
         public static bool gene_centric_families = false;
+        public static bool include_td_nodes = true;
         public static string preferred_gene_label;
         public List<ProteoformFamily> construct_families()
         {
-            clean_up_td_relations();
+            // clean_up_td_relations();
+            Parallel.ForEach(topdown_proteoforms, t =>
+            {
+                t.relationships.Select(r => r.Accepted = include_td_nodes);
+            });
+
             List<Proteoform> proteoforms = new List<Proteoform>();
             proteoforms.AddRange(this.experimental_proteoforms.Where(e => e.accepted).ToList());
-            proteoforms.AddRange(topdown_proteoforms); //want to include families with no E proteoforms, only topdown proteoforms. For now, only non-targeted topdown proteoforms
+            if (include_td_nodes) proteoforms.AddRange(topdown_proteoforms); //want to include families with no E proteoforms, only topdown proteoforms. For now, only non-targeted topdown proteoforms
             Stack<Proteoform> remaining = new Stack<Proteoform>(proteoforms);
             List<ProteoformFamily> running_families = new List<ProteoformFamily>();
             List<Proteoform> running = new List<Proteoform>();
@@ -368,18 +374,18 @@ namespace ProteoformSuiteInternal
         }
 
         //if E in relation w/ T and TD of diff accesions, TD takes priority because has retention time evidence as well 
-        public void clean_up_td_relations()
-        {
-            foreach (ExperimentalProteoform e in this.experimental_proteoforms.Where(e => e.accepted && e.relationships.Where(r =>
-                r.Accepted && r.RelationType == ProteoformComparison.ExperimentalTheoretical).Count() >= 1 && e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).Count() == 1))
-            {
-                string accession = e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).First().connected_proteoforms[0].accession.Split('_')[0];
-                foreach (ProteoformRelation relation in e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical && r.connected_proteoforms[1].accession.Split('_')[0] != accession))
-                {
-                    relation.Accepted = false;
-                }
-            }
-        }
+        //public void clean_up_td_relations()
+        //{
+        //    foreach (ExperimentalProteoform e in this.experimental_proteoforms.Where(e => e.accepted && e.relationships.Where(r =>
+        //        r.Accepted && r.RelationType == ProteoformComparison.ExperimentalTheoretical).Count() >= 1 && e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).Count() == 1))
+        //    {
+        //        string accession = e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).First().connected_proteoforms[0].accession.Split('_')[0];
+        //        foreach (ProteoformRelation relation in e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical && r.connected_proteoforms[1].accession.Split('_')[0] != accession))
+        //        {
+        //            relation.Accepted = false;
+        //        }
+        //    }
+        //}
 
         public IEnumerable<ProteoformFamily> combine_gene_families(IEnumerable<ProteoformFamily> families)
         {

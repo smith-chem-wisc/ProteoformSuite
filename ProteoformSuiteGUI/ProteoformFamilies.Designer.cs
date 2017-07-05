@@ -50,6 +50,7 @@
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
+            this.cb_remove_bad_relations = new System.Windows.Forms.CheckBox();
             this.bt_check_id_experimentals_TD = new System.Windows.Forms.Button();
             this.bt_check_id_exp_fragmented = new System.Windows.Forms.Button();
             this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
@@ -78,7 +79,7 @@
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.Families_update = new System.Windows.Forms.Button();
-            this.cb_remove_bad_relations = new System.Windows.Forms.CheckBox();
+            this.cb_include_td_nodes = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -342,6 +343,7 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.Controls.Add(this.cb_include_td_nodes);
             this.splitContainer3.Panel2.Controls.Add(this.cb_remove_bad_relations);
             this.splitContainer3.Panel2.Controls.Add(this.bt_check_id_experimentals_TD);
             this.splitContainer3.Panel2.Controls.Add(this.bt_check_id_exp_fragmented);
@@ -379,6 +381,17 @@
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(832, 513);
             this.dgv_proteoform_family_members.TabIndex = 3;
             // 
+            // cb_remove_bad_relations
+            // 
+            this.cb_remove_bad_relations.AutoSize = true;
+            this.cb_remove_bad_relations.Location = new System.Drawing.Point(42, 389);
+            this.cb_remove_bad_relations.Name = "cb_remove_bad_relations";
+            this.cb_remove_bad_relations.Size = new System.Drawing.Size(135, 17);
+            this.cb_remove_bad_relations.TabIndex = 60;
+            this.cb_remove_bad_relations.Text = "Remove Bad Relations";
+            this.cb_remove_bad_relations.UseVisualStyleBackColor = true;
+            this.cb_remove_bad_relations.CheckedChanged += new System.EventHandler(this.cb_remove_bad_relations_CheckedChanged);
+            // 
             // bt_check_id_experimentals_TD
             // 
             this.bt_check_id_experimentals_TD.Location = new System.Drawing.Point(286, 360);
@@ -399,10 +412,6 @@
             this.bt_check_id_exp_fragmented.UseVisualStyleBackColor = true;
             this.bt_check_id_exp_fragmented.Click += new System.EventHandler(this.bt_check_id_exp_fragmented_Click);
             // 
-            // rtb_proteoformFamilyResults
-            // 
-            this.rtb_proteoformFamilyResults.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(76, 390);
             // rtb_proteoformFamilyResults
             // 
             this.rtb_proteoformFamilyResults.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
@@ -675,16 +684,18 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
-            // cb_remove_bad_relations
+            // cb_include_td_nodes
             // 
-            this.cb_remove_bad_relations.AutoSize = true;
-            this.cb_remove_bad_relations.Location = new System.Drawing.Point(42, 389);
-            this.cb_remove_bad_relations.Name = "cb_remove_bad_relations";
-            this.cb_remove_bad_relations.Size = new System.Drawing.Size(135, 17);
-            this.cb_remove_bad_relations.TabIndex = 60;
-            this.cb_remove_bad_relations.Text = "Remove Bad Relations";
-            this.cb_remove_bad_relations.UseVisualStyleBackColor = true;
-            this.cb_remove_bad_relations.CheckedChanged += new System.EventHandler(this.cb_remove_bad_relations_CheckedChanged);
+            this.cb_include_td_nodes.AutoSize = true;
+            this.cb_include_td_nodes.Checked = true;
+            this.cb_include_td_nodes.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_include_td_nodes.Location = new System.Drawing.Point(301, 133);
+            this.cb_include_td_nodes.Name = "cb_include_td_nodes";
+            this.cb_include_td_nodes.Size = new System.Drawing.Size(168, 17);
+            this.cb_include_td_nodes.TabIndex = 66;
+            this.cb_include_td_nodes.Text = "Include Topdown Proteoforms";
+            this.cb_include_td_nodes.UseVisualStyleBackColor = true;
+            this.cb_include_td_nodes.CheckedChanged += new System.EventHandler(this.cb_include_td_nodes_CheckedChanged);
             // 
             // ProteoformFamilies
             // 
@@ -775,5 +786,6 @@
         private System.Windows.Forms.Button bt_check_id_experimentals_TD;
         private System.Windows.Forms.Button bt_check_id_exp_fragmented;
         private System.Windows.Forms.CheckBox cb_remove_bad_relations;
+        public System.Windows.Forms.CheckBox cb_include_td_nodes;
     }
 }
