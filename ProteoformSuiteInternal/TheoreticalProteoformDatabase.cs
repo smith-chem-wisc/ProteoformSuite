@@ -56,7 +56,7 @@ namespace ProteoformSuiteInternal
             theoretical_proteins.Clear();
             theoreticals_by_accession.Clear();
             //Read the UniProt-XML and ptmlist
-            List<ModificationWithLocation> all_known_modifications = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
+            List<Modification> all_known_modifications = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
             uniprotModifications = make_modification_dictionary(all_known_modifications);
 
             Dictionary<string, Modification> um;
@@ -81,7 +81,7 @@ namespace ProteoformSuiteInternal
                 all_known_modifications.AddRange(new_mods);
             }
 
-            all_known_modifications = new HashSet<ModificationWithLocation>(all_known_modifications).ToList();
+            all_known_modifications = new HashSet<Modification>(all_known_modifications).ToList();
             uniprotModifications = make_modification_dictionary(all_known_modifications);
             all_mods_with_mass = uniprotModifications.SelectMany(kv => kv.Value).OfType<ModificationWithMass>().Concat(variableModifications).ToList();
             SaveState.lollipop.modification_ranks = rank_mods(theoretical_proteins, variableModifications, all_mods_with_mass);
@@ -149,7 +149,7 @@ namespace ProteoformSuiteInternal
             return possible_ptmsets;
         }
 
-        public Dictionary<string, List<Modification>> make_modification_dictionary(IEnumerable<ModificationWithLocation> all_modifications)
+        public Dictionary<string, List<Modification>> make_modification_dictionary(IEnumerable<Modification> all_modifications)
         {
             Dictionary<string, List<Modification>> mod_dict = new Dictionary<string, List<Modification>>();
             foreach (var nice in all_modifications)
@@ -225,9 +225,7 @@ namespace ProteoformSuiteInternal
                     p.Accession + "_" + (begin + startPosAfterCleavage).ToString() + "full" + end.ToString(),
                     p.GeneNames.ToList(),
                     p.OneBasedPossibleLocalizedModifications,
-                    new int?[] { begin + startPosAfterCleavage },
-                    new int?[] { end },
-                    new string[] { SaveState.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full" },
+                    new List<ProteolysisProduct> { new ProteolysisProduct(begin + startPosAfterCleavage, end, SaveState.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full") } ,
                     p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms, p.DisulfideBonds));
 
                 //Add fragments
@@ -252,9 +250,7 @@ namespace ProteoformSuiteInternal
                             p.Accession + "_" + feature_begin.ToString() + "frag" + feature_end.ToString(),
                             p.GeneNames.ToList(),
                             segmented_ptms,
-                            new int?[] { feature_begin },
-                            new int?[] { feature_end },
-                            new string[] { feature_type },
+                            new List<ProteolysisProduct> { new ProteolysisProduct(feature_begin, feature_end, feature_type) },
                             p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms, p.DisulfideBonds));
                 }
                 expanded_prots.AddRange(new_prots);
