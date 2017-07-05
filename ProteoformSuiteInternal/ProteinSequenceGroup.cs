@@ -13,9 +13,7 @@ namespace ProteoformSuiteInternal
                 proteins_with_contaminants_first.SelectMany(p => p.GeneNames).ToList(),
                 proteins_with_contaminants_first.SelectMany(p => p.OneBasedPossibleLocalizedModifications.Keys).Distinct()
                   .ToDictionary(i => i, i => proteins_with_contaminants_first.Where(p => p.OneBasedPossibleLocalizedModifications.ContainsKey(i)).SelectMany(p => p.OneBasedPossibleLocalizedModifications[i]).ToList()),
-                proteins_with_contaminants_first.First().ProteolysisProducts.Select(p => p.OneBasedBeginPosition).ToArray(),
-                proteins_with_contaminants_first.First().ProteolysisProducts.Select(p => p.OneBasedEndPosition).ToArray(),
-                proteins_with_contaminants_first.First().ProteolysisProducts.Select(p => p.Type).ToArray(),
+                proteins_with_contaminants_first.First().ProteolysisProducts,
                 String.Join(";", proteins_with_contaminants_first.Select(p => p.Name).Distinct()),
                 proteins_with_contaminants_first.First().FullName,
                 false, 
