@@ -69,9 +69,9 @@ namespace ProteoformSuiteGUI
             get { return qval.variance; }
         }
 
-        public decimal Scatter
+        public decimal Scatter_linear
         {
-            get { return qval.scatter_log; }
+            get { return qval.scatter; }
         }
 
         public decimal pValue
@@ -84,14 +84,9 @@ namespace ProteoformSuiteGUI
             get { return qval.significant; }
         }
 
-        public decimal TestStatistic_log
-        {
-            get { return qval.testStatistic_log; }
-        }
-
         public decimal TestStatistic_linear
         {
-            get { return qval.testStatistic_linear; }
+            get { return qval.testStatistic; }
         }
 
         public decimal AvgPermutedTestStatistic
@@ -121,7 +116,6 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(IntensitySum)].DefaultCellStyle.Format = "0.##";
             dgv.Columns[nameof(LogFoldChange)].DefaultCellStyle.Format = "0.####";
             dgv.Columns[nameof(pValue)].DefaultCellStyle.Format = "E2";
-            dgv.Columns[nameof(TestStatistic_log)].DefaultCellStyle.Format = "0.#####";
             dgv.Columns[nameof(TestStatistic_linear)].DefaultCellStyle.Format = "0.#####";
             dgv.Columns[nameof(AvgPermutedTestStatistic)].DefaultCellStyle.Format = "0.#####";
 
@@ -132,9 +126,8 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(IntensitySum)].HeaderText = "Intensity Sum";
             dgv.Columns[nameof(LogFoldChange)].HeaderText = "Log2 Fold Change";
             dgv.Columns[nameof(pValue)].HeaderText = "p-value (by randomization test)";
-            dgv.Columns[nameof(TestStatistic_log)].HeaderText = "Student's t-Test Statistic (Log2 Intensities)";
             dgv.Columns[nameof(TestStatistic_linear)].HeaderText = "Student's t-Test Statistic (Linear Intensities)";
-            dgv.Columns[nameof(AvgPermutedTestStatistic)].HeaderText = "Corresponding Avg. Permuted Student's t-Test Statistic " + (SaveState.lollipop.testStatisticsWithLogIntensities ? "(Log2 Intensities)" : "(Linear Intensities)");
+            dgv.Columns[nameof(AvgPermutedTestStatistic)].HeaderText = "Corresponding Avg. Permuted Student's t-Test Statistic (Linear Intensities)";
             dgv.Columns[nameof(manual_validation_quant)].HeaderText = "Abundant Component for Manual Validation of Quantification";
         }
 

@@ -23,16 +23,12 @@ namespace ProteoformSuiteInternal
         public decimal intensitySum { get; set; } = 0;
         public decimal logFoldChange { get; set; } = 0;
         public decimal variance { get; set; } = 0;
-        public decimal scatter_log { get; set; } = 0;
-        public decimal scatter_linear { get; set; } = 0;
+        public decimal scatter { get; set; } = 0;
         public decimal pValue { get; set; } = 0;
         public bool significant { get; set; } = false;
-        public decimal testStatistic_log { get; set; }
-        public decimal testStatistic_linear { get; set; }
-        public List<decimal> permutedTestStatistics_log { get; set; } // Balanced permutation test statistics
-        public List<decimal> permutedTestStatistics_linear { get; set; } // Balanced permutation test statistics
-        public decimal averagePermutedTestStatistic_log { get; set; } // Average for balanced permutations
-        public decimal averagePermutedTestStatistic_linear { get; set; } // Average for balanced permutations
+        public decimal testStatistic { get; set; }
+        public List<decimal> permutedTestStatistics { get; set; } // Balanced permutation test statistics
+        public decimal averagePermutedTestStatistic { get; set; } // Average for balanced permutations
         public decimal correspondingAveragePermutedTestStatistic { get; set; } // Corresponding value from Tusher plot
         public decimal FDR { get; set; } = 0;
 
@@ -73,15 +69,12 @@ namespace ProteoformSuiteInternal
             variance = Variance(logFoldChange, allNumeratorIntensities, allDenominatorIntensities);
             pValue = PValue(logFoldChange, allNumeratorIntensities, allDenominatorIntensities);
 
-            scatter_log = StdDev_log(allNumeratorIntensities, allDenominatorIntensities); //with log2
-            testStatistic_log = getSingleTestStatistic_log(allNumeratorIntensities, allDenominatorIntensities, scatter_log, sKnot);
-            permutedTestStatistics_log = getBalancedPermutedTestStatistics(allNumeratorIntensities, allDenominatorIntensities, sKnot, getSingleTestStatistic_log, StdDev_log);
-            averagePermutedTestStatistic_log = permutedTestStatistics_log.Average();
-
-            scatter_linear = StdDev(allNumeratorIntensities, allDenominatorIntensities); //linear, like in Tusher et al. (2001)
-            testStatistic_linear = getSingleTestStatistic_linear(allNumeratorIntensities, allDenominatorIntensities, scatter_linear, sKnot);
-            permutedTestStatistics_linear = getBalancedPermutedTestStatistics(allNumeratorIntensities, allDenominatorIntensities, sKnot, getSingleTestStatistic_linear, StdDev);
-            averagePermutedTestStatistic_linear = permutedTestStatistics_linear.Average();
+            // We are using linear intensities, like in Tusher et al. (2001).
+            // This is a non-parametric test, and so it makes no assumptions about the incoming probability distribution, unlike a simple t-test.
+            // Therefore, the right-skewed intensity distributions is okay for this test.
+            testStatistic = getSingleTestStatistic(allNumeratorIntensities, allDenominatorIntensities, StdDev(allNumeratorIntensities, allDenominatorIntensities), sKnot);
+            permutedTestStatistics = getBalancedPermutedTestStatistics(allNumeratorIntensities, allDenominatorIntensities, sKnot, getSingleTestStatistic, StdDev);
+            averagePermutedTestStatistic = permutedTestStatistics.Average();
         }
 
         /// <summary>
@@ -110,6 +103,15 @@ namespace ProteoformSuiteInternal
             return fdr;
         }
 
+        /// <summary>
+        /// Returns imputed intensities for a certain condition for biological replicates this proteoform was not observed in.
+        /// </summary>
+        /// <param name="observedBioreps"></param>
+        /// <param name="bkgdAverageIntensity"></param>
+        /// <param name="bkgdStDev"></param>
+        /// <param name="condition"></param>
+        /// <param name="bioreps"></param>
+        /// <returns></returns>
         public static List<BiorepIntensity> imputedIntensities(List<BiorepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev, string condition, List<int> bioreps)
         {
             //bkgdAverageIntensity is log base 2
@@ -117,8 +119,7 @@ namespace ProteoformSuiteInternal
 
             return (
                 from biorep in bioreps
-                where !observedBioreps.Select(k => k.condition).Contains(condition) || // no bioreps observed from this conditon at all 
-                    !observedBioreps.Where(l => l.condition == condition).Select(b => b.biorep).Contains(biorep) // OR this condtion was observed but this biorep was not
+                where !observedBioreps.Any(k => k.condition == condition && k.biorep == biorep)
                 select add_biorep_intensity(bkgdAverageIntensity, bkgdStDev, biorep, condition))
                 .ToList();
         }
@@ -156,35 +157,14 @@ namespace ProteoformSuiteInternal
                 if (numerators_in_biorep.Count != denominators_in_biorep.Count)
                     throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for the numerator and denominator at this point.");
 
-                decimal logRepRatio = (decimal)Math.Log(
-                        (double)(((decimal)numerators_in_biorep.Sum(i => i.intensity)) /
-                        ((decimal)denominators_in_biorep.Sum(i => i.intensity)))
+                decimal logRepRatio = (decimal)Math.Log((double)
+                        ((numerators_in_biorep.Sum(i => (decimal)i.intensity)) /
+                        (denominators_in_biorep.Sum(i => (decimal)i.intensity)))
                         , 2);
 
                 squaredVariance += (decimal)Math.Pow(((double)logRepRatio - (double)logFoldChange), 2);
             }
             return (decimal)Math.Pow((double)squaredVariance, 0.5);
-        }
-
-        /// <summary>
-        /// Calculates the pooled standard deviation across logarithmic intensities for the two conditions for this proteoform.
-        /// This is known as the "scatter s(i)" in the Tusher et al. paper.
-        /// </summary>
-        /// <param name="allNumerators"></param>
-        /// <param name="allDenominators"></param>
-        /// <returns></returns>
-        public decimal StdDev_log(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators)
-        {
-            if ((allNumerators.Count + allDenominators.Count) == 2)
-                return 1000000m;
-
-            decimal a = (decimal)((1d / (double)allNumerators.Count + 1d / (double)allDenominators.Count) / ((double)allNumerators.Count + (double)allDenominators.Count - 2d));
-            double Avglog2Numerator = allNumerators.Average(l => Math.Log(l.intensity, 2));
-            double Avglog2Denominator = allDenominators.Average(l => Math.Log(l.intensity, 2));
-            decimal numeratorSumSquares = allNumerators.Sum(l => (decimal)Math.Pow(Math.Log(l.intensity, 2) - Avglog2Numerator, 2d));
-            decimal denominatorSumSquares = allDenominators.Sum(h => (decimal)Math.Pow(Math.Log(h.intensity, 2) - Avglog2Denominator, 2d));
-            decimal stdev = (decimal)Math.Sqrt((double)((numeratorSumSquares + denominatorSumSquares) * a));
-            return stdev;
         }
 
         /// <summary>
@@ -200,27 +180,12 @@ namespace ProteoformSuiteInternal
                 return 1000000m;
 
             decimal a = (decimal)((1d / (double)allNumerators.Count + 1d / (double)allDenominators.Count) / ((double)allNumerators.Count + (double)allDenominators.Count - 2d));
-            decimal numeratorSumSquares = allNumerators.Sum(n => (decimal)Math.Pow(n.intensity - allNumerators.Average(x => x.intensity), 2d));
-            decimal denominatorSumSquares = allDenominators.Sum(d => (decimal)Math.Pow(d.intensity - allDenominators.Average(x => x.intensity), 2d));
+            double avgNumerator = allNumerators.Average(x => x.intensity);
+            double avgDenominator = allDenominators.Average(x => x.intensity);
+            decimal numeratorSumSquares = allNumerators.Sum(n => (decimal)Math.Pow(n.intensity - avgNumerator, 2d));
+            decimal denominatorSumSquares = allDenominators.Sum(d => (decimal)Math.Pow(d.intensity - avgDenominator, 2d));
             decimal stdev = (decimal)Math.Sqrt((double)((numeratorSumSquares + denominatorSumSquares) * a));
             return stdev;
-        }
-
-        /// <summary>
-        /// This is the relative difference from Tusher, et al. (2001), except with log intensities
-        /// d(i) = { Average(measurement x from state I) - Average(measurement x from state U) } / { (pooled std dev from I and U) - s_knot }
-        /// </summary>
-        /// <param name="allNumerators"></param>
-        /// <param name="allDenominators"></param>
-        /// <param name="pooledStdDev"></param>
-        /// <param name="sKnot">
-        /// A constant intended to "minimize the coefficient of variation"
-        /// </param>
-        /// <returns></returns>
-        public decimal getSingleTestStatistic_log(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators, decimal pooledStdDev, decimal sKnot)
-        {
-            double t = (Math.Log(allNumerators.Average(l => l.intensity), 2) - Math.Log(allDenominators.Average(h => h.intensity), 2)) / ((double)(pooledStdDev + sKnot));
-            return (decimal)t;
         }
 
         /// <summary>
@@ -234,7 +199,7 @@ namespace ProteoformSuiteInternal
         /// A constant intended to "minimize the coefficient of variation"
         /// </param>
         /// <returns></returns>
-        public decimal getSingleTestStatistic_linear(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators, decimal pooledStdDev, decimal sKnot)
+        public decimal getSingleTestStatistic(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators, decimal pooledStdDev, decimal sKnot)
         {
             double t = (allNumerators.Average(l => l.intensity) - allDenominators.Average(h => h.intensity)) / ((double)(pooledStdDev + sKnot));
             return (decimal)t;
@@ -244,6 +209,13 @@ namespace ProteoformSuiteInternal
         /// Gets the test statistics for all balanced permutations of the intensity sums for this proteoform. 
         /// A balanced permutation has n/2 (integer division) values from the original set.
         /// Because positional permutations yield the same test statistic, only unique sets of permuted values are considered.
+        /// </summary>
+        /// <param name="allNumerators"></param>
+        /// <param name="allDenominators"></param>
+        /// <param name="sKnot"></param>
+        /// <param name="get_test_statistic"></param>
+        /// <param name="stdev"></param>
+        /// <returns></returns>
         /// 
         /// Example 1 (triples):
         /// Normal: 1, 2, 3 | Stress: 4, 5, 6
@@ -267,13 +239,6 @@ namespace ProteoformSuiteInternal
         /// *6*, *7*, 3, 4 ;; 1, *6*, *7*, 4 ;; 1, 2, *6*, *7* ;; *6*, 2, *7*, 4 ;; *6*, 2, 3 *7* ;; 1, *6*, 3, *7*
         /// *6*, *8*, 3, 4 ;; 1, *6*, *8*, 4 ;; 1, 2, *6*, *8* ;; *6*, 2, *8*, 4 ;; *6*, 2, 3 *8* ;; 1, *6*, 3, *8*
         /// *7*, *8*, 3, 4 ;; 1, *7*, *8*, 4 ;; 1, 2, *7*, *8* ;; *7*, 2, *8*, 4 ;; *7*, 2, 3 *8* ;; 1, *7*, 3, *8*
-        /// </summary>
-        /// <param name="allNumerators"></param>
-        /// <param name="allDenominators"></param>
-        /// <param name="sKnot"></param>
-        /// <param name="get_test_statistic"></param>
-        /// <param name="stdev"></param>
-        /// <returns></returns>
         public List<decimal> getBalancedPermutedTestStatistics(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators, decimal sKnot, Func<List<BiorepIntensity>, List<BiorepIntensity>, decimal, decimal, decimal> get_test_statistic, Func<List<BiorepIntensity>, List<BiorepIntensity>, decimal> stdev)
         {
             if (allNumerators.Count != allDenominators.Count) // This shouldn't happen because imputation forces these lists to be the same length
@@ -288,7 +253,7 @@ namespace ProteoformSuiteInternal
             {
                 List<BiorepIntensity> numerators = permuation.Select(i => allBiorepIntensities[i]).ToList();
                 List<BiorepIntensity> denominators = allBiorepIntensities.Except(numerators).ToList();
-                balanced_permuted_test_statistics.Add(get_test_statistic(numerators, denominators, stdev(allNumerators, allDenominators), sKnot));
+                balanced_permuted_test_statistics.Add(get_test_statistic(numerators, denominators, stdev(numerators, denominators), sKnot));
             }
             return balanced_permuted_test_statistics;
         }
