@@ -17,15 +17,15 @@ namespace ProteoformSuiteInternal
         public string fragment { get; set; }
         public int begin { get; set; }
         public int end { get; set; }
-        public string sequence { get; private set; }
+        public string sequence { get; set; }
         public double unmodified_mass { get; set; }
         public string goTerm_IDs { get; private set; }
         public double ptm_mass { get { return ptm_set.mass; } }
         public List<BottomUpPSM> psm_list { get; set; } = new List<BottomUpPSM>();
-        public int TD_proteoforms { get { return relationships.Count(r => r.RelationType == ProteoformComparison.TheoreticalTopDown); } }
         public bool contaminant { get; set; }
         public List<GoTerm> goTerms { get; private set; }
         public List<DisulfideBond> disulfide_bonds { get; set; }
+        public List<string> all_accessions { get; set; } = new List<string>();
         #endregion Public Properties
 
         #region Public Constructor
@@ -36,6 +36,7 @@ namespace ProteoformSuiteInternal
             this.linked_proteoform_references = new List<Proteoform>();
             this.ExpandedProteinList = expanded_protein_list.ToList();
             this.accession = accession;
+            this.all_accessions = expanded_protein_list.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct().ToList();
             this.description = description;
             this.name = String.Join(";", expanded_protein_list.Select(p => p.Name));
             this.fragment = String.Join(";", expanded_protein_list.Select(p => p.ProteolysisProducts.FirstOrDefault().Type));
@@ -48,8 +49,7 @@ namespace ProteoformSuiteInternal
             this.ptm_set = ptm_set;
             this.unmodified_mass = unmodified_mass;
             if (check_contaminants) this.contaminant = theoretical_proteins.Where(item => item.Key.ContaminantDB).SelectMany(kv => kv.Value).Any(p => p.Accession == this.accession.Split(new char[] { '_' })[0]);
-            psm_list = SaveState.lollipop.BottomUpPSMList.Where(p => p.protein_accession == this.accession.Split('_')[0]).ToList(); //TODO: proteoform parsimony
-            this.disulfide_bonds = expanded_protein_list.First().DisulfideBonds.Where(d => d.OneBasedBeginPosition >= this.begin && d.OneBasedBeginPosition <= this.end).ToList();
+            this.disulfide_bonds = expanded_protein_list.SelectMany(p => p.DisulfideBonds.Where(d => d.OneBasedBeginPosition >= this.begin && d.OneBasedBeginPosition <= this.end)).ToList();
         }
 
         #endregion Public Constructor

@@ -69,7 +69,6 @@ namespace ProteoformSuiteGUI
         private void display_td_bu_proteoforms(int row_index)
         {
             ExperimentalProteoform selected_experimental = (ExperimentalProteoform)((DisplayObject)this.dgv_identified_experimentals.Rows[row_index].DataBoundItem).display_object;
-
             DisplayUtility.FillDataGridView(dgv_same_topdown_id, selected_experimental.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).Select(r => r.connected_proteoforms[0]).Select(t => new DisplayTopDownProteoform(t as TopDownProteoform)));
             DisplayUtility.FillDataGridView(dgv_other_topdown_ids, SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Where(t =>  t.gene_name == selected_experimental.gene_name && !t.relationships.SelectMany(r => r.connected_proteoforms).Contains(selected_experimental) &&
                 Math.Abs(t.modified_mass - selected_experimental.modified_mass) < (double)SaveState.lollipop.mass_tolerance).Select(t => new DisplayTopDownProteoform(t)));
