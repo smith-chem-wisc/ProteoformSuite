@@ -72,7 +72,8 @@ namespace ProteoformSuiteInternal
             // We are using linear intensities, like in Tusher et al. (2001).
             // This is a non-parametric test, and so it makes no assumptions about the incoming probability distribution, unlike a simple t-test.
             // Therefore, the right-skewed intensity distributions is okay for this test.
-            testStatistic = getSingleTestStatistic(allNumeratorIntensities, allDenominatorIntensities, StdDev(allNumeratorIntensities, allDenominatorIntensities), sKnot);
+            scatter = StdDev(allNumeratorIntensities, allDenominatorIntensities);
+            testStatistic = getSingleTestStatistic(allNumeratorIntensities, allDenominatorIntensities, scatter, sKnot);
             permutedTestStatistics = getBalancedPermutedTestStatistics(allNumeratorIntensities, allDenominatorIntensities, sKnot, getSingleTestStatistic, StdDev);
             averagePermutedTestStatistic = permutedTestStatistics.Average();
         }
