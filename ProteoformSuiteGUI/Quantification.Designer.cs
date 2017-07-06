@@ -798,7 +798,7 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(375, 18);
+            this.label15.Location = new System.Drawing.Point(374, 16);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(29, 13);
             this.label15.TabIndex = 7;
@@ -806,7 +806,7 @@
             // 
             // tb_FDR
             // 
-            this.tb_FDR.Location = new System.Drawing.Point(410, 15);
+            this.tb_FDR.Location = new System.Drawing.Point(409, 13);
             this.tb_FDR.Name = "tb_FDR";
             this.tb_FDR.Size = new System.Drawing.Size(69, 20);
             this.tb_FDR.TabIndex = 6;
@@ -814,7 +814,7 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(211, 18);
+            this.label13.Location = new System.Drawing.Point(210, 16);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(96, 13);
             this.label13.TabIndex = 3;
@@ -829,7 +829,7 @@
             0,
             65536});
             this.nud_Offset.InterceptArrowKeys = false;
-            this.nud_Offset.Location = new System.Drawing.Point(313, 16);
+            this.nud_Offset.Location = new System.Drawing.Point(312, 14);
             this.nud_Offset.Maximum = new decimal(new int[] {
             5,
             0,
