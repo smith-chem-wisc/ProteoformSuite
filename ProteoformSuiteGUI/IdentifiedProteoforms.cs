@@ -73,7 +73,6 @@ namespace ProteoformSuiteGUI
             DisplayUtility.FillDataGridView(dgv_other_topdown_ids, SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Where(t =>  t.gene_name == selected_experimental.gene_name && !t.relationships.SelectMany(r => r.connected_proteoforms).Contains(selected_experimental) &&
                 Math.Abs(t.modified_mass - selected_experimental.modified_mass) < (double)SaveState.lollipop.mass_tolerance).Select(t => new DisplayTopDownProteoform(t)));
             DisplayUtility.FillDataGridView(dgv_bottom_up_peptides, selected_experimental.family.theoretical_proteoforms.Where(t => t.gene_name == selected_experimental.gene_name).SelectMany(t => t.psm_list).Select(t => new DisplayBottomUpPSM(t)));
-
             DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_other_topdown_ids);
             DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_same_topdown_id);
             DisplayBottomUpPSM.FormatTopDownProteoformTable(dgv_bottom_up_peptides);
