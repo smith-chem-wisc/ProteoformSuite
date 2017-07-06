@@ -308,6 +308,7 @@ namespace ProteoformSuiteInternal
                 candidateExperimentalProteoforms;
 
             target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
+            target_proteoform_community.community_number = -100;
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
             {
                 community.experimental_proteoforms = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
@@ -631,29 +632,37 @@ namespace ProteoformSuiteInternal
                 unprocessed_td_hits = unprocessed_td_hits.Except(unprocessed_td_hits.Where(h => h.pvalue == root.pvalue && h.ms2ScanNumber == root.ms2ScanNumber && h.filename == root.filename)).ToList();
             }
 
-            List<TopDownProteoform> first_aggregation = new List<TopDownProteoform>();
-            //aggregate to td hit w/ highest c-score as root - 1st average for retention time
-            while (remaining_td_hits.Count > 0)
+            List<string> PFRs = remaining_td_hits.Select(h => h.pfr).Distinct().ToList();
+            Parallel.ForEach(PFRs, pfr =>
             {
-                TopDownHit root = remaining_td_hits[0];
-                //ambiguous results - only include higher scoring one (if same scan, file, and p-value)
-                //find topdownhits within RT tol --> first average
-                double first_RT_average = remaining_td_hits.Where(h => Math.Abs(h.retention_time - root.retention_time) <= Convert.ToDouble(retention_time_tolerance) && h.pfr == root.pfr).Select(h => h.retention_time).Average();
-                List<TopDownHit> hits_to_aggregate = remaining_td_hits.Where(h => Math.Abs(h.retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance) && h.pfr == root.pfr).OrderByDescending(h => h.score).ToList();
-                root = hits_to_aggregate[0];
-                //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
-                TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, hits_to_aggregate);
-                remaining_td_hits = remaining_td_hits.Except(new_pf.topdown_hits).ToList();
-
-                //could have cases where topdown proteoforms same accession, mass, diff PTMs --> need a diff accession
-                int count = topdown_proteoforms.Count(t => t.accession.Contains(new_pf.accession));
-                if (count > 0)
+                List<TopDownHit> hits_by_pfr = remaining_td_hits.Where(h => h.pfr == pfr).ToList();
+                List<TopDownProteoform> first_aggregation = new List<TopDownProteoform>();
+                //aggregate to td hit w/ highest c-score as root - 1st average for retention time
+                while (hits_by_pfr.Count > 0)
                 {
-                    string[] old_accession = new_pf.accession.Split('_');
-                    new_pf.accession = old_accession[0] + "_TD" + count + "_" + old_accession[2] + old_accession[3] + "_" + old_accession[4];
+                    TopDownHit root = hits_by_pfr[0];
+                    //ambiguous results - only include higher scoring one (if same scan, file, and p-value)
+                    //find topdownhits within RT tol --> first average
+                    double first_RT_average = hits_by_pfr.Where(h => Math.Abs(h.retention_time - root.retention_time) <= Convert.ToDouble(retention_time_tolerance) && h.pfr == root.pfr).Select(h => h.retention_time).Average();
+                    List<TopDownHit> hits_to_aggregate = hits_by_pfr.Where(h => Math.Abs(h.retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance) && h.pfr == root.pfr).OrderByDescending(h => h.score).ToList();
+                    root = hits_to_aggregate[0];
+                    //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
+                    TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, hits_to_aggregate);
+                    hits_by_pfr = hits_by_pfr.Except(new_pf.topdown_hits).ToList();
+
+                    //could have cases where topdown proteoforms same accession, mass, diff PTMs --> need a diff accession
+                    lock (topdown_proteoforms)
+                    {
+                        int count = topdown_proteoforms.Count(t => t.accession.Contains(new_pf.accession));
+                        if (count > 0)
+                        {
+                            string[] old_accession = new_pf.accession.Split('_');
+                            new_pf.accession = old_accession[0] + "_TD" + count + "_" + old_accession[2] + old_accession[3] + "_" + old_accession[4];
+                        }
+                        topdown_proteoforms.Add(new_pf);
+                    }
                 }
-                topdown_proteoforms.Add(new_pf);
-            }
+            });
             return topdown_proteoforms;
         }
      
