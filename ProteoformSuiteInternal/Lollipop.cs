@@ -906,10 +906,10 @@ namespace ProteoformSuiteInternal
 
         public void computeSortedTestStatistics(List<ExperimentalProteoform> satisfactoryProteoforms)
         {
-            sortedProteoformTestStatistics = satisfactoryProteoforms.Select(eP => testStatisticsWithLogIntensities ? eP.quant.testStatistic : eP.quant.testStatistic).ToList();
-            sortedAvgPermutationTestStatistics = satisfactoryProteoforms.Select(eP => testStatisticsWithLogIntensities ? eP.quant.averagePermutedTestStatistic : eP.quant.averagePermutedTestStatistic).ToList();
-            sortedProteoformTestStatistics.Sort();
-            sortedAvgPermutationTestStatistics.Sort();
+            sortedProteoformTestStatistics = satisfactoryProteoforms.Select(eP => eP.quant.testStatistic).OrderBy(x => x).ToList();
+            int permutations = satisfactoryProteoforms[0].quant.permutedTestStatistics.Count;
+            List<List<decimal>> permuted_statistics = Enumerable.Range(0, permutations).Select(i => satisfactoryProteoforms.Select(pf => pf.quant.permutedTestStatistics[i]).OrderBy(x => x).ToList()).ToList();
+            sortedAvgPermutationTestStatistics = Enumerable.Range(0, sortedProteoformTestStatistics.Count).Select(i => permuted_statistics.Average(proteoforms => proteoforms[i])).OrderBy(x => x).ToList();
             int ct = 0;
             foreach (ExperimentalProteoform p in satisfactoryProteoforms.OrderBy(eP => testStatisticsWithLogIntensities ? eP.quant.testStatistic : eP.quant.testStatistic).ToList())
             {
