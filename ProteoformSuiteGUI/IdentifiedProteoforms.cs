@@ -50,7 +50,7 @@ namespace ProteoformSuiteGUI
         public void FillTablesAndCharts()
         {
             DisplayUtility.FillDataGridView(dgv_identified_experimentals, SaveState.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
-                .Where(e => e.linked_proteoform_references != null).Select(e => new DisplayExperimentalProteoform(e)));
+                .Where(e => e.linked_proteoform_references != null && (SaveState.lollipop.count_adducts_as_identifications || !e.adduct)).Select(e => new DisplayExperimentalProteoform(e)));
             DisplayExperimentalProteoform.FormatIdentifiedProteoformTable(dgv_identified_experimentals);
         }
 

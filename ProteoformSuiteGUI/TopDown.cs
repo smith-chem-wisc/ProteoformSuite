@@ -59,11 +59,10 @@ namespace ProteoformSuiteGUI
                   + String.Join(", ", SaveState.lollipop.topdownReader.topdown_ptms.Select(m => m.id + " at " + m.motif.Motif)));
             }
             SaveState.lollipop.td_relations = SaveState.lollipop.target_proteoform_community.relate_td(SaveState.lollipop.target_proteoform_community.experimental_proteoforms.ToList(), SaveState.lollipop.target_proteoform_community.theoretical_proteoforms.ToList(), SaveState.lollipop.target_proteoform_community.topdown_proteoforms.ToList());
-            foreach (ProteoformCommunity c in SaveState.lollipop.decoy_proteoform_communities.Values)
-            { 
+            Parallel.ForEach(SaveState.lollipop.decoy_proteoform_communities.Values, c =>
+            {
                 c.relate_td(c.experimental_proteoforms.ToList(), c.theoretical_proteoforms.ToList(), c.topdown_proteoforms.ToList());
-
-            }
+            });
             if (SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.ttd_match_count == 0) > 0)
             {
                 MessageBox.Show("Warning: Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: "
@@ -120,13 +119,11 @@ namespace ProteoformSuiteGUI
             if (SaveState.lollipop.top_down_hits.Count > 0)
             {
                 List<TopDownProteoform> topdown_proteoforms = SaveState.lollipop.AggregateTdHits(SaveState.lollipop.top_down_hits);
-
                 SaveState.lollipop.target_proteoform_community.topdown_proteoforms = topdown_proteoforms.Where(p => p != null).ToArray();
-                foreach (ProteoformCommunity community in SaveState.lollipop.decoy_proteoform_communities.Values)
+                foreach(ProteoformCommunity community in SaveState.lollipop.decoy_proteoform_communities.Values)
                 {
                     community.topdown_proteoforms = SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Select(e => new TopDownProteoform(e)).ToArray();
                 }
-
                 tb_tdProteoforms.Text = SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Length.ToString();
             }
         }

@@ -409,6 +409,7 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(expanded_proteins, p => EnterTheoreticalProteformFamily(p.BaseSequence, p, p.Accession, theoretical_proteoforms, -100, variableModifications));
             if (!SaveState.lollipop.reduced_disulfides) theoretical_proteoforms = add_disulfide_bonds(theoretical_proteoforms, -100);
             SaveState.lollipop.target_proteoform_community.theoretical_proteoforms = theoretical_proteoforms.ToArray();
+            SaveState.lollipop.target_proteoform_community.community_number = -100;
         }
 
         private void process_decoys(ProteinWithGoTerms[] expanded_proteins, IEnumerable<ModificationWithMass> variableModifications)
@@ -439,6 +440,7 @@ namespace ProteoformSuiteInternal
                     SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + decoyNumber].theoretical_proteoforms = decoy_proteoforms.ToArray();
                     SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + decoyNumber].experimental_proteoforms =
                     SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
+                    SaveState.lollipop.decoy_proteoform_communities[SaveState.lollipop.decoy_community_name_prefix + decoyNumber].community_number = decoyNumber;
                 }
             });
         }

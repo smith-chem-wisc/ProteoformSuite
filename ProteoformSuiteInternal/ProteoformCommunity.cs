@@ -11,7 +11,7 @@ namespace ProteoformSuiteInternal
     {
 
         #region Public Fields
-
+        public int community_number; //-100 for target, decoy database number for decoys
         public ExperimentalProteoform[] experimental_proteoforms = new ExperimentalProteoform[0];
         public TheoreticalProteoform[] theoretical_proteoforms = new TheoreticalProteoform[0];
         public TopDownProteoform[] topdown_proteoforms = new TopDownProteoform[0];
@@ -138,61 +138,68 @@ namespace ProteoformSuiteInternal
 
                 //match each td proteoform group to the closest theoretical w/ same accession and modifications. (if no match always make relationship with unmodified)
                 //if accession the same, or uniprot ID the same, or same sequence (take into account cleaved methionine)
-                List<TheoreticalProteoform> candidate_theoreticals = theoreticals.Where(t => t.name.Split(';').Contains(topdown.uniprot_id)).ToList();
 
-                List<ProteoformRelation> possible_ttd_relations = candidate_theoreticals.Select(t => new ProteoformRelation(t, topdown, ProteoformComparison.TheoreticalTopDown, topdown.theoretical_mass - t.modified_mass, Environment.CurrentDirectory)).ToList();
-                ProteoformRelation best_ttd_relation;
-                foreach (ProteoformRelation relation in possible_ttd_relations)
+                List<TheoreticalProteoform> candidate_theoreticals;
+                lock (SaveState.lollipop.theoretical_database.theoreticals_by_accession)
                 {
-                    if (SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(relation.DeltaMass, 1), out List<PtmSet> candidate_sets))
-                    {
-                        double mass_tolerance = topdown.theoretical_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
-                        relation.candidate_ptmset = topdown.generate_possible_added_ptmsets(candidate_sets.Where(s => Math.Abs(s.mass - relation.DeltaMass) < 0.05).ToList(), relation.DeltaMass, mass_tolerance, SaveState.lollipop.theoretical_database.all_mods_with_mass, relation.connected_proteoforms[0], ((TheoreticalProteoform)relation.connected_proteoforms[0]).sequence, SaveState.lollipop.mod_rank_first_quartile)
-                        .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(relation.DeltaMass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
-                        .FirstOrDefault();
-                    }
+                    SaveState.lollipop.theoretical_database.theoreticals_by_accession[community_number].TryGetValue(topdown.accession.Split('_')[0], out candidate_theoreticals);
                 }
-                best_ttd_relation = possible_ttd_relations.Where(r => r.candidate_ptmset != null).OrderBy(r => r.candidate_ptmset.ptm_rank_sum).FirstOrDefault();
-
-                if (best_ttd_relation == null)
+                if (candidate_theoreticals != null)
                 {
-                    TheoreticalProteoform t = candidate_theoreticals.Where(r => r.ptm_set.ptm_combination.Count == 0 && r.fragment == "full" || r.fragment == "full-met-cleaved").FirstOrDefault();
-                    if (t == null) t = candidate_theoreticals.Where(r => r.ptm_set.ptm_combination.Count == 0).FirstOrDefault();
-                    if (t != null)
+                    List<ProteoformRelation> possible_ttd_relations = candidate_theoreticals.Select(t => new ProteoformRelation(t, topdown, ProteoformComparison.TheoreticalTopDown, topdown.theoretical_mass - t.modified_mass, Environment.CurrentDirectory)).ToList();
+                    ProteoformRelation best_ttd_relation;
+                    foreach (ProteoformRelation relation in possible_ttd_relations)
                     {
-                        TheoreticalProteoform new_t = new TheoreticalProteoform(topdown.accession + "_" + topdown.start_index + "to" + topdown.stop_index + "_" + counter + "TD", t.description, t.ExpandedProteinList, (topdown.theoretical_mass - topdown.ptm_set.mass), topdown.lysine_count, topdown.ptm_set, t.is_target, false, null);
-                        new_t.contaminant = false;
-                        new_t.psm_list = t.psm_list;
-                        new_t.sequence = topdown.sequence;
-                        new_t.begin = topdown.start_index;
-                        new_t.end = topdown.stop_index;
-                        ProteoformRelation relation = new ProteoformRelation(new_t, topdown, ProteoformComparison.TheoreticalTopDown, topdown.theoretical_mass - new_t.modified_mass, Environment.CurrentDirectory);
                         if (SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(relation.DeltaMass, 1), out List<PtmSet> candidate_sets))
                         {
                             double mass_tolerance = topdown.theoretical_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
                             relation.candidate_ptmset = topdown.generate_possible_added_ptmsets(candidate_sets.Where(s => Math.Abs(s.mass - relation.DeltaMass) < 0.05).ToList(), relation.DeltaMass, mass_tolerance, SaveState.lollipop.theoretical_database.all_mods_with_mass, relation.connected_proteoforms[0], ((TheoreticalProteoform)relation.connected_proteoforms[0]).sequence, SaveState.lollipop.mod_rank_first_quartile)
                             .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(relation.DeltaMass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                             .FirstOrDefault();
-                            if (relation.candidate_ptmset != null)
+                        }
+                    }
+                    best_ttd_relation = possible_ttd_relations.Where(r => r.candidate_ptmset != null).OrderBy(r => r.candidate_ptmset.ptm_rank_sum).FirstOrDefault();
+
+                    if (best_ttd_relation == null)
+                    {
+                        TheoreticalProteoform t = candidate_theoreticals.Where(r => r.ptm_set.ptm_combination.Count == 0 && r.fragment == "full" || r.fragment == "full-met-cleaved").FirstOrDefault();
+                        if (t == null) t = candidate_theoreticals.Where(r => r.ptm_set.ptm_combination.Count == 0).FirstOrDefault();
+                        if (t != null)
+                        {
+                            TheoreticalProteoform new_t = new TheoreticalProteoform(topdown.accession + "_" + topdown.start_index + "to" + topdown.stop_index + "_" + counter + "TD", t.description, t.ExpandedProteinList, (topdown.theoretical_mass - topdown.ptm_set.mass), topdown.lysine_count, topdown.ptm_set, t.is_target, false, null);
+                            new_t.contaminant = false;
+                            new_t.psm_list = t.psm_list;
+                            new_t.sequence = topdown.sequence;
+                            new_t.begin = topdown.start_index;
+                            new_t.end = topdown.stop_index;
+                            ProteoformRelation relation = new ProteoformRelation(new_t, topdown, ProteoformComparison.TheoreticalTopDown, topdown.theoretical_mass - new_t.modified_mass, Environment.CurrentDirectory);
+                            if (SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(relation.DeltaMass, 1), out List<PtmSet> candidate_sets))
                             {
-                                theoretical_proteoforms = theoretical_proteoforms.Concat(new List<TheoreticalProteoform> { new_t }).ToArray();
-                                best_ttd_relation = relation;
-                                counter++;
+                                double mass_tolerance = topdown.theoretical_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
+                                relation.candidate_ptmset = topdown.generate_possible_added_ptmsets(candidate_sets.Where(s => Math.Abs(s.mass - relation.DeltaMass) < 0.05).ToList(), relation.DeltaMass, mass_tolerance, SaveState.lollipop.theoretical_database.all_mods_with_mass, relation.connected_proteoforms[0], ((TheoreticalProteoform)relation.connected_proteoforms[0]).sequence, SaveState.lollipop.mod_rank_first_quartile)
+                                .OrderBy(x => (double)x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(relation.DeltaMass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
+                                .FirstOrDefault();
+                                if (relation.candidate_ptmset != null)
+                                {
+                                    theoretical_proteoforms = theoretical_proteoforms.Concat(new List<TheoreticalProteoform> { new_t }).ToArray();
+                                    best_ttd_relation = relation;
+                                    counter++;
+                                }
                             }
                         }
                     }
-                }
-                if (best_ttd_relation != null)
-                {
-                    best_ttd_relation.connected_proteoforms[0].relationships.Add(best_ttd_relation);
-                    best_ttd_relation.connected_proteoforms[1].relationships.Add(best_ttd_relation);
-                    best_ttd_relation.Accepted = true;
-                    td_relations.Add(best_ttd_relation);
-                }
-                else
-                //shows Warning message in TopDown GUI if no TTD relations for the accession. 
-                {
-                    continue;
+                    if (best_ttd_relation != null)
+                    {
+                        best_ttd_relation.connected_proteoforms[0].relationships.Add(best_ttd_relation);
+                        best_ttd_relation.connected_proteoforms[1].relationships.Add(best_ttd_relation);
+                        best_ttd_relation.Accepted = true;
+                        td_relations.Add(best_ttd_relation);
+                    }
+                    else
+                    //shows Warning message in TopDown GUI if no TTD relations for the accession. 
+                    {
+                        continue;
+                    }
                 }
 
                 double mass = topdown.modified_mass;

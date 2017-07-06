@@ -91,7 +91,7 @@ namespace ProteoformSuiteInternal
                         e = r.connected_proteoforms.OfType<TopDownProteoform>().FirstOrDefault(p => p != this);
                         if (e == null) continue; //on TD looking at T
                     }
-                    else continue;
+                    else continue; //on E looking at TD
                 }
     
             
@@ -145,10 +145,10 @@ namespace ProteoformSuiteInternal
                 }
                 else
                 {
-                    List<Ptm> new_combo = this.ptm_set.ptm_combination;
+                    List<Ptm> new_combo = new List<Ptm>(this.ptm_set.ptm_combination);
                     foreach (Ptm ptm in best_loss.ptm_combination)
                     {
-                        new_combo.Remove(new_combo.FirstOrDefault(asdf => asdf.position < 1 && asdf.modification == ptm.modification));
+                        new_combo.Remove(new_combo.FirstOrDefault(asdf => asdf.modification == ptm.modification));
                     }
                     with_mod_change = new PtmSet(new_combo);
                 }
@@ -184,15 +184,14 @@ namespace ProteoformSuiteInternal
                         continue;
                     }
                     int begin = theoretical_base is TopDownProteoform ? ((TopDownProteoform)theoretical_base).start_index : ((TheoreticalProteoform)theoretical_base).begin;
-
                     bool could_be_m_retention = m.modificationType == "AminoAcid" && m.motif.Motif == "M" && begin == 2 && !ptm_set.ptm_combination.Select(p => p.modification).Contains(m);
                     bool motif_matches_n_terminus = n_terminal_degraded_aas < theoretical_base_sequence.Length && m.motif.Motif == theoretical_base_sequence[n_terminal_degraded_aas].ToString();
                     bool motif_matches_c_terminus = c_terminal_degraded_aas < theoretical_base_sequence.Length && m.motif.Motif == theoretical_base_sequence[theoretical_base_sequence.Length - c_terminal_degraded_aas - 1].ToString();
                     bool cannot_be_degradation = !motif_matches_n_terminus && !motif_matches_c_terminus;
-                    if (m.modificationType == "Missing" && cannot_be_degradation
-                        || m.modificationType == "AminoAcid" && !could_be_m_retention
-                        || u != null ? u.require_proteoform_without_mod : false && set.ptm_combination.Count > 1
-                        || ((this is TopDownProteoform || theoretical_base is TopDownProteoform) && m.modificationType != "Missing" && m.modificationType != "AminoAcid" && m.modificationType != "Deconvolution Error"))
+                    if ((m.modificationType == "Missing" && cannot_be_degradation)
+                        || (m.modificationType == "AminoAcid" && !could_be_m_retention)
+                        || (u != null ? u.require_proteoform_without_mod : false && set.ptm_combination.Count > 1)
+                        || (this as TopDownProteoform != null && m.modificationType != "Missing" && m.modificationType != "AminoAcid" && m.modificationType != "Deconvolution Error"))
                     {
                         rank_sum = Int32.MaxValue;
                         break;
