@@ -175,12 +175,14 @@ namespace ProteoformSuiteInternal
         /// <param name="allNumerators"></param>
         /// <param name="allDenominators"></param>
         /// <returns></returns>
-        public decimal StdDev(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators)
+        public decimal StdDev(IEnumerable<BiorepIntensity> allNumerators, IEnumerable<BiorepIntensity> allDenominators)
         {
-            if ((allNumerators.Count + allDenominators.Count) == 2)
+            int numerator_count = allNumerators.Count();
+            int denominator_count = allDenominators.Count();
+            if ((numerator_count + denominator_count) == 2)
                 return 1000000m;
 
-            decimal a = (decimal)((1d / (double)allNumerators.Count + 1d / (double)allDenominators.Count) / ((double)allNumerators.Count + (double)allDenominators.Count - 2d));
+            decimal a = (decimal)((1d / (double)numerator_count + 1d / (double)denominator_count) / ((double)numerator_count+ (double)denominator_count - 2d));
             double avgNumerator = allNumerators.Average(x => x.intensity);
             double avgDenominator = allDenominators.Average(x => x.intensity);
             decimal numeratorSumSquares = allNumerators.Sum(n => (decimal)Math.Pow(n.intensity - avgNumerator, 2d));
@@ -207,9 +209,10 @@ namespace ProteoformSuiteInternal
         }
 
         /// <summary>
-        /// Gets the test statistics for all balanced permutations of the intensity sums for this proteoform. 
+        /// Gets the test statistics for all balanced permutations of biological replicates of the intensity sums for this proteoform. 
         /// A balanced permutation has n/2 (integer division) values from the original set.
         /// Because positional permutations yield the same test statistic, only unique sets of permuted values are considered.
+        /// Multiple conditions is not implemented
         /// </summary>
         /// <param name="allNumerators"></param>
         /// <param name="allDenominators"></param>
@@ -240,6 +243,14 @@ namespace ProteoformSuiteInternal
         /// *6*, *7*, 3, 4 ;; 1, *6*, *7*, 4 ;; 1, 2, *6*, *7* ;; *6*, 2, *7*, 4 ;; *6*, 2, 3 *7* ;; 1, *6*, 3, *7*
         /// *6*, *8*, 3, 4 ;; 1, *6*, *8*, 4 ;; 1, 2, *6*, *8* ;; *6*, 2, *8*, 4 ;; *6*, 2, 3 *8* ;; 1, *6*, 3, *8*
         /// *7*, *8*, 3, 4 ;; 1, *7*, *8*, 4 ;; 1, 2, *7*, *8* ;; *7*, 2, *8*, 4 ;; *7*, 2, 3 *8* ;; 1, *7*, 3, *8*
+        /// 
+        /// Example 3 (duples):
+        /// Normal: n_1, n_2, n_3 | Stress: s_1, s_2, s_3
+        /// Three balanced permutations for "normal"
+        /// *s_1*, n_2, n_3
+        /// n_1, *s_2*, n_3
+        /// n_1, n_2, *s_3*
+        /// 
         public List<decimal> getBalancedPermutedTestStatistics(List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators, decimal sKnot, Func<List<BiorepIntensity>, List<BiorepIntensity>, decimal, decimal, decimal> get_test_statistic, Func<List<BiorepIntensity>, List<BiorepIntensity>, decimal> stdev)
         {
             if (allNumerators.Count != allDenominators.Count) // This shouldn't happen because imputation forces these lists to be the same length
@@ -248,11 +259,15 @@ namespace ProteoformSuiteInternal
             List<BiorepIntensity> allBiorepIntensities = new List<BiorepIntensity>(allNumerators.Concat(allDenominators));
             List<int> arr = Enumerable.Range(0, allBiorepIntensities.Count).ToList();
             List<HashSet<int>> permutations = new List<HashSet<int>>(ExtensionMethods.Combinations(arr, allNumerators.Count).Select(list => new HashSet<int>(list))); // using hash sets gets rid of positional permuations, even though it seems Combinations doesn't produce those
-            List<HashSet<int>> balanced_permutations = permutations.Where(p => p.Count(i => i >= allNumerators.Count) == allNumerators.Count / 2).ToList(); // integer division is intended with (allNumerators.Count / 2) to check the number of denominator entries
+            HashSet<int> original_set = new HashSet<int>(allNumerators.Select(n => allBiorepIntensities.IndexOf(n)));
+            HashSet<int> all_bioreps = new HashSet<int>(allBiorepIntensities.Select(br => br.biorep));
+            List<List<BiorepIntensity>> balanced_biorep_permutations = permutations.Where(p => 
+                !p.SequenceEqual(original_set) 
+                && p.Count(x => x >= allNumerators.Count) == allNumerators.Count / 2
+                && all_bioreps.All(b => p.Count(i => allBiorepIntensities[i].biorep == b) == allBiorepIntensities.Count(x => x.biorep == b) / 2)).Select(list => new List<BiorepIntensity>(list.Select(i => allBiorepIntensities[i]).ToList())).ToList(); // integer division is intended with (allNumerators.Count / 2) to check the number of denominator entries
             List<decimal> balanced_permuted_test_statistics = new List<decimal>();
-            foreach (var permuation in balanced_permutations)
+            foreach (var numerators in balanced_biorep_permutations)
             {
-                List<BiorepIntensity> numerators = permuation.Select(i => allBiorepIntensities[i]).ToList();
                 List<BiorepIntensity> denominators = allBiorepIntensities.Except(numerators).ToList();
                 balanced_permuted_test_statistics.Add(get_test_statistic(numerators, denominators, stdev(numerators, denominators), sKnot));
             }
