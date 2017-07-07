@@ -14,21 +14,21 @@ namespace ProteoformSuiteInternal
 
         public ExperimentalProteoform proteoform { get; set; }
         public string accession { get { return proteoform.accession; } }
-        public List<BiorepIntensity> lightBiorepIntensities { get; set; }
-        public List<BiorepIntensity> heavyBiorepIntensities { get; set; }
-        public List<BiorepIntensity> lightImputedIntensities { get; set; }
-        public List<BiorepIntensity> heavyImputedIntensities { get; set; }
-        public decimal lightIntensitySum { get; set; } = 0;
-        public decimal heavyIntensitySum { get; set; } = 0;
+        public List<BiorepIntensity> numeratorOriginalBiorepIntensities { get; set; }
+        public List<BiorepIntensity> denominatorOriginalBiorepIntensities { get; set; }
+        public List<BiorepIntensity> numeratorImputedIntensities { get; set; }
+        public List<BiorepIntensity> denominatorImputedIntensities { get; set; }
+        public Dictionary<Tuple<string,int>, BiorepIntensity> allIntensities { get; set; }
+        public decimal numeratorIntensitySum { get; set; } = 0;
+        public decimal denominatorIntensitySum { get; set; } = 0;
         public decimal intensitySum { get; set; } = 0;
         public decimal logFoldChange { get; set; } = 0;
-        public decimal variance { get; set; } = 0;
+        public decimal scatter { get; set; } = 0;
         public decimal pValue { get; set; } = 0;
         public bool significant { get; set; } = false;
-        public decimal testStatistic { get; set; }
-        public decimal correspondingAvgPermutedTestStatistic { get; set; }
-        public List<decimal> permutedTestStatistics { get; set; }
-        public decimal FDR { get; set; } = 0;
+        public decimal relative_difference { get; set; }
+        public decimal correspondingAvgSortedRelDiff { get; set; }
+        public decimal roughSignificanceFDR { get; set; } = 0;
 
         #endregion Public Properties
 
@@ -45,180 +45,189 @@ namespace ProteoformSuiteInternal
 
         #region Public Methods
 
-        public void determine_biorep_intensities_and_test_statistics(bool neucode_labeled, List<BiorepIntensity> biorepIntensityList, decimal bkgdAverageIntensity, decimal bkgdStDev, string numerator, string denominator, decimal sKnot)
+        public void determine_biorep_intensities_and_test_statistics(List<BiorepIntensity> biorepIntensityList, Dictionary<string, List<int>> conditionBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal bkgdAverageIntensity, decimal bkgdStDev, decimal sKnot)
         {
             //bkgdAverageIntensity is log base 2
             //bkgdStDev is log base 2
 
-            //numerator and denominator not used yet b/c of the programming that would require.
             significant = false;
-            lightBiorepIntensities = biorepIntensityList.Where(b => b.light).ToList();
-            lightImputedIntensities = imputedIntensities(true, lightBiorepIntensities, bkgdAverageIntensity, bkgdStDev, SaveState.lollipop.ltConditionsBioReps);
-            lightIntensitySum = (decimal)lightBiorepIntensities.Sum(i => i.intensity) + (decimal)lightImputedIntensities.Sum(i => i.intensity);
-            List<BiorepIntensity> allLights = lightBiorepIntensities.Concat(lightImputedIntensities).ToList();
+            numeratorOriginalBiorepIntensities = biorepIntensityList.Where(b => b.condition == numerator_condition).ToList();
+            numeratorImputedIntensities = imputedIntensities(numeratorOriginalBiorepIntensities, bkgdAverageIntensity, bkgdStDev, numerator_condition, conditionBioReps[numerator_condition]);
+            numeratorIntensitySum = (decimal)numeratorOriginalBiorepIntensities.Sum(i => i.intensity) + (decimal)numeratorImputedIntensities.Sum(i => i.intensity);
+            List<BiorepIntensity> allNumeratorIntensities = numeratorOriginalBiorepIntensities.Concat(numeratorImputedIntensities).ToList();
 
-            List<BiorepIntensity> allHeavys = new List<BiorepIntensity>();
-            if (neucode_labeled)
-            {
-                heavyBiorepIntensities = biorepIntensityList.Where(b => !b.light).ToList();
-                heavyImputedIntensities = imputedIntensities(false, heavyBiorepIntensities, bkgdAverageIntensity, bkgdStDev, SaveState.lollipop.hvConditionsBioReps);
-                heavyIntensitySum = (decimal)heavyBiorepIntensities.Sum(i => i.intensity) + (decimal)heavyImputedIntensities.Sum(i => i.intensity);
-                allHeavys = heavyBiorepIntensities.Concat(heavyImputedIntensities).ToList();
-            }
+            List<BiorepIntensity> allDenominatorIntensities = new List<BiorepIntensity>();
+            denominatorOriginalBiorepIntensities = biorepIntensityList.Where(b => b.condition == denominator_condition).ToList();
+            denominatorImputedIntensities = imputedIntensities(denominatorOriginalBiorepIntensities, bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition]);
+            denominatorIntensitySum = (decimal)denominatorOriginalBiorepIntensities.Sum(i => i.intensity) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity);
+            allDenominatorIntensities = denominatorOriginalBiorepIntensities.Concat(denominatorImputedIntensities).ToList();
 
-            intensitySum = lightIntensitySum + heavyIntensitySum;
-            logFoldChange = (decimal)Math.Log((double)lightIntensitySum / (double)heavyIntensitySum, 2); // Will get divide by zero error if not neuCode labeled, right? -AC
-            variance = Variance(logFoldChange, allLights, allHeavys);
-            pValue = PValue(logFoldChange, allLights, allHeavys);
-            decimal proteinLevelStdDev = getProteinLevelStdDev(allLights, allHeavys); //this is log2 bases
-            testStatistic = getSingleTestStatistic(allLights, allHeavys, proteinLevelStdDev, sKnot);
-            permutedTestStatistics = getPermutedTestStatistics(allLights, allHeavys, proteinLevelStdDev, sKnot);
+            allIntensities = allNumeratorIntensities.Concat(allDenominatorIntensities).ToDictionary(x => new Tuple<string, int>(x.condition, x.biorep), x => x);
+
+            intensitySum = numeratorIntensitySum + denominatorIntensitySum;
+            logFoldChange = (decimal)Math.Log((double)numeratorIntensitySum / (double)denominatorIntensitySum, 2);
+            pValue = PValue(logFoldChange, allNumeratorIntensities, allDenominatorIntensities);
+
+            // We are using linear intensities, like in Tusher et al. (2001).
+            // This is a non-parametric test, and so it makes no assumptions about the incoming probability distribution, unlike a simple t-test.
+            // Therefore, the right-skewed intensity distributions is okay for this test.
+            scatter = StdDev(allNumeratorIntensities, allDenominatorIntensities);
+            List<BiorepIntensity> induced = allIntensities.Where(kv => kv.Key.Item1 == induced_condition).Select(kv => kv.Value).ToList();
+            List<BiorepIntensity> uninduced = allIntensities.Where(kv => kv.Key.Item1 != induced_condition).Select(kv => kv.Value).ToList();
+            relative_difference = getSingleTestStatistic(induced, uninduced, scatter, sKnot);
         }
 
-        public static decimal computeExperimentalProteoformFDR(decimal testStatistic, List<List<decimal>> permutedTestStatistics, int satisfactoryProteoformsCount, List<decimal> sortedProteoformTestStatistics)
-        {
-            decimal minimumPositivePassingTestStatistic = Math.Abs(testStatistic);
-            decimal minimumNegativePassingTestStatistic = -minimumPositivePassingTestStatistic;
+        #endregion Public Methods
 
-            int totalFalsePermutedPositiveValues = 0;
-            int totalFalsePermutedNegativeValues = 0;
+        #region Imputation Methods
 
-            foreach (List<decimal> pts in permutedTestStatistics)
-            {
-                totalFalsePermutedPositiveValues += pts.Count(p => p >= minimumPositivePassingTestStatistic);
-                totalFalsePermutedNegativeValues += pts.Count(p => p <= minimumNegativePassingTestStatistic);
-            }
-
-            decimal avergePermuted = (decimal)(totalFalsePermutedPositiveValues + totalFalsePermutedNegativeValues) / (decimal)satisfactoryProteoformsCount;
-            return avergePermuted / ((decimal)(sortedProteoformTestStatistics.Count(s => s >= minimumPositivePassingTestStatistic) + sortedProteoformTestStatistics.Count(s => s <= minimumNegativePassingTestStatistic)));
-        }
-
-        public static List<BiorepIntensity> imputedIntensities(bool light, List<BiorepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev, Dictionary<string, List<int>> observedConditionsBioreps)
+        /// <summary>
+        /// Returns imputed intensities for a certain condition for biological replicates this proteoform was not observed in.
+        /// </summary>
+        /// <param name="observedBioreps"></param>
+        /// <param name="bkgdAverageIntensity"></param>
+        /// <param name="bkgdStDev"></param>
+        /// <param name="condition"></param>
+        /// <param name="bioreps"></param>
+        /// <returns></returns>
+        public static List<BiorepIntensity> imputedIntensities(List<BiorepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev, string condition, List<int> bioreps)
         {
             //bkgdAverageIntensity is log base 2
             //bkgdStDev is log base 2
 
-            List<BiorepIntensity> imputedBioreps = new List<BiorepIntensity>();
-            foreach (KeyValuePair<string, List<int>> entry in observedConditionsBioreps)//keys are conditions and values are bioreps.
-            {
-                foreach (int biorep in entry.Value)
-                {
-                    if (!observedBioreps.Where(l => l.light == light).Select(k => k.condition).Contains(entry.Key)) // no bioreps observed from this conditon at all
-                        imputedBioreps.Add(add_biorep_intensity(bkgdAverageIntensity, bkgdStDev, biorep, entry.Key, light));
-                    else if (!observedBioreps.Where(l => l.condition == entry.Key && l.light == light).Select(b => b.biorep).Contains(biorep)) //this condtion was observed but this biorep was not
-                        imputedBioreps.Add(add_biorep_intensity(bkgdAverageIntensity, bkgdStDev, biorep, entry.Key, light));
-                }
-            }
-            return imputedBioreps;
+            return (
+                from biorep in bioreps
+                where !observedBioreps.Any(k => k.condition == condition && k.biorep == biorep)
+                select add_biorep_intensity(bkgdAverageIntensity, bkgdStDev, biorep, condition))
+                .ToList();
         }
 
-        public static BiorepIntensity add_biorep_intensity(decimal bkgdAverageIntensity, decimal bkgdStDev, int biorep, string key, bool light)
+        /// <summary>
+        /// Computes an intensity from a background distribution of intensity I and standard deviation s.
+        /// The standard normal distribution of mean 0 and variance 1 is computed from two random numbers distributed uniformly on (0, 1).
+        /// Then, a number from that distribution, x, is used to calculate the imputed intensity: I + s * x
+        /// </summary>
+        /// <param name="bkgdAverageIntensity"></param>
+        /// <param name="bkgdStDev"></param>
+        /// <param name="biorep"></param>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public static BiorepIntensity add_biorep_intensity(decimal bkgdAverageIntensity, decimal bkgdStDev, int biorep, string key)
         {
             //bkgdAverageIntensity is coming in as a log 2 number
             //bkgdStDev is coming in as a log 2 number
 
-            double u1 = ExtensionMethods.RandomNumber(); //these are uniform(0,1) random doubles
+            double u1 = ExtensionMethods.RandomNumber(); // these are uniform(0,1) random doubles
             double u2 = ExtensionMethods.RandomNumber();
-            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-            double intensity = Math.Pow(2, (double)bkgdAverageIntensity) + (Math.Pow(2, (double)bkgdStDev) * randStdNormal);
-            return (new BiorepIntensity(light, true, biorep, key, intensity));//random normal(mean,stdDev^2)
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); // random normal(0,1) -- normal(mean,variance)
+            double intensity = Math.Pow(2, (double)bkgdAverageIntensity + (double)bkgdStDev * randStdNormal); // std dev is calculated for log intensities, so convert to linear after adding I + s * x
+            return new BiorepIntensity(true, biorep, key, intensity); // random normal(mean,stdDev^2)
         }
 
-        public decimal Variance(decimal logFoldChange, List<BiorepIntensity> allLights, List<BiorepIntensity> allHeavies)
+        #endregion Imputation Methods
+
+        #region Relative Difference Methods
+
+        /// <summary>
+        /// Calculates the pooled standard deviation across unlogged intensities for the two conditions for this proteoform.
+        /// This is known as the "scatter s(i)" in the Tusher et al. paper.
+        /// </summary>
+        /// <param name="allInduced"></param>
+        /// <param name="allUninduced"></param>
+        /// <returns></returns>
+        public decimal StdDev(IEnumerable<BiorepIntensity> allInduced, IEnumerable<BiorepIntensity> allUninduced)
         {
-            decimal squaredVariance = 0;
-            foreach (int biorep in allLights.Select(b => b.biorep).ToList())
-            {
-                List<BiorepIntensity> lights_in_biorep = allLights.Where(b => b.biorep == biorep).ToList();
-                List<BiorepIntensity> heavies_in_biorep = allHeavies.Where(b => b.biorep == biorep).ToList();
-
-                if (lights_in_biorep.Count != heavies_in_biorep.Count)
-                    throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for NeuCode light and heavy at this point.");
-
-                decimal logRepRatio = (decimal)Math.Log(
-                        (double)(((decimal)lights_in_biorep.Sum(i => i.intensity)) /
-                        ((decimal)heavies_in_biorep.Sum(i => i.intensity)))
-                        , 2);
-                squaredVariance += (decimal)Math.Pow(((double)logRepRatio - (double)logFoldChange), 2);
-            }
-            return (decimal)Math.Pow((double)squaredVariance, 0.5);
-        }
-
-        public decimal getProteinLevelStdDev(List<BiorepIntensity> allLights, List<BiorepIntensity> allHeavys)
-        {
-            if ((allLights.Count + allHeavys.Count) == 2)
+            int numerator_count = allInduced.Count();
+            int denominator_count = allUninduced.Count();
+            if ((numerator_count + denominator_count) == 2)
                 return 1000000m;
 
-            decimal a = (decimal)((1d / (double)allLights.Count + 1d / (double)allHeavys.Count) / ((double)allLights.Count + (double)allHeavys.Count - 2d));
-            double log2LightAvg = Math.Log(allLights.Average(l => l.intensity), 2);
-            double log2HeavyAvg = Math.Log(allHeavys.Average(l => l.intensity), 2);
-            decimal lightSumSquares = allLights.Sum(l => (decimal)Math.Pow(Math.Log(l.intensity, 2) - log2LightAvg, 2d));
-            decimal heavySumSquares = allHeavys.Sum(h => (decimal)Math.Pow(Math.Log(h.intensity, 2) - log2HeavyAvg, 2d));
-            decimal stdev = (decimal)Math.Sqrt((double)((lightSumSquares + heavySumSquares) * a));
+            decimal a = (decimal)((1d / (double)numerator_count + 1d / (double)denominator_count) / ((double)numerator_count + (double)denominator_count - 2d));
+            double avgNumerator = allInduced.Average(x => x.intensity);
+            double avgDenominator = allUninduced.Average(x => x.intensity);
+            decimal numeratorSumSquares = allInduced.Sum(n => (decimal)Math.Pow(n.intensity - avgNumerator, 2d));
+            decimal denominatorSumSquares = allUninduced.Sum(d => (decimal)Math.Pow(d.intensity - avgDenominator, 2d));
+            decimal stdev = (decimal)Math.Sqrt((double)((numeratorSumSquares + denominatorSumSquares) * a));
             return stdev;
         }
 
-        public decimal getSingleTestStatistic(List<BiorepIntensity> allLights, List<BiorepIntensity> allHeavys, decimal proteinLevelStdDev, decimal sKnot)
+        /// <summary>
+        /// This is the relative difference from Tusher, et al. (2001) using unlogged intensity values
+        /// d(i) = { Average(measurement x from state I) - Average(measurement x from state U) } / { (pooled std dev from I and U) - s_knot }
+        /// </summary>
+        /// <param name="allInduced"></param>
+        /// <param name="allUninduced"></param>
+        /// <param name="pooledStdDev"></param>
+        /// <param name="sKnot">
+        /// A constant intended to "minimize the coefficient of variation"
+        /// </param>
+        /// <returns></returns>
+        public decimal getSingleTestStatistic(List<BiorepIntensity> allInduced, List<BiorepIntensity> allUninduced, decimal pooledStdDev, decimal sKnot)
         {
-            double t = (Math.Log(allLights.Average(l => l.intensity), 2) - Math.Log(allHeavys.Average(h => h.intensity), 2)) / ((double)(proteinLevelStdDev + sKnot));
+            double t = (allInduced.Average(l => l.intensity) - allUninduced.Average(h => h.intensity)) / ((double)(pooledStdDev + sKnot));
             return (decimal)t;
         }
 
-        public List<decimal> getPermutedTestStatistics(List<BiorepIntensity> allLights, List<BiorepIntensity> allHeavys, decimal protproteinLevelStdDevein, decimal sKnot)
+        #endregion Relative Difference Methods
+
+        #region Fold Change Method
+
+        public decimal PValue(decimal logFoldChange, List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators)
         {
-            List<decimal> pst = new List<decimal>();
-            int ltCount = allLights.Count;
-            int hvCount = allHeavys.Count;
-            List<int> arr = Enumerable.Range(0, ltCount + hvCount).ToList();
-            var result = ExtensionMethods.Combinations(arr, ltCount);
-
-            List<BiorepIntensity> allBiorepIntensities = new List<BiorepIntensity>(allLights.Concat(allHeavys));
-
-            int last = ltCount;
-            if (ltCount != hvCount) // This shouldn't happen because imputation forces these lists to be the same length
-            {
-                last += hvCount;
-                throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for NeuCode light and heavy at this point.");
-            }
-
-            for (int i = 0; i < last; i++)
-            {
-                List<BiorepIntensity> lightlist = new List<BiorepIntensity>();
-                List<BiorepIntensity> heavylist = new List<BiorepIntensity>();
-                foreach (int index in result.ElementAt(i))
-                    lightlist.Add(allBiorepIntensities[index]);
-                heavylist = allBiorepIntensities.Except(lightlist).ToList();
-                pst.Add(getSingleTestStatistic(lightlist, heavylist, protproteinLevelStdDevein, sKnot)); //adding the test statistic for each combo
-            }
-            return pst;
-        }
-
-        public decimal PValue(decimal logFoldChange, List<BiorepIntensity> allLights, List<BiorepIntensity> allHeavies)
-        {
-            if (allLights.Count != allHeavies.Count)
+            if (allNumerators.Count != allDenominators.Count)
                 throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for NeuCode light and heavy at this point.");
 
-            int maxPermutations = 10000;
-            ConcurrentBag<decimal> permutedRatios = new ConcurrentBag<decimal>();
+            int maxRandomizations = 10000;
+            ConcurrentBag<decimal> randomizedRatios = new ConcurrentBag<decimal>();
 
-            Parallel.For(0, maxPermutations, i =>
+            Parallel.For(0, maxRandomizations, i =>
             {
-                List<double> combined = allLights.Select(j => j.intensity).Concat(allHeavies.Select(j => j.intensity)).ToList();
+                List<double> combined = allNumerators.Select(j => j.intensity).Concat(allDenominators.Select(j => j.intensity)).ToList();
                 combined.Shuffle();
-                double numerator = combined.Take(allLights.Count).Sum();
-                double denominator = combined.Skip(allLights.Count).Take(allHeavies.Count).Sum();
+                double numerator = combined.Take(allNumerators.Count).Sum();
+                double denominator = combined.Skip(allNumerators.Count).Take(allDenominators.Count).Sum();
                 decimal someRatio = (decimal)Math.Log(numerator / denominator, 2);
-                permutedRatios.Add(someRatio);
+                randomizedRatios.Add(someRatio);
             });
 
             decimal pValue = logFoldChange > 0 ?
-                (decimal)(1M / maxPermutations) + (decimal)permutedRatios.Count(x => x > logFoldChange) / (decimal)permutedRatios.Count : //adding a slight positive shift so that later logarithms don't produce fault
-                (decimal)(1M / maxPermutations) + (decimal)permutedRatios.Count(x => x < logFoldChange) / (decimal)permutedRatios.Count; //adding a slight positive shift so that later logarithms don't produce fault
+                (decimal)(1M / maxRandomizations) + (decimal)randomizedRatios.Count(x => x > logFoldChange) / (decimal)randomizedRatios.Count : //adding a slight positive shift so that later logarithms don't produce fault
+                (decimal)(1M / maxRandomizations) + (decimal)randomizedRatios.Count(x => x < logFoldChange) / (decimal)randomizedRatios.Count; //adding a slight positive shift so that later logarithms don't produce fault
 
             return pValue;
         }
 
-        #endregion Public Methods
+        #endregion Fold Change Method
+
+        #region Additional Relative Difference Method (Not from Tusher, et al. paper)
+
+        /// <summary>
+        /// Calculates a rough q-value for this proteoform by dividing the estimated number of pfs that pass given the balanced permutations by the real pfs that pass.
+        /// The threshold for passing is drawn at the test statistic for this proteoform.
+        /// To calculate the "estimated number of pfs that pass given balanced permutations," I multiply the proportion of passing permuations by the number of pfs.
+        /// 
+        /// This calculation is an extension of the relative difference method presented in the Tusher et al. paper.
+        /// </summary>
+        /// <param name="testStatistic"></param>
+        /// <param name="permutedTestStatistics"></param>
+        /// <param name="satisfactoryProteoformsCount"></param>
+        /// <param name="sortedProteoformTestStatistics"></param>
+        /// <returns></returns>
+        public static decimal computeExperimentalProteoformFDR(decimal testStatistic, List<decimal> permutedTestStatistics, int satisfactoryProteoformsCount, List<decimal> sortedProteoformTestStatistics)
+        {
+            decimal minimumPositivePassingTestStatistic = Math.Abs(testStatistic);
+            decimal minimumNegativePassingTestStatistic = -minimumPositivePassingTestStatistic;
+
+            int totalFalsePermutedPassingValues = permutedTestStatistics.Count(v => v <= minimumNegativePassingTestStatistic && v <= 0 || minimumPositivePassingTestStatistic <= v && v >= 0);
+            decimal averagePermutedPassing = (decimal)totalFalsePermutedPassingValues / (decimal)permutedTestStatistics.Count * (decimal)satisfactoryProteoformsCount;
+
+            int totalRealPassing = sortedProteoformTestStatistics.Count(stat => stat <= minimumNegativePassingTestStatistic && stat <= 0 || minimumPositivePassingTestStatistic <= stat && stat >= 0);
+
+            decimal fdr = averagePermutedPassing / (decimal)totalRealPassing; // real passing will always be above zero because this proteoform always passes
+            return fdr;
+        }
+
+        #endregion Additional Relative Difference Method (Not from Tusher, et al. paper)
 
     }
 }

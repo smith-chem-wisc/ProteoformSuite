@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -73,11 +74,19 @@ namespace ProteoformSuiteGUI
 
         public void FillTablesAndCharts()
         {
-            plotObservedVsExpectedRelativeDifference();
+            if (cb_useLocalFdrCutoff.Checked)
+                plotObservedRelativeDifferenceVsFdr();
+            else if (new int[] { 0 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotObservedVsExpectedRelativeDifference();
+            else if (new int[] { 1 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotObservedRelativeDifferenceVsScatter();
+            else if (new int[] { 2 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotAllPermutedTestStatistics();
             DisplayUtility.FillDataGridView(dgv_quantification_results, SaveState.lollipop.qVals.Select(q => new DisplayQuantitativeValues(q)));
             DisplayQuantitativeValues.FormatGridView(dgv_quantification_results);
             tb_avgIntensity.Text = Math.Round(SaveState.lollipop.selectAverageIntensity, 1).ToString();
             tb_stdevIntensity.Text = Math.Round(SaveState.lollipop.selectStDev, 3).ToString();
+            tb_FDR.Text = Math.Round(SaveState.lollipop.relativeDifferenceFDR, 4).ToString();
             volcanoPlot();
             plotBiorepIntensities();
             updateGoTermsTable();
@@ -99,10 +108,13 @@ namespace ProteoformSuiteGUI
             conditions = conditions.Distinct().ToList();
             cmbx_ratioNumerator.Items.AddRange(conditions.ToArray());
             cmbx_ratioDenominator.Items.AddRange(conditions.ToArray());
+            cmbx_inducedCondition.Items.AddRange(conditions.ToArray());
             cmbx_ratioNumerator.SelectedIndex = 0;
-            cmbx_ratioDenominator.SelectedIndex = Convert.ToInt32(conditions.Count() > 1);
+            cmbx_ratioDenominator.SelectedIndex = Convert.ToInt32(conditions.Count > 1);
+            cmbx_inducedCondition.SelectedIndex = Convert.ToInt32(conditions.Count > 1);
             SaveState.lollipop.numerator_condition = cmbx_ratioNumerator.SelectedItem.ToString();
             SaveState.lollipop.denominator_condition = cmbx_ratioDenominator.SelectedItem.ToString();
+            SaveState.lollipop.induced_condition = cmbx_inducedCondition.SelectedItem.ToString();
             cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels);
 
             //Initialize display options
@@ -124,6 +136,16 @@ namespace ProteoformSuiteGUI
             ProteoformCommunity.preferred_gene_label = cmbx_geneLabel.SelectedItem.ToString();
             ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
 
+            cmbx_relativeDifferenceChartSelection.Items.AddRange(relative_difference_selections);
+            cmbx_relativeDifferenceChartSelection.SelectedIndexChanged -= cmbx_relativeDifferenceChartSelection_SelectedIndexChanged;
+            cmbx_relativeDifferenceChartSelection.SelectedIndex = 0; //start with obs vs exp
+            cmbx_relativeDifferenceChartSelection.SelectedIndexChanged += cmbx_relativeDifferenceChartSelection_SelectedIndexChanged;
+
+            cmbx_intensityDistributionChartSelection.Items.AddRange(biorepintensity_selections);
+            cmbx_intensityDistributionChartSelection.SelectedIndexChanged -= cmbx_relativeDifferenceChartSelection_SelectedIndexChanged;
+            cmbx_intensityDistributionChartSelection.SelectedIndex = 3; //start with projected
+            cmbx_intensityDistributionChartSelection.SelectedIndexChanged += cmbx_relativeDifferenceChartSelection_SelectedIndexChanged;
+
             //Set parameters
             nud_bkgdShift.ValueChanged -= nud_bkgdShift_ValueChanged;
             nud_bkgdShift.Value = (decimal)-1.8;
@@ -142,7 +164,7 @@ namespace ProteoformSuiteGUI
             nud_ratio.ValueChanged -= new EventHandler(updateGoTermsTable);
             nud_intensity.ValueChanged -= new EventHandler(updateGoTermsTable);
 
-            nud_FDR.Value = SaveState.lollipop.minProteoformFDR;
+            nud_FDR.Value = SaveState.lollipop.maxGoTermFDR;
             nud_ratio.Value = SaveState.lollipop.minProteoformFoldChange;
             nud_intensity.Value = SaveState.lollipop.minProteoformIntensity;
 
@@ -150,7 +172,6 @@ namespace ProteoformSuiteGUI
             nud_ratio.ValueChanged += new EventHandler(updateGoTermsTable);
             nud_intensity.ValueChanged += new EventHandler(updateGoTermsTable);
 
-            //Lollipop.getObservationParameters(); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
             nud_minObservations.Minimum = 1;
             nud_minObservations.Maximum = SaveState.lollipop.countOfBioRepsInOneCondition;
             nud_minObservations.Value = SaveState.lollipop.countOfBioRepsInOneCondition;
@@ -162,13 +183,14 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
             cmbx_observationsTypeRequired.SelectedIndexChanged += cmbx_observationsTypeRequired_SelectedIndexChanged;
 
-            nud_sKnot_minFoldChange.ValueChanged -= nud_sKnot_minFoldChange_ValueChanged;
-            nud_sKnot_minFoldChange.Value = SaveState.lollipop.sKnot_minFoldChange;
-            nud_sKnot_minFoldChange.ValueChanged += nud_sKnot_minFoldChange_ValueChanged;
-
             nud_Offset.ValueChanged -= nud_Offset_ValueChanged;
             nud_Offset.Value = SaveState.lollipop.offsetTestStatistics;
             nud_Offset.ValueChanged += nud_Offset_ValueChanged;
+
+            nud_localFdrCutoff.ValueChanged -= nud_localFdrCutoff_ValueChanged;
+            nud_localFdrCutoff.Value = SaveState.lollipop.localFdrCutoff;
+            nud_localFdrCutoff.ValueChanged += nud_localFdrCutoff_ValueChanged;
+            nud_localFdrCutoff.Enabled = cb_useLocalFdrCutoff.Checked;
 
             cmbx_goAspect.Items.Add(Aspect.BiologicalProcess);
             cmbx_goAspect.Items.Add(Aspect.CellularComponent);
@@ -214,119 +236,6 @@ namespace ProteoformSuiteGUI
                 MessageBox.Show("Please construct proteoform families.", "Quantification");
         }
 
-        private void plotObservedVsExpectedRelativeDifference()
-        {
-            ct_relativeDifference.Series.Clear();
-            ct_relativeDifference.Series.Add("obsVSexp");
-            ct_relativeDifference.Series["obsVSexp"].ChartType = SeriesChartType.Point;
-            ct_relativeDifference.Series.Add("positiveOffset");
-            ct_relativeDifference.Series["positiveOffset"].ChartType = SeriesChartType.Line;
-            ct_relativeDifference.Series.Add("negativeOffset");
-            ct_relativeDifference.Series["negativeOffset"].ChartType = SeriesChartType.Line;
-            ct_relativeDifference.ChartAreas[0].AxisX.Title = "Expected Relative Difference dE(i)";
-            ct_relativeDifference.ChartAreas[0].AxisY.Title = "Observed Relative Difference d(i)";
-
-            ct_relativeDifference.Series["obsVSexp"].Points.DataBindXY(SaveState.lollipop.sortedAvgPermutationTestStatistics.ToList(), SaveState.lollipop.sortedProteoformTestStatistics.ToList());
-
-            if (SaveState.lollipop.sortedAvgPermutationTestStatistics.Count > 0 && SaveState.lollipop.sortedProteoformTestStatistics.Count > 0)
-            {
-                ct_relativeDifference.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(SaveState.lollipop.sortedAvgPermutationTestStatistics.First()));
-                ct_relativeDifference.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(SaveState.lollipop.sortedAvgPermutationTestStatistics.Last()));
-                ct_relativeDifference.ChartAreas[0].AxisY.Minimum = Math.Min(Convert.ToDouble(Math.Floor(negativeOffsetFunction(SaveState.lollipop.sortedProteoformTestStatistics.First()))), Convert.ToDouble(Math.Floor(SaveState.lollipop.sortedProteoformTestStatistics.First())));
-                ct_relativeDifference.ChartAreas[0].AxisY.Maximum = Math.Max(Convert.ToDouble(Math.Ceiling(positiveOffsetFunction(SaveState.lollipop.sortedProteoformTestStatistics.Last()))), Convert.ToDouble(Math.Ceiling(SaveState.lollipop.sortedProteoformTestStatistics.Last())));
-            }
-
-            plotObservedVsExpectedOffsets();
-        }
-
-        private decimal positiveOffsetFunction(decimal x)
-        {
-            return (x + nud_Offset.Value);
-        }
-
-        private decimal negativeOffsetFunction(decimal x)
-        {
-            return (x - nud_Offset.Value);
-        }
-
-        private void plotObservedVsExpectedOffsets()
-        {
-            ct_relativeDifference.Series["positiveOffset"].Points.Clear();
-            ct_relativeDifference.Series["negativeOffset"].Points.Clear();
-
-            foreach (decimal xValue in SaveState.lollipop.sortedAvgPermutationTestStatistics)
-            {
-                ct_relativeDifference.Series["positiveOffset"].Points.AddXY(xValue, positiveOffsetFunction(xValue));
-                ct_relativeDifference.Series["negativeOffset"].Points.AddXY(xValue, negativeOffsetFunction(xValue));
-            }
-
-            if (SaveState.lollipop.sortedAvgPermutationTestStatistics.Count <= 0 && SaveState.lollipop.sortedProteoformTestStatistics.Count <= 0)
-            {
-                ct_relativeDifference.ChartAreas[0].AxisX.Minimum = -10;
-                ct_relativeDifference.ChartAreas[0].AxisX.Maximum = 10;
-                ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -10;
-                ct_relativeDifference.ChartAreas[0].AxisY.Maximum = 10;
-            }
-
-            tb_FDR.Text = SaveState.lollipop.offsetFDR.ToString();
-        }
-
-        private void plotBiorepIntensitiesEvent(object s, EventArgs e)
-        {
-            plotBiorepIntensities();
-        }
-
-        private void plotBiorepIntensities()
-        {
-            ct_proteoformIntensities.Series.Clear();
-            ct_proteoformIntensities.Series.Add("Observed Intensities");
-            ct_proteoformIntensities.Series["Observed Intensities"].ChartType = SeriesChartType.Point; // these are the actual experimental proteoform intensities
-            ct_proteoformIntensities.Series.Add("Observed Fit");
-            ct_proteoformIntensities.Series["Observed Fit"].ChartType = SeriesChartType.Line; // this is a gaussian best fit to the experimental proteoform intensities.
-            ct_proteoformIntensities.Series.Add("Background Projected");
-            ct_proteoformIntensities.Series["Background Projected"].ChartType = SeriesChartType.Line; // this is a gaussian line representing the distribution of missing values.
-            ct_proteoformIntensities.Series.Add("Fit + Projected");
-            ct_proteoformIntensities.Series["Fit + Projected"].ChartType = SeriesChartType.Line; // this is the sum of the gaussians for observed and missing values
-            ct_proteoformIntensities.ChartAreas[0].AxisX.Title = "Log (Base 2) Intensity";
-            ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "Count";
-
-
-            foreach (KeyValuePair<decimal, int> entry in SaveState.lollipop.logSelectIntensityHistogram)
-            {
-                ct_proteoformIntensities.Series["Observed Intensities"].Points.AddXY(entry.Key, entry.Value);
-
-                double gaussIntensity = ((double)SaveState.lollipop.selectGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)SaveState.lollipop.selectAverageIntensity), 2) / (2d * Math.Pow((double)SaveState.lollipop.selectStDev, 2)));
-                double bkgd_gaussIntensity = ((double)SaveState.lollipop.bkgdGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)SaveState.lollipop.bkgdAverageIntensity), 2) / (2d * Math.Pow((double)SaveState.lollipop.bkgdStDev, 2)));
-                double sumIntensity = gaussIntensity + bkgd_gaussIntensity;
-                ct_proteoformIntensities.Series["Observed Fit"].Points.AddXY(entry.Key, gaussIntensity);
-                ct_proteoformIntensities.Series["Background Projected"].Points.AddXY(entry.Key, bkgd_gaussIntensity);
-                ct_proteoformIntensities.Series["Fit + Projected"].Points.AddXY(entry.Key, sumIntensity);
-            }
-        }
-
-        private void volcanoPlot()
-        {
-            ct_volcano_logFold_logP.Series.Clear();
-            ct_volcano_logFold_logP.Series.Add("logFold_logP");
-            ct_volcano_logFold_logP.Series["logFold_logP"].ChartType = SeriesChartType.Point; // these are the actual experimental proteoform intensities
-
-            ct_volcano_logFold_logP.ChartAreas[0].AxisX.Title = "Log (Base 2) Fold Change (" + SaveState.lollipop.numerator_condition + "/" + SaveState.lollipop.denominator_condition + ")";
-            ct_volcano_logFold_logP.ChartAreas[0].AxisY.Title = "Log (Base 10) p-Value";
-
-            foreach (QuantitativeProteoformValues qValue in SaveState.lollipop.qVals)
-            {
-                ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10((double)qValue.pValue));
-            }
-
-            if (SaveState.lollipop.qVals.Count > 0)
-            {
-                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(SaveState.lollipop.qVals.Min(q => q.logFoldChange)));
-                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(SaveState.lollipop.qVals.Max(q => q.logFoldChange)));
-                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Minimum = Math.Floor(SaveState.lollipop.qVals.Min(q => -Math.Log10((double)q.pValue)));
-                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = Math.Ceiling(SaveState.lollipop.qVals.Max(q => -Math.Log10((double)q.pValue)));
-            }
-        }
-
         private void cmbx_ratioNumerator_SelectedIndexChanged(object sender, EventArgs e)
         {
             SaveState.lollipop.numerator_condition = cmbx_ratioNumerator.SelectedItem.ToString();
@@ -343,7 +252,7 @@ namespace ProteoformSuiteGUI
             if (SaveState.lollipop.qVals.Count <= 0)
                 return;
             SaveState.lollipop.defineAllObservedIntensityDistribution(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.logIntensityHistogram);
-            SaveState.lollipop.defineBackgroundIntensityDistribution(SaveState.lollipop.neucode_labeled, SaveState.lollipop.quantBioFracCombos, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.backgroundShift, SaveState.lollipop.backgroundWidth);
+            SaveState.lollipop.defineBackgroundIntensityDistribution(SaveState.lollipop.quantBioFracCombos, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.backgroundShift, SaveState.lollipop.backgroundWidth);
         }
 
         private void nud_bkgdWidth_ValueChanged(object sender, EventArgs e)
@@ -352,12 +261,17 @@ namespace ProteoformSuiteGUI
             if (SaveState.lollipop.qVals.Count <= 0)
                 return;
             SaveState.lollipop.defineAllObservedIntensityDistribution(SaveState.lollipop.target_proteoform_community.experimental_proteoforms, SaveState.lollipop.logIntensityHistogram);
-            SaveState.lollipop.defineBackgroundIntensityDistribution(SaveState.lollipop.neucode_labeled, SaveState.lollipop.quantBioFracCombos, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.backgroundShift, SaveState.lollipop.backgroundWidth);
+            SaveState.lollipop.defineBackgroundIntensityDistribution(SaveState.lollipop.quantBioFracCombos, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.backgroundShift, SaveState.lollipop.backgroundWidth);
         }
 
         private void cmbx_observationsTypeRequired_SelectedIndexChanged(object sender, EventArgs e)
         {
             SaveState.lollipop.observation_requirement = cmbx_observationsTypeRequired.SelectedItem.ToString();
+            if (SaveState.lollipop.observation_requirement == Lollipop.observation_requirement_possibilities[1]) // From any condition
+                nud_minObservations.Maximum = SaveState.lollipop.conditionsBioReps.Sum(kv => kv.Value.Count);
+            else
+                nud_minObservations.Maximum = SaveState.lollipop.countOfBioRepsInOneCondition;
+            nud_minObservations.Value = nud_minObservations.Maximum;
         }
 
         private void nud_minObservations_ValueChanged(object sender, EventArgs e)
@@ -365,16 +279,261 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.minBiorepsWithObservations = (int)nud_minObservations.Value;
         }
 
-        private void nud_sKnot_minFoldChange_ValueChanged(object sender, EventArgs e)
+        private void btn_saveBiorepIntensitiesWithImputation_Click(object sender, EventArgs e)
         {
-            SaveState.lollipop.sKnot_minFoldChange = nud_sKnot_minFoldChange.Value;
-            if (SaveState.lollipop.satisfactoryProteoforms.Count <= 0)
-                return;
-            SaveState.lollipop.computeProteoformTestStatistics(SaveState.lollipop.neucode_labeled, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.bkgdAverageIntensity, SaveState.lollipop.bkgdStDev, SaveState.lollipop.numerator_condition, SaveState.lollipop.denominator_condition, SaveState.lollipop.sKnot_minFoldChange);
-            SaveState.lollipop.computeSortedTestStatistics(SaveState.lollipop.satisfactoryProteoforms);
-            SaveState.lollipop.computeFoldChangeFDR(SaveState.lollipop.sortedAvgPermutationTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.permutedTestStatistics, SaveState.lollipop.offsetTestStatistics);
-            SaveState.lollipop.computeIndividualExperimentalProteoformFDRs(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.sortedProteoformTestStatistics, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.minProteoformFDR, SaveState.lollipop.minProteoformIntensity);
+            SaveFileDialog result = new SaveFileDialog();
+            if (result.ShowDialog() == DialogResult.OK)
+            {
+                ResultsSummaryGenerator.save_biological_replicate_intensities(result.FileName, true, SaveState.lollipop.satisfactoryProteoforms);
+            }
+        }
+
+        private void btn_saveBiologicalReplicateIntensities_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog result = new SaveFileDialog();
+            if (result.ShowDialog() == DialogResult.OK)
+            {
+                ResultsSummaryGenerator.save_biological_replicate_intensities(result.FileName, false, SaveState.lollipop.satisfactoryProteoforms);
+            }
+        }
+
+        #endregion Quantification Private Methods
+
+        #region Volcano Plot Methods
+
+        private void volcanoPlot()
+        {
+            ct_volcano_logFold_logP.Series.Clear();
+            ct_volcano_logFold_logP.Series.Add("logFold_logP");
+            ct_volcano_logFold_logP.Series["logFold_logP"].ChartType = SeriesChartType.Point; // these are the actual experimental proteoform intensities
+            ct_volcano_logFold_logP.Series.Add("significantlogFold_logP");
+            ct_volcano_logFold_logP.Series["significantlogFold_logP"].ChartType = SeriesChartType.Point; // these are the actual experimental proteoform intensities
+
+            ct_volcano_logFold_logP.ChartAreas[0].AxisX.Title = "Log (Base 2) Fold Change (" + SaveState.lollipop.numerator_condition + "/" + SaveState.lollipop.denominator_condition + ")";
+            ct_volcano_logFold_logP.ChartAreas[0].AxisY.Title = "Log (Base 10) p-Value";
+
+            foreach (QuantitativeProteoformValues qValue in SaveState.lollipop.qVals)
+            {
+                if (qValue.significant)
+                    ct_volcano_logFold_logP.Series["significantlogFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10((double)qValue.pValue));
+                else
+                    ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10((double)qValue.pValue));
+            }
+
+            if (SaveState.lollipop.qVals.Count > 0)
+            {
+                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(SaveState.lollipop.qVals.Min(q => q.logFoldChange)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(SaveState.lollipop.qVals.Max(q => q.logFoldChange)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Minimum = Math.Floor(SaveState.lollipop.qVals.Min(q => -Math.Log10((double)q.pValue)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = Math.Ceiling(SaveState.lollipop.qVals.Max(q => -Math.Log10((double)q.pValue)));
+            }
+        }
+
+        Point? ct_volcano_logFold_logP_prevPosition = null;
+        ToolTip ct_volcano_logFold_logP_tt = new ToolTip();
+        private void ct_volcano_logFold_logP_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+                DisplayUtility.tooltip_graph_display(ct_volcano_logFold_logP_tt, e, ct_volcano_logFold_logP, ct_volcano_logFold_logP_prevPosition);
+        }
+
+        #endregion Volcano Plot Methods
+
+        #region Relative Difference Chart Methods
+
+        private string[] relative_difference_selections = new string[]
+        {
+            "Observed vs. Expected",
+            "Observed vs. Scatter",
+            "All Permuted vs. Average Permuted"
+        };
+
+        private void plotObservedVsExpectedRelativeDifference()
+        {
+            int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
+
+            ct_relativeDifference.ChartAreas[0].AxisX.IsLogarithmic = false;
+            ct_relativeDifference.Series.Clear();
+            ct_relativeDifference.Series.Add("Quantified");
+            ct_relativeDifference.Series["Quantified"].ChartType = SeriesChartType.Point;
+            ct_relativeDifference.Series.Add("Significant");
+            ct_relativeDifference.Series["Significant"].ChartType = SeriesChartType.Point;
+            ct_relativeDifference.Series.Add("d(i) = dE(i)");
+            ct_relativeDifference.Series["d(i) = dE(i)"].ChartType = SeriesChartType.Line;
+            ct_relativeDifference.Series.Add("Positive Offset");
+            ct_relativeDifference.Series["Positive Offset"].ChartType = SeriesChartType.Line;
+            ct_relativeDifference.Series.Add("Negative Offset");
+            ct_relativeDifference.Series["Negative Offset"].ChartType = SeriesChartType.Line;
+            ct_relativeDifference.ChartAreas[0].AxisX.Title = "Expected Relative Difference dE(i)";
+            ct_relativeDifference.ChartAreas[0].AxisY.Title = "Observed Relative Difference d(i)";
+
+            int max_test_stat_unit = 0;
+            foreach (ExperimentalProteoform pf in SaveState.lollipop.satisfactoryProteoforms)
+            {
+                if (pf.quant.significant)
+                    ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.correspondingAvgSortedRelDiff, pf.quant.relative_difference);
+                else
+                    ct_relativeDifference.Series["Quantified"].Points.AddXY(pf.quant.correspondingAvgSortedRelDiff, pf.quant.relative_difference);
+                if (Math.Ceiling(Math.Abs(pf.quant.correspondingAvgSortedRelDiff)) > max_test_stat_unit)
+                    max_test_stat_unit = (int)Math.Ceiling(Math.Abs(pf.quant.correspondingAvgSortedRelDiff));
+                if (Math.Ceiling(Math.Abs(pf.quant.relative_difference)) > max_test_stat_unit)
+                    max_test_stat_unit = (int)Math.Ceiling(Math.Abs(pf.quant.relative_difference));
+            }
+
+            if (SaveState.lollipop.avgSortedPermutationRelativeDifferences.Count > 0 && SaveState.lollipop.sortedProteoformRelativeDifferences.Count > 0)
+            {
+                //ct_relativeDifference.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(SaveState.lollipop.sortedAvgPermutationTestStatistics.First()));
+                //ct_relativeDifference.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(SaveState.lollipop.sortedAvgPermutationTestStatistics.Last()));
+                //ct_relativeDifference.ChartAreas[0].AxisY.Minimum = Math.Min(Convert.ToDouble(Math.Floor(negativeOffsetFunction(SaveState.lollipop.sortedAvgPermutationTestStatistics.First()))), Convert.ToDouble(Math.Floor(SaveState.lollipop.sortedProteoformTestStatistics.First())));
+                //ct_relativeDifference.ChartAreas[0].AxisY.Maximum = Math.Max(Convert.ToDouble(Math.Ceiling(positiveOffsetFunction(SaveState.lollipop.sortedAvgPermutationTestStatistics.Last()))), Convert.ToDouble(Math.Ceiling(SaveState.lollipop.sortedProteoformTestStatistics.Last())));
+                ct_relativeDifference.ChartAreas[0].AxisX.Minimum = -max_test_stat_unit;
+                ct_relativeDifference.ChartAreas[0].AxisX.Maximum = max_test_stat_unit;
+                ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -max_test_stat_unit;
+                ct_relativeDifference.ChartAreas[0].AxisY.Maximum = max_test_stat_unit;
+
+            }
+
             plotObservedVsExpectedOffsets();
+        }
+
+        private void plotObservedRelativeDifferenceVsScatter()
+        {
+            int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
+
+            ct_relativeDifference.Series.Clear();
+            ct_relativeDifference.Series.Add("Quantified");
+            ct_relativeDifference.Series["Quantified"].ChartType = SeriesChartType.Point;
+            ct_relativeDifference.Series.Add("Significant");
+            ct_relativeDifference.Series["Significant"].ChartType = SeriesChartType.Point;
+            ct_relativeDifference.ChartAreas[0].AxisX.Title = "Scatter s(i)";
+            ct_relativeDifference.ChartAreas[0].AxisY.Title = "Observed Relative Difference d(i)";
+
+            decimal min_scatter = Decimal.MaxValue;
+            decimal max_scatter = Decimal.MinValue;
+            decimal max_stat = Decimal.MinValue;
+
+            foreach (ExperimentalProteoform pf in SaveState.lollipop.satisfactoryProteoforms)
+            {
+                if (pf.quant.significant)
+                    ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.scatter, pf.quant.relative_difference);
+                else
+                    ct_relativeDifference.Series["Quantified"].Points.AddXY(pf.quant.scatter, pf.quant.relative_difference);
+
+                if (pf.quant.scatter < min_scatter) min_scatter = pf.quant.scatter;
+                if (pf.quant.scatter > max_scatter) max_scatter = pf.quant.scatter;
+                if (Math.Abs(pf.quant.relative_difference) > max_stat) max_stat = Math.Abs(pf.quant.relative_difference);
+            }
+
+            ct_relativeDifference.ChartAreas[0].AxisX.Minimum = 1;
+            ct_relativeDifference.ChartAreas[0].AxisX.IsLogarithmic = true;
+            ct_relativeDifference.ChartAreas[0].AxisX.Maximum = Math.Pow(Math.Ceiling(Math.Log10((double)max_scatter)), 10);
+            ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -(double)Math.Ceiling(max_stat);
+            ct_relativeDifference.ChartAreas[0].AxisY.Maximum = (double)Math.Ceiling(max_stat);
+        }
+
+        private void plotAllPermutedTestStatistics()
+        {
+            int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
+
+            ct_relativeDifference.ChartAreas[0].AxisX.IsLogarithmic = false;
+            ct_relativeDifference.Series.Clear();
+            ct_relativeDifference.Series.Add("Permuted");
+            ct_relativeDifference.Series["Permuted"].ChartType = SeriesChartType.Point;
+            ct_relativeDifference.Series.Add("Passing Permuted");
+            ct_relativeDifference.Series["Passing Permuted"].ChartType = SeriesChartType.Point;
+            ct_relativeDifference.ChartAreas[0].AxisX.Title = "Expected Relative Difference dE(i)";
+            ct_relativeDifference.ChartAreas[0].AxisY.Title = "Observed Relative Difference d(i)";
+
+            int max_test_stat_unit = 0;
+            for (int i = 0; i < SaveState.lollipop.sortedProteoformRelativeDifferences.Count; i++)
+            {
+                decimal avg = SaveState.lollipop.avgSortedPermutationRelativeDifferences[i];
+                foreach (decimal relativedifference in SaveState.lollipop.sortedPermutedRelativeDifferences.Select(sorted => sorted[i]))
+                {
+                    if (relativedifference <= SaveState.lollipop.minimumPassingNegativeTestStatistic && relativedifference <= 0 || SaveState.lollipop.minimumPassingPositiveTestStatisitic <= relativedifference && relativedifference >= 0)
+                        ct_relativeDifference.Series["Passing Permuted"].Points.AddXY(avg, relativedifference);
+                    else
+                        ct_relativeDifference.Series["Permuted"].Points.AddXY(avg, relativedifference);
+                    if (Math.Ceiling(Math.Abs(avg)) > max_test_stat_unit)
+                        max_test_stat_unit = (int)Math.Ceiling(Math.Abs(avg));
+                    if (Math.Ceiling(Math.Abs(relativedifference)) > max_test_stat_unit)
+                        max_test_stat_unit = (int)Math.Ceiling(Math.Abs(relativedifference));
+                }
+            }
+
+            if (SaveState.lollipop.avgSortedPermutationRelativeDifferences.Count > 0 && SaveState.lollipop.sortedProteoformRelativeDifferences.Count > 0)
+            {
+                ct_relativeDifference.ChartAreas[0].AxisX.Minimum = -max_test_stat_unit;
+                ct_relativeDifference.ChartAreas[0].AxisX.Maximum = max_test_stat_unit;
+                ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -max_test_stat_unit;
+                ct_relativeDifference.ChartAreas[0].AxisY.Maximum = max_test_stat_unit;
+            }
+        }
+
+        private void cmbx_relativeDifferenceChartSelection_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cb_useLocalFdrCutoff.Checked)
+                plotObservedRelativeDifferenceVsFdr();
+            else if (new int[] { 0 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotObservedVsExpectedRelativeDifference();
+            else if (new int[] { 1 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotObservedRelativeDifferenceVsScatter();
+            else if (new int[] { 2 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotAllPermutedTestStatistics();
+        }
+
+        private void plotObservedRelativeDifferenceVsFdr()
+        {
+            int selection = cmbx_relativeDifferenceChartSelection.SelectedIndex;
+
+            ct_relativeDifference.ChartAreas[0].AxisX.IsLogarithmic = false;
+            ct_relativeDifference.Series.Clear();
+            ct_relativeDifference.Series.Add("Quantified");
+            ct_relativeDifference.Series["Quantified"].ChartType = SeriesChartType.Point;
+            ct_relativeDifference.Series.Add("Significant");
+            ct_relativeDifference.Series["Significant"].ChartType = SeriesChartType.Point;
+            ct_relativeDifference.ChartAreas[0].AxisX.Title = "Local FDR";
+            ct_relativeDifference.ChartAreas[0].AxisY.Title = "Observed Relative Difference d(i)";
+
+            decimal min_fdr = Decimal.MaxValue;
+            decimal max_fdr = Decimal.MinValue;
+            decimal min_stat = Decimal.MaxValue;
+            decimal max_stat = Decimal.MinValue;
+
+            foreach (ExperimentalProteoform pf in SaveState.lollipop.satisfactoryProteoforms)
+            {
+                decimal rel_diff = pf.quant.relative_difference;
+                if (pf.quant.significant)
+                    ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.roughSignificanceFDR, rel_diff);
+                else
+                    ct_relativeDifference.Series["Quantified"].Points.AddXY(pf.quant.roughSignificanceFDR, rel_diff);
+
+                if (pf.quant.roughSignificanceFDR < min_fdr) min_fdr = pf.quant.roughSignificanceFDR;
+                if (pf.quant.roughSignificanceFDR > max_fdr) max_fdr = pf.quant.roughSignificanceFDR;
+                if (pf.quant.relative_difference < min_stat) min_stat = rel_diff;
+                if (pf.quant.relative_difference > max_stat) max_stat = rel_diff;
+            }
+
+            ct_relativeDifference.ChartAreas[0].AxisX.Minimum = (double)Math.Floor(min_fdr);
+            ct_relativeDifference.ChartAreas[0].AxisX.Maximum = (double)Math.Ceiling(max_fdr);
+            ct_relativeDifference.ChartAreas[0].AxisY.Minimum = (double)Math.Floor(min_stat);
+            ct_relativeDifference.ChartAreas[0].AxisY.Maximum = (double)Math.Ceiling(max_stat);
+        }
+
+        private void plotObservedVsExpectedOffsets()
+        {
+            ct_relativeDifference.Series["d(i) = dE(i)"].Points.Clear();
+            ct_relativeDifference.Series["Positive Offset"].Points.Clear();
+            ct_relativeDifference.Series["Negative Offset"].Points.Clear();
+
+            for (double xvalue = ct_relativeDifference.ChartAreas[0].AxisX.Minimum; xvalue <= ct_relativeDifference.ChartAreas[0].AxisX.Maximum; xvalue += (ct_relativeDifference.ChartAreas[0].AxisX.Maximum - ct_relativeDifference.ChartAreas[0].AxisX.Minimum) / 100d)
+            {
+                ct_relativeDifference.Series["d(i) = dE(i)"].Points.AddXY(xvalue, xvalue);
+                ct_relativeDifference.Series["Positive Offset"].Points.AddXY(xvalue, positiveOffsetFunction(xvalue));
+                ct_relativeDifference.Series["Negative Offset"].Points.AddXY(xvalue, negativeOffsetFunction(xvalue));
+            }
+
+            tb_FDR.Text = Math.Round(SaveState.lollipop.relativeDifferenceFDR, 4).ToString();
         }
 
         private void nud_Offset_ValueChanged(object sender, EventArgs e)
@@ -382,11 +541,158 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.offsetTestStatistics = nud_Offset.Value;
             if (SaveState.lollipop.satisfactoryProteoforms.Count <= 0)
                 return;
-            SaveState.lollipop.computeFoldChangeFDR(SaveState.lollipop.sortedAvgPermutationTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics, SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.permutedTestStatistics, SaveState.lollipop.offsetTestStatistics);
-            plotObservedVsExpectedOffsets();
+            SaveState.lollipop.reestablishSignficance();
+            if (cb_useLocalFdrCutoff.Checked)
+                plotObservedRelativeDifferenceVsFdr();
+            else if (new int[] { 0 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotObservedVsExpectedRelativeDifference();
+            else if (new int[] { 1 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotObservedRelativeDifferenceVsScatter();
+            else if (new int[] { 2 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotAllPermutedTestStatistics();
+            volcanoPlot();
+            tb_FDR.Text = Math.Round(SaveState.lollipop.relativeDifferenceFDR, 4).ToString();
         }
 
-        #endregion Quantification Private Methods
+        private double positiveOffsetFunction(double x)
+        {
+            return (x + (double)nud_Offset.Value);
+        }
+
+        private double negativeOffsetFunction(double x)
+        {
+            return (x - (double)nud_Offset.Value);
+        }
+
+        Point? ct_relativeDifference_prevPosition = null;
+        ToolTip ct_relativeDifference_tt = new ToolTip();
+        private void ct_relativeDifference_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+                DisplayUtility.tooltip_graph_display(ct_relativeDifference_tt, e, ct_relativeDifference, ct_relativeDifference_prevPosition);
+        }
+
+        private void cb_useLocalFdrCutoff_CheckedChanged(object sender, EventArgs e)
+        {
+            SaveState.lollipop.useLocalFdrCutoff = cb_useLocalFdrCutoff.Checked;
+            SaveState.lollipop.reestablishSignficance();
+
+            if (cb_useLocalFdrCutoff.Checked)
+                plotObservedRelativeDifferenceVsFdr();
+            else if (new int[] { 0 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotObservedVsExpectedRelativeDifference();
+            else if (new int[] { 1 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotObservedRelativeDifferenceVsScatter();
+            else if (new int[] { 2 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
+                plotAllPermutedTestStatistics();
+
+            nud_Offset.Enabled = !cb_useLocalFdrCutoff.Checked;
+            nud_localFdrCutoff.Enabled = cb_useLocalFdrCutoff.Checked;
+        }
+
+        private void nud_localFdrCutoff_ValueChanged(object sender, EventArgs e)
+        {
+            SaveState.lollipop.localFdrCutoff = nud_localFdrCutoff.Value;
+            SaveState.lollipop.reestablishSignficance();
+            if (cb_useLocalFdrCutoff.Checked)
+                plotObservedRelativeDifferenceVsFdr();
+        }
+
+        #endregion Relative Difference Chart Methods
+
+        #region Biorep Intensities Plot Methods
+
+        private void plotBiorepIntensitiesEvent(object s, EventArgs e)
+        {
+            plotBiorepIntensities();
+        }
+
+        private string[] biorepintensity_selections = new string[]
+        {
+            "All Observed (Log2 Intensities)", //0
+            "Before Imputation (Log2 Intensities)", //1
+            "Projected (Log2 Intensities)", //2
+            "After Imputation (Log2 Intensities)", //3
+            "All Linear Intensities", //4
+            "Selected Linear Intensities" //4
+        };
+
+        private void plotBiorepIntensities()
+        {
+            int selection = cmbx_intensityDistributionChartSelection.SelectedIndex;
+
+            ct_proteoformIntensities.Series.Clear();
+            ct_proteoformIntensities.Series.Add("Intensities");
+            ct_proteoformIntensities.Series["Intensities"].ChartType = SeriesChartType.Point; // these are the actual experimental proteoform intensities
+            if (new int[] { 4, 5 }.Contains(selection))
+            {
+                ct_proteoformIntensities.ChartAreas[0].AxisX.Title = "Avg. Intensity, " + SaveState.lollipop.numerator_condition;
+                ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "Avg. Intensity, " + SaveState.lollipop.denominator_condition;
+                foreach (ExperimentalProteoform pf in selection == 4 ? SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Where(pf => pf.quant.numeratorOriginalBiorepIntensities != null && pf.quant.denominatorOriginalBiorepIntensities != null).ToList() :  SaveState.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.numeratorOriginalBiorepIntensities != null && pf.quant.denominatorOriginalBiorepIntensities != null).ToList())
+                {
+                    ct_proteoformIntensities.Series["Intensities"].Points.AddXY(pf.quant.numeratorOriginalBiorepIntensities == null ? 0 : pf.quant.numeratorOriginalBiorepIntensities.Average(x => x.intensity), pf.quant.denominatorOriginalBiorepIntensities == null ? 0 : pf.quant.denominatorOriginalBiorepIntensities.Average(x => x.intensity));
+                }
+                return;
+            }
+
+            ct_proteoformIntensities.Series.Add("Fit");
+            ct_proteoformIntensities.Series["Fit"].ChartType = SeriesChartType.Line; // this is a gaussian best fit to the experimental proteoform intensities.
+            if (selection == 2)
+            {
+                ct_proteoformIntensities.Series.Add("Bkgd. Projected");
+                ct_proteoformIntensities.Series["Bkgd. Projected"].ChartType = SeriesChartType.Line; // this is a gaussian line representing the distribution of missing values.
+                ct_proteoformIntensities.Series.Add("Fit + Projected");
+                ct_proteoformIntensities.Series["Fit + Projected"].ChartType = SeriesChartType.Line; // this is the sum of the gaussians for observed and missing values
+            }
+            ct_proteoformIntensities.ChartAreas[0].AxisX.Title = "Log (Base 2) Intensity";
+            ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "Count";
+
+            foreach (KeyValuePair<decimal, int> entry in selection == 3 ? 
+                SaveState.lollipop.logSelectIntensityWithImputationHistogram : 
+                new int[] { 1, 2 }.Contains(selection) ? SaveState.lollipop.logSelectIntensityHistogram :
+                    SaveState.lollipop.logIntensityHistogram)
+            {
+                ct_proteoformIntensities.Series["Intensities"].Points.AddXY(entry.Key, entry.Value);
+
+                decimal gaussian_height = selection == 3 ?
+                    SaveState.lollipop.selectWithImputationGaussianHeight :
+                    new int[] { 1, 2 }.Contains(selection) ? SaveState.lollipop.selectWithImputationGaussianHeight :
+                        SaveState.lollipop.allObservedGaussianHeight;
+                decimal average_intensity = selection == 3 ?
+                    SaveState.lollipop.selectWithImputationAverageIntensity :
+                    new int[] { 1, 2 }.Contains(selection) ? SaveState.lollipop.selectWithImputationAverageIntensity :
+                        SaveState.lollipop.allObservedAverageIntensity;
+                decimal std_dev = selection == 3 ?
+                    SaveState.lollipop.selectWithImputationStDev :
+                    new int[] { 1, 2 }.Contains(selection) ? SaveState.lollipop.selectWithImputationStDev :
+                        SaveState.lollipop.allObservedStDev;
+                double gaussIntensity = ((double)gaussian_height) * Math.Exp(-Math.Pow(((double)entry.Key - (double)average_intensity), 2) / (2d * Math.Pow((double)std_dev, 2)));
+                double bkgd_gaussIntensity = ((double)SaveState.lollipop.bkgdGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)SaveState.lollipop.bkgdAverageIntensity), 2) / (2d * Math.Pow((double)SaveState.lollipop.bkgdStDev, 2)));
+                double sumIntensity = gaussIntensity + bkgd_gaussIntensity;
+                ct_proteoformIntensities.Series["Fit"].Points.AddXY(entry.Key, gaussIntensity);
+
+                if (selection == 2)
+                {
+                    ct_proteoformIntensities.Series["Bkgd. Projected"].Points.AddXY(entry.Key, bkgd_gaussIntensity);
+                    ct_proteoformIntensities.Series["Fit + Projected"].Points.AddXY(entry.Key, sumIntensity);
+                }
+            }
+        }
+
+        private void cmbx_intensityDistributionChartSelection_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            plotBiorepIntensities();
+        }
+
+        Point? ct_proteoformIntensities_prevPosition = null;
+        ToolTip ct_proteoformIntensities_tt = new ToolTip();
+        private void ct_proteoformIntensities_MouseClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+                DisplayUtility.tooltip_graph_display(ct_proteoformIntensities_tt, e, ct_proteoformIntensities, ct_proteoformIntensities_prevPosition);
+        }
+
+        #endregion Biorep Intensities Plot Methods
 
         #region GO-Term Analysis Private Methods
 
@@ -398,20 +704,20 @@ namespace ProteoformSuiteGUI
 
         private void updateGoTermsTable(object s, EventArgs e)
         {
-            SaveState.lollipop.minProteoformFDR = nud_FDR.Value;
+            SaveState.lollipop.maxGoTermFDR = nud_FDR.Value;
             SaveState.lollipop.minProteoformFoldChange = nud_ratio.Value;
             SaveState.lollipop.minProteoformIntensity = nud_intensity.Value;
-            SaveState.lollipop.inducedOrRepressedProteins = SaveState.lollipop.getInducedOrRepressedProteins(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.minProteoformFDR, SaveState.lollipop.minProteoformIntensity);
+            SaveState.lollipop.inducedOrRepressedProteins = SaveState.lollipop.getInducedOrRepressedProteins(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.maxGoTermFDR, SaveState.lollipop.minProteoformIntensity);
             SaveState.lollipop.GO_analysis();
             fillGoTermsTable();
         }
 
         private void updateGoTermsTable()
         {
-            SaveState.lollipop.minProteoformFDR = nud_FDR.Value;
+            SaveState.lollipop.maxGoTermFDR = nud_FDR.Value;
             SaveState.lollipop.minProteoformFoldChange = nud_ratio.Value;
             SaveState.lollipop.minProteoformIntensity = nud_intensity.Value;
-            SaveState.lollipop.inducedOrRepressedProteins = SaveState.lollipop.getInducedOrRepressedProteins(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.minProteoformFDR, SaveState.lollipop.minProteoformIntensity);
+            SaveState.lollipop.inducedOrRepressedProteins = SaveState.lollipop.getInducedOrRepressedProteins(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.maxGoTermFDR, SaveState.lollipop.minProteoformIntensity);
             SaveState.lollipop.GO_analysis();
             fillGoTermsTable();
         }
@@ -541,7 +847,7 @@ namespace ProteoformSuiteGUI
 
         private void btn_buildFamiliesWithSignificantChange_Click(object sender, EventArgs e)
         {
-            List<ProteoformFamily> families = SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.minProteoformFDR, SaveState.lollipop.minProteoformIntensity).Distinct().ToList();
+            List<ProteoformFamily> families = SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.maxGoTermFDR, SaveState.lollipop.minProteoformIntensity).Distinct().ToList();
             string time_stamp = SaveState.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
             string message = CytoscapeScript.write_cytoscape_script(families, SaveState.lollipop.target_proteoform_community.families,
@@ -603,5 +909,9 @@ namespace ProteoformSuiteGUI
 
         #endregion Cytoscape Visualization Private Methods
 
+        private void cmbx_inducedCondition_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

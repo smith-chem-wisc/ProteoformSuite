@@ -1,10 +1,8 @@
-﻿using System;
-using System.Linq;
-using ProteoformSuiteInternal;
-using System.Windows.Forms;
-using System.IO;
-using System.Threading.Tasks;
+﻿using ProteoformSuiteInternal;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
 {

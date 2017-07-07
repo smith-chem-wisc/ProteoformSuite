@@ -269,24 +269,17 @@ namespace ProteoformSuiteInternal
             quant = new QuantitativeProteoformValues(this); //Reset quantitation if starting over from biorep requirements
 
             List<BiorepIntensity> biorepIntensityList = new List<BiorepIntensity>();
-            foreach (string condition in ltConditionStrings.ToList())
+
+            foreach (string condition in ltConditionStrings.Concat(hvConditionStrings).Distinct().ToList())
             {
-                foreach (int b in lt_quant_components.Where(c => c.input_file.lt_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())
+                List<T> quants_from_condition = lt_quant_components.Where(c => c.input_file.lt_condition == condition).Concat(hv_quant_components.Where(c => c.input_file.hv_condition == condition)).ToList();
+                List<int> bioreps = quants_from_condition.Select(c => c.input_file.biological_replicate).Distinct().ToList();
+                foreach (int b in bioreps)
                 {
-                    biorepIntensityList.Add(new BiorepIntensity(true, false, b, condition, lt_quant_components.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum)));
+                    biorepIntensityList.Add(new BiorepIntensity(false, b, condition, quants_from_condition.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum)));
                 }
             }
 
-            if (SaveState.lollipop.neucode_labeled)
-            {
-                foreach (string condition in hvConditionStrings.ToList())
-                {
-                    foreach (int b in hv_quant_components.Where(c => c.input_file.hv_condition == condition).Select(c => c.input_file.biological_replicate).Distinct())
-                    {
-                        biorepIntensityList.Add(new BiorepIntensity(false, false, b, condition, hv_quant_components.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum)));
-                    }
-                }
-            }
             this.biorepIntensityList = biorepIntensityList;
             return biorepIntensityList;
         }

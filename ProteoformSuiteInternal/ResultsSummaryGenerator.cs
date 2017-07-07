@@ -47,7 +47,7 @@ namespace ProteoformSuiteInternal
                     ProteoformCommunity.gene_centric_families, ProteoformCommunity.preferred_gene_label);
                 message += Environment.NewLine;
 
-                message += CytoscapeScript.write_cytoscape_script(SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.minProteoformFDR, SaveState.lollipop.minProteoformIntensity).Distinct().ToList(), SaveState.lollipop.target_proteoform_community.families,
+                message += CytoscapeScript.write_cytoscape_script(SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.maxGoTermFDR, SaveState.lollipop.minProteoformIntensity).Distinct().ToList(), SaveState.lollipop.target_proteoform_community.families,
                     SaveState.lollipop.results_folder, "SignificantChanges_", timestamp,
                     true, 
                     true, true, 
@@ -56,7 +56,7 @@ namespace ProteoformSuiteInternal
                 message += Environment.NewLine;
             }
 
-            foreach (GoTermNumber gtn in SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.minProteoformFDR).ToList())
+            foreach (GoTermNumber gtn in SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.maxGoTermFDR).ToList())
             {
                 message += CytoscapeScript.write_cytoscape_script(new GoTermNumber[] { gtn }, SaveState.lollipop.target_proteoform_community.families,
                     SaveState.lollipop.results_folder, gtn.Aspect.ToString() + gtn.Description.Replace(" ", "_") + "_", timestamp,
@@ -90,6 +90,13 @@ namespace ProteoformSuiteInternal
                 go_terms_of_significance() +
                 loaded_files_report();
         }
+
+        public static void save_biological_replicate_intensities(string filename, bool include_imputation, List<ExperimentalProteoform> proteoforms)
+        {
+            using (StreamWriter writer = new StreamWriter(filename))
+                writer.Write(biological_replicate_intensities(proteoforms, include_imputation));
+        }
+
 
         public static string loaded_files_report()
         {
@@ -191,16 +198,17 @@ namespace ProteoformSuiteInternal
             string report = "";
 
             report += SaveState.lollipop.satisfactoryProteoforms.Count.ToString() + "\tQuantified Experimental Proteoforms (Threshold for Quantification: " + SaveState.lollipop.minBiorepsWithObservations.ToString() + " = " + SaveState.lollipop.observation_requirement + ")" + Environment.NewLine;
-            report += SaveState.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + SaveState.lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + SaveState.lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + SaveState.lollipop.minProteoformFDR.ToString() + ")" + Environment.NewLine;
+            report += SaveState.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + SaveState.lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + SaveState.lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + SaveState.lollipop.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
+            report += Math.Round(SaveState.lollipop.relativeDifferenceFDR, 4).ToString() + "FDR for Significance Conclusion (Offset of " + Math.Round(SaveState.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
             report += SaveState.lollipop.selectAverageIntensity.ToString() + "\tAverage Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
             report += SaveState.lollipop.selectStDev.ToString() + "\tIntensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
-            report += SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.minProteoformFDR, SaveState.lollipop.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
+            report += SaveState.lollipop.getInterestingFamilies(SaveState.lollipop.satisfactoryProteoforms, SaveState.lollipop.minProteoformFoldChange, SaveState.lollipop.maxGoTermFDR, SaveState.lollipop.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
             report += SaveState.lollipop.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
-            report += SaveState.lollipop.goTermNumbers.Count(g => g.by < (double)SaveState.lollipop.minProteoformFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + SaveState.lollipop.minProteoformFDR.ToString() + "): " + Environment.NewLine;
+            report += SaveState.lollipop.goTermNumbers.Count(g => g.by < (double)SaveState.lollipop.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + SaveState.lollipop.maxGoTermFDR.ToString() + "): " + Environment.NewLine;
             report += Environment.NewLine;
 
             // Venn Diagram of quantifiable proteoforms
-            List<string> conditions = SaveState.lollipop.ltConditionsBioReps.Keys.Concat(SaveState.lollipop.hvConditionsBioReps.Keys).ToList();
+            List<string> conditions = SaveState.lollipop.ltConditionsBioReps.Keys.Concat(SaveState.lollipop.hvConditionsBioReps.Keys).Distinct().ToList();
             foreach (string condition in conditions)
             {
                 SaveState.lollipop.ltConditionsBioReps.TryGetValue(condition, out List<int> ltbioreps);
@@ -250,8 +258,8 @@ namespace ProteoformSuiteInternal
 
         public static string go_terms_of_significance()
         {
-            return "GO Terms of Significance (Benjimini-Yekeulti p-value < " + SaveState.lollipop.minProteoformFDR.ToString() + "): " + Environment.NewLine
-                + String.Join(Environment.NewLine, SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.minProteoformFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
+            return "GO Terms of Significance (Benjimini-Yekeulti p-value < " + SaveState.lollipop.maxGoTermFDR.ToString() + "): " + Environment.NewLine
+                + String.Join(Environment.NewLine, SaveState.lollipop.goTermNumbers.Where(g => g.by < (double)SaveState.lollipop.maxGoTermFDR).Select(g => g.ToString()).OrderBy(x => x)) + Environment.NewLine + Environment.NewLine;
         }
 
         public static string results_dataframe()
@@ -287,10 +295,97 @@ namespace ProteoformSuiteInternal
                     e.modified_mass - e.linked_proteoform_references.Last().modified_mass,
                     e.agg_rt,
                     e.agg_intensity,
-                    e.quant.lightIntensitySum,
-                    e.quant.heavyIntensitySum,
+                    e.quant.numeratorIntensitySum,
+                    e.quant.denominatorIntensitySum,
                     e.quant.significant
                 );
+            }
+
+            StringBuilder result_string = new StringBuilder();
+            string header = "";
+            foreach (DataColumn column in results.Columns)
+            {
+                header += column.ColumnName + "\t";
+            }
+            result_string.AppendLine(header);
+            foreach (DataRow row in results.Rows)
+            {
+                result_string.AppendLine(String.Join("\t", row.ItemArray));
+            }
+            return result_string.ToString();
+        }
+
+        public static string biological_replicate_intensities(List<ExperimentalProteoform> proteoforms, bool include_imputation)
+        {
+            DataTable results = new DataTable();
+            results.Columns.Add("Proteoform ID", typeof(string));
+            foreach (KeyValuePair<string, List<int>> condition_bioreps in SaveState.lollipop.conditionsBioReps)
+            {
+                foreach (int biorep in condition_bioreps.Value)
+                {
+                    results.Columns.Add(condition_bioreps.Key + "_" + biorep.ToString(), typeof(double));
+                }
+            }
+
+            foreach (ExperimentalProteoform pf in proteoforms)
+            {
+                List<double> condition_biorep_intensities = new List<double>();
+                foreach (KeyValuePair<string, List<int>> condition_bioreps in SaveState.lollipop.conditionsBioReps)
+                {
+                    if (condition_bioreps.Key != SaveState.lollipop.numerator_condition && condition_bioreps.Key != SaveState.lollipop.denominator_condition)
+                        continue;
+                    else if (condition_bioreps.Key == SaveState.lollipop.numerator_condition && pf.quant.numeratorOriginalBiorepIntensities == null)
+                    {
+                        foreach (int biorep in condition_bioreps.Value)
+                        {
+                            condition_biorep_intensities.Add(Double.NaN);
+                        }
+                    }
+                    else if (condition_bioreps.Key == SaveState.lollipop.denominator_condition && pf.quant.denominatorOriginalBiorepIntensities == null)
+                    {
+                        foreach (int biorep in condition_bioreps.Value)
+                        {
+                            condition_biorep_intensities.Add(Double.NaN);
+                        }
+                    }
+                    else
+                    {
+                        List<BiorepIntensity> numerator = include_imputation ? pf.quant.numeratorOriginalBiorepIntensities.Concat(pf.quant.numeratorImputedIntensities == null ? new List<BiorepIntensity>() : pf.quant.numeratorImputedIntensities).ToList() : pf.quant.numeratorOriginalBiorepIntensities;
+                        List<BiorepIntensity> denominator = include_imputation ? pf.quant.denominatorOriginalBiorepIntensities.Concat(pf.quant.denominatorImputedIntensities == null ? new List<BiorepIntensity>() : pf.quant.denominatorOriginalBiorepIntensities).ToList() : pf.quant.denominatorOriginalBiorepIntensities;
+
+                        foreach (int biorep in condition_bioreps.Value)
+                        {
+                            if (condition_bioreps.Key == SaveState.lollipop.numerator_condition)
+                            {
+                                BiorepIntensity br = numerator.FirstOrDefault(x => x.biorep == biorep);
+                                if (br == null)
+                                    condition_biorep_intensities.Add(Double.NaN);
+                                else
+                                    condition_biorep_intensities.Add((double)br.intensity);
+                            }
+                            if (condition_bioreps.Key == SaveState.lollipop.denominator_condition)
+                            {
+                                BiorepIntensity br = denominator.FirstOrDefault(x => x.biorep == biorep);
+                                if (br == null)
+                                    condition_biorep_intensities.Add(Double.NaN);
+                                else
+                                    condition_biorep_intensities.Add((double)br.intensity);
+                            }
+                        }
+                    }
+                }
+
+                DataRow row = results.NewRow();
+                row["Proteoform ID"] = pf.accession;
+                int ct = 0;
+                foreach (KeyValuePair<string, List<int>> condition_bioreps in SaveState.lollipop.conditionsBioReps)
+                {
+                    foreach (int biorep in condition_bioreps.Value)
+                    {
+                        row[condition_bioreps.Key + "_" + biorep.ToString()] = condition_biorep_intensities[ct++];
+                    }
+                }
+                results.Rows.Add(row);
             }
 
             StringBuilder result_string = new StringBuilder();
