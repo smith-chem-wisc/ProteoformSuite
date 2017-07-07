@@ -334,14 +334,14 @@ namespace ProteoformSuiteInternal
                 {
                     if (condition_bioreps.Key != SaveState.lollipop.numerator_condition && condition_bioreps.Key != SaveState.lollipop.denominator_condition)
                         continue;
-                    else if (condition_bioreps.Key == SaveState.lollipop.numerator_condition && pf.quant.numeratorBiorepIntensities == null)
+                    else if (condition_bioreps.Key == SaveState.lollipop.numerator_condition && pf.quant.numeratorOriginalBiorepIntensities == null)
                     {
                         foreach (int biorep in condition_bioreps.Value)
                         {
                             condition_biorep_intensities.Add(Double.NaN);
                         }
                     }
-                    else if (condition_bioreps.Key == SaveState.lollipop.denominator_condition && pf.quant.denominatorBiorepIntensities == null)
+                    else if (condition_bioreps.Key == SaveState.lollipop.denominator_condition && pf.quant.denominatorOriginalBiorepIntensities == null)
                     {
                         foreach (int biorep in condition_bioreps.Value)
                         {
@@ -350,8 +350,8 @@ namespace ProteoformSuiteInternal
                     }
                     else
                     {
-                        List<BiorepIntensity> numerator = include_imputation ? pf.quant.numeratorBiorepIntensities.Concat(pf.quant.numeratorImputedIntensities == null ? new List<BiorepIntensity>() : pf.quant.numeratorImputedIntensities).ToList() : pf.quant.numeratorBiorepIntensities;
-                        List<BiorepIntensity> denominator = include_imputation ? pf.quant.denominatorBiorepIntensities.Concat(pf.quant.denominatorImputedIntensities == null ? new List<BiorepIntensity>() : pf.quant.denominatorBiorepIntensities).ToList() : pf.quant.denominatorBiorepIntensities;
+                        List<BiorepIntensity> numerator = include_imputation ? pf.quant.numeratorOriginalBiorepIntensities.Concat(pf.quant.numeratorImputedIntensities == null ? new List<BiorepIntensity>() : pf.quant.numeratorImputedIntensities).ToList() : pf.quant.numeratorOriginalBiorepIntensities;
+                        List<BiorepIntensity> denominator = include_imputation ? pf.quant.denominatorOriginalBiorepIntensities.Concat(pf.quant.denominatorImputedIntensities == null ? new List<BiorepIntensity>() : pf.quant.denominatorOriginalBiorepIntensities).ToList() : pf.quant.denominatorOriginalBiorepIntensities;
 
                         foreach (int biorep in condition_bioreps.Value)
                         {

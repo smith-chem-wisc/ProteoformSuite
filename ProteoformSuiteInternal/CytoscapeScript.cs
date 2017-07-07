@@ -346,9 +346,8 @@ namespace ProteoformSuiteInternal
                     {
                         tooltip += "\\n\\nQuantitation Results:" +
                         String.Join("; ", new string[] {
-                            "Q-Value = " + ep.quant.FDR.ToString(),
+                            "Q-Value = " + ep.quant.roughSignificanceFDR.ToString(),
                             "Log2FC = " + ep.quant.logFoldChange.ToString(),
-                            "Variance = " + ep.quant.variance.ToString(),
                             "Significant = " + ep.quant.significant.ToString(),
                             SaveState.lollipop.numerator_condition + " Quantitative Component Count = " + ep.lt_quant_components.Count.ToString(),
                             SaveState.lollipop.denominator_condition + " Quantitative Component Count = " + ep.hv_quant_components.Count.ToString(),
