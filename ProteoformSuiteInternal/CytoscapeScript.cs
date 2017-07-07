@@ -346,9 +346,8 @@ namespace ProteoformSuiteInternal
                     {
                         tooltip += "\\n\\nQuantitation Results:" +
                         String.Join("; ", new string[] {
-                            "Q-Value = " + ep.quant.FDR.ToString(),
+                            "Q-Value = " + ep.quant.roughSignificanceFDR.ToString(),
                             "Log2FC = " + ep.quant.logFoldChange.ToString(),
-                            "Variance = " + ep.quant.variance.ToString(),
                             "Significant = " + ep.quant.significant.ToString(),
                             SaveState.lollipop.numerator_condition + " Quantitative Component Count = " + ep.lt_quant_components.Count.ToString(),
                             SaveState.lollipop.denominator_condition + " Quantitative Component Count = " + ep.hv_quant_components.Count.ToString(),
@@ -357,7 +356,7 @@ namespace ProteoformSuiteInternal
                     }
 
                     if (quantitative && ep.quant.intensitySum != 0)
-                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.lightIntensitySum).ToString(), ((double)ep.quant.heavyIntensitySum).ToString(), ep.quant.significant.ToString(), get_piechart_string(color_scheme));
+                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.numeratorIntensitySum).ToString(), ((double)ep.quant.denominatorIntensitySum).ToString(), ep.quant.significant.ToString(), get_piechart_string(color_scheme));
                     else if (quantitative)
                         node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, "", "", "", "");
                     else

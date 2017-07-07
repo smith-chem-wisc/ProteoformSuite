@@ -57,7 +57,11 @@
             this.splitContainer14 = new System.Windows.Forms.SplitContainer();
             this.splitContainer15 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.rb_neucode = new System.Windows.Forms.RadioButton();
+            this.rb_unlabeled = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.rb_standardOptions = new System.Windows.Forms.RadioButton();
+            this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.splitContainer19 = new System.Windows.Forms.SplitContainer();
             this.splitContainer20 = new System.Windows.Forms.SplitContainer();
@@ -81,10 +85,6 @@
             this.splitContainer26 = new System.Windows.Forms.SplitContainer();
             this.btn_fullRun = new System.Windows.Forms.Button();
             this.bt_clearResults = new System.Windows.Forms.Button();
-            this.rb_neucode = new System.Windows.Forms.RadioButton();
-            this.rb_unlabeled = new System.Windows.Forms.RadioButton();
-            this.rb_standardOptions = new System.Windows.Forms.RadioButton();
-            this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel1.SuspendLayout();
             this.splitContainer3.Panel2.SuspendLayout();
@@ -628,6 +628,29 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Proteoform Identification Results";
             // 
+            // rb_neucode
+            // 
+            this.rb_neucode.AutoSize = true;
+            this.rb_neucode.Checked = true;
+            this.rb_neucode.Location = new System.Drawing.Point(16, 22);
+            this.rb_neucode.Name = "rb_neucode";
+            this.rb_neucode.Size = new System.Drawing.Size(111, 17);
+            this.rb_neucode.TabIndex = 56;
+            this.rb_neucode.TabStop = true;
+            this.rb_neucode.Text = "NeuCode Labeled";
+            this.rb_neucode.UseVisualStyleBackColor = true;
+            this.rb_neucode.CheckedChanged += new System.EventHandler(this.btn_neucode_CheckedChanged);
+            // 
+            // rb_unlabeled
+            // 
+            this.rb_unlabeled.AutoSize = true;
+            this.rb_unlabeled.Location = new System.Drawing.Point(16, 46);
+            this.rb_unlabeled.Name = "rb_unlabeled";
+            this.rb_unlabeled.Size = new System.Drawing.Size(73, 17);
+            this.rb_unlabeled.TabIndex = 57;
+            this.rb_unlabeled.Text = "Unlabeled";
+            this.rb_unlabeled.UseVisualStyleBackColor = true;
+            // 
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.rb_standardOptions);
@@ -639,6 +662,30 @@
             this.groupBox4.TabIndex = 51;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Load Options";
+            // 
+            // rb_standardOptions
+            // 
+            this.rb_standardOptions.AutoSize = true;
+            this.rb_standardOptions.Checked = true;
+            this.rb_standardOptions.Location = new System.Drawing.Point(18, 22);
+            this.rb_standardOptions.Name = "rb_standardOptions";
+            this.rb_standardOptions.Size = new System.Drawing.Size(68, 17);
+            this.rb_standardOptions.TabIndex = 56;
+            this.rb_standardOptions.TabStop = true;
+            this.rb_standardOptions.Text = "Standard";
+            this.rb_standardOptions.UseVisualStyleBackColor = true;
+            this.rb_standardOptions.CheckedChanged += new System.EventHandler(this.rb_standardOptions_CheckedChanged);
+            // 
+            // rb_chemicalCalibration
+            // 
+            this.rb_chemicalCalibration.AutoSize = true;
+            this.rb_chemicalCalibration.Location = new System.Drawing.Point(18, 46);
+            this.rb_chemicalCalibration.Name = "rb_chemicalCalibration";
+            this.rb_chemicalCalibration.Size = new System.Drawing.Size(120, 17);
+            this.rb_chemicalCalibration.TabIndex = 57;
+            this.rb_chemicalCalibration.Text = "Chemical Calibration";
+            this.rb_chemicalCalibration.UseVisualStyleBackColor = true;
+            this.rb_chemicalCalibration.CheckedChanged += new System.EventHandler(this.rb_chemicalCalibration_CheckedChanged);
             // 
             // groupBox3
             // 
@@ -948,53 +995,6 @@
             this.bt_clearResults.Text = "Clear Results";
             this.bt_clearResults.UseVisualStyleBackColor = true;
             this.bt_clearResults.Click += new System.EventHandler(this.bt_clearResults_Click);
-            // 
-            // rb_neucode
-            // 
-            this.rb_neucode.AutoSize = true;
-            this.rb_neucode.Checked = true;
-            this.rb_neucode.Location = new System.Drawing.Point(16, 22);
-            this.rb_neucode.Name = "rb_neucode";
-            this.rb_neucode.Size = new System.Drawing.Size(111, 17);
-            this.rb_neucode.TabIndex = 56;
-            this.rb_neucode.TabStop = true;
-            this.rb_neucode.Text = "NeuCode Labeled";
-            this.rb_neucode.UseVisualStyleBackColor = true;
-            this.rb_neucode.CheckedChanged += new System.EventHandler(this.btn_neucode_CheckedChanged);
-            // 
-            // rb_unlabeled
-            // 
-            this.rb_unlabeled.AutoSize = true;
-            this.rb_unlabeled.Location = new System.Drawing.Point(16, 46);
-            this.rb_unlabeled.Name = "rb_unlabeled";
-            this.rb_unlabeled.Size = new System.Drawing.Size(73, 17);
-            this.rb_unlabeled.TabIndex = 57;
-            this.rb_unlabeled.Text = "Unlabeled";
-            this.rb_unlabeled.UseVisualStyleBackColor = true;
-            // 
-            // rb_standardOptions
-            // 
-            this.rb_standardOptions.AutoSize = true;
-            this.rb_standardOptions.Checked = true;
-            this.rb_standardOptions.Location = new System.Drawing.Point(18, 22);
-            this.rb_standardOptions.Name = "rb_standardOptions";
-            this.rb_standardOptions.Size = new System.Drawing.Size(68, 17);
-            this.rb_standardOptions.TabIndex = 56;
-            this.rb_standardOptions.TabStop = true;
-            this.rb_standardOptions.Text = "Standard";
-            this.rb_standardOptions.UseVisualStyleBackColor = true;
-            this.rb_standardOptions.CheckedChanged += new System.EventHandler(this.rb_standardOptions_CheckedChanged);
-            // 
-            // rb_chemicalCalibration
-            // 
-            this.rb_chemicalCalibration.AutoSize = true;
-            this.rb_chemicalCalibration.Location = new System.Drawing.Point(18, 46);
-            this.rb_chemicalCalibration.Name = "rb_chemicalCalibration";
-            this.rb_chemicalCalibration.Size = new System.Drawing.Size(120, 17);
-            this.rb_chemicalCalibration.TabIndex = 57;
-            this.rb_chemicalCalibration.Text = "Chemical Calibration";
-            this.rb_chemicalCalibration.UseVisualStyleBackColor = true;
-            this.rb_chemicalCalibration.CheckedChanged += new System.EventHandler(this.rb_chemicalCalibration_CheckedChanged);
             // 
             // LoadDeconvolutionResults
             // 

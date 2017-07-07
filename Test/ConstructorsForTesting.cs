@@ -120,7 +120,7 @@ namespace Test
             f.lt_condition = lt_con;
             f.hv_condition = hv_con;
             f.biological_replicate = biorep;
-            f.fraction = fraction;
+            //f.fraction = fraction;
             f.technical_replicate = techrep;
             return f;
         }

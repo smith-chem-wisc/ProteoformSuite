@@ -118,8 +118,8 @@ namespace Test
             e.relationships.Add(et);
             t.relationships.Add(et);
             e.agg_intensity = 999.99;
-            e.quant.lightIntensitySum = 444.44m;
-            e.quant.heavyIntensitySum = 333.33m;
+            e.quant.numeratorIntensitySum = 444.44m;
+            e.quant.denominatorIntensitySum = 333.33m;
             e.quant.intensitySum = 777.77m;
             List<ProteoformFamily> f = new List<ProteoformFamily> { new ProteoformFamily(e) };
             f.First().construct_family();
@@ -162,8 +162,8 @@ namespace Test
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
             ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.ExperimentalTheoretical, 0, TestContext.CurrentContext.TestDirectory);
             e.agg_intensity = 999.99;
-            e.quant.lightIntensitySum = 444.44m;
-            e.quant.heavyIntensitySum = 333.33m;
+            e.quant.numeratorIntensitySum = 444.44m;
+            e.quant.denominatorIntensitySum = 333.33m;
             e.quant.intensitySum = 777.77m;
             List<ProteoformFamily> f = new List<ProteoformFamily> { new ProteoformFamily(e) };
             f.First().construct_family();

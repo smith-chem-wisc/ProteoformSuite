@@ -58,11 +58,11 @@ namespace ProteoformSuiteGUI
             set { file.biological_replicate = value; }
         }
 
-        public int Fraction
-        {
-            get { return file.fraction; }
-            set { file.fraction = value; }
-        }
+        //public int Fraction
+        //{
+        //    get { return file.fraction; }
+        //    set { file.fraction = value; }
+        //}
 
         public string lt_condition
         {
@@ -117,7 +117,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(complete_path)].HeaderText = "File Path";
             dgv.Columns[nameof(matchingCalibrationFile)].HeaderText = "Matching Calibration File";
             dgv.Columns[nameof(biological_replicate)].HeaderText = "Biological Replicate";
-            dgv.Columns[nameof(lt_condition)].HeaderText = "NeuCode Light Condition";
+            dgv.Columns[nameof(lt_condition)].HeaderText = SaveState.lollipop.neucode_labeled ? "NeuCode Light Condition" : "Condition";
             dgv.Columns[nameof(hv_condition)].HeaderText = "NeuCode Heavy Condition";
             dgv.Columns[nameof(ContaminantDB)].HeaderText = "Contaminant Database";
 
@@ -133,9 +133,9 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(matchingCalibrationFile)].Visible = dgv_purposes.Contains(Purpose.Calibration) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(Labeling)].Visible = dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(biological_replicate)].Visible = dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(Fraction)].Visible = dgv_purposes.Contains(Purpose.Quantification);
+            //dgv.Columns[nameof(Fraction)].Visible = dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(lt_condition)].Visible = dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(hv_condition)].Visible = dgv_purposes.Contains(Purpose.Quantification);
+            dgv.Columns[nameof(hv_condition)].Visible = SaveState.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(ContaminantDB)].Visible = dgv_purposes.Contains(Purpose.ProteinDatabase);
         }
 

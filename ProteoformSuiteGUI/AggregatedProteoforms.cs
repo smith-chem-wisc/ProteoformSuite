@@ -9,6 +9,12 @@ namespace ProteoformSuiteGUI
     public partial class AggregatedProteoforms : Form, ISweetForm
     {
 
+        #region Private Field
+
+        ExperimentalProteoform selected_pf = null;
+
+        #endregion Private Field
+
         #region Public Constructor
 
         public AggregatedProteoforms()
@@ -17,25 +23,62 @@ namespace ProteoformSuiteGUI
             InitializeParameterSet();
         }
 
-        #endregion
+        #endregion Public Constructor
 
         #region Private Methods
 
         private void dgv_AggregatedProteoforms_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex >= 0) display_light_proteoforms(e.RowIndex);
+            if (e.RowIndex >= 0)
+                selected_pf = (ExperimentalProteoform)((DisplayExperimentalProteoform)this.dgv_AggregatedProteoforms.Rows[e.RowIndex].DataBoundItem).display_object;
+            else
+                selected_pf = null;
+            display_light_proteoforms();
         }
 
         private void dgv_AggregatedProteoforms_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.RowIndex >= 0) display_light_proteoforms(e.RowIndex);
+            if (e.RowIndex >= 0)
+                selected_pf = (ExperimentalProteoform)((DisplayExperimentalProteoform)this.dgv_AggregatedProteoforms.Rows[e.RowIndex].DataBoundItem).display_object;
+            else
+                selected_pf = null;
+            display_light_proteoforms();
         }
 
-        private void display_light_proteoforms(int row_index)
+        private void display_light_proteoforms()
         {
-            ExperimentalProteoform selected_pf = (ExperimentalProteoform)((DisplayExperimentalProteoform)this.dgv_AggregatedProteoforms.Rows[row_index].DataBoundItem).display_object;
-            DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, selected_pf.aggregated_components.Select(c => new DisplayComponent(c)));
-            DisplayComponent.FormatComponentsTable(dgv_AcceptNeuCdLtProteoforms, false);
+            List<Component> components = selected_pf == null ? new List<Component>() :
+                rb_displayIdentificationComponents.Checked ?
+                selected_pf.aggregated_components :
+                rb_displayLightQuantificationComponents.Checked ?
+                    selected_pf.lt_quant_components :
+                    selected_pf.hv_quant_components;
+            DisplayUtility.FillDataGridView(dgv_AcceptNeuCdLtProteoforms, 
+                SaveState.lollipop.neucode_labeled && rb_displayIdentificationComponents.Checked ? 
+                    components.Select(c => new DisplayNeuCodePair(c as NeuCodePair)) : 
+                    components.Select(c => new DisplayComponent(c)));
+            if (SaveState.lollipop.neucode_labeled && rb_displayIdentificationComponents.Checked)
+                DisplayNeuCodePair.FormatNeuCodeTable(dgv_AcceptNeuCdLtProteoforms);
+            else
+                DisplayComponent.FormatComponentsTable(dgv_AcceptNeuCdLtProteoforms, !rb_displayIdentificationComponents.Checked);
+        }
+
+        private void rb_displayIdentificationComponents_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_displayIdentificationComponents.Checked)
+                display_light_proteoforms();
+        }
+
+        private void rb_displayLightQuantificationComponents_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_displayLightQuantificationComponents.Checked)
+                display_light_proteoforms();
+        }
+
+        private void rb_displayHeavyQuantificationComponents_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rb_displayHeavyQuantificationComponents.Checked)
+                display_light_proteoforms();
         }
 
         private void updateFiguresOfMerit()
@@ -107,7 +150,7 @@ namespace ProteoformSuiteGUI
             SaveState.lollipop.min_num_bioreps = Convert.ToInt16(nUD_min_num_bioreps.Value);
         }
 
-        #endregion
+        #endregion Private Methods
 
         #region Public Methods
 
@@ -170,6 +213,6 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Public Methods
-        
+
     }
 }
