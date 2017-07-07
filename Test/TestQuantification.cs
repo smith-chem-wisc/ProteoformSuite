@@ -110,18 +110,19 @@ namespace Test
             //Assert.AreEqual(2, e1.biorepIntensityList.Count(b => b.light == false));
 
             SaveState.lollipop.getBiorepsFractionsList(SaveState.lollipop.input_files);
-            SaveState.lollipop.numerator_condition = SaveState.lollipop.ltConditionsBioReps.Keys.First();
-            SaveState.lollipop.denominator_condition = SaveState.lollipop.hvConditionsBioReps.Keys.First();
+            string numerator_condition = SaveState.lollipop.ltConditionsBioReps.Keys.First();
+            string denominator_condition = SaveState.lollipop.hvConditionsBioReps.Keys.First();
+            string induced_condition = SaveState.lollipop.hvConditionsBioReps.Keys.First();
+            Dictionary<string, List<int> > cbr = e1.biorepIntensityList.Select(x => x.condition).Distinct().ToDictionary(c => c, c => e1.biorepIntensityList.Where(br => br.condition == c).Select(br => br.biorep).Distinct().ToList());
 
-            SaveState.lollipop.computeProteoformTestStatistics(true, new List<ExperimentalProteoform> { e1 }, (decimal)10.000, (decimal)10.000, "", "", 1);
+            SaveState.lollipop.compute_proteoform_statistics(new List<ExperimentalProteoform> { e1 }, (decimal)10.000, (decimal)10.000, cbr, numerator_condition, denominator_condition, induced_condition, 1);
 
-            Assert.AreEqual(2, e1.quant.numeratorBiorepIntensities.Count);
-            Assert.AreEqual(2, e1.quant.denominatorBiorepIntensities.Count);
-            Assert.AreEqual(200d, e1.quant.numeratorBiorepIntensities.Sum(i => i.intensity));
-            Assert.AreEqual(105d, e1.quant.denominatorBiorepIntensities.Sum(i => i.intensity));
+            Assert.AreEqual(2, e1.quant.numeratorOriginalBiorepIntensities.Count);
+            Assert.AreEqual(2, e1.quant.denominatorOriginalBiorepIntensities.Count);
+            Assert.AreEqual(200d, e1.quant.numeratorOriginalBiorepIntensities.Sum(i => i.intensity));
+            Assert.AreEqual(105d, e1.quant.denominatorOriginalBiorepIntensities.Sum(i => i.intensity));
             Assert.AreEqual(305d, e1.quant.intensitySum);
             Assert.AreEqual(0.929610672108602M, e1.quant.logFoldChange);
-            Assert.AreEqual(0.0379131331237966M, e1.quant.variance);
             Assert.True(0 <= e1.quant.pValue && e1.quant.pValue <= 1);
         }
 
@@ -154,22 +155,22 @@ namespace Test
             //Assert.AreEqual(2 * 2, e2.biorepIntensityList.Count(b => !b.light));
 
             SaveState.lollipop.getBiorepsFractionsList(SaveState.lollipop.input_files);
-            SaveState.lollipop.numerator_condition = "light";
-            SaveState.lollipop.denominator_condition = "heavy";
+            string numerator_condition = "light";
+            string denominator_condition = "heavy";
+            string induced_condition = "heavy";
+            Dictionary<string, List<int>> cbr = e2.biorepIntensityList.Select(x => x.condition).Distinct().ToDictionary(c => c, c => e2.biorepIntensityList.Where(br => br.condition == c).Select(br => br.biorep).Distinct().ToList());
 
-            SaveState.lollipop.computeProteoformTestStatistics(true, new List<ExperimentalProteoform> { e2 }, (decimal)10.000, (decimal)10.000, "", "", 1);
+            SaveState.lollipop.compute_proteoform_statistics(new List<ExperimentalProteoform> { e2 }, (decimal)10.000, (decimal)10.000, cbr, numerator_condition, denominator_condition, induced_condition, 1);
 
-            Assert.AreEqual(4, e2.quant.numeratorBiorepIntensities.Count);
-            Assert.AreEqual(4, e2.quant.denominatorBiorepIntensities.Count);
-            Assert.AreEqual(298d, e2.quant.numeratorBiorepIntensities.Sum(i => i.intensity));
-            Assert.AreEqual(307d, e2.quant.denominatorBiorepIntensities.Sum(i => i.intensity));
+            Assert.AreEqual(4, e2.quant.numeratorOriginalBiorepIntensities.Count);
+            Assert.AreEqual(4, e2.quant.denominatorOriginalBiorepIntensities.Count);
+            Assert.AreEqual(298d, e2.quant.numeratorOriginalBiorepIntensities.Sum(i => i.intensity));
+            Assert.AreEqual(307d, e2.quant.denominatorOriginalBiorepIntensities.Sum(i => i.intensity));
             Assert.AreEqual(605d, e2.quant.intensitySum);
             Assert.AreEqual(-0.0429263249080178M, e2.quant.logFoldChange);
-            Assert.AreEqual(1.97538639776822M, e2.quant.variance);
             Assert.True(0 <= e2.quant.pValue && e2.quant.pValue <= 1);
-            Assert.AreEqual(20.338m, Math.Round(e2.quant.StdDev(e2.quant.numeratorBiorepIntensities, e2.quant.denominatorBiorepIntensities), 3));
-            Assert.AreEqual(-0.10544m, Math.Round(e2.quant.testStatistic, 5));
-            Assert.AreEqual(e2.quant.permutedTestStatistics.Count, SaveState.lollipop.permutedTestStatistics.Count());
+            Assert.AreEqual(20.338m, Math.Round(e2.quant.StdDev(e2.quant.numeratorOriginalBiorepIntensities, e2.quant.denominatorOriginalBiorepIntensities), 3));
+            Assert.AreEqual(0.10544m, Math.Round(e2.quant.relative_difference, 5));
         }
 
         [Test]
@@ -180,31 +181,30 @@ namespace Test
             Assert.True(e.quant.StdDev(singleton_list, singleton_list) > 0);
         }
 
-        [Test]
-        public void quant_variance_without_imputation_aka_unequal_list_lengths()
-        {
-            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
-            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, 1, "", 0) };
-            List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
-            try
-            {
-                e.quant.Variance(0, shorter_list, singleton_list);
-            }
-            catch (ArgumentException ex)
-            {
-                Assert.NotNull(ex.Message);
-            }
-        }
+        //[Test]
+        //public void quant_variance_without_imputation_aka_unequal_list_lengths()
+        //{
+        //    ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
+        //    List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, 1, "", 0) };
+        //    List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
+        //    try
+        //    {
+        //        e.quant.Variance(0, shorter_list, singleton_list);
+        //    }
+        //    catch (ArgumentException ex)
+        //    {
+        //        Assert.NotNull(ex.Message);
+        //    }
+        //}
 
         [Test]
         public void quant_permuations_without_imputation_aka_unequal_list_lengths()
         {
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
-            List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, 1, "", 0) };
-            List<BiorepIntensity> shorter_list = new List<BiorepIntensity>();
+            Dictionary<string, List<int>> unbalanced_design = new Dictionary<string, List<int>> { { "n", new List<int> { 1, 2 } }, {"s", new List<int> { 1 } } };
             try
             {
-                e.quant.getBalancedPermutedTestStatistics(shorter_list, singleton_list, 0, e.quant.getSingleTestStatistic, e.quant.StdDev);
+                SaveState.lollipop.compute_balanced_biorep_permutation_relativeDifferences(unbalanced_design, "s", new List<ExperimentalProteoform>(), 0);
             }
             catch (ArgumentException ex)
             {
@@ -213,7 +213,7 @@ namespace Test
         }
 
         [Test]
-        public void quant_balanced_permutation_works_with_3_or_4()
+        public void quant_balanced_permutation_works_with_3()
         {
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             BiorepIntensity b1 = new BiorepIntensity(false, 1, "n", 99);
@@ -222,20 +222,47 @@ namespace Test
             BiorepIntensity b5 = new BiorepIntensity(false, 1, "s", 51);
             BiorepIntensity b6 = new BiorepIntensity(false, 2, "s", 54);
             BiorepIntensity b7 = new BiorepIntensity(false, 3, "s", 100);
-            List<BiorepIntensity> triple_list1 = new List<BiorepIntensity> { b1, b2, b3 };
-            List<BiorepIntensity> triple_list2 = new List<BiorepIntensity> { b5, b6, b7 };
-            List<decimal> perms = e.quant.getBalancedPermutedTestStatistics(triple_list1, triple_list2, 1, e.quant.getSingleTestStatistic, e.quant.StdDev);
+            List<BiorepIntensity> uninduced = new List<BiorepIntensity> { b1, b2, b3 };
+            List<BiorepIntensity> induced = new List<BiorepIntensity> { b5, b6, b7 };
+            e.quant.numeratorOriginalBiorepIntensities = uninduced;
+            e.quant.denominatorOriginalBiorepIntensities = induced;
+            e.quant.allIntensities = induced.Concat(uninduced).ToDictionary(b => new Tuple<string, int>(b.condition, b.biorep), b => b);
+            Dictionary<string, List<int>> cbr = new Dictionary<string, List<int>> { { "n", new List<int> { 1, 2, 3 } }, { "s", new List<int> { 1, 2, 3 } } };
+            List<ExperimentalProteoform> satisfy = new List<ExperimentalProteoform> { e };
+            List<List<decimal>> perms = SaveState.lollipop.compute_balanced_biorep_permutation_relativeDifferences(cbr, "s", satisfy, 1);
             Assert.AreEqual(3, perms.Count);
-            Assert.AreEqual(1, perms.Count(v => Math.Round(v, 4) == -0.7185m));
-            Assert.AreEqual(1, perms.Count(v => Math.Round(v, 4) == -0.6867m));
-            Assert.AreEqual(1, perms.Count(v => Math.Round(v, 4) == 20.7143m));
-            BiorepIntensity b1_2 = new BiorepIntensity(false, 1, "n", 99);
-            BiorepIntensity b2_2 = new BiorepIntensity(false, 2, "n", 101);
-            BiorepIntensity b5_2 = new BiorepIntensity(false, 1, "s", 51);
-            BiorepIntensity b6_2 = new BiorepIntensity(false, 2, "s", 54);
-            List<BiorepIntensity> quad_list1 = new List<BiorepIntensity> { b1, b1_2, b2, b2_2 };
-            List<BiorepIntensity> quad_list2 = new List<BiorepIntensity> { b5, b5_2, b6, b6_2 };
-            //Assert.AreEqual(36, e.quant.getBalancedPermutedTestStatistics(quad_list1, quad_list2, 1, e.quant.getSingleTestStatistic, e.quant.StdDev).Count); // this isn't working... I was trying to replicate the Tusher et al. relative difference calculations, but I think they may have balanced across hybridizations and cell line, not just cell lines, keeping the UUII balanced, too
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v, 4) == 0.7185m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v, 4) == 0.6867m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v, 4) == -20.7143m));
+        }
+
+        [Test]
+        public void quant_balanced_permutation_works_with_4()
+        {
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
+            BiorepIntensity b1 = new BiorepIntensity(false, 1, "n", 99);
+            BiorepIntensity b2 = new BiorepIntensity(false, 2, "n", 101);
+            BiorepIntensity b3 = new BiorepIntensity(false, 3, "n", 50);
+            BiorepIntensity b4 = new BiorepIntensity(false, 4, "n", 48);
+            BiorepIntensity b5 = new BiorepIntensity(false, 1, "s", 51);
+            BiorepIntensity b6 = new BiorepIntensity(false, 2, "s", 54);
+            BiorepIntensity b7 = new BiorepIntensity(false, 3, "s", 100);
+            BiorepIntensity b8 = new BiorepIntensity(false, 4, "s", 102);
+            List<BiorepIntensity> uninduced = new List<BiorepIntensity> { b1, b2, b3, b4 };
+            List<BiorepIntensity> induced = new List<BiorepIntensity> { b5, b6, b7, b8 };
+            e.quant.numeratorOriginalBiorepIntensities = uninduced;
+            e.quant.denominatorOriginalBiorepIntensities = induced;
+            e.quant.allIntensities = induced.Concat(uninduced).ToDictionary(b => new Tuple<string, int>(b.condition, b.biorep), b => b);
+            Dictionary<string, List<int>> cbr = new Dictionary<string, List<int>> { { "n", new List<int> { 1, 2, 3, 4 } }, { "s", new List<int> { 1, 2, 3, 4 } } };
+            List<ExperimentalProteoform> satisfy = new List<ExperimentalProteoform> { e };
+            List<List<decimal>> perms = SaveState.lollipop.compute_balanced_biorep_permutation_relativeDifferences(cbr, "s", satisfy, 1);
+            Assert.AreEqual(6, perms.Count);
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v, 4) == 20.6704m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v, 4) == -20.6704m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v, 4) == 0.0585m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v, 4) == -0.0585m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v, 4) == -0.0351m));
+            Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v, 4) == 0.0351m));
         }
 
         [Test]
@@ -422,30 +449,28 @@ namespace Test
         public void testComputeIndividualProteoformFDR()
         {
             List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>();
-            List<decimal> permutedTestStats = new List<decimal>();
 
-            for (int i = 0; i < 10; i++)
+            List<List<decimal>> permutedStats = new List<List<decimal>>();
+            for (int i = 0; i < 10; i++) //proteoforms
             {
                 ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
-                List<decimal> onepst = new List<decimal>();
-                for (int j = 0; j < 10; j++)
+                for (int j = 0; j < 10; j++) // permutations
                 {
-                    onepst.Add((decimal)j);
+                    if (i == 0) permutedStats.Add(new List<decimal>());
+                    permutedStats[j].Add(j);
                 }
-                e.quant.testStatistic = ((decimal)i/10);
-                e.quant.permutedTestStatistics = onepst;
+                e.quant.relative_difference = ((decimal)i/10);
                 satisfactoryProteoforms.Add(e);
-                permutedTestStats.AddRange(onepst);
             }
 
-            SaveState.lollipop.computeSortedTestStatistics(satisfactoryProteoforms);
-            SaveState.lollipop.computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, permutedTestStats, SaveState.lollipop.sortedProteoformTestStatistics);
+            SaveState.lollipop.computeSortedRelativeDifferences(satisfactoryProteoforms, permutedStats);
+            SaveState.lollipop.computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, permutedStats.SelectMany(x => x).ToList(), SaveState.lollipop.sortedProteoformRelativeDifferences);
 
             //testStatistic = 0.2m;
-            Assert.AreEqual(1.125, satisfactoryProteoforms[2].quant.FDR);
+            Assert.AreEqual(1.125, satisfactoryProteoforms[2].quant.roughSignificanceFDR);
 
             //testStatistic = 0.8m;
-            Assert.AreEqual(4.5, satisfactoryProteoforms[8].quant.FDR);
+            Assert.AreEqual(4.5, satisfactoryProteoforms[8].quant.roughSignificanceFDR);
         }
 
         [Test]
@@ -486,36 +511,38 @@ namespace Test
         {
             List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>();
 
-            for (int i = 0; i < 10; i++)
+            List<List<decimal>> permutedStats = new List<List<decimal>>(100); 
+            for (int i = -5; i < 5; i++) // proteoforms
             {
                 ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
-                List<decimal> onepst = new List<decimal>();
-                for (int j = 0; j < 10; j++)
+                for (int j = 0; j < 10; j++) // permutations
                 {
-                    if (j == 9) onepst.Add(9);
-                    else onepst.Add((decimal)7); //making it asymmetrical
+                    if (i == -5) permutedStats.Add(new List<decimal>());
+                    permutedStats[i+5].Add((decimal)(j-5)/2); //making it asymmetrical
                 }
-                e.quant.testStatistic = ((decimal)i);
-                e.quant.permutedTestStatistics = onepst;
-                e.quant.averagePermutedTestStatistic = onepst.Average();
+                e.quant.relative_difference = ((decimal)i);
                 satisfactoryProteoforms.Add(e);
             }
 
-            SaveState.lollipop.computeSortedTestStatistics(satisfactoryProteoforms);
-            Assert.AreEqual(SaveState.lollipop.sortedAvgPermutationTestStatistics.Count, SaveState.lollipop.sortedProteoformTestStatistics.Count);
+            SaveState.lollipop.computeSortedRelativeDifferences(satisfactoryProteoforms, permutedStats);
+            Assert.AreEqual(SaveState.lollipop.avgSortedPermutationRelativeDifferences.Count, SaveState.lollipop.sortedProteoformRelativeDifferences.Count);
 
-            var sorted_check1 = SaveState.lollipop.sortedProteoformTestStatistics.OrderBy(x => x);
-            var sorted_check2 = SaveState.lollipop.sortedAvgPermutationTestStatistics.OrderBy(x => x);
-            Assert.IsTrue(sorted_check1.SequenceEqual(SaveState.lollipop.sortedProteoformTestStatistics));
-            Assert.IsTrue(sorted_check2.SequenceEqual(SaveState.lollipop.sortedAvgPermutationTestStatistics));
+            var sorted_check1 = SaveState.lollipop.sortedProteoformRelativeDifferences.OrderBy(x => x);
+            var sorted_check2 = SaveState.lollipop.avgSortedPermutationRelativeDifferences.OrderBy(x => x);
+            Assert.IsTrue(sorted_check1.SequenceEqual(SaveState.lollipop.sortedProteoformRelativeDifferences));
+            Assert.IsTrue(sorted_check2.SequenceEqual(SaveState.lollipop.avgSortedPermutationRelativeDifferences));
 
             //Vertical line on the Tusher plot with all average permuted test statistics the same (7.18)
-            //Average permuted of the set {0,0,0,0,0,0,0,0,0,9} is 7.18 for each of 10 proteoforms
-            //First passing above 7.18 + 1 = 8.18 is 9
-            //First below 7.18 - 1 = 6.18 is 6
-            //One permuted value passes each of 10 times, the nine (numerator = 10 permuted passing / 100 permuted total * 10 proteoforms = 1)
-            //Eight values in the set {0,1,2,3,4,5,6,7,8,9} pass the two cutoffs, 6 and 9 (denominator = 8 passing proteoforms)
-            Assert.AreEqual((double)1 / (double)8, SaveState.lollipop.computeRelativeDifferenceFDR(SaveState.lollipop.sortedAvgPermutationTestStatistics, SaveState.lollipop.sortedProteoformTestStatistics, satisfactoryProteoforms, satisfactoryProteoforms.SelectMany(e => e.quant.permutedTestStatistics).ToList(), 1));
+            //Target relative differences are {-5,-4,-3,-2,-1,0,1,2,3,4}
+            //Average permuted of the 10 sets {-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2} is the same set {-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2}
+            //Upper cutoff is {-1.5,-1,-0.5, 0, 0.5, 1, 1.5, 2,2.5,3} 
+            //Lower cutoff is {-3.5,-3,-2.5,-2,-1.5,-1,-0.5, 0,0.5,1}
+            //First passing above (positive or 0) is 2 {2,3,4}
+            //First passing below (negative or 0) is -2 {-5,-4,-3,-2}
+            //Seven pass (denominator = 7)
+            //Three permuted value passes each of 10 times {-2.5, -2, 2} (numerator = 30 permuted passing / 100 permuted total * 10 proteoforms = 3)
+            //FDR is numerator / denominator = 3 / 7
+            Assert.AreEqual((double)3 / (double)7, SaveState.lollipop.computeRelativeDifferenceFDR(SaveState.lollipop.avgSortedPermutationRelativeDifferences, SaveState.lollipop.sortedProteoformRelativeDifferences, satisfactoryProteoforms, permutedStats.SelectMany(x => x).ToList(), 1));
 
             SaveState.lollipop.satisfactoryProteoforms = satisfactoryProteoforms;
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
@@ -659,13 +686,13 @@ namespace Test
             //SELECTED BACKGROUND
             SaveState.lollipop.condition_count = e.biorepIntensityList.Select(b => b.condition).Distinct().Count();
             Dictionary<int, List<int>> qBioFractions = e.biorepIntensityList.Select(b => b.biorep).Distinct().ToDictionary(b => b, b => new List<int>());
-            SaveState.lollipop.defineBackgroundIntensityDistribution(false, qBioFractions, exps, -2, 0.5m);
+            SaveState.lollipop.defineBackgroundIntensityDistribution(qBioFractions, exps, -2, 0.5m);
             Assert.AreEqual(1.04m, Math.Round(SaveState.lollipop.bkgdAverageIntensity, 2));
             Assert.AreEqual(0.041m, Math.Round(SaveState.lollipop.bkgdStDev, 3));
             Assert.AreEqual(0, Math.Round(SaveState.lollipop.bkgdGaussianHeight, 2));
 
             //unlabeled works similarly
-            SaveState.lollipop.defineBackgroundIntensityDistribution(true, qBioFractions, exps, -2, 0.5m);
+            SaveState.lollipop.defineBackgroundIntensityDistribution(qBioFractions, exps, -2, 0.5m);
             Assert.AreEqual(1.04m, Math.Round(SaveState.lollipop.bkgdAverageIntensity, 2));
             Assert.AreEqual(0.041m, Math.Round(SaveState.lollipop.bkgdStDev, 3));
             Assert.AreEqual(0, Math.Round(SaveState.lollipop.bkgdGaussianHeight, 2));

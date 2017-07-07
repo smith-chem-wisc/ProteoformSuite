@@ -64,11 +64,6 @@ namespace ProteoformSuiteGUI
             get { return qval.logFoldChange; }
         }
 
-        public decimal Variance
-        {
-            get { return qval.variance; }
-        }
-
         public decimal Scatter_linear
         {
             get { return qval.scatter; }
@@ -86,12 +81,12 @@ namespace ProteoformSuiteGUI
 
         public decimal TestStatistic_linear
         {
-            get { return qval.testStatistic; }
+            get { return qval.relative_difference; }
         }
 
         public decimal AvgPermutedTestStatistic
         {
-            get { return qval.correspondingAveragePermutedTestStatistic; }
+            get { return qval.correspondingAvgSortedRelDiff; }
         }
 
         public string manual_validation_quant
