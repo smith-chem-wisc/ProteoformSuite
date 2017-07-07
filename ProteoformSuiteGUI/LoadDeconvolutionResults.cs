@@ -32,7 +32,7 @@ namespace ProteoformSuiteGUI
 
         public List<DataGridView> GetDGVs()
         {
-            return null;
+            return new List<DataGridView> { dgv_loadFiles1, dgv_loadFiles2, dgv_loadFiles3 };
         }
 
         public void ClearListsTablesFigures(bool clear_following)
