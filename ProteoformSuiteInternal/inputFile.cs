@@ -38,7 +38,7 @@ namespace ProteoformSuiteInternal
         //For identification files
         public ComponentReader reader = new ComponentReader();
 
-        public bool matchingCalibrationFile { get; set; } = false;
+        public bool topdownRawFile { get; set; } = false;
 
         public Labeling label { get; set; }
 

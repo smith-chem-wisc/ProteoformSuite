@@ -17,14 +17,14 @@ namespace ProteoformSuiteInternal
     {
         //parameters
         public double fineResolution = 0.1;
-    
+        List<double> test = new List<double>();
+        List<double> test2 = new List<double>();
         //CALIBRATION WITH TD HITS
         private int numMs1MassChargeCombinationsConsidered;
         private int numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
         private IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile;
-        private double mass_tolerance;
 
-        public bool Run_TdMzCal(InputFile file, List<TopDownHit> identifications, bool td_file, double mass_tolerance)
+        public bool Run_TdMzCal(InputFile file, List<TopDownHit> identifications, bool td_file, int bio_rep, int fraction, int tech_rep)
         {
 
             if (identifications.Count < 5) return false;
@@ -32,17 +32,42 @@ namespace ProteoformSuiteInternal
             var trainingPointCounts = new List<int>();
 
             myMsDataFile = ThermoStaticData.LoadAllStaticData(file.complete_path);
-            this.mass_tolerance = mass_tolerance;
             DataPointAquisitionResults dataPointAcquisitionResult = null;
             Parallel.ForEach(identifications, h => h.mz = h.reported_mass.ToMz(h.charge)); //need to reset m/z in case same td hits used for multiple calibration raw files... 
             for (int linearCalibrationRound = 1; ; linearCalibrationRound++)
             {
-                dataPointAcquisitionResult = GetDataPoints(identifications, td_file, file.filename);
+                dataPointAcquisitionResult = GetDataPoints(identifications, td_file, bio_rep, fraction, tech_rep);
                 // go until same # training points as previous round
                 if (linearCalibrationRound >= 2 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[linearCalibrationRound - 2])
                     break;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
-                CalibrateLinear(false, file.filename, dataPointAcquisitionResult.Ms1List);
+                CalibrateLinear(td_file, bio_rep, fraction, tech_rep, dataPointAcquisitionResult.Ms1List);
+                if (!td_file)
+                {
+                    using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\linear" + linearCalibrationRound + ".txt"))
+                    {
+                        foreach(var point in dataPointAcquisitionResult.Ms1List)
+                        {
+                            writer.WriteLine(point.mz + "\t" + point.retentionTime + "\t" + point.Label);
+                        }
+                    }
+
+                    using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\linearComponents" + linearCalibrationRound + ".txt"))
+                    {
+                        foreach (var point in test)
+                        {
+                            writer.WriteLine(point);
+                        }
+                    }
+
+                    using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\linearMassTols" + linearCalibrationRound + ".txt"))
+                    {
+                        foreach (var point in test2)
+                        {
+                            writer.WriteLine(point);
+                        }
+                    }
+                }
             }
 
 
@@ -50,11 +75,35 @@ namespace ProteoformSuiteInternal
             trainingPointCounts = new List<int>();
             for (int forestCalibrationRound = 1; ; forestCalibrationRound++)
             {
-                CalibrationFunction calibrationFunction = CalibrateRF(dataPointAcquisitionResult, file.filename);
-                dataPointAcquisitionResult = GetDataPoints(identifications, td_file, file.filename);
+                CalibrationFunction calibrationFunction = CalibrateRF(dataPointAcquisitionResult, td_file, bio_rep, fraction, tech_rep);
+                dataPointAcquisitionResult = GetDataPoints(identifications, td_file, bio_rep, fraction, tech_rep);
                 if (forestCalibrationRound >= 2 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[forestCalibrationRound - 2])
                     break;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
+                if (!td_file)
+                {
+                    using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\forest" + forestCalibrationRound + ".txt"))
+                    {
+                        foreach (var point in dataPointAcquisitionResult.Ms1List)
+                        {
+                            writer.WriteLine(point.mz + "\t" + point.retentionTime + "\t" + point.Label);
+                        }
+                    }
+                    using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\forestComponents" + forestCalibrationRound + ".txt"))
+                    {
+                        foreach (var point in test)
+                        {
+                            writer.WriteLine(point);
+                        }
+                    }
+                    using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\forestMassTols" + forestCalibrationRound + ".txt"))
+                    {
+                        foreach (var point in test2)
+                        {
+                            writer.WriteLine(point);
+                        }
+                    }
+                }
             }
 
             //calibrate topdown hits if this is topdown file....
@@ -66,7 +115,7 @@ namespace ProteoformSuiteInternal
             return true;
         }
 
-        private CalibrationFunction CalibrateRF(DataPointAquisitionResults res, string filename)
+        private CalibrationFunction CalibrateRF(DataPointAquisitionResults res, bool td_file, int bio_rep, int fraction, int tech_rep)
         {
             var rnd = new Random();
 
@@ -90,33 +139,34 @@ namespace ProteoformSuiteInternal
             }
             CalibrationFunction bestCf = bestMS1predictor;
 
-            CalibrateHitsAndComponents(bestCf, filename);
+            CalibrateHitsAndComponents(bestCf, td_file, bio_rep, fraction, tech_rep);
             return bestCf;
         }
 
 
-        public void CalibrateHitsAndComponents(CalibrationFunction bestCf, string filename)
+        public void CalibrateHitsAndComponents(CalibrationFunction bestCf, bool td_file, int bio_rep, int fraction, int tech_rep)
         {
-            foreach (TopDownHit hit in SaveState.lollipop.td_hits_calibration.Where(h => h.filename == filename))
+            foreach (TopDownHit hit in SaveState.lollipop.td_hits_calibration.Where(h => h.biological_replicate == bio_rep && h.fraction == fraction && (!td_file || h.technical_replicate == tech_rep)))
             {
-                int scanNum = hit.ms2ScanNumber;
-                while (myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
-                hit.mz = hit.mz - bestCf.Predict(new double[] { hit.mz, myMsDataFile.GetOneBasedScan(scanNum).RetentionTime });
+                hit.mz = hit.mz - bestCf.Predict(new double[] { hit.mz, hit.retention_time });
             }
-            foreach (Component c in SaveState.lollipop.calibration_components.Where(h => h.input_file.filename == filename))
+            if (!td_file)
             {
-                foreach (ChargeState cs in c.charge_states)
+                foreach (Component c in SaveState.lollipop.calibration_components.Where(h => h.input_file.biological_replicate == bio_rep && h.input_file.technical_replicate == tech_rep && h.input_file.fraction == fraction))
                 {
-                    int scanNumber = myMsDataFile.GetClosestOneBasedSpectrumNumber(c.rt_apex);
-                    var scan = myMsDataFile.GetOneBasedScan(scanNumber);
-                    bool ms1Scan = scan.MsnOrder == 1;
-                    while (!ms1Scan)
+                    foreach (ChargeState cs in c.charge_states)
                     {
-                        scanNumber--;
-                        scan = myMsDataFile.GetOneBasedScan(scanNumber);
-                        ms1Scan = scan.MsnOrder == 1;
+                        int scanNumber = myMsDataFile.GetClosestOneBasedSpectrumNumber(c.rt_apex);
+                        var scan = myMsDataFile.GetOneBasedScan(scanNumber);
+                        bool ms1Scan = scan.MsnOrder == 1;
+                        while (!ms1Scan)
+                        {
+                            scanNumber--;
+                            scan = myMsDataFile.GetOneBasedScan(scanNumber);
+                            ms1Scan = scan.MsnOrder == 1;
+                        }
+                        cs.mz_centroid = cs.mz_centroid - bestCf.Predict(new double[] { cs.mz_centroid, scan.RetentionTime });
                     }
-                    cs.mz_centroid = cs.mz_centroid - bestCf.Predict(new double[] { cs.mz_centroid, scan.RetentionTime });
                 }
             }
             foreach (var a in myMsDataFile.Where(s => s.MsnOrder == 1))
@@ -126,7 +176,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        private void CalibrateLinear(bool mz_only, string filename, List<LabeledMs1DataPoint> res)
+        private void CalibrateLinear(bool td_file, int bio_rep, int fraction, int tech_rep, List<LabeledMs1DataPoint> res)
         {
             var rnd = new Random();
 
@@ -189,10 +239,10 @@ namespace ProteoformSuiteInternal
                 {
                 }
             }
-            CalibrateHitsAndComponents(bestMS1predictor, filename);
+            CalibrateHitsAndComponents(bestMS1predictor, td_file, bio_rep, fraction, tech_rep);
         }
 
-        private DataPointAquisitionResults GetDataPoints(List<TopDownHit> identifications, bool td_file, string filename)
+        private DataPointAquisitionResults GetDataPoints(List<TopDownHit> identifications, bool td_file, int bio_rep, int fraction, int tech_rep)
         {
             DataPointAquisitionResults res = new DataPointAquisitionResults()
             {
@@ -208,10 +258,13 @@ namespace ProteoformSuiteInternal
 
                 if (!td_file) //if calibrating across files find component with matching mass and retention time
                 {
-                    Component matching_component = SaveState.lollipop.calibration_components.Where(c => c.input_file.filename == filename
-                && Math.Abs(c.weighted_monoisotopic_mass - (SaveState.lollipop.neucode_labeled ? identification.mz.ToMass(identification.charge) - identification.sequence.Count(s => s == 'K') * 128.094963 + identification.sequence.Count(s => s == 'K') * 136.109162 : identification.mz.ToMass(identification.charge))) < mass_tolerance
-                && Math.Abs(Convert.ToDouble(c.rt_range.Split('-')[0]) - identification.retention_time) < (double)SaveState.lollipop.retention_time_tolerance).OrderBy(c => Math.Abs(c.weighted_monoisotopic_mass - (SaveState.lollipop.neucode_labeled ? identification.mz.ToMass(identification.charge) - identification.sequence.Count(s => s == 'K') * 128.094963 + identification.sequence.Count(s => s == 'K') * 136.109162 : identification.mz.ToMass(identification.charge)))).FirstOrDefault();     
-                if (matching_component == null) continue;
+                    double hit_mass = (SaveState.lollipop.neucode_labeled ? (identification.mz.ToMass(identification.charge) - (identification.sequence.Count(s => s == 'K') * 128.094963) + (identification.sequence.Count(s => s == 'K') * 136.109162)) : identification.mz.ToMass(identification.charge));
+                    Component matching_component = SaveState.lollipop.calibration_components.Where(c => c.input_file.biological_replicate == bio_rep && c.input_file.fraction == fraction
+                && Math.Abs(c.weighted_monoisotopic_mass - hit_mass) * 1e6 / hit_mass < (double)SaveState.lollipop.mass_tolerance
+                && Math.Abs(c.rt_apex- identification.retention_time) < (double)SaveState.lollipop.retention_time_tolerance).OrderBy(c => Math.Abs(c.weighted_monoisotopic_mass - hit_mass)).FirstOrDefault();
+                    if (matching_component == null) continue;
+                    ChargeState cs = matching_component.charge_states.OrderByDescending(c => c.intensity).FirstOrDefault();
+                    if (cs != null) test.Add(cs.mz_centroid.ToMass(cs.charge_count) - hit_mass);
                     scanNumbers.Clear();
                     for (int i = Convert.ToInt16(matching_component.scan_range.Split('-')[0]); i <= Convert.ToInt16(matching_component.scan_range.Split('-')[1]); i++)
                     {
@@ -240,18 +293,24 @@ namespace ProteoformSuiteInternal
                 numMs1MassChargeCombinationsConsidered = 0;
                 numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks = 0;
 
+                //determine mass tolerance
+                List<double> mass_errors = identifications.Select(h => h.mz.ToMass(h.charge) - h.theoretical_mass - Math.Round(h.mz.ToMass(h.charge) - h.theoretical_mass, 0)).ToList();
+                double average_mass_error = mass_errors.Average();
+                double st_dev_mass_error = Math.Sqrt(mass_errors.Average(v => Math.Pow((double)(v - average_mass_error), 2)) / (mass_errors.Count - 1)); 
+                test2.Add(average_mass_error + 3 * st_dev_mass_error);
+
                 foreach (int scanNumber in scanNumbers)
                 {
-                    res.Ms1List.AddRange(SearchMS1Spectra(masses, intensities, scanNumber, -1, peaksAddedFromMS1HashSet, proteinCharge, identification));
-                    res.Ms1List.AddRange(SearchMS1Spectra(masses, intensities, scanNumber, 1, peaksAddedFromMS1HashSet, proteinCharge, identification));
+                    res.Ms1List.AddRange(SearchMS1Spectra(average_mass_error, st_dev_mass_error, masses, intensities, scanNumber, -1, peaksAddedFromMS1HashSet, proteinCharge, identification));
+                    res.Ms1List.AddRange(SearchMS1Spectra(average_mass_error, st_dev_mass_error ,masses, intensities, scanNumber, 1, peaksAddedFromMS1HashSet, proteinCharge, identification));
                     res.numMs1MassChargeCombinationsConsidered += numMs1MassChargeCombinationsConsidered;
                     res.numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks += numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
                 }
             }
-                return res;
+            return res;
         }
 
-        private IEnumerable<LabeledMs1DataPoint> SearchMS1Spectra(double[] originalMasses, double[] originalIntensities, int ms2spectrumIndex, int direction, HashSet<Tuple<double, int>> peaksAddedHashSet, int peptideCharge, TopDownHit identification)
+        private IEnumerable<LabeledMs1DataPoint> SearchMS1Spectra(double average_mass_error, double st_dev_mass_error, double[] originalMasses, double[] originalIntensities, int ms2spectrumIndex, int direction, HashSet<Tuple<double, int>> peaksAddedHashSet, int peptideCharge, TopDownHit identification)
         {
             var theIndex = -1;
             if (direction == 1)
@@ -298,9 +357,9 @@ namespace ProteoformSuiteInternal
                             double theMZ = a.ToMz(chargeToLookAt);
                             if (SaveState.lollipop.neucode_labeled)
                             {
-                                theMZ = theMZ - (((identification.sequence.Count(s => s == 'K') * 128.094963) / chargeToLookAt ) + ((identification.sequence.Count(s => s == 'K') * 136.109162) / chargeToLookAt));
+                                theMZ = theMZ - (((identification.sequence.Count(s => s == 'K') * 128.094963) / chargeToLookAt) + ((identification.sequence.Count(s => s == 'K') * 136.109162) / chargeToLookAt));
                             }
-                            var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - (mass_tolerance / identification.charge), theMZ + (mass_tolerance / identification.charge)); //WAS ID.CHARGE
+                            var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - ((average_mass_error - (3 * st_dev_mass_error)) / identification.charge), theMZ + ((average_mass_error + (3 * st_dev_mass_error)) / identification.charge)); //WAS ID.CHARGE
                             if (npwr == 0)
                             {
                                 break;
@@ -396,46 +455,35 @@ namespace ProteoformSuiteInternal
         //READ AND WRITE NEW CALIBRATED RAW EXPERIMENTAL COMPONENTS FILE
         public void calibrate_components_in_xlsx(InputFile file)
         {
-            if (SaveState.lollipop.td_calibration_functions.ContainsKey(file.filename))
-            {
-                //Copy file to new worksheet
-                string old_absolute_path = file.complete_path;
-                string new_absolute_path = file.directory + "\\" + file.filename + "_calibrated" + file.extension;
+            //Copy file to new worksheet
+            string old_absolute_path = file.complete_path;
+            string new_absolute_path = file.directory + "\\" + file.filename + "_calibrated" + file.extension;
 
-                //create copy of excel file
-                byte[] byteArray = File.ReadAllBytes(old_absolute_path);
-                using (MemoryStream stream = new MemoryStream())
+            //create copy of excel file
+            byte[] byteArray = File.ReadAllBytes(old_absolute_path);
+            using (MemoryStream stream = new MemoryStream())
+            {
+                stream.Write(byteArray, 0, (int)byteArray.Length);
+                File.WriteAllBytes(new_absolute_path, stream.ToArray());
+            }
+            var workbook = new XLWorkbook(new_absolute_path);
+            var worksheet = workbook.Worksheets.Worksheet(1);
+            Parallel.ForEach(worksheet.Rows(), row =>
+            {
+                if (row.Cell(1).Value.ToString().Length == 0)
                 {
-                    stream.Write(byteArray, 0, (int)byteArray.Length);
-                    File.WriteAllBytes(new_absolute_path, stream.ToArray());
-                }
-                var workbook = new XLWorkbook(new_absolute_path);
-                var worksheet = workbook.Worksheets.Worksheet(1);
-                Parallel.ForEach(worksheet.Rows(), row =>
-                {
-                    if (row.Cell(1).Value.ToString().Length == 0)
+                    if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
                     {
-                        if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
+                        double value;
+                        if (SaveState.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double>(file.filename, Math.Round(row.Cell(3).GetDouble(), 0)), out value))
                         {
-                            Tuple<double, double, int, int> value;
-                            if (SaveState.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double>(file.filename, Math.Round(row.Cell(3).GetDouble(), 0)), out value))
-                            {
-                                row.Cell(4).SetValue(value.Item1);
-                               // row.Cell(6).SetValue(value.Item2);
-                               // row.Cell(7).SetValue(value.Item3);
-                               // row.Cell(8).SetValue(value.Item4);
-                            }
-                        }
-                        else
-                        {
-                            row.Cell(6).SetValue("Signal to Noise");
-                            row.Cell(7).SetValue("Isotopic peaks left of averagine");
-                            row.Cell(8).SetValue("Isotopic peaks right of averageine");
+                            row.Cell(4).SetValue(value);
                         }
                     }
-                });
-                workbook.Save();
-            }
+                }
+            });
+            workbook.Save();
+
         }
     }
 }
