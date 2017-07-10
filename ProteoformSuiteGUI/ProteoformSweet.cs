@@ -192,7 +192,7 @@ namespace ProteoformSuiteGUI
         private void saveMethod(string method_filename)
         {
             using (StreamWriter file = new StreamWriter(method_filename))
-                file.WriteLine(SaveState.save_method());
+                file.WriteLine(Sweet.save_method());
         }
 
         private void loadSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -206,7 +206,7 @@ namespace ProteoformSuiteGUI
             if (dr == DialogResult.OK)
             {
                 string method_filename = methodFileOpen.FileName;
-                SaveState.open_method(File.ReadAllLines(method_filename));
+                Sweet.open_method(File.ReadAllLines(method_filename));
                 return true;
             }
             return false;
@@ -214,7 +214,7 @@ namespace ProteoformSuiteGUI
 
         private void loadRunToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (SaveState.lollipop.input_files.Count == 0)
+            if (Sweet.lollipop.input_files.Count == 0)
             {
                 MessageBox.Show("Please load in deconvolution result files in order to use load and run.");
                 return;
@@ -232,9 +232,9 @@ namespace ProteoformSuiteGUI
         public bool full_run()
         {
             clear_lists();
-            if (!SaveState.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory))
+            if (!Sweet.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory))
             {
-                if (SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
+                if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
                 {
                     MessageBox.Show("Please list at least one protein database.", "Full Run");
                     return false;
@@ -244,7 +244,7 @@ namespace ProteoformSuiteGUI
                     DialogResult d = MessageBox.Show("No PTM list is listed.\n\nWill now download the default PTM list from UniProt and use it for the Full Run.", "Full Run", MessageBoxButtons.OKCancel);
                     if (d == DialogResult.OK)
                     {
-                        SaveState.lollipop.enter_uniprot_ptmlist();
+                        Sweet.lollipop.enter_uniprot_ptmlist();
                         if (loadDeconvolutionResults.ReadyToRunTheGamut())
                             loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
                     }
@@ -253,7 +253,7 @@ namespace ProteoformSuiteGUI
                 
             }
 
-            if (SaveState.lollipop.results_folder == "")
+            if (Sweet.lollipop.results_folder == "")
             {
                 DialogResult d = MessageBox.Show("Choose a results folder for this Full Run?", "Full Run", MessageBoxButtons.YesNoCancel);
                 if (d == DialogResult.Yes)
@@ -263,7 +263,7 @@ namespace ProteoformSuiteGUI
                     if (dr == DialogResult.OK)
                     {
                         string temp_folder_path = folderBrowser.SelectedPath;
-                        SaveState.lollipop.results_folder = temp_folder_path;
+                        Sweet.lollipop.results_folder = temp_folder_path;
                         loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
                     }
                     else if (dr == DialogResult.Cancel) return false;
@@ -277,9 +277,9 @@ namespace ProteoformSuiteGUI
                 if (sweet.ReadyToRunTheGamut())
                     sweet.RunTheGamut();
             }
-            string timestamp = SaveState.time_stamp();
-            ResultsSummaryGenerator.save_all(SaveState.lollipop.results_folder, timestamp);
-            save_all_plots(SaveState.lollipop.results_folder, timestamp);
+            string timestamp = Sweet.time_stamp();
+            ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp);
+            save_all_plots(Sweet.lollipop.results_folder, timestamp);
             Cursor = Cursors.Default;
             return true;
         }
@@ -333,13 +333,13 @@ namespace ProteoformSuiteGUI
 
         public void save_all_plots(string folder, string timestamp)
         {
-            if (SaveState.lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_IntensityRatio, folder, "NeuCode_IntensityRatios_", timestamp);
-            if (SaveState.lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_LysineCount, folder, "NeuCode_LysineCounts_", timestamp);
-            if (SaveState.lollipop.et_relations.Count > 0) save_as_png(experimentalTheoreticalComparison.ct_ET_Histogram, folder, "ExperimentalTheoretical_MassDifferences_", timestamp);
-            if (SaveState.lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
-            if (SaveState.lollipop.qVals.Count > 0) save_as_png(quantification.ct_proteoformIntensities, folder, "QuantifiedProteoform_Intensities_", timestamp);
-            if (SaveState.lollipop.qVals.Count > 0) save_as_png(quantification.ct_relativeDifference, folder, "QuantifiedProteoform_Tusher2001Plot_", timestamp);
-            if (SaveState.lollipop.qVals.Count > 0) save_as_png(quantification.ct_volcano_logFold_logP, folder, "QuantifiedProteoform_VolcanoPlot_", timestamp);
+            if (Sweet.lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_IntensityRatio, folder, "NeuCode_IntensityRatios_", timestamp);
+            if (Sweet.lollipop.raw_neucode_pairs.Count > 0) save_as_png(neuCodePairs.ct_LysineCount, folder, "NeuCode_LysineCounts_", timestamp);
+            if (Sweet.lollipop.et_relations.Count > 0) save_as_png(experimentalTheoreticalComparison.ct_ET_Histogram, folder, "ExperimentalTheoretical_MassDifferences_", timestamp);
+            if (Sweet.lollipop.ee_relations.Count > 0) save_as_png(experimentExperimentComparison.ct_EE_Histogram, folder, "ExperimentalExperimental_MassDifferences_", timestamp);
+            if (Sweet.lollipop.qVals.Count > 0) save_as_png(quantification.ct_proteoformIntensities, folder, "QuantifiedProteoform_Intensities_", timestamp);
+            if (Sweet.lollipop.qVals.Count > 0) save_as_png(quantification.ct_relativeDifference, folder, "QuantifiedProteoform_Tusher2001Plot_", timestamp);
+            if (Sweet.lollipop.qVals.Count > 0) save_as_png(quantification.ct_volcano_logFold_logP, folder, "QuantifiedProteoform_VolcanoPlot_", timestamp);
         }
 
         private void save_as_png(Chart ct, string folder, string prefix, string timestamp)
@@ -353,16 +353,16 @@ namespace ProteoformSuiteGUI
 
         public void clear_lists()
         {
-            SaveState.lollipop.raw_experimental_components.Clear();
-            SaveState.lollipop.raw_neucode_pairs.Clear();
-            SaveState.lollipop.target_proteoform_community = new ProteoformCommunity();
-            SaveState.lollipop.decoy_proteoform_communities.Clear();
-            SaveState.lollipop.et_relations.Clear();
-            SaveState.lollipop.et_peaks.Clear();
-            SaveState.lollipop.ee_relations.Clear();
-            SaveState.lollipop.ee_peaks.Clear();
-            SaveState.lollipop.ed_relations.Clear();
-            SaveState.lollipop.ef_relations.Clear();
+            Sweet.lollipop.raw_experimental_components.Clear();
+            Sweet.lollipop.raw_neucode_pairs.Clear();
+            Sweet.lollipop.target_proteoform_community = new ProteoformCommunity();
+            Sweet.lollipop.decoy_proteoform_communities.Clear();
+            Sweet.lollipop.et_relations.Clear();
+            Sweet.lollipop.et_peaks.Clear();
+            Sweet.lollipop.ee_relations.Clear();
+            Sweet.lollipop.ee_peaks.Clear();
+            Sweet.lollipop.ed_relations.Clear();
+            Sweet.lollipop.ef_relations.Clear();
         }
 
         #endregion Public Method

@@ -162,26 +162,26 @@ namespace ProteoformSuiteInternal
 
         public void aggregate()
         {
-            ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", root, new List<Component>(SaveState.lollipop.remaining_components), true); //first pass returns temporary proteoform
-            ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, new List<Component>(SaveState.lollipop.remaining_components), true, SaveState.lollipop.neucode_labeled); //second pass uses temporary protoeform from first pass.
+            ExperimentalProteoform temp_pf = new ExperimentalProteoform("tbd", root, new List<Component>(Sweet.lollipop.remaining_components), true); //first pass returns temporary proteoform
+            ExperimentalProteoform new_pf = new ExperimentalProteoform("tbd", temp_pf, new List<Component>(Sweet.lollipop.remaining_components), true, Sweet.lollipop.neucode_labeled); //second pass uses temporary protoeform from first pass.
             copy_aggregate(new_pf); //doesn't copy quant on purpose
             root = temp_pf.root; //maintain the original component root
         }
 
         public void verify()
         {
-            foreach (Component c in SaveState.lollipop.remaining_verification_components)
+            foreach (Component c in Sweet.lollipop.remaining_verification_components)
             {
                 if (includes_neucode_component(c, this, true))
                     lt_verification_components.Add(c);
-                if (SaveState.lollipop.neucode_labeled && includes_neucode_component(c, this, false))
+                if (Sweet.lollipop.neucode_labeled && includes_neucode_component(c, this, false))
                     hv_verification_components.Add(c);
             }
         }
 
         public void assign_quantitative_components()
         {
-            foreach (Component c in SaveState.lollipop.remaining_quantification_components)
+            foreach (Component c in Sweet.lollipop.remaining_quantification_components)
             {
                 if (includes_neucode_component(c, this, true))
                     lt_quant_components.Add(c);
@@ -198,12 +198,12 @@ namespace ProteoformSuiteInternal
         public void calculate_properties()
         {
             //if not neucode labeled, the intensity sum of overlapping charge states was calculated with all charge states.
-            agg_intensity = aggregated_components.Sum(c => SaveState.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum);
-            agg_mass = aggregated_components.Sum(c => (c.weighted_monoisotopic_mass - Math.Round(c.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * (SaveState.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum) / agg_intensity); //remove the monoisotopic errors before aggregating masses
-            agg_rt = aggregated_components.Sum(c => c.rt_apex * (SaveState.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum) / agg_intensity);
+            agg_intensity = aggregated_components.Sum(c => Sweet.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum);
+            agg_mass = aggregated_components.Sum(c => (c.weighted_monoisotopic_mass - Math.Round(c.weighted_monoisotopic_mass - root.weighted_monoisotopic_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS) * (Sweet.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum) / agg_intensity); //remove the monoisotopic errors before aggregating masses
+            agg_rt = aggregated_components.Sum(c => c.rt_apex * (Sweet.lollipop.neucode_labeled ? c.intensity_sum_olcs : c.intensity_sum) / agg_intensity);
             lysine_count = root as NeuCodePair != null ? (root as NeuCodePair).lysine_count : lysine_count;
             modified_mass = agg_mass;
-            accepted = aggregated_components.Count >= SaveState.lollipop.min_agg_count && aggregated_components.Select(c => c.input_file.biological_replicate).Distinct().Count() >= SaveState.lollipop.min_num_bioreps;
+            accepted = aggregated_components.Count >= Sweet.lollipop.min_agg_count && aggregated_components.Select(c => c.input_file.biological_replicate).Distinct().Count() >= Sweet.lollipop.min_num_bioreps;
         }
 
         //This aggregates based on lysine count, mass, and retention time all at the same time. Note that in the past we aggregated based on 
@@ -230,26 +230,26 @@ namespace ProteoformSuiteInternal
 
         private bool tolerable_rt(Component candidate, double rt_apex)
         {
-            return candidate.rt_apex >= rt_apex - Convert.ToDouble(SaveState.lollipop.retention_time_tolerance) &&
-                candidate.rt_apex <= rt_apex + Convert.ToDouble(SaveState.lollipop.retention_time_tolerance);
+            return candidate.rt_apex >= rt_apex - Convert.ToDouble(Sweet.lollipop.retention_time_tolerance) &&
+                candidate.rt_apex <= rt_apex + Convert.ToDouble(Sweet.lollipop.retention_time_tolerance);
         }
 
         private bool tolerable_lysCt(NeuCodePair candidate, int lysine_count)
         {
-            int max_missed_lysines = Convert.ToInt32(SaveState.lollipop.missed_lysines);
+            int max_missed_lysines = Convert.ToInt32(Sweet.lollipop.missed_lysines);
             List<int> acceptable_lysineCts = Enumerable.Range(lysine_count - max_missed_lysines, max_missed_lysines * 2 + 1).ToList();
             return acceptable_lysineCts.Contains(candidate.lysine_count);
         }
 
         private bool tolerable_mass(Component candidate, double corrected_mass)
         {
-            int max_missed_monoisotopics = Convert.ToInt32(SaveState.lollipop.missed_monos);
+            int max_missed_monoisotopics = Convert.ToInt32(Sweet.lollipop.missed_monos);
             List<int> missed_monoisotopics_range = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
             foreach (int missed_mono_count in missed_monoisotopics_range)
             {
                 double shift = missed_mono_count * Lollipop.MONOISOTOPIC_UNIT_MASS;
                 double shifted_mass = corrected_mass + shift;
-                double mass_tolerance = shifted_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
+                double mass_tolerance = shifted_mass / 1000000 * (double)Sweet.lollipop.mass_tolerance;
                 double low = shifted_mass - mass_tolerance;
                 double high = shifted_mass + mass_tolerance;
                 bool tolerable_mass = candidate.weighted_monoisotopic_mass >= low && candidate.weighted_monoisotopic_mass <= high;
