@@ -452,10 +452,12 @@ namespace ProteoformSuiteInternal
         {
             theoreticals_to_remove.Clear();
             List<TheoreticalProteoform> new_theoreticals = new List<TheoreticalProteoform>();
-            Parallel.ForEach(theoretical_proteoforms, theoretical1 =>
-            {
-                List<List<DisulfideBond>> possible_disulfide_bonds = get_possible_disulfide_bonds(theoretical1);
+          // Parallel.ForEach(theoretical_proteoforms, theoretical1 =>
+           foreach(var theoretical1 in theoretical_proteoforms)                                                            
+           {
+               List<List<DisulfideBond>> possible_disulfide_bonds = get_possible_disulfide_bonds(theoretical1);
                 int i = 1;
+
                 foreach (List<DisulfideBond> bond_list in possible_disulfide_bonds)
                 {
                     List<TheoreticalProteoform> theoreticals = new List<TheoreticalProteoform>() { theoretical1 };
@@ -468,19 +470,19 @@ namespace ProteoformSuiteInternal
                             if (bonded != null) theoreticals.AddRange(bonded);
                         }
                     }
-                    List<Tuple<int, List<TheoreticalProteoform>>> possible_bonded_fragments = get_possible_bonded_fragments(theoreticals, bond_list);
+                    List<Tuple<List<DisulfideBond>, List<TheoreticalProteoform>>> possible_bonded_fragments = get_possible_bonded_fragments(theoretical1, theoreticals, bond_list);
                     foreach (var possible_theoretical in possible_bonded_fragments)
                     {
-
-                        int num_bonds = possible_theoretical.Item1;
+                        int num_bonds = possible_theoretical.Item1.Count;
                         double mass = theoretical1.unmodified_mass;
                         string description = theoretical1.description + "| Fragments: " + theoretical1.begin + " to " + theoretical1.end;
                         foreach (TheoreticalProteoform theoretical2 in possible_theoretical.Item2)
                         {
                             List<DisulfideBond> more_bonds = theoretical2.disulfide_bonds.Where(b => b.OneBasedBeginPosition >= theoretical2.begin && b.OneBasedEndPosition <= theoretical2.end &&
-                           !bond_list.Select(d => d.OneBasedBeginPosition).Contains(b.OneBasedBeginPosition) && !bond_list.Select(d => d.OneBasedEndPosition).Contains(b.OneBasedEndPosition)).ToList();
+                           !possible_theoretical.Item1.Select(d => d.OneBasedBeginPosition).Contains(b.OneBasedBeginPosition) && !possible_theoretical.Item1.Select(d => d.OneBasedEndPosition).Contains(b.OneBasedEndPosition)).ToList();
                             foreach (DisulfideBond bond in more_bonds)
                             {
+                                possible_theoretical.Item1.Add(bond);
                                 num_bonds++;
                             }
                             if (theoretical2 != theoretical1)
@@ -503,14 +505,13 @@ namespace ProteoformSuiteInternal
                             theoretical1.lysine_count,
                             new PtmSet(possible_theoretical.Item2.Where(t2 => t2 != theoretical1).SelectMany(t => t.ptm_set.ptm_combination).Concat(theoretical1.ptm_set.ptm_combination).ToList()),
                             decoy_number < 0,
-                            theoreticals.Concat(new List<TheoreticalProteoform>() { theoretical1 }).Any(t => t.contaminant),
+                            possible_theoretical.Item2.Any(t => t.contaminant),
                             new Dictionary<InputFile, Protein[]>());
-
                         lock (new_theoreticals) new_theoreticals.Add(new_theoretical);
                         i++;
                     }
                 }
-            });
+            } //);
             theoretical_proteoforms.AddRange(new_theoreticals);
             foreach (TheoreticalProteoform new_theoretical in new_theoreticals)
             {
@@ -543,16 +544,22 @@ namespace ProteoformSuiteInternal
             return possible_disulfide_bonds.Distinct().ToList();
         }
 
-        private List<Tuple<int, List<TheoreticalProteoform>>> get_possible_bonded_fragments(List<TheoreticalProteoform> theoreticals, List<DisulfideBond> bonds)
+        private List<Tuple<List<DisulfideBond>, List<TheoreticalProteoform>>> get_possible_bonded_fragments(TheoreticalProteoform theoretical1, List<TheoreticalProteoform> theoreticals, List<DisulfideBond> bonds)
         {
-            List<Tuple<int, List<TheoreticalProteoform>>> possible_bonded_fragments = new List<Tuple<int, List<TheoreticalProteoform>>>();
-            foreach (TheoreticalProteoform t in theoreticals)
+            List<Tuple<List<DisulfideBond>, List<TheoreticalProteoform>>> possible_bonded_fragments = new List<Tuple<List<DisulfideBond>, List<TheoreticalProteoform>>>();
+            List<TheoreticalProteoform> potential_theoreticals = theoreticals.Where(p => p.begin > theoretical1.end + 1).ToList();
+            foreach (TheoreticalProteoform t2 in potential_theoreticals)
             {
-                List<TheoreticalProteoform> possible_fragments = theoreticals.Where(p => p.begin > t.end + 1 && p.end < t.begin - 1).ToList();
-                possible_fragments.Add(t);
-                int bond_count = bonds.Count(b => possible_fragments.Any(p => b.OneBasedBeginPosition >= p.begin && b.OneBasedBeginPosition <= p.end) && possible_fragments.Any(p => b.OneBasedEndPosition >= p.begin && b.OneBasedEndPosition <= p.end));
-                if (possible_bonded_fragments.Select(i => i.Item2).Count(list => list.All(possible_fragments.Contains)) == 0) possible_bonded_fragments.Add(new Tuple<int, List<TheoreticalProteoform>>(bond_count, possible_fragments));
+                List<TheoreticalProteoform> possible_fragments = new List<TheoreticalProteoform>() { theoretical1 };
+                possible_fragments.Add(t2);
+                List<DisulfideBond> bonds_connecting_fragments = bonds.Where(b => possible_fragments.Count(p => b.OneBasedBeginPosition >= p.begin && b.OneBasedBeginPosition <= p.end) > 0 && possible_fragments.Count(p => b.OneBasedEndPosition >= p.begin && b.OneBasedEndPosition <= p.end) > 0).ToList();
+                if (bonds_connecting_fragments.Count > 0 && possible_bonded_fragments.Select(i => i.Item2).Count(list => list.All(possible_fragments.Contains)) == 0)
+                {
+                    possible_bonded_fragments.Add(new Tuple<List<DisulfideBond>, List<TheoreticalProteoform>>(bonds_connecting_fragments, possible_fragments));
+                }
             }
+            //add fragment alone
+            possible_bonded_fragments.Add(new Tuple<List<DisulfideBond>, List<TheoreticalProteoform>>(new List<DisulfideBond>(), new List<TheoreticalProteoform>() { theoretical1 }));
             return possible_bonded_fragments;
         }
 

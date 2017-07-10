@@ -134,30 +134,7 @@ namespace ProteoformSuiteInternal
             Loaders.LoadUniprot(Path.Combine(Environment.CurrentDirectory, "ptmlist.txt"), null);
             SaveState.lollipop.enter_input_files(new string[] { Path.Combine(Environment.CurrentDirectory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], SaveState.lollipop.input_files);
         }
-
-        public string match_calibration_files()
-        {
-            string return_message = "";
-
-            // Look for results files with the same filename as a calibration file, and show that they're matched
-            foreach (InputFile file in get_files(input_files, Purpose.RawFile))
-            {
-                if (input_files.Count(f => f.purpose != Purpose.RawFile && f.filename == file.filename) > 0)
-                {
-                    IEnumerable<InputFile> matching_files = input_files.Where(f => f.purpose != Purpose.RawFile && f.filename == file.filename);
-                    InputFile matching_file = matching_files.First();
-                    if (matching_files.Count() != 1)
-                        return_message += "Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + "." + Environment.NewLine;
-                    file.matchingCalibrationFile = true;
-                    matching_file.matchingCalibrationFile = true;
-                }
-            }
-
-            if (input_files.Count(f => f.purpose == Purpose.CalibrationIdentification) > 0 && get_files(input_files, Purpose.RawFile).Count() > 0 && get_files(input_files, Purpose.CalibrationIdentification).Any(f => !f.matchingCalibrationFile))
-                return_message += "To calibrate, deconvolution identification files should have the same names as corresponding raw files.";
-
-            return return_message;
-        }
+       
 
         #endregion Input Files
 
@@ -1133,8 +1110,7 @@ namespace ProteoformSuiteInternal
         #region CALIBRATION
         public List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
         public Dictionary<Tuple<string, double>, MsScan> ms_scans = new Dictionary<Tuple<string, double>, MsScan>();
-        public Dictionary<string, bool> td_calibration_functions = new Dictionary<string, bool>();
-        public Dictionary<Tuple<string, double>, Tuple<double, double, int, int>> file_mz_correction = new Dictionary<Tuple<string, double>, Tuple<double, double, int, int>>();
+        public Dictionary<Tuple<string, double>, double> file_mz_correction = new Dictionary<Tuple<string, double>, double>();
         public Dictionary<Tuple<string, int, double>, double> td_hit_correction = new Dictionary<Tuple<string, int, double>, double>();
         public List<Component> calibration_components = new List<Component>();
         public string[] file_descriptions; 
@@ -1142,7 +1118,6 @@ namespace ProteoformSuiteInternal
         public void read_in_calibration_td_hits()
         {
             td_hits_calibration.Clear();
-            td_calibration_functions.Clear();
             file_mz_correction.Clear();
             td_hit_correction.Clear();
             calibration_components.Clear();
@@ -1160,6 +1135,7 @@ namespace ProteoformSuiteInternal
                 int biological_replicate;
                 int fraction;
                 int technical_replicate;
+                bool tdRawFile;
                 string[] file_description = line.Split('\t');
                 if (file_descriptions.Count(d => d.Split('\t')[0] == file_description[0]) > 1)
                     return "Error in file descriptions file - multiple entries for one filename";
@@ -1168,10 +1144,11 @@ namespace ProteoformSuiteInternal
                     biological_replicate = Convert.ToInt32(file_description[1]);
                     fraction = Convert.ToInt32(file_description[2]);
                     technical_replicate = Convert.ToInt32(file_description[3]);
+                    tdRawFile = Convert.ToBoolean(file_description[4]);
                 }
                 catch
                 {
-                    return "Error in file descriptions file - value not an integer.";
+                    return "Error in file descriptions file values";
 
                 }
                 List<InputFile> files = input_files.Where(f => f.filename == file_description[0]).ToList();
@@ -1180,6 +1157,7 @@ namespace ProteoformSuiteInternal
                     file.biological_replicate = biological_replicate;
                     file.fraction = fraction;
                     file.technical_replicate = technical_replicate;
+                    file.topdownRawFile = tdRawFile;
 
                 }
                 Parallel.ForEach(td_hits_calibration.Where(h => h.filename == file_description[0]), h =>
@@ -1197,11 +1175,13 @@ namespace ProteoformSuiteInternal
             foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && td_hits_calibration.Any(h => h.filename == f.filename)))
             {
                 IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = ThermoStaticData.LoadAllStaticData(raw_file.complete_path);
-
                 Parallel.ForEach(SaveState.lollipop.td_hits_calibration.Where(f => f.filename == raw_file.filename).ToList(), hit =>
                 {
+                    int scanNum = hit.ms2ScanNumber;
+                    while (scanNum < myMsDataFile.NumSpectra && myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
                     hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(hit.ms2ScanNumber) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge 
                     hit.mz = hit.reported_mass.ToMz(hit.charge);
+                    hit.retention_time = myMsDataFile.GetOneBasedScan(scanNum).RetentionTime;
                 });
             }
             if (td_hits_calibration.Any(h => h.charge == 0)) return "Error: need to input all raw files for top-down hits.";
@@ -1213,61 +1193,52 @@ namespace ProteoformSuiteInternal
                     foreach (int technical_replicate in input_files.Where(f => f.biological_replicate == biological_replicate && f.fraction == fraction).Select(f => f.technical_replicate).Distinct())
                     {
                         Calibration calibration = new Calibration();
-                        if (input_files.Count(f => f.purpose == Purpose.RawFile && f.matchingCalibrationFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate) == 1)
+                        foreach(InputFile file in input_files.Where(f => f.purpose == Purpose.RawFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate))
                         {
-                            process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
-                            get_calibration_points(calibration, biological_replicate, fraction, technical_replicate);
-                            determine_component_shift(calibration, biological_replicate, fraction, technical_replicate);
-                            InputFile file = input_files.Where(f => td_calibration_functions.ContainsKey(f.filename) && f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate).FirstOrDefault();
-                            if (file != null) calibration.calibrate_components_in_xlsx(file);
+                            if (!file.topdownRawFile) process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
+                            bool calibrated = get_calibration_points(calibration, file);
+                            if (!file.topdownRawFile && calibrated)
+                            {
+                                determine_component_shift(calibration, biological_replicate, fraction, technical_replicate);
+                                List<InputFile> files = input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate).ToList();
+                                foreach (InputFile f in files) calibration.calibrate_components_in_xlsx(f);
+                            }
                         }
                     }
                 }
             }
             Calibration cali = new Calibration();
-            if (td_calibration_functions.Count > 0)
+            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
             {
-                foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
-                {
-                    cali.calibrate_td_hits_file(file);
-                }
+                cali.calibrate_td_hits_file(file);
             }
             return "Successfully calibrated files.";
         }
 
 
-        public void get_calibration_points(Calibration calibration, int biological_replicate, int fraction, int technical_replicate)
+        public bool get_calibration_points(Calibration calibration, InputFile raw_file)
         {
-            foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate))
-            {
-                bool topdown_file = td_hits_calibration.Any(h => h.filename == raw_file.filename);
-                List<TopDownHit> hits = td_hits_calibration.Where(h => h.biological_replicate == biological_replicate && h.fraction == fraction && (!topdown_file || h.technical_replicate == technical_replicate) && h.tdResultType == TopDownResultType.TightAbsoluteMass && h.score >= 40).ToList();
-                bool calibrated = calibration.Run_TdMzCal(raw_file, hits, topdown_file, 0.2);
-                if (calibrated)
-                {
-                    td_calibration_functions.Add(raw_file.filename, true);
-                }
-            }
+            bool topdown_file = td_hits_calibration.Any(h => h.filename == raw_file.filename);
+            List<TopDownHit> hits = td_hits_calibration.Where(h => h.biological_replicate == raw_file.biological_replicate && h.fraction == raw_file.fraction && (!topdown_file || h.technical_replicate == raw_file.technical_replicate) && h.tdResultType == TopDownResultType.TightAbsoluteMass && h.score >= 40).ToList();
+            return calibration.Run_TdMzCal(raw_file, hits, topdown_file, raw_file.biological_replicate, raw_file.fraction, raw_file.technical_replicate);
         }
 
         public void determine_component_shift(Calibration calibration, int biological_replicate, int fraction, int technical_replicate)
         {
             Parallel.ForEach(calibration_components.Where(c => c.input_file.biological_replicate == biological_replicate && c.input_file.fraction == fraction && c.input_file.technical_replicate == technical_replicate), c =>
             {
-                if (td_calibration_functions.ContainsKey(c.input_file.filename))
+                foreach (ChargeState cs in c.charge_states)
                 {
-                    foreach (ChargeState cs in c.charge_states)
+                    var key = new Tuple<string, double>(c.input_file.filename, Math.Round(cs.intensity, 0));
+                    lock (file_mz_correction)
                     {
-                        var key = new Tuple<string, double>(c.input_file.filename, Math.Round(cs.intensity, 0));
-                        lock (file_mz_correction)
+                        if (!file_mz_correction.ContainsKey(key))
                         {
-                            if (!file_mz_correction.ContainsKey(key))
-                            {
-                                file_mz_correction.Add(key, new Tuple<double, double, int, int>(cs.mz_centroid, 0, 0, 0));
-                            }
+                            file_mz_correction.Add(key, cs.mz_centroid);
                         }
                     }
                 }
+
             });
         }
 

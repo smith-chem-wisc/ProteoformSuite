@@ -82,12 +82,6 @@ namespace ProteoformSuiteGUI
             set { file.technical_replicate = value; }
         }
 
-        // For identification files
-        public bool matchingCalibrationFile
-        {
-            get { return file.matchingCalibrationFile; }
-        }
-
         public Labeling Labeling
         {
             get { return file.label; }
@@ -120,7 +114,6 @@ namespace ProteoformSuiteGUI
             //HEADERS
             dgv.Columns[nameof(UniqueId)].HeaderText = "File ID";
             dgv.Columns[nameof(complete_path)].HeaderText = "File Path";
-            dgv.Columns[nameof(matchingCalibrationFile)].HeaderText = "Matching Calibration File";
             dgv.Columns[nameof(biological_replicate)].HeaderText = "Biological Replicate";
             dgv.Columns[nameof(lt_condition)].HeaderText = "NeuCode Light Condition";
             dgv.Columns[nameof(hv_condition)].HeaderText = "NeuCode Heavy Condition";
@@ -132,10 +125,8 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(Directory)].ReadOnly = true;
             dgv.Columns[nameof(Filename)].ReadOnly = true;
             dgv.Columns[nameof(Purpose)].ReadOnly = true;
-            dgv.Columns[nameof(matchingCalibrationFile)].ReadOnly = true;
 
             //VISIBILITY
-            dgv.Columns[nameof(matchingCalibrationFile)].Visible = dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(Labeling)].Visible = dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(biological_replicate)].Visible = dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             dgv.Columns[nameof(Fraction)].Visible = dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);

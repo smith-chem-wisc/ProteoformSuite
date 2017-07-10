@@ -76,14 +76,6 @@ namespace ProteoformSuiteGUI
 
         }
 
-        private void match_files()
-        {
-            string message = SaveState.lollipop.match_calibration_files();
-            refresh_dgvs();
-            if (message != "")
-                MessageBox.Show(message);
-        }
-
         private void rb_standardOptions_CheckedChanged(object sender, EventArgs e)
         {
             populate_file_lists();
@@ -176,7 +168,7 @@ namespace ProteoformSuiteGUI
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
             SaveState.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], SaveState.lollipop.input_files);
-            match_files();
+            refresh_dgvs();
             DisplayUtility.FillDataGridView(dgv, SaveState.lollipop.get_files(SaveState.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
         }
@@ -266,7 +258,7 @@ namespace ProteoformSuiteGUI
             if (dr == DialogResult.OK)
             {
                 SaveState.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], SaveState.lollipop.input_files);
-                match_files();
+                refresh_dgvs();
             }
 
             DisplayUtility.FillDataGridView(dgv, SaveState.lollipop.get_files(SaveState.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
@@ -293,7 +285,7 @@ namespace ProteoformSuiteGUI
         private void clear_files(ComboBox cmb, DataGridView dgv)
         {
             SaveState.lollipop.input_files = SaveState.lollipop.input_files.Except(SaveState.lollipop.get_files(SaveState.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex])).ToList();
-            match_files();
+            refresh_dgvs();
             DisplayUtility.FillDataGridView(dgv, SaveState.lollipop.get_files(SaveState.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
         }
