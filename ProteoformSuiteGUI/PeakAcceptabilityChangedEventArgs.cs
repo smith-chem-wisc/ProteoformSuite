@@ -5,28 +5,13 @@ namespace ProteoformSuiteGUI
 {
     public class PeakAcceptabilityChangedEventArgs : EventArgs
     {
-        private bool _isPeakAcceptable;
-        public bool IsPeakAcceptable
-        {
-            get
-            {
-                return this._isPeakAcceptable;
-            }
-        }
-
-        private DeltaMassPeak _Peak;
-        public DeltaMassPeak Peak
-        {
-            get
-            {
-                return this._Peak;
-            }
-        }
+        public bool IsPeakAcceptable { get; }
+        public DeltaMassPeak Peak { get; }
 
         public PeakAcceptabilityChangedEventArgs(bool IsPeakAcceptable, DeltaMassPeak Peak)
         {
-            this._isPeakAcceptable = IsPeakAcceptable; //True if peak is acceptable
-            this._Peak = Peak;
+            this.IsPeakAcceptable = IsPeakAcceptable; //True if peak is acceptable
+            this.Peak = Peak;
         }
     }
 }

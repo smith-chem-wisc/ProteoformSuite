@@ -32,7 +32,7 @@ namespace ProteoformSuiteInternal
                     "Unknown" : 
                     ptm_set.ptm_combination.Count == 0 ?
                         "Unmodified" :
-                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id));
+                        String.Join("; ", ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id));
             }
         }
 
@@ -84,7 +84,7 @@ namespace ProteoformSuiteInternal
                 ExperimentalProteoform e = r.connected_proteoforms.OfType<ExperimentalProteoform>().FirstOrDefault(p => p != this);
                 if (e == null) continue; // Looking at an ET pair, expecting an EE pair
 
-                double mass_tolerance = modified_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
+                double mass_tolerance = modified_mass / 1000000 * (double)Sweet.lollipop.mass_tolerance;
                 int sign = Math.Sign(e.modified_mass - modified_mass);
                 double deltaM = Math.Sign(r.peak.DeltaMass) < 0 ? r.peak.DeltaMass : sign * r.peak.DeltaMass; // give EE relations the correct sign, but don't switch negative ET relation deltaM's
                 TheoreticalProteoform theoretical_base = this as TheoreticalProteoform != null ?
@@ -157,11 +157,11 @@ namespace ProteoformSuiteInternal
             {
                 List<ModificationWithMass> mods_in_set = set.ptm_combination.Select(ptm => ptm.modification).ToList();
 
-                int rank_sum = additional_ptm_penalty * (set.ptm_combination.Sum(m => SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m.modification, out UnlocalizedModification x) ? x.ptm_count : 1) - 1); // penalize additional PTMs
+                int rank_sum = additional_ptm_penalty * (set.ptm_combination.Sum(m => Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m.modification, out UnlocalizedModification x) ? x.ptm_count : 1) - 1); // penalize additional PTMs
 
                 foreach (ModificationWithMass m in mods_in_set)
                 {
-                    int mod_rank = SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification u) ? u.ptm_rank : SaveState.lollipop.modification_ranks[m.monoisotopicMass];
+                    int mod_rank = Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(m, out UnlocalizedModification u) ? u.ptm_rank : Sweet.lollipop.modification_ranks[m.monoisotopicMass];
 
                     if (m.monoisotopicMass == 0)
                     {
@@ -183,10 +183,10 @@ namespace ProteoformSuiteInternal
 
                     bool could_be_n_term_degradation = m.modificationType == "Missing" && motif_matches_n_terminus;
                     bool could_be_c_term_degradation = m.modificationType == "Missing" && motif_matches_c_terminus;
-                    bool likely_cleavage_site = could_be_n_term_degradation && SaveState.lollipop.likely_cleavages.Contains(theoretical_base_sequence[n_terminal_degraded_aas].ToString())
-                        || could_be_c_term_degradation && SaveState.lollipop.likely_cleavages.Contains(theoretical_base_sequence[theoretical_base_sequence.Length - c_terminal_degraded_aas - 1].ToString());
+                    bool likely_cleavage_site = could_be_n_term_degradation && Sweet.lollipop.likely_cleavages.Contains(theoretical_base_sequence[n_terminal_degraded_aas].ToString())
+                        || could_be_c_term_degradation && Sweet.lollipop.likely_cleavages.Contains(theoretical_base_sequence[theoretical_base_sequence.Length - c_terminal_degraded_aas - 1].ToString());
 
-                    rank_sum -= Convert.ToInt32(SaveState.lollipop.theoretical_database.variableModifications.Contains(m)); // favor variable modifications over regular modifications of the same mass
+                    rank_sum -= Convert.ToInt32(Sweet.lollipop.theoretical_database.variableModifications.Contains(m)); // favor variable modifications over regular modifications of the same mass
 
                     // In order of likelihood:
                     // 1. First, we observe I/L/A cleavage to be the most common, 
@@ -195,16 +195,16 @@ namespace ProteoformSuiteInternal
                     // 2. Second, other degradations and methionine cleavage are weighted mid-level
                     // 3. Missed monoisotopic errors are considered, but weighted towards the bottom. This should allow missed monoisotopics with common modifications like oxidation, but not rare ones.  (handled in unlocalized modification)
                     if (likely_cleavage_site)  
-                        rank_sum += SaveState.lollipop.mod_rank_first_quartile / 2;
+                        rank_sum += Sweet.lollipop.mod_rank_first_quartile / 2;
                     else if (could_be_m_retention || could_be_n_term_degradation || could_be_c_term_degradation)
-                        rank_sum += SaveState.lollipop.mod_rank_second_quartile;
+                        rank_sum += Sweet.lollipop.mod_rank_second_quartile;
                     else
-                        rank_sum += known_mods.Concat(SaveState.lollipop.theoretical_database.variableModifications).Contains(m) ?
+                        rank_sum += known_mods.Concat(Sweet.lollipop.theoretical_database.variableModifications).Contains(m) ?
                             mod_rank :
-                            mod_rank + SaveState.lollipop.mod_rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
+                            mod_rank + Sweet.lollipop.mod_rank_first_quartile / 2; // Penalize modifications that aren't known for this protein and push really rare ones out of the running if they're not in the protein entry
                 }
 
-                if (rank_sum <= SaveState.lollipop.mod_rank_sum_threshold)
+                if (rank_sum <= Sweet.lollipop.mod_rank_sum_threshold)
                 {
                     PtmSet adjusted_ranksum = new PtmSet(set.ptm_combination);
                     adjusted_ranksum.ptm_rank_sum = rank_sum;

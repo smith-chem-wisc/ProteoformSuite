@@ -28,7 +28,7 @@ namespace Test
         public void restore_lollipop_settings()
         {
             Lollipop defaults = new Lollipop();
-            StringBuilder builder = SaveState.save_method();
+            StringBuilder builder = Sweet.save_method();
             foreach (PropertyInfo property in typeof(Lollipop).GetProperties())
             {
                 if (property.PropertyType == typeof(int))
@@ -59,7 +59,7 @@ namespace Test
                 else continue;
             }
 
-            SaveState.open_method(builder.ToString());
+            Sweet.open_method(builder.ToString());
             foreach (PropertyInfo property in typeof(Lollipop).GetProperties())
             {
                 if (property.PropertyType == typeof(int))
@@ -95,7 +95,7 @@ namespace Test
             e.ptm_set = e.linked_proteoform_references.Last().ptm_set;
             ProteoformFamily f = new ProteoformFamily(e);
             f.construct_family();
-            SaveState.lollipop.target_proteoform_community.families = new List<ProteoformFamily> { f };
+            Sweet.lollipop.target_proteoform_community.families = new List<ProteoformFamily> { f };
             string[] lines = ResultsSummaryGenerator.results_dataframe().Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
             Assert.True(lines.Count() == 3);
             Assert.True(lines.Any(a => a.Contains("E1")));
@@ -104,13 +104,13 @@ namespace Test
         [Test]
         public void saveall()
         {
-            SaveState.lollipop = new Lollipop();
+            Sweet.lollipop = new Lollipop();
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("asdf");
-            SaveState.lollipop.qVals.Add(e.quant);
+            Sweet.lollipop.qVals.Add(e.quant);
             GoTermNumber g = new GoTermNumber(new GoTerm("id", "desc", Aspect.BiologicalProcess), 0, 0, 0, 0);
             g.by = -1;
-            SaveState.lollipop.goTermNumbers.Add(g);
-            ResultsSummaryGenerator.save_all(TestContext.CurrentContext.TestDirectory, SaveState.time_stamp());
+            Sweet.lollipop.goTermNumbers.Add(g);
+            ResultsSummaryGenerator.save_all(TestContext.CurrentContext.TestDirectory, Sweet.time_stamp());
         }
 
         #endregion Results Summary

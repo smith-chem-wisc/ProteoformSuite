@@ -23,7 +23,7 @@ namespace Test
                 new InputFile("fake.txt", Purpose.Quantification),
                 new InputFile("fake.txt", Purpose.Quantification),
             };
-            Assert.AreEqual(3, SaveState.lollipop.get_files(files, new List<Purpose> { Purpose.PtmList, Purpose.ProteinDatabase }).Count());
+            Assert.AreEqual(3, Sweet.lollipop.get_files(files, new List<Purpose> { Purpose.PtmList, Purpose.ProteinDatabase }).Count());
         }
 
         [Test]
@@ -33,7 +33,7 @@ namespace Test
             List<string> extension = new List<string> { ".xlsx" };
             List<Purpose> purpose = new List<Purpose> { Purpose.Identification };
             List<InputFile> destination = new List<InputFile>();
-            SaveState.lollipop.enter_input_files(folder, extension, purpose, destination);
+            Sweet.lollipop.enter_input_files(folder, extension, purpose, destination);
             Assert.AreEqual(2, destination.Count);
             Assert.True(destination.All(f => f.extension == extension[0]));
             Assert.True(destination.All(f => f.purpose == purpose[0]));
@@ -48,8 +48,8 @@ namespace Test
             Assert.False(i.matchingCalibrationFile);
             c.filename = "hello";
             i.filename = "hello";
-            SaveState.lollipop.input_files = new List<InputFile> { c, i };
-            SaveState.lollipop.match_calibration_files();
+            Sweet.lollipop.input_files = new List<InputFile> { c, i };
+            Sweet.lollipop.match_calibration_files();
             Assert.True(c.matchingCalibrationFile);
             Assert.True(i.matchingCalibrationFile);
         }
@@ -63,8 +63,8 @@ namespace Test
             c.filename = "hello";
             i.filename = "hello";
             j.filename = "hello";
-            SaveState.lollipop.input_files = new List<InputFile> { c, i, j };
-            Assert.AreNotEqual("", SaveState.lollipop.match_calibration_files());
+            Sweet.lollipop.input_files = new List<InputFile> { c, i, j };
+            Assert.AreNotEqual("", Sweet.lollipop.match_calibration_files());
         }
 
         [Test]
@@ -74,8 +74,8 @@ namespace Test
             InputFile i = new InputFile("fake.txt", Purpose.Identification);
             c.filename = "hello";
             i.filename = "hey";
-            SaveState.lollipop.input_files = new List<InputFile> { c, i };
-            SaveState.lollipop.match_calibration_files();
+            Sweet.lollipop.input_files = new List<InputFile> { c, i };
+            Sweet.lollipop.match_calibration_files();
             Assert.False(c.matchingCalibrationFile);
             Assert.False(i.matchingCalibrationFile);
         }
@@ -84,8 +84,8 @@ namespace Test
         public void matching_calibration_none_possible()
         {
             InputFile c = new InputFile("fake.txt", Purpose.Calibration);
-            SaveState.lollipop.input_files = new List<InputFile> { c };
-            Assert.AreNotEqual("", SaveState.lollipop.match_calibration_files());
+            Sweet.lollipop.input_files = new List<InputFile> { c };
+            Assert.AreNotEqual("", Sweet.lollipop.match_calibration_files());
         }
     }
 }

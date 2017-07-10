@@ -56,7 +56,7 @@ namespace Test
         public void basic_read_correction_factors()
         {
             InputFile corr = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "example_corrections.tsv"), Purpose.Calibration);
-            Assert.IsNotEmpty(SaveState.lollipop.read_corrections(corr));
+            Assert.IsNotEmpty(Sweet.lollipop.read_corrections(corr));
         }
     }
 }

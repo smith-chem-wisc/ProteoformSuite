@@ -55,8 +55,8 @@ namespace ProteoformSuiteInternal
 
         public void set_accepted()
         {
-            accepted = lysine_count >= SaveState.lollipop.min_lysine_ct && lysine_count <= SaveState.lollipop.max_lysine_ct
-                && intensity_ratio >= Convert.ToDouble(SaveState.lollipop.min_intensity_ratio) && intensity_ratio <= Convert.ToDouble(SaveState.lollipop.max_intensity_ratio);
+            accepted = lysine_count >= Sweet.lollipop.min_lysine_ct && lysine_count <= Sweet.lollipop.max_lysine_ct
+                && intensity_ratio >= Convert.ToDouble(Sweet.lollipop.min_intensity_ratio) && intensity_ratio <= Convert.ToDouble(Sweet.lollipop.max_intensity_ratio);
         }
 
         #endregion Public Methods

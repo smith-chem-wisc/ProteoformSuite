@@ -103,6 +103,7 @@ namespace ProteoformSuiteInternal
                         file.ContaminantDB = file.filename.Contains("cRAP");
                     }
                     destination.Add(file);
+                    Sweet.add_file_action(file);
                 }
             }
         }
@@ -110,7 +111,7 @@ namespace ProteoformSuiteInternal
         public void enter_uniprot_ptmlist()
         {
             Loaders.LoadUniprot(Path.Combine(Environment.CurrentDirectory, "ptmlist.txt"));
-            SaveState.lollipop.enter_input_files(new string[] { Path.Combine(Environment.CurrentDirectory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], SaveState.lollipop.input_files);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(Environment.CurrentDirectory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], Sweet.lollipop.input_files);
         }
 
         public string match_calibration_files()
@@ -307,7 +308,7 @@ namespace ProteoformSuiteInternal
             target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
             {
-                community.experimental_proteoforms = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
+                community.experimental_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
             }
             if (neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0)
             {
@@ -494,10 +495,10 @@ namespace ProteoformSuiteInternal
             {
                 community.experimental_proteoforms = new ExperimentalProteoform[0];
             }
-            SaveState.lollipop.vetted_proteoforms.Clear();
-            SaveState.lollipop.ordered_components = new Component[0];
-            SaveState.lollipop.remaining_components.Clear();
-            SaveState.lollipop.remaining_verification_components.Clear();
+            Sweet.lollipop.vetted_proteoforms.Clear();
+            Sweet.lollipop.ordered_components = new Component[0];
+            Sweet.lollipop.remaining_components.Clear();
+            Sweet.lollipop.remaining_verification_components.Clear();
         }
 
         #endregion AGGREGATED PROTEOFORMS
@@ -548,13 +549,13 @@ namespace ProteoformSuiteInternal
 
         public void relate_ed()
         {
-            SaveState.lollipop.ed_relations.Clear();
-            for (int i = 0; i < SaveState.lollipop.decoy_proteoform_communities.Count; i++)
+            Sweet.lollipop.ed_relations.Clear();
+            for (int i = 0; i < Sweet.lollipop.decoy_proteoform_communities.Count; i++)
             {
                 string key = decoy_community_name_prefix + i;
-                SaveState.lollipop.ed_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true, Environment.CurrentDirectory, true));
+                Sweet.lollipop.ed_relations.Add(key, Sweet.lollipop.decoy_proteoform_communities[key].relate(Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, Sweet.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true, Environment.CurrentDirectory, true));
                 if (i == 0)
-                    ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
+                    ProteoformCommunity.count_nearby_relations(Sweet.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
             }
 
             foreach (ProteoformRelation mass_difference in ed_relations.Values.SelectMany(v => v).ToList())
@@ -568,13 +569,13 @@ namespace ProteoformSuiteInternal
 
         public void relate_ef()
         {
-            SaveState.lollipop.ef_relations.Clear();
-            for (int i = 0; i < SaveState.lollipop.decoy_proteoform_communities.Count; i++)
+            Sweet.lollipop.ef_relations.Clear();
+            for (int i = 0; i < Sweet.lollipop.decoy_proteoform_communities.Count; i++)
             {
                 string key = decoy_community_name_prefix + i;
-                SaveState.lollipop.ef_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate_ef(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms));
+                Sweet.lollipop.ef_relations.Add(key, Sweet.lollipop.decoy_proteoform_communities[key].relate_ef(Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms));
                 if (i == 0)
-                    ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ef_relations[key]); //count from first decoy database (for histogram)
+                    ProteoformCommunity.count_nearby_relations(Sweet.lollipop.ef_relations[key]); //count from first decoy database (for histogram)
             }
 
             foreach (ProteoformRelation mass_difference in ef_relations.Values.SelectMany(v => v).ToList())
@@ -584,6 +585,22 @@ namespace ProteoformSuiteInternal
                     p.relationships.Add(mass_difference);
                 }
             }
+        }
+
+        public void change_peak_acceptance(DeltaMassPeak peak, bool accepted)
+        {
+            peak.Accepted = accepted;
+            Parallel.ForEach(peak.grouped_relations, r => r.Accepted = accepted);
+
+            if (peak.RelationType == ProteoformComparison.ExperimentalTheoretical)
+                Parallel.ForEach(Sweet.lollipop.ed_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
+            else
+                Parallel.ForEach(Sweet.lollipop.ef_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
+
+            if (accepted)
+                Sweet.accept_peak_action(peak);
+            else
+                Sweet.unaccept_peak_action(peak);
         }
 
         #endregion ET,ED,EE,EF COMPARISONS Public Fields
@@ -1212,11 +1229,11 @@ namespace ProteoformSuiteInternal
 
         public void clear_et()
         {
-            SaveState.lollipop.et_relations.Clear();
-            SaveState.lollipop.et_peaks.Clear();
-            SaveState.lollipop.ed_relations.Clear();
-            SaveState.lollipop.target_proteoform_community.families.Clear();
-            SaveState.lollipop.decoy_proteoform_communities.Values.Select(c => c.families).ToList().Clear();
+            Sweet.lollipop.et_relations.Clear();
+            Sweet.lollipop.et_peaks.Clear();
+            Sweet.lollipop.ed_relations.Clear();
+            Sweet.lollipop.target_proteoform_community.families.Clear();
+            Sweet.lollipop.decoy_proteoform_communities.Values.Select(c => c.families).ToList().Clear();
 
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
             {
@@ -1241,9 +1258,9 @@ namespace ProteoformSuiteInternal
 
         public void clear_ee()
         {
-            SaveState.lollipop.ee_relations.Clear();
-            SaveState.lollipop.ee_peaks.Clear();
-            SaveState.lollipop.ef_relations.Clear();
+            Sweet.lollipop.ee_relations.Clear();
+            Sweet.lollipop.ee_peaks.Clear();
+            Sweet.lollipop.ef_relations.Clear();
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
             {
                 community.families.Clear();
