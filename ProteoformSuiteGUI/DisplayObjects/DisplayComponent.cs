@@ -85,6 +85,8 @@ namespace ProteoformSuiteGUI
         }
 
         public double manual_mass_shift
+
+
         {
             get { return c.manual_mass_shift; }
         }
@@ -164,7 +166,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(fract_abundance)].HeaderText = "Fractional Abundance (from Thermo Decon.)";
 
             //Visibility
-            dgv.Columns[nameof(intensity_sum_olcs)].Visible = SaveState.lollipop.neucode_labeled;
+            dgv.Columns[nameof(intensity_sum_olcs)].Visible = Sweet.lollipop.neucode_labeled;
             dgv.Columns[nameof(manual_mass_shift)].Visible = false;
         }
 

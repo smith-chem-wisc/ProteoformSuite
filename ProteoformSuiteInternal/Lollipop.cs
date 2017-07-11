@@ -74,15 +74,15 @@ namespace ProteoformSuiteInternal
             new List<Purpose> { Purpose.Calibration },
         };
 
-        public void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, List<Purpose> purposes, List<InputFile> destination)
+        public void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, List<Purpose> purposes, List<InputFile> destination, bool user_directed)
         {
             foreach (string complete_path in files)
             {
                 FileAttributes a = File.GetAttributes(complete_path);
                 if ((a & FileAttributes.Directory) == FileAttributes.Directory)
                 {
-                    enter_input_files(Directory.GetFiles(complete_path), acceptable_extensions, purposes, destination);
-                    enter_input_files(Directory.GetDirectories(complete_path), acceptable_extensions, purposes, destination);
+                    enter_input_files(Directory.GetFiles(complete_path), acceptable_extensions, purposes, destination, true);
+                    enter_input_files(Directory.GetDirectories(complete_path), acceptable_extensions, purposes, destination, true);
                     continue;
                 }
 
@@ -103,14 +103,17 @@ namespace ProteoformSuiteInternal
                         file.ContaminantDB = file.filename.Contains("cRAP");
                     }
                     destination.Add(file);
+                    if (user_directed) Sweet.add_file_action(file);
                 }
             }
+
+            Sweet.update_files_from_presets(destination);
         }
 
         public void enter_uniprot_ptmlist()
         {
             Loaders.LoadUniprot(Path.Combine(Environment.CurrentDirectory, "ptmlist.txt"));
-            SaveState.lollipop.enter_input_files(new string[] { Path.Combine(Environment.CurrentDirectory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], SaveState.lollipop.input_files);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(Environment.CurrentDirectory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], Sweet.lollipop.input_files, true);
         }
 
         public string match_calibration_files()
@@ -307,7 +310,7 @@ namespace ProteoformSuiteInternal
             target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
             {
-                community.experimental_proteoforms = SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
+                community.experimental_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
             }
             if (neucode_labeled && get_files(input_files, Purpose.Quantification).Count() > 0)
             {
@@ -494,10 +497,10 @@ namespace ProteoformSuiteInternal
             {
                 community.experimental_proteoforms = new ExperimentalProteoform[0];
             }
-            SaveState.lollipop.vetted_proteoforms.Clear();
-            SaveState.lollipop.ordered_components = new Component[0];
-            SaveState.lollipop.remaining_components.Clear();
-            SaveState.lollipop.remaining_verification_components.Clear();
+            Sweet.lollipop.vetted_proteoforms.Clear();
+            Sweet.lollipop.ordered_components = new Component[0];
+            Sweet.lollipop.remaining_components.Clear();
+            Sweet.lollipop.remaining_verification_components.Clear();
         }
 
         #endregion AGGREGATED PROTEOFORMS
@@ -548,13 +551,13 @@ namespace ProteoformSuiteInternal
 
         public void relate_ed()
         {
-            SaveState.lollipop.ed_relations.Clear();
-            for (int i = 0; i < SaveState.lollipop.decoy_proteoform_communities.Count; i++)
+            Sweet.lollipop.ed_relations.Clear();
+            for (int i = 0; i < Sweet.lollipop.decoy_proteoform_communities.Count; i++)
             {
                 string key = decoy_community_name_prefix + i;
-                SaveState.lollipop.ed_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true, Environment.CurrentDirectory, true));
+                Sweet.lollipop.ed_relations.Add(key, Sweet.lollipop.decoy_proteoform_communities[key].relate(Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, Sweet.lollipop.decoy_proteoform_communities[key].theoretical_proteoforms, ProteoformComparison.ExperimentalDecoy, true, Environment.CurrentDirectory, true));
                 if (i == 0)
-                    ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
+                    ProteoformCommunity.count_nearby_relations(Sweet.lollipop.ed_relations[key]); //count from first decoy database (for histogram)
             }
 
             foreach (ProteoformRelation mass_difference in ed_relations.Values.SelectMany(v => v).ToList())
@@ -568,13 +571,13 @@ namespace ProteoformSuiteInternal
 
         public void relate_ef()
         {
-            SaveState.lollipop.ef_relations.Clear();
-            for (int i = 0; i < SaveState.lollipop.decoy_proteoform_communities.Count; i++)
+            Sweet.lollipop.ef_relations.Clear();
+            for (int i = 0; i < Sweet.lollipop.decoy_proteoform_communities.Count; i++)
             {
                 string key = decoy_community_name_prefix + i;
-                SaveState.lollipop.ef_relations.Add(key, SaveState.lollipop.decoy_proteoform_communities[key].relate_ef(SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, SaveState.lollipop.decoy_proteoform_communities[key].experimental_proteoforms));
+                Sweet.lollipop.ef_relations.Add(key, Sweet.lollipop.decoy_proteoform_communities[key].relate_ef(Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms, Sweet.lollipop.decoy_proteoform_communities[key].experimental_proteoforms));
                 if (i == 0)
-                    ProteoformCommunity.count_nearby_relations(SaveState.lollipop.ef_relations[key]); //count from first decoy database (for histogram)
+                    ProteoformCommunity.count_nearby_relations(Sweet.lollipop.ef_relations[key]); //count from first decoy database (for histogram)
             }
 
             foreach (ProteoformRelation mass_difference in ef_relations.Values.SelectMany(v => v).ToList())
@@ -584,6 +587,22 @@ namespace ProteoformSuiteInternal
                     p.relationships.Add(mass_difference);
                 }
             }
+        }
+
+        public void change_peak_acceptance(DeltaMassPeak peak, bool accepted, bool add_action)
+        {
+            peak.Accepted = accepted;
+            Parallel.ForEach(peak.grouped_relations, r => r.Accepted = accepted);
+
+            if (peak.RelationType == ProteoformComparison.ExperimentalTheoretical)
+                Parallel.ForEach(Sweet.lollipop.ed_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
+            else
+                Parallel.ForEach(Sweet.lollipop.ef_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
+
+            if (accepted && add_action)
+                Sweet.accept_peak_action(peak);
+            else if (add_action)
+                Sweet.unaccept_peak_action(peak);
         }
 
         #endregion ET,ED,EE,EF COMPARISONS Public Fields
@@ -711,13 +730,12 @@ namespace ProteoformSuiteInternal
 
         #region QUANTIFICATION Public Fields
 
-        public SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>();
-        public SortedDictionary<decimal, int> logSelectIntensityHistogram = new SortedDictionary<decimal, int>();
-        public SortedDictionary<decimal, int> logSelectIntensityWithImputationHistogram = new SortedDictionary<decimal, int>();
+        // Histograms
+        public SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>(); // all intensities
+        public SortedDictionary<decimal, int> logSelectIntensityHistogram = new SortedDictionary<decimal, int>(); // selected intensities
+        public SortedDictionary<decimal, int> logSelectIntensityWithImputationHistogram = new SortedDictionary<decimal, int>(); // selected intensities & imputed intensities
 
-        public string numerator_condition = "";
-        public string denominator_condition = "";
-        public string induced_condition = "";
+        // Gaussian fit to histograms
         public decimal allObservedAverageIntensity; //log base 2
         public decimal allObservedStDev;
         public decimal allObservedGaussianArea;
@@ -725,6 +743,7 @@ namespace ProteoformSuiteInternal
         public decimal selectAverageIntensity; //log base 2
         public decimal selectStDev;
         public decimal selectGaussianArea;
+        public decimal selectGaussianHeight;
         public decimal selectWithImputationAverageIntensity;
         public decimal selectWithImputationStDev;
         public decimal selectWithImputationGaussianArea;
@@ -735,27 +754,36 @@ namespace ProteoformSuiteInternal
         public decimal backgroundShift;
         public decimal backgroundWidth;
 
-        public List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>(); // these are proteoforms meeting the required number of observations.
-        public List<List<decimal>> permutedRelativeDifferences;
-        public List<List<decimal>> sortedPermutedRelativeDifferences;
-        public List<decimal> flattenedPermutedRelativeDifferences;
+        // Condition labels
+        public string numerator_condition = ""; // numerator for fold change calculation
+        public string denominator_condition = ""; // denominator for fold change calculation
+        public string induced_condition = ""; // induced condition for relative difference calculation
+
+        // Selecting proteoforms for quantification
         public static string[] observation_requirement_possibilities = new string[] { "Minimum Bioreps with Observations From Any Single Condition", "Minimum Bioreps with Observations From Any Condition", "Minimum Bioreps with Observations From Each Condition" };
         public string observation_requirement = observation_requirement_possibilities[0];
         public int minBiorepsWithObservations = 1;
-        public decimal selectGaussianHeight;
-        public List<QuantitativeProteoformValues> qVals = new List<QuantitativeProteoformValues>();
-        public decimal sKnot_minFoldChange = 1m;
-        public List<decimal> sortedProteoformRelativeDifferences = new List<decimal>();
-        public List<decimal> avgSortedPermutationRelativeDifferences = new List<decimal>();
-        public decimal offsetTestStatistics = 1m;
-        public decimal minimumPassingNegativeTestStatistic;
-        public decimal minimumPassingPositiveTestStatisitic;
-        public double relativeDifferenceFDR;
-        public List<ProteinWithGoTerms> observedProteins = new List<ProteinWithGoTerms>(); //This is the complete list of observed proteins
-        public List<ProteinWithGoTerms> quantifiedProteins = new List<ProteinWithGoTerms>(); //This is the complete list of proteins that were quantified and included in any accepted proteoform family
-        public List<ProteinWithGoTerms> inducedOrRepressedProteins = new List<ProteinWithGoTerms>(); //This is the list of proteins from proteoforms that underwent significant induction or repression
+        public List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>(); // these are proteoforms meeting the required number of observations.
+        public List<QuantitativeProteoformValues> qVals = new List<QuantitativeProteoformValues>(); // quantitative values associated with each selected proteoform
+
+        // Relative difference calculations with balanced permutations
+        public decimal sKnot_minFoldChange = 1m; // this is used in the original paper to correct for artificially high relative differences calculated at low intensities. Mass spec intensities are high enough in general that this is not a problem, so this is not customized by the user.
+        public List<decimal> sortedProteoformRelativeDifferences = new List<decimal>(); // real relative differences for each selected proteoform; sorted
+        public List<List<decimal>> permutedRelativeDifferences; // relative differences for each proteoform for each balanced permutation
+        public List<List<decimal>> sortedPermutedRelativeDifferences; // sorted relative differences for each balanced permutation
+        public List<decimal> avgSortedPermutationRelativeDifferences = new List<decimal>(); // average relative difference across sorted values for each balanced permutation
+        public List<decimal> flattenedPermutedRelativeDifferences; // all relative differences from permutations
+        public decimal offsetTestStatistics = 1m; // offset from expected relative differences (avgSortedPermutationRelativeDifferences); used to call significance with minimumPassingNegativeTestStatistic & minimumPassingPositiveTestStatisitic
+        public decimal minimumPassingNegativeTestStatistic; // the first NEGATIVE relative difference from a selected proteoform that exceeded the offset BELOW the expected relative differences (avg sorted permuted); everything equal to or BELOW this value is considered significant
+        public decimal minimumPassingPositiveTestStatisitic; // the first POSITIVE relative difference from a selected proteoform that exceeded the offset ABOVE the expected relative differences (avg sorted permuted); everything equal to or ABOVE this value is considered significant
+        public double relativeDifferenceFDR; // average # of permuted relative differences that pass minimumPassingNegativeTestStatistic & minimumPassingPositiveTestStatisitic, divided by the number of selected proteoforms that passed
+        public List<ProteinWithGoTerms> observedProteins = new List<ProteinWithGoTerms>(); // This is the complete list of observed proteins
+        public List<ProteinWithGoTerms> quantifiedProteins = new List<ProteinWithGoTerms>(); // This is the complete list of proteins that were quantified and included in any accepted proteoform family
+        public List<ProteinWithGoTerms> inducedOrRepressedProteins = new List<ProteinWithGoTerms>(); // This is the list of proteins from proteoforms that underwent significant induction or repression
+
+        // "Local FDR" calculated using the relative difference of each proteoform as both minimumPassingNegativeTestStatistic & minimumPassingPositiveTestStatisitic. This is an unofficial extension of the statisitical analysis above.
         public bool useLocalFdrCutoff = false;
-        public decimal localFdrCutoff = 0.05m;
+        public decimal localFdrCutoff = 0.05m; 
 
         #endregion QUANTIFICATION Public Fields
 
@@ -763,7 +791,6 @@ namespace ProteoformSuiteInternal
 
         public void quantify()
         {
-
             IEnumerable<string> ltconditions = ltConditionsBioReps.Keys;
             IEnumerable<string> hvconditions = hvConditionsBioReps.Keys;
             List<string> conditions = ltconditions.Concat(hvconditions).Distinct().ToList();
@@ -1212,11 +1239,11 @@ namespace ProteoformSuiteInternal
 
         public void clear_et()
         {
-            SaveState.lollipop.et_relations.Clear();
-            SaveState.lollipop.et_peaks.Clear();
-            SaveState.lollipop.ed_relations.Clear();
-            SaveState.lollipop.target_proteoform_community.families.Clear();
-            SaveState.lollipop.decoy_proteoform_communities.Values.Select(c => c.families).ToList().Clear();
+            Sweet.lollipop.et_relations.Clear();
+            Sweet.lollipop.et_peaks.Clear();
+            Sweet.lollipop.ed_relations.Clear();
+            Sweet.lollipop.target_proteoform_community.families.Clear();
+            Sweet.lollipop.decoy_proteoform_communities.Values.Select(c => c.families).ToList().Clear();
 
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
             {
@@ -1241,9 +1268,9 @@ namespace ProteoformSuiteInternal
 
         public void clear_ee()
         {
-            SaveState.lollipop.ee_relations.Clear();
-            SaveState.lollipop.ee_peaks.Clear();
-            SaveState.lollipop.ef_relations.Clear();
+            Sweet.lollipop.ee_relations.Clear();
+            Sweet.lollipop.ee_peaks.Clear();
+            Sweet.lollipop.ef_relations.Clear();
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))
             {
                 community.families.Clear();

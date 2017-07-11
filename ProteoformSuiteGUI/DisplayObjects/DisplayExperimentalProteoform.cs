@@ -149,7 +149,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(manual_validation_quant)].HeaderText = "Abundant Component for Manual Validation of Quantification";
 
             //VISIBILITY
-            dgv.Columns[nameof(lysine_count)].Visible = SaveState.lollipop.neucode_labeled; 
+            dgv.Columns[nameof(lysine_count)].Visible = Sweet.lollipop.neucode_labeled; 
         }
 
         #endregion

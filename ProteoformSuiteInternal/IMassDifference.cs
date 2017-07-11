@@ -1,6 +1,6 @@
 ﻿namespace ProteoformSuiteInternal
 {
-    interface IMassDifference
+    public interface IMassDifference
     {
         int InstanceId { get; set; }
         double DeltaMass { get; set; }

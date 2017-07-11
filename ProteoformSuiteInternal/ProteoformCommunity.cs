@@ -83,25 +83,25 @@ namespace ProteoformSuiteInternal
             {
                 case (ProteoformComparison.ExperimentalTheoretical):
                 case (ProteoformComparison.ExperimentalDecoy):
-                    return (!SaveState.lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
-                        && (pf1.modified_mass - pf2.modified_mass) >= SaveState.lollipop.et_low_mass_difference
-                        && (pf1.modified_mass - pf2.modified_mass) <= SaveState.lollipop.et_high_mass_difference
+                    return (!Sweet.lollipop.neucode_labeled || pf2.lysine_count == pf1.lysine_count)
+                        && (pf1.modified_mass - pf2.modified_mass) >= Sweet.lollipop.et_low_mass_difference
+                        && (pf1.modified_mass - pf2.modified_mass) <= Sweet.lollipop.et_high_mass_difference
                         && (pf2.ptm_set.ptm_combination.Count < 3 || pf2.ptm_set.ptm_combination.Select(ptm => ptm.modification.monoisotopicMass).All(x => x == pf2.ptm_set.ptm_combination.First().modification.monoisotopicMass));
 
                 case (ProteoformComparison.ExperimentalExperimental):
                     return pf1.modified_mass >= pf2.modified_mass
                         && pf1 != pf2
-                        && (!SaveState.lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
-                        && pf1.modified_mass - pf2.modified_mass <= SaveState.lollipop.ee_max_mass_difference
-                        && Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) <= SaveState.lollipop.ee_max_RetentionTime_difference;
+                        && (!Sweet.lollipop.neucode_labeled || pf1.lysine_count == pf2.lysine_count)
+                        && pf1.modified_mass - pf2.modified_mass <= Sweet.lollipop.ee_max_mass_difference
+                        && Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) <= Sweet.lollipop.ee_max_RetentionTime_difference;
 
                 case (ProteoformComparison.ExperimentalFalse):
                     return pf1.modified_mass >= pf2.modified_mass
                         && pf1 != pf2
-                        && (pf1.modified_mass - pf2.modified_mass <= SaveState.lollipop.ee_max_mass_difference)
-                        && (!SaveState.lollipop.neucode_labeled || Math.Abs(pf1.lysine_count - pf2.lysine_count) > SaveState.lollipop.missed_lysines)
-                        && (SaveState.lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) > SaveState.lollipop.ee_max_RetentionTime_difference * 2)
-                        && (!SaveState.lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) < SaveState.lollipop.ee_max_RetentionTime_difference);
+                        && (pf1.modified_mass - pf2.modified_mass <= Sweet.lollipop.ee_max_mass_difference)
+                        && (!Sweet.lollipop.neucode_labeled || Math.Abs(pf1.lysine_count - pf2.lysine_count) > Sweet.lollipop.missed_lysines)
+                        && (Sweet.lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) > Sweet.lollipop.ee_max_RetentionTime_difference * 2)
+                        && (!Sweet.lollipop.neucode_labeled || Math.Abs(((ExperimentalProteoform)pf1).agg_rt - ((ExperimentalProteoform)pf2).agg_rt) < Sweet.lollipop.ee_max_RetentionTime_difference);
 
                 default:
                     return false;
@@ -121,7 +121,7 @@ namespace ProteoformSuiteInternal
             List<ProteoformRelation> all_ef_relations = relate(pfs1, pfs2, ProteoformComparison.ExperimentalFalse, true, Environment.CurrentDirectory, true);
             ProteoformRelation[] to_shuffle = new List<ProteoformRelation>(all_ef_relations).ToArray();
             to_shuffle.Shuffle();
-            return to_shuffle.Take(SaveState.lollipop.ee_relations.Count).ToList();
+            return to_shuffle.Take(Sweet.lollipop.ee_relations.Count).ToList();
         }
 
         #endregion BUILDING RELATIONSHIPS
@@ -177,7 +177,13 @@ namespace ProteoformSuiteInternal
                 active.Clear();
                 root = find_next_root(remaining_relations_outside_no_mans, running);
             }
-            if (peaks.Count > 0 && peaks.First().RelationType == ProteoformComparison.ExperimentalTheoretical) SaveState.lollipop.et_peaks.AddRange(peaks); else SaveState.lollipop.ee_peaks.AddRange(peaks);
+
+            if (peaks.Count > 0 && peaks.First().RelationType == ProteoformComparison.ExperimentalTheoretical)
+                Sweet.lollipop.et_peaks.AddRange(peaks);
+            else
+                Sweet.lollipop.ee_peaks.AddRange(peaks);
+
+            Sweet.update_peaks_from_presets(); // accept or unaccept peaks noted in presets
 
             //Nearby relations are no longer needed after counting them
             Parallel.ForEach(decoy_relations.SelectMany(kv => kv.Value).Concat(relations).ToList(), r =>

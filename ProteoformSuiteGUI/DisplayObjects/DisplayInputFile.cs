@@ -46,47 +46,91 @@ namespace ProteoformSuiteGUI
         //For protein databases
         public bool ContaminantDB
         {
-            get { return file.ContaminantDB; }
-            set { file.ContaminantDB = value; }
+            get
+            {
+                return file.ContaminantDB;
+            }
+            set
+            {
+                Sweet.change_file(file, nameof(file.ContaminantDB), file.ContaminantDB.ToString(), value.ToString());
+                file.ContaminantDB = value;
+            }
         }
 
 
         // For quantification files
         public int biological_replicate
         {
-            get { return file.biological_replicate; }
-            set { file.biological_replicate = value; }
+            get
+            {
+                return file.biological_replicate;
+            }
+            set
+            {
+                Sweet.change_file(file, file.biological_replicate, file.biological_replicate.ToString(), value.ToString());
+                file.biological_replicate = value;
+            }
         }
 
         //public int Fraction
         //{
-        //    get { return file.fraction; }
-        //    set { file.fraction = value; }
+        //    get
+        //    {
+        //        return file.fraction;
+        //    }
+        //    set
+        //    {
+        //        file.fraction = value;
+        //    }
         //}
 
         public string lt_condition
         {
-            get { return file.lt_condition; }
-            set { file.lt_condition = value; }
+            get
+            {
+                return file.lt_condition;
+            }
+            set
+            {
+                Sweet.change_file(file, file.lt_condition, file.lt_condition.ToString(), value.ToString());
+                file.lt_condition = value;
+            }
         }
 
         public string hv_condition
         {
-            get { return file.hv_condition; }
-            set { file.hv_condition = value; }
+            get
+            {
+                return file.hv_condition;
+            }
+            set
+            {
+                Sweet.change_file(file, file.hv_condition, file.hv_condition.ToString(), value.ToString());
+                file.hv_condition = value;
+            }
         }
 
 
         // For identification files
         public bool matchingCalibrationFile
         {
-            get { return file.matchingCalibrationFile; }
+            get
+            {
+                return file.matchingCalibrationFile;
+            }
         }
 
         public Labeling Labeling
         {
-            get { return file.label; }
-            set { file.label = value; }
+            get
+            {
+                return file.label;
+            }
+            set
+            {
+                Sweet.change_file(file, file.label, file.label.ToString(), value.ToString());
+                file.label = value;
+            }
         }
 
 
@@ -117,7 +161,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(complete_path)].HeaderText = "File Path";
             dgv.Columns[nameof(matchingCalibrationFile)].HeaderText = "Matching Calibration File";
             dgv.Columns[nameof(biological_replicate)].HeaderText = "Biological Replicate";
-            dgv.Columns[nameof(lt_condition)].HeaderText = SaveState.lollipop.neucode_labeled ? "NeuCode Light Condition" : "Condition";
+            dgv.Columns[nameof(lt_condition)].HeaderText = Sweet.lollipop.neucode_labeled ? "NeuCode Light Condition" : "Condition";
             dgv.Columns[nameof(hv_condition)].HeaderText = "NeuCode Heavy Condition";
             dgv.Columns[nameof(ContaminantDB)].HeaderText = "Contaminant Database";
 
@@ -135,7 +179,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(biological_replicate)].Visible = dgv_purposes.Contains(Purpose.Quantification);
             //dgv.Columns[nameof(Fraction)].Visible = dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(lt_condition)].Visible = dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(hv_condition)].Visible = SaveState.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification);
+            dgv.Columns[nameof(hv_condition)].Visible = Sweet.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(ContaminantDB)].Visible = dgv_purposes.Contains(Purpose.ProteinDatabase);
         }
 

@@ -143,6 +143,7 @@
     <Compile Include="AggregatedProteoforms.Designer.cs">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </Compile>
+    <Compile Include="DisplayObjects\DisplayDeltaMassPeak.cs" />
     <Compile Include="DisplayObjects\DisplayNeuCodePair.cs" />
     <Compile Include="DisplayObjects\DisplayProteoformFamily.cs" />
     <Compile Include="DisplayObjects\DisplayTheoreticalProteoform.cs" />
@@ -156,7 +157,6 @@
     <Compile Include="DisplayObjects\DisplayProteoformRelation.cs" />
     <Compile Include="DisplayObjects\DisplayUnlocalizedModification.cs" />
     <Compile Include="ISweetForm.cs" />
-    <Compile Include="PeakAcceptabilityChangedEventArgs.cs" />
     <Compile Include="DGVExcelWriter.cs" />
     <Compile Include="DisplayUtility.cs" />
     <Compile Include="ExperimentExperimentComparison.cs">
