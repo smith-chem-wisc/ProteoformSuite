@@ -155,7 +155,7 @@ namespace ProteoformSuiteInternal
             actions.Add("add file " + file.complete_path + " with purpose " + file.purpose.ToString());
         }
 
-        public static void change_file(InputFile file, string property, string from, string to)
+        public static void change_file(InputFile file, object property, string from, string to)
         {
             actions.Add("change file " + file.complete_path + " property " + property + " of type " + property.GetType().FullName + " from " + from + " to " + to);
         }

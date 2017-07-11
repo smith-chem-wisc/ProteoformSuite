@@ -84,6 +84,8 @@ namespace ProteoformSuiteGUI
             string timestamp = Sweet.time_stamp();
             ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp);
             ((ProteoformSweet)MdiParent).save_all_plots(Sweet.lollipop.results_folder, timestamp);
+            using (StreamWriter file = new StreamWriter(Path.Combine(Sweet.lollipop.results_folder, "presets_" + timestamp + ".xml")))
+                file.WriteLine(Sweet.save_method());
         }
 
         #endregion Private Methods
