@@ -137,6 +137,7 @@
     <Compile Include="ProteoformRelation.cs" />
     <Compile Include="QuantitativeProteoformValues.cs" />
     <Compile Include="ResultsSummaryGenerator.cs" />
+    <Compile Include="SafeRandom.cs" />
     <Compile Include="Sweet.cs" />
     <Compile Include="TheoreticalProteoform.cs" />
     <Compile Include="TheoreticalProteoformDatabase.cs" />

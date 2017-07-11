@@ -59,7 +59,7 @@ namespace Test
                 else continue;
             }
 
-            Sweet.open_method(builder.ToString());
+            Sweet.open_method(builder.ToString(), false);
             foreach (PropertyInfo property in typeof(Lollipop).GetProperties())
             {
                 if (property.PropertyType == typeof(int))

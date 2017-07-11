@@ -206,7 +206,9 @@ namespace ProteoformSuiteGUI
             if (dr == DialogResult.OK)
             {
                 string method_filename = methodFileOpen.FileName;
-                Sweet.open_method(File.ReadAllLines(method_filename));
+                DialogResult d4 = MessageBox.Show("Add files at the listed paths if they still exist?", "Full Run", MessageBoxButtons.YesNoCancel);
+                if (d4 == DialogResult.Cancel) return false;
+                Sweet.open_method(File.ReadAllLines(method_filename), d4 == DialogResult.Yes);
                 return true;
             }
             return false;
@@ -231,7 +233,8 @@ namespace ProteoformSuiteGUI
 
         public bool full_run()
         {
-            clear_lists();
+            Sweet.lollipop = new Lollipop(); // clear memory
+            loadDeconvolutionResults.ClearListsTablesFigures(true); // clear forms
             if (!Sweet.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory))
             {
                 if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
@@ -241,8 +244,8 @@ namespace ProteoformSuiteGUI
                 }
                 else
                 {
-                    DialogResult d = MessageBox.Show("No PTM list is listed.\n\nWill now download the default PTM list from UniProt and use it for the Full Run.", "Full Run", MessageBoxButtons.OKCancel);
-                    if (d == DialogResult.OK)
+                    DialogResult d1 = MessageBox.Show("No PTM list is listed.\n\nWill now download the default PTM list from UniProt and use it for the Full Run.", "Full Run", MessageBoxButtons.OKCancel);
+                    if (d1 == DialogResult.OK)
                     {
                         Sweet.lollipop.enter_uniprot_ptmlist();
                         if (loadDeconvolutionResults.ReadyToRunTheGamut())
@@ -255,8 +258,8 @@ namespace ProteoformSuiteGUI
 
             if (Sweet.lollipop.results_folder == "")
             {
-                DialogResult d = MessageBox.Show("Choose a results folder for this Full Run?", "Full Run", MessageBoxButtons.YesNoCancel);
-                if (d == DialogResult.Yes)
+                DialogResult d2 = MessageBox.Show("Choose a results folder for this Full Run?", "Full Run", MessageBoxButtons.YesNoCancel);
+                if (d2 == DialogResult.Yes)
                 {
                     FolderBrowserDialog folderBrowser = new FolderBrowserDialog();
                     DialogResult dr = folderBrowser.ShowDialog();
@@ -268,8 +271,24 @@ namespace ProteoformSuiteGUI
                     }
                     else if (dr == DialogResult.Cancel) return false;
                 }
-                else if (d == DialogResult.Cancel) return false;
+                else if (d2 == DialogResult.Cancel) return false;
             }
+
+            DialogResult d3 = MessageBox.Show("Use presets for this Full Run?", "Full Run", MessageBoxButtons.YesNoCancel);
+            if (d3 == DialogResult.Yes)
+            {
+                DialogResult dr = methodFileOpen.ShowDialog();
+                if (dr == DialogResult.OK)
+                {
+                    string filepath = methodFileOpen.FileName;
+                    DialogResult d4 = MessageBox.Show("Add files at the listed paths if they still exist?", "Full Run", MessageBoxButtons.YesNoCancel);
+                    if (d4 == DialogResult.Cancel) return false;
+                    Sweet.open_method(File.ReadAllLines(filepath), d4 == DialogResult.Yes);
+                    loadDeconvolutionResults.FillTablesAndCharts(); // updates the filelists
+                }
+                else if (dr == DialogResult.Cancel) return false;
+            }
+            else if (d3 == DialogResult.Cancel) return false;
 
             Cursor = Cursors.WaitCursor;
             foreach (ISweetForm sweet in forms)
@@ -348,24 +367,6 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Results Summary Methods
-
-        #region Public Method
-
-        public void clear_lists()
-        {
-            Sweet.lollipop.raw_experimental_components.Clear();
-            Sweet.lollipop.raw_neucode_pairs.Clear();
-            Sweet.lollipop.target_proteoform_community = new ProteoformCommunity();
-            Sweet.lollipop.decoy_proteoform_communities.Clear();
-            Sweet.lollipop.et_relations.Clear();
-            Sweet.lollipop.et_peaks.Clear();
-            Sweet.lollipop.ee_relations.Clear();
-            Sweet.lollipop.ee_peaks.Clear();
-            Sweet.lollipop.ed_relations.Clear();
-            Sweet.lollipop.ef_relations.Clear();
-        }
-
-        #endregion Public Method
 
     }
 }
