@@ -28,7 +28,7 @@ namespace ProteoformSuiteInternal
         public string accession_list { get { return String.Join("; ", theoretical_proteoforms.Select(p => p.accession)); } }
         public string gene_list { get { return String.Join("; ", gene_names.Select(p => p.get_prefered_name(ProteoformCommunity.preferred_gene_label)).Where(n => n != null).Distinct()); } }
         public string experimentals_list { get { return String.Join("; ", experimental_proteoforms.Select(p => p.accession)); } }
-        public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, SaveState.lollipop.deltaM_edge_display_rounding))); } }
+        public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, Sweet.lollipop.deltaM_edge_display_rounding))); } }
         public List<ExperimentalProteoform> experimental_proteoforms { get; private set; }
         public List<TheoreticalProteoform> theoretical_proteoforms { get; private set; }
         public List<GeneName> gene_names { get; private set; }
@@ -73,7 +73,7 @@ namespace ProteoformSuiteInternal
             Parallel.ForEach(theoretical_proteoforms, t =>
             {
                 lock (identified_experimentals)
-                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
+                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
                     {
                         identified_experimentals.Add(e);
                     }
@@ -89,7 +89,7 @@ namespace ProteoformSuiteInternal
                 Parallel.ForEach(newly_identified_experimentals, id_experimental =>
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
-                        foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(SaveState.lollipop.theoretical_database.all_possible_ptmsets, SaveState.lollipop.theoretical_database.all_mods_with_mass))
+                        foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
                         {
                             identified_experimentals.Add(new_e);
                             tmp_new_experimentals.Add(new_e);

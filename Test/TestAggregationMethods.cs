@@ -31,16 +31,16 @@ namespace Test
 
             //Based on components
             List<Component> active = new List<Component> { is_running };
-            Component next = SaveState.lollipop.find_next_root(ordered, active);
-            Assert.True(Math.Abs(next.weighted_monoisotopic_mass - is_running.weighted_monoisotopic_mass) > 2 * (double)SaveState.lollipop.missed_monos);
+            Component next = Sweet.lollipop.find_next_root(ordered, active);
+            Assert.True(Math.Abs(next.weighted_monoisotopic_mass - is_running.weighted_monoisotopic_mass) > 2 * (double)Sweet.lollipop.missed_monos);
             Assert.AreEqual(4, next.intensity_sum_olcs);
 
             //Based on experimental proteoforms
             ExperimentalProteoform exp = ConstructorsForTesting.ExperimentalProteoform("E");
             exp.root = is_running;
             List<ExperimentalProteoform> active2 = new List<ExperimentalProteoform> { exp };
-            Component next2 = SaveState.lollipop.find_next_root(ordered, active2);
-            Assert.True(Math.Abs(next.weighted_monoisotopic_mass - is_running.weighted_monoisotopic_mass) > 2 * (double)SaveState.lollipop.missed_monos);
+            Component next2 = Sweet.lollipop.find_next_root(ordered, active2);
+            Assert.True(Math.Abs(next.weighted_monoisotopic_mass - is_running.weighted_monoisotopic_mass) > 2 * (double)Sweet.lollipop.missed_monos);
             Assert.AreEqual(4, next.intensity_sum_olcs);
         }
 
@@ -65,8 +65,8 @@ namespace Test
             is_running.agg_intensity = 100;
 
             List<ExperimentalProteoform> active = new List<ExperimentalProteoform> { is_running };
-            ExperimentalProteoform next = SaveState.lollipop.find_next_root(ordered, active);
-            Assert.True(Math.Abs(next.agg_mass - is_running.agg_mass) > 2 * (double)SaveState.lollipop.missed_monos);
+            ExperimentalProteoform next = Sweet.lollipop.find_next_root(ordered, active);
+            Assert.True(Math.Abs(next.agg_mass - is_running.agg_mass) > 2 * (double)Sweet.lollipop.missed_monos);
             Assert.AreEqual(4, next.agg_intensity);
         }
 
@@ -78,12 +78,12 @@ namespace Test
 
             List<Component> components = TestExperimentalProteoform.generate_neucode_components(TestExperimentalProteoform.starter_mass);
 
-            SaveState.lollipop.neucode_labeled = true;
-            List<ExperimentalProteoform> pfs = SaveState.lollipop.createProteoforms(components.OfType<NeuCodePair>(), components, 0);
+            Sweet.lollipop.neucode_labeled = true;
+            List<ExperimentalProteoform> pfs = Sweet.lollipop.createProteoforms(components.OfType<NeuCodePair>(), components, 0);
             Assert.AreEqual(1, pfs.Count);
             Assert.AreEqual(2, pfs[0].aggregated_components.Count);
             Assert.AreEqual(2, components.Count);
-            Assert.AreEqual(0, SaveState.lollipop.remaining_components.Count);
+            Assert.AreEqual(0, Sweet.lollipop.remaining_components.Count);
         }
 
         [Test]
@@ -97,15 +97,15 @@ namespace Test
             List<Component> components = neucodes.Select(nc => nc.neuCodeLight).Concat(neucodes.Select(nc => nc.neuCodeHeavy)).ToList();
 
             // in bounds lowest monoisotopic error
-            SaveState.lollipop.neucode_labeled = true;
-            List<ExperimentalProteoform> pfs = SaveState.lollipop.createProteoforms(neucodes, components, 0);
-            List<ExperimentalProteoform> vetted = SaveState.lollipop.vetExperimentalProteoforms(pfs, components, new List<ExperimentalProteoform>());
+            Sweet.lollipop.neucode_labeled = true;
+            List<ExperimentalProteoform> pfs = Sweet.lollipop.createProteoforms(neucodes, components, 0);
+            List<ExperimentalProteoform> vetted = Sweet.lollipop.vetExperimentalProteoforms(pfs, components, new List<ExperimentalProteoform>());
             Assert.AreEqual(1, vetted.Count);
             Assert.AreEqual(2, vetted[0].aggregated_components.Count);
             Assert.AreEqual(2, vetted[0].lt_verification_components.Count);
             Assert.AreEqual(2, vetted[0].hv_verification_components.Count);
             Assert.AreEqual(4, components.Count);
-            Assert.AreEqual(0, SaveState.lollipop.remaining_verification_components.Count);
+            Assert.AreEqual(0, Sweet.lollipop.remaining_verification_components.Count);
         }
 
         [Test]
@@ -118,15 +118,15 @@ namespace Test
             List<Component> quant_components = TestExperimentalProteoform.generate_neucode_quantitative_components();
 
             // in bounds lowest monoisotopic error
-            SaveState.lollipop.neucode_labeled = true;
-            List<ExperimentalProteoform> pfs = SaveState.lollipop.createProteoforms(neucodes, neucodes, 0);
-            List<ExperimentalProteoform> vetted_quant = SaveState.lollipop.assignQuantificationComponents(pfs, quant_components);
+            Sweet.lollipop.neucode_labeled = true;
+            List<ExperimentalProteoform> pfs = Sweet.lollipop.createProteoforms(neucodes, neucodes, 0);
+            List<ExperimentalProteoform> vetted_quant = Sweet.lollipop.assignQuantificationComponents(pfs, quant_components);
             Assert.AreEqual(1, vetted_quant.Count);
             Assert.AreEqual(2, vetted_quant[0].aggregated_components.Count);
             Assert.AreEqual(1, vetted_quant[0].lt_quant_components.Count);
             Assert.AreEqual(1, vetted_quant[0].hv_quant_components.Count);
             Assert.AreEqual(2, quant_components.Count);
-            Assert.AreEqual(0, SaveState.lollipop.remaining_quantification_components.Count);
+            Assert.AreEqual(0, Sweet.lollipop.remaining_quantification_components.Count);
         }
 
 
@@ -142,9 +142,9 @@ namespace Test
 
             //Must use SaveState.lol.remaining_components because ThreadStart only uses void methods
             //Must use SaveState.lol.remaining_components because ThreadStart only uses void methods
-            SaveState.lollipop.neucode_labeled = true;
-            SaveState.lollipop.input_files = new List<InputFile> { new InputFile("fake.txt", Purpose.Quantification) };
-            List<ExperimentalProteoform> vetted_quant = SaveState.lollipop.aggregate_proteoforms(true, neucodes, components, quant_components, 0);
+            Sweet.lollipop.neucode_labeled = true;
+            Sweet.lollipop.input_files = new List<InputFile> { new InputFile("fake.txt", Purpose.Quantification) };
+            List<ExperimentalProteoform> vetted_quant = Sweet.lollipop.aggregate_proteoforms(true, neucodes, components, quant_components, 0);
             Assert.AreEqual(1, vetted_quant.Count);
             Assert.AreEqual(2, vetted_quant[0].aggregated_components.Count);
             Assert.AreEqual(2, vetted_quant[0].lt_verification_components.Count);
@@ -152,7 +152,7 @@ namespace Test
             Assert.AreEqual(1, vetted_quant[0].lt_quant_components.Count);
             Assert.AreEqual(1, vetted_quant[0].hv_quant_components.Count);
             Assert.AreEqual(2, quant_components.Count);
-            Assert.AreEqual(0, SaveState.lollipop.remaining_quantification_components.Count);
+            Assert.AreEqual(0, Sweet.lollipop.remaining_quantification_components.Count);
         }        
         
         [Test]
@@ -166,9 +166,9 @@ namespace Test
             List<Component> quant_components = TestExperimentalProteoform.generate_neucode_quantitative_components();
 
             //Must use SaveState.lol.remaining_components because ThreadStart only uses void methods
-            SaveState.lollipop.neucode_labeled = true;
-            SaveState.lollipop.input_files = new List<InputFile> { new InputFile("fake.txt", Purpose.Quantification) };
-            List<ExperimentalProteoform> vetted_quant = SaveState.lollipop.aggregate_proteoforms(false, neucodes, components, quant_components, 0);
+            Sweet.lollipop.neucode_labeled = true;
+            Sweet.lollipop.input_files = new List<InputFile> { new InputFile("fake.txt", Purpose.Quantification) };
+            List<ExperimentalProteoform> vetted_quant = Sweet.lollipop.aggregate_proteoforms(false, neucodes, components, quant_components, 0);
             Assert.AreEqual(1, vetted_quant.Count);
             Assert.AreEqual(2, vetted_quant[0].aggregated_components.Count);
             Assert.AreEqual(0, vetted_quant[0].lt_verification_components.Count);
@@ -176,21 +176,21 @@ namespace Test
             Assert.AreEqual(1, vetted_quant[0].lt_quant_components.Count);
             Assert.AreEqual(1, vetted_quant[0].hv_quant_components.Count);
             Assert.AreEqual(2, quant_components.Count);
-            Assert.AreEqual(0, SaveState.lollipop.remaining_quantification_components.Count);
+            Assert.AreEqual(0, Sweet.lollipop.remaining_quantification_components.Count);
         }
 
         [Test]
         public void unlabeled_agg()
         {
-            SaveState.lollipop.min_num_bioreps = 0;
+            Sweet.lollipop.min_num_bioreps = 0;
             double max_monoisotopic_mass = TestExperimentalProteoform.starter_mass + TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = TestExperimentalProteoform.starter_mass - TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
 
             List<Component> components = TestExperimentalProteoform.generate_unlabeled_components(TestExperimentalProteoform.starter_mass);
 
-            SaveState.lollipop.neucode_labeled = false;
-            SaveState.lollipop.remaining_components = new List<Component>(components);
-            SaveState.lollipop.remaining_verification_components = new List<Component>(components);
+            Sweet.lollipop.neucode_labeled = false;
+            Sweet.lollipop.remaining_components = new List<Component>(components);
+            Sweet.lollipop.remaining_verification_components = new List<Component>(components);
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             e.root = components[0];
             e.aggregate();
@@ -206,10 +206,10 @@ namespace Test
         [Test]
         public void basic_regroup_test()
         {
-            SaveState.lollipop.raw_neucode_pairs.Add(new NeuCodePair());
-            Assert.IsNotEmpty(SaveState.lollipop.raw_neucode_pairs);
-            Assert.IsEmpty(SaveState.lollipop.regroup_components(true, false, new List<InputFile>(), SaveState.lollipop.raw_neucode_pairs, SaveState.lollipop.raw_experimental_components, SaveState.lollipop.raw_quantification_components, 0));
-            Assert.IsEmpty(SaveState.lollipop.raw_neucode_pairs);
+            Sweet.lollipop.raw_neucode_pairs.Add(new NeuCodePair());
+            Assert.IsNotEmpty(Sweet.lollipop.raw_neucode_pairs);
+            Assert.IsEmpty(Sweet.lollipop.regroup_components(true, false, new List<InputFile>(), Sweet.lollipop.raw_neucode_pairs, Sweet.lollipop.raw_experimental_components, Sweet.lollipop.raw_quantification_components, 0));
+            Assert.IsEmpty(Sweet.lollipop.raw_neucode_pairs);
         }
     }
 }
