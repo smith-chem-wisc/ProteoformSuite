@@ -47,14 +47,16 @@ namespace Test
             List<Purpose> purpose = new List<Purpose> { Purpose.Identification };
             List<InputFile> destination = new List<InputFile>();
             InputFile mock = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_directory", "one.xlsx"), Purpose.Identification);
-            Sweet.change_file(mock, nameof(mock.lt_condition), mock.lt_condition, "Normal");
-            Sweet.change_file(mock, nameof(mock.hv_condition), mock.hv_condition, "Stress");
+            Sweet.change_file(mock, mock.lt_condition, nameof(mock.lt_condition), mock.lt_condition, "Normal");
+            Sweet.change_file(mock, mock.hv_condition, nameof(mock.hv_condition), mock.hv_condition, "Stress");
+            Sweet.change_file(mock, mock.biological_replicate, nameof(mock.biological_replicate), mock.biological_replicate.ToString(), "2");
             Sweet.lollipop.enter_input_files(folder, extension, purpose, destination, true);
             Assert.AreEqual(2, destination.Count);
             Assert.True(destination.All(f => f.extension == extension[0]));
             Assert.True(destination.All(f => f.purpose == purpose[0]));
             Assert.True(destination.Where(f => f.filename.StartsWith("one")).All(f => f.lt_condition == "Normal"));
             Assert.True(destination.Where(f => f.filename.StartsWith("one")).All(f => f.hv_condition == "Stress"));
+            Assert.True(destination.Where(f => f.filename.StartsWith("one")).All(f => f.biological_replicate == 2));
         }
 
         [Test]
@@ -63,12 +65,14 @@ namespace Test
             List<InputFile> destination = new List<InputFile>();
             InputFile mock = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "test_directory", "one.xlsx"), Purpose.Identification);
             Sweet.add_file_action(mock);
-            Sweet.change_file(mock, nameof(mock.lt_condition), mock.lt_condition, "Normal");
-            Sweet.change_file(mock, nameof(mock.hv_condition), mock.hv_condition, "Stress");
+            Sweet.change_file(mock, mock.lt_condition, nameof(mock.lt_condition), mock.lt_condition, "Normal");
+            Sweet.change_file(mock, mock.hv_condition, nameof(mock.hv_condition), mock.hv_condition, "Stress");
+            Sweet.change_file(mock, mock.biological_replicate, nameof(mock.biological_replicate), mock.biological_replicate.ToString(), "2");
             Sweet.add_files_from_presets(destination);
             Assert.AreEqual(1, destination.Count);
             Assert.True(destination[0].lt_condition == "Normal");
             Assert.True(destination[0].hv_condition == "Stress");
+            Assert.True(destination[0].biological_replicate == 2);
         }
 
         [Test]
