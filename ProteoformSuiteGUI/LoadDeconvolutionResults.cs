@@ -476,8 +476,38 @@ namespace ProteoformSuiteGUI
                 }
             }
             testdialog.Dispose();
-        } 
+        }
 
         #endregion
+
+        #region Cell Validation Methods
+
+        private void dgv_loadFiles1_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            validate(dgv_loadFiles1, e);
+        }
+
+        private void dgv_loadFiles2_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            validate(dgv_loadFiles2, e);
+        }
+
+        private void dgv_loadFiles3_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
+        {
+            validate(dgv_loadFiles3, e);
+        }
+
+        private void validate(DataGridView dgv, DataGridViewCellValidatingEventArgs e)
+        {
+            if (dgv.Rows[e.RowIndex].IsNewRow)
+                return;
+            if (dgv[e.ColumnIndex, e.RowIndex].ValueType == typeof(int) && (!int.TryParse(e.FormattedValue.ToString(), out int x) || x < 1))
+            {
+                e.Cancel = true;
+                MessageBox.Show("Please use positive integers for biological replicate labels.");
+            }
+        }
+
+        #endregion Cell Validation Methods
     }
 }
