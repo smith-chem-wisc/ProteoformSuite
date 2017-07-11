@@ -177,7 +177,7 @@ namespace ProteoformSuiteGUI
         private void drag_drop(DragEventArgs e, ComboBox cmb, DataGridView dgv)
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
-            Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files);
+            Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files, true);
             match_files();
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
@@ -267,7 +267,7 @@ namespace ProteoformSuiteGUI
             DialogResult dr = openFileDialog.ShowDialog();
             if (dr == DialogResult.OK)
             {
-                Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files);
+                Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files, true);
                 match_files();
             }
 
@@ -396,6 +396,7 @@ namespace ProteoformSuiteGUI
         #endregion CHANGED TABLE SELECTION Private Methods
 
         #region CHANGE ALL CELLS private methods
+
         private void dgv_loadFiles1_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right)
@@ -469,6 +470,7 @@ namespace ProteoformSuiteGUI
             }
             testdialog.Dispose();
         } 
+
         #endregion
     }
 }

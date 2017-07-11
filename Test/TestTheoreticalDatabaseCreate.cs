@@ -59,8 +59,8 @@ namespace Test
             Sweet.lollipop.ptmset_mass_tolerance = 0.00001;
             Sweet.lollipop.combine_identical_sequences = true;
             Sweet.lollipop.theoretical_database.limit_triples_and_greater = false;
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files);
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
 
             Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
@@ -98,8 +98,8 @@ namespace Test
             Sweet.lollipop.ptmset_mass_tolerance = 0.00001;
             Sweet.lollipop.combine_identical_sequences = true;
             Sweet.lollipop.theoretical_database.limit_triples_and_greater = false;
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files);
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
 
             Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
@@ -128,7 +128,7 @@ namespace Test
             Sweet.lollipop.methionine_cleavage = true;
             Sweet.lollipop.max_ptms = 0;
             Sweet.lollipop.input_files.Clear();
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "stripped.xml"), Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "stripped.xml"), Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
@@ -156,7 +156,7 @@ namespace Test
             Sweet.lollipop.methionine_cleavage = true;
             Sweet.lollipop.max_ptms = 0;
             Sweet.lollipop.input_files.Clear();
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "stripped_plus2M.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "stripped_plus2M.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = new TheoreticalProteoform[0];
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
@@ -185,12 +185,12 @@ namespace Test
         [Test]
         public void test_get_modification_dictionary()
         {
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(new string[] { TestContext.CurrentContext.TestDirectory, "Mods", "amino_acids.txt" }) }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(new string[] { TestContext.CurrentContext.TestDirectory, "Mods", "amino_acids.txt" }) }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             var mods = ConstructorsForTesting.read_mods();
             Assert.AreEqual(21, mods.Keys.Count);
             Assert.True(mods.Values.All(v => v.Count == 1));
 
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(new string[] { TestContext.CurrentContext.TestDirectory, "amino_acids_duplicates.txt" }) }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(new string[] { TestContext.CurrentContext.TestDirectory, "amino_acids_duplicates.txt" }) }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             mods = ConstructorsForTesting.read_mods();
             Assert.AreEqual(21, mods.Keys.Count);
             Assert.True(mods.Values.All(v => v.Count == 2)); // a bunch of duplicates, now

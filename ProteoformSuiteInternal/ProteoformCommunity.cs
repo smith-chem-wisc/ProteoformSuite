@@ -177,7 +177,13 @@ namespace ProteoformSuiteInternal
                 active.Clear();
                 root = find_next_root(remaining_relations_outside_no_mans, running);
             }
-            if (peaks.Count > 0 && peaks.First().RelationType == ProteoformComparison.ExperimentalTheoretical) Sweet.lollipop.et_peaks.AddRange(peaks); else Sweet.lollipop.ee_peaks.AddRange(peaks);
+
+            if (peaks.Count > 0 && peaks.First().RelationType == ProteoformComparison.ExperimentalTheoretical)
+                Sweet.lollipop.et_peaks.AddRange(peaks);
+            else
+                Sweet.lollipop.ee_peaks.AddRange(peaks);
+
+            Sweet.update_peaks_from_presets(); // accept or unaccept peaks noted in presets
 
             //Nearby relations are no longer needed after counting them
             Parallel.ForEach(decoy_relations.SelectMany(kv => kv.Value).Concat(relations).ToList(), r =>

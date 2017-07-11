@@ -21,7 +21,7 @@ namespace Test
         [Test]
         public void TestDeltaMassPeakConstructor()
         {
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             ConstructorsForTesting.read_mods();
             Sweet.lollipop.et_high_mass_difference = 250;
             Sweet.lollipop.et_low_mass_difference = -250;
@@ -132,9 +132,10 @@ namespace Test
 
             Sweet.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet> { new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }) };
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = Sweet.lollipop.theoretical_database.make_ptmset_dictionary();
-            Sweet.lollipop.et_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
-            Assert.AreEqual(1, Sweet.lollipop.et_peaks.Count);
-            DeltaMassPeak peak = Sweet.lollipop.et_peaks[0];
+            Sweet.lollipop.ee_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
+            Assert.AreEqual(1, Sweet.lollipop.ee_peaks.Count);
+            DeltaMassPeak peak = Sweet.lollipop.ee_peaks[0];
+            Assert.IsTrue(peak.Accepted);
             Assert.AreEqual(3, peak.grouped_relations.Count);
             Assert.AreEqual(3, pr2.peak.peak_relation_group_count);
             Assert.AreEqual(0, pr2.peak.DeltaMass);
@@ -159,7 +160,7 @@ namespace Test
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr2, pr3 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
             test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
-            Assert.False(Sweet.lollipop.et_peaks[0].shift_experimental_masses(1, true));
+            Assert.False(Sweet.lollipop.ee_peaks[0].shift_experimental_masses(1, true));
         }
 
         [Test]
@@ -233,6 +234,76 @@ namespace Test
             }
 
             foreach (Component c in 
+                n3.Select(n => ((NeuCodePair)n).neuCodeHeavy).
+                Concat(n4.Select(n => ((NeuCodePair)n).neuCodeHeavy)))
+            {
+                Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.manual_mass_shift);
+                Assert.AreEqual(200 + TestExperimentalProteoform.starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT - 1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.weighted_monoisotopic_mass);
+            }
+        }
+
+        [Test]
+        public void shift_et_peak_neucode_from_actions()
+        {
+            Sweet.lollipop = new Lollipop();
+            ProteoformCommunity test_community = new ProteoformCommunity();
+            Sweet.lollipop.target_proteoform_community = test_community;
+
+            //Make a few experimental proteoforms
+            List<Component> n1 = TestExperimentalProteoform.generate_neucode_components(100);
+            List<Component> n2 = TestExperimentalProteoform.generate_neucode_components(100);
+            List<Component> n3 = TestExperimentalProteoform.generate_neucode_components(200);
+            List<Component> n4 = TestExperimentalProteoform.generate_neucode_components(200);
+            ExperimentalProteoform pf1 = ConstructorsForTesting.ExperimentalProteoform("E1");
+            pf1.aggregated_components = n1;
+            ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("E2");
+            pf2.aggregated_components = n2;
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E3");
+            pf3.aggregated_components = n3;
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E4");
+            pf4.aggregated_components = n4;
+
+            Sweet.lollipop.target_proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform> { pf1, pf2, pf3, pf4 }.ToArray();
+
+            //Connect them to theoreticals to form two peaks
+            ProteoformComparison comparison14 = ProteoformComparison.ExperimentalTheoretical;
+            ProteoformComparison comparison25 = ProteoformComparison.ExperimentalTheoretical;
+            ProteoformComparison comparison36 = ProteoformComparison.ExperimentalTheoretical;
+            ProteoformComparison comparison47 = ProteoformComparison.ExperimentalTheoretical;
+            TheoreticalProteoform pf5 = ConstructorsForTesting.make_a_theoretical();
+            TheoreticalProteoform pf6 = ConstructorsForTesting.make_a_theoretical();
+            TheoreticalProteoform pf7 = ConstructorsForTesting.make_a_theoretical();
+            TheoreticalProteoform pf8 = ConstructorsForTesting.make_a_theoretical();
+            ProteoformRelation pr1 = new ProteoformRelation(pf1, pf5, comparison14, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr2 = new ProteoformRelation(pf2, pf6, comparison25, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr3 = new ProteoformRelation(pf3, pf7, comparison36, 1, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr4 = new ProteoformRelation(pf4, pf8, comparison47, 1, TestContext.CurrentContext.TestDirectory);
+            List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1, pr2, pr3, pr4 };
+            foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
+            test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
+            Assert.AreEqual(2, Sweet.lollipop.et_peaks.Count);
+
+            //Shift the peaks, which shifts all of the proteoforms
+            DeltaMassPeak d2 = Sweet.lollipop.et_peaks[1];
+            d2.mass_shifter = "-1";
+            Sweet.shift_peak_action(d2);
+            d2.mass_shifter = null;
+            Sweet.mass_shifts_from_presets();
+            d2.shift_experimental_masses(Convert.ToInt32(d2.mass_shifter), true);
+
+            Assert.IsTrue(pf3.mass_shifted);
+            Assert.IsTrue(pf4.mass_shifted);
+            foreach (Component c in
+                n3.
+                Concat(n4).
+                Concat(n3.Select(n => ((NeuCodePair)n).neuCodeLight)).
+                Concat(n4.Select(n => ((NeuCodePair)n).neuCodeLight)))
+            {
+                Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.manual_mass_shift);
+                Assert.AreEqual(200 - 1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.weighted_monoisotopic_mass);
+            }
+
+            foreach (Component c in
                 n3.Select(n => ((NeuCodePair)n).neuCodeHeavy).
                 Concat(n4.Select(n => ((NeuCodePair)n).neuCodeHeavy)))
             {
