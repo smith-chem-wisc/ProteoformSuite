@@ -67,7 +67,7 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, nameof(file.biological_replicate), file.biological_replicate.ToString(), value.ToString());
+                Sweet.change_file(file, file.biological_replicate, file.biological_replicate.ToString(), value.ToString());
                 file.biological_replicate = value;
             }
         }
@@ -92,7 +92,7 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, nameof(file.lt_condition), file.lt_condition.ToString(), value.ToString());
+                Sweet.change_file(file, file.lt_condition, file.lt_condition.ToString(), value.ToString());
                 file.lt_condition = value;
             }
         }
@@ -105,7 +105,7 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, nameof(file.hv_condition), file.hv_condition.ToString(), value.ToString());
+                Sweet.change_file(file, file.hv_condition, file.hv_condition.ToString(), value.ToString());
                 file.hv_condition = value;
             }
         }
@@ -128,7 +128,7 @@ namespace ProteoformSuiteGUI
             }
             set
             {
-                Sweet.change_file(file, nameof(file.label), file.label.ToString(), value.ToString());
+                Sweet.change_file(file, file.label, file.label.ToString(), value.ToString());
                 file.label = value;
             }
         }

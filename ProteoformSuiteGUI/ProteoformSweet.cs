@@ -233,8 +233,33 @@ namespace ProteoformSuiteGUI
 
         public bool full_run()
         {
-            Sweet.lollipop = new Lollipop(); // clear memory
-            loadDeconvolutionResults.ClearListsTablesFigures(true); // clear forms
+            forms[1].ClearListsTablesFigures(true); // clear forms following load deconvolution results
+
+            DialogResult d3 = MessageBox.Show("Use presets for this Full Run?", "Full Run", MessageBoxButtons.YesNoCancel);
+            if (d3 == DialogResult.Yes)
+            {
+                DialogResult dr = methodFileOpen.ShowDialog();
+                if (dr == DialogResult.OK)
+                {
+                    string filepath = methodFileOpen.FileName;
+                    DialogResult d4 = MessageBox.Show("Add files at the listed paths if they still exist?", "Full Run", MessageBoxButtons.YesNoCancel);
+                    if (d4 == DialogResult.Cancel) return false;
+                    Sweet.open_method(File.ReadAllLines(filepath), d4 == DialogResult.Yes);
+                }
+                else if (dr == DialogResult.Cancel) return false;
+            }
+            else if (d3 == DialogResult.Cancel) return false;
+
+            loadDeconvolutionResults.FillTablesAndCharts(); // updates the filelists in form
+
+            // Check that there are input files
+            if (Sweet.lollipop.input_files.Count == 0)
+            {
+                MessageBox.Show("Please load in deconvolution result files in order to use load and run.", "Full Run");
+                return false;
+            }
+
+            // Check that theoretical database(s) are present
             if (!Sweet.lollipop.theoretical_database.ready_to_make_database(Environment.CurrentDirectory))
             {
                 if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.ProteinDatabase).Count() <= 0)
@@ -253,9 +278,9 @@ namespace ProteoformSuiteGUI
                     }
                     else return false;
                 }
-                
             }
 
+            // Option to choose a result folder
             if (Sweet.lollipop.results_folder == "")
             {
                 DialogResult d2 = MessageBox.Show("Choose a results folder for this Full Run?", "Full Run", MessageBoxButtons.YesNoCancel);
@@ -274,31 +299,23 @@ namespace ProteoformSuiteGUI
                 else if (d2 == DialogResult.Cancel) return false;
             }
 
-            DialogResult d3 = MessageBox.Show("Use presets for this Full Run?", "Full Run", MessageBoxButtons.YesNoCancel);
-            if (d3 == DialogResult.Yes)
-            {
-                DialogResult dr = methodFileOpen.ShowDialog();
-                if (dr == DialogResult.OK)
-                {
-                    string filepath = methodFileOpen.FileName;
-                    DialogResult d4 = MessageBox.Show("Add files at the listed paths if they still exist?", "Full Run", MessageBoxButtons.YesNoCancel);
-                    if (d4 == DialogResult.Cancel) return false;
-                    Sweet.open_method(File.ReadAllLines(filepath), d4 == DialogResult.Yes);
-                    loadDeconvolutionResults.FillTablesAndCharts(); // updates the filelists
-                }
-                else if (dr == DialogResult.Cancel) return false;
-            }
-            else if (d3 == DialogResult.Cancel) return false;
-
+            // Run the program
             Cursor = Cursors.WaitCursor;
             foreach (ISweetForm sweet in forms)
             {
                 if (sweet.ReadyToRunTheGamut())
                     sweet.RunTheGamut();
             }
-            string timestamp = Sweet.time_stamp();
-            ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp);
-            save_all_plots(Sweet.lollipop.results_folder, timestamp);
+
+            // Save the results
+            if (Sweet.lollipop.results_folder != "")
+            {
+                string timestamp = Sweet.time_stamp();
+                ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp);
+                save_all_plots(Sweet.lollipop.results_folder, timestamp);
+            }
+
+            //Program ran successfully
             Cursor = Cursors.Default;
             return true;
         }

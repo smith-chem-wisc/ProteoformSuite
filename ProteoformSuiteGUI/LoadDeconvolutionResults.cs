@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Threading;
 
 namespace ProteoformSuiteGUI
 {
@@ -138,6 +139,10 @@ namespace ProteoformSuiteGUI
             lb_filter1.Text = Lollipop.file_lists[cmb_loadTable1.SelectedIndex];
             lb_filter2.Text = Lollipop.file_lists[cmb_loadTable2.SelectedIndex];
             lb_filter3.Text = Lollipop.file_lists[cmb_loadTable3.SelectedIndex];
+
+            dgv_loadFiles1.Refresh();
+            dgv_loadFiles2.Refresh();
+            dgv_loadFiles3.Refresh();
         }
 
         #endregion General Table Option Private Methods
@@ -306,11 +311,6 @@ namespace ProteoformSuiteGUI
 
         private void btn_fullRun_Click(object sender, EventArgs e)
         {
-            if (Sweet.lollipop.input_files.Count == 0)
-            {
-                MessageBox.Show("Please load in deconvolution result files in order to use load and run.", "Full Run");
-                return;
-            }
             bool successful_run = ((ProteoformSweet)MdiParent).full_run();
             if (successful_run) MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.", "Full Run");
             else MessageBox.Show("Method did not successfully run.", "Full Run");
@@ -443,15 +443,22 @@ namespace ProteoformSuiteGUI
                 okay.Dock = DockStyle.Left;
                 okay.Click += new EventHandler(okay_click);
                 cancel.Click += new EventHandler(cancel_click);
+                tb.Enter += new EventHandler(tb_enter);
+                ActiveControl = tb;
             }
 
-            public void okay_click(Object sender, EventArgs e)
+            void tb_enter(object sender, EventArgs e)
+            {
+                this.AcceptButton = okay;
+            }
+
+            void okay_click(object sender, EventArgs e)
             {
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
 
-            public void cancel_click(Object sender, EventArgs e)
+            void cancel_click(object sender, EventArgs e)
             {
                 this.DialogResult = DialogResult.Cancel;
                 this.Close();
