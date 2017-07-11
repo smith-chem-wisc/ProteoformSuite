@@ -101,7 +101,7 @@ namespace ProteoformSuiteInternal
         public static string actions()
         {
             string header = "USER ACTIONS" + Environment.NewLine;
-            string report = String.Join(Environment.NewLine, Sweet.actions.Select(x => x.Item2)) + Environment.NewLine + Environment.NewLine;
+            string report = String.Join(Environment.NewLine, Sweet.actions) + Environment.NewLine + Environment.NewLine;
             return header + report;
         }
 
@@ -206,7 +206,7 @@ namespace ProteoformSuiteInternal
 
             report += Sweet.lollipop.satisfactoryProteoforms.Count.ToString() + "\tQuantified Experimental Proteoforms (Threshold for Quantification: " + Sweet.lollipop.minBiorepsWithObservations.ToString() + " = " + Sweet.lollipop.observation_requirement + ")" + Environment.NewLine;
             report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + Sweet.lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
-            report += Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4).ToString() + "FDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
             report += Sweet.lollipop.selectAverageIntensity.ToString() + "\tAverage Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
             report += Sweet.lollipop.selectStDev.ToString() + "\tIntensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
             report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.minProteoformFoldChange, Sweet.lollipop.maxGoTermFDR, Sweet.lollipop.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;

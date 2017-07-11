@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
@@ -37,8 +38,20 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsTablesFigures(bool clear_following)
         {
+            Sweet.lollipop.input_files.Clear();
+            Sweet.actions.Clear();
             Sweet.lollipop.results_folder = "";
             tb_resultsFolder.Text = "";
+            if (clear_following)
+            {
+                for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
+                {
+                    ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
+                    sweet.ClearListsTablesFigures(false);
+                    sweet.FillTablesAndCharts();
+                }
+            }
+            FillTablesAndCharts();
         }
 
         public bool ReadyToRunTheGamut()
@@ -60,7 +73,7 @@ namespace ProteoformSuiteGUI
 
         #region GENERAL TABLE OPTIONS Private Methods
 
-        private void btn_neucode_CheckedChanged(object sender, EventArgs e)
+        private void rb_neucode_CheckedChanged(object sender, EventArgs e)
         {
             ((ProteoformSweet)MdiParent).enable_neuCodeProteoformPairsToolStripMenuItem(rb_neucode.Checked);
             Sweet.lollipop.neucode_labeled = rb_neucode.Checked;
@@ -76,6 +89,9 @@ namespace ProteoformSuiteGUI
             match_files();
             populate_file_lists();
         }
+
+        private void rb_unlabeled_CheckedChanged(object sender, EventArgs e)
+        { }
 
         private void match_files()
         {
@@ -302,7 +318,8 @@ namespace ProteoformSuiteGUI
 
         private void bt_clearResults_Click(object sender, EventArgs e)
         {
-            ((ProteoformSweet)MdiParent).clear_lists();
+            Sweet.lollipop = new Lollipop();
+            ClearListsTablesFigures(true);
         }
 
         private void btn_stepThrough_Click(object sender, EventArgs e)
@@ -378,9 +395,80 @@ namespace ProteoformSuiteGUI
 
         #endregion CHANGED TABLE SELECTION Private Methods
 
-        private void rb_unlabeled_CheckedChanged(object sender, EventArgs e)
+        #region CHANGE ALL CELLS private methods
+        private void dgv_loadFiles1_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-
+            if (e.Button == MouseButtons.Right)
+                change_all_selected_cells(dgv_loadFiles1);
         }
+
+        private void dgv_loadFiles2_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                change_all_selected_cells(dgv_loadFiles2);
+        }
+
+        private void dgv_loadFiles3_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+                change_all_selected_cells(dgv_loadFiles3);
+        }
+
+        private class InputBox : Form
+        {
+            private Label lb = new Label();
+            public TextBox tb = new TextBox();
+            private Button okay = new Button();
+            private Button cancel = new Button();
+
+            public InputBox()
+            {
+                this.Text = "Change Selected";
+                lb.Text = "Replace with:";
+                okay.Text = "Okay";
+                cancel.Text = "Cancel";
+                this.Size = new Size(300, 150);
+                okay.Size = new Size(150, 50);
+                cancel.Size = new Size(150, 50);
+                this.MaximizeBox = false;
+                this.MinimizeBox = false;
+                this.Controls.Add(cancel);
+                this.Controls.Add(okay);
+                this.Controls.Add(tb);
+                this.Controls.Add(lb);
+                lb.Dock = DockStyle.Top;
+                tb.Dock = DockStyle.Top;
+                cancel.Dock = DockStyle.Left;
+                okay.Dock = DockStyle.Left;
+                okay.Click += new EventHandler(okay_click);
+                cancel.Click += new EventHandler(cancel_click);
+            }
+
+            public void okay_click(Object sender, EventArgs e)
+            {
+                this.DialogResult = DialogResult.OK;
+                this.Close();
+            }
+
+            public void cancel_click(Object sender, EventArgs e)
+            {
+                this.DialogResult = DialogResult.Cancel;
+                this.Close();
+            }
+        }
+
+        private void change_all_selected_cells(DataGridView dgv)
+        {
+            InputBox testdialog = new InputBox();
+            if (testdialog.ShowDialog(this) == DialogResult.OK)
+            {
+                foreach (DataGridViewTextBoxCell cell in dgv.SelectedCells.OfType<DataGridViewTextBoxCell>())
+                {
+                    cell.Value = testdialog.tb.Text;
+                }
+            }
+            testdialog.Dispose();
+        } 
+        #endregion
     }
 }

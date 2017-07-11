@@ -254,21 +254,21 @@ namespace ProteoformSuiteGUI
             int int_mass_shifter = 0;
             try
             {
-                int_mass_shifter = Convert.ToInt32(peak.mass_shifter);
+                int_mass_shifter = Convert.ToInt32(peak.MassShifter);
             }
             catch
             {
-                MessageBox.Show("Oops, this mass shifter " + peak.mass_shifter + " is not an integer.");
+                MessageBox.Show("Oops, this mass shifter " + peak.MassShifter + " is not an integer.");
                 return;
             }
 
             switch (e.ClickedItem.Name.ToString())
             {
                 case "IncreaseMass":
-                    peak.mass_shifter = (int_mass_shifter + 1).ToString();
+                    peak.MassShifter = (int_mass_shifter + 1).ToString();
                     break;
                 case "DecreaseMass":
-                    peak.mass_shifter = (int_mass_shifter - 1).ToString();
+                    peak.MassShifter = (int_mass_shifter - 1).ToString();
                     break;
             }
             dgv_ET_Peak_List.Refresh();
