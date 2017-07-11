@@ -30,7 +30,7 @@ namespace ProteoformSuiteGUI
             dgv_ET_Peak_List.MouseClick += new MouseEventHandler(dgv_ET_Peak_List_CellClick);
             ct_ET_Histogram.MouseClick += new MouseEventHandler(ct_ET_Histogram_MouseClick);
             ct_ET_peakList.MouseClick += new MouseEventHandler(ct_ET_peakList_MouseClick);
-            dgv_ET_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(ET_Peak_List_DirtyStateChanged); //makes the change immediate and automatic
+            dgv_ET_Peak_List.CurrentCellDirtyStateChanged += new EventHandler(ET_Peak_List_DirtyStateChanged); // makes the change immediate and automatic
             InitializeParameterSet();
         }
 
@@ -46,7 +46,7 @@ namespace ProteoformSuiteGUI
         public void RunTheGamut()
         {
             ClearListsTablesFigures(true);
-            shift_masses();
+            shift_masses();  // always shift before forming relations; shifts might be entered from preset; if none are entered, no shifting occurs
             Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, true);
             Sweet.lollipop.relate_ed();
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);

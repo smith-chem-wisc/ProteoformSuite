@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Proteomics;
 
 namespace Test
 {
@@ -74,6 +75,61 @@ namespace Test
                     Assert.AreEqual(Convert.ToBoolean(property.GetValue(defaults)), Convert.ToBoolean(property.GetValue(null))); //the bool value were changed back
                 else continue;
             }
+        }
+
+        [Test]
+        public void test_accept_from_presets()
+        {
+            Sweet.lollipop = new Lollipop();
+            ProteoformCommunity test_community = new ProteoformCommunity();
+            Sweet.lollipop.target_proteoform_community = test_community;
+
+            Sweet.lollipop.theoretical_database.uniprotModifications = new Dictionary<string, List<Modification>>
+            {
+                { "unmodified", new List<Modification>() { ConstructorsForTesting.get_modWithMass("unmodified", 0) } }
+            };
+
+            //Testing the acceptance of peaks. The FDR is tested above, so I'm not going to work with that here.
+            //Four proteoforms, three relations (linear), middle one isn't accepted; should give 2 families
+            Sweet.lollipop.min_peak_count_ee = 2;
+            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("E1");
+            ExperimentalProteoform pf4 = ConstructorsForTesting.ExperimentalProteoform("E2");
+            ExperimentalProteoform pf5 = ConstructorsForTesting.ExperimentalProteoform("E3");
+            ExperimentalProteoform pf6 = ConstructorsForTesting.ExperimentalProteoform("E4");
+
+            ProteoformComparison comparison34 = ProteoformComparison.ExperimentalExperimental;
+            ProteoformComparison comparison45 = ProteoformComparison.ExperimentalExperimental;
+            ProteoformComparison comparison56 = ProteoformComparison.ExperimentalExperimental;
+            ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison34, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr3 = new ProteoformRelation(pf4, pf5, comparison45, 0, TestContext.CurrentContext.TestDirectory);
+            ProteoformRelation pr4 = new ProteoformRelation(pf5, pf6, comparison56, 0, TestContext.CurrentContext.TestDirectory);
+
+            //Test display strings
+            Assert.AreEqual("E1", pr2.connected_proteoforms[0].accession);
+            Assert.AreEqual("E2", pr2.connected_proteoforms[1].accession);
+
+            List<ProteoformRelation> prs2 = new List<ProteoformRelation> { pr2, pr3, pr4 };
+            foreach (ProteoformRelation pr in prs2) pr.set_nearby_group(prs2, prs2.Select(r => r.InstanceId).ToList());
+            Assert.AreEqual(3, pr2.nearby_relations_count);
+            Assert.AreEqual(3, pr3.nearby_relations_count);
+            Assert.AreEqual(3, pr4.nearby_relations_count);
+
+            Sweet.lollipop.theoretical_database.all_possible_ptmsets = new List<PtmSet> { new PtmSet(new List<Ptm> { new Ptm(-1, ConstructorsForTesting.get_modWithMass("unmodified", 0)) }) };
+            Sweet.lollipop.theoretical_database.possible_ptmset_dictionary = Sweet.lollipop.theoretical_database.make_ptmset_dictionary();
+            Sweet.unaccept_peak_action(pr2);
+            Sweet.lollipop.ee_peaks = test_community.accept_deltaMass_peaks(prs2, new List<ProteoformRelation>());
+            Assert.AreEqual(1, Sweet.lollipop.ee_peaks.Count);
+            DeltaMassPeak peak = Sweet.lollipop.ee_peaks[0];
+            Assert.IsFalse(peak.Accepted); // <-- even though it's above the threshold
+            Assert.AreEqual(3, peak.grouped_relations.Count);
+            Assert.AreEqual(3, pr2.peak.peak_relation_group_count);
+            Assert.AreEqual(0, pr2.peak.DeltaMass);
+            Assert.AreEqual("[unmodified]", peak.possiblePeakAssignments_string);
+
+            //Test that the relations in the peak are added to each of the proteoforms referenced in the peak
+            Assert.True(pf3.relationships.Contains(pr2));
+            Assert.True(pf4.relationships.Contains(pr2) && pf4.relationships.Contains(pr3));
+            Assert.True(pf5.relationships.Contains(pr3) && pf5.relationships.Contains(pr4));
         }
 
         #endregion Methods and Settings
