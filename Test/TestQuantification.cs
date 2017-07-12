@@ -550,7 +550,7 @@ namespace Test
             Sweet.lollipop.satisfactoryProteoforms = satisfactoryProteoforms;
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
         }
-
+         
         [Test]
         public void test_addBiorepIntensity()
         {
