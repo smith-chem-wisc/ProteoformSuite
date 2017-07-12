@@ -148,12 +148,12 @@ namespace ProteoformSuiteGUI
 
             //Set parameters
             nud_bkgdShift.ValueChanged -= nud_bkgdShift_ValueChanged;
-            nud_bkgdShift.Value = (decimal)-1.8;
+            nud_bkgdShift.Value = Sweet.lollipop.backgroundShift;
             Sweet.lollipop.backgroundShift = nud_bkgdShift.Value;
             nud_bkgdShift.ValueChanged += nud_bkgdShift_ValueChanged;
 
             nud_bkgdWidth.ValueChanged -= nud_bkgdWidth_ValueChanged;
-            nud_bkgdWidth.Value = (decimal)0.5;
+            nud_bkgdWidth.Value = Sweet.lollipop.backgroundWidth;
             Sweet.lollipop.backgroundWidth = nud_bkgdWidth.Value;
             nud_bkgdWidth.ValueChanged += nud_bkgdWidth_ValueChanged;
 

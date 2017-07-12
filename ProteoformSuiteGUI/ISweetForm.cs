@@ -1,7 +1,6 @@
 ﻿using System.Windows.Forms;
 using System.Collections.Generic;
 
-
 namespace ProteoformSuiteGUI
 {
     /// <summary>

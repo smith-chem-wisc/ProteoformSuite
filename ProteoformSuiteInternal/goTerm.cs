@@ -1,6 +1,5 @@
 ﻿using Accord.Math;
 using Proteomics;
-using System;
 using System.Linq;
 
 namespace ProteoformSuiteInternal

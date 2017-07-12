@@ -88,22 +88,22 @@ namespace ProteoformSuiteGUI
 
         private void nUP_mass_tolerance_ValueChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.mass_tolerance = nUP_mass_tolerance.Value;
+            Sweet.lollipop.mass_tolerance = Convert.ToDouble(nUP_mass_tolerance.Value);
         }
 
         private void nUD_RetTimeToleranace_ValueChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.retention_time_tolerance = nUD_RetTimeToleranace.Value;
+            Sweet.lollipop.retention_time_tolerance = Convert.ToDouble(nUD_RetTimeToleranace.Value);
         }
 
         private void nUD_Missed_Monos_ValueChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.missed_monos = nUD_Missed_Monos.Value;
+            Sweet.lollipop.maximum_missed_monos = Convert.ToInt32(nUD_Missed_Monos.Value);
         }
 
         private void nUD_Missed_Ks_ValueChanged(object sender, EventArgs e)
         {
-            Sweet.lollipop.missed_lysines = nUD_Missed_Ks.Value;
+            Sweet.lollipop.maximum_missed_lysines = Convert.ToInt32(nUD_Missed_Ks.Value);
         }
 
         private void bt_aggregate_Click(object sender, EventArgs e)
@@ -182,10 +182,10 @@ namespace ProteoformSuiteGUI
         public void InitializeParameterSet()
         {
             //Min and Max set from designer
-            nUP_mass_tolerance.Value = Sweet.lollipop.mass_tolerance;
-            nUD_RetTimeToleranace.Value = Sweet.lollipop.retention_time_tolerance;
-            nUD_Missed_Monos.Value = Sweet.lollipop.missed_monos;
-            nUD_Missed_Ks.Value = Sweet.lollipop.missed_lysines;
+            nUP_mass_tolerance.Value = Convert.ToDecimal(Sweet.lollipop.mass_tolerance);
+            nUD_RetTimeToleranace.Value = Convert.ToDecimal(Sweet.lollipop.retention_time_tolerance);
+            nUD_Missed_Monos.Value = Sweet.lollipop.maximum_missed_monos;
+            nUD_Missed_Ks.Value = Sweet.lollipop.maximum_missed_lysines;
             nUD_min_num_bioreps.Value = Sweet.lollipop.min_num_bioreps;
             nUD_min_agg_count.Value = Sweet.lollipop.min_agg_count;
             nUD_min_num_CS.Value = Sweet.lollipop.min_num_CS;

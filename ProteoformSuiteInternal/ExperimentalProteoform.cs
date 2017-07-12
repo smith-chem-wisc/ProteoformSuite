@@ -230,26 +230,23 @@ namespace ProteoformSuiteInternal
 
         private bool tolerable_rt(Component candidate, double rt_apex)
         {
-            return candidate.rt_apex >= rt_apex - Convert.ToDouble(Sweet.lollipop.retention_time_tolerance) &&
-                candidate.rt_apex <= rt_apex + Convert.ToDouble(Sweet.lollipop.retention_time_tolerance);
+            return candidate.rt_apex >= rt_apex - Sweet.lollipop.retention_time_tolerance &&
+                candidate.rt_apex <= rt_apex + Sweet.lollipop.retention_time_tolerance;
         }
 
         private bool tolerable_lysCt(NeuCodePair candidate, int lysine_count)
         {
-            int max_missed_lysines = Convert.ToInt32(Sweet.lollipop.missed_lysines);
-            List<int> acceptable_lysineCts = Enumerable.Range(lysine_count - max_missed_lysines, max_missed_lysines * 2 + 1).ToList();
+            List<int> acceptable_lysineCts = Enumerable.Range(lysine_count - Sweet.lollipop.maximum_missed_lysines, Sweet.lollipop.maximum_missed_lysines * 2 + 1).ToList();
             return acceptable_lysineCts.Contains(candidate.lysine_count);
         }
 
         private bool tolerable_mass(Component candidate, double corrected_mass)
         {
-            int max_missed_monoisotopics = Convert.ToInt32(Sweet.lollipop.missed_monos);
-            List<int> missed_monoisotopics_range = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
-            foreach (int missed_mono_count in missed_monoisotopics_range)
+            foreach (int missed_mono_count in Sweet.lollipop.missed_monoisotopics_range)
             {
                 double shift = missed_mono_count * Lollipop.MONOISOTOPIC_UNIT_MASS;
                 double shifted_mass = corrected_mass + shift;
-                double mass_tolerance = shifted_mass / 1000000 * (double)Sweet.lollipop.mass_tolerance;
+                double mass_tolerance = shifted_mass / 1000000 * Sweet.lollipop.mass_tolerance;
                 double low = shifted_mass - mass_tolerance;
                 double high = shifted_mass + mass_tolerance;
                 bool tolerable_mass = candidate.weighted_monoisotopic_mass >= low && candidate.weighted_monoisotopic_mass <= high;

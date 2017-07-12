@@ -3,8 +3,6 @@ using ProteoformSuiteInternal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Test
 {
@@ -51,7 +49,7 @@ namespace Test
                 counter++;
             }
 
-            List<Component> compressed = new List<Component>(cr.TEST_remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
+            List<Component> compressed = new List<Component>(cr.remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
 
             Assert.AreEqual(1, compressed.Count);
             Assert.AreEqual(400d, compressed.FirstOrDefault().intensity_sum);
@@ -81,7 +79,7 @@ namespace Test
                 counter++;
             }
 
-            compressed = cr.TEST_remove_monoisotopic_duplicates_harmonics_from_same_scan(cList);
+            compressed = cr.remove_monoisotopic_duplicates_harmonics_from_same_scan(cList);
 
             Assert.AreEqual(2, compressed.Count);
         }
@@ -132,7 +130,7 @@ namespace Test
                 counter++;
             }
 
-            List<Component> compressed = new List<Component>(cr.TEST_remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
+            List<Component> compressed = new List<Component>(cr.remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
 
             Assert.AreEqual(1, compressed.Count);
 
@@ -166,7 +164,7 @@ namespace Test
                 counter++;
             }
 
-            List<Component> compressed = new List<Component>(cr.TEST_remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
+            List<Component> compressed = new List<Component>(cr.remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
 
             Assert.AreEqual(2, compressed.Count);
         }
@@ -199,7 +197,7 @@ namespace Test
                 counter++;
             }
 
-            List<Component> compressed = new List<Component>(cr.TEST_remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
+            List<Component> compressed = new List<Component>(cr.remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
 
             Assert.AreEqual(1, compressed.Count);
             Assert.AreEqual(1000, Convert.ToInt32(compressed.FirstOrDefault().weighted_monoisotopic_mass));
@@ -244,7 +242,7 @@ namespace Test
                 counter++;
             }
 
-            List<Component> compressed = new List<Component>(cr.TEST_remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
+            List<Component> compressed = new List<Component>(cr.remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
 
             Assert.AreEqual(1, compressed.Count);
             Assert.AreEqual(1000, Convert.ToInt32(compressed.FirstOrDefault().weighted_monoisotopic_mass));
@@ -290,7 +288,7 @@ namespace Test
                 counter++;
             }
 
-            List<Component> compressed = new List<Component>(cr.TEST_remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
+            List<Component> compressed = new List<Component>(cr.remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
 
             Assert.AreEqual(1, compressed.Count);
             Assert.AreEqual(500, Convert.ToInt32(compressed.FirstOrDefault().weighted_monoisotopic_mass));
@@ -330,7 +328,7 @@ namespace Test
             cList.Add(c3);
 
 
-            List<Component> compressed = new List<Component>(cr.TEST_remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
+            List<Component> compressed = new List<Component>(cr.remove_monoisotopic_duplicates_harmonics_from_same_scan(cList));
 
             Assert.AreEqual(2, compressed.Count);
         }
