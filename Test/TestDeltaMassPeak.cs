@@ -60,7 +60,7 @@ namespace Test
 
             //base_relation.nearby_relations = base_relation.set_nearby_group(theList, theList.Select(r => r.InstanceId).ToList());
             Console.WriteLine("Creating deltaMassPeak");
-            DeltaMassPeak deltaMassPeak = new DeltaMassPeak(base_relation, theList);
+            DeltaMassPeak deltaMassPeak = new DeltaMassPeak(base_relation, new HashSet<ProteoformRelation>(theList));
             Console.WriteLine("Created deltaMassPeak");
 
 
@@ -172,7 +172,7 @@ namespace Test
             ProteoformComparison comparison = ProteoformComparison.ExperimentalExperimental;
             ProteoformRelation pr2 = new ProteoformRelation(pf3, pf4, comparison, 0, TestContext.CurrentContext.TestDirectory);
             ProteoformRelation pr3 = new ProteoformRelation(pf3, pf4, comparison, 0, TestContext.CurrentContext.TestDirectory);
-            List<ProteoformRelation> prs = new List<ProteoformRelation> { pr2, pr3 };
+            HashSet<ProteoformRelation> prs = new HashSet<ProteoformRelation> { pr2, pr3 };
             Assert.AreEqual(prs, new DeltaMassPeak(pr2, prs).grouped_relations);
         }
 
