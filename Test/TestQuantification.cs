@@ -534,7 +534,7 @@ namespace Test
             var sorted_check2 = Sweet.lollipop.avgSortedPermutationRelativeDifferences.OrderBy(x => x);
             Assert.IsTrue(sorted_check1.SequenceEqual(Sweet.lollipop.sortedProteoformRelativeDifferences));
             Assert.IsTrue(sorted_check2.SequenceEqual(Sweet.lollipop.avgSortedPermutationRelativeDifferences));
-
+            
             //Vertical line on the Tusher plot with all average permuted test statistics the same (7.18)
             //Target relative differences are {-5,-4,-3,-2,-1,0,1,2,3,4}
             //Average permuted of the 10 sets {-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2} is the same set {-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2}
