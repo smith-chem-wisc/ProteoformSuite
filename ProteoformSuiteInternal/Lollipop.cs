@@ -517,6 +517,7 @@ namespace ProteoformSuiteInternal
             Sweet.lollipop.ordered_components = new Component[0];
             Sweet.lollipop.remaining_components.Clear();
             Sweet.lollipop.remaining_verification_components.Clear();
+            Sweet.lollipop.remaining_quantification_components.Clear();
         }
 
         #endregion AGGREGATED PROTEOFORMS

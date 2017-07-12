@@ -168,9 +168,11 @@ namespace Test
 
             //Must use SaveState.lol.remaining_components because ThreadStart only uses void methods
             Sweet.lollipop.neucode_labeled = true;
+            Sweet.lollipop.decoy_proteoform_communities = new Dictionary<string, ProteoformCommunity> { { "1", new ProteoformCommunity() } };
             Sweet.lollipop.input_files = new List<InputFile> { new InputFile("fake.txt", Purpose.Quantification) };
             List<ExperimentalProteoform> vetted_quant = Sweet.lollipop.aggregate_proteoforms(false, neucodes, components, quant_components, 0);
             Assert.AreEqual(1, vetted_quant.Count);
+            Assert.AreEqual(1, Sweet.lollipop.decoy_proteoform_communities.First().Value.experimental_proteoforms.Length);
             Assert.AreEqual(2, vetted_quant[0].aggregated_components.Count);
             Assert.AreEqual(0, vetted_quant[0].lt_verification_components.Count);
             Assert.AreEqual(0, vetted_quant[0].hv_verification_components.Count);
@@ -178,6 +180,13 @@ namespace Test
             Assert.AreEqual(1, vetted_quant[0].hv_quant_components.Count);
             Assert.AreEqual(2, quant_components.Count);
             Assert.AreEqual(0, Sweet.lollipop.remaining_quantification_components.Count);
+
+            Sweet.lollipop.clear_aggregation();
+            Assert.True(Sweet.lollipop.decoy_proteoform_communities.All(x => x.Value.experimental_proteoforms.Length == 0));
+            Assert.IsEmpty(Sweet.lollipop.target_proteoform_community.experimental_proteoforms);
+            Assert.IsEmpty(Sweet.lollipop.remaining_components);
+            Assert.IsEmpty(Sweet.lollipop.remaining_quantification_components);
+            Assert.IsEmpty(Sweet.lollipop.remaining_verification_components);
         }
 
         [Test]
