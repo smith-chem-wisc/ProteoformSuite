@@ -59,7 +59,7 @@ namespace ProteoformSuiteInternal
             foreach (TopDownHit hit in identifications.Where(h => h.filename == file.filename))
             {
                 Tuple<string, int, double> key = new Tuple<string, int, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);
-                if (!SaveState.lollipop.td_hit_correction.ContainsKey(key)) lock (SaveState.lollipop.td_hit_correction) SaveState.lollipop.td_hit_correction.Add(key, hit.mz.ToMass(hit.charge));
+                if (!Sweet.lollipop.td_hit_correction.ContainsKey(key)) lock (Sweet.lollipop.td_hit_correction) Sweet.lollipop.td_hit_correction.Add(key, hit.mz.ToMass(hit.charge));
             }
             return true;
         }
@@ -95,11 +95,11 @@ namespace ProteoformSuiteInternal
 
         public void CalibrateHitsAndComponents(CalibrationFunction bestCf, bool td_file, int bio_rep, int fraction, int tech_rep)
         {
-            foreach (TopDownHit hit in SaveState.lollipop.td_hits_calibration.Where(h => h.biological_replicate == bio_rep && h.fraction == fraction && (!td_file || h.technical_replicate == tech_rep)))
+            foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration.Where(h => h.biological_replicate == bio_rep && h.fraction == fraction && (!td_file || h.technical_replicate == tech_rep)))
             {
                 hit.mz = hit.mz - bestCf.Predict(new double[] { hit.mz, hit.retention_time });
             }
-            foreach (Component c in SaveState.lollipop.calibration_components.Where(h => h.input_file.topdown_file == td_file && h.input_file.biological_replicate == bio_rep && h.input_file.technical_replicate == tech_rep && h.input_file.fraction == fraction))
+            foreach (Component c in Sweet.lollipop.calibration_components.Where(h => h.input_file.topdown_file == td_file && h.input_file.biological_replicate == bio_rep && h.input_file.technical_replicate == tech_rep && h.input_file.fraction == fraction))
             {
                 foreach (ChargeState cs in c.charge_states)
                 {
@@ -206,8 +206,8 @@ namespace ProteoformSuiteInternal
                 if (!td_file) //if calibrating across files find component with matching mass and retention time
                 {
                     //look around theoretical mass of topdown hit identified proteoforms - 10 ppm and 5 minutes
-                     double hit_mass = (SaveState.lollipop.neucode_labeled ? (identification.theoretical_mass - (identification.sequence.Count(s => s == 'K') * 128.094963) + (identification.sequence.Count(s => s == 'K') * 136.109162)) : identification.mz.ToMass(identification.charge));
-                     matching_component = SaveState.lollipop.calibration_components.Where(c => c.input_file.biological_replicate == bio_rep && c.input_file.fraction == fraction
+                     double hit_mass = (Sweet.lollipop.neucode_labeled ? (identification.theoretical_mass - (identification.sequence.Count(s => s == 'K') * 128.094963) + (identification.sequence.Count(s => s == 'K') * 136.109162)) : identification.mz.ToMass(identification.charge));
+                     matching_component = Sweet.lollipop.calibration_components.Where(c => c.input_file.biological_replicate == bio_rep && c.input_file.fraction == fraction
                 && Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass ) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
                 && Math.Abs(c.rt_apex- identification.retention_time) < 5.0 ).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass)).FirstOrDefault();
                     if (matching_component == null) continue;
@@ -295,7 +295,7 @@ namespace ProteoformSuiteInternal
                         foreach (double a in originalMasses)
                         {
                             double theMZ = a.ToMz(chargeToLookAt);
-                            if (SaveState.lollipop.neucode_labeled)
+                            if (Sweet.lollipop.neucode_labeled)
                             {
                                 theMZ = (theMZ.ToMass(chargeToLookAt) - (identification.sequence.Count(s => s == 'K') * 128.094963) + ((identification.sequence.Count(s => s == 'K') * 136.109162))).ToMz(chargeToLookAt);
                             }
@@ -380,7 +380,7 @@ namespace ProteoformSuiteInternal
                 if (row.RowNumber() != 1)
                 {
                     double corrected_mass;
-                    if (SaveState.lollipop.td_hit_correction.TryGetValue(new Tuple<string, int, double>(row.Cell(15).Value.ToString().Split('.')[0], Convert.ToInt16(row.Cell(18).GetDouble()), row.Cell(17).GetDouble()), out corrected_mass))
+                    if (Sweet.lollipop.td_hit_correction.TryGetValue(new Tuple<string, int, double>(row.Cell(15).Value.ToString().Split('.')[0], Convert.ToInt16(row.Cell(18).GetDouble()), row.Cell(17).GetDouble()), out corrected_mass))
                     {
                         row.Cell(17).SetValue(corrected_mass);
                     }
@@ -418,7 +418,7 @@ namespace ProteoformSuiteInternal
                     if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
                     {
                         double value;
-                        if (SaveState.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double>(file.filename, Math.Round(row.Cell(3).GetDouble(), 0)), out value))
+                        if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double>(file.filename, Math.Round(row.Cell(3).GetDouble(), 0)), out value))
                         {
                             row.Cell(4).SetValue(value);
                         }

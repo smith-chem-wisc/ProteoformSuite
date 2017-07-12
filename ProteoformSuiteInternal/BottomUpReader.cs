@@ -30,7 +30,7 @@ namespace ProteoformSuiteInternal
                         double modMass = identifications.ModificationMass(sirIndex, siiIndex, p);
                         ModificationWithMass mod = null;
                         List<PtmSet> set;
-                        SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(modMass, 0), out set);
+                        Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(modMass, 0), out set);
                         if (set != null) mod = set.Where(m => m.ptm_combination.Count == 1).Select(m => m.ptm_combination.First().modification).Where(m => m.id == identifications.ModificationValue(sirIndex, siiIndex, p)).FirstOrDefault();
                         if (mod != null) modifications.Add(new Ptm(identifications.ModificationLocation(sirIndex, siiIndex, p), mod));
                         else

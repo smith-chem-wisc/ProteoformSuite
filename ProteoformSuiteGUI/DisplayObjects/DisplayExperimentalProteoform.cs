@@ -147,8 +147,8 @@ namespace ProteoformSuiteGUI
             get
             {
                 return e.linked_proteoform_references != null ?
-                SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.gene_name == e.gene_name && !t.relationships.SelectMany(r => r.connected_proteoforms).Contains(e) &&
-                Math.Abs(t.modified_mass - e.modified_mass) < (double)SaveState.lollipop.mass_tolerance) :
+                Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.gene_name == e.gene_name && !t.relationships.SelectMany(r => r.connected_proteoforms).Contains(e) &&
+                Math.Abs(t.modified_mass - e.modified_mass) < (double)Sweet.lollipop.mass_tolerance) :
                 0;
             }
         }
@@ -199,7 +199,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(fragment)].HeaderText = "Fragment";
 
             //VISIBILITY
-            dgv.Columns[nameof(lysine_count)].Visible = SaveState.lollipop.neucode_labeled;
+            dgv.Columns[nameof(lysine_count)].Visible = Sweet.lollipop.neucode_labeled;
             dgv.Columns[nameof(etd_relations)].Visible = false;
             dgv.Columns[nameof(other_topdown)].Visible = false;
             dgv.Columns[nameof(bottomup_PSMs)].Visible = false;
@@ -233,7 +233,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(bottomup_PSMs)].HeaderText = "BottomUp PSMs Count";
 
             //VISIBILITY
-            dgv.Columns[nameof(lysine_count)].Visible = SaveState.lollipop.neucode_labeled;
+            dgv.Columns[nameof(lysine_count)].Visible = Sweet.lollipop.neucode_labeled;
             dgv.Columns[nameof(heavy_verification_count)].Visible = false;
             dgv.Columns[nameof(light_verification_count)].Visible = false;
             dgv.Columns[nameof(heavy_observation_count)].Visible = false;
@@ -242,7 +242,6 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(manual_validation_quant)].Visible = false;
             dgv.Columns[nameof(mass_shifted)].Visible = false;
             dgv.Columns[nameof(Accepted)].Visible = false;
-
         }
 
         #endregion

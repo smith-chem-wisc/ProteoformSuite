@@ -15,8 +15,7 @@ namespace Test
         public static void make_relation(Proteoform p1, Proteoform p2)
         {
             ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ExperimentalExperimental, 0, TestContext.CurrentContext.TestDirectory);
-            DeltaMassPeak ppp = new DeltaMassPeak(pp, new List<ProteoformRelation> { pp });
-            pp.Accepted = true;
+            DeltaMassPeak ppp = new DeltaMassPeak(pp, new HashSet<ProteoformRelation> { pp });
             pp.peak = ppp;
             pp.Accepted = true;
             ppp.Accepted = true;
@@ -108,7 +107,7 @@ namespace Test
             if (quantitative_observations.Count > 0)
             {
                 e.lt_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, true)));
-                if (SaveState.lollipop.neucode_labeled) e.hv_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, false)));
+                if (Sweet.lollipop.neucode_labeled) e.hv_quant_components.AddRange(quantitative_observations.Where(r => e.includes_neucode_component(r, e, false)));
             }
             e.root = e.aggregated_components.OrderByDescending(a => a.intensity_sum).FirstOrDefault();
             return e;
@@ -122,7 +121,7 @@ namespace Test
             f.lt_condition = lt_con;
             f.hv_condition = hv_con;
             f.biological_replicate = biorep;
-            f.fraction = fraction;
+            //f.fraction = fraction;
             f.technical_replicate = techrep;
             return f;
         }
@@ -140,8 +139,8 @@ namespace Test
         public static Dictionary<string, List<Modification>> read_mods()
         {
             Loaders.LoadElements(Path.Combine(TestContext.CurrentContext.TestDirectory, "elements.dat"));
-            List<Modification> all_modifications = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
-            return SaveState.lollipop.theoretical_database.make_modification_dictionary(all_modifications);
+            List<Modification> all_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
+            return Sweet.lollipop.theoretical_database.make_modification_dictionary(all_modifications);
         }
     }
 }

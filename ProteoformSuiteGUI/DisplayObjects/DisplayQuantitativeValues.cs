@@ -41,14 +41,14 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        public decimal LightIntensitySum
+        public decimal NumeratorIntensitySum
         {
-            get { return qval.lightIntensitySum; }
+            get { return qval.numeratorIntensitySum; }
         }
-
-        public decimal HeavyIntensitySum
+        
+        public decimal DenominatorIntensitySum
         {
-            get { return qval.heavyIntensitySum; }
+            get { return qval.denominatorIntensitySum; }
         }
 
         public decimal IntensitySum
@@ -61,9 +61,9 @@ namespace ProteoformSuiteGUI
             get { return qval.logFoldChange; }
         }
 
-        public decimal Variance
+        public decimal Scatter_linear
         {
-            get { return qval.variance; }
+            get { return qval.scatter; }
         }
 
         public decimal pValue
@@ -76,14 +76,14 @@ namespace ProteoformSuiteGUI
             get { return qval.significant; }
         }
 
-        public decimal TestStatistic
+        public decimal TestStatistic_linear
         {
-            get { return qval.testStatistic; }
+            get { return qval.relative_difference; }
         }
 
         public decimal AvgPermutedTestStatistic
         {
-            get { return qval.correspondingAvgPermutedTestStatistic; }
+            get { return qval.correspondingAvgSortedRelDiff; }
         }
 
         public string manual_validation_quant
@@ -103,23 +103,23 @@ namespace ProteoformSuiteGUI
             dgv.ReadOnly = true;
 
             //NUMBER FORMAT
-            dgv.Columns[nameof(LightIntensitySum)].DefaultCellStyle.Format = "0.##";
-            dgv.Columns[nameof(HeavyIntensitySum)].DefaultCellStyle.Format = "0.##";
+            dgv.Columns[nameof(NumeratorIntensitySum)].DefaultCellStyle.Format = "0.##";
+            dgv.Columns[nameof(DenominatorIntensitySum)].DefaultCellStyle.Format = "0.##";
             dgv.Columns[nameof(IntensitySum)].DefaultCellStyle.Format = "0.##";
             dgv.Columns[nameof(LogFoldChange)].DefaultCellStyle.Format = "0.####";
             dgv.Columns[nameof(pValue)].DefaultCellStyle.Format = "E2";
-            dgv.Columns[nameof(TestStatistic)].DefaultCellStyle.Format = "0.#####";
+            dgv.Columns[nameof(TestStatistic_linear)].DefaultCellStyle.Format = "0.#####";
             dgv.Columns[nameof(AvgPermutedTestStatistic)].DefaultCellStyle.Format = "0.#####";
 
             //HEADERS
             dgv.Columns[nameof(GeneName)].HeaderText = "Gene Name";
-            dgv.Columns[nameof(LightIntensitySum)].HeaderText = "Light Intensity Sum";
-            dgv.Columns[nameof(HeavyIntensitySum)].HeaderText = "Heavy Intensity Sum";
+            dgv.Columns[nameof(NumeratorIntensitySum)].HeaderText = "Light Intensity Sum";
+            dgv.Columns[nameof(DenominatorIntensitySum)].HeaderText = "Heavy Intensity Sum";
             dgv.Columns[nameof(IntensitySum)].HeaderText = "Intensity Sum";
             dgv.Columns[nameof(LogFoldChange)].HeaderText = "Log2 Fold Change";
             dgv.Columns[nameof(pValue)].HeaderText = "p-value (by randomization test)";
-            dgv.Columns[nameof(TestStatistic)].HeaderText = "Student's t-Test Statistic";
-            dgv.Columns[nameof(AvgPermutedTestStatistic)].HeaderText = "Corresponding Avg. Permuted Student's t-Test Statistic";
+            dgv.Columns[nameof(TestStatistic_linear)].HeaderText = "Student's t-Test Statistic (Linear Intensities)";
+            dgv.Columns[nameof(AvgPermutedTestStatistic)].HeaderText = "Corresponding Avg. Permuted Student's t-Test Statistic (Linear Intensities)";
             dgv.Columns[nameof(manual_validation_quant)].HeaderText = "Abundant Component for Manual Validation of Quantification";
         }
 

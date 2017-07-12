@@ -245,7 +245,7 @@ namespace ProteoformSuiteInternal
                     get_proteoform_shared_name(r.connected_proteoforms[1], node_label, double_rounding),
                     delta_mass,
                     edge_label == Lollipop.edge_labels[1] && append_ptmlist ?
-                        delta_mass + " " + String.Join("; ", r.represented_ptmset.ptm_combination.Select(ptm => SaveState.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)) :
+                        delta_mass + " " + String.Join("; ", r.represented_ptmset.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)) :
                         delta_mass
                 );
             }
@@ -286,8 +286,8 @@ namespace ProteoformSuiteInternal
 
             if (quantitative)
             {
-                node_table.Columns.Add(SaveState.lollipop.numerator_condition, typeof(string));
-                node_table.Columns.Add(SaveState.lollipop.denominator_condition, typeof(string));
+                node_table.Columns.Add(Sweet.lollipop.numerator_condition, typeof(string));
+                node_table.Columns.Add(Sweet.lollipop.denominator_condition, typeof(string));
                 node_table.Columns.Add(significant_header, typeof(string));
                 node_table.Columns.Add(piechart_header, typeof(string));
             }
@@ -345,7 +345,7 @@ namespace ProteoformSuiteInternal
                         "Aggregated Retention Time = " + ep.agg_rt.ToString(),
                         "Total Intensity = " + total_intensity.ToString(),
                         "Aggregated Component Count = " + ep.aggregated_components.Count.ToString(),
-                        SaveState.lollipop.neucode_labeled ? "; Lysine Count = " + p.lysine_count : "",
+                        Sweet.lollipop.neucode_labeled ? "; Lysine Count = " + p.lysine_count : "",
                         "Abundant Component for Manual Validation of Identification: " + ep.manual_validation_id,
                         "Abundant Component for Manual Validation of Identification Validation: " + ep.manual_validation_verification
                     });
@@ -353,18 +353,17 @@ namespace ProteoformSuiteInternal
                     {
                         tooltip += "\\n\\nQuantitation Results:" +
                         String.Join("; ", new string[] {
-                            "Q-Value = " + ep.quant.FDR.ToString(),
+                            "Q-Value = " + ep.quant.roughSignificanceFDR.ToString(),
                             "Log2FC = " + ep.quant.logFoldChange.ToString(),
-                            "Variance = " + ep.quant.variance.ToString(),
                             "Significant = " + ep.quant.significant.ToString(),
-                            SaveState.lollipop.numerator_condition + " Quantitative Component Count = " + ep.lt_quant_components.Count.ToString(),
-                            SaveState.lollipop.denominator_condition + " Quantitative Component Count = " + ep.hv_quant_components.Count.ToString(),
+                            Sweet.lollipop.numerator_condition + " Quantitative Component Count = " + ep.lt_quant_components.Count.ToString(),
+                            Sweet.lollipop.denominator_condition + " Quantitative Component Count = " + ep.hv_quant_components.Count.ToString(),
                             "Abundant Component for Manual Validation of Quantification: " + ep.manual_validation_quant
                         });
                     }
 
                     if (quantitative && ep.quant.intensitySum != 0)
-                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.lightIntensitySum).ToString(), ((double)ep.quant.heavyIntensitySum).ToString(), ep.quant.significant.ToString(), get_piechart_string(color_scheme));
+                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.numeratorIntensitySum).ToString(), ((double)ep.quant.denominatorIntensitySum).ToString(), ep.quant.significant.ToString(), get_piechart_string(color_scheme));
                     else if (quantitative)
                         node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, "", "", "", "");
                     else
@@ -421,7 +420,7 @@ namespace ProteoformSuiteInternal
                     name += " " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession
                           + " " + (e.ptm_set.ptm_combination.Count == 0 ?
                             "Unmodified" :
-                            String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => SaveState.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));
+                            String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));
                 return name;
             }
 
@@ -443,7 +442,7 @@ namespace ProteoformSuiteInternal
 
         private static string get_piechart_string(string color_scheme)
         {
-            return "piechart: attributelist = \"" + SaveState.lollipop.numerator_condition + "," + SaveState.lollipop.denominator_condition +
+            return "piechart: attributelist = \"" + Sweet.lollipop.numerator_condition + "," + Sweet.lollipop.denominator_condition +
                 "\" colorlist = \"" + color_schemes[color_scheme][0] + "," + color_schemes[color_scheme][3] +
                 "\" labellist = \",\"";
         }

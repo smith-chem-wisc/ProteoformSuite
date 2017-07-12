@@ -339,7 +339,7 @@ namespace ProteoformSuiteGUI
             }
 
             //making these columns invisible
-            dgv.Columns[nameof(LysineCount)].Visible = SaveState.lollipop.neucode_labeled;
+            dgv.Columns[nameof(LysineCount)].Visible = Sweet.lollipop.neucode_labeled;
         } 
         #endregion
 

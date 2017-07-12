@@ -24,13 +24,13 @@ namespace ProteoformSuiteInternal
             mass = m.monoisotopicMass;
             id = m.id;
             ptm_count = 1;
-            ptm_rank = SaveState.lollipop.modification_ranks[m.monoisotopicMass];
+            ptm_rank = Sweet.lollipop.modification_ranks[m.monoisotopicMass];
             require_proteoform_without_mod = false;
 
             if (m.modificationType == "FattyAcid" || m.modificationType == "Unlocalized")
-                ptm_rank = SaveState.lollipop.mod_rank_first_quartile / 2;
+                ptm_rank = Sweet.lollipop.mod_rank_first_quartile / 2;
             else if (m.modificationType == "Deconvolution Error")
-                ptm_rank = SaveState.lollipop.mod_rank_third_quartile;
+                ptm_rank = Sweet.lollipop.mod_rank_third_quartile;
         }
 
         #endregion Public Constructor

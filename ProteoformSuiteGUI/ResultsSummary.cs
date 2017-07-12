@@ -1,10 +1,8 @@
-﻿using System;
-using System.Linq;
-using ProteoformSuiteInternal;
-using System.Windows.Forms;
-using System.IO;
-using System.Threading.Tasks;
+﻿using ProteoformSuiteInternal;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Windows.Forms;
 
 namespace ProteoformSuiteGUI
 {
@@ -44,14 +42,14 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
-            tb_summarySaveFolder.Text = SaveState.lollipop.results_folder;
+            tb_summarySaveFolder.Text = Sweet.lollipop.results_folder;
         }
 
         public void ClearListsTablesFigures(bool x)
         {
             rtb_summary.Text = "";
             tb_summarySaveFolder.Text = "";
-            SaveState.lollipop.results_folder = "";
+            Sweet.lollipop.results_folder = "";
         }
 
         public void FillTablesAndCharts()
@@ -76,16 +74,18 @@ namespace ProteoformSuiteGUI
             {
                 string temp_folder_path = folderBrowser.SelectedPath;
                 tb_summarySaveFolder.Text = temp_folder_path;
-                SaveState.lollipop.results_folder = temp_folder_path;
+                Sweet.lollipop.results_folder = temp_folder_path;
             }
         }
 
         private void btn_save_Click(object sender, EventArgs e)
         {
-            if (!Directory.Exists(SaveState.lollipop.results_folder)) return;
-            string timestamp = SaveState.time_stamp();
-            ResultsSummaryGenerator.save_all(SaveState.lollipop.results_folder, timestamp);
-            ((ProteoformSweet)MdiParent).save_all_plots(SaveState.lollipop.results_folder, timestamp);
+            if (!Directory.Exists(Sweet.lollipop.results_folder)) return;
+            string timestamp = Sweet.time_stamp();
+            ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp);
+            ((ProteoformSweet)MdiParent).save_all_plots(Sweet.lollipop.results_folder, timestamp);
+            using (StreamWriter file = new StreamWriter(Path.Combine(Sweet.lollipop.results_folder, "presets_" + timestamp + ".xml")))
+                file.WriteLine(Sweet.save_method());
         }
 
         #endregion Private Methods

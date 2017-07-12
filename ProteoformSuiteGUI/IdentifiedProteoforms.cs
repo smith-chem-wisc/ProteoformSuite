@@ -20,7 +20,7 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null) > 0;
+            return Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.linked_proteoform_references != null) > 0;
         }
 
         public void RunTheGamut()
@@ -49,8 +49,8 @@ namespace ProteoformSuiteGUI
 
         public void FillTablesAndCharts()
         {
-            DisplayUtility.FillDataGridView(dgv_identified_experimentals, SaveState.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
-                .Where(e => e.linked_proteoform_references != null && (SaveState.lollipop.count_adducts_as_identifications || !e.adduct)).Select(e => new DisplayExperimentalProteoform(e)));
+            DisplayUtility.FillDataGridView(dgv_identified_experimentals, Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
+                .Where(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct)).Select(e => new DisplayExperimentalProteoform(e)));
             DisplayExperimentalProteoform.FormatIdentifiedProteoformTable(dgv_identified_experimentals);
         }
 
@@ -70,8 +70,8 @@ namespace ProteoformSuiteGUI
         {
             ExperimentalProteoform selected_experimental = (ExperimentalProteoform)((DisplayObject)this.dgv_identified_experimentals.Rows[row_index].DataBoundItem).display_object;
             DisplayUtility.FillDataGridView(dgv_same_topdown_id, selected_experimental.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).Select(r => r.connected_proteoforms[0]).Select(t => new DisplayTopDownProteoform(t as TopDownProteoform)));
-            DisplayUtility.FillDataGridView(dgv_other_topdown_ids, SaveState.lollipop.target_proteoform_community.topdown_proteoforms.Where(t =>  t.gene_name == selected_experimental.gene_name && !t.relationships.SelectMany(r => r.connected_proteoforms).Contains(selected_experimental) &&
-                Math.Abs(t.modified_mass - selected_experimental.modified_mass) < (double)SaveState.lollipop.mass_tolerance).Select(t => new DisplayTopDownProteoform(t)));
+            DisplayUtility.FillDataGridView(dgv_other_topdown_ids, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Where(t =>  t.gene_name == selected_experimental.gene_name && !t.relationships.SelectMany(r => r.connected_proteoforms).Contains(selected_experimental) &&
+                Math.Abs(t.modified_mass - selected_experimental.modified_mass) < (double)Sweet.lollipop.mass_tolerance).Select(t => new DisplayTopDownProteoform(t)));
             DisplayUtility.FillDataGridView(dgv_bottom_up_peptides, selected_experimental.family.theoretical_proteoforms.Where(t => t.gene_name == selected_experimental.gene_name).SelectMany(t => t.psm_list).Select(t => new DisplayBottomUpPSM(t)));
             DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_other_topdown_ids);
             DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_same_topdown_id);

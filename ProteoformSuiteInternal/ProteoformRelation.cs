@@ -70,7 +70,7 @@ namespace ProteoformSuiteInternal
             RelationType = relation_type;
             DeltaMass = delta_mass;
             InstanceId = instanceCounter;
-            lock (SaveState.lollipop) instanceCounter += 1; //Not thread safe
+            lock (Sweet.lollipop) instanceCounter += 1; //Not thread safe
 
             if (CH2 == null || HPO3 == null)
             {
@@ -79,27 +79,27 @@ namespace ProteoformSuiteInternal
                 HPO3 = ChemicalFormula.ParseFormula("H1 O3 P1");
             }
 
-            if (SaveState.lollipop.neucode_labeled)
+            if (Sweet.lollipop.neucode_labeled)
             {
                 lysine_count = pf1.lysine_count;
             }
 
             if ((relation_type == ProteoformComparison.ExperimentalTheoretical || relation_type == ProteoformComparison.ExperimentalDecoy) 
-                && SaveState.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out List<PtmSet> candidate_sets)
+                && Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.TryGetValue(Math.Round(delta_mass, 1), out List<PtmSet> candidate_sets)
                 && pf2 as TheoreticalProteoform != null)
             {
                 TheoreticalProteoform t = pf2 as TheoreticalProteoform;
-                double mass_tolerance = t.modified_mass / 1000000 * (double)SaveState.lollipop.mass_tolerance;
+                double mass_tolerance = t.modified_mass / 1000000 * Sweet.lollipop.mass_tolerance;
                 List<PtmSet> narrower_range_of_candidates = candidate_sets.Where(s => Math.Abs(s.mass - delta_mass) < 0.05).ToList();
-                candidate_ptmset = t.generate_possible_added_ptmsets(narrower_range_of_candidates, delta_mass, mass_tolerance, SaveState.lollipop.theoretical_database.all_mods_with_mass, t, t.sequence, SaveState.lollipop.mod_rank_first_quartile)
+                candidate_ptmset = t.generate_possible_added_ptmsets(narrower_range_of_candidates, delta_mass, mass_tolerance, Sweet.lollipop.theoretical_database.all_mods_with_mass, t, t.sequence, Sweet.lollipop.mod_rank_first_quartile)
                     .OrderBy(x => x.ptm_rank_sum + Math.Abs(Math.Abs(x.mass) - Math.Abs(delta_mass)) * 10E-6) // major score: delta rank; tie breaker: deltaM, where it's always less than 1
                     .FirstOrDefault();
             }
 
             // Start the model (0 Da) at the mass defect of CH2 or HPO3 itself, allowing the peak width tolerance on either side
             double half_peak_width = RelationType == ProteoformComparison.ExperimentalTheoretical || RelationType == ProteoformComparison.ExperimentalDecoy ?
-                SaveState.lollipop.peak_width_base_et / 2 :
-                SaveState.lollipop.peak_width_base_ee / 2;
+                Sweet.lollipop.peak_width_base_et / 2 :
+                Sweet.lollipop.peak_width_base_ee / 2;
             double low_decimal_bound = half_peak_width + ((CH2.MonoisotopicMass - Math.Truncate(CH2.MonoisotopicMass)) / CH2.MonoisotopicMass) * (Math.Abs(delta_mass) <= CH2.MonoisotopicMass ? CH2.MonoisotopicMass : Math.Abs(delta_mass));
             double high_decimal_bound = 1 - half_peak_width + ((HPO3.MonoisotopicMass - Math.Ceiling(HPO3.MonoisotopicMass)) / HPO3.MonoisotopicMass) * (Math.Abs(delta_mass) <= HPO3.MonoisotopicMass ? HPO3.MonoisotopicMass : Math.Abs(delta_mass));
             double delta_mass_decimal = Math.Abs(delta_mass - Math.Truncate(delta_mass));
@@ -115,8 +115,8 @@ namespace ProteoformSuiteInternal
         public List<ProteoformRelation> set_nearby_group(List<ProteoformRelation> all_ordered_relations, List<int> ordered_relation_ids)
         {
             double peak_width_base = typeof(TheoreticalProteoform).IsAssignableFrom(all_ordered_relations[0].connected_proteoforms[1].GetType()) ?
-                SaveState.lollipop.peak_width_base_et :
-                SaveState.lollipop.peak_width_base_ee;
+                Sweet.lollipop.peak_width_base_et :
+                Sweet.lollipop.peak_width_base_ee;
             double lower_limit_of_peak_width = DeltaMass - peak_width_base / 2;
             double upper_limit_of_peak_width = DeltaMass + peak_width_base / 2;
             int idx = ordered_relation_ids.IndexOf(InstanceId);
@@ -143,11 +143,11 @@ namespace ProteoformSuiteInternal
 
         public void generate_peak()
         {
-            new DeltaMassPeak(this, SaveState.lollipop.target_proteoform_community.remaining_relations_outside_no_mans); //setting the peak takes place elsewhere, but this constructs it
-            if (connected_proteoforms[1] as TheoreticalProteoform != null && SaveState.lollipop.ed_relations.Count > 0)
-                lock (peak) peak.calculate_fdr(SaveState.lollipop.ed_relations);
-            else if (connected_proteoforms[1] as ExperimentalProteoform != null && SaveState.lollipop.ef_relations.Count > 0)
-                lock (peak) peak.calculate_fdr(SaveState.lollipop.ef_relations);
+            new DeltaMassPeak(this, Sweet.lollipop.target_proteoform_community.remaining_relations_outside_no_mans); //setting the peak takes place elsewhere, but this constructs it
+            if (connected_proteoforms[1] as TheoreticalProteoform != null && Sweet.lollipop.ed_relations.Count > 0)
+                lock (peak) peak.calculate_fdr(Sweet.lollipop.ed_relations);
+            else if (connected_proteoforms[1] as ExperimentalProteoform != null && Sweet.lollipop.ef_relations.Count > 0)
+                lock (peak) peak.calculate_fdr(Sweet.lollipop.ef_relations);
         }
 
         public override bool Equals(object obj)

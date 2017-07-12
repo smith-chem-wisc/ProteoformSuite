@@ -82,8 +82,8 @@ namespace ProteoformSuiteInternal
          
         private bool tolerable_rt(TopDownHit candidate, double rt)
         {
-            return candidate.retention_time >= rt - Convert.ToDouble(SaveState.lollipop.retention_time_tolerance) &&
-                candidate.retention_time <= rt + Convert.ToDouble(SaveState.lollipop.retention_time_tolerance);
+            return candidate.retention_time >= rt - Convert.ToDouble(Sweet.lollipop.retention_time_tolerance) &&
+                candidate.retention_time <= rt + Convert.ToDouble(Sweet.lollipop.retention_time_tolerance);
         }
 
         public bool same_ptms(Proteoform theo)

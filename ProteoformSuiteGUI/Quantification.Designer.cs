@@ -35,6 +35,7 @@
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series5 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.Windows.Forms.DataVisualization.Charting.Series series6 = new System.Windows.Forms.DataVisualization.Charting.Series();
@@ -44,10 +45,14 @@
             this.dgv_quantification_results = new System.Windows.Forms.DataGridView();
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btn_saveBiorepIntensitiesWithImputation = new System.Windows.Forms.Button();
+            this.btn_saveBiologicalReplicateIntensities = new System.Windows.Forms.Button();
             this.nud_minObservations = new System.Windows.Forms.NumericUpDown();
             this.cmbx_observationsTypeRequired = new System.Windows.Forms.ComboBox();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.gb_quantDataDisplaySelection = new System.Windows.Forms.GroupBox();
+            this.label18 = new System.Windows.Forms.Label();
+            this.cmbx_intensityDistributionChartSelection = new System.Windows.Forms.ComboBox();
             this.tb_stdevIntensity = new System.Windows.Forms.TextBox();
             this.tb_avgIntensity = new System.Windows.Forms.TextBox();
             this.label16 = new System.Windows.Forms.Label();
@@ -71,12 +76,16 @@
             this.cmbx_ratioDenominator = new System.Windows.Forms.ComboBox();
             this.splitContainer9 = new System.Windows.Forms.SplitContainer();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.cmbx_inducedCondition = new System.Windows.Forms.ComboBox();
+            this.label19 = new System.Windows.Forms.Label();
+            this.cmbx_relativeDifferenceChartSelection = new System.Windows.Forms.ComboBox();
+            this.nud_localFdrCutoff = new System.Windows.Forms.NumericUpDown();
+            this.cb_useLocalFdrCutoff = new System.Windows.Forms.CheckBox();
             this.label15 = new System.Windows.Forms.Label();
             this.tb_FDR = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
             this.nud_Offset = new System.Windows.Forms.NumericUpDown();
-            this.label12 = new System.Windows.Forms.Label();
-            this.nud_sKnot_minFoldChange = new System.Windows.Forms.NumericUpDown();
             this.ct_relativeDifference = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.splitContainer10 = new System.Windows.Forms.SplitContainer();
             this.dgv_goAnalysis = new System.Windows.Forms.DataGridView();
@@ -180,8 +189,8 @@
             this.splitContainer9.Panel2.SuspendLayout();
             this.splitContainer9.SuspendLayout();
             this.groupBox6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_localFdrCutoff)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Offset)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_sKnot_minFoldChange)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_relativeDifference)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer10)).BeginInit();
             this.splitContainer10.Panel1.SuspendLayout();
@@ -281,6 +290,8 @@
             // groupBox1
             // 
             this.groupBox1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.groupBox1.Controls.Add(this.btn_saveBiorepIntensitiesWithImputation);
+            this.groupBox1.Controls.Add(this.btn_saveBiologicalReplicateIntensities);
             this.groupBox1.Controls.Add(this.nud_minObservations);
             this.groupBox1.Controls.Add(this.cmbx_observationsTypeRequired);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -290,6 +301,28 @@
             this.groupBox1.TabIndex = 26;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Minimum Required Observations";
+            // 
+            // btn_saveBiorepIntensitiesWithImputation
+            // 
+            this.btn_saveBiorepIntensitiesWithImputation.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.btn_saveBiorepIntensitiesWithImputation.Location = new System.Drawing.Point(241, 45);
+            this.btn_saveBiorepIntensitiesWithImputation.Name = "btn_saveBiorepIntensitiesWithImputation";
+            this.btn_saveBiorepIntensitiesWithImputation.Size = new System.Drawing.Size(217, 23);
+            this.btn_saveBiorepIntensitiesWithImputation.TabIndex = 102;
+            this.btn_saveBiorepIntensitiesWithImputation.Text = "Save Biorep Intensities (With Imputation)";
+            this.btn_saveBiorepIntensitiesWithImputation.UseVisualStyleBackColor = true;
+            this.btn_saveBiorepIntensitiesWithImputation.Click += new System.EventHandler(this.btn_saveBiorepIntensitiesWithImputation_Click);
+            // 
+            // btn_saveBiologicalReplicateIntensities
+            // 
+            this.btn_saveBiologicalReplicateIntensities.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.btn_saveBiologicalReplicateIntensities.Location = new System.Drawing.Point(18, 45);
+            this.btn_saveBiologicalReplicateIntensities.Name = "btn_saveBiologicalReplicateIntensities";
+            this.btn_saveBiologicalReplicateIntensities.Size = new System.Drawing.Size(217, 23);
+            this.btn_saveBiologicalReplicateIntensities.TabIndex = 101;
+            this.btn_saveBiologicalReplicateIntensities.Text = "Save Biological Replicate Intensities";
+            this.btn_saveBiologicalReplicateIntensities.UseVisualStyleBackColor = true;
+            this.btn_saveBiologicalReplicateIntensities.Click += new System.EventHandler(this.btn_saveBiologicalReplicateIntensities_Click);
             // 
             // nud_minObservations
             // 
@@ -315,7 +348,7 @@
             this.cmbx_observationsTypeRequired.FormattingEnabled = true;
             this.cmbx_observationsTypeRequired.Location = new System.Drawing.Point(77, 19);
             this.cmbx_observationsTypeRequired.Name = "cmbx_observationsTypeRequired";
-            this.cmbx_observationsTypeRequired.Size = new System.Drawing.Size(369, 21);
+            this.cmbx_observationsTypeRequired.Size = new System.Drawing.Size(401, 21);
             this.cmbx_observationsTypeRequired.TabIndex = 0;
             this.cmbx_observationsTypeRequired.SelectedIndexChanged += new System.EventHandler(this.cmbx_observationsTypeRequired_SelectedIndexChanged);
             this.cmbx_observationsTypeRequired.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
@@ -335,12 +368,14 @@
             // 
             this.splitContainer5.Panel2.Controls.Add(this.ct_proteoformIntensities);
             this.splitContainer5.Size = new System.Drawing.Size(484, 527);
-            this.splitContainer5.SplitterDistance = 78;
+            this.splitContainer5.SplitterDistance = 100;
             this.splitContainer5.TabIndex = 0;
             // 
             // gb_quantDataDisplaySelection
             // 
             this.gb_quantDataDisplaySelection.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.gb_quantDataDisplaySelection.Controls.Add(this.label18);
+            this.gb_quantDataDisplaySelection.Controls.Add(this.cmbx_intensityDistributionChartSelection);
             this.gb_quantDataDisplaySelection.Controls.Add(this.tb_stdevIntensity);
             this.gb_quantDataDisplaySelection.Controls.Add(this.tb_avgIntensity);
             this.gb_quantDataDisplaySelection.Controls.Add(this.label16);
@@ -354,49 +389,70 @@
             this.gb_quantDataDisplaySelection.Margin = new System.Windows.Forms.Padding(2);
             this.gb_quantDataDisplaySelection.Name = "gb_quantDataDisplaySelection";
             this.gb_quantDataDisplaySelection.Padding = new System.Windows.Forms.Padding(2);
-            this.gb_quantDataDisplaySelection.Size = new System.Drawing.Size(484, 78);
+            this.gb_quantDataDisplaySelection.Size = new System.Drawing.Size(484, 100);
             this.gb_quantDataDisplaySelection.TabIndex = 20;
             this.gb_quantDataDisplaySelection.TabStop = false;
-            this.gb_quantDataDisplaySelection.Text = "Adjust Background Imputation (Units: Std. Dev. of Selected Pf Intensities)";
+            this.gb_quantDataDisplaySelection.Text = "Imputation from Background. (Shift and width are multiples of observed log2 inten" +
+    "sity std. dev.)";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(15, 48);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(176, 13);
+            this.label18.TabIndex = 14;
+            this.label18.Text = "Intensity Distribution Chart Selection";
+            // 
+            // cmbx_intensityDistributionChartSelection
+            // 
+            this.cmbx_intensityDistributionChartSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbx_intensityDistributionChartSelection.FormattingEnabled = true;
+            this.cmbx_intensityDistributionChartSelection.Location = new System.Drawing.Point(18, 66);
+            this.cmbx_intensityDistributionChartSelection.Name = "cmbx_intensityDistributionChartSelection";
+            this.cmbx_intensityDistributionChartSelection.Size = new System.Drawing.Size(246, 21);
+            this.cmbx_intensityDistributionChartSelection.TabIndex = 13;
+            this.cmbx_intensityDistributionChartSelection.SelectedIndexChanged += new System.EventHandler(this.cmbx_intensityDistributionChartSelection_SelectedIndexChanged);
+            this.cmbx_intensityDistributionChartSelection.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
             // tb_stdevIntensity
             // 
-            this.tb_stdevIntensity.Location = new System.Drawing.Point(297, 17);
+            this.tb_stdevIntensity.Location = new System.Drawing.Point(397, 17);
             this.tb_stdevIntensity.Name = "tb_stdevIntensity";
             this.tb_stdevIntensity.ReadOnly = true;
-            this.tb_stdevIntensity.Size = new System.Drawing.Size(100, 20);
+            this.tb_stdevIntensity.Size = new System.Drawing.Size(82, 20);
             this.tb_stdevIntensity.TabIndex = 11;
             // 
             // tb_avgIntensity
             // 
-            this.tb_avgIntensity.Location = new System.Drawing.Point(91, 18);
+            this.tb_avgIntensity.Location = new System.Drawing.Point(186, 17);
             this.tb_avgIntensity.Name = "tb_avgIntensity";
             this.tb_avgIntensity.ReadOnly = true;
-            this.tb_avgIntensity.Size = new System.Drawing.Size(100, 20);
+            this.tb_avgIntensity.Size = new System.Drawing.Size(78, 20);
             this.tb_avgIntensity.TabIndex = 10;
             // 
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(203, 22);
+            this.label16.Location = new System.Drawing.Point(270, 20);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(88, 13);
+            this.label16.Size = new System.Drawing.Size(121, 13);
             this.label16.TabIndex = 9;
-            this.label16.Text = "Std Dev Intensity";
+            this.label16.Text = "Std. Dev. Log2 Intensity";
             // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(16, 21);
+            this.label17.Location = new System.Drawing.Point(82, 20);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(68, 13);
+            this.label17.Size = new System.Drawing.Size(98, 13);
             this.label17.TabIndex = 8;
-            this.label17.Text = "Avg Intensity";
+            this.label17.Text = "Avg. Log2 Intensity";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(315, 55);
+            this.label5.Location = new System.Drawing.Point(362, 52);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(63, 13);
             this.label5.TabIndex = 7;
@@ -405,7 +461,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(185, 55);
+            this.label4.Location = new System.Drawing.Point(369, 78);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(56, 13);
             this.label4.TabIndex = 6;
@@ -419,7 +475,7 @@
             0,
             0,
             65536});
-            this.nud_bkgdWidth.Location = new System.Drawing.Point(382, 51);
+            this.nud_bkgdWidth.Location = new System.Drawing.Point(431, 48);
             this.nud_bkgdWidth.Maximum = new decimal(new int[] {
             1,
             0,
@@ -448,7 +504,7 @@
             0,
             0,
             65536});
-            this.nud_bkgdShift.Location = new System.Drawing.Point(247, 52);
+            this.nud_bkgdShift.Location = new System.Drawing.Point(431, 74);
             this.nud_bkgdShift.Maximum = new decimal(new int[] {
             0,
             0,
@@ -488,9 +544,10 @@
             series2.Name = "Series2";
             this.ct_proteoformIntensities.Series.Add(series1);
             this.ct_proteoformIntensities.Series.Add(series2);
-            this.ct_proteoformIntensities.Size = new System.Drawing.Size(484, 445);
+            this.ct_proteoformIntensities.Size = new System.Drawing.Size(484, 423);
             this.ct_proteoformIntensities.TabIndex = 25;
             this.ct_proteoformIntensities.Text = "log2_intensity";
+            this.ct_proteoformIntensities.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_proteoformIntensities_MouseClick);
             // 
             // splitContainer2
             // 
@@ -537,11 +594,13 @@
             this.ct_volcano_logFold_logP.Name = "ct_volcano_logFold_logP";
             series3.ChartArea = "ChartArea1";
             series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series3.Legend = "Legend1";
             series3.Name = "Series1";
             this.ct_volcano_logFold_logP.Series.Add(series3);
             this.ct_volcano_logFold_logP.Size = new System.Drawing.Size(485, 309);
             this.ct_volcano_logFold_logP.TabIndex = 21;
             this.ct_volcano_logFold_logP.Text = "Volcano";
+            this.ct_volcano_logFold_logP.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_volcano_logFold_logP_MouseClick);
             // 
             // splitContainer7
             // 
@@ -558,7 +617,7 @@
             // 
             this.splitContainer7.Panel2.Controls.Add(this.splitContainer8);
             this.splitContainer7.Size = new System.Drawing.Size(485, 548);
-            this.splitContainer7.SplitterDistance = 41;
+            this.splitContainer7.SplitterDistance = 37;
             this.splitContainer7.TabIndex = 0;
             // 
             // btn_refreshCalculation
@@ -566,7 +625,7 @@
             this.btn_refreshCalculation.Dock = System.Windows.Forms.DockStyle.Fill;
             this.btn_refreshCalculation.Location = new System.Drawing.Point(0, 0);
             this.btn_refreshCalculation.Name = "btn_refreshCalculation";
-            this.btn_refreshCalculation.Size = new System.Drawing.Size(485, 41);
+            this.btn_refreshCalculation.Size = new System.Drawing.Size(485, 37);
             this.btn_refreshCalculation.TabIndex = 32;
             this.btn_refreshCalculation.Text = "Refresh Calculations";
             this.btn_refreshCalculation.UseVisualStyleBackColor = true;
@@ -586,8 +645,8 @@
             // splitContainer8.Panel2
             // 
             this.splitContainer8.Panel2.Controls.Add(this.splitContainer9);
-            this.splitContainer8.Size = new System.Drawing.Size(485, 503);
-            this.splitContainer8.SplitterDistance = 54;
+            this.splitContainer8.Size = new System.Drawing.Size(485, 507);
+            this.splitContainer8.SplitterDistance = 42;
             this.splitContainer8.TabIndex = 0;
             // 
             // groupBox2
@@ -596,7 +655,7 @@
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox2.Location = new System.Drawing.Point(0, 0);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(485, 54);
+            this.groupBox2.Size = new System.Drawing.Size(485, 42);
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Ratio";
@@ -614,7 +673,7 @@
             // splitContainer15.Panel2
             // 
             this.splitContainer15.Panel2.Controls.Add(this.splitContainer16);
-            this.splitContainer15.Size = new System.Drawing.Size(479, 35);
+            this.splitContainer15.Size = new System.Drawing.Size(479, 23);
             this.splitContainer15.SplitterDistance = 203;
             this.splitContainer15.TabIndex = 0;
             // 
@@ -622,7 +681,6 @@
             // 
             this.cmbx_ratioNumerator.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbx_ratioNumerator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbx_ratioNumerator.Enabled = false;
             this.cmbx_ratioNumerator.FormattingEnabled = true;
             this.cmbx_ratioNumerator.Location = new System.Drawing.Point(0, 0);
             this.cmbx_ratioNumerator.Name = "cmbx_ratioNumerator";
@@ -644,7 +702,7 @@
             // splitContainer16.Panel2
             // 
             this.splitContainer16.Panel2.Controls.Add(this.cmbx_ratioDenominator);
-            this.splitContainer16.Size = new System.Drawing.Size(272, 35);
+            this.splitContainer16.Size = new System.Drawing.Size(272, 23);
             this.splitContainer16.SplitterDistance = 53;
             this.splitContainer16.TabIndex = 0;
             // 
@@ -662,7 +720,6 @@
             // 
             this.cmbx_ratioDenominator.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmbx_ratioDenominator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbx_ratioDenominator.Enabled = false;
             this.cmbx_ratioDenominator.FormattingEnabled = true;
             this.cmbx_ratioDenominator.Location = new System.Drawing.Point(0, 0);
             this.cmbx_ratioDenominator.Name = "cmbx_ratioDenominator";
@@ -685,50 +742,123 @@
             // splitContainer9.Panel2
             // 
             this.splitContainer9.Panel2.Controls.Add(this.ct_relativeDifference);
-            this.splitContainer9.Size = new System.Drawing.Size(485, 445);
-            this.splitContainer9.SplitterDistance = 47;
+            this.splitContainer9.Size = new System.Drawing.Size(485, 461);
+            this.splitContainer9.SplitterDistance = 112;
             this.splitContainer9.TabIndex = 0;
             // 
             // groupBox6
             // 
+            this.groupBox6.Controls.Add(this.label12);
+            this.groupBox6.Controls.Add(this.cmbx_inducedCondition);
+            this.groupBox6.Controls.Add(this.label19);
+            this.groupBox6.Controls.Add(this.cmbx_relativeDifferenceChartSelection);
+            this.groupBox6.Controls.Add(this.nud_localFdrCutoff);
+            this.groupBox6.Controls.Add(this.cb_useLocalFdrCutoff);
             this.groupBox6.Controls.Add(this.label15);
             this.groupBox6.Controls.Add(this.tb_FDR);
             this.groupBox6.Controls.Add(this.label13);
             this.groupBox6.Controls.Add(this.nud_Offset);
-            this.groupBox6.Controls.Add(this.label12);
-            this.groupBox6.Controls.Add(this.nud_sKnot_minFoldChange);
             this.groupBox6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox6.Location = new System.Drawing.Point(0, 0);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(485, 47);
+            this.groupBox6.Size = new System.Drawing.Size(485, 112);
             this.groupBox6.TabIndex = 31;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "FDR Determination Via Permutation";
             // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(265, 15);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(93, 13);
+            this.label12.TabIndex = 14;
+            this.label12.Text = "Induced Condition";
+            // 
+            // cmbx_inducedCondition
+            // 
+            this.cmbx_inducedCondition.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbx_inducedCondition.FormattingEnabled = true;
+            this.cmbx_inducedCondition.Location = new System.Drawing.Point(267, 31);
+            this.cmbx_inducedCondition.Name = "cmbx_inducedCondition";
+            this.cmbx_inducedCondition.Size = new System.Drawing.Size(215, 21);
+            this.cmbx_inducedCondition.TabIndex = 13;
+            this.cmbx_inducedCondition.SelectedIndexChanged += new System.EventHandler(this.cmbx_inducedCondition_SelectedIndexChanged);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(6, 16);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(173, 13);
+            this.label19.TabIndex = 12;
+            this.label19.Text = "Relative Difference Chart Selection";
+            // 
+            // cmbx_relativeDifferenceChartSelection
+            // 
+            this.cmbx_relativeDifferenceChartSelection.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbx_relativeDifferenceChartSelection.FormattingEnabled = true;
+            this.cmbx_relativeDifferenceChartSelection.Location = new System.Drawing.Point(9, 31);
+            this.cmbx_relativeDifferenceChartSelection.Name = "cmbx_relativeDifferenceChartSelection";
+            this.cmbx_relativeDifferenceChartSelection.Size = new System.Drawing.Size(197, 21);
+            this.cmbx_relativeDifferenceChartSelection.TabIndex = 11;
+            this.cmbx_relativeDifferenceChartSelection.SelectedIndexChanged += new System.EventHandler(this.cmbx_relativeDifferenceChartSelection_SelectedIndexChanged);
+            this.cmbx_relativeDifferenceChartSelection.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
+            // 
+            // nud_localFdrCutoff
+            // 
+            this.nud_localFdrCutoff.DecimalPlaces = 3;
+            this.nud_localFdrCutoff.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            196608});
+            this.nud_localFdrCutoff.Location = new System.Drawing.Point(344, 88);
+            this.nud_localFdrCutoff.Maximum = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            this.nud_localFdrCutoff.Name = "nud_localFdrCutoff";
+            this.nud_localFdrCutoff.Size = new System.Drawing.Size(69, 20);
+            this.nud_localFdrCutoff.TabIndex = 10;
+            this.nud_localFdrCutoff.ValueChanged += new System.EventHandler(this.nud_localFdrCutoff_ValueChanged);
+            // 
+            // cb_useLocalFdrCutoff
+            // 
+            this.cb_useLocalFdrCutoff.AutoSize = true;
+            this.cb_useLocalFdrCutoff.Location = new System.Drawing.Point(205, 90);
+            this.cb_useLocalFdrCutoff.Name = "cb_useLocalFdrCutoff";
+            this.cb_useLocalFdrCutoff.Size = new System.Drawing.Size(133, 17);
+            this.cb_useLocalFdrCutoff.TabIndex = 9;
+            this.cb_useLocalFdrCutoff.Text = "Use Local FDR Cutoff:";
+            this.cb_useLocalFdrCutoff.UseVisualStyleBackColor = true;
+            this.cb_useLocalFdrCutoff.CheckedChanged += new System.EventHandler(this.cb_useLocalFdrCutoff_CheckedChanged);
+            // 
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(344, 22);
+            this.label15.Location = new System.Drawing.Point(6, 91);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(29, 13);
+            this.label15.Size = new System.Drawing.Size(90, 13);
             this.label15.TabIndex = 7;
-            this.label15.Text = "FDR";
+            this.label15.Text = "Significance FDR";
             // 
             // tb_FDR
             // 
-            this.tb_FDR.Location = new System.Drawing.Point(379, 19);
+            this.tb_FDR.Location = new System.Drawing.Point(108, 88);
             this.tb_FDR.Name = "tb_FDR";
-            this.tb_FDR.Size = new System.Drawing.Size(64, 20);
+            this.tb_FDR.Size = new System.Drawing.Size(69, 20);
             this.tb_FDR.TabIndex = 6;
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(203, 22);
+            this.label13.Location = new System.Drawing.Point(6, 65);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(35, 13);
+            this.label13.Size = new System.Drawing.Size(96, 13);
             this.label13.TabIndex = 3;
-            this.label13.Text = "Offset";
+            this.label13.Text = "Significance Offset";
             // 
             // nud_Offset
             // 
@@ -739,67 +869,45 @@
             0,
             65536});
             this.nud_Offset.InterceptArrowKeys = false;
-            this.nud_Offset.Location = new System.Drawing.Point(244, 19);
+            this.nud_Offset.Location = new System.Drawing.Point(108, 62);
             this.nud_Offset.Maximum = new decimal(new int[] {
             5,
             0,
             0,
             0});
             this.nud_Offset.Name = "nud_Offset";
-            this.nud_Offset.Size = new System.Drawing.Size(60, 20);
+            this.nud_Offset.Size = new System.Drawing.Size(69, 20);
             this.nud_Offset.TabIndex = 2;
             this.nud_Offset.ValueChanged += new System.EventHandler(this.nud_Offset_ValueChanged);
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(7, 22);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(20, 13);
-            this.label12.TabIndex = 1;
-            this.label12.Text = "S0";
-            // 
-            // nud_sKnot_minFoldChange
-            // 
-            this.nud_sKnot_minFoldChange.DecimalPlaces = 1;
-            this.nud_sKnot_minFoldChange.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.nud_sKnot_minFoldChange.Location = new System.Drawing.Point(33, 20);
-            this.nud_sKnot_minFoldChange.Maximum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.nud_sKnot_minFoldChange.Name = "nud_sKnot_minFoldChange";
-            this.nud_sKnot_minFoldChange.Size = new System.Drawing.Size(66, 20);
-            this.nud_sKnot_minFoldChange.TabIndex = 0;
-            this.nud_sKnot_minFoldChange.ValueChanged += new System.EventHandler(this.nud_sKnot_minFoldChange_ValueChanged);
             // 
             // ct_relativeDifference
             // 
             chartArea3.Name = "ChartArea1";
             this.ct_relativeDifference.ChartAreas.Add(chartArea3);
             this.ct_relativeDifference.Dock = System.Windows.Forms.DockStyle.Fill;
+            legend2.Name = "Legend1";
+            this.ct_relativeDifference.Legends.Add(legend2);
             this.ct_relativeDifference.Location = new System.Drawing.Point(0, 0);
             this.ct_relativeDifference.Name = "ct_relativeDifference";
             series4.ChartArea = "ChartArea1";
             series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Point;
+            series4.Legend = "Legend1";
             series4.Name = "obsVSexp";
             series5.ChartArea = "ChartArea1";
             series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series5.Legend = "Legend1";
             series5.Name = "positiveOffset";
             series6.ChartArea = "ChartArea1";
             series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series6.Legend = "Legend1";
             series6.Name = "negativeOffset";
             this.ct_relativeDifference.Series.Add(series4);
             this.ct_relativeDifference.Series.Add(series5);
             this.ct_relativeDifference.Series.Add(series6);
-            this.ct_relativeDifference.Size = new System.Drawing.Size(485, 394);
+            this.ct_relativeDifference.Size = new System.Drawing.Size(485, 345);
             this.ct_relativeDifference.TabIndex = 30;
             this.ct_relativeDifference.Text = "Observed vs. Expected Relative Difference";
+            this.ct_relativeDifference.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_relativeDifference_MouseClick);
             // 
             // splitContainer10
             // 
@@ -918,7 +1026,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(9, 78);
+            this.label3.Location = new System.Drawing.Point(18, 79);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(55, 13);
@@ -932,7 +1040,7 @@
             0,
             0,
             0});
-            this.nud_intensity.Location = new System.Drawing.Point(71, 77);
+            this.nud_intensity.Location = new System.Drawing.Point(91, 77);
             this.nud_intensity.Margin = new System.Windows.Forms.Padding(2);
             this.nud_intensity.Maximum = new decimal(new int[] {
             -727379968,
@@ -946,7 +1054,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(17, 52);
+            this.label2.Location = new System.Drawing.Point(18, 52);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(45, 13);
@@ -961,7 +1069,7 @@
             0,
             0,
             65536});
-            this.nud_ratio.Location = new System.Drawing.Point(71, 51);
+            this.nud_ratio.Location = new System.Drawing.Point(91, 48);
             this.nud_ratio.Margin = new System.Windows.Forms.Padding(2);
             this.nud_ratio.Maximum = new decimal(new int[] {
             50,
@@ -980,12 +1088,12 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(13, 26);
+            this.label1.Location = new System.Drawing.Point(4, 25);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(38, 13);
+            this.label1.Size = new System.Drawing.Size(100, 13);
             this.label1.TabIndex = 1;
-            this.label1.Text = "FDR <";
+            this.label1.Text = "Corrected p-value <";
             // 
             // nud_FDR
             // 
@@ -995,7 +1103,7 @@
             0,
             0,
             131072});
-            this.nud_FDR.Location = new System.Drawing.Point(71, 25);
+            this.nud_FDR.Location = new System.Drawing.Point(108, 24);
             this.nud_FDR.Margin = new System.Windows.Forms.Padding(2);
             this.nud_FDR.Maximum = new decimal(new int[] {
             1,
@@ -1003,7 +1111,7 @@
             0,
             0});
             this.nud_FDR.Name = "nud_FDR";
-            this.nud_FDR.Size = new System.Drawing.Size(80, 20);
+            this.nud_FDR.Size = new System.Drawing.Size(63, 20);
             this.nud_FDR.TabIndex = 0;
             // 
             // gb_backgroundGoTerms
@@ -1487,8 +1595,8 @@
             this.splitContainer9.ResumeLayout(false);
             this.groupBox6.ResumeLayout(false);
             this.groupBox6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_localFdrCutoff)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nud_Offset)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_sKnot_minFoldChange)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ct_relativeDifference)).EndInit();
             this.splitContainer10.Panel1.ResumeLayout(false);
             this.splitContainer10.Panel2.ResumeLayout(false);
@@ -1564,8 +1672,6 @@
         private System.Windows.Forms.TextBox tb_FDR;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.NumericUpDown nud_Offset;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.NumericUpDown nud_sKnot_minFoldChange;
         public System.Windows.Forms.DataVisualization.Charting.Chart ct_relativeDifference;
         private System.Windows.Forms.DataGridView dgv_goAnalysis;
         private System.Windows.Forms.ComboBox cmbx_goAspect;
@@ -1616,5 +1722,15 @@
         private System.Windows.Forms.SplitContainer splitContainer16;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.ComboBox cmbx_ratioDenominator;
+        private System.Windows.Forms.NumericUpDown nud_localFdrCutoff;
+        private System.Windows.Forms.CheckBox cb_useLocalFdrCutoff;
+        private System.Windows.Forms.ComboBox cmbx_intensityDistributionChartSelection;
+        private System.Windows.Forms.ComboBox cmbx_relativeDifferenceChartSelection;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Button btn_saveBiologicalReplicateIntensities;
+        private System.Windows.Forms.Button btn_saveBiorepIntensitiesWithImputation;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.ComboBox cmbx_inducedCondition;
     }
 }
