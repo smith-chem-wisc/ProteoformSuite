@@ -32,7 +32,7 @@ namespace ProteoformSuiteInternal
 
         #region Public Constructor
 
-        public DeltaMassPeak(ProteoformRelation base_relation, List<ProteoformRelation> relations_to_group)
+        public DeltaMassPeak(ProteoformRelation base_relation, HashSet<ProteoformRelation> relations_to_group)
         {
             lock (base_relation)
             {
@@ -71,7 +71,7 @@ namespace ProteoformSuiteInternal
 
         /*(this needs to be done at the actual time of forming peaks or else the average is wrong so the peak can be formed out
             of incorrect relations (average shouldn't include relations already grouped into peaks)*/
-        private List<ProteoformRelation> find_nearby_relations(List<ProteoformRelation> ungrouped_relations)
+        private List<ProteoformRelation> find_nearby_relations(HashSet<ProteoformRelation> ungrouped_relations)
         {
             if (ungrouped_relations.Count <= 0)
             {
