@@ -29,7 +29,7 @@ namespace Test
             pr1.Accepted = true;
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
-            DeltaMassPeak peak = new DeltaMassPeak(prs[0], prs);
+            DeltaMassPeak peak = new DeltaMassPeak(prs[0],new HashSet<ProteoformRelation>(prs));
             Sweet.lollipop.et_peaks = new List<DeltaMassPeak> { peak };
             test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
             test_community.theoretical_proteoforms = new TheoreticalProteoform[] { pf2 };
@@ -163,7 +163,7 @@ namespace Test
             pr1.Accepted = true;
             List<ProteoformRelation> prs = new List<ProteoformRelation> { pr1 };
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
-            DeltaMassPeak peak = new DeltaMassPeak(prs[0], prs);
+            DeltaMassPeak peak = new DeltaMassPeak(prs[0], new HashSet<ProteoformRelation>(prs));
             Sweet.lollipop.et_peaks = new List<DeltaMassPeak> { peak };
             test_community.experimental_proteoforms = new ExperimentalProteoform[] { pf1 };
             test_community.theoretical_proteoforms = new TheoreticalProteoform[] { pf2 };
