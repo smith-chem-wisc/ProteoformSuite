@@ -37,7 +37,7 @@ namespace ProteoformSuiteInternal
             Dictionary<Tuple<string, double>, MsScan> ms_scans = new Dictionary<Tuple<string, double>, MsScan>();
             foreach (InputFile file in files)
                 ms_scans = get_ms_scans( ms_scans, file);
-           foreach(ExperimentalProteoform e in SaveState.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => e.linked_proteoform_references != null && (SaveState.lollipop.count_adducts_as_identifications || !e.adduct) && e.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) == 0))
+           foreach(ExperimentalProteoform e in Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(e => e.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !e.adduct) && e.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) == 0))
             {
                 foreach (Component comp in e.aggregated_components)
                 {

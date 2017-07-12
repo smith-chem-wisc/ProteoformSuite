@@ -32,32 +32,39 @@ namespace ProteoformSuiteGUI
             get { return file.filename; }
         }
 
-        //For protein databases
-        public bool ContaminantDB
-        {
-            get { return file.ContaminantDB; }
-            set { file.ContaminantDB = value; }
-        }
-
-
         // For identification and quantification files
         public int biological_replicate
         {
-            get { return file.biological_replicate; }
-            set { file.biological_replicate = value; }
+            get
+            {
+                return file.biological_replicate;
+            }
+            set
+            {
+                Sweet.change_file(file, file.biological_replicate, nameof(file.biological_replicate), file.biological_replicate.ToString(), value.ToString());
+                file.biological_replicate = value;
+            }
         }
+
 
         public int Fraction
         {
             get { return file.fraction; }
-            set { file.fraction = value; }
+            set
+            {
+                Sweet.change_file(file, file.fraction, nameof(file.fraction), file.fraction.ToString(), value.ToString());
+                file.fraction = value;
+            }
         }
-
 
         public int technical_replicate
         {
             get { return file.technical_replicate; }
-            set { file.technical_replicate = value; }
+            set
+            {
+                Sweet.change_file(file, file.technical_replicate, nameof(file.technical_replicate), file.technical_replicate.ToString(), value.ToString());
+                file.technical_replicate = value;
+            }
         }
 
         public bool topdown_file
@@ -72,22 +79,58 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        public Labeling Labeling
+        //For protein databases
+        public bool ContaminantDB
         {
-            get { return file.label; }
-            set { file.label = value; }
+            get
+            {
+                return file.ContaminantDB;
+            }
+            set
+            {
+                Sweet.change_file(file, file.ContaminantDB, nameof(file.ContaminantDB), file.ContaminantDB.ToString(), value.ToString());
+                file.ContaminantDB = value;
+            }
         }
 
         public string lt_condition
         {
-            get { return file.lt_condition; }
-            set { file.lt_condition = value; }
+            get
+            {
+                return file.lt_condition;
+            }
+            set
+            {
+                Sweet.change_file(file, file.lt_condition, nameof(file.lt_condition), file.lt_condition.ToString(), value.ToString());
+                file.lt_condition = value;
+            }
         }
 
+
         public string hv_condition
+        { 
+            get
+            {
+                return file.hv_condition;
+            }
+            set
+            {
+                Sweet.change_file(file, file.hv_condition, nameof(file.hv_condition), file.hv_condition.ToString(), value.ToString());
+                file.hv_condition = value;
+            }
+        }
+
+        public Labeling Labeling
         {
-            get { return file.hv_condition; }
-            set { file.hv_condition = value; }
+            get
+            {
+                return file.label;
+            }
+            set
+            {
+                Sweet.change_file(file, file.label, nameof(file.label), file.label.ToString(), value.ToString());
+                file.label = value;
+            }
         }
 
         // Other for all files
@@ -127,7 +170,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(UniqueId)].HeaderText = "File ID";
             dgv.Columns[nameof(complete_path)].HeaderText = "File Path";
             dgv.Columns[nameof(biological_replicate)].HeaderText = "Biological Replicate";
-            dgv.Columns[nameof(lt_condition)].HeaderText = "NeuCode Light Condition";
+            dgv.Columns[nameof(lt_condition)].HeaderText = Sweet.lollipop.neucode_labeled ? "NeuCode Light Condition" : "Condition";
             dgv.Columns[nameof(hv_condition)].HeaderText = "NeuCode Heavy Condition";
             dgv.Columns[nameof(ContaminantDB)].HeaderText = "Contaminant Database";
             dgv.Columns[nameof(topdown_file)].HeaderText = "Top-down File";
@@ -145,7 +188,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(Fraction)].Visible = dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             dgv.Columns[nameof(lt_condition)].Visible = dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             dgv.Columns[nameof(technical_replicate)].Visible = dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
-            dgv.Columns[nameof(hv_condition)].Visible = dgv_purposes.Contains(Purpose.Quantification);
+            dgv.Columns[nameof(hv_condition)].Visible = Sweet.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(ContaminantDB)].Visible = dgv_purposes.Contains(Purpose.ProteinDatabase);
             dgv.Columns[nameof(topdown_file)].Visible = dgv_purposes.Contains(Purpose.RawFile) || dgv_purposes.Contains(Purpose.CalibrationIdentification);
         }

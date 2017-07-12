@@ -30,15 +30,15 @@ namespace ProteoformSuiteGUI
         {
             ClearListsTablesFigures(true);
 
-            SaveState.lollipop.getBiorepsFractionsList(SaveState.lollipop.input_files); // list of bioreps with a list of fractions for each biorep
-            SaveState.lollipop.getObservationParameters(SaveState.lollipop.neucode_labeled, SaveState.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
-            if (SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.Quantification).Count() > 0)
+            Sweet.lollipop.getBiorepsFractionsList(Sweet.lollipop.input_files); // list of bioreps with a list of fractions for each biorep
+            Sweet.lollipop.getObservationParameters(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+            if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0)
                 (MdiParent as ProteoformSweet).quantification.InitializeParameterSet();
 
             Parallel.Invoke
             (
-                () => SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_experimental_components, Purpose.Identification, true),
-                () => SaveState.lollipop.process_raw_components(SaveState.lollipop.input_files, SaveState.lollipop.raw_quantification_components, Purpose.Quantification, true)
+                () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true),
+                () => Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_quantification_components, Purpose.Quantification, true)
             );
 
             FillTablesAndCharts();
@@ -46,7 +46,7 @@ namespace ProteoformSuiteGUI
 
         public void InitializeParameterSet()
         {
-            rb_displayQuantificationComponents.Enabled = SaveState.lollipop.get_files(SaveState.lollipop.input_files, Purpose.Quantification).Count() > 0;
+            rb_displayQuantificationComponents.Enabled = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0;
             FillTablesAndCharts();
         }
 
@@ -78,20 +78,20 @@ namespace ProteoformSuiteGUI
 
         public void FillTablesAndCharts()
         {
-            DisplayUtility.FillDataGridView(dgv_fileList, SaveState.lollipop.get_files(SaveState.lollipop.input_files, new Purpose[] { Purpose.Identification, Purpose.Quantification }).Select(c => new DisplayInputFile(c)));
+            DisplayUtility.FillDataGridView(dgv_fileList, Sweet.lollipop.get_files(Sweet.lollipop.input_files, new Purpose[] { Purpose.Identification, Purpose.Quantification }).Select(c => new DisplayInputFile(c)));
             DisplayInputFile.FormatInputFileTable(dgv_fileList, new Purpose[] { Purpose.Identification, Purpose.Quantification });
             dgv_fileList.ReadOnly = true;
 
-            if (rb_displayIdentificationComponents.Checked && SaveState.lollipop.raw_experimental_components.Count > 0)
-                DisplayUtility.FillDataGridView(dgv_rawComponents, SaveState.lollipop.raw_experimental_components.Select(c => new DisplayComponent(c)));
+            if (rb_displayIdentificationComponents.Checked && Sweet.lollipop.raw_experimental_components.Count > 0)
+                DisplayUtility.FillDataGridView(dgv_rawComponents, Sweet.lollipop.raw_experimental_components.Select(c => new DisplayComponent(c)));
 
-            if (rb_displayQuantificationComponents.Checked && SaveState.lollipop.raw_quantification_components.Count > 0)
-                DisplayUtility.FillDataGridView(dgv_rawComponents, SaveState.lollipop.raw_quantification_components.Select(c => new DisplayComponent(c)));
+            if (rb_displayQuantificationComponents.Checked && Sweet.lollipop.raw_quantification_components.Count > 0)
+                DisplayUtility.FillDataGridView(dgv_rawComponents, Sweet.lollipop.raw_quantification_components.Select(c => new DisplayComponent(c)));
 
             DisplayComponent.FormatComponentsTable(dgv_rawComponents, true);
 
             NeuCodePairs pairs_form = (MdiParent as ProteoformSweet).neuCodePairs;
-            if (SaveState.lollipop.neucode_labeled && pairs_form.ReadyToRunTheGamut())
+            if (Sweet.lollipop.neucode_labeled && pairs_form.ReadyToRunTheGamut())
                 pairs_form.RunTheGamut();
         }
 

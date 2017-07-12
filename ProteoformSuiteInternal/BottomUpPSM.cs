@@ -32,7 +32,7 @@ namespace ProteoformSuiteInternal
                 return
                    modifications == null || modifications.Count == 0 ?
                        "Unmodified" :
-                       String.Join("; ", modifications.Select(ptm => ptm.position > 0 ? ptm.modification.id + "@" + ptm.position : SaveState.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id));
+                       String.Join("; ", modifications.Select(ptm => ptm.position > 0 ? ptm.modification.id + "@" + ptm.position : Sweet.lollipop.theoretical_database.unlocalized_lookup.TryGetValue(ptm.modification, out UnlocalizedModification x) ? x.id : ptm.modification.id));
 
             }
         }

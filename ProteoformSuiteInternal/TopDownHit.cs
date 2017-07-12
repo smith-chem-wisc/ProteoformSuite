@@ -120,7 +120,7 @@ namespace ProteoformSuiteInternal
             for (int r = 0; r < sequence.Length; r++)
             {
                 sbsequence.Append(sequence[r]);
-                if (SaveState.lollipop.carbamidomethylation && sequence[r] == 'C')
+                if (Sweet.lollipop.carbamidomethylation && sequence[r] == 'C')
                 {
                     sbsequence.Append("[H3C2N1O1]");
                 }
