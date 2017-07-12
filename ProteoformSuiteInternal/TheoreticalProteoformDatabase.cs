@@ -55,7 +55,7 @@ namespace ProteoformSuiteInternal
             theoretical_proteins.Clear();
 
             //Read the UniProt-XML and ptmlist
-            List<ModificationWithLocation> all_known_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).ToList();
+            List<ModificationWithLocation> all_known_modifications = Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.PtmList).SelectMany(file => PtmListLoader.ReadModsFromFile(file.complete_path)).OfType<ModificationWithLocation>().ToList();
             uniprotModifications = make_modification_dictionary(all_known_modifications);
 
             Dictionary<string, Modification> um;
@@ -67,15 +67,15 @@ namespace ProteoformSuiteInternal
 
             foreach (string filename in Directory.GetFiles(Path.Combine(current_directory, "Mods")))
             {
-                var new_mods = !filename.EndsWith("variable.txt") || Sweet.lollipop.methionine_oxidation ?
-                    PtmListLoader.ReadModsFromFile(filename) :
-                    new List<ModificationWithLocation>(); // Empty variable modifications if not selected
+                List<ModificationWithMass> new_mods = !filename.EndsWith("variable.txt") || Sweet.lollipop.methionine_oxidation ?
+                    PtmListLoader.ReadModsFromFile(filename).OfType<ModificationWithMass>().ToList() :
+                    new List<ModificationWithMass>(); // Empty variable modifications if not selected
                 if (filename.EndsWith("variable.txt"))
-                    variableModifications = new_mods.OfType<ModificationWithMass>().ToList();
+                    variableModifications = new_mods;
                 if (filename.EndsWith("intact_mods.txt"))
                 {
                     List<double> old_mods = all_known_modifications.OfType<ModificationWithMass>().Select(m => m.monoisotopicMass).ToList();
-                    new_mods = new_mods.OfType<ModificationWithMass>().Where(m => !old_mods.Contains(m.monoisotopicMass)); // get rid of the unlocalized mods if they're already present
+                    new_mods = new_mods.Where(m => !old_mods.Contains(m.monoisotopicMass)).ToList(); // get rid of the unlocalized mods if they're already present
                 }
                 all_known_modifications.AddRange(new_mods);
             }
@@ -208,9 +208,7 @@ namespace ProteoformSuiteInternal
                     p.Accession + "_" + (begin + startPosAfterCleavage).ToString() + "full" + end.ToString(),
                     p.GeneNames.ToList(),
                     p.OneBasedPossibleLocalizedModifications,
-                    new int?[] { begin + startPosAfterCleavage },
-                    new int?[] { end },
-                    new string[] { Sweet.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full" },
+                    new List<ProteolysisProduct> { new ProteolysisProduct(begin + startPosAfterCleavage, end, Sweet.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full") },
                     p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
 
                 //Add fragments
@@ -235,9 +233,7 @@ namespace ProteoformSuiteInternal
                             p.Accession + "_" + feature_begin.ToString() + "frag" + feature_end.ToString(),
                             p.GeneNames.ToList(),
                             segmented_ptms,
-                            new int?[] { feature_begin },
-                            new int?[] { feature_end },
-                            new string[] { feature_type },
+                            new List<ProteolysisProduct> { new ProteolysisProduct(feature_begin, feature_end, feature_type) },
                             p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
                 }
                 expanded_prots.AddRange(new_prots);
