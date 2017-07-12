@@ -32,7 +32,7 @@ namespace Test
             //Based on components
             List<Component> active = new List<Component> { is_running };
             Component next = Sweet.lollipop.find_next_root(ordered, active);
-            Assert.True(Math.Abs(next.weighted_monoisotopic_mass - is_running.weighted_monoisotopic_mass) > 2 * (double)Sweet.lollipop.missed_monos);
+            Assert.True(Math.Abs(next.weighted_monoisotopic_mass - is_running.weighted_monoisotopic_mass) > 2 * (double)Sweet.lollipop.maximum_missed_monos);
             Assert.AreEqual(4, next.intensity_sum_olcs);
 
             //Based on experimental proteoforms
@@ -40,7 +40,7 @@ namespace Test
             exp.root = is_running;
             List<ExperimentalProteoform> active2 = new List<ExperimentalProteoform> { exp };
             Component next2 = Sweet.lollipop.find_next_root(ordered, active2);
-            Assert.True(Math.Abs(next.weighted_monoisotopic_mass - is_running.weighted_monoisotopic_mass) > 2 * (double)Sweet.lollipop.missed_monos);
+            Assert.True(Math.Abs(next.weighted_monoisotopic_mass - is_running.weighted_monoisotopic_mass) > 2 * (double)Sweet.lollipop.maximum_missed_monos);
             Assert.AreEqual(4, next.intensity_sum_olcs);
         }
 
@@ -66,7 +66,7 @@ namespace Test
 
             List<ExperimentalProteoform> active = new List<ExperimentalProteoform> { is_running };
             ExperimentalProteoform next = Sweet.lollipop.find_next_root(ordered, active);
-            Assert.True(Math.Abs(next.agg_mass - is_running.agg_mass) > 2 * (double)Sweet.lollipop.missed_monos);
+            Assert.True(Math.Abs(next.agg_mass - is_running.agg_mass) > 2 * (double)Sweet.lollipop.maximum_missed_monos);
             Assert.AreEqual(4, next.agg_intensity);
         }
 
@@ -113,6 +113,7 @@ namespace Test
         {
             double max_monoisotopic_mass = TestExperimentalProteoform.starter_mass + TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = TestExperimentalProteoform.starter_mass - TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-TestExperimentalProteoform.missed_monoisotopics, TestExperimentalProteoform.missed_monoisotopics * 2 + 1).ToList();
 
             IEnumerable<NeuCodePair> neucodes = TestExperimentalProteoform.generate_neucode_components(TestExperimentalProteoform.starter_mass).OfType<NeuCodePair>();
             List<Component> quant_components = TestExperimentalProteoform.generate_neucode_quantitative_components();
@@ -190,7 +191,7 @@ namespace Test
 
             Sweet.lollipop.neucode_labeled = false;
             Sweet.lollipop.remaining_components = new List<Component>(components);
-            Sweet.lollipop.remaining_verification_components = new List<Component>(components);
+            Sweet.lollipop.remaining_verification_components = new HashSet<Component>(components);
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             e.root = components[0];
             e.aggregate();

@@ -113,7 +113,7 @@ namespace Test
             TheoreticalProteoform t = ConstructorsForTesting.make_a_theoretical();
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1");
             ProteoformRelation et = new ProteoformRelation(e, t, ProteoformComparison.ExperimentalTheoretical, 0, TestContext.CurrentContext.TestDirectory);
-            et.peak = new DeltaMassPeak(et, new List<ProteoformRelation> { et });
+            et.peak = new DeltaMassPeak(et, new HashSet<ProteoformRelation> { et });
             et.peak.Accepted = true;
             e.relationships.Add(et);
             t.relationships.Add(et);

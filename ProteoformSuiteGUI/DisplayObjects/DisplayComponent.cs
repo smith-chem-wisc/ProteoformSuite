@@ -85,8 +85,6 @@ namespace ProteoformSuiteGUI
         }
 
         public double manual_mass_shift
-
-
         {
             get { return c.manual_mass_shift; }
         }
