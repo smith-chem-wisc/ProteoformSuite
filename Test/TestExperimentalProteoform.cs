@@ -171,6 +171,7 @@ namespace Test
         [Test]
         public void aggregate_in_bounds_monoisotopic_tolerance()
         {
+            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-missed_monoisotopics, missed_monoisotopics * 2 + 1).ToList();
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Sweet.lollipop.neucode_labeled = true;
@@ -190,6 +191,7 @@ namespace Test
         [Test]
         public void aggregate_out_of_monoisotpic_tolerance()
         {
+            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-missed_monoisotopics, missed_monoisotopics * 2 + 1).ToList();
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Sweet.lollipop.neucode_labeled = true;
@@ -210,6 +212,7 @@ namespace Test
         public void aggregate_in_bounds_middle_monoisotopic_tolerance()
         {
             missed_monoisotopics -= 1;
+            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-missed_monoisotopics, missed_monoisotopics * 2 + 1).ToList();
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Sweet.lollipop.neucode_labeled = true;
@@ -230,6 +233,7 @@ namespace Test
         public void aggregate_out_of_middle_monoisotopic_tolerance()
         {
             missed_monoisotopics -= 1;
+            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-missed_monoisotopics, missed_monoisotopics * 2 + 1).ToList();
             double max_monoisotopic_mass = starter_mass + missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = starter_mass - missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             Sweet.lollipop.neucode_labeled = true;
