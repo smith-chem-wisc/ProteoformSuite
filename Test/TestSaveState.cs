@@ -207,7 +207,7 @@ namespace Test
             ResultsSummaryGenerator.save_biological_replicate_intensities(Path.Combine(TestContext.CurrentContext.TestDirectory, "biorep.txt"), true, new List<ExperimentalProteoform> { e });
             Assert.True(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "biorep.txt")));
         }
-
+        
         #endregion Results Summary
 
     }
