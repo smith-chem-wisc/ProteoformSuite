@@ -1136,7 +1136,6 @@ namespace ProteoformSuiteInternal
                 int biological_replicate;
                 int fraction;
                 int technical_replicate;
-                bool tdRawFile;
                 string[] file_description = line.Split('\t');
                 if (file_descriptions.Count(d => d.Split('\t')[0] == file_description[0]) > 1)
                     return "Error in file descriptions file - multiple entries for one filename";
@@ -1145,7 +1144,6 @@ namespace ProteoformSuiteInternal
                     biological_replicate = Convert.ToInt32(file_description[1]);
                     fraction = Convert.ToInt32(file_description[2]);
                     technical_replicate = Convert.ToInt32(file_description[3]);
-                    tdRawFile = Convert.ToBoolean(file_description[4]);
                 }
                 catch
                 {
@@ -1163,7 +1161,7 @@ namespace ProteoformSuiteInternal
                 return "Error in file descriptions file - top-down hit(s) with no matching description.";
             if (input_files.Where(f => f.purpose == Purpose.RawFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == 0))
                 return "Label fraction, biological replicate, and techincal replicate of input files.";
-            foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && td_hits_calibration.Any(h => h.filename == f.filename)))
+            foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && f.topdown_file))
             {
                 IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = ThermoStaticData.LoadAllStaticData(raw_file.complete_path);
                 Parallel.ForEach(SaveState.lollipop.td_hits_calibration.Where(f => f.filename == raw_file.filename).ToList(), hit =>
@@ -1186,12 +1184,12 @@ namespace ProteoformSuiteInternal
                         Calibration calibration = new Calibration();
                         foreach(InputFile file in input_files.Where(f => f.purpose == Purpose.RawFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate))
                         {
-                            if (!file.topdownRawFile) process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
+                            process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.topdown_file == file.topdown_file && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
                             bool calibrated = get_calibration_points(calibration, file);
-                            if (!file.topdownRawFile && calibrated)
+                            if (calibrated)
                             {
-                                determine_component_shift(calibration, biological_replicate, fraction, technical_replicate);
-                                List<InputFile> files = input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate).ToList();
+                                determine_component_shift(calibration, file.topdown_file, biological_replicate, fraction, technical_replicate);
+                                List<InputFile> files = input_files.Where(f => f.topdown_file == file.topdown_file && f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate).ToList();
                                 foreach (InputFile f in files) calibration.calibrate_components_in_xlsx(f);
                             }
                         }
@@ -1209,14 +1207,13 @@ namespace ProteoformSuiteInternal
 
         public bool get_calibration_points(Calibration calibration, InputFile raw_file)
         {
-            bool topdown_file = td_hits_calibration.Any(h => h.filename == raw_file.filename);
-            List<TopDownHit> hits = td_hits_calibration.Where(h => h.biological_replicate == raw_file.biological_replicate && h.fraction == raw_file.fraction && (!topdown_file || h.technical_replicate == raw_file.technical_replicate) && h.tdResultType == TopDownResultType.TightAbsoluteMass && h.score >= 40).ToList();
-            return calibration.Run_TdMzCal(raw_file, hits, topdown_file, raw_file.biological_replicate, raw_file.fraction, raw_file.technical_replicate);
+            List<TopDownHit> hits = td_hits_calibration.Where(h => h.biological_replicate == raw_file.biological_replicate && h.fraction == raw_file.fraction && (!raw_file.topdown_file || h.technical_replicate == raw_file.technical_replicate) && h.tdResultType == TopDownResultType.TightAbsoluteMass && h.score >= 40).ToList();
+            return calibration.Run_TdMzCal(raw_file, hits, raw_file.topdown_file, raw_file.biological_replicate, raw_file.fraction, raw_file.technical_replicate);
         }
 
-        public void determine_component_shift(Calibration calibration, int biological_replicate, int fraction, int technical_replicate)
+        public void determine_component_shift(Calibration calibration, bool topdown_file, int biological_replicate, int fraction, int technical_replicate)
         {
-            Parallel.ForEach(calibration_components.Where(c => c.input_file.biological_replicate == biological_replicate && c.input_file.fraction == fraction && c.input_file.technical_replicate == technical_replicate), c =>
+            Parallel.ForEach(calibration_components.Where(c =>c.input_file.topdown_file == topdown_file && c.input_file.biological_replicate == biological_replicate && c.input_file.fraction == fraction && c.input_file.technical_replicate == technical_replicate), c =>
             {
                 foreach (ChargeState cs in c.charge_states)
                 {

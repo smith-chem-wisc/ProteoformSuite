@@ -99,23 +99,20 @@ namespace ProteoformSuiteInternal
             {
                 hit.mz = hit.mz - bestCf.Predict(new double[] { hit.mz, hit.retention_time });
             }
-            if (!td_file)
+            foreach (Component c in SaveState.lollipop.calibration_components.Where(h => h.input_file.topdown_file == td_file && h.input_file.biological_replicate == bio_rep && h.input_file.technical_replicate == tech_rep && h.input_file.fraction == fraction))
             {
-                foreach (Component c in SaveState.lollipop.calibration_components.Where(h => h.input_file.biological_replicate == bio_rep && h.input_file.technical_replicate == tech_rep && h.input_file.fraction == fraction))
+                foreach (ChargeState cs in c.charge_states)
                 {
-                    foreach (ChargeState cs in c.charge_states)
+                    int scanNumber = myMsDataFile.GetClosestOneBasedSpectrumNumber(c.rt_apex);
+                    var scan = myMsDataFile.GetOneBasedScan(scanNumber);
+                    bool ms1Scan = scan.MsnOrder == 1;
+                    while (!ms1Scan)
                     {
-                        int scanNumber = myMsDataFile.GetClosestOneBasedSpectrumNumber(c.rt_apex);
-                        var scan = myMsDataFile.GetOneBasedScan(scanNumber);
-                        bool ms1Scan = scan.MsnOrder == 1;
-                        while (!ms1Scan)
-                        {
-                            scanNumber--;
-                            scan = myMsDataFile.GetOneBasedScan(scanNumber);
-                            ms1Scan = scan.MsnOrder == 1;
-                        }
-                        cs.mz_centroid = cs.mz_centroid - bestCf.Predict(new double[] { cs.mz_centroid, scan.RetentionTime });
+                        scanNumber--;
+                        scan = myMsDataFile.GetOneBasedScan(scanNumber);
+                        ms1Scan = scan.MsnOrder == 1;
                     }
+                    cs.mz_centroid = cs.mz_centroid - bestCf.Predict(new double[] { cs.mz_centroid, scan.RetentionTime });
                 }
             }
             foreach (var a in myMsDataFile.Where(s => s.MsnOrder == 1))
@@ -208,10 +205,10 @@ namespace ProteoformSuiteInternal
                 Component matching_component = null;
                 if (!td_file) //if calibrating across files find component with matching mass and retention time
                 {
-                    //double hit_mass = (SaveState.lollipop.neucode_labeled ? (identification.mz.ToMass(identification.charge) - (identification.sequence.Count(s => s == 'K') * 128.094963) + (identification.sequence.Count(s => s == 'K') * 136.109162)) : identification.mz.ToMass(identification.charge));
-                    double hit_mass = (SaveState.lollipop.neucode_labeled ? (identification.theoretical_mass - (identification.sequence.Count(s => s == 'K') * 128.094963) + (identification.sequence.Count(s => s == 'K') * 136.109162)) : identification.mz.ToMass(identification.charge));
+                    //look around theoretical mass of topdown hit identified proteoforms - 10 ppm and 5 minutes
+                     double hit_mass = (SaveState.lollipop.neucode_labeled ? (identification.theoretical_mass - (identification.sequence.Count(s => s == 'K') * 128.094963) + (identification.sequence.Count(s => s == 'K') * 136.109162)) : identification.mz.ToMass(identification.charge));
                      matching_component = SaveState.lollipop.calibration_components.Where(c => c.input_file.biological_replicate == bio_rep && c.input_file.fraction == fraction
-                && Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass ) < 0.2
+                && Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass ) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
                 && Math.Abs(c.rt_apex- identification.retention_time) < 5.0 ).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass)).FirstOrDefault();
                     if (matching_component == null) continue;
                     ChargeState cs = matching_component.charge_states.OrderByDescending(c => c.intensity).FirstOrDefault();
@@ -302,9 +299,11 @@ namespace ProteoformSuiteInternal
                             {
                                 theMZ = (theMZ.ToMass(chargeToLookAt) - (identification.sequence.Count(s => s == 'K') * 128.094963) + ((identification.sequence.Count(s => s == 'K') * 136.109162))).ToMz(chargeToLookAt);
                             }
-                            double mass_tolerance = 0.2;
+
+                            //10 ppm
+                            double mass_tolerance = theMZ.ToMass(chargeToLookAt) / 1e6 * 10;
                             var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - ( mass_tolerance / identification.charge), theMZ + ( mass_tolerance / identification.charge)); //WAS ID.CHARGE
-                            if (npwr == 0) //don't break because sometimes monoisotopic mass peak not observed --> still look for other isotopes 
+                            if (npwr == 0) 
                             {
                                 break;
                             }

@@ -60,6 +60,18 @@ namespace ProteoformSuiteGUI
             set { file.technical_replicate = value; }
         }
 
+        public bool topdown_file
+        {
+            get
+            {
+                return file.topdown_file;
+            }
+            set
+            {
+                file.topdown_file = value;
+            }
+        }
+
         public Labeling Labeling
         {
             get { return file.label; }
@@ -118,6 +130,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(lt_condition)].HeaderText = "NeuCode Light Condition";
             dgv.Columns[nameof(hv_condition)].HeaderText = "NeuCode Heavy Condition";
             dgv.Columns[nameof(ContaminantDB)].HeaderText = "Contaminant Database";
+            dgv.Columns[nameof(topdown_file)].HeaderText = "Top-down File";
 
             //EDITABILITY
             dgv.Columns[nameof(UniqueId)].ReadOnly = true;
@@ -134,6 +147,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(technical_replicate)].Visible = dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             dgv.Columns[nameof(hv_condition)].Visible = dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(ContaminantDB)].Visible = dgv_purposes.Contains(Purpose.ProteinDatabase);
+            dgv.Columns[nameof(topdown_file)].Visible = dgv_purposes.Contains(Purpose.RawFile) || dgv_purposes.Contains(Purpose.CalibrationIdentification);
         }
 
         #endregion
