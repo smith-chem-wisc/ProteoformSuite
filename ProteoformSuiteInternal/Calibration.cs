@@ -17,8 +17,7 @@ namespace ProteoformSuiteInternal
     {
         //parameters
         public double fineResolution = 0.1;
-        List<double> test = new List<double>();
-        List<double> test2 = new List<double>();
+
         //CALIBRATION WITH TD HITS
         private int numMs1MassChargeCombinationsConsidered;
         private int numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
@@ -42,32 +41,6 @@ namespace ProteoformSuiteInternal
                     break;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
                 CalibrateLinear(td_file, bio_rep, fraction, tech_rep, dataPointAcquisitionResult.Ms1List);
-                if (!td_file)
-                {
-                    using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\linear" + linearCalibrationRound + ".txt"))
-                    {
-                        foreach(var point in dataPointAcquisitionResult.Ms1List)
-                        {
-                            writer.WriteLine(point.mz + "\t" + point.retentionTime + "\t" + point.Label);
-                        }
-                    }
-
-                    using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\linearComponents" + linearCalibrationRound + ".txt"))
-                    {
-                        foreach (var point in test)
-                        {
-                            writer.WriteLine(point);
-                        }
-                    }
-
-                    using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\linearMassTols" + linearCalibrationRound + ".txt"))
-                    {
-                        foreach (var point in test2)
-                        {
-                            writer.WriteLine(point);
-                        }
-                    }
-                }
             }
 
 
@@ -80,30 +53,6 @@ namespace ProteoformSuiteInternal
                 if (forestCalibrationRound >= 2 && dataPointAcquisitionResult.Ms1List.Count <= trainingPointCounts[forestCalibrationRound - 2])
                     break;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
-                if (!td_file)
-                {
-                    using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\forest" + forestCalibrationRound + ".txt"))
-                    {
-                        foreach (var point in dataPointAcquisitionResult.Ms1List)
-                        {
-                            writer.WriteLine(point.mz + "\t" + point.retentionTime + "\t" + point.Label);
-                        }
-                    }
-                    using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\forestComponents" + forestCalibrationRound + ".txt"))
-                    {
-                        foreach (var point in test)
-                        {
-                            writer.WriteLine(point);
-                        }
-                    }
-                    using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\forestMassTols" + forestCalibrationRound + ".txt"))
-                    {
-                        foreach (var point in test2)
-                        {
-                            writer.WriteLine(point);
-                        }
-                    }
-                }
             }
 
             //calibrate topdown hits if this is topdown file....
@@ -248,7 +197,7 @@ namespace ProteoformSuiteInternal
             {
                 Ms1List = new List<LabeledMs1DataPoint>()
             };
-
+            
             // Set of peaks, identified by m/z and retention time. If a peak is in here, it means it has been a part of an accepted identification, and should be rejected
             var peaksAddedFromMS1HashSet = new HashSet<Tuple<double, int>>();
             foreach (TopDownHit identification in identifications)
@@ -256,15 +205,16 @@ namespace ProteoformSuiteInternal
                 List<int> scanNumbers = new List<int>() { identification.ms2ScanNumber };
                 int proteinCharge = identification.charge;
 
+                Component matching_component = null;
                 if (!td_file) //if calibrating across files find component with matching mass and retention time
                 {
-                    double hit_mass = (SaveState.lollipop.neucode_labeled ? (identification.mz.ToMass(identification.charge) - (identification.sequence.Count(s => s == 'K') * 128.094963) + (identification.sequence.Count(s => s == 'K') * 136.109162)) : identification.mz.ToMass(identification.charge));
-                    Component matching_component = SaveState.lollipop.calibration_components.Where(c => c.input_file.biological_replicate == bio_rep && c.input_file.fraction == fraction
-                && Math.Abs(c.weighted_monoisotopic_mass - hit_mass) * 1e6 / hit_mass < (double)SaveState.lollipop.mass_tolerance
-                && Math.Abs(c.rt_apex- identification.retention_time) < (double)SaveState.lollipop.retention_time_tolerance).OrderBy(c => Math.Abs(c.weighted_monoisotopic_mass - hit_mass)).FirstOrDefault();
+                    //double hit_mass = (SaveState.lollipop.neucode_labeled ? (identification.mz.ToMass(identification.charge) - (identification.sequence.Count(s => s == 'K') * 128.094963) + (identification.sequence.Count(s => s == 'K') * 136.109162)) : identification.mz.ToMass(identification.charge));
+                    double hit_mass = (SaveState.lollipop.neucode_labeled ? (identification.theoretical_mass - (identification.sequence.Count(s => s == 'K') * 128.094963) + (identification.sequence.Count(s => s == 'K') * 136.109162)) : identification.mz.ToMass(identification.charge));
+                     matching_component = SaveState.lollipop.calibration_components.Where(c => c.input_file.biological_replicate == bio_rep && c.input_file.fraction == fraction
+                && Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass ) < 0.2
+                && Math.Abs(c.rt_apex- identification.retention_time) < 5.0 ).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass)).FirstOrDefault();
                     if (matching_component == null) continue;
                     ChargeState cs = matching_component.charge_states.OrderByDescending(c => c.intensity).FirstOrDefault();
-                    if (cs != null) test.Add(cs.mz_centroid.ToMass(cs.charge_count) - hit_mass);
                     scanNumbers.Clear();
                     for (int i = Convert.ToInt16(matching_component.scan_range.Split('-')[0]); i <= Convert.ToInt16(matching_component.scan_range.Split('-')[1]); i++)
                     {
@@ -272,7 +222,6 @@ namespace ProteoformSuiteInternal
                     }
                     proteinCharge = matching_component.charge_states.OrderByDescending(c => c.intensity).First().charge_count;
                 }
-
 
                 var SequenceWithChemicalFormulas = identification.GetSequenceWithChemicalFormula();
                 if (SequenceWithChemicalFormulas == null)
@@ -293,16 +242,10 @@ namespace ProteoformSuiteInternal
                 numMs1MassChargeCombinationsConsidered = 0;
                 numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks = 0;
 
-                //determine mass tolerance
-                List<double> mass_errors = identifications.Select(h => h.mz.ToMass(h.charge) - h.theoretical_mass - Math.Round(h.mz.ToMass(h.charge) - h.theoretical_mass, 0)).ToList();
-                double average_mass_error = mass_errors.Average();
-                double st_dev_mass_error = Math.Sqrt(mass_errors.Average(v => Math.Pow((double)(v - average_mass_error), 2)) / (mass_errors.Count - 1)); 
-                test2.Add(average_mass_error + 3 * st_dev_mass_error);
-
                 foreach (int scanNumber in scanNumbers)
                 {
-                    res.Ms1List.AddRange(SearchMS1Spectra(average_mass_error, st_dev_mass_error, masses, intensities, scanNumber, -1, peaksAddedFromMS1HashSet, proteinCharge, identification));
-                    res.Ms1List.AddRange(SearchMS1Spectra(average_mass_error, st_dev_mass_error ,masses, intensities, scanNumber, 1, peaksAddedFromMS1HashSet, proteinCharge, identification));
+                    res.Ms1List.AddRange(SearchMS1Spectra(masses, intensities, scanNumber, -1, peaksAddedFromMS1HashSet, proteinCharge, identification));
+                    res.Ms1List.AddRange(SearchMS1Spectra(masses, intensities, scanNumber, 1, peaksAddedFromMS1HashSet, proteinCharge, identification));
                     res.numMs1MassChargeCombinationsConsidered += numMs1MassChargeCombinationsConsidered;
                     res.numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks += numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
                 }
@@ -310,7 +253,7 @@ namespace ProteoformSuiteInternal
             return res;
         }
 
-        private IEnumerable<LabeledMs1DataPoint> SearchMS1Spectra(double average_mass_error, double st_dev_mass_error, double[] originalMasses, double[] originalIntensities, int ms2spectrumIndex, int direction, HashSet<Tuple<double, int>> peaksAddedHashSet, int peptideCharge, TopDownHit identification)
+        private IEnumerable<LabeledMs1DataPoint> SearchMS1Spectra(double[] originalMasses, double[] originalIntensities, int ms2spectrumIndex, int direction, HashSet<Tuple<double, int>> peaksAddedHashSet, int peptideCharge, TopDownHit identification)
         {
             var theIndex = -1;
             if (direction == 1)
@@ -357,10 +300,11 @@ namespace ProteoformSuiteInternal
                             double theMZ = a.ToMz(chargeToLookAt);
                             if (SaveState.lollipop.neucode_labeled)
                             {
-                                theMZ = theMZ - (((identification.sequence.Count(s => s == 'K') * 128.094963) / chargeToLookAt) + ((identification.sequence.Count(s => s == 'K') * 136.109162) / chargeToLookAt));
+                                theMZ = (theMZ.ToMass(chargeToLookAt) - (identification.sequence.Count(s => s == 'K') * 128.094963) + ((identification.sequence.Count(s => s == 'K') * 136.109162))).ToMz(chargeToLookAt);
                             }
-                            var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - ((average_mass_error - (3 * st_dev_mass_error)) / identification.charge), theMZ + ((average_mass_error + (3 * st_dev_mass_error)) / identification.charge)); //WAS ID.CHARGE
-                            if (npwr == 0)
+                            double mass_tolerance = 0.2;
+                            var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - ( mass_tolerance / identification.charge), theMZ + ( mass_tolerance / identification.charge)); //WAS ID.CHARGE
+                            if (npwr == 0) //don't break because sometimes monoisotopic mass peak not observed --> still look for other isotopes 
                             {
                                 break;
                             }

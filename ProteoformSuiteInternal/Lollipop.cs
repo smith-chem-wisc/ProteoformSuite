@@ -50,11 +50,11 @@ namespace ProteoformSuiteInternal
             "Proteoform Identification Results (.xlsx)",
             "Proteoform Quantification Results (.xlsx)",
             "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
-            "ProSight Top-Down Results (.xlsx)",
+            "Top-Down Results (Unlabeled) (.xlsx)",
             "Bottom-Up Results MzIdentML (.mzid)",
             "Uncalibrated Proteoform Identification Results (.xlsx)",
             "Raw Files (.raw)",
-             "Uncalibrated ProSight Top-Down Results (.xlsx)"
+             "Uncalibrated Top-Down Results (Unlabeled) (.xlsx)"
         };
 
         public static List<string>[] acceptable_extensions = new List<string>[]
@@ -639,6 +639,7 @@ namespace ProteoformSuiteInternal
                         topdown_proteoforms.Add(new_pf);
                     }
                 }
+
             });
             return topdown_proteoforms;
         }
@@ -1151,15 +1152,6 @@ namespace ProteoformSuiteInternal
                     return "Error in file descriptions file values";
 
                 }
-                List<InputFile> files = input_files.Where(f => f.filename == file_description[0]).ToList();
-                foreach (InputFile file in files)
-                {
-                    file.biological_replicate = biological_replicate;
-                    file.fraction = fraction;
-                    file.technical_replicate = technical_replicate;
-                    file.topdownRawFile = tdRawFile;
-
-                }
                 Parallel.ForEach(td_hits_calibration.Where(h => h.filename == file_description[0]), h =>
                 {
                     h.biological_replicate = biological_replicate;
@@ -1170,8 +1162,7 @@ namespace ProteoformSuiteInternal
             if (td_hits_calibration.Any(h => h.fraction == 0))
                 return "Error in file descriptions file - top-down hit(s) with no matching description.";
             if (input_files.Where(f => f.purpose == Purpose.RawFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == 0))
-                return "Error in file descriptions file - raw or identification file(s) with no matching description.";
-
+                return "Label fraction, biological replicate, and techincal replicate of input files.";
             foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && td_hits_calibration.Any(h => h.filename == f.filename)))
             {
                 IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = ThermoStaticData.LoadAllStaticData(raw_file.complete_path);

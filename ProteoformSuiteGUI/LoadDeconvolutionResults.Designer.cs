@@ -60,7 +60,6 @@
             this.rb_neucode = new System.Windows.Forms.RadioButton();
             this.rb_unlabeled = new System.Windows.Forms.RadioButton();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.rb_topdown = new System.Windows.Forms.RadioButton();
             this.rb_standardOptions = new System.Windows.Forms.RadioButton();
             this.rb_chemicalCalibration = new System.Windows.Forms.RadioButton();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -656,7 +655,6 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.rb_topdown);
             this.groupBox4.Controls.Add(this.rb_standardOptions);
             this.groupBox4.Controls.Add(this.rb_chemicalCalibration);
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -666,17 +664,6 @@
             this.groupBox4.TabIndex = 51;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Load Options";
-            // 
-            // rb_topdown
-            // 
-            this.rb_topdown.AutoSize = true;
-            this.rb_topdown.Location = new System.Drawing.Point(18, 58);
-            this.rb_topdown.Name = "rb_topdown";
-            this.rb_topdown.Size = new System.Drawing.Size(73, 17);
-            this.rb_topdown.TabIndex = 58;
-            this.rb_topdown.Text = "Top-down";
-            this.rb_topdown.UseVisualStyleBackColor = true;
-            this.rb_topdown.CheckedChanged += new System.EventHandler(this.rb_topdown_CheckedChanged);
             // 
             // rb_standardOptions
             // 
@@ -1212,7 +1199,6 @@
         private System.Windows.Forms.RadioButton rb_unlabeled;
         private System.Windows.Forms.RadioButton rb_standardOptions;
         private System.Windows.Forms.RadioButton rb_chemicalCalibration;
-        private System.Windows.Forms.RadioButton rb_topdown;
         private System.Windows.Forms.Button bt_calibrate;
     }
 }

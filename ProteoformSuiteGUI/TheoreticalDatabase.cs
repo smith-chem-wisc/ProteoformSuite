@@ -250,6 +250,8 @@ namespace ProteoformSuiteGUI
         private void cb_reduced_disulfide_CheckedChanged(object sender, EventArgs e)
         {
             SaveState.lollipop.reduced_disulfides = cb_reduced_disulfide.Checked;
+            ckbx_combineIdenticalSequences.Checked = false;
+            ckbx_combineTheoreticalsByMass.Checked = false;
         }
 
         #endregion CHECKBOXES Private Methods
