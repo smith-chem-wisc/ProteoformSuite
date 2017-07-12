@@ -743,7 +743,7 @@
             // 
             this.splitContainer9.Panel2.Controls.Add(this.ct_relativeDifference);
             this.splitContainer9.Size = new System.Drawing.Size(485, 461);
-            this.splitContainer9.SplitterDistance = 113;
+            this.splitContainer9.SplitterDistance = 112;
             this.splitContainer9.TabIndex = 0;
             // 
             // groupBox6
@@ -761,7 +761,7 @@
             this.groupBox6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox6.Location = new System.Drawing.Point(0, 0);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(485, 113);
+            this.groupBox6.Size = new System.Drawing.Size(485, 112);
             this.groupBox6.TabIndex = 31;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "FDR Determination Via Permutation";
@@ -904,7 +904,7 @@
             this.ct_relativeDifference.Series.Add(series4);
             this.ct_relativeDifference.Series.Add(series5);
             this.ct_relativeDifference.Series.Add(series6);
-            this.ct_relativeDifference.Size = new System.Drawing.Size(485, 344);
+            this.ct_relativeDifference.Size = new System.Drawing.Size(485, 345);
             this.ct_relativeDifference.TabIndex = 30;
             this.ct_relativeDifference.Text = "Observed vs. Expected Relative Difference";
             this.ct_relativeDifference.MouseClick += new System.Windows.Forms.MouseEventHandler(this.ct_relativeDifference_MouseClick);
