@@ -108,6 +108,10 @@ namespace ProteoformSuiteGUI
             cmb_loadTable3.SelectedIndex = 2;
             bt_calibrate.Visible = false;
 
+            cmb_loadTable1.Enabled = true;
+            cmb_loadTable2.Enabled = true;
+            cmb_loadTable3.Enabled = true;
+
             if (rb_chemicalCalibration.Checked)
             {
                 for (int i = 5; i < 8; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
@@ -116,13 +120,11 @@ namespace ProteoformSuiteGUI
                 cmb_loadTable1.SelectedIndex = 5;
                 cmb_loadTable2.SelectedIndex = 6;
                 cmb_loadTable3.SelectedIndex = 7;
-            }
 
-            else if (rb_topdown.Checked)
-            {
-                cmb_loadTable1.SelectedIndex = 0;
-                cmb_loadTable2.SelectedIndex = 3;
-                cmb_loadTable3.SelectedIndex = 2;
+                cmb_loadTable1.Enabled = false;
+                cmb_loadTable2.Enabled = false;
+                cmb_loadTable3.Enabled = false;
+
             }
 
             lb_filter1.Text = Lollipop.file_lists[cmb_loadTable1.SelectedIndex];
@@ -385,7 +387,7 @@ namespace ProteoformSuiteGUI
                 MessageBox.Show("First create a theoretical proteoform database. On the Results tab, select Theoretical Proteoform Database.");
                 return;
             }
-            MessageBox.Show("Please select file with descriptions of filename, biological replicate, fraction, and technical replicate #'s.");
+            MessageBox.Show("Please select file with descriptions of top-down hits filename, biological replicate, fraction, and technical replicate #'s.");
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Title = "File Descriptions";
             openFileDialog.Filter = ".tsv Files (*.tsv) | *.tsv";

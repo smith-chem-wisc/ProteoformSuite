@@ -74,6 +74,11 @@ namespace ProteoformSuiteGUI
             get { return t.agg_RT; }
         }
 
+        public double theoretical_mass
+        {
+            get { return t.theoretical_mass;  }
+        }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -92,6 +97,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(modified_mass)].HeaderText = "Modified Mass";
             dgv.Columns[nameof(bottomUpPSMcount)].HeaderText = "Bottom-Up PSM Count";
             dgv.Columns[nameof(retentionTime)].HeaderText = "Retention Time";
+            dgv.Columns[nameof(theoretical_mass)].HeaderText = "Theoretical Mass";
             dgv.Columns[nameof(pfr)].HeaderText = "PFR";
             dgv.AllowUserToAddRows = false;
         }

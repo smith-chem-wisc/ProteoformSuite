@@ -26,22 +26,11 @@ namespace ProteoformSuiteGUI
 
         #region Public Properties
 
-        // For all files
-        public int UniqueId
-        {
-            get { return file.UniqueId; }
-        }
 
         public string Filename
         {
             get { return file.filename; }
         }
-
-        public Purpose Purpose
-        {
-            get { return file.purpose; }
-        }
-
 
         //For protein databases
         public bool ContaminantDB
@@ -64,17 +53,6 @@ namespace ProteoformSuiteGUI
             set { file.fraction = value; }
         }
 
-        public string lt_condition
-        {
-            get { return file.lt_condition; }
-            set { file.lt_condition = value; }
-        }
-
-        public string hv_condition
-        {
-            get { return file.hv_condition; }
-            set { file.hv_condition = value; }
-        }
 
         public int technical_replicate
         {
@@ -88,7 +66,17 @@ namespace ProteoformSuiteGUI
             set { file.label = value; }
         }
 
+        public string lt_condition
+        {
+            get { return file.lt_condition; }
+            set { file.lt_condition = value; }
+        }
 
+        public string hv_condition
+        {
+            get { return file.hv_condition; }
+            set { file.hv_condition = value; }
+        }
 
         // Other for all files
         public string complete_path
@@ -100,6 +88,18 @@ namespace ProteoformSuiteGUI
         {
             get { return file.directory; }
         }
+
+        public Purpose Purpose
+        {
+            get { return file.purpose; }
+        }
+
+        // For all files
+        public int UniqueId
+        {
+            get { return file.UniqueId; }
+        }
+
 
         #endregion Public Properties
 
@@ -127,7 +127,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(Purpose)].ReadOnly = true;
 
             //VISIBILITY
-            dgv.Columns[nameof(Labeling)].Visible = dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
+            dgv.Columns[nameof(Labeling)].Visible = dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             dgv.Columns[nameof(biological_replicate)].Visible = dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             dgv.Columns[nameof(Fraction)].Visible = dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             dgv.Columns[nameof(lt_condition)].Visible = dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);

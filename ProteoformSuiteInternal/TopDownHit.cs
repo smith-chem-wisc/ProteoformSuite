@@ -47,7 +47,7 @@ namespace ProteoformSuiteInternal
             this.stop_index = stop_index;
             this.ptm_list = modifications;
             this.reported_mass = reported_mass;
-            this.theoretical_mass = TheoreticalProteoform.CalculateProteoformMass(sequence, aaIsotopeMassList) + ptm_list.Sum(p => p.modification.monoisotopicMass);
+            this.theoretical_mass = CalculateProteoformMass(sequence, aaIsotopeMassList) + ptm_list.Sum(p => p.modification.monoisotopicMass);
             this.ms2ScanNumber = scan;
             this.retention_time = retention_time;
             this.filename = filename;
@@ -84,6 +84,22 @@ namespace ProteoformSuiteInternal
         {
             return (observed - theoretical_mass) - Math.Round(observed - theoretical, 0);
         }
+
+
+        private double CalculateProteoformMass(string pForm, Dictionary<char, double> aaIsotopeMassList)
+        {
+            double proteoformMass = 18.010565; // start with water
+            char[] aminoAcids = pForm.ToCharArray();
+            List<double> aaMasses = new List<double>();
+            for (int i = 0; i < pForm.Length; i++)
+            {
+                //for top-down do unlabeled K whether or not neucode labeled intact mass data loaded in...
+                if (aminoAcids[i] == 'K') aaMasses.Add(128.094963);
+                else if (aaIsotopeMassList.ContainsKey(aminoAcids[i])) aaMasses.Add(aaIsotopeMassList[aminoAcids[i]]);
+            }
+            return proteoformMass + aaMasses.Sum();
+        }
+
 
         public string GetSequenceWithChemicalFormula()
         {
