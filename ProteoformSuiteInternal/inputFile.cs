@@ -34,11 +34,11 @@ namespace ProteoformSuiteInternal
 
         public Purpose purpose { get; set; }
 
+        //for raw files
+        public bool topdown_file { get; set; }
 
         //For identification files
         public ComponentReader reader = new ComponentReader();
-
-        public bool topdownRawFile { get; set; } = false;
 
         public Labeling label { get; set; }
 
