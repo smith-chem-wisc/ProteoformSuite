@@ -95,7 +95,7 @@ namespace ProteoformSuiteInternal
         public static void save_biological_replicate_intensities(string filename, bool include_imputation, List<ExperimentalProteoform> proteoforms)
         {
             using (StreamWriter writer = new StreamWriter(filename))
-                writer.Write(biological_replicate_intensities(proteoforms, include_imputation));
+                writer.Write(biological_replicate_intensities(proteoforms, Sweet.lollipop.conditionsBioReps, include_imputation));
         }
 
         public static string actions()
@@ -322,11 +322,11 @@ namespace ProteoformSuiteInternal
             return result_string.ToString();
         }
 
-        public static string biological_replicate_intensities(List<ExperimentalProteoform> proteoforms, bool include_imputation)
+        public static string biological_replicate_intensities(List<ExperimentalProteoform> proteoforms, Dictionary<string, List<int>> conditionsBioReps, bool include_imputation)
         {
             DataTable results = new DataTable();
             results.Columns.Add("Proteoform ID", typeof(string));
-            foreach (KeyValuePair<string, List<int>> condition_bioreps in Sweet.lollipop.conditionsBioReps)
+            foreach (KeyValuePair<string, List<int>> condition_bioreps in conditionsBioReps)
             {
                 foreach (int biorep in condition_bioreps.Value)
                 {
@@ -336,60 +336,15 @@ namespace ProteoformSuiteInternal
 
             foreach (ExperimentalProteoform pf in proteoforms)
             {
-                List<double> condition_biorep_intensities = new List<double>();
-                foreach (KeyValuePair<string, List<int>> condition_bioreps in Sweet.lollipop.conditionsBioReps)
-                {
-                    if (condition_bioreps.Key != Sweet.lollipop.numerator_condition && condition_bioreps.Key != Sweet.lollipop.denominator_condition)
-                        continue;
-                    else if (condition_bioreps.Key == Sweet.lollipop.numerator_condition && pf.quant.numeratorOriginalBiorepIntensities == null)
-                    {
-                        foreach (int biorep in condition_bioreps.Value)
-                        {
-                            condition_biorep_intensities.Add(Double.NaN);
-                        }
-                    }
-                    else if (condition_bioreps.Key == Sweet.lollipop.denominator_condition && pf.quant.denominatorOriginalBiorepIntensities == null)
-                    {
-                        foreach (int biorep in condition_bioreps.Value)
-                        {
-                            condition_biorep_intensities.Add(Double.NaN);
-                        }
-                    }
-                    else
-                    {
-                        List<BiorepIntensity> numerator = include_imputation ? pf.quant.numeratorOriginalBiorepIntensities.Concat(pf.quant.numeratorImputedIntensities == null ? new List<BiorepIntensity>() : pf.quant.numeratorImputedIntensities).ToList() : pf.quant.numeratorOriginalBiorepIntensities;
-                        List<BiorepIntensity> denominator = include_imputation ? pf.quant.denominatorOriginalBiorepIntensities.Concat(pf.quant.denominatorImputedIntensities == null ? new List<BiorepIntensity>() : pf.quant.denominatorOriginalBiorepIntensities).ToList() : pf.quant.denominatorOriginalBiorepIntensities;
-
-                        foreach (int biorep in condition_bioreps.Value)
-                        {
-                            if (condition_bioreps.Key == Sweet.lollipop.numerator_condition)
-                            {
-                                BiorepIntensity br = numerator.FirstOrDefault(x => x.biorep == biorep);
-                                if (br == null)
-                                    condition_biorep_intensities.Add(Double.NaN);
-                                else
-                                    condition_biorep_intensities.Add((double)br.intensity);
-                            }
-                            if (condition_bioreps.Key == Sweet.lollipop.denominator_condition)
-                            {
-                                BiorepIntensity br = denominator.FirstOrDefault(x => x.biorep == biorep);
-                                if (br == null)
-                                    condition_biorep_intensities.Add(Double.NaN);
-                                else
-                                    condition_biorep_intensities.Add((double)br.intensity);
-                            }
-                        }
-                    }
-                }
-
                 DataRow row = results.NewRow();
                 row["Proteoform ID"] = pf.accession;
-                int ct = 0;
-                foreach (KeyValuePair<string, List<int>> condition_bioreps in Sweet.lollipop.conditionsBioReps)
+                foreach (KeyValuePair<string, List<int>> condition_bioreps in conditionsBioReps)
                 {
                     foreach (int biorep in condition_bioreps.Value)
                     {
-                        row[condition_bioreps.Key + "_" + biorep.ToString()] = condition_biorep_intensities[ct++];
+                        BiorepIntensity br = pf.quant.allIntensities[new Tuple<string, int>(condition_bioreps.Key, biorep)];
+                        double value = !br.imputed || include_imputation ? br.intensity : double.NaN;
+                        row[condition_bioreps.Key + "_" + biorep.ToString()] = value;
                     }
                 }
                 results.Rows.Add(row);

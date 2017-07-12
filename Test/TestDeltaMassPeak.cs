@@ -161,6 +161,8 @@ namespace Test
             foreach (ProteoformRelation pr in prs) pr.set_nearby_group(prs, prs.Select(r => r.InstanceId).ToList());
             test_community.accept_deltaMass_peaks(prs, new List<ProteoformRelation>());
             Assert.False(Sweet.lollipop.ee_peaks[0].shift_experimental_masses(1, true));
+            Sweet.lollipop.clear_ee();
+            Assert.AreEqual(0, Sweet.lollipop.ee_peaks.Count);
         }
 
         [Test]
@@ -240,6 +242,9 @@ namespace Test
                 Assert.AreEqual(-1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.manual_mass_shift);
                 Assert.AreEqual(200 + TestExperimentalProteoform.starter_lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT - 1.0 * Lollipop.MONOISOTOPIC_UNIT_MASS, c.weighted_monoisotopic_mass);
             }
+
+            Sweet.lollipop.clear_et();
+            Assert.AreEqual(0, Sweet.lollipop.et_peaks.Count);
         }
 
         [Test]

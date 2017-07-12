@@ -1,11 +1,12 @@
 ﻿using NUnit.Framework;
 using ProteoformSuiteInternal;
+using Proteomics;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Proteomics;
 
 namespace Test
 {
@@ -169,6 +170,44 @@ namespace Test
             ResultsSummaryGenerator.save_all(TestContext.CurrentContext.TestDirectory, Sweet.time_stamp());
         }
 
+        [Test]
+        public void biorepintensitytable()
+        {
+            Sweet.lollipop = new Lollipop();
+            Dictionary<string, List<int>> conditionsBioReps = new Dictionary<string, List<int>>
+            {
+                {"n", new List<int>{1, 2, 3} },
+                {"s", new List<int>{1, 2, 3} },
+            };
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("asdf");
+            e.quant.allIntensities = new Dictionary<Tuple<string, int>, BiorepIntensity>
+            {
+                {new Tuple<string, int>("n", 1), new BiorepIntensity(false, 1, "n", 1) },
+                {new Tuple<string, int>("n", 2), new BiorepIntensity(true, 2, "n", 1) },
+                {new Tuple<string, int>("n", 3), new BiorepIntensity(false, 3, "n", 1) },
+                {new Tuple<string, int>("s", 1), new BiorepIntensity(false, 1, "s", 1) },
+                {new Tuple<string, int>("s", 2), new BiorepIntensity(false, 2, "s", 1) },
+                {new Tuple<string, int>("s", 3), new BiorepIntensity(false, 3, "s", 1) },
+            };
+            Assert.False(ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, conditionsBioReps, true).Contains("NaN"));
+            Assert.True(ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, conditionsBioReps, false).Contains("NaN"));
+            e.quant.allIntensities = new Dictionary<Tuple<string, int>, BiorepIntensity>
+            {
+                {new Tuple<string, int>("n", 1), new BiorepIntensity(true, 1, "n", 1) },
+                {new Tuple<string, int>("n", 2), new BiorepIntensity(true, 2, "n", 1) },
+                {new Tuple<string, int>("n", 3), new BiorepIntensity(true, 3, "n", 1) },
+                {new Tuple<string, int>("s", 1), new BiorepIntensity(false, 1, "s", 1) },
+                {new Tuple<string, int>("s", 2), new BiorepIntensity(false, 2, "s", 1) },
+                {new Tuple<string, int>("s", 3), new BiorepIntensity(false, 3, "s", 1) },
+            };
+            string[] line = ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, conditionsBioReps, false).Split('\n')[1].Split('\t');
+            Assert.True(line.First() == e.accession);
+            Assert.True(line[1] == "NaN" && line[2] == "NaN" && line[3] == "NaN" && line[4] != "NaN" && line[5] != "NaN" && line[6] != "NaN" );
+
+            ResultsSummaryGenerator.save_biological_replicate_intensities(Path.Combine(TestContext.CurrentContext.TestDirectory, "biorep.txt"), true, new List<ExperimentalProteoform> { e });
+            Assert.True(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "biorep.txt")));
+        }
+        
         #endregion Results Summary
 
     }
