@@ -85,6 +85,13 @@ namespace Test
         }
 
         [Test]
+        public void getobsparameters_doesnt_crash_when_no_quant_files()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.getObservationParameters(true, new List<InputFile>());
+        }
+
+        [Test]
         public void proteoformQuantificationStatistics1()
         {
             double proteoformMass = 1000d;
