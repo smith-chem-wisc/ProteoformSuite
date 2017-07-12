@@ -113,6 +113,7 @@ namespace Test
         {
             double max_monoisotopic_mass = TestExperimentalProteoform.starter_mass + TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
             double min_monoisotopic_mass = TestExperimentalProteoform.starter_mass - TestExperimentalProteoform.missed_monoisotopics * Lollipop.MONOISOTOPIC_UNIT_MASS;
+            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-TestExperimentalProteoform.missed_monoisotopics, TestExperimentalProteoform.missed_monoisotopics * 2 + 1).ToList();
 
             IEnumerable<NeuCodePair> neucodes = TestExperimentalProteoform.generate_neucode_components(TestExperimentalProteoform.starter_mass).OfType<NeuCodePair>();
             List<Component> quant_components = TestExperimentalProteoform.generate_neucode_quantitative_components();

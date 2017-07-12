@@ -90,6 +90,7 @@ namespace Test
             double proteoformMass = 1000d;
             int lysineCount = 3;
             double intensity = 100;
+            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-TestExperimentalProteoform.missed_monoisotopics, TestExperimentalProteoform.missed_monoisotopics * 2 + 1).ToList();
 
             Sweet.lollipop.neucode_labeled = true;
             List<Component> quant_components_list = generate_neucode_quantitative_components(proteoformMass, 99d, 51d, 1, lysineCount);//these are for quantification
@@ -132,6 +133,7 @@ namespace Test
             double proteoformMass = 1000d;
             int lysineCount = 3;
             double intensity = 100;
+            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-TestExperimentalProteoform.missed_monoisotopics, TestExperimentalProteoform.missed_monoisotopics * 2 + 1).ToList();
 
             Sweet.lollipop.neucode_labeled = true;
             List<Component> quant_components_list = generate_neucode_quantitative_components(proteoformMass, 99d, 51d, 1, lysineCount);//these are for quantification
@@ -287,6 +289,7 @@ namespace Test
             double proteoformMass = 1000d;
             int lysineCount = 3;
             double intensity = 100;
+            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-TestExperimentalProteoform.missed_monoisotopics, TestExperimentalProteoform.missed_monoisotopics * 2 + 1).ToList();
 
             Sweet.lollipop.neucode_labeled = true;
             List<Component> quant_components_list = generate_neucode_quantitative_components(proteoformMass, 99d, 51d, 1, lysineCount);//these are for quantification
