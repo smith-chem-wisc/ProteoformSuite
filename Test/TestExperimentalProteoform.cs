@@ -142,10 +142,10 @@ namespace Test
             Sweet.lollipop.neucode_labeled = true;
             List<Component> components = generate_neucode_components(starter_mass);
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
-            components[1].rt_apex = starter_rt - Convert.ToDouble(Sweet.lollipop.retention_time_tolerance) - 1;
+            components[1].rt_apex = starter_rt - Sweet.lollipop.retention_time_tolerance - 1;
             e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
-            components[1].rt_apex = starter_rt + Convert.ToDouble(Sweet.lollipop.retention_time_tolerance) + 1;
+            components[1].rt_apex = starter_rt + Sweet.lollipop.retention_time_tolerance + 1;
             e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
         }
@@ -156,17 +156,17 @@ namespace Test
             Sweet.lollipop.neucode_labeled = true;
             List<Component> components = generate_neucode_components(starter_mass);
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
-            ((NeuCodePair)components[1]).lysine_count = starter_lysine_count + Convert.ToInt32(Sweet.lollipop.missed_lysines) + 1;
+            ((NeuCodePair)components[1]).lysine_count = starter_lysine_count + Sweet.lollipop.maximum_missed_lysines + 1;
             e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
-            ((NeuCodePair)components[1]).lysine_count = starter_lysine_count - Convert.ToInt32(Sweet.lollipop.missed_lysines) - 1;
+            ((NeuCodePair)components[1]).lysine_count = starter_lysine_count - Sweet.lollipop.maximum_missed_lysines - 1;
             e = ConstructorsForTesting.ExperimentalProteoform("E1", components[0], components, empty_quant_components_list, true);
             Assert.AreEqual(1, e.aggregated_components.Count);
         }
 
 
         //Maximum number of missed
-        public static int missed_monoisotopics = Convert.ToInt32(Sweet.lollipop.missed_monos);
+        public static int missed_monoisotopics = Sweet.lollipop.maximum_missed_monos;
 
         [Test]
         public void aggregate_in_bounds_monoisotopic_tolerance()

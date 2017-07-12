@@ -84,7 +84,7 @@ namespace ProteoformSuiteInternal
                 ExperimentalProteoform e = r.connected_proteoforms.OfType<ExperimentalProteoform>().FirstOrDefault(p => p != this);
                 if (e == null) continue; // Looking at an ET pair, expecting an EE pair
 
-                double mass_tolerance = modified_mass / 1000000 * (double)Sweet.lollipop.mass_tolerance;
+                double mass_tolerance = modified_mass / 1000000 * Sweet.lollipop.mass_tolerance;
                 int sign = Math.Sign(e.modified_mass - modified_mass);
                 double deltaM = Math.Sign(r.peak.DeltaMass) < 0 ? r.peak.DeltaMass : sign * r.peak.DeltaMass; // give EE relations the correct sign, but don't switch negative ET relation deltaM's
                 TheoreticalProteoform theoretical_base = this as TheoreticalProteoform != null ?
@@ -102,8 +102,8 @@ namespace ProteoformSuiteInternal
                 foreach (PtmSet set in all_possible_ptmsets)
                 {
                     bool within_loss_tolerance = deltaM >= -set.mass - mass_tolerance && deltaM <= -set.mass + mass_tolerance;
-                    var these_mods = this.ptm_set.ptm_combination.Select(ptm => ptm.modification);
-                    var those_mods = set.ptm_combination.Select(ptm => ptm.modification); // all must be in the current set to remove them
+                    List<ModificationWithMass> these_mods = this.ptm_set.ptm_combination.Select(ptm => ptm.modification).ToList();
+                    List<ModificationWithMass> those_mods = set.ptm_combination.Select(ptm => ptm.modification).ToList(); // all must be in the current set to remove them
                     bool can_be_removed = those_mods.All(m => these_mods.Contains(m));
                     bool better_than_current_best_loss = best_loss == null || Math.Abs(deltaM - (-set.mass)) < Math.Abs(deltaM - (-best_loss.mass));
                     if (can_be_removed && within_loss_tolerance && better_than_current_best_loss)

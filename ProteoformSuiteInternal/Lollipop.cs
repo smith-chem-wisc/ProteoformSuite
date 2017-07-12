@@ -175,7 +175,7 @@ namespace ProteoformSuiteInternal
             {
                 foreach (string scan_range in inputFile.reader.scan_ranges)
                 {
-                    find_neucode_pairs(inputFile.reader.final_components.Where(c => c.scan_range == scan_range), raw_neucode_pairs);
+                    find_neucode_pairs(inputFile.reader.final_components.Where(c => c.scan_range == scan_range), raw_neucode_pairs, heavy_hashed_pairs);
                 }
             }
         }
@@ -202,6 +202,7 @@ namespace ProteoformSuiteInternal
         #region NEUCODE PAIRS Public Fields
 
         public List<NeuCodePair> raw_neucode_pairs = new List<NeuCodePair>();
+        public Dictionary<Component, List<NeuCodePair>> heavy_hashed_pairs = new Dictionary<Component, List<NeuCodePair>>();
         public decimal max_intensity_ratio = 6m;
         public decimal min_intensity_ratio = 1.4m;
         public decimal max_lysine_ct = 26.2m;
@@ -211,7 +212,7 @@ namespace ProteoformSuiteInternal
 
         #region NEUCODE PAIRS
 
-        public List<NeuCodePair> find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange, List<NeuCodePair> destination)
+        public List<NeuCodePair> find_neucode_pairs(IEnumerable<Component> components_in_file_scanrange, List<NeuCodePair> destination, Dictionary<Component, List<NeuCodePair>> heavy_hashed_pairs)
         {
             List<NeuCodePair> pairsInScanRange = new List<NeuCodePair>();
             //Add putative neucode pairs. Must be in same spectrum, mass must be within 6 Da of each other
@@ -240,8 +241,8 @@ namespace ProteoformSuiteInternal
                                     new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
                                     new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
 
-                                lock (pairsInScanRange)
-                                    pairsInScanRange.Add(pair);
+                                    if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + MONOISOTOPIC_UNIT_MASS) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
+                                        lock (pairsInScanRange) pairsInScanRange.Add(pair);
                             }
                         }
                     }
@@ -250,14 +251,21 @@ namespace ProteoformSuiteInternal
 
             foreach (NeuCodePair pair in pairsInScanRange
                 .OrderBy(p => Math.Min(p.neuCodeLight.weighted_monoisotopic_mass, p.neuCodeHeavy.weighted_monoisotopic_mass)) //lower_component
-                .ThenBy(p => Math.Max(p.neuCodeLight.weighted_monoisotopic_mass, p.neuCodeHeavy.weighted_monoisotopic_mass)).ToList()) //higher_component
+                .ThenBy(p => Math.Max(p.neuCodeLight.weighted_monoisotopic_mass, p.neuCodeHeavy.weighted_monoisotopic_mass)) //higher_component
+                .ToList()) 
             {
-                lock (destination)
+                lock (heavy_hashed_pairs)
                 {
-                    if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + MONOISOTOPIC_UNIT_MASS // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
-                        && !destination.Any(p => p.neuCodeHeavy.id == pair.neuCodeLight.id && p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity, is probably correct, and that that component should not get reuused as a light.)
+                    if (!heavy_hashed_pairs.TryGetValue(pair.neuCodeLight, out List<NeuCodePair> these_pairs) 
+                        || !these_pairs.Any(p => p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity, is probably correct, and that that component should not get reuused as a light.)
                     {
-                        destination.Add(pair);
+                        lock (destination)
+                            destination.Add(pair);
+                        if (heavy_hashed_pairs.TryGetValue(pair.neuCodeHeavy, out List<NeuCodePair> paired))
+                            lock (paired)
+                                paired.Add(pair);
+                        else
+                            heavy_hashed_pairs.Add(pair.neuCodeHeavy, new List<NeuCodePair> { pair }); // already locked
                     }
 
                     else
@@ -278,13 +286,14 @@ namespace ProteoformSuiteInternal
         public Dictionary<string, ProteoformCommunity> decoy_proteoform_communities = new Dictionary<string, ProteoformCommunity>();
         public string decoy_community_name_prefix = "Decoy_Proteoform_Community_";
         public List<Component> remaining_components = new List<Component>();
-        public List<Component> remaining_verification_components = new List<Component>();
-        public List<Component> remaining_quantification_components = new List<Component>();
+        public HashSet<Component> remaining_verification_components = new HashSet<Component>();
+        public HashSet<Component> remaining_quantification_components = new HashSet<Component>();
         public bool validate_proteoforms = true;
-        public decimal mass_tolerance = 10; //ppm
-        public decimal retention_time_tolerance = 5; //min
-        public decimal missed_monos = 3;
-        public decimal missed_lysines = 2;
+        public double mass_tolerance = 10; //ppm
+        public double retention_time_tolerance = 5; //min
+        public int maximum_missed_monos = 3;
+        public List<int> missed_monoisotopics_range = new List<int>();
+        public int maximum_missed_lysines = 2;
         public int min_agg_count = 1;
         public int min_num_CS = 1;
         public int min_num_bioreps = 1;
@@ -303,6 +312,7 @@ namespace ProteoformSuiteInternal
 
         public List<ExperimentalProteoform> aggregate_proteoforms(bool two_pass_validation, IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, IEnumerable<Component> raw_quantification_components, int min_num_CS)
         {
+            missed_monoisotopics_range = Enumerable.Range(-maximum_missed_monos, maximum_missed_monos * 2 + 1).ToList();
             List<ExperimentalProteoform> candidateExperimentalProteoforms = createProteoforms(raw_neucode_pairs, raw_experimental_components, min_num_CS);
             vetted_proteoforms = two_pass_validation ?
                 vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms) :
@@ -399,7 +409,7 @@ namespace ProteoformSuiteInternal
         public List<ExperimentalProteoform> vetExperimentalProteoforms(IEnumerable<ExperimentalProteoform> candidateExperimentalProteoforms, IEnumerable<Component> raw_experimental_components, List<ExperimentalProteoform> vetted_proteoforms) // eliminating candidate proteoforms that were mistakenly created
         {
             List<ExperimentalProteoform> candidates = candidateExperimentalProteoforms.OrderByDescending(p => p.agg_intensity).ToList();
-            remaining_verification_components = new List<Component>(raw_experimental_components);
+            remaining_verification_components = new HashSet<Component>(raw_experimental_components);
 
             ExperimentalProteoform candidate = candidates.FirstOrDefault();
             List<ExperimentalProteoform> running = new List<ExperimentalProteoform>();
@@ -427,7 +437,10 @@ namespace ProteoformSuiteInternal
                         // e.accepted = true; this is set based on the e properties
                         vetted_proteoforms.Add(e);
                     }
-                    remaining_verification_components = remaining_verification_components.Except(e.lt_verification_components.Concat(e.hv_verification_components)).ToList();
+                    foreach (Component c in e.lt_verification_components.Concat(e.hv_verification_components).ToList())
+                    {
+                        remaining_verification_components.Remove(c); // O(1) complexity with HashSet
+                    }
                     candidates.Remove(e);
                 }
 
@@ -441,7 +454,7 @@ namespace ProteoformSuiteInternal
         public List<ExperimentalProteoform> assignQuantificationComponents(List<ExperimentalProteoform> vetted_proteoforms, IEnumerable<Component> raw_quantification_components)  // this is only need for neucode labeled data. quantitative components for unlabelled are assigned elsewhere "vetExperimentalProteoforms"
         {
             List<ExperimentalProteoform> proteoforms = vetted_proteoforms.OrderByDescending(x => x.agg_intensity).ToList();
-            remaining_quantification_components = new List<Component>(raw_quantification_components);
+            remaining_quantification_components = new HashSet<Component>(raw_quantification_components);
 
             ExperimentalProteoform p = proteoforms.FirstOrDefault();
             List<ExperimentalProteoform> running = new List<ExperimentalProteoform>();
@@ -464,7 +477,10 @@ namespace ProteoformSuiteInternal
 
                 foreach (ExperimentalProteoform e in running)
                 {
-                    remaining_quantification_components = remaining_quantification_components.Except(e.lt_quant_components.Concat(e.hv_quant_components)).ToList();
+                    foreach (Component c in e.lt_quant_components.Concat(e.hv_quant_components).ToList())
+                    {
+                        remaining_quantification_components.Remove(c);
+                    }
                     proteoforms.Remove(e);
                 }
 
