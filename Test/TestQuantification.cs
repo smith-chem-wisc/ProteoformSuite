@@ -1072,6 +1072,9 @@ namespace Test
             Sweet.lollipop.reestablishSignficance();
             Assert.AreEqual(22, Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant));
             Assert.AreEqual(0.1667, Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4));
+
+            //rough test of quant summary
+            Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
         }
     }
 }
