@@ -1066,6 +1066,12 @@ namespace Test
             Assert.AreEqual(4.49, Math.Round(Sweet.lollipop.minimumPassingPositiveTestStatisitic, 2));
             Assert.AreEqual(13, Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant));
             Assert.AreEqual(0.1538, Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4));
+
+            //change up a parameter and reevaluate
+            Sweet.lollipop.offsetTestStatistics = 0.8m;
+            Sweet.lollipop.reestablishSignficance();
+            Assert.AreEqual(22, Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant));
+            Assert.AreEqual(0.1667, Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4));
         }
     }
 }
