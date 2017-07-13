@@ -685,22 +685,7 @@ namespace ProteoformSuiteInternal
 
         #region QUANTIFICATION SETUP
 
-        public void getBiorepsFractionsList(List<InputFile> input_files)  //this should be moved to the appropriate location. somewhere at the start of raw component/end of load component.
-        {
-            if (!input_files.Any(f => f.purpose == Purpose.Quantification))
-                return;
-
-            quantBioFracCombos = new Dictionary<int, List<int>>();
-            List<int> bioreps = input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
-            List<int> fractions = new List<int>();
-            foreach (int b in bioreps)
-            {
-                //fractions = input_files.Where(q => q.purpose == Purpose.Quantification).Where(rep => rep.biological_replicate == b).Select(f => f.fraction).Distinct().ToList();
-                quantBioFracCombos.Add(b, fractions);
-            }
-        }
-
-        public void getObservationParameters(bool neucode_labeled, List<InputFile> input_files) //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+        public void getConditionBiorepFractionLabels(bool neucode_labeled, List<InputFile> input_files) //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
         {
             if (!input_files.Any(f => f.purpose == Purpose.Quantification))
                 return;
@@ -715,20 +700,20 @@ namespace ProteoformSuiteInternal
 
             foreach (string condition in ltConditions.Concat(hvConditions).Distinct().ToList())
             {
-                List<int> bioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition || f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
-                conditionsBioReps.Add(condition, bioreps);
+                List<int> allbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition || f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                conditionsBioReps.Add(condition, allbioreps);
             }
 
             foreach (string condition in ltConditions)
             {
-                List<int> bioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
-                ltConditionsBioReps.Add(condition, bioreps);
+                List<int> ltbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                ltConditionsBioReps.Add(condition, ltbioreps);
             }
 
             foreach (string condition in hvConditions)
             {
-                List<int> bioreps = get_files(input_files, Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
-                hvConditionsBioReps.Add(condition, bioreps);
+                List<int> hvbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                hvConditionsBioReps.Add(condition, hvbioreps);
             }
 
             condition_count = conditionsBioReps.Count;
@@ -741,6 +726,16 @@ namespace ProteoformSuiteInternal
 
             countOfBioRepsInOneCondition = conditionsBioReps.Min(kv => kv.Value.Count);
             minBiorepsWithObservations = countOfBioRepsInOneCondition > 0 ? countOfBioRepsInOneCondition : 1;
+
+            //getBiorepsFractionsList
+            quantBioFracCombos = new Dictionary<int, List<int>>();
+            List<int> bioreps = input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
+            List<int> fractions = new List<int>();
+            foreach (int b in bioreps)
+            {
+                //fractions = input_files.Where(q => q.purpose == Purpose.Quantification).Where(rep => rep.biological_replicate == b).Select(f => f.fraction).Distinct().ToList();
+                quantBioFracCombos.Add(b, fractions);
+            }
         }
 
         #endregion QUANTIFICATION SETUP
@@ -768,8 +763,8 @@ namespace ProteoformSuiteInternal
         public decimal bkgdAverageIntensity; //log base 2
         public decimal bkgdStDev;
         public decimal bkgdGaussianHeight;
-        public decimal backgroundShift;
-        public decimal backgroundWidth;
+        public decimal backgroundShift = -1.8m;
+        public decimal backgroundWidth = 0.5m;
 
         // Condition labels
         public string numerator_condition = ""; // numerator for fold change calculation
@@ -1082,9 +1077,9 @@ namespace ProteoformSuiteInternal
             {
                 decimal lower_threshold = sortedAvgPermutationTestStatistics[i] - significanceTestStatOffset;
                 decimal higher_threshold = sortedAvgPermutationTestStatistics[i] + significanceTestStatOffset;
-                if (sortedProteoformTestStatistics[i] <= lower_threshold)
+                if (sortedProteoformTestStatistics[i] < lower_threshold)
                     minimumPassingNegativeTestStatistic = sortedProteoformTestStatistics[i]; // last one below
-                if (sortedProteoformTestStatistics[i] >= higher_threshold)
+                if (sortedProteoformTestStatistics[i] > higher_threshold)
                 {
                     minimumPassingPositiveTestStatisitic = sortedProteoformTestStatistics[i]; //first one above
                     break;
