@@ -20,7 +20,7 @@ namespace Test
         public static List<Component> generate_neucode_components(double mass, double lightIntensity, double heavyIntensity, int lysineCount)
         {
             List<Component> components = new List<Component>();
-            InputFile inFile = new ProteoformSuiteInternal.InputFile("somepath", Labeling.NeuCode, Purpose.Identification);
+            InputFile inFile = new InputFile("somepath", Labeling.NeuCode, Purpose.Identification);
 
             for (int i = 0; i < 2; i++)
             {
