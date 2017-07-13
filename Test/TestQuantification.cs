@@ -500,48 +500,6 @@ namespace Test
             Assert.AreEqual(2.5m, QuantitativeProteoformValues.computeExperimentalProteoformFDR(testStatistic, permutedTestStatistics, satisfactoryProteoformsCount, sortedProteoformTestStatistics));
             satisfactoryProteoformsCount++;
         }
-
-        [Test]
-        public void test_compute_sorted_statistics_and_tusher_fdr_calculation()
-        {
-            List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>();
-
-            List<List<decimal>> permutedStats = new List<List<decimal>>(100); 
-            for (int i = -5; i < 5; i++) // proteoforms
-            {
-                ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
-                for (int j = 0; j < 10; j++) // permutations
-                {
-                    if (i == -5) permutedStats.Add(new List<decimal>());
-                    permutedStats[i+5].Add((decimal)(j-5)/2); //making it asymmetrical
-                }
-                e.quant.relative_difference = ((decimal)i);
-                satisfactoryProteoforms.Add(e);
-            }
-
-            Sweet.lollipop.computeSortedRelativeDifferences(satisfactoryProteoforms, permutedStats);
-            Assert.AreEqual(Sweet.lollipop.avgSortedPermutationRelativeDifferences.Count, Sweet.lollipop.sortedProteoformRelativeDifferences.Count);
-
-            var sorted_check1 = Sweet.lollipop.sortedProteoformRelativeDifferences.OrderBy(x => x);
-            var sorted_check2 = Sweet.lollipop.avgSortedPermutationRelativeDifferences.OrderBy(x => x);
-            Assert.IsTrue(sorted_check1.SequenceEqual(Sweet.lollipop.sortedProteoformRelativeDifferences));
-            Assert.IsTrue(sorted_check2.SequenceEqual(Sweet.lollipop.avgSortedPermutationRelativeDifferences));
-            
-            //Vertical line on the Tusher plot with all average permuted test statistics the same (7.18)
-            //Target relative differences are {-5,-4,-3,-2,-1,0,1,2,3,4}
-            //Average permuted of the 10 sets {-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2} is the same set {-2.5,-2,-1.5,-1,-0.5,0,0.5,1,1.5,2}
-            //Upper cutoff is {-1.5,-1,-0.5, 0, 0.5, 1, 1.5, 2,2.5,3} 
-            //Lower cutoff is {-3.5,-3,-2.5,-2,-1.5,-1,-0.5, 0,0.5,1}
-            //First passing above (positive or 0) is 2 {2,3,4}
-            //First passing below (negative or 0) is -2 {-5,-4,-3,-2}
-            //Seven pass (denominator = 7)
-            //Three permuted value passes each of 10 times {-2.5, -2, 2} (numerator = 30 permuted passing / 100 permuted total * 10 proteoforms = 3)
-            //FDR is numerator / denominator = 3 / 7
-            Assert.AreEqual((double)3 / (double)7, Sweet.lollipop.computeRelativeDifferenceFDR(Sweet.lollipop.avgSortedPermutationRelativeDifferences, Sweet.lollipop.sortedProteoformRelativeDifferences, satisfactoryProteoforms, permutedStats.SelectMany(x => x).ToList(), 1));
-
-            Sweet.lollipop.satisfactoryProteoforms = satisfactoryProteoforms;
-            Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
-        }
          
         [Test]
         public void test_addBiorepIntensity()
@@ -1051,7 +1009,7 @@ namespace Test
         }
 
         [Test]
-        public void full_quant_test()
+        public void full_quant_test() // see proteoform_quantification_minimal_test.xlsx in the Examples folder for a full excel workup on this example
         {
             Sweet.lollipop = new Lollipop();
             string[] table = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, @"full_quant_test_table.txt"));
