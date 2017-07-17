@@ -56,7 +56,7 @@ namespace Test
             Assert.True(destination.All(f => f.purpose == purpose[0]));
             Assert.True(destination.Where(f => f.filename.StartsWith("one")).All(f => f.lt_condition == "Normal"));
             Assert.True(destination.Where(f => f.filename.StartsWith("one")).All(f => f.hv_condition == "Stress"));
-            Assert.True(destination.Where(f => f.filename.StartsWith("one")).All(f => f.biological_replicate == 2));
+            Assert.True(destination.Where(f => f.filename.StartsWith("one")).All(f => f.biological_replicate == "2"));
         }
 
         [Test]
@@ -72,7 +72,7 @@ namespace Test
             Assert.AreEqual(1, destination.Count);
             Assert.True(destination[0].lt_condition == "Normal");
             Assert.True(destination[0].hv_condition == "Stress");
-            Assert.True(destination[0].biological_replicate == 2);
+            Assert.True(destination[0].biological_replicate == "2");
         }
 
         [Test]

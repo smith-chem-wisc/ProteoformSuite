@@ -270,10 +270,17 @@ namespace ProteoformSuiteInternal
             foreach (string condition in ltConditionStrings.Concat(hvConditionStrings).Distinct().ToList())
             {
                 List<T> quants_from_condition = lt_quant_components.Where(c => c.input_file.lt_condition == condition).Concat(hv_quant_components.Where(c => c.input_file.hv_condition == condition)).ToList();
-                List<int> bioreps = quants_from_condition.Select(c => c.input_file.biological_replicate).Distinct().ToList();
-                foreach (int b in bioreps)
+                List<string> bioreps = quants_from_condition.Select(c => c.input_file.biological_replicate).Distinct().ToList();
+                List<string> fractions = quants_from_condition.Select(c => c.input_file.fraction).Distinct().ToList();
+                List<string> techreps = quants_from_condition.Select(c => c.input_file.technical_replicate).Distinct().ToList();
+                foreach (string b in bioreps)
                 {
-                    biorepIntensityList.Add(new BiorepIntensity(false, b, condition, quants_from_condition.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum)));
+                    List<BiorepFractionTechrepIntensity> bft =
+                        (from f in fractions
+                        from t in techreps
+                        select new BiorepFractionTechrepIntensity(condition, b, f, t, quants_from_condition.Where(q => q.input_file.biological_replicate == b && q.input_file.fraction == f && q.input_file.technical_replicate == t).Sum(q => q.intensity_sum)))
+                        .ToList();
+                    biorepIntensityList.Add(new BiorepIntensity(false, b, condition, quants_from_condition.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum), bft));
                 }
             }
 

@@ -104,6 +104,7 @@
   <ItemGroup>
     <Compile Include="AminoAcidMasses.cs" />
     <Compile Include="BigRational.cs" />
+    <Compile Include="BiorepFractionIntensity.cs" />
     <Compile Include="BiorepIntensity.cs" />
     <Compile Include="ChargeState.cs" />
     <Compile Include="Component.cs" />

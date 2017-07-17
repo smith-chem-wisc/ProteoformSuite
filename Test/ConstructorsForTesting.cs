@@ -114,13 +114,13 @@ namespace Test
 
 
         //INPUT FILE
-        public static InputFile InputFile(string complete_path, Labeling label, Purpose purpose, string lt_con, string hv_con, int biorep, int fraction, int techrep) // for neucode files. here both conditions are present in one file
+        public static InputFile InputFile(string complete_path, Labeling label, Purpose purpose, string lt_con, string hv_con, string biorep, string fraction, string techrep) // for neucode files. here both conditions are present in one file
         {
             InputFile f = new InputFile(complete_path, label, purpose);
             f.lt_condition = lt_con;
             f.hv_condition = hv_con;
             f.biological_replicate = biorep;
-            //f.fraction = fraction;
+            f.fraction = fraction;
             f.technical_replicate = techrep;
             return f;
         }

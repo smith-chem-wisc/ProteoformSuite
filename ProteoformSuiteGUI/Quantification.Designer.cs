@@ -320,7 +320,7 @@
             this.btn_saveBiologicalReplicateIntensities.Name = "btn_saveBiologicalReplicateIntensities";
             this.btn_saveBiologicalReplicateIntensities.Size = new System.Drawing.Size(217, 23);
             this.btn_saveBiologicalReplicateIntensities.TabIndex = 101;
-            this.btn_saveBiologicalReplicateIntensities.Text = "Save Biological Replicate Intensities";
+            this.btn_saveBiologicalReplicateIntensities.Text = "Save Biorep/Fraction/Techrep Intensities";
             this.btn_saveBiologicalReplicateIntensities.UseVisualStyleBackColor = true;
             this.btn_saveBiologicalReplicateIntensities.Click += new System.EventHandler(this.btn_saveBiologicalReplicateIntensities_Click);
             // 

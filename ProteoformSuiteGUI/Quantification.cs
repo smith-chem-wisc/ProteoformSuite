@@ -244,6 +244,11 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.denominator_condition = cmbx_ratioDenominator.SelectedItem.ToString();
         }
 
+        private void cmbx_inducedCondition_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.induced_condition = cmbx_inducedCondition.SelectedItem.ToString();
+        }
+
         private void nud_bkgdShift_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.backgroundShift = nud_bkgdShift.Value;
@@ -907,9 +912,5 @@ namespace ProteoformSuiteGUI
 
         #endregion Cytoscape Visualization Private Methods
 
-        private void cmbx_inducedCondition_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }

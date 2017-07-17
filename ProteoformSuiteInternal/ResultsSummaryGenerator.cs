@@ -95,7 +95,7 @@ namespace ProteoformSuiteInternal
         public static void save_biological_replicate_intensities(string filename, bool include_imputation, List<ExperimentalProteoform> proteoforms)
         {
             using (StreamWriter writer = new StreamWriter(filename))
-                writer.Write(biological_replicate_intensities(proteoforms, Sweet.lollipop.conditionsBioReps, include_imputation));
+                writer.Write(biological_replicate_intensities(proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, include_imputation));
         }
 
         public static string actions()
@@ -218,28 +218,30 @@ namespace ProteoformSuiteInternal
             List<string> conditions = Sweet.lollipop.ltConditionsBioReps.Keys.Concat(Sweet.lollipop.hvConditionsBioReps.Keys).Distinct().ToList();
             foreach (string condition in conditions)
             {
-                Sweet.lollipop.ltConditionsBioReps.TryGetValue(condition, out List<int> ltbioreps);
-                Sweet.lollipop.hvConditionsBioReps.TryGetValue(condition, out List<int> hvbioreps);
-                List<int> combined_bioreps = ltbioreps == null && hvbioreps == null ?
-                    new List<int>() :
-                    ltbioreps == null ? hvbioreps.Distinct().ToList() :
-                    hvbioreps == null ? ltbioreps.Distinct().ToList() :
-                        ltbioreps.Concat(hvbioreps).Distinct().ToList();
+                Sweet.lollipop.ltConditionsBioReps.TryGetValue(condition, out List<string> ltbioreps);
+                Sweet.lollipop.hvConditionsBioReps.TryGetValue(condition, out List<string> hvbioreps);
+                string[] combined_bioreps = ltbioreps == null && hvbioreps == null ?
+                    new string[0] :
+                    ltbioreps == null ? hvbioreps.Distinct().ToArray() :
+                    hvbioreps == null ? ltbioreps.Distinct().ToArray() :
+                        ltbioreps.Concat(hvbioreps)
+                        .Distinct()
+                        .ToArray();
 
-                report += combined_bioreps.Count.ToString() + "\tBiological Replicates for " + condition + Environment.NewLine;
+                report += combined_bioreps.Length.ToString() + "\tBiological Replicates for " + condition + Environment.NewLine;
 
-                for (int start = 0; start < combined_bioreps.Count; start++)
+                for (int start = 0; start < combined_bioreps.Length; start++)
                 {
                     int exp_prots_with_these_bioreps = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(combined_bioreps[start]));
                     int exp_prots_with_these_bioreps_exclusive = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(combined_bioreps[start]) && e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Distinct().Count() == 1);
                     report += exp_prots_with_these_bioreps + "\tExperimental Proteoforms Observed in " + condition + ", Biological Replicate #" + combined_bioreps[start].ToString() + Environment.NewLine;
                     report += exp_prots_with_these_bioreps_exclusive + "\tExperimental Proteoforms Observed Exclusively in " + condition + ", Biological Replicate #" + combined_bioreps[start].ToString() + Environment.NewLine;
 
-                    for (int end = start; end < combined_bioreps.Count; end++)
+                    for (int end = start; end < combined_bioreps.Length; end++)
                     {
                         for (int between = end; between > start; between--)
                         {
-                            List<int> bioreps_of_interest = new List<int> { start }.Concat(Enumerable.Range(between, end - between + 1)).Distinct().Select(idx => combined_bioreps[idx]).ToList();
+                            List<string> bioreps_of_interest = new List<int> { start }.Concat(Enumerable.Range(between, end - between + 1)).Distinct().Select(idx => combined_bioreps[idx]).ToList();
                             exp_prots_with_these_bioreps = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => bioreps_of_interest.All(x => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(x)));
                             exp_prots_with_these_bioreps_exclusive = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Count(e => bioreps_of_interest.All(x => e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Contains(x)) && e.biorepIntensityList.Where(br => br.condition == condition).Select(br => br.biorep).Distinct().Count() == bioreps_of_interest.Distinct().Count());
                             report += exp_prots_with_these_bioreps + "\tExperimental Proteoforms Observed in " + condition + ", Biological Replicates #" + String.Join(" #", bioreps_of_interest) + Environment.NewLine;
@@ -322,15 +324,27 @@ namespace ProteoformSuiteInternal
             return result_string.ToString();
         }
 
-        public static string biological_replicate_intensities(List<ExperimentalProteoform> proteoforms, Dictionary<string, List<int>> conditionsBioReps, bool include_imputation)
+        public static string biological_replicate_intensities(List<ExperimentalProteoform> proteoforms, List<InputFile> input_files, Dictionary<string, List<string>> conditionsBioReps, bool include_imputation)
         {
             DataTable results = new DataTable();
             results.Columns.Add("Proteoform ID", typeof(string));
-            foreach (KeyValuePair<string, List<int>> condition_bioreps in conditionsBioReps)
+            foreach (KeyValuePair<string, List<string>> condition_bioreps in conditionsBioReps)
             {
-                foreach (int biorep in condition_bioreps.Value)
+                foreach (string biorep in condition_bioreps.Value)
                 {
-                    results.Columns.Add(condition_bioreps.Key + "_" + biorep.ToString(), typeof(double));
+                    if (!include_imputation)
+                    {
+                        HashSet<Tuple<string, string>> frac_tech = new HashSet<Tuple<string, string>>();
+                        frac_tech = new HashSet<Tuple<string, string>>(input_files.Where(f => (f.lt_condition == condition_bioreps.Key || f.hv_condition == condition_bioreps.Key) && f.biological_replicate == biorep).Select(f => new Tuple<string, string>(f.fraction, f.technical_replicate)));
+                        foreach (Tuple<string, string> ft in frac_tech)
+                        {
+                            results.Columns.Add(condition_bioreps.Key + "_" + biorep + "_" + ft.Item1 + "_" + ft.Item2, typeof(double));
+                        }
+                    }
+                    else
+                    {
+                        results.Columns.Add(condition_bioreps.Key + "_" + biorep, typeof(double));
+                    }
                 }
             }
 
@@ -338,13 +352,27 @@ namespace ProteoformSuiteInternal
             {
                 DataRow row = results.NewRow();
                 row["Proteoform ID"] = pf.accession;
-                foreach (KeyValuePair<string, List<int>> condition_bioreps in conditionsBioReps)
+                foreach (KeyValuePair<string, List<string>> condition_bioreps in conditionsBioReps)
                 {
-                    foreach (int biorep in condition_bioreps.Value)
+                    foreach (string biorep in condition_bioreps.Value)
                     {
-                        BiorepIntensity br = pf.quant.allIntensities[new Tuple<string, int>(condition_bioreps.Key, biorep)];
-                        double value = !br.imputed || include_imputation ? br.intensity : double.NaN;
-                        row[condition_bioreps.Key + "_" + biorep.ToString()] = value;
+                        BiorepIntensity br = pf.quant.allIntensities[new Tuple<string, string>(condition_bioreps.Key, biorep)];
+                        if (!include_imputation)
+                        {
+                            HashSet<Tuple<string, string>> frac_tech = new HashSet<Tuple<string, string>>();
+                            frac_tech = new HashSet<Tuple<string, string>>(input_files.Where(f => (f.lt_condition == condition_bioreps.Key || f.hv_condition == condition_bioreps.Key) && f.biological_replicate == biorep).Select(f => new Tuple<string, string>(f.fraction, f.technical_replicate)));
+                            foreach (Tuple<string, string> ft in frac_tech)
+                            {
+                                BiorepFractionTechrepIntensity bft = br.summed_intensities.FirstOrDefault(bftx => bftx.condition == condition_bioreps.Key && bftx.biorep == biorep && bftx.fraction == ft.Item1 && bftx.techrep == ft.Item2);
+                                double value = !br.imputed ? bft != null ? bft.intensity : double.NaN : double.NaN;
+                                row[condition_bioreps.Key + "_" + biorep + "_" + ft.Item1 + "_" + ft.Item2] = value;
+                            }
+                        }
+                        else
+                        {
+                            double value = !br.imputed || include_imputation ? br.intensity : double.NaN;
+                            row[condition_bioreps.Key + "_" + biorep] = value;
+                        }
                     }
                 }
                 results.Rows.Add(row);
