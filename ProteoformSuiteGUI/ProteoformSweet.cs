@@ -209,6 +209,9 @@ namespace ProteoformSuiteGUI
                 DialogResult d4 = MessageBox.Show("Add files at the listed paths if they still exist?", "Full Run", MessageBoxButtons.YesNoCancel);
                 if (d4 == DialogResult.Cancel) return false;
                 Sweet.open_method(File.ReadAllLines(method_filename), d4 == DialogResult.Yes);
+                loadDeconvolutionResults.InitializeParameterSet(); // updates the textbox
+                if (loadDeconvolutionResults.ReadyToRunTheGamut())
+                    loadDeconvolutionResults.RunTheGamut(); // updates the dgvs
                 return true;
             }
             return false;

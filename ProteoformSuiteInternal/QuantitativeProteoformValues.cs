@@ -18,7 +18,7 @@ namespace ProteoformSuiteInternal
         public List<BiorepIntensity> denominatorOriginalBiorepIntensities { get; set; }
         public List<BiorepIntensity> numeratorImputedIntensities { get; set; }
         public List<BiorepIntensity> denominatorImputedIntensities { get; set; }
-        public Dictionary<Tuple<string,int>, BiorepIntensity> allIntensities { get; set; }
+        public Dictionary<Tuple<string, string>, BiorepIntensity> allIntensities { get; set; }
         public decimal numeratorIntensitySum { get; set; } = 0;
         public decimal denominatorIntensitySum { get; set; } = 0;
         public decimal intensitySum { get; set; } = 0;
@@ -45,7 +45,7 @@ namespace ProteoformSuiteInternal
 
         #region Public Methods
 
-        public void determine_biorep_intensities_and_test_statistics(List<BiorepIntensity> biorepIntensityList, Dictionary<string, List<int>> conditionBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal bkgdAverageIntensity, decimal bkgdStDev, decimal sKnot)
+        public void determine_biorep_intensities_and_test_statistics(List<BiorepIntensity> biorepIntensityList, Dictionary<string, List<string>> conditionBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal bkgdAverageIntensity, decimal bkgdStDev, decimal sKnot)
         {
             //bkgdAverageIntensity is log base 2
             //bkgdStDev is log base 2
@@ -62,7 +62,7 @@ namespace ProteoformSuiteInternal
             denominatorIntensitySum = (decimal)denominatorOriginalBiorepIntensities.Sum(i => i.intensity) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity);
             allDenominatorIntensities = denominatorOriginalBiorepIntensities.Concat(denominatorImputedIntensities).ToList();
 
-            allIntensities = allNumeratorIntensities.Concat(allDenominatorIntensities).ToDictionary(x => new Tuple<string, int>(x.condition, x.biorep), x => x);
+            allIntensities = allNumeratorIntensities.Concat(allDenominatorIntensities).ToDictionary(x => new Tuple<string, string>(x.condition, x.biorep), x => x);
 
             intensitySum = numeratorIntensitySum + denominatorIntensitySum;
             logFoldChange = (decimal)Math.Log((double)numeratorIntensitySum / (double)denominatorIntensitySum, 2);
@@ -90,7 +90,7 @@ namespace ProteoformSuiteInternal
         /// <param name="condition"></param>
         /// <param name="bioreps"></param>
         /// <returns></returns>
-        public static List<BiorepIntensity> imputedIntensities(List<BiorepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev, string condition, List<int> bioreps)
+        public static List<BiorepIntensity> imputedIntensities(List<BiorepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev, string condition, List<string> bioreps)
         {
             //bkgdAverageIntensity is log base 2
             //bkgdStDev is log base 2
@@ -112,7 +112,7 @@ namespace ProteoformSuiteInternal
         /// <param name="biorep"></param>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static BiorepIntensity add_biorep_intensity(decimal bkgdAverageIntensity, decimal bkgdStDev, int biorep, string key)
+        public static BiorepIntensity add_biorep_intensity(decimal bkgdAverageIntensity, decimal bkgdStDev, string biorep, string key)
         {
             //bkgdAverageIntensity is coming in as a log 2 number
             //bkgdStDev is coming in as a log 2 number
@@ -121,7 +121,7 @@ namespace ProteoformSuiteInternal
             double u2 = ExtensionMethods.RandomNumber();
             double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); // random normal(0,1) -- normal(mean,variance)
             double intensity = Math.Pow(2, (double)bkgdAverageIntensity + (double)bkgdStDev * randStdNormal); // std dev is calculated for log intensities, so convert to linear after adding I + s * x
-            return new BiorepIntensity(true, biorep, key, intensity); // random normal(mean,stdDev^2)
+            return new BiorepIntensity(true, biorep, key, intensity, new List<BiorepFractionTechrepIntensity>()); // random normal(mean,stdDev^2)
         }
 
         #endregion Imputation Methods

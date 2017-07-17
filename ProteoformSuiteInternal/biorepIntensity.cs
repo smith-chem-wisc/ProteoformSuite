@@ -1,35 +1,22 @@
-﻿namespace ProteoformSuiteInternal
+﻿using System.Collections.Generic;
+
+namespace ProteoformSuiteInternal
 {
     public class BiorepIntensity
     {
         public bool imputed { get; set; } = false;
-        public int biorep { get; set; }
+        public string biorep { get; set; }
         public string condition { get; set; }
+        public List<BiorepFractionTechrepIntensity> summed_intensities { get; set; } = new List<BiorepFractionTechrepIntensity>();
         public double intensity { get; set; }// this should be linear intensity not log intensity
 
-        public BiorepIntensity(bool imputed, int biorep, string condition, double intensity)
+        public BiorepIntensity(bool imputed, string biorep, string condition, double intensity, List<BiorepFractionTechrepIntensity> summed_intensities)
         {
             this.imputed = imputed;
             this.biorep = biorep;
             this.condition = condition;
             this.intensity = intensity;// this should be linear intensity not log intensity
+            this.summed_intensities = summed_intensities;
         }
     }
-
-    //public class bftIntensity
-    //{        
-    //    public bool light { get; set; } = true; // true if unlabelled or neucode light; false if neucode heavy
-    //    public int biorep { get; set; }
-    //    public int fraction { get; set; }
-    //    public int techrep { get; set; }
-    //    public double intensity { get; set; }
-    //    public bftIntensity(bool light, int biorep, int fraction, int techrep, double intensity)
-    //    {
-    //        this.light = light;
-    //        this.biorep = biorep;
-    //        this.fraction = fraction;
-    //        this.techrep = techrep;
-    //        this.intensity = intensity;
-    //    }
-    //}
 }

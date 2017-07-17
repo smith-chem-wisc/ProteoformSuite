@@ -675,11 +675,11 @@ namespace ProteoformSuiteInternal
 
         public int countOfBioRepsInOneCondition; //need this in quantification to select which proteoforms to perform calculations on.
         public int condition_count;
-        public Dictionary<string, List<int>> conditionsBioReps = new Dictionary<string, List<int>>();
-        public Dictionary<string, List<int>> ltConditionsBioReps = new Dictionary<string, List<int>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
-        public Dictionary<string, List<int>> hvConditionsBioReps = new Dictionary<string, List<int>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
-        public Dictionary<int, List<int>> quantBioFracCombos; //this dictionary has an integer list of bioreps with an integer list of observed fractions. this way we can be missing reps and fractions.
-        public List<Tuple<int, int, double>> normalizationFactors;
+        public Dictionary<string, List<string>> conditionsBioReps = new Dictionary<string, List<string>>();
+        public Dictionary<string, List<string>> ltConditionsBioReps = new Dictionary<string, List<string>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
+        public Dictionary<string, List<string>> hvConditionsBioReps = new Dictionary<string, List<string>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
+        public Dictionary<string, List<string>> quantBioFracCombos; //this dictionary has an integer list of bioreps with an integer list of observed fractions. this way we can be missing reps and fractions.
+        public List<Tuple<string, string, double>> normalizationFactors;
 
         #endregion QUANTIFICATION SETUP Public Fields
 
@@ -700,19 +700,19 @@ namespace ProteoformSuiteInternal
 
             foreach (string condition in ltConditions.Concat(hvConditions).Distinct().ToList())
             {
-                List<int> allbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition || f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                List<string> allbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition || f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 conditionsBioReps.Add(condition, allbioreps);
             }
 
             foreach (string condition in ltConditions)
             {
-                List<int> ltbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                List<string> ltbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 ltConditionsBioReps.Add(condition, ltbioreps);
             }
 
             foreach (string condition in hvConditions)
             {
-                List<int> hvbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                List<string> hvbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 hvConditionsBioReps.Add(condition, hvbioreps);
             }
 
@@ -728,10 +728,10 @@ namespace ProteoformSuiteInternal
             minBiorepsWithObservations = countOfBioRepsInOneCondition > 0 ? countOfBioRepsInOneCondition : 1;
 
             //getBiorepsFractionsList
-            quantBioFracCombos = new Dictionary<int, List<int>>();
-            List<int> bioreps = input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
-            List<int> fractions = new List<int>();
-            foreach (int b in bioreps)
+            quantBioFracCombos = new Dictionary<string, List<string>>();
+            List<string> bioreps = input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
+            List<string> fractions = new List<string>();
+            foreach (string b in bioreps)
             {
                 //fractions = input_files.Where(q => q.purpose == Purpose.Quantification).Where(rep => rep.biological_replicate == b).Select(f => f.fraction).Distinct().ToList();
                 quantBioFracCombos.Add(b, fractions);
@@ -921,7 +921,7 @@ namespace ProteoformSuiteInternal
             return gaussian_area;
         }
 
-        public void defineBackgroundIntensityDistribution(Dictionary<int, List<int>> quantBioFracCombos, List<ExperimentalProteoform> satisfactoryProteoforms, decimal backgroundShift, decimal backgroundWidth)
+        public void defineBackgroundIntensityDistribution(Dictionary<string, List<string>> quantBioFracCombos, List<ExperimentalProteoform> satisfactoryProteoforms, decimal backgroundShift, decimal backgroundWidth)
         {
             bkgdAverageIntensity = selectAverageIntensity + backgroundShift * selectStDev;
             bkgdStDev = selectStDev * backgroundWidth;
@@ -934,7 +934,7 @@ namespace ProteoformSuiteInternal
             bkgdGaussianHeight = bkgdGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)bkgdStDev, 2));
         }
 
-        public void compute_proteoform_statistics(List<ExperimentalProteoform> satisfactoryProteoforms, decimal bkgdAverageIntensity, decimal bkgdStDev, Dictionary<string, List<int>> conditionsBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal sKnot_minFoldChange)
+        public void compute_proteoform_statistics(List<ExperimentalProteoform> satisfactoryProteoforms, decimal bkgdAverageIntensity, decimal bkgdStDev, Dictionary<string, List<string>> conditionsBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal sKnot_minFoldChange)
         {
             foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
             {
@@ -994,7 +994,7 @@ namespace ProteoformSuiteInternal
         /// n_1, *s_2*, n_3, *s_4*
         /// n_1, n_2, *s_3*, *s_4*
         /// 
-        public List<List<decimal>> compute_balanced_biorep_permutation_relativeDifferences(Dictionary<string, List<int>> conditionsBioReps, string induced_condition, List<ExperimentalProteoform> satisfactoryProteoforms, decimal sKnot_minFoldChange)
+        public List<List<decimal>> compute_balanced_biorep_permutation_relativeDifferences(Dictionary<string, List<string>> conditionsBioReps, string induced_condition, List<ExperimentalProteoform> satisfactoryProteoforms, decimal sKnot_minFoldChange)
         {
             if (!conditionsBioReps.All(x => x.Value.OrderBy(y => y).SequenceEqual(conditionsBioReps.First().Value.OrderBy(z => z))))
                 throw new ArgumentException("Error: Permutation analysis doesn't currently handle unbalanced experimental designs.");
@@ -1003,19 +1003,19 @@ namespace ProteoformSuiteInternal
             if (conditionsBioReps.Count > 2)
                 throw new ArgumentException("Error: Permutation analysis doesn't currently handle experimental  designs with more than 2 conditions.");
 
-            List<int> bioreps = conditionsBioReps.SelectMany(kv => kv.Value).Distinct().ToList();
-            List<Tuple<string, int>> allInduced = conditionsBioReps[induced_condition].Select(v => new Tuple<string, int>(induced_condition, v)).ToList();
-            List<Tuple<string, int>> allUninduced = conditionsBioReps.Where(kv => kv.Key != induced_condition).SelectMany(kv => kv.Value.Select(v => new Tuple<string, int>(kv.Key, v))).ToList();
-            List<Tuple<string, int>> all = allInduced.Concat(allUninduced).ToList();
-            List<IEnumerable<Tuple<string, int>>> permutations = ExtensionMethods.Combinations(all, allInduced.Count).ToList();
-            List<IEnumerable<Tuple<string, int>>> balanced_permutations_induced = permutations.Where(p =>
+            List<string> bioreps = conditionsBioReps.SelectMany(kv => kv.Value).Distinct().ToList();
+            List<Tuple<string, string>> allInduced = conditionsBioReps[induced_condition].Select(v => new Tuple<string, string>(induced_condition, v)).ToList();
+            List<Tuple<string, string>> allUninduced = conditionsBioReps.Where(kv => kv.Key != induced_condition).SelectMany(kv => kv.Value.Select(v => new Tuple<string, string>(kv.Key, v))).ToList();
+            List<Tuple<string, string>> all = allInduced.Concat(allUninduced).ToList();
+            List<IEnumerable<Tuple<string, string>>> permutations = ExtensionMethods.Combinations(all, allInduced.Count).ToList();
+            List<IEnumerable<Tuple<string, string>>> balanced_permutations_induced = permutations.Where(p =>
                 !p.SequenceEqual(allInduced) // not the original set
                 && bioreps.All(rep => p.Any(x => x.Item2 == rep)) // all bioreps are represented
                 && p.Count(x => x.Item1 != induced_condition) == allInduced.Count / 2) // there should be n/2 (int division) from the uninduced set to satisfy balanced and nearly balanced permutations
                 .ToList();
 
             List<List<decimal>> permutedRelativeDifferences = new List<List<decimal>>(); // each internal list is sorted
-            foreach (IEnumerable<Tuple<string, int>> induced in balanced_permutations_induced)
+            foreach (IEnumerable<Tuple<string, string>> induced in balanced_permutations_induced)
             {
                 List<decimal> relativeDifferences = new List<decimal>();
                 foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
