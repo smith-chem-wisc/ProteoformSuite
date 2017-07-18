@@ -404,7 +404,7 @@ namespace ProteoformSuiteGUI
                 MessageBox.Show("First create a theoretical proteoform database. On the Results tab, select Theoretical Proteoform Database.");
                 return;
             }
-            MessageBox.Show("Please select file with descriptions of top-down hits filename, biological replicate, fraction, and technical replicate #'s.");
+            MessageBox.Show("Please select file with columns of top-down hits filename, biological replicate, fraction, and technical replicate #'s.");
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Title = "File Descriptions";
             openFileDialog.Filter = ".tsv Files (*.tsv) | *.tsv";
@@ -531,7 +531,7 @@ namespace ProteoformSuiteGUI
         {
             if (dgv.Rows[e.RowIndex].IsNewRow)
                 return;
-            if (dgv[e.ColumnIndex, e.RowIndex].ValueType == typeof(int) && (!int.TryParse(e.FormattedValue.ToString(), out int x) || x < 1))
+            if (dgv[e.ColumnIndex, e.RowIndex].ValueType == typeof(int) && (!int.TryParse(e.FormattedValue.ToString(), out int x) || x < 0))
             {
                 e.Cancel = true;
                 MessageBox.Show("Please use positive integers for biological replicate labels.");

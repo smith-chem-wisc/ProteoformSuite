@@ -230,12 +230,22 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        public string PtmDescription
+        public string TheoreticalDescription
         {
             get
             {
                 return connected_proteoforms[1] as TheoreticalProteoform != null ?
                     ((TheoreticalProteoform)connected_proteoforms[1]).description :
+                    "";
+            }
+        }
+
+        public string PTMDescription
+        {
+            get
+            {
+                return connected_proteoforms[1] as TheoreticalProteoform != null ?
+                    ((TheoreticalProteoform)connected_proteoforms[1]).ptm_description :
                     "";
             }
         }
@@ -282,7 +292,8 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(OutsideNoMansLand)].HeaderText = "Outside No Man's Land";
 
             //ET formatting
-            dgv.Columns[nameof(PtmDescription)].HeaderText = "PTM Description";
+            dgv.Columns[nameof(TheoreticalDescription)].HeaderText = "Theoretical Description";
+            dgv.Columns[nameof(TheoreticalDescription)].HeaderText = "PTM Description";
             if (mask_experimental)
             {
                 dgv.Columns[nameof(num_observations_1)].HeaderText = "Number Experimental Observations";
@@ -303,6 +314,8 @@ namespace ProteoformSuiteGUI
             //EE formatting
             if (mask_theoretical)
             {
+                dgv.Columns[nameof(TheoreticalDescription)].Visible = false;
+                dgv.Columns[nameof(PTMDescription)].Visible = false;
                 dgv.Columns[nameof(num_observations_2)].HeaderText = "Number Light Experimental Observations";
                 dgv.Columns[nameof(num_observations_1)].HeaderText = "Number Heavy Experimental Observations";
                 dgv.Columns[nameof(agg_intensity_2)].HeaderText = "Light Experimental Aggregated Intensity";

@@ -98,12 +98,6 @@ namespace ProteoformSuiteInternal
             //Generate lookup table for ptm sets based on rounded mass of eligible PTMs -- used in forming ET relations
             possible_ptmset_dictionary = make_ptmset_dictionary();
 
-            //read in BU results if available
-            Sweet.lollipop.BottomUpPSMList.Clear();
-            foreach (InputFile file in Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.BottomUp))
-            {
-                Sweet.lollipop.BottomUpPSMList.AddRange(BottomUpReader.ReadBUFile(file.complete_path));
-            }
 
 
             expanded_proteins = expand_protein_entries(theoretical_proteins.Values.SelectMany(p => p).ToArray());
@@ -114,22 +108,12 @@ namespace ProteoformSuiteInternal
             process_entries(expanded_proteins, variableModifications);
             process_decoys(expanded_proteins, variableModifications);
 
-            //match up bottom-up PSMs
-            Parallel.ForEach(Sweet.lollipop.BottomUpPSMList, bu_psm =>
+            //read in BU results if available
+            Sweet.lollipop.BottomUpPSMList.Clear();
+            foreach (InputFile file in Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.BottomUp))
             {
-                foreach (var dictionary in theoreticals_by_accession.Values)
-                {
-                    List<TheoreticalProteoform> theoreticals;
-                    lock (dictionary) dictionary.TryGetValue(bu_psm.protein_accession, out theoreticals);
-                    if (theoreticals != null)
-                    {
-                        foreach (TheoreticalProteoform t in theoreticals)
-                        {
-                            lock (t) t.psm_list.Add(bu_psm);
-                        }
-                    }
-                }
-            });
+                Sweet.lollipop.BottomUpPSMList.AddRange(BottomUpReader.ReadBUFile(file.complete_path, theoreticals_by_accession.Values.ToList()));
+            }
 
             if (Sweet.lollipop.combine_theoretical_proteoforms_byMass)
             {
@@ -218,52 +202,51 @@ namespace ProteoformSuiteInternal
 
         public static ProteinWithGoTerms[] expand_protein_entries(Protein[] proteins)
         {
-
-            List<ProteinWithGoTerms> expanded_prots = new List<ProteinWithGoTerms>();
-            foreach (Protein p in proteins)
-            {
-                List<ProteinWithGoTerms> new_prots = new List<ProteinWithGoTerms>();
-
-                //Add full length product
-                int begin = 1;
-                int end = p.BaseSequence.Length;
-                List<GoTerm> goTerms = p.DatabaseReferences.Where(reference => reference.Type == "GO").Select(reference => new GoTerm(reference)).ToList();
-                int startPosAfterCleavage = Convert.ToInt32(Sweet.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M"));
-                new_prots.Add(new ProteinWithGoTerms(
-                    p.BaseSequence.Substring(begin + startPosAfterCleavage - 1, end - (begin + startPosAfterCleavage) + 1),
-                    p.Accession + "_" + (begin + startPosAfterCleavage).ToString() + "full" + end.ToString(),
-                    p.GeneNames.ToList(),
-                    p.OneBasedPossibleLocalizedModifications,
-                    new List<ProteolysisProduct> { new ProteolysisProduct(begin + startPosAfterCleavage, end, Sweet.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full") },
-                    p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms, p.DisulfideBonds));
-
-                //Add fragments
-                List<ProteolysisProduct> products = p.ProteolysisProducts.ToList();
-                foreach (ProteolysisProduct product in p.ProteolysisProducts)
+                List<ProteinWithGoTerms> expanded_prots = new List<ProteinWithGoTerms>();
+                foreach (Protein p in proteins)
                 {
-                    string feature_type = product.Type.Replace(' ', '-');
-                    if (!(feature_type == "peptide" || feature_type == "propeptide" || feature_type == "chain" || feature_type == "signal-peptide")
-                            || !product.OneBasedBeginPosition.HasValue
-                            || !product.OneBasedEndPosition.HasValue)
-                        continue;
-                    int feature_begin = (int)product.OneBasedBeginPosition;
-                    int feature_end = (int)product.OneBasedEndPosition;
-                    if (feature_begin < 1 || feature_end < 1)
-                        continue;
-                    bool feature_is_just_met_cleavage = Sweet.lollipop.methionine_cleavage && feature_begin == begin + 1 && feature_end == end;
-                    string subsequence = p.BaseSequence.Substring(feature_begin - 1, feature_end - feature_begin + 1);
-                    Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= feature_begin && kv.Key <= feature_end).ToDictionary(kv => kv.Key, kv => kv.Value);
-                    if (!feature_is_just_met_cleavage && subsequence.Length != p.BaseSequence.Length && subsequence.Length >= Sweet.lollipop.min_peptide_length)
-                        new_prots.Add(new ProteinWithGoTerms(
-                            subsequence,
-                            p.Accession + "_" + feature_begin.ToString() + "frag" + feature_end.ToString(),
-                            p.GeneNames.ToList(),
-                            segmented_ptms,
-                            new List<ProteolysisProduct> { new ProteolysisProduct(feature_begin, feature_end, feature_type) },
-                            p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms, p.DisulfideBonds));
+                    List<ProteinWithGoTerms> new_prots = new List<ProteinWithGoTerms>();
+
+                    //Add full length product
+                    int begin = 1;
+                    int end = p.BaseSequence.Length;
+                    List<GoTerm> goTerms = p.DatabaseReferences.Where(reference => reference.Type == "GO").Select(reference => new GoTerm(reference)).ToList();
+                    int startPosAfterCleavage = Convert.ToInt32(Sweet.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M"));
+                    new_prots.Add(new ProteinWithGoTerms(
+                        p.BaseSequence.Substring(begin + startPosAfterCleavage - 1, end - (begin + startPosAfterCleavage) + 1),
+                        p.Accession + "_" + (begin + startPosAfterCleavage).ToString() + "full" + end.ToString(),
+                        p.GeneNames.ToList(),
+                        p.OneBasedPossibleLocalizedModifications,
+                        new List<ProteolysisProduct> { new ProteolysisProduct(begin + startPosAfterCleavage, end, Sweet.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full") },
+                        p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms, p.DisulfideBonds));
+
+                    //Add fragments
+                    List<ProteolysisProduct> products = p.ProteolysisProducts.ToList();
+                    foreach (ProteolysisProduct product in p.ProteolysisProducts)
+                    {
+                        string feature_type = product.Type.Replace(' ', '-');
+                        if (!(feature_type == "peptide" || feature_type == "propeptide" || feature_type == "chain" || feature_type == "signal-peptide")
+                                || !product.OneBasedBeginPosition.HasValue
+                                || !product.OneBasedEndPosition.HasValue)
+                            continue;
+                        int feature_begin = (int)product.OneBasedBeginPosition;
+                        int feature_end = (int)product.OneBasedEndPosition;
+                        if (feature_begin < 1 || feature_end < 1)
+                            continue;
+                        bool feature_is_just_met_cleavage = Sweet.lollipop.methionine_cleavage && feature_begin == begin + 1 && feature_end == end;
+                        string subsequence = p.BaseSequence.Substring(feature_begin - 1, feature_end - feature_begin + 1);
+                        Dictionary<int, List<Modification>> segmented_ptms = p.OneBasedPossibleLocalizedModifications.Where(kv => kv.Key >= feature_begin && kv.Key <= feature_end).ToDictionary(kv => kv.Key, kv => kv.Value);
+                        if (!feature_is_just_met_cleavage && subsequence.Length != p.BaseSequence.Length && subsequence.Length >= Sweet.lollipop.min_peptide_length)
+                            new_prots.Add(new ProteinWithGoTerms(
+                                subsequence,
+                                p.Accession + "_" + feature_begin.ToString() + "frag" + feature_end.ToString(),
+                                p.GeneNames.ToList(),
+                                segmented_ptms,
+                                new List<ProteolysisProduct> { new ProteolysisProduct(feature_begin, feature_end, feature_type) },
+                                p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms, p.DisulfideBonds));
+                    }
+                    expanded_prots.AddRange(new_prots);
                 }
-                expanded_prots.AddRange(new_prots);
-            }
             return expanded_prots.ToArray();
         }
 

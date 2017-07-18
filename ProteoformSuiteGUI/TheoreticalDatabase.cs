@@ -252,6 +252,7 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.reduced_disulfides = cb_reduced_disulfide.Checked;
             ckbx_combineIdenticalSequences.Checked = false;
             ckbx_combineTheoreticalsByMass.Checked = false;
+            ckbx_Carbam.Checked = false;
         }
 
         #endregion CHECKBOXES Private Methods

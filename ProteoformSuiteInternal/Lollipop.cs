@@ -528,7 +528,7 @@ namespace ProteoformSuiteInternal
 
         #region ET,ED,EE,EF COMPARISONS Public Fields
 
-        public double ee_max_mass_difference = 1100;
+        public double ee_max_mass_difference = 300;
         public double ee_max_RetentionTime_difference = 2.5;
         public double et_low_mass_difference = -300;
         public double et_high_mass_difference = 350;
@@ -629,7 +629,6 @@ namespace ProteoformSuiteInternal
         {
             //group hits into topdown proteoforms by accession/theoretical AND observed mass
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
-            //TopDownHit[] remaining_td_hits = new TopDownHit[0];
             List<TopDownHit> unprocessed_td_hits = top_down_hits.Where(h => h.score >= min_score_td && h.retention_time >= min_RT_td && h.retention_time <= max_RT_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
 
             List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
@@ -1340,9 +1339,8 @@ namespace ProteoformSuiteInternal
                 catch
                 {
                     return "Error in file descriptions file values";
-
                 }
-                Parallel.ForEach(td_hits_calibration.Where(h => h.filename == file_description[0]), h =>
+                Parallel.ForEach(td_hits_calibration.Where(h => h.filename == file_description[0].Split('.')[0]), h =>
                 {
                     h.biological_replicate = biological_replicate;
                     h.fraction = fraction;
