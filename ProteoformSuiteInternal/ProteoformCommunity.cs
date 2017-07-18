@@ -134,11 +134,8 @@ namespace ProteoformSuiteInternal
             foreach (TopDownProteoform topdown in topdowns)
             {
                 List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
-
-
                 //match each td proteoform group to the closest theoretical w/ same accession and modifications. (if no match always make relationship with unmodified)
                 //if accession the same, or uniprot ID the same, or same sequence (take into account cleaved methionine)
-
                 List<TheoreticalProteoform> candidate_theoreticals;
                 lock (Sweet.lollipop.theoretical_database.theoreticals_by_accession)
                 {
@@ -166,7 +163,7 @@ namespace ProteoformSuiteInternal
                         if (t == null) t = candidate_theoreticals.Where(r => r.ptm_set.ptm_combination.Count == 0).FirstOrDefault();
                         if (t != null)
                         {
-                            TheoreticalProteoform new_t = new TheoreticalProteoform(topdown.accession + "_" + topdown.start_index + "to" + topdown.stop_index + "_" + counter + "TD", t.description, t.ExpandedProteinList, (topdown.theoretical_mass - topdown.ptm_set.mass), topdown.lysine_count, topdown.ptm_set, t.is_target, false, null);
+                            TheoreticalProteoform new_t = new TheoreticalProteoform(topdown.accession + "_" + counter + "TD", t.description, t.ExpandedProteinList, (topdown.theoretical_mass - topdown.ptm_set.mass), topdown.lysine_count, topdown.ptm_set, t.is_target, false, null);
                             new_t.contaminant = false;
                             new_t.psm_list = t.psm_list;
                             new_t.sequence = topdown.sequence;
@@ -351,7 +348,7 @@ namespace ProteoformSuiteInternal
         public static string preferred_gene_label;
         public List<ProteoformFamily> construct_families()
         {
-            // clean_up_td_relations();
+            clean_up_td_relations();
             Parallel.ForEach(topdown_proteoforms, t =>
             {
                 t.relationships.Select(r => r.Accepted = include_td_nodes);
@@ -409,18 +406,18 @@ namespace ProteoformSuiteInternal
         }
 
         //if E in relation w/ T and TD of diff accesions, TD takes priority because has retention time evidence as well 
-        //public void clean_up_td_relations()
-        //{
-        //    foreach (ExperimentalProteoform e in this.experimental_proteoforms.Where(e => e.accepted && e.relationships.Where(r =>
-        //        r.Accepted && r.RelationType == ProteoformComparison.ExperimentalTheoretical).Count() >= 1 && e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).Count() == 1))
-        //    {
-        //        string accession = e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).First().connected_proteoforms[0].accession.Split('_')[0];
-        //        foreach (ProteoformRelation relation in e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical && r.connected_proteoforms[1].accession.Split('_')[0] != accession))
-        //        {
-        //            relation.Accepted = false;
-        //        }
-        //    }
-        //}
+        public void clean_up_td_relations()
+        {
+            foreach (ExperimentalProteoform e in this.experimental_proteoforms.Where(e => e.accepted && e.relationships.Where(r =>
+                r.Accepted && r.RelationType == ProteoformComparison.ExperimentalTheoretical).Count() >= 1 && e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).Select(r => r.connected_proteoforms[0].accession.Split('_')[0]).Distinct().Count() == 1))
+            {
+                string accession = e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).First().connected_proteoforms[0].accession.Split('_')[0];
+                foreach (ProteoformRelation relation in e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical && r.connected_proteoforms[1].accession.Split('_')[0] != accession))
+                {
+                    relation.Accepted = false;
+                }
+            }
+        }
 
         public IEnumerable<ProteoformFamily> combine_gene_families(IEnumerable<ProteoformFamily> families)
         {

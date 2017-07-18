@@ -43,8 +43,6 @@ namespace ProteoformSuiteInternal
                 CalibrateLinear(td_file, bio_rep, fraction, tech_rep, dataPointAcquisitionResult.Ms1List);
             }
 
-
-            //found that this made results worse... maybe too few hits
             trainingPointCounts = new List<int>();
             for (int forestCalibrationRound = 1; ; forestCalibrationRound++)
             {
@@ -56,7 +54,7 @@ namespace ProteoformSuiteInternal
             }
 
             //calibrate topdown hits if this is topdown file....
-            foreach (TopDownHit hit in identifications.Where(h => h.filename == file.filename))
+            foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration.Where(h => h.filename == file.filename))
             {
                 Tuple<string, int, double> key = new Tuple<string, int, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);
                 if (!Sweet.lollipop.td_hit_correction.ContainsKey(key)) lock (Sweet.lollipop.td_hit_correction) Sweet.lollipop.td_hit_correction.Add(key, hit.mz.ToMass(hit.charge));

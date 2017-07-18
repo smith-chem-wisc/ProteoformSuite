@@ -13,7 +13,7 @@ namespace ProteoformSuiteInternal
     {
         public static List<string> bottom_up_PTMs_not_in_dictionary = new List<string>(); //PTMs from BU file that did not match to any PTMs in uniprotModifications dictionary, added to warning
         //READING IN BOTTOM-UP MORPHEUS FILE
-        public static List<BottomUpPSM> ReadBUFile(string filename)
+        public static List<BottomUpPSM> ReadBUFile(string filename, List<Dictionary<string, List<TheoreticalProteoform>>> theoreticals_by_accession)
         {
             bottom_up_PTMs_not_in_dictionary.Clear();
             List<BottomUpPSM> psm_list = new List<BottomUpPSM>();
@@ -45,7 +45,20 @@ namespace ProteoformSuiteInternal
                     }
                     if (add_psm)
                     {
-                        lock (psm_list) psm_list.Add(new BottomUpPSM(identifications.PeptideSequenceWithoutModifications(sirIndex, siiIndex), identifications.StartResidueInProtein(sirIndex, siiIndex), identifications.EndResidueInProtein(sirIndex, siiIndex), modifications, identifications.Ms2SpectrumID(sirIndex), identifications.ProteinAccession(sirIndex, siiIndex), identifications.ProteinFullName(sirIndex, siiIndex), identifications.ExperimentalMassToCharge(sirIndex, siiIndex), identifications.ChargeState(sirIndex, siiIndex), identifications.CalculatedMassToCharge(sirIndex, siiIndex)));
+                        BottomUpPSM bu_psm = new BottomUpPSM(identifications.PeptideSequenceWithoutModifications(sirIndex, siiIndex), identifications.StartResidueInProtein(sirIndex, siiIndex), identifications.EndResidueInProtein(sirIndex, siiIndex), modifications, identifications.Ms2SpectrumID(sirIndex), identifications.ProteinAccession(sirIndex, siiIndex), identifications.ProteinFullName(sirIndex, siiIndex), identifications.ExperimentalMassToCharge(sirIndex, siiIndex), identifications.ChargeState(sirIndex, siiIndex), identifications.CalculatedMassToCharge(sirIndex, siiIndex));
+                        lock (psm_list) psm_list.Add(bu_psm);
+                        foreach (var dictionary in theoreticals_by_accession)
+                        {
+                            List<TheoreticalProteoform> theoreticals;
+                            lock (dictionary) dictionary.TryGetValue(bu_psm.protein_accession, out theoreticals);
+                            if (theoreticals != null)
+                            {
+                                foreach (TheoreticalProteoform t in theoreticals)
+                                {
+                                    lock (t) t.psm_list.Add(bu_psm);
+                                }
+                            }
+                        }
                     }
                 }
             });
