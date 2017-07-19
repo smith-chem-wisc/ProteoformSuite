@@ -10,8 +10,8 @@ namespace ProteoformSuiteInternal
         public List<string> AccessionList { get; set; }
         public List<GoTerm> GoTerms { get; set; }
 
-        public ProteinWithGoTerms(string sequence, string accession, List<Tuple<string, string>> gene_names, IDictionary<int, List<Modification>> oneBasedModifications, IEnumerable<ProteolysisProduct> proteolysisProducts, string name, string full_name, bool isDecoy, bool isContaminant, IEnumerable<DatabaseReference> databaseReferences, IEnumerable<GoTerm> goTerms, IEnumerable<DisulfideBond> disulfideBonds)
-            : base(sequence, accession, gene_names, oneBasedModifications, proteolysisProducts.ToList(), name, full_name, isDecoy, isContaminant, databaseReferences.ToList(), null, disulfideBonds.ToList())
+        public ProteinWithGoTerms(string sequence, string accession, List<Tuple<string, string>> gene_names, IDictionary<int, List<Modification>> oneBasedModifications, IEnumerable<ProteolysisProduct> proteolysisProducts, string name, string full_name, bool isDecoy, bool isContaminant, IEnumerable<DatabaseReference> databaseReferences, IEnumerable<GoTerm> goTerms)
+            : base(sequence, accession, gene_names, oneBasedModifications, proteolysisProducts.ToList(), name, full_name, isDecoy, isContaminant, databaseReferences.ToList(), null)
         {
             this.GoTerms = goTerms.ToList();
             this.AccessionList = new List<string> { accession };
