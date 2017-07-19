@@ -113,6 +113,18 @@ namespace Test
             return e;
         }
 
+        //TOPDOWN pROTEOFORM
+        public static TopDownProteoform TopDownProteoform(string accession, double modified_mass, double retention_time)
+        {
+            TopDownHit h = new TopDownHit();
+            h.reported_mass = modified_mass;
+            h.theoretical_mass = modified_mass;
+            h.retention_time = retention_time;
+            h.sequence = "MSSSSSSSSSS";
+            TopDownProteoform td = new TopDownProteoform(accession, h, new List<TopDownHit>() { h } );
+            return td;
+        }
+
 
         //INPUT FILE
         public static InputFile InputFile(string complete_path, Labeling label, Purpose purpose, string lt_con, string hv_con, int biorep, int fraction, int techrep) // for neucode files. here both conditions are present in one file

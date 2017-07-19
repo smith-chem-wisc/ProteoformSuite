@@ -125,15 +125,14 @@ namespace ProteoformSuiteInternal
             return to_shuffle.Take(Sweet.lollipop.ee_relations.Count).ToList();
         }
 
-        public List<ProteoformRelation> relate_td(List<ExperimentalProteoform> experimentals, List<TheoreticalProteoform> theoreticals, List<TopDownProteoform> topdowns)
+        public List<ProteoformRelation> relate_td()
         {
             List<ProteoformRelation> td_relations = new List<ProteoformRelation>();
             int max_missed_monoisotopics = Convert.ToInt32(Sweet.lollipop.maximum_missed_monos);
             List<int> missed_monoisotopics_range = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
             int counter = 1;
-            foreach (TopDownProteoform topdown in topdowns)
+            foreach (TopDownProteoform topdown in topdown_proteoforms)
             {
-                List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
                 //match each td proteoform group to the closest theoretical w/ same accession and modifications. (if no match always make relationship with unmodified)
                 //if accession the same, or uniprot ID the same, or same sequence (take into account cleaved methionine)
                 List<TheoreticalProteoform> candidate_theoreticals;
@@ -200,14 +199,14 @@ namespace ProteoformSuiteInternal
                 }
 
                 double mass = topdown.modified_mass;
-
+                List<ProteoformRelation> all_td_relations = new List<ProteoformRelation>();
                 foreach (int m in missed_monoisotopics_range)
                 {
                     double shift = m * Lollipop.MONOISOTOPIC_UNIT_MASS;
                     double mass_tol = (mass + shift) / 1000000 * Convert.ToInt32(Sweet.lollipop.mass_tolerance);
                     double low = mass + shift - mass_tol;
                     double high = mass + shift + mass_tol;
-                    List<ExperimentalProteoform> matching_e = experimentals.Where(ep => ep.modified_mass >= low && ep.modified_mass <= high
+                    List<ExperimentalProteoform> matching_e = experimental_proteoforms.Where(ep => ep.modified_mass >= low && ep.modified_mass <= high
                         && Math.Abs(ep.agg_rt - topdown.agg_RT) <= Convert.ToDouble(Sweet.lollipop.retention_time_tolerance)).ToList();
                     foreach (ExperimentalProteoform e in matching_e)
                     {
