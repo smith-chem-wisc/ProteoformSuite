@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ProteoformSuiteInternal;
 using Proteomics;
+using System.IO;
 
 namespace Test
 {
@@ -108,11 +109,13 @@ namespace Test
             pf1.agg_rt = 45;
             ExperimentalProteoform pf2 = ConstructorsForTesting.ExperimentalProteoform("A2", 1000.0, 1, true);
             pf2.agg_rt = 85;
-            ExperimentalProteoform pf3 = ConstructorsForTesting.ExperimentalProteoform("A3", 1131.04, 1, true);
+            ExperimentalProteoform pf3  = ConstructorsForTesting.ExperimentalProteoform("A3", 1131.04, 1, true);
+            pf3.agg_rt = 45;
             TopDownProteoform td1 = ConstructorsForTesting.TopDownProteoform("ACCESSION_1", 1000.0, 45);
             TopDownProteoform td2 = ConstructorsForTesting.TopDownProteoform("ACCESSION_2", 1001.0, 85);
+            TopDownProteoform td3 = ConstructorsForTesting.TopDownProteoform("ACCESSION_3", 1131.04, 85);
 
-            TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("ACCESSION", 1087.03, 1); //td1 with methionine retention
+            TheoreticalProteoform t1 = ConstructorsForTesting.make_a_theoretical("ACCESSION", 1087.03, 1);
             //td2 doesn't have matching theoretical... will make one
 
             //need to make theoretical accession database
@@ -132,7 +135,7 @@ namespace Test
             Sweet.lollipop.modification_ranks.Add(-1.0023, 2);
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.Add(-1.0, new List<PtmSet>() { set });
 
-            //need missing error...
+            //need missing error
             ModificationWithMass m2 = new ModificationWithMass("", new Tuple<string, string>("", ""), motif, ModificationSites.K, -87.03, new Dictionary<string, IList<string>>(), new List<double>(), new List<double>(), "Missing");
             Sweet.lollipop.theoretical_database.all_mods_with_mass.Add(m2);
             PtmSet set2 = new PtmSet(new List<Ptm> { new Ptm(-1, m2) });
@@ -140,21 +143,55 @@ namespace Test
             Sweet.lollipop.modification_ranks.Add(-87.03, 2);
             Sweet.lollipop.theoretical_database.possible_ptmset_dictionary.Add(-87.0, new List<PtmSet>() { set2 });
 
-
-
             Sweet.lollipop.target_proteoform_community.experimental_proteoforms = new List<ExperimentalProteoform>() { pf1, pf2, pf3 }.ToArray();
             Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = new List<TheoreticalProteoform>() { t1 }.ToArray();
-            Sweet.lollipop.target_proteoform_community.topdown_proteoforms = new List<TopDownProteoform> { td1, td2 }.ToArray();
+            Sweet.lollipop.target_proteoform_community.topdown_proteoforms = new List<TopDownProteoform> { td1, td2, td3 }.ToArray();
             List<ProteoformRelation> td_relations =  Sweet.lollipop.target_proteoform_community.relate_td( );
 
-            //should be 4 relations
-            Assert.AreEqual(4, td_relations.Count);
+            //should be 6 relations
+            Assert.AreEqual(5, td_relations.Count);
+
+            //td3 shouldnt have any etd relations (wrong rt)
+            Assert.AreEqual(0, td3.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
+
             //2 etd
             Assert.AreEqual(2, td_relations.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
+            Assert.AreEqual(0, pf3.relationships.Count);
+            Assert.AreEqual(1, pf1.relationships.Count);
+            Assert.AreEqual(1, pf2.relationships.Count);
+            Assert.AreEqual(-1, Math.Round(pf2.relationships.First().DeltaMass, 0));
             //2 ttd
-            Assert.AreEqual(2, td_relations.Count(r => r.RelationType == ProteoformComparison.TheoreticalTopDown));
+            Assert.AreEqual(3, td_relations.Count(r => r.RelationType == ProteoformComparison.TheoreticalTopDown));
+            Assert.AreEqual(1, td1.relationships.Count(r => r.RelationType == ProteoformComparison.TheoreticalTopDown));
+            Assert.AreEqual(1, td2.relationships.Count(r => r.RelationType == ProteoformComparison.TheoreticalTopDown));
             //added a new theoretical because couldn't form relation with one of the topdowns.
-            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
+            Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
+
+
+            //experimental w/ multiple topdowns should relate to the one closest to 0, not with MM errors, regardless of order td relations made in
+            Sweet.lollipop.clear_td();
+             td3 = ConstructorsForTesting.TopDownProteoform("ACCESSION_3", 1000.0, 45);
+            TopDownProteoform td4 = ConstructorsForTesting.TopDownProteoform("ACCESSION_4", 1001.0, 45);
+            Sweet.lollipop.target_proteoform_community.topdown_proteoforms = new List<TopDownProteoform> { td3, td4 }.ToArray();
+            Sweet.lollipop.target_proteoform_community.topdown_proteoforms.OrderBy(p => p.modified_mass);
+            td_relations = Sweet.lollipop.target_proteoform_community.relate_td();
+
+            Assert.AreEqual(1, pf1.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
+            Assert.AreEqual(1, td3.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
+            Assert.AreEqual(0, td4.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
+            Assert.AreEqual(3, td_relations.Count);
+
+            //try in other order of topdown (other relation added first, needs to be removed)
+            Sweet.lollipop.clear_td();
+             td3 = ConstructorsForTesting.TopDownProteoform("ACCESSION_3", 1000.0, 45);
+             td4 = ConstructorsForTesting.TopDownProteoform("ACCESSION_4", 1001.0, 45);
+            Sweet.lollipop.target_proteoform_community.topdown_proteoforms = new List<TopDownProteoform> { td3, td4 }.ToArray();
+            Sweet.lollipop.target_proteoform_community.topdown_proteoforms.OrderByDescending(p => p.modified_mass);
+            td_relations = Sweet.lollipop.target_proteoform_community.relate_td();
+            Assert.AreEqual(1, pf1.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
+            Assert.AreEqual(1, td3.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
+            Assert.AreEqual(0, td4.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
+            Assert.AreEqual(3, td_relations.Count);
         }
     }
 }

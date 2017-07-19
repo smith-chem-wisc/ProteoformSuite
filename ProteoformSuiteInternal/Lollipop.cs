@@ -1475,6 +1475,20 @@ namespace ProteoformSuiteInternal
             }
         }
 
+        public void clear_td()
+        {
+            Sweet.lollipop.top_down_hits.Clear();
+            Sweet.lollipop.td_relations.Clear();
+            Sweet.lollipop.topdownReader.topdown_ptms.Clear();
+            foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { Sweet.lollipop.target_proteoform_community }))
+            {
+                community.topdown_proteoforms = new TopDownProteoform[0];
+                foreach (Proteoform p in community.experimental_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTopDown);
+                foreach (Proteoform p in community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.TheoreticalTopDown);
+                foreach (Proteoform p in community.topdown_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTopDown || r.RelationType == ProteoformComparison.TheoreticalTopDown);
+            }
+        }
+
         public void clear_all_families()
         {
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { target_proteoform_community }))

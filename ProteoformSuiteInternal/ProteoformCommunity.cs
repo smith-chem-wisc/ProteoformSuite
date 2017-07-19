@@ -232,21 +232,27 @@ namespace ProteoformSuiteInternal
                 {
                     best_relation.connected_proteoforms[0].relationships.Add(best_relation);
                     best_relation.connected_proteoforms[1].relationships.Add(best_relation);
-                    ((ExperimentalProteoform)best_relation.connected_proteoforms[1]).accepted = true;
                     best_relation.Accepted = true;
                     td_relations.Add(best_relation);
                     //if experimental is connected to a topdown with fewer missed monoisotopics, go with this one
+                    List<ProteoformRelation> relationsToRemove = new List<ProteoformRelation>();
                     foreach (ProteoformRelation relation in best_relation.connected_proteoforms[1].relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown))
                     {
                         if (relation.candidate_ptmset.ptm_combination.Count(m => m.modification.modificationType == "Deconvolution Error") < best_relation.candidate_ptmset.ptm_combination.Count(m => m.modification.modificationType == "Deconvolution Error"))
                         {
-                            best_relation.Accepted = false;
+                            relationsToRemove.Add(best_relation);
                             break;
                         }
                         if (relation.candidate_ptmset.ptm_combination.Count(m => m.modification.modificationType == "Deconvolution Error") > best_relation.candidate_ptmset.ptm_combination.Count(m => m.modification.modificationType == "Deconvolution Error"))
                         {
-                            relation.Accepted = false;
+                            relationsToRemove.Add(relation);
                         }
+                    }
+                    foreach(ProteoformRelation relation in relationsToRemove)
+                    {
+                        td_relations.Remove(relation);
+                        best_relation.connected_proteoforms[0].relationships.Remove(relation);
+                        best_relation.connected_proteoforms[1].relationships.Remove(relation);
                     }
                 }
             }
@@ -347,10 +353,9 @@ namespace ProteoformSuiteInternal
         public static string preferred_gene_label;
         public List<ProteoformFamily> construct_families()
         {
-            clean_up_td_relations();
-            Parallel.ForEach(topdown_proteoforms, t =>
+            Parallel.ForEach(Sweet.lollipop.td_relations, t =>
             {
-                t.relationships.Select(r => r.Accepted = include_td_nodes);
+                t.Accepted = include_td_nodes;
             });
 
             List<Proteoform> proteoforms = new List<Proteoform>();
@@ -402,20 +407,6 @@ namespace ProteoformSuiteInternal
             if (gene_centric_families) families = combine_gene_families(families).ToList();
             Parallel.ForEach(families, f => f.identify_experimentals());
             return families;
-        }
-
-        //if E in relation w/ T and TD of diff accesions, TD takes priority because has retention time evidence as well 
-        public void clean_up_td_relations()
-        {
-            foreach (ExperimentalProteoform e in this.experimental_proteoforms.Where(e => e.accepted && e.relationships.Where(r =>
-                r.Accepted && r.RelationType == ProteoformComparison.ExperimentalTheoretical).Count() >= 1 && e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).Select(r => r.connected_proteoforms[0].accession.Split('_')[0]).Distinct().Count() == 1))
-            {
-                string accession = e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).First().connected_proteoforms[0].accession.Split('_')[0];
-                foreach (ProteoformRelation relation in e.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical && r.connected_proteoforms[1].accession.Split('_')[0] != accession))
-                {
-                    relation.Accepted = false;
-                }
-            }
         }
 
         public IEnumerable<ProteoformFamily> combine_gene_families(IEnumerable<ProteoformFamily> families)

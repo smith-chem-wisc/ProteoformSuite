@@ -154,9 +154,9 @@ namespace ProteoformSuiteInternal
         {
             ProteoformRelation r2 = obj as ProteoformRelation;
             return r2 != null &&
-                (InstanceId == r2.InstanceId ||
-                connected_proteoforms[0] == r2.connected_proteoforms[1] && connected_proteoforms[1] == r2.connected_proteoforms[0] ||
-                connected_proteoforms[0] == r2.connected_proteoforms[0] && connected_proteoforms[1] == r2.connected_proteoforms[1]);
+                (InstanceId == r2.InstanceId) ||
+                (connected_proteoforms[0] == r2.connected_proteoforms[1] && connected_proteoforms[1] == r2.connected_proteoforms[0]) ||
+                (connected_proteoforms[0] == r2.connected_proteoforms[0] && connected_proteoforms[1] == r2.connected_proteoforms[1]);
         }
 
         public override int GetHashCode()
