@@ -30,7 +30,6 @@ namespace Test
             p2.relationships.Add(pp);
             return pp;
         }
-
         
         //MAKE THEORETICAL
         public static TheoreticalProteoform make_a_theoretical(string a, ProteinWithGoTerms p, Dictionary<InputFile, Protein[]> dict)

@@ -110,6 +110,7 @@ namespace ProteoformSuiteInternal
 
             //read in BU results if available
             Sweet.lollipop.BottomUpPSMList.Clear();
+            BottomUpReader.bottom_up_PTMs_not_in_dictionary.Clear();
             foreach (InputFile file in Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.BottomUp))
             {
                 Sweet.lollipop.BottomUpPSMList.AddRange(BottomUpReader.ReadBUFile(file.complete_path, theoreticals_by_accession.Values.ToList()));
