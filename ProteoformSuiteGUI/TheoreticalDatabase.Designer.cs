@@ -70,7 +70,6 @@
             this.dgv_Database = new System.Windows.Forms.DataGridView();
             this.dgv_unlocalizedModifications = new System.Windows.Forms.DataGridView();
             this.splitter1 = new System.Windows.Forms.Splitter();
-            this.cb_reduced_disulfide = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -99,7 +98,6 @@
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.cb_reduced_disulfide);
             this.splitContainer1.Panel1.Controls.Add(this.groupBox2);
             this.splitContainer1.Panel1.Controls.Add(this.btn_downloadUniProtPtmList);
             this.splitContainer1.Panel1.Controls.Add(this.cb_limitLargePtmSets);
@@ -605,19 +603,6 @@
             this.splitter1.TabIndex = 1;
             this.splitter1.TabStop = false;
             // 
-            // cb_reduced_disulfide
-            // 
-            this.cb_reduced_disulfide.AutoSize = true;
-            this.cb_reduced_disulfide.Checked = true;
-            this.cb_reduced_disulfide.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_reduced_disulfide.Location = new System.Drawing.Point(7, 283);
-            this.cb_reduced_disulfide.Name = "cb_reduced_disulfide";
-            this.cb_reduced_disulfide.Size = new System.Drawing.Size(146, 17);
-            this.cb_reduced_disulfide.TabIndex = 54;
-            this.cb_reduced_disulfide.Text = "Reduced Disulfide Bonds";
-            this.cb_reduced_disulfide.UseVisualStyleBackColor = true;
-            this.cb_reduced_disulfide.CheckedChanged += new System.EventHandler(this.cb_reduced_disulfide_CheckedChanged);
-            // 
             // TheoreticalDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -696,6 +681,5 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox tb_modTableFilter;
         private System.Windows.Forms.Button btn_amendModNames;
-        private System.Windows.Forms.CheckBox cb_reduced_disulfide;
     }
 }
