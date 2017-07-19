@@ -323,6 +323,9 @@ namespace Test
             Assert.AreEqual("PTM not in database", BottomUpReader.bottom_up_PTMs_not_in_dictionary.First());
             //accession matches one of the accessions of proteins collapsed into theoretical proteoforms (combine identical sequences/masses)
             Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(t => t.psm_list.Count > 0));
+            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[0].psm_list.Count);
+            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[1].psm_list.Count);
+            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.psm_list.Count > 0).ToList()[2].psm_list.Count);
         }
     }
 }
