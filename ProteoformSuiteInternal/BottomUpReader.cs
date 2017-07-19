@@ -15,7 +15,6 @@ namespace ProteoformSuiteInternal
         //READING IN BOTTOM-UP MORPHEUS FILE
         public static List<BottomUpPSM> ReadBUFile(string filename, List<Dictionary<string, List<TheoreticalProteoform>>> theoreticals_by_accession)
         {
-            bottom_up_PTMs_not_in_dictionary.Clear();
             List<BottomUpPSM> psm_list = new List<BottomUpPSM>();
             var identifications = new MzidIdentifications(filename);
             Parallel.For(0, identifications.Count, sirIndex =>
