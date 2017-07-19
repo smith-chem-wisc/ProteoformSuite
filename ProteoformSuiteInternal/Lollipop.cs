@@ -503,7 +503,6 @@ namespace ProteoformSuiteInternal
         #endregion AGGREGATED PROTEOFORMS
 
         #region THEORETICAL DATABASE Public Fields
-        public bool reduced_disulfides = true;
         public bool methionine_oxidation = true;
         public bool carbamidomethylation = true;
         public bool methionine_cleavage = true;
