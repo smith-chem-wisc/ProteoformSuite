@@ -319,6 +319,10 @@ namespace Test
             Assert.AreEqual(1, Sweet.lollipop.BottomUpPSMList.Count(p => p.modifications.Count > 0));
             Assert.AreEqual(1, Sweet.lollipop.BottomUpPSMList.Where(p => p.modifications.Count > 0).First().modifications.Count);
             Assert.AreEqual("(3R,4R)-3,4-dihydroxyproline", Sweet.lollipop.BottomUpPSMList.Where(p => p.modifications.Count > 0).First().modifications.First().modification.id);
+            Assert.AreEqual("EGFQVADGP[(3R,4R)-3,4-dihydroxyproline]LYR", Sweet.lollipop.BottomUpPSMList.Where(p => p.modifications.Count > 0).First().sequence_with_modifications);
+            Assert.AreEqual("(3R,4R)-3,4-dihydroxyproline@10", Sweet.lollipop.BottomUpPSMList.Where(p => p.modifications.Count > 0).First().ptm_descriptions);
+            Assert.AreEqual("Unmodified", Sweet.lollipop.BottomUpPSMList.Where(p => p.modifications.Count == 0).First().ptm_descriptions);
+            Assert.AreEqual("EGFQVADGPLYR", Sweet.lollipop.BottomUpPSMList.Where(p => p.modifications.Count == 0).First().sequence_with_modifications);
             Assert.AreEqual(1, BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count);
             Assert.AreEqual("PTM not in database", BottomUpReader.bottom_up_PTMs_not_in_dictionary.First());
             //accession matches one of the accessions of proteins collapsed into theoretical proteoforms (combine identical sequences/masses)
