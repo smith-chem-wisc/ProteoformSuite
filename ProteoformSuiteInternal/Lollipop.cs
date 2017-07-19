@@ -1295,7 +1295,6 @@ namespace ProteoformSuiteInternal
 
         #region CALIBRATION
         public List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
-        public Dictionary<Tuple<string, double>, MsScan> ms_scans = new Dictionary<Tuple<string, double>, MsScan>();
         public Dictionary<Tuple<string, double>, double> file_mz_correction = new Dictionary<Tuple<string, double>, double>();
         public Dictionary<Tuple<string, int, double>, double> td_hit_correction = new Dictionary<Tuple<string, int, double>, double>();
         public List<Component> calibration_components = new List<Component>();

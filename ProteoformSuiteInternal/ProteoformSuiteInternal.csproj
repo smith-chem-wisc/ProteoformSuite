@@ -135,7 +135,6 @@
     <Compile Include="Ptm.cs" />
     <Compile Include="PtmCombos.cs" />
     <Compile Include="PtmSet.cs" />
-    <Compile Include="MsScan.cs" />
     <Compile Include="NeuCodePair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProteinSequenceGroup.cs" />
@@ -145,7 +144,6 @@
     <Compile Include="ProteoformFamily.cs" />
     <Compile Include="ProteoformRelation.cs" />
     <Compile Include="BottomUpPSM.cs" />
-    <Compile Include="RawFileReader.cs" />
     <Compile Include="TopDownReader.cs" />
     <Compile Include="Calibration.cs" />
     <Compile Include="TopDownHit.cs" />

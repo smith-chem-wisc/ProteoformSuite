@@ -50,9 +50,9 @@
             this.cmbx_tableSelector = new System.Windows.Forms.ComboBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
+            this.cb_include_td_nodes = new System.Windows.Forms.CheckBox();
             this.cb_remove_bad_relations = new System.Windows.Forms.CheckBox();
             this.bt_check_id_experimentals_TD = new System.Windows.Forms.Button();
-            this.bt_check_id_exp_fragmented = new System.Windows.Forms.Button();
             this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.cb_count_adducts_as_id = new System.Windows.Forms.CheckBox();
@@ -79,7 +79,6 @@
             this.tb_familyBuildFolder = new System.Windows.Forms.TextBox();
             this.btn_browseTempFolder = new System.Windows.Forms.Button();
             this.Families_update = new System.Windows.Forms.Button();
-            this.cb_include_td_nodes = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -346,7 +345,6 @@
             this.splitContainer3.Panel2.Controls.Add(this.cb_include_td_nodes);
             this.splitContainer3.Panel2.Controls.Add(this.cb_remove_bad_relations);
             this.splitContainer3.Panel2.Controls.Add(this.bt_check_id_experimentals_TD);
-            this.splitContainer3.Panel2.Controls.Add(this.bt_check_id_exp_fragmented);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
@@ -381,6 +379,19 @@
             this.dgv_proteoform_family_members.Size = new System.Drawing.Size(832, 513);
             this.dgv_proteoform_family_members.TabIndex = 3;
             // 
+            // cb_include_td_nodes
+            // 
+            this.cb_include_td_nodes.AutoSize = true;
+            this.cb_include_td_nodes.Checked = true;
+            this.cb_include_td_nodes.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cb_include_td_nodes.Location = new System.Drawing.Point(301, 133);
+            this.cb_include_td_nodes.Name = "cb_include_td_nodes";
+            this.cb_include_td_nodes.Size = new System.Drawing.Size(168, 17);
+            this.cb_include_td_nodes.TabIndex = 66;
+            this.cb_include_td_nodes.Text = "Include Topdown Proteoforms";
+            this.cb_include_td_nodes.UseVisualStyleBackColor = true;
+            this.cb_include_td_nodes.CheckedChanged += new System.EventHandler(this.cb_include_td_nodes_CheckedChanged);
+            // 
             // cb_remove_bad_relations
             // 
             this.cb_remove_bad_relations.AutoSize = true;
@@ -391,26 +402,6 @@
             this.cb_remove_bad_relations.Text = "Remove Bad Relations";
             this.cb_remove_bad_relations.UseVisualStyleBackColor = true;
             this.cb_remove_bad_relations.CheckedChanged += new System.EventHandler(this.cb_remove_bad_relations_CheckedChanged);
-            // 
-            // bt_check_id_experimentals_TD
-            // 
-            this.bt_check_id_experimentals_TD.Location = new System.Drawing.Point(286, 360);
-            this.bt_check_id_experimentals_TD.Name = "bt_check_id_experimentals_TD";
-            this.bt_check_id_experimentals_TD.Size = new System.Drawing.Size(195, 23);
-            this.bt_check_id_experimentals_TD.TabIndex = 65;
-            this.bt_check_id_experimentals_TD.Text = "Check ID\'d Experimentals TD";
-            this.bt_check_id_experimentals_TD.UseVisualStyleBackColor = true;
-            this.bt_check_id_experimentals_TD.Click += new System.EventHandler(this.bt_check_id_experimentals_TD_Click);
-            // 
-            // bt_check_id_exp_fragmented
-            // 
-            this.bt_check_id_exp_fragmented.Location = new System.Drawing.Point(286, 333);
-            this.bt_check_id_exp_fragmented.Name = "bt_check_id_exp_fragmented";
-            this.bt_check_id_exp_fragmented.Size = new System.Drawing.Size(195, 23);
-            this.bt_check_id_exp_fragmented.TabIndex = 64;
-            this.bt_check_id_exp_fragmented.Text = "Check ID\'d Experimentals Fragmented";
-            this.bt_check_id_exp_fragmented.UseVisualStyleBackColor = true;
-            this.bt_check_id_exp_fragmented.Click += new System.EventHandler(this.bt_check_id_exp_fragmented_Click);
             // 
             // rtb_proteoformFamilyResults
             // 
@@ -684,19 +675,6 @@
             this.Families_update.UseVisualStyleBackColor = true;
             this.Families_update.Click += new System.EventHandler(this.Families_update_Click);
             // 
-            // cb_include_td_nodes
-            // 
-            this.cb_include_td_nodes.AutoSize = true;
-            this.cb_include_td_nodes.Checked = true;
-            this.cb_include_td_nodes.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_include_td_nodes.Location = new System.Drawing.Point(301, 133);
-            this.cb_include_td_nodes.Name = "cb_include_td_nodes";
-            this.cb_include_td_nodes.Size = new System.Drawing.Size(168, 17);
-            this.cb_include_td_nodes.TabIndex = 66;
-            this.cb_include_td_nodes.Text = "Include Topdown Proteoforms";
-            this.cb_include_td_nodes.UseVisualStyleBackColor = true;
-            this.cb_include_td_nodes.CheckedChanged += new System.EventHandler(this.cb_include_td_nodes_CheckedChanged);
-            // 
             // ProteoformFamilies
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -784,7 +762,6 @@
         private System.Windows.Forms.RichTextBox rtb_proteoformFamilyResults;
         private System.Windows.Forms.CheckBox cb_count_adducts_as_id;
         private System.Windows.Forms.Button bt_check_id_experimentals_TD;
-        private System.Windows.Forms.Button bt_check_id_exp_fragmented;
         private System.Windows.Forms.CheckBox cb_remove_bad_relations;
         public System.Windows.Forms.CheckBox cb_include_td_nodes;
     }
