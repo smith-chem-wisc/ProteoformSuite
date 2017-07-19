@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using IO.Thermo;
 using Chemistry;
-using Proteomics;
 using System.IO;
 using ClosedXML.Excel;
 using System.Text.RegularExpressions;
@@ -203,7 +202,7 @@ namespace ProteoformSuiteInternal
                 Component matching_component = null;
                 if (!td_file) //if calibrating across files find component with matching mass and retention time
                 {
-                    //look around theoretical mass of topdown hit identified proteoforms - 10 ppm and 5 minutes
+                    //look around theoretical mass of topdown hit identified proteoforms - 10 ppm and 5 minutes            
                      double hit_mass = (Sweet.lollipop.neucode_labeled ? (identification.theoretical_mass - (identification.sequence.Count(s => s == 'K') * 128.094963) + (identification.sequence.Count(s => s == 'K') * 136.109162)) : identification.mz.ToMass(identification.charge));
                      matching_component = Sweet.lollipop.calibration_components.Where(c => c.input_file.biological_replicate == bio_rep && c.input_file.fraction == fraction
                 && Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass ) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
@@ -299,8 +298,8 @@ namespace ProteoformSuiteInternal
                             }
 
                             //10 ppm
-                            double mass_tolerance = theMZ.ToMass(chargeToLookAt) / 1e6 * 10;
-                            var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - ( mass_tolerance / identification.charge), theMZ + ( mass_tolerance / identification.charge)); //WAS ID.CHARGE
+                            double mass_tolerance = theMZ / 1e6 * 10;
+                            var npwr = fullMS1spectrum.NumPeaksWithinRange(theMZ - mass_tolerance, theMZ + mass_tolerance);
                             if (npwr == 0) 
                             {
                                 break;
