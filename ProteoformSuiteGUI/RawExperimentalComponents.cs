@@ -30,8 +30,7 @@ namespace ProteoformSuiteGUI
         {
             ClearListsTablesFigures(true);
 
-            Sweet.lollipop.getBiorepsFractionsList(Sweet.lollipop.input_files); // list of bioreps with a list of fractions for each biorep
-            Sweet.lollipop.getObservationParameters(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
+            Sweet.lollipop.getConditionBiorepFractionLabels(Sweet.lollipop.neucode_labeled, Sweet.lollipop.input_files); //examines the conditions and bioreps to determine the maximum number of observations to require for quantification
             if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0)
                 (MdiParent as ProteoformSweet).quantification.InitializeParameterSet();
 
