@@ -14,6 +14,14 @@ namespace ProteoformSuiteInternal
 
         public ExperimentalProteoform proteoform { get; set; }
         public string accession { get { return proteoform.accession; } }
+        public decimal logFoldChange { get; set; } = 0;
+        public decimal intensitySum { get; set; } = 0;
+        public decimal pValue_randomization { get; set; } = 0;
+
+        #endregion Public Properties
+
+        #region Tusher Analysis Properties
+
         public List<BiorepIntensity> numeratorOriginalBiorepIntensities { get; set; }
         public List<BiorepIntensity> denominatorOriginalBiorepIntensities { get; set; }
         public List<BiorepIntensity> numeratorImputedIntensities { get; set; }
@@ -21,16 +29,26 @@ namespace ProteoformSuiteInternal
         public Dictionary<Tuple<string, string>, BiorepIntensity> allIntensities { get; set; }
         public decimal numeratorIntensitySum { get; set; } = 0;
         public decimal denominatorIntensitySum { get; set; } = 0;
-        public decimal intensitySum { get; set; } = 0;
-        public decimal logFoldChange { get; set; } = 0;
         public decimal scatter { get; set; } = 0;
-        public decimal pValue { get; set; } = 0;
-        public bool significant { get; set; } = false;
+        public bool significant_tusher { get; set; } = false;
         public decimal relative_difference { get; set; }
         public decimal correspondingAvgSortedRelDiff { get; set; }
         public decimal roughSignificanceFDR { get; set; } = 0;
 
-        #endregion Public Properties
+        #endregion Public Tusher Analysis Properties
+
+        #region Fold Change Analysis Properties
+
+        public Dictionary<Tuple<InputFile, string>, BiorepFractionTechrepIntensity> allBftIntensities { get; set; } // each bft corresponds to a file and condition
+        public List<double> log2FoldChanges = new List<double>();
+        public double average_log2fc { get; set; } = 0;
+        public double stdev_log2fc { get; set; } = 0;
+        public double tTestStatistic { get; set; } = 0;
+        public double pValue_uncorrected { get; set; } = 0;
+        public double benjiHoch_value { get; set; } = 0;
+        public bool significant_foldchange { get; set; } = false;
+
+        #endregion Fold Change Analysis Properties
 
         #region Public Constructor
 
@@ -45,28 +63,28 @@ namespace ProteoformSuiteInternal
 
         #region Public Methods
 
-        public void determine_biorep_intensities_and_test_statistics(List<BiorepIntensity> biorepIntensityList, Dictionary<string, List<string>> conditionBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal bkgdAverageIntensity, decimal bkgdStDev, decimal sKnot)
+        public void impute_biorep_intensities_and_determine_test_statistics(List<BiorepIntensity> biorepIntensityList, Dictionary<string, List<string>> conditionBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal bkgdAverageIntensity, decimal bkgdStDev, decimal sKnot)
         {
             //bkgdAverageIntensity is log base 2
             //bkgdStDev is log base 2
 
-            significant = false;
+            significant_tusher = false;
             numeratorOriginalBiorepIntensities = biorepIntensityList.Where(b => b.condition == numerator_condition).ToList();
             numeratorImputedIntensities = imputedIntensities(numeratorOriginalBiorepIntensities, bkgdAverageIntensity, bkgdStDev, numerator_condition, conditionBioReps[numerator_condition]);
-            numeratorIntensitySum = (decimal)numeratorOriginalBiorepIntensities.Sum(i => i.intensity) + (decimal)numeratorImputedIntensities.Sum(i => i.intensity);
+            numeratorIntensitySum = (decimal)numeratorOriginalBiorepIntensities.Sum(i => i.intensity_sum) + (decimal)numeratorImputedIntensities.Sum(i => i.intensity_sum);
             List<BiorepIntensity> allNumeratorIntensities = numeratorOriginalBiorepIntensities.Concat(numeratorImputedIntensities).ToList();
 
             List<BiorepIntensity> allDenominatorIntensities = new List<BiorepIntensity>();
             denominatorOriginalBiorepIntensities = biorepIntensityList.Where(b => b.condition == denominator_condition).ToList();
             denominatorImputedIntensities = imputedIntensities(denominatorOriginalBiorepIntensities, bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition]);
-            denominatorIntensitySum = (decimal)denominatorOriginalBiorepIntensities.Sum(i => i.intensity) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity);
+            denominatorIntensitySum = (decimal)denominatorOriginalBiorepIntensities.Sum(i => i.intensity_sum) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity_sum);
             allDenominatorIntensities = denominatorOriginalBiorepIntensities.Concat(denominatorImputedIntensities).ToList();
 
             allIntensities = allNumeratorIntensities.Concat(allDenominatorIntensities).ToDictionary(x => new Tuple<string, string>(x.condition, x.biorep), x => x);
 
             intensitySum = numeratorIntensitySum + denominatorIntensitySum;
             logFoldChange = (decimal)Math.Log((double)numeratorIntensitySum / (double)denominatorIntensitySum, 2);
-            pValue = PValue(logFoldChange, allNumeratorIntensities, allDenominatorIntensities);
+            pValue_randomization = Randomization_PValue(logFoldChange, allNumeratorIntensities, allDenominatorIntensities);
 
             // We are using linear intensities, like in Tusher et al. (2001).
             // This is a non-parametric test, and so it makes no assumptions about the incoming probability distribution, unlike a simple t-test.
@@ -77,7 +95,39 @@ namespace ProteoformSuiteInternal
             relative_difference = getSingleTestStatistic(induced, uninduced, scatter, sKnot);
         }
 
+        public void impute_bft_intensities(List<BiorepFractionTechrepIntensity> bftIntensityList, List<InputFile> allFiles, Dictionary<Tuple<InputFile, string>, double> fileCondition_avgLog2I, Dictionary<Tuple<InputFile, string>, double> fileCondition_stdevLog2I)
+        {
+            List<BiorepFractionTechrepIntensity> imputed_bft_intensities = imputedIntensities(bftIntensityList, allFiles, fileCondition_avgLog2I, fileCondition_stdevLog2I);
+            allBftIntensities = bftIntensityList.Concat(imputed_bft_intensities).ToDictionary(bft => new Tuple<InputFile, string>(bft.input_file, bft.condition), bft => bft);
+        }
+
+        public void normalize_bft_intensities(Dictionary<Tuple<string, string>, double> conditionBiorepNormalizationDivisors)
+        {
+            foreach (BiorepFractionTechrepIntensity bft in allBftIntensities.Values)
+            {
+                bft.intensity_sum = bft.intensity_sum / conditionBiorepNormalizationDivisors[new Tuple<string, string>(bft.condition, bft.input_file.biological_replicate)];
+            }
+        }
+
+
         #endregion Public Methods
+
+        #region Fold Change Analysis Methods
+
+        public void calculate_log2FoldChanges(string numerator_condition, string denominator_condition)
+        {
+            log2FoldChanges = allBftIntensities.Values.Where(bft => bft.condition == numerator_condition).Select(bft => Math.Log(bft.intensity_sum, 2) - Math.Log(allBftIntensities[new Tuple<InputFile, string>(bft.input_file, denominator_condition)].intensity_sum)).ToList();
+            average_log2fc = log2FoldChanges.Average();
+            stdev_log2fc = Math.Sqrt(log2FoldChanges.Sum(fc => Math.Pow(fc - average_log2fc, 2)) / (log2FoldChanges.Count - 1));
+        }
+
+        public void calculate_log2TestStatistics(double log2FC_population_average)
+        {
+            tTestStatistic = (average_log2fc - log2FC_population_average) / (stdev_log2fc / Math.Sqrt(log2FoldChanges.Count));
+
+        }
+
+        #endregion Fold Change Analysis Methods
 
         #region Imputation Methods
 
@@ -98,8 +148,34 @@ namespace ProteoformSuiteInternal
             return (
                 from biorep in bioreps
                 where !observedBioreps.Any(k => k.condition == condition && k.biorep == biorep)
-                select add_biorep_intensity(bkgdAverageIntensity, bkgdStDev, biorep, condition))
+                select new BiorepIntensity(true, biorep, condition, imputed_intensity(bkgdAverageIntensity, bkgdStDev)))
                 .ToList();
+        }
+
+        /// <summary>
+        /// Returns imputed intensities for a certain condition for biological replicates this proteoform was not observed in.
+        /// </summary>
+        /// <param name="observedBftIntensities"></param>
+        /// <param name="bkgdAverageIntensity"></param>
+        /// <param name="bkgdStDev"></param>
+        /// <param name="condition"></param>
+        /// <param name="bioreps"></param>
+        /// <returns></returns>
+        public static List<BiorepFractionTechrepIntensity> imputedIntensities(List<BiorepFractionTechrepIntensity> observedBftIntensities, List<InputFile> allFiles, Dictionary<Tuple<InputFile, string>, double> fileCondition_avgLog2I, Dictionary<Tuple<InputFile, string>, double> fileCondition_stdevLog2I)
+        {
+            //avtIntensities are log base 2
+            //stdevIntensities are log base 2
+
+            List<BiorepFractionTechrepIntensity> intensities_without_corresponding_values = observedBftIntensities.Where(bft => !observedBftIntensities.Any(ff => bft.condition != ff.condition && bft.input_file.biological_replicate == ff.input_file.biological_replicate && bft.input_file.fraction == ff.input_file.fraction && bft.input_file.technical_replicate == ff.input_file.technical_replicate)).ToList();
+            List<BiorepFractionTechrepIntensity> imputed_values = new List<BiorepFractionTechrepIntensity>();
+            foreach (BiorepFractionTechrepIntensity bft in intensities_without_corresponding_values)
+            {
+                Tuple<InputFile, string> x = new Tuple<InputFile, string>(bft.input_file, bft.input_file.lt_condition != bft.condition ? bft.input_file.lt_condition : bft.input_file.hv_condition);
+                decimal avglog2i = (decimal)fileCondition_avgLog2I[x];
+                decimal stdevlog2i = (decimal)fileCondition_stdevLog2I[x];
+                imputed_values.Add(new BiorepFractionTechrepIntensity(x.Item1, x.Item2, true, imputed_intensity(avglog2i, stdevlog2i)));
+            }
+            return imputed_values;
         }
 
         /// <summary>
@@ -107,12 +183,10 @@ namespace ProteoformSuiteInternal
         /// The standard normal distribution of mean 0 and variance 1 is computed from two random numbers distributed uniformly on (0, 1).
         /// Then, a number from that distribution, x, is used to calculate the imputed intensity: I + s * x
         /// </summary>
-        /// <param name="bkgdAverageIntensity"></param>
-        /// <param name="bkgdStDev"></param>
-        /// <param name="biorep"></param>
-        /// <param name="key"></param>
+        /// <param name="avgLog2Intensity"></param>
+        /// <param name="stdevLog2Intensity"></param>
         /// <returns></returns>
-        public static BiorepIntensity add_biorep_intensity(decimal bkgdAverageIntensity, decimal bkgdStDev, string biorep, string key)
+        public static double imputed_intensity(decimal avgLog2Intensity, decimal stdevLog2Intensity)
         {
             //bkgdAverageIntensity is coming in as a log 2 number
             //bkgdStDev is coming in as a log 2 number
@@ -120,8 +194,8 @@ namespace ProteoformSuiteInternal
             double u1 = ExtensionMethods.RandomNumber(); // these are uniform(0,1) random doubles
             double u2 = ExtensionMethods.RandomNumber();
             double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); // random normal(0,1) -- normal(mean,variance)
-            double intensity = Math.Pow(2, (double)bkgdAverageIntensity + (double)bkgdStDev * randStdNormal); // std dev is calculated for log intensities, so convert to linear after adding I + s * x
-            return new BiorepIntensity(true, biorep, key, intensity, new List<BiorepFractionTechrepIntensity>()); // random normal(mean,stdDev^2)
+            double intensity = Math.Pow(2, (double)avgLog2Intensity + (double)stdevLog2Intensity * randStdNormal); // std dev is calculated for log intensities, so convert to linear after adding I + s * x
+            return intensity;
         }
 
         #endregion Imputation Methods
@@ -143,10 +217,10 @@ namespace ProteoformSuiteInternal
                 return 1000000m;
 
             decimal a = (decimal)((1d / (double)numerator_count + 1d / (double)denominator_count) / ((double)numerator_count + (double)denominator_count - 2d));
-            double avgNumerator = allInduced.Average(x => x.intensity);
-            double avgDenominator = allUninduced.Average(x => x.intensity);
-            decimal numeratorSumSquares = allInduced.Sum(n => (decimal)Math.Pow(n.intensity - avgNumerator, 2d));
-            decimal denominatorSumSquares = allUninduced.Sum(d => (decimal)Math.Pow(d.intensity - avgDenominator, 2d));
+            double avgNumerator = allInduced.Average(x => x.intensity_sum);
+            double avgDenominator = allUninduced.Average(x => x.intensity_sum);
+            decimal numeratorSumSquares = allInduced.Sum(n => (decimal)Math.Pow(n.intensity_sum - avgNumerator, 2d));
+            decimal denominatorSumSquares = allUninduced.Sum(d => (decimal)Math.Pow(d.intensity_sum - avgDenominator, 2d));
             decimal stdev = (decimal)Math.Sqrt((double)((numeratorSumSquares + denominatorSumSquares) * a));
             return stdev;
         }
@@ -164,7 +238,7 @@ namespace ProteoformSuiteInternal
         /// <returns></returns>
         public decimal getSingleTestStatistic(List<BiorepIntensity> allInduced, List<BiorepIntensity> allUninduced, decimal pooledStdDev, decimal sKnot)
         {
-            double t = (allInduced.Average(l => l.intensity) - allUninduced.Average(h => h.intensity)) / ((double)(pooledStdDev + sKnot));
+            double t = (allInduced.Average(l => l.intensity_sum) - allUninduced.Average(h => h.intensity_sum)) / ((double)(pooledStdDev + sKnot));
             return (decimal)t;
         }
 
@@ -172,7 +246,7 @@ namespace ProteoformSuiteInternal
 
         #region Fold Change Method
 
-        public decimal PValue(decimal logFoldChange, List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators)
+        public decimal Randomization_PValue(decimal logFoldChange, List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators)
         {
             if (allNumerators.Count != allDenominators.Count)
                 throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for NeuCode light and heavy at this point.");
@@ -182,7 +256,7 @@ namespace ProteoformSuiteInternal
 
             Parallel.For(0, maxRandomizations, i =>
             {
-                List<double> combined = allNumerators.Select(j => j.intensity).Concat(allDenominators.Select(j => j.intensity)).ToList();
+                List<double> combined = allNumerators.Select(j => j.intensity_sum).Concat(allDenominators.Select(j => j.intensity_sum)).ToList();
                 combined.Shuffle();
                 double numerator = combined.Take(allNumerators.Count).Sum();
                 double denominator = combined.Skip(allNumerators.Count).Take(allDenominators.Count).Sum();
