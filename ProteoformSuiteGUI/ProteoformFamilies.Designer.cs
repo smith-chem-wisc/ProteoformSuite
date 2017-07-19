@@ -463,9 +463,9 @@
             this.cb_unidentified_families.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_unidentified_families.Location = new System.Drawing.Point(21, 53);
             this.cb_unidentified_families.Name = "cb_unidentified_families";
-            this.cb_unidentified_families.Size = new System.Drawing.Size(122, 17);
+            this.cb_unidentified_families.Size = new System.Drawing.Size(141, 17);
             this.cb_unidentified_families.TabIndex = 57;
-            this.cb_unidentified_families.Text = "Unidentified Families";
+            this.cb_unidentified_families.Text = "Unidentified Proteoforms";
             this.cb_unidentified_families.UseVisualStyleBackColor = true;
             // 
             // cb_identified_families
@@ -475,9 +475,9 @@
             this.cb_identified_families.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cb_identified_families.Location = new System.Drawing.Point(21, 30);
             this.cb_identified_families.Name = "cb_identified_families";
-            this.cb_identified_families.Size = new System.Drawing.Size(109, 17);
+            this.cb_identified_families.Size = new System.Drawing.Size(128, 17);
             this.cb_identified_families.TabIndex = 56;
-            this.cb_identified_families.Text = "Identified Families";
+            this.cb_identified_families.Text = "Identified Proteoforms";
             this.cb_identified_families.UseVisualStyleBackColor = true;
             // 
             // btn_inclusion_list_selected_families
