@@ -429,12 +429,10 @@ namespace ProteoformSuiteInternal
             });
         }
 
-        private List<TheoreticalProteoform> theoreticals_to_remove = new List<TheoreticalProteoform>();
         private List<TheoreticalProteoform> add_disulfide_bonds(List<TheoreticalProteoform> theoretical_proteoforms, int decoy_number)
         {
-            theoreticals_to_remove.Clear();
+            List<TheoreticalProteoform> theoreticals_to_remove = new List<TheoreticalProteoform>();
             List<TheoreticalProteoform> new_theoreticals = new List<TheoreticalProteoform>();
-          // Parallel.ForEach(theoretical_proteoforms, theoretical1 =>
            foreach(var theoretical1 in theoretical_proteoforms)                                                            
            {
                List<List<DisulfideBond>> possible_disulfide_bonds = get_possible_disulfide_bonds(theoretical1);
@@ -493,7 +491,7 @@ namespace ProteoformSuiteInternal
                         i++;
                     }
                 }
-            } //);
+            }
             theoretical_proteoforms.AddRange(new_theoreticals);
             foreach (TheoreticalProteoform new_theoretical in new_theoreticals)
             {
