@@ -69,9 +69,6 @@ namespace ProteoformSuiteInternal
 
         #region Private Methods
 
-
-
-
         /*(this needs to be done at the actual time of forming peaks or else the average is wrong so the peak can be formed out
             of incorrect relations (average shouldn't include relations already grouped into peaks)*/
         private List<ProteoformRelation> find_nearby_relations(HashSet<ProteoformRelation> ungrouped_relations)
@@ -127,11 +124,7 @@ namespace ProteoformSuiteInternal
         {
             List<int> nearby_decoy_counts = decoy_relations.Values.Select(v => count_nearby_decoys(v)).OrderBy(x => x).ToList();
             double median_false_peak_count;
-            if (nearby_decoy_counts.Count == 1) //1 decoy database
-            {
-                median_false_peak_count = nearby_decoy_counts[0];
-            }
-            else if (nearby_decoy_counts.Count % 2 == 0) //is even
+            if (nearby_decoy_counts.Count % 2 == 0) //is even
             {
                 int middle = nearby_decoy_counts.Count / 2;
                 median_false_peak_count = 0.5 * ((double)nearby_decoy_counts[middle] + (double)nearby_decoy_counts[middle - 1]);
