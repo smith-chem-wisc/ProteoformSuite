@@ -92,10 +92,10 @@ namespace ProteoformSuiteInternal
                 loaded_files_report();
         }
 
-        public static void save_biological_replicate_intensities(string filename, bool include_imputation, List<ExperimentalProteoform> proteoforms)
+        public static void save_biological_replicate_intensities(string filename, bool include_imputation, bool use_bft, List<ExperimentalProteoform> proteoforms)
         {
             using (StreamWriter writer = new StreamWriter(filename))
-                writer.Write(biological_replicate_intensities(proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, include_imputation));
+                writer.Write(biological_replicate_intensities(proteoforms, Sweet.lollipop.input_files, Sweet.lollipop.conditionsBioReps, include_imputation, use_bft));
         }
 
         public static string actions()
@@ -205,7 +205,7 @@ namespace ProteoformSuiteInternal
             string report = "";
 
             report += Sweet.lollipop.satisfactoryProteoforms.Count.ToString() + "\tQuantified Experimental Proteoforms (Threshold for Quantification: " + Sweet.lollipop.minBiorepsWithObservations.ToString() + " = " + Sweet.lollipop.observation_requirement + ")" + Environment.NewLine;
-            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + Sweet.lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
+            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant_tusher && Sweet.lollipop.significance_by_permutation || p.quant.significant_foldchange && Sweet.lollipop.significance_by_log2FC).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + Sweet.lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
             report += Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
             report += Math.Round(Sweet.lollipop.selectAverageIntensity, 4).ToString() + "\tAverage Log2 Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
             report += Math.Round(Sweet.lollipop.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
@@ -289,7 +289,7 @@ namespace ProteoformSuiteInternal
 
             foreach (ExperimentalProteoform e in Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
                 .Where(e => e.linked_proteoform_references != null)
-                .OrderByDescending(e => e.quant.significant ? 1 : 0)
+                .OrderByDescending(e => e.quant.significant_tusher ? 1 : 0)
                 .ThenBy(e => (e.linked_proteoform_references.First() as TheoreticalProteoform).accession)
                 .ThenBy(e => e.ptm_set.ptm_combination.Count))
             {
@@ -306,7 +306,7 @@ namespace ProteoformSuiteInternal
                     e.agg_intensity,
                     e.quant.numeratorIntensitySum,
                     e.quant.denominatorIntensitySum,
-                    e.quant.significant
+                    e.quant.significant_tusher
                 );
             }
 
@@ -324,7 +324,7 @@ namespace ProteoformSuiteInternal
             return result_string.ToString();
         }
 
-        public static string biological_replicate_intensities(List<ExperimentalProteoform> proteoforms, List<InputFile> input_files, Dictionary<string, List<string>> conditionsBioReps, bool include_imputation)
+        public static string biological_replicate_intensities(List<ExperimentalProteoform> proteoforms, List<InputFile> input_files, Dictionary<string, List<string>> conditionsBioReps, bool include_imputation, bool use_bft)
         {
             DataTable results = new DataTable();
             results.Columns.Add("Proteoform ID", typeof(string));
@@ -332,7 +332,7 @@ namespace ProteoformSuiteInternal
             {
                 foreach (string biorep in condition_bioreps.Value)
                 {
-                    if (!include_imputation)
+                    if (use_bft)
                     {
                         HashSet<Tuple<string, string>> frac_tech = new HashSet<Tuple<string, string>>();
                         frac_tech = new HashSet<Tuple<string, string>>(input_files.Where(f => (f.lt_condition == condition_bioreps.Key || f.hv_condition == condition_bioreps.Key) && f.biological_replicate == biorep).Select(f => new Tuple<string, string>(f.fraction, f.technical_replicate)));
@@ -356,21 +356,19 @@ namespace ProteoformSuiteInternal
                 {
                     foreach (string biorep in condition_bioreps.Value)
                     {
-                        BiorepIntensity br = pf.quant.allIntensities[new Tuple<string, string>(condition_bioreps.Key, biorep)];
-                        if (!include_imputation)
+                        if (use_bft)
                         {
-                            HashSet<Tuple<string, string>> frac_tech = new HashSet<Tuple<string, string>>();
-                            frac_tech = new HashSet<Tuple<string, string>>(input_files.Where(f => (f.lt_condition == condition_bioreps.Key || f.hv_condition == condition_bioreps.Key) && f.biological_replicate == biorep).Select(f => new Tuple<string, string>(f.fraction, f.technical_replicate)));
-                            foreach (Tuple<string, string> ft in frac_tech)
+                            foreach (InputFile f in input_files.Where(f => (f.lt_condition == condition_bioreps.Key || f.hv_condition == condition_bioreps.Key) && f.biological_replicate == biorep))
                             {
-                                BiorepFractionTechrepIntensity bft = br.summed_intensities.FirstOrDefault(bftx => bftx.condition == condition_bioreps.Key && bftx.biorep == biorep && bftx.fraction == ft.Item1 && bftx.techrep == ft.Item2);
-                                double value = !br.imputed ? bft != null ? bft.intensity : double.NaN : double.NaN;
-                                row[condition_bioreps.Key + "_" + biorep + "_" + ft.Item1 + "_" + ft.Item2] = value;
+                                BiorepFractionTechrepIntensity bft = pf.quant.allBftIntensities[new Tuple<InputFile, string>(f, condition_bioreps.Key)];
+                                double value = bft != null ? !bft.imputed || include_imputation ? bft.intensity_sum : double.NaN : double.NaN;
+                                row[condition_bioreps.Key + "_" + biorep + "_" + f.fraction + "_" + f.technical_replicate] = value;
                             }
                         }
                         else
                         {
-                            double value = !br.imputed || include_imputation ? br.intensity : double.NaN;
+                            BiorepIntensity br = pf.quant.allIntensities[new Tuple<string, string>(condition_bioreps.Key, biorep)];
+                            double value = br != null ? !br.imputed || include_imputation ? br.intensity_sum : double.NaN : double.NaN;
                             row[condition_bioreps.Key + "_" + biorep] = value;
                         }
                     }

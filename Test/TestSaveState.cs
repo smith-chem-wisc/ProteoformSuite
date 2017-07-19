@@ -181,48 +181,95 @@ namespace Test
             };
             List<InputFile> input_files = new List<InputFile>
             {
-                ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "1", "1", "1"),
-                ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "1", "2", "1"),
-                ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "2", "1", "1"),
-                ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "2", "2", "1"),
-                ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "3", "1", "1"),
-                ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "3", "2", "1"),
+                ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "1", "1", "1"), //0
+                ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "1", "2", "1"), //1
+                ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "2", "1", "1"), //2
+                ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "2", "2", "1"), //3
+                ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "3", "1", "1"), //4
+                ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "3", "2", "1"), //5
             };
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("asdf");
             e.quant.allIntensities = new Dictionary<Tuple<string, string>, BiorepIntensity>
             {
-                {new Tuple<string, string>("n", 1.ToString()), new BiorepIntensity(false, 1.ToString(), "n", 1, new List<BiorepFractionTechrepIntensity>()) },
-                {new Tuple<string, string>("n", 2.ToString()), new BiorepIntensity(true, 2.ToString(), "n", 1, new List<BiorepFractionTechrepIntensity>()) },
-                {new Tuple<string, string>("n", 3.ToString()), new BiorepIntensity(false, 3.ToString(), "n", 1, new List<BiorepFractionTechrepIntensity>()) },
-                {new Tuple<string, string>("s", 1.ToString()), new BiorepIntensity(false, 1.ToString(), "s", 1, new List<BiorepFractionTechrepIntensity>()) },
-                {new Tuple<string, string>("s", 2.ToString()), new BiorepIntensity(false, 2.ToString(), "s", 1, new List<BiorepFractionTechrepIntensity>()) },
-                {new Tuple<string, string>("s", 3.ToString()), new BiorepIntensity(false, 3.ToString(), "s", 1, new List<BiorepFractionTechrepIntensity>()) },
+                {new Tuple<string, string>("n", 1.ToString()), new BiorepIntensity(false, 1.ToString(), "n", 1) },
+                {new Tuple<string, string>("n", 2.ToString()), new BiorepIntensity(true, 2.ToString(), "n", 1) },
+                {new Tuple<string, string>("n", 3.ToString()), new BiorepIntensity(false, 3.ToString(), "n", 1) },
+                {new Tuple<string, string>("s", 1.ToString()), new BiorepIntensity(false, 1.ToString(), "s", 1) },
+                {new Tuple<string, string>("s", 2.ToString()), new BiorepIntensity(false, 2.ToString(), "s", 1) },
+                {new Tuple<string, string>("s", 3.ToString()), new BiorepIntensity(false, 3.ToString(), "s", 1) },
             };
-            Assert.False(ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, true).Contains("NaN"));
-            Assert.True(ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false).Contains("NaN"));
+            Assert.False(ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, true, false).Contains("NaN"));
+            Assert.True(ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, false).Contains("NaN"));
             e.quant.allIntensities = new Dictionary<Tuple<string, string>, BiorepIntensity>
             {
-                {new Tuple<string, string>("n", 1.ToString()), new BiorepIntensity(true, 1.ToString(), "n", 1, new List<BiorepFractionTechrepIntensity>()) },
-                {new Tuple<string, string>("n", 2.ToString()), new BiorepIntensity(true, 2.ToString(), "n", 1, new List<BiorepFractionTechrepIntensity>()) },
-                {new Tuple<string, string>("n", 3.ToString()), new BiorepIntensity(true, 3.ToString(), "n", 1, new List<BiorepFractionTechrepIntensity>()) },
-                {new Tuple<string, string>("s", 1.ToString()), new BiorepIntensity(false, 1.ToString(), "s", 1, new List<BiorepFractionTechrepIntensity> { new BiorepFractionTechrepIntensity("s", 1.ToString(), 2.ToString(), 1.ToString(), 1d) }) },
-                {new Tuple<string, string>("s", 2.ToString()), new BiorepIntensity(false, 2.ToString(), "s", 1, new List<BiorepFractionTechrepIntensity> { new BiorepFractionTechrepIntensity("s", 2.ToString(), 2.ToString(), 1.ToString(), 1d) }) },
-                {new Tuple<string, string>("s", 3.ToString()), new BiorepIntensity(false, 3.ToString(), "s", 1, new List<BiorepFractionTechrepIntensity> { new BiorepFractionTechrepIntensity("s", 3.ToString(), 2.ToString(), 1.ToString(), 1d) }) },
+                {new Tuple<string, string>("n", 1.ToString()), new BiorepIntensity(true, 1.ToString(), "n", 1) },
+                {new Tuple<string, string>("n", 2.ToString()), new BiorepIntensity(true, 2.ToString(), "n", 1) },
+                {new Tuple<string, string>("n", 3.ToString()), new BiorepIntensity(true, 3.ToString(), "n", 1) },
+                {new Tuple<string, string>("s", 1.ToString()), new BiorepIntensity(false, 1.ToString(), "s", 1) },
+                {new Tuple<string, string>("s", 2.ToString()), new BiorepIntensity(false, 2.ToString(), "s", 1) },
+                {new Tuple<string, string>("s", 3.ToString()), new BiorepIntensity(false, 3.ToString(), "s", 1) },
             };
-            
-            // Headers should be condition_biorep_fraction_techrep
-            string[] header = ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false).Split('\n')[0].Split('\t');
-            Assert.True(header[1] == "n_1_1_1" && header[2] == "n_1_2_1" && header[3] == "n_2_1_1" && header[4] == "n_2_2_1" && header[5] == "n_3_1_1" && header[6] == "n_3_2_1" 
-                && header[7] == "s_1_1_1" && header[8] == "s_1_2_1" && header[9] == "s_2_1_1" && header[10] == "s_2_2_1" && header[11] == "s_3_1_1" && header[12] == "s_3_2_1");
-
-            string[] line = ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false).Split('\n')[1].Split('\t');
+            string[] line = ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, false).Split('\n')[1].Split('\t');
             Assert.True(line.First() == e.accession);
-            Assert.True(line[1] == "NaN" && line[2] == "NaN" && line[3] == "NaN" && line[4] == "NaN" && line[5] == "NaN" && line[6] == "NaN" // all "n" condition is imputed
-                && line[7] == "NaN" && line[8] != "NaN" && line[9] == "NaN" && line[10] != "NaN" && line[11] == "NaN" && line[12] != "NaN"); // all fract2 of "s" condition has values
+            Assert.True(line[1] == "NaN" && line[2] == "NaN" && line[3] == "NaN" && line[4] != "NaN" && line[5] != "NaN" && line[6] != "NaN");
 
-            ResultsSummaryGenerator.save_biological_replicate_intensities(Path.Combine(TestContext.CurrentContext.TestDirectory, "biorep.txt"), true, new List<ExperimentalProteoform> { e });
+            ResultsSummaryGenerator.save_biological_replicate_intensities(Path.Combine(TestContext.CurrentContext.TestDirectory, "biorep.txt"), true, false, new List<ExperimentalProteoform> { e });
             Assert.True(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "biorep.txt")));
         }
+
+        //[Test]
+        //public void bftintensitytable()
+        //{
+        //    Sweet.lollipop = new Lollipop();
+        //    Dictionary<string, List<string>> conditionsBioReps = new Dictionary<string, List<string>>
+        //    {
+        //        {"n", new List<string>{1.ToString(), 2.ToString(), 3.ToString() } },
+        //        {"s", new List<string>{1.ToString(), 2.ToString(), 3.ToString() } },
+        //    };
+        //    List<InputFile> input_files = new List<InputFile>
+        //    {
+        //        ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "1", "1", "1"), //0
+        //        ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "1", "2", "1"), //1
+        //        ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "2", "1", "1"), //2
+        //        ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "2", "2", "1"), //3
+        //        ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "3", "1", "1"), //4
+        //        ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "3", "2", "1"), //5
+        //    };
+        //    ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("asdf");
+        //    e.quant.allIntensities = new Dictionary<Tuple<string, string>, BiorepIntensity>
+        //    {
+        //        {new Tuple<string, string>("n", 1.ToString()), new BiorepIntensity(false, 1.ToString(), "n", 1) },
+        //        {new Tuple<string, string>("n", 2.ToString()), new BiorepIntensity(true, 2.ToString(), "n", 1) },
+        //        {new Tuple<string, string>("n", 3.ToString()), new BiorepIntensity(false, 3.ToString(), "n", 1) },
+        //        {new Tuple<string, string>("s", 1.ToString()), new BiorepIntensity(false, 1.ToString(), "s", 1) },
+        //        {new Tuple<string, string>("s", 2.ToString()), new BiorepIntensity(false, 2.ToString(), "s", 1) },
+        //        {new Tuple<string, string>("s", 3.ToString()), new BiorepIntensity(false, 3.ToString(), "s", 1) },
+        //    };
+        //    Assert.False(ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, true).Contains("NaN"));
+        //    Assert.True(ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false).Contains("NaN"));
+        //    e.quant.allIntensities = new Dictionary<Tuple<string, string>, BiorepIntensity>
+        //    {
+        //        {new Tuple<string, string>("n", 1.ToString()), new BiorepIntensity(true, 1.ToString(), "n", 1, new List<BiorepFractionTechrepIntensity>()) },
+        //        {new Tuple<string, string>("n", 2.ToString()), new BiorepIntensity(true, 2.ToString(), "n", 1, new List<BiorepFractionTechrepIntensity>()) },
+        //        {new Tuple<string, string>("n", 3.ToString()), new BiorepIntensity(true, 3.ToString(), "n", 1, new List<BiorepFractionTechrepIntensity>()) },
+        //        {new Tuple<string, string>("s", 1.ToString()), new BiorepIntensity(false, 1.ToString(), "s", 1, new List<BiorepFractionTechrepIntensity> { new BiorepFractionTechrepIntensity(input_files[1], "s", 1d) }) },
+        //        {new Tuple<string, string>("s", 2.ToString()), new BiorepIntensity(false, 2.ToString(), "s", 1, new List<BiorepFractionTechrepIntensity> { new BiorepFractionTechrepIntensity(input_files[3], "s", 1d) }) },
+        //        {new Tuple<string, string>("s", 3.ToString()), new BiorepIntensity(false, 3.ToString(), "s", 1, new List<BiorepFractionTechrepIntensity> { new BiorepFractionTechrepIntensity(input_files[5], "s", 1d) }) },
+        //    };
+            
+        //    // Headers should be condition_biorep_fraction_techrep
+        //    string[] header = ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false).Split('\n')[0].Split('\t');
+        //    Assert.True(header[1] == "n_1_1_1" && header[2] == "n_1_2_1" && header[3] == "n_2_1_1" && header[4] == "n_2_2_1" && header[5] == "n_3_1_1" && header[6] == "n_3_2_1" 
+        //        && header[7] == "s_1_1_1" && header[8] == "s_1_2_1" && header[9] == "s_2_1_1" && header[10] == "s_2_2_1" && header[11] == "s_3_1_1" && header[12] == "s_3_2_1");
+
+        //    string[] line = ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false).Split('\n')[1].Split('\t');
+        //    Assert.True(line.First() == e.accession);
+        //    Assert.True(line[1] == "NaN" && line[2] == "NaN" && line[3] == "NaN" && line[4] == "NaN" && line[5] == "NaN" && line[6] == "NaN" // all "n" condition is imputed
+        //        && line[7] == "NaN" && line[8] != "NaN" && line[9] == "NaN" && line[10] != "NaN" && line[11] == "NaN" && line[12] != "NaN"); // all fract2 of "s" condition has values
+
+        //    ResultsSummaryGenerator.save_biological_replicate_intensities(Path.Combine(TestContext.CurrentContext.TestDirectory, "biorep.txt"), true, new List<ExperimentalProteoform> { e });
+        //    Assert.True(File.Exists(Path.Combine(TestContext.CurrentContext.TestDirectory, "biorep.txt")));
+        //}
         
         #endregion Results Summary
 

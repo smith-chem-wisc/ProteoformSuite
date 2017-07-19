@@ -68,12 +68,12 @@ namespace ProteoformSuiteGUI
 
         public decimal pValue
         {
-            get { return qval.pValue; }
+            get { return qval.pValue_randomization; }
         }
 
         public bool Significant
         {
-            get { return qval.significant; }
+            get { return qval.significant_tusher; }
         }
 
         public decimal TestStatistic_linear
