@@ -382,7 +382,7 @@ namespace ProteoformSuiteGUI
                         //get highest intensity charge state 
                         ChargeState max = proteoform.aggregated_components.SelectMany(p => p.charge_states).OrderByDescending(c => c.intensity).First();
                         double mz = max.mz_centroid;
-                        if (Sweet.lollipop.neucode_labeled) mz = mz - (136.109162 * proteoform.lysine_count).ToMz(max.charge_count) + (128.094963 * proteoform.lysine_count).ToMz(max.charge_count);
+                        if (Sweet.lollipop.neucode_labeled) mz = mz - (136.109162 * proteoform.lysine_count / max.charge_count) + (128.094963 * proteoform.lysine_count / max.charge_count);
                         writer.WriteLine(mz + "\t" + max.charge_count + "\t" + proteoform.agg_rt);
                     }
                 }
@@ -417,77 +417,7 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.remove_bad_relations = cb_remove_bad_relations.Checked;
         }
 
-        private void bt_check_id_exp_fragmented_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Please select all corresponding raw files.");
-            OpenFileDialog openDialog = new OpenFileDialog();
-            openDialog.Filter = "Raw files (*.raw)|*.raw";
-            openDialog.Multiselect = true;
-            DialogResult dr = openDialog.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                List<InputFile> files = new List<InputFile>();
-                Sweet.lollipop.enter_input_files(openDialog.FileNames, Lollipop.acceptable_extensions[4], Lollipop.file_types[4], files, false);
-                if (RawFileReader.check_fragmented_experimentals(files))
-                {
-                    update_figures_of_merit();
-                }
-                else
-                {
-                    MessageBox.Show("Error: Not all corresponding raw file were input. Please select all corresponding raw files.");
-                }
-            }
-            else return;
-        }
 
-        private void bt_check_id_experimentals_TD_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Please select a top-down file.");
-            OpenFileDialog openDialog = new OpenFileDialog();
-            openDialog.Filter = "Top-down Excel File (*.xlsx)|*.xlsx";
-            openDialog.Multiselect = true;
-            DialogResult dr = openDialog.ShowDialog();
-
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                List<InputFile> files = new List<InputFile>();
-                Sweet.lollipop.enter_input_files(openDialog.FileNames, Lollipop.acceptable_extensions[0], Lollipop.file_types[0], files, false);
-                TopDownReader reader = new TopDownReader();
-                List<TopDownHit> hits = new List<TopDownHit>();
-                foreach (InputFile file in files)
-                {
-                    hits.AddRange(reader.ReadTDFile(file));
-                }
-                if (hits.Count > 0)
-                {
-                    List<TopDownProteoform> topdowns = Sweet.lollipop.AggregateTdHits(hits);
-                    List<ProteoformRelation> td_relations = new List<ProteoformRelation>();
-                    int max_missed_monoisotopics = Convert.ToInt32(Sweet.lollipop.maximum_missed_monos);
-                    List<int> missed_monoisotopics_range = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
-
-                    Parallel.ForEach(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(exp => exp.linked_proteoform_references != null && (Sweet.lollipop.count_adducts_as_identifications || !exp.adduct) && exp.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) == 0), exp =>
-                    {
-                        exp.topdown_identified = false;
-                        foreach (int m in missed_monoisotopics_range)
-                        {
-                            double shift = m * Lollipop.MONOISOTOPIC_UNIT_MASS;
-                            double mass_tol = (exp.modified_mass + shift) / 1000000 * Convert.ToInt32(Sweet.lollipop.mass_tolerance);
-                            double low = exp.modified_mass + shift - mass_tol;
-                            double high = exp.modified_mass + shift + mass_tol;
-                            if (topdowns.Count(t => t.modified_mass >= low && t.modified_mass <= high
-                             && Math.Abs(t.agg_RT - exp.agg_rt) <= Convert.ToDouble(Sweet.lollipop.retention_time_tolerance)) > 0)
-                            {
-                                exp.topdown_identified = true;
-                                break;
-                            }
-                        }
-
-                    });
-                }
-                update_figures_of_merit();
-            }
-            else return;
-        }
 
 
         private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
