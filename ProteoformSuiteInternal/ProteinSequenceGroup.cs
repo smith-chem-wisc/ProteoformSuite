@@ -19,7 +19,7 @@ namespace ProteoformSuiteInternal
                 false, 
                 proteins_with_contaminants_first.Any(p => p.IsContaminant), 
                 proteins_with_contaminants_first.SelectMany(p => p.DatabaseReferences),
-                proteins_with_contaminants_first.SelectMany(p => p.GoTerms), proteins_with_contaminants_first.First().DisulfideBonds)
+                proteins_with_contaminants_first.SelectMany(p => p.GoTerms))
         {
             proteinWithGoTermList = proteins_with_contaminants_first.ToList();
             this.AccessionList = proteins_with_contaminants_first.Select(p => p.Accession).ToList();

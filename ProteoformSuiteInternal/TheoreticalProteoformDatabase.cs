@@ -218,7 +218,7 @@ namespace ProteoformSuiteInternal
                         p.GeneNames.ToList(),
                         p.OneBasedPossibleLocalizedModifications,
                         new List<ProteolysisProduct> { new ProteolysisProduct(begin + startPosAfterCleavage, end, Sweet.lollipop.methionine_cleavage && p.BaseSequence.StartsWith("M") ? "full-met-cleaved" : "full") },
-                        p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms, p.DisulfideBonds));
+                        p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
 
                     //Add fragments
                     List<ProteolysisProduct> products = p.ProteolysisProducts.ToList();
@@ -243,7 +243,7 @@ namespace ProteoformSuiteInternal
                                 p.GeneNames.ToList(),
                                 segmented_ptms,
                                 new List<ProteolysisProduct> { new ProteolysisProduct(feature_begin, feature_end, feature_type) },
-                                p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms, p.DisulfideBonds));
+                                p.Name, p.FullName, p.IsDecoy, p.IsContaminant, p.DatabaseReferences, goTerms));
                     }
                     expanded_prots.AddRange(new_prots);
                 }
