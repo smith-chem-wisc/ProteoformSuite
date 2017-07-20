@@ -677,7 +677,6 @@ namespace ProteoformSuiteInternal
         #endregion TOPDOWN 
 
         #region PROTEOFORM FAMILIES Public Fields
-        public bool remove_bad_relations = false;
         public bool count_adducts_as_identifications = false;
         public string family_build_folder_path = "";
 

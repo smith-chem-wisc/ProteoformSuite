@@ -120,15 +120,6 @@ namespace ProteoformSuiteInternal
                 });
                 newly_identified_experimentals = new List<Proteoform>(tmp_new_experimentals);
             }
-
-            if (Sweet.lollipop.remove_bad_relations && gene_names.Select(g => g.ordered_locus).Distinct().Count() > 0 && proteoforms.Count > 1)
-            {
-                foreach (ProteoformRelation bad_relation in relations.Where(r => r.connected_proteoforms[0].linked_proteoform_references == null || r.connected_proteoforms[1].linked_proteoform_references == null))
-                {
-                    bad_relation.Accepted = false;
-                    //if remove bad relations, reconstruct proteoform families so nodes won't be joined into this family... 
-                }
-            }
         }
 
         #endregion Public Methods

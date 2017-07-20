@@ -185,18 +185,6 @@ namespace ProteoformSuiteInternal
             }
             return raw_components.Except(removeThese).ToList();
         }
-
-
-        private static string GetCellValue(SpreadsheetDocument document, Cell cell)
-        {
-            SharedStringTablePart stringTablePart = document.WorkbookPart.SharedStringTablePart;
-            string value = cell.CellValue.InnerXml;
-            if (cell.DataType != null && cell.DataType.Value == CellValues.SharedString && value != null)
-                return stringTablePart.SharedStringTable.ChildElements[Int32.Parse(value)].InnerText;
-            else
-                return value;
-        }
         #endregion Private Methods
-
     }
 }
