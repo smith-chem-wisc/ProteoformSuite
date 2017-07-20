@@ -470,7 +470,7 @@ namespace ProteoformSuiteInternal
 
                 lock (theoreticals_by_accession)
                 {
-                    foreach (string t_accession in new_theoretical.all_accessions)
+                    foreach (string t_accession in new_theoretical.ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct()) 
                     {
                         if (theoreticals_by_accession[decoy_number].ContainsKey(t_accession)) theoreticals_by_accession[decoy_number][t_accession].Add(new_theoretical);
                         else theoreticals_by_accession[decoy_number].Add(t_accession, new List<TheoreticalProteoform>() { new_theoretical });

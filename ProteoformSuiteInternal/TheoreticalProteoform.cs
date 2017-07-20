@@ -24,7 +24,6 @@ namespace ProteoformSuiteInternal
         public List<BottomUpPSM> psm_list { get; set; } = new List<BottomUpPSM>();
         public bool contaminant { get; set; }
         public List<GoTerm> goTerms { get; private set; }
-        public List<string> all_accessions { get; set; } = new List<string>();
         #endregion Public Properties
 
         #region Public Constructor
@@ -35,7 +34,6 @@ namespace ProteoformSuiteInternal
             this.linked_proteoform_references = new List<Proteoform>();
             this.ExpandedProteinList = expanded_protein_list.ToList();
             this.accession = accession;
-            this.all_accessions = expanded_protein_list.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct().ToList();
             this.description = description;
             this.name = String.Join(";", expanded_protein_list.Select(p => p.Name));
             this.fragment = String.Join(";", expanded_protein_list.Select(p => p.ProteolysisProducts.FirstOrDefault().Type));

@@ -95,6 +95,27 @@ namespace Test
         }
 
         [Test]
+        public void nodes_table_gives_meaningful_topdown()
+        {
+            TopDownProteoform t = ConstructorsForTesting.TopDownProteoform("ACC", 999.99, 50);
+            ProteoformFamily f = new ProteoformFamily(t);
+            f.construct_family();
+            string node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f },
+              false,
+              CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2,
+              f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1]);
+            Assert.True(node_table.Contains("ACC_TD1_999.99_Da_10to20"));
+            Assert.True(node_table.Contains("999.99"));
+
+            t.ptm_set = new PtmSet(new List<Ptm>() { new Ptm(15, new ModificationWithMass("Acetylation", null, null, ModificationSites.Any, 42.02, null, null, null, null)) });
+            node_table = CytoscapeScript.get_cytoscape_nodes_tsv(new List<ProteoformFamily> { f },
+              false,
+              CytoscapeScript.color_scheme_names[0], Lollipop.edge_labels[0], Lollipop.node_labels[0], Lollipop.node_positioning[0], 2,
+              f.theoretical_proteoforms, false, Lollipop.gene_name_labels[1]);
+            Assert.True(node_table.Contains("ACC_TD1_999.99_Da_10to20 Acetylation@15"));
+        }
+
+        [Test]
         public void test_write_families_no_experimentals_which_shouldnt_happen()
         {
             List<ProteoformFamily> f = new List<ProteoformFamily> { new ProteoformFamily(ConstructorsForTesting.make_a_theoretical()) };

@@ -20,9 +20,6 @@ namespace ProteoformSuiteInternal
         public double agg_RT { get; set; }
         public TopDownHit root;
         public List<TopDownHit> topdown_hits;
-        public int etd_match_count { get { return relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).ToList().Count; } }
-        public int ttd_match_count { get { return relationships.Where(r => r.RelationType == ProteoformComparison.TheoreticalTopDown).ToList().Count; } }
-        public int observations { get { return topdown_hits.Count; } }
         public int bottom_up_PSMs
         {
             get
