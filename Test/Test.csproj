@@ -90,6 +90,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConstructorsForTesting.cs" />
+    <Compile Include="TestCalibration.cs" />
     <Compile Include="TestTopDown.cs" />
     <Compile Include="TestAggregationMethods.cs" />
     <Compile Include="TestBigRational.cs" />

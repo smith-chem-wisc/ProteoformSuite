@@ -56,7 +56,7 @@ namespace ProteoformSuiteGUI
             if (Sweet.lollipop.topdownReader.topdown_ptms.Count > 0)
             {
                 MessageBox.Show("Warning: Top-down proteoforms with the following modifications were not matched to a modification in the theoretical PTM list: "
-                  + String.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Select(m => m.id + " at " + m.motif.Motif)));
+                  + String.Join(", ", Sweet.lollipop.topdownReader.topdown_ptms.Distinct()));
             }
             Sweet.lollipop.td_relations = Sweet.lollipop.target_proteoform_community.relate_td();
             Parallel.ForEach(Sweet.lollipop.decoy_proteoform_communities.Values, c =>

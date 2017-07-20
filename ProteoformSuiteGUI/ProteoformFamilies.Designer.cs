@@ -114,8 +114,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer1.Size = new System.Drawing.Size(1459, 890);
-            this.splitContainer1.SplitterDistance = 369;
+            this.splitContainer1.Size = new System.Drawing.Size(1362, 741);
+            this.splitContainer1.SplitterDistance = 307;
             this.splitContainer1.TabIndex = 3;
             // 
             // splitContainer2
@@ -148,8 +148,8 @@
             this.splitContainer2.Panel2.Controls.Add(this.cmbx_colorScheme);
             this.splitContainer2.Panel2.Controls.Add(this.lb_dgv_selection);
             this.splitContainer2.Panel2.Controls.Add(this.cmbx_tableSelector);
-            this.splitContainer2.Size = new System.Drawing.Size(1459, 369);
-            this.splitContainer2.SplitterDistance = 844;
+            this.splitContainer2.Size = new System.Drawing.Size(1362, 307);
+            this.splitContainer2.SplitterDistance = 787;
             this.splitContainer2.TabIndex = 5;
             // 
             // dgv_main
@@ -161,7 +161,7 @@
             this.dgv_main.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_main.Location = new System.Drawing.Point(0, 0);
             this.dgv_main.Name = "dgv_main";
-            this.dgv_main.Size = new System.Drawing.Size(840, 365);
+            this.dgv_main.Size = new System.Drawing.Size(783, 303);
             this.dgv_main.TabIndex = 2;
             this.dgv_main.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgv_proteoform_families_CellMouseClick);
             // 
@@ -363,8 +363,8 @@
             this.splitContainer3.Panel2.Controls.Add(this.tb_familyBuildFolder);
             this.splitContainer3.Panel2.Controls.Add(this.btn_browseTempFolder);
             this.splitContainer3.Panel2.Controls.Add(this.Families_update);
-            this.splitContainer3.Size = new System.Drawing.Size(1455, 513);
-            this.splitContainer3.SplitterDistance = 832;
+            this.splitContainer3.Size = new System.Drawing.Size(1358, 426);
+            this.splitContainer3.SplitterDistance = 776;
             this.splitContainer3.TabIndex = 7;
             // 
             // dgv_proteoform_family_members
@@ -376,7 +376,7 @@
             this.dgv_proteoform_family_members.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgv_proteoform_family_members.Location = new System.Drawing.Point(0, 0);
             this.dgv_proteoform_family_members.Name = "dgv_proteoform_family_members";
-            this.dgv_proteoform_family_members.Size = new System.Drawing.Size(832, 513);
+            this.dgv_proteoform_family_members.Size = new System.Drawing.Size(776, 426);
             this.dgv_proteoform_family_members.TabIndex = 3;
             // 
             // cb_include_td_nodes
@@ -403,10 +403,17 @@
             this.cb_remove_bad_relations.UseVisualStyleBackColor = true;
             this.cb_remove_bad_relations.CheckedChanged += new System.EventHandler(this.cb_remove_bad_relations_CheckedChanged);
             // 
+            // bt_check_id_experimentals_TD
+            // 
+            this.bt_check_id_experimentals_TD.Location = new System.Drawing.Point(0, 0);
+            this.bt_check_id_experimentals_TD.Name = "bt_check_id_experimentals_TD";
+            this.bt_check_id_experimentals_TD.Size = new System.Drawing.Size(75, 23);
+            this.bt_check_id_experimentals_TD.TabIndex = 67;
+            // 
             // rtb_proteoformFamilyResults
             // 
             this.rtb_proteoformFamilyResults.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(17, 390);
+            this.rtb_proteoformFamilyResults.Location = new System.Drawing.Point(-3, 303);
             this.rtb_proteoformFamilyResults.Name = "rtb_proteoformFamilyResults";
             this.rtb_proteoformFamilyResults.Size = new System.Drawing.Size(463, 84);
             this.rtb_proteoformFamilyResults.TabIndex = 63;
@@ -666,7 +673,7 @@
             // 
             this.Families_update.AllowDrop = true;
             this.Families_update.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.Families_update.Location = new System.Drawing.Point(110, 480);
+            this.Families_update.Location = new System.Drawing.Point(90, 393);
             this.Families_update.Name = "Families_update";
             this.Families_update.Size = new System.Drawing.Size(402, 23);
             this.Families_update.TabIndex = 33;
@@ -679,7 +686,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1459, 890);
+            this.ClientSize = new System.Drawing.Size(1362, 741);
             this.ControlBox = false;
             this.Controls.Add(this.splitContainer1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

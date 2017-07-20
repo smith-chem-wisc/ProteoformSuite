@@ -7,13 +7,6 @@ namespace ProteoformSuiteInternal
 {
     public class TheoreticalProteoformGroup : TheoreticalProteoform
     {
-
-        #region Public Property
-
-        public List<string> accessionList { get; set; } // this is the list of accession numbers for all proteoforms that share the same modified mass. the list gets alphabetical order
-
-        #endregion Public Property
-
         #region Public Constructor
 
         public TheoreticalProteoformGroup(IEnumerable<TheoreticalProteoform> theoreticals_with_contaminants_first)
