@@ -1,5 +1,6 @@
 ﻿using ProteoformSuiteInternal;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace ProteoformSuiteGUI
 {
@@ -66,7 +67,14 @@ namespace ProteoformSuiteGUI
 
         public int bottomUpPSMcount
         {
-            get { return t.bottom_up_PSMs;  }
+            get
+            {
+                try
+                {
+                    return t.relationships.Sum(r => r.connected_proteoforms.OfType<TheoreticalProteoform>().Sum(t => t.psm_list.Count));
+                }
+                catch { return 0; }
+            }
         }
 
         public double retentionTime

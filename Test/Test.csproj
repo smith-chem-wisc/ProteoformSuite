@@ -130,6 +130,9 @@
     <None Include="test_directory\two.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="test_td_hits_file.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ProteoformSuiteInternal\ProteoformSuiteInternal.csproj">

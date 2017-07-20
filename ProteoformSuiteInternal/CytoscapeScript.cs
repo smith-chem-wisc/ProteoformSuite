@@ -429,7 +429,7 @@ namespace ProteoformSuiteInternal
                 return p.accession + " " + p.ptm_description;
             }
 
-            else if (typeof(TopDownProteoform).IsAssignableFrom(p.GetType()))
+            else if (p as TopDownProteoform != null)
             {
                 return p.accession + " " + p.ptm_description;
             }

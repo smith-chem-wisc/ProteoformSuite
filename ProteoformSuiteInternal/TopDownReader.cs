@@ -37,7 +37,7 @@ namespace ProteoformSuiteInternal
                         int position = 1;
                         if (cellStrings[10].Split(':')[1] == "1458")//PSI-MOD 1458 is supposed to be N-terminal acetylation
                         {
-                            ModificationWithMass mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.modificationType == "Acetylation" && m.terminusLocalization == ModificationSites.NTerminus && m.motif.Motif == cellStrings[4][0].ToString()).FirstOrDefault();
+                            ModificationWithMass mod = Sweet.lollipop.theoretical_database.uniprotModifications.Values.SelectMany(m => m).OfType<ModificationWithMass>().Where(m => m.id.Contains("acetyl") && m.terminusLocalization == ModificationSites.NProt && m.motif.Motif == cellStrings[4][0].ToString()).FirstOrDefault();
                             if (mod != null)
                             {
                                 ptm_list.Add(new Ptm(position, mod));
