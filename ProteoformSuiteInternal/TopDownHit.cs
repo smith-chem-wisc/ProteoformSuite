@@ -80,12 +80,6 @@ namespace ProteoformSuiteInternal
 
         }
 
-        public double get_mass_error(double theoretical, double observed)
-        {
-            return (observed - theoretical_mass) - Math.Round(observed - theoretical, 0);
-        }
-
-
         private double CalculateProteoformMass(string pForm, Dictionary<char, double> aaIsotopeMassList)
         {
             double proteoformMass = 18.010565; // start with water
@@ -100,7 +94,7 @@ namespace ProteoformSuiteInternal
             return proteoformMass + aaMasses.Sum();
         }
 
-
+        //calibration
         public string GetSequenceWithChemicalFormula()
         {
 
