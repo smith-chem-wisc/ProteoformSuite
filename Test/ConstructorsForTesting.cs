@@ -120,6 +120,8 @@ namespace Test
             h.theoretical_mass = modified_mass;
             h.retention_time = retention_time;
             h.sequence = "MSSSSSSSSSS";
+            h.start_index = 10;
+            h.stop_index = 20;
             TopDownProteoform td = new TopDownProteoform(accession, h, new List<TopDownHit>() { h } );
             return td;
         }

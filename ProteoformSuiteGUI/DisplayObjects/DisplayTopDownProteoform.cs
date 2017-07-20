@@ -49,7 +49,7 @@ namespace ProteoformSuiteGUI
             get { return t.stop_index; }
         }
 
-        public string pfr
+        public string PFR
         {
             get { return t.pfr; }
         }
@@ -79,6 +79,11 @@ namespace ProteoformSuiteGUI
             get { return t.theoretical_mass;  }
         }
 
+        public int Observations
+        {
+            get { return t.topdown_hits.Count; }
+        }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -98,7 +103,6 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(bottomUpPSMcount)].HeaderText = "Bottom-Up PSM Count";
             dgv.Columns[nameof(retentionTime)].HeaderText = "Retention Time";
             dgv.Columns[nameof(theoretical_mass)].HeaderText = "Theoretical Mass";
-            dgv.Columns[nameof(pfr)].HeaderText = "PFR";
             dgv.AllowUserToAddRows = false;
         }
 
