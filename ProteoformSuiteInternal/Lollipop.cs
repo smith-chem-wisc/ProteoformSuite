@@ -957,7 +957,7 @@ namespace ProteoformSuiteInternal
         public IEnumerable<ExperimentalProteoform> getInterestingProteoforms(IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
         {
             return proteoforms.Where(p =>
-                p.quant.significant_tusher
+                (p.quant.significant_tusher && significance_by_permutation || p.quant.significant_foldchange && significance_by_log2FC)
                 && Math.Abs(p.quant.logFoldChange) > minProteoformAbsLogFoldChange
                 && p.quant.intensitySum > minProteoformIntensity);
         }

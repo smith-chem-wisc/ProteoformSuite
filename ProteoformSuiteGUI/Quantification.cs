@@ -33,6 +33,7 @@ namespace ProteoformSuiteGUI
         {
             ClearListsTablesFigures(true);
             Sweet.lollipop.quantify();
+            Sweet.lollipop.calculate_log2fc_statistics();
             Sweet.lollipop.GO_analysis();
             FillTablesAndCharts();
         }
@@ -332,17 +333,17 @@ namespace ProteoformSuiteGUI
             foreach (QuantitativeProteoformValues qValue in Sweet.lollipop.qVals)
             {
                 if (qValue.significant_tusher && Sweet.lollipop.significance_by_permutation || qValue.significant_foldchange && Sweet.lollipop.significance_by_log2FC)
-                    ct_volcano_logFold_logP.Series["significantlogFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.benjiHoch_value : (double)qValue.pValue_randomization));
+                    ct_volcano_logFold_logP.Series["significantlogFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.pValue_uncorrected : (double)qValue.pValue_randomization));
                 else
-                    ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.benjiHoch_value : (double)qValue.pValue_randomization));
+                    ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.pValue_uncorrected : (double)qValue.pValue_randomization));
             }
 
             if (Sweet.lollipop.qVals.Count > 0)
             {
                 ct_volcano_logFold_logP.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(Sweet.lollipop.qVals.Min(q => q.logFoldChange)));
                 ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(Sweet.lollipop.qVals.Max(q => q.logFoldChange)));
-                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Minimum = Math.Floor(Sweet.lollipop.qVals.Min(q => -Math.Log10(plot_selection == 0 ? q.benjiHoch_value : (double)q.pValue_randomization)));
-                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = Math.Ceiling(Sweet.lollipop.qVals.Max(q => -Math.Log10(plot_selection == 0 ? q.benjiHoch_value : (double)q.pValue_randomization)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Minimum = Math.Floor(Sweet.lollipop.qVals.Min(q => -Math.Log10(plot_selection == 0 ? q.pValue_uncorrected : (double)q.pValue_randomization)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = Math.Ceiling(Sweet.lollipop.qVals.Max(q => -Math.Log10(plot_selection == 0 ? q.pValue_uncorrected : (double)q.pValue_randomization)));
             }
         }
 

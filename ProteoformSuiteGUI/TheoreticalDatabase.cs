@@ -374,5 +374,6 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Modification Names Private Methods
+
     }
 }
