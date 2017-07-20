@@ -129,7 +129,7 @@
     <Compile Include="GoTerm.cs" />
     <Compile Include="IBiorepable.cs" />
     <Compile Include="IMassDifference.cs" />
-    <Compile Include="InputFile.cs" />
+    <Compile Include="inputFile.cs" />
     <Compile Include="LabeledMs1DataPoint.cs" />
     <Compile Include="Lollipop.cs" />
     <Compile Include="Ptm.cs" />
