@@ -86,11 +86,6 @@ namespace ProteoformSuiteGUI
         {
             ClearListsTablesFigures(true);
             Sweet.lollipop.construct_target_and_decoy_families();
-            if (Sweet.lollipop.remove_bad_relations)
-            {
-                ClearListsTablesFigures(true);
-                Sweet.lollipop.construct_target_and_decoy_families();
-            }
             cmbx_tableSelector.SelectedIndex = 0;
             tb_tableFilter.Text = "";
             FillTablesAndCharts();
@@ -412,12 +407,6 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.count_adducts_as_identifications = cb_count_adducts_as_id.Checked;
             update_figures_of_merit();
         }
-
-        private void cb_remove_bad_relations_CheckedChanged(object sender, EventArgs e)
-        {
-            Sweet.lollipop.remove_bad_relations = cb_remove_bad_relations.Checked;
-        }
-
 
 
 

@@ -62,26 +62,5 @@ namespace ProteoformSuiteInternal
             this.modified_mass = this.monoisotopic_mass;
             this.agg_RT = topdown_hits.Select(h => h.retention_time).Average();
         }
-         
-        private bool tolerable_rt(TopDownHit candidate, double rt)
-        {
-            return candidate.retention_time >= rt - Convert.ToDouble(Sweet.lollipop.retention_time_tolerance) &&
-                candidate.retention_time <= rt + Convert.ToDouble(Sweet.lollipop.retention_time_tolerance);
-        }
-
-        public bool same_ptms(Proteoform theo)
-        {                   
-            //equal numbers of each type of modification
-            if (this.ptm_set.ptm_combination.Count == theo.ptm_set.ptm_combination.Count)
-            {
-                foreach (ModificationWithMass mod in this.ptm_set.ptm_combination.Select(p => p.modification).Distinct())
-                {
-                    if (theo.ptm_set.ptm_combination.Where(p => p.modification == mod).Count() == this.ptm_set.ptm_combination.Where(p => p.modification == mod).Count()) continue;
-                    else return false;
-                }
-                return true;
-            }
-            else return false;
-        }
     }
 }

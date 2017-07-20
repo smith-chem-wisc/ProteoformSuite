@@ -458,12 +458,6 @@ namespace Test
         }
 
         [Test]
-        public void test_remove_bad_relations()
-        {
-
-        }
-
-        [Test]
         public void test_results_summary_with_peaks()
         {
             Sweet.lollipop.theoretical_database.theoretical_proteins = new Dictionary<InputFile, Protein[]>();

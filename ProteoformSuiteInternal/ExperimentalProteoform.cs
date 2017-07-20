@@ -45,15 +45,7 @@ namespace ProteoformSuiteInternal
 
         public double agg_rt { get; set; } = 0;
 
-        public List<double> all_RTs { get; set; } = new List<double>();
-
         public bool mass_shifted { get; set; } = false; //make sure in ET if shifting multiple peaks, not shifting same E > once. 
-
-        public bool fragmented { get; set; }
-
-        public bool topdown_identified { get; set; } //if identified in a different topdown run....
-
-        public int exp_topdown_match_count { get { return relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown); } }
 
         public string manual_validation_id { get; set; }
 

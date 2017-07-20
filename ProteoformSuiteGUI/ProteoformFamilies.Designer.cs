@@ -51,7 +51,6 @@
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
             this.cb_include_td_nodes = new System.Windows.Forms.CheckBox();
-            this.cb_remove_bad_relations = new System.Windows.Forms.CheckBox();
             this.bt_check_id_experimentals_TD = new System.Windows.Forms.Button();
             this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -343,7 +342,6 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.cb_include_td_nodes);
-            this.splitContainer3.Panel2.Controls.Add(this.cb_remove_bad_relations);
             this.splitContainer3.Panel2.Controls.Add(this.bt_check_id_experimentals_TD);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox2);
@@ -391,18 +389,7 @@
             this.cb_include_td_nodes.Text = "Include Topdown Proteoforms";
             this.cb_include_td_nodes.UseVisualStyleBackColor = true;
             this.cb_include_td_nodes.CheckedChanged += new System.EventHandler(this.cb_include_td_nodes_CheckedChanged);
-            // 
-            // cb_remove_bad_relations
-            // 
-            this.cb_remove_bad_relations.AutoSize = true;
-            this.cb_remove_bad_relations.Location = new System.Drawing.Point(42, 389);
-            this.cb_remove_bad_relations.Name = "cb_remove_bad_relations";
-            this.cb_remove_bad_relations.Size = new System.Drawing.Size(135, 17);
-            this.cb_remove_bad_relations.TabIndex = 60;
-            this.cb_remove_bad_relations.Text = "Remove Bad Relations";
-            this.cb_remove_bad_relations.UseVisualStyleBackColor = true;
-            this.cb_remove_bad_relations.CheckedChanged += new System.EventHandler(this.cb_remove_bad_relations_CheckedChanged);
-            // 
+            //
             // bt_check_id_experimentals_TD
             // 
             this.bt_check_id_experimentals_TD.Location = new System.Drawing.Point(0, 0);
@@ -769,7 +756,6 @@
         private System.Windows.Forms.RichTextBox rtb_proteoformFamilyResults;
         private System.Windows.Forms.CheckBox cb_count_adducts_as_id;
         private System.Windows.Forms.Button bt_check_id_experimentals_TD;
-        private System.Windows.Forms.CheckBox cb_remove_bad_relations;
         public System.Windows.Forms.CheckBox cb_include_td_nodes;
     }
 }
