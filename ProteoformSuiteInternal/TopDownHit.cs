@@ -23,16 +23,18 @@ namespace ProteoformSuiteInternal
         public string name { get; set; }
         public double pvalue { get; set; }
         public double reported_mass { get; set; } //reported in TD results file
-        public int charge { get; set; }
-        public double mass_error { get; set; }
-        public double mz { get; set; }
         public double score { get; set; }//C-score
         public TopDownResultType tdResultType { get; set; }
         public InputFile file { get; set; }
+        public string pfr { get; set; }
+
+        //for mass calibration
         public int biological_replicate { get; set; } = 0;
         public int technical_replicate { get; set; } = 0;
         public int fraction { get; set; } = 0;
-        public string pfr { get; set; }
+        public double mz { get; set; }
+        public int charge { get; set; }
+
 
         public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string pfr, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double pvalue, double score)
         {
@@ -113,11 +115,11 @@ namespace ProteoformSuiteInternal
 
             for (int r = 0; r < sequence.Length; r++)
             {
-                sbsequence.Append(sequence[r]);
                 if (Sweet.lollipop.carbamidomethylation && sequence[r] == 'C')
                 {
                     sbsequence.Append("[H3C2N1O1]");
                 }
+                sbsequence.Append(sequence[r]);
                 // variable modification on this residue
                 ModificationWithMass residue_variable_mod = ptm_list.Where(p => p.position == r + 2).Select(m => m.modification).FirstOrDefault();
                 if (residue_variable_mod != null)

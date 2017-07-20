@@ -15,7 +15,7 @@ namespace ProteoformSuiteInternal
 
         #endregion Private Fields
 
-        public List<ModificationWithMass> topdown_ptms = new List<ModificationWithMass>(); //PTMs not in theoretical database added to warning file.
+        public List<string> topdown_ptms = new List<string>(); //PTMs not in theoretical database added to warning file.
         //Reading in Top-down excel
         public List<TopDownHit> ReadTDFile(InputFile file)
         {
@@ -46,13 +46,7 @@ namespace ProteoformSuiteInternal
                             {
                                 lock (topdown_ptms)
                                 {
-                                    ModificationMotif motif;
-                                    ModificationMotif.TryGetMotif(cellStrings[4][0].ToString(), out motif);
-                                    ModificationWithMass new_ptm = topdown_ptms.Where(m => m.id == "N-terminal acetylation").FirstOrDefault();//multiple modifications can be indicated in this cell (e.g. alpha-amino acetylated residue@N, O-phospho-L-serine@95)
-                                    if (new_ptm == null) //if not in topdown_ptms list, add it (will show in warning)
-                                    {
-                                        topdown_ptms.Add(new ModificationWithMass("N-terminal acetylation", null, motif, ModificationSites.NTerminus, 0, null, new List<double>(), new List<double>(), null));
-                                    }
+                                    topdown_ptms.Add("N-terminal acetylation at " + cellStrings[4][0]);
                                 }
                                 add_topdown_hit = false;
                             }
@@ -75,11 +69,7 @@ namespace ProteoformSuiteInternal
                             {
                                 lock (topdown_ptms)
                                 {
-                                    ModificationMotif motif;
-                                    ModificationMotif.TryGetMotif(cellStrings[4][position - 1].ToString(), out motif);
-                                    ModificationWithMass new_ptm = topdown_ptms.Where(m => m.id == resid).FirstOrDefault();
-                                    if (new_ptm == null) //if not in topdown_ptms list, add it (will show in warning)
-                                        topdown_ptms.Add(new ModificationWithMass(resid, null, motif, ModificationSites.Any, 0, null, new List<double>(), new List<double>(), null));
+                                    topdown_ptms.Add(resid + " at " + cellStrings[4][position - 1]);
                                 }
                                 add_topdown_hit = false;
                             }
