@@ -45,8 +45,8 @@ namespace ProteoformSuiteGUI
 
         public void RunTheGamut()
         {
-            ClearListsTablesFigures(true);
             shift_masses();  // always shift before forming relations; shifts might be entered from preset; if none are entered, no shifting occurs
+            ClearListsTablesFigures(true);
             Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, Environment.CurrentDirectory, true);
             Sweet.lollipop.relate_ed();
             Sweet.lollipop.et_peaks = Sweet.lollipop.target_proteoform_community.accept_deltaMass_peaks(Sweet.lollipop.et_relations, Sweet.lollipop.ed_relations);
@@ -73,6 +73,7 @@ namespace ProteoformSuiteGUI
 
         public void ClearListsTablesFigures(bool clear_following)
         {
+            bool shiftedExperimentals = Sweet.lollipop.et_peaks.Any(p => p.mass_shifter != "0");
             Sweet.lollipop.clear_et();
             et_histogram_from_unmod.Clear();
 
@@ -89,7 +90,7 @@ namespace ProteoformSuiteGUI
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
                 {
                     ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
-                    if (sweet as ExperimentExperimentComparison == null)
+                    if (sweet as ExperimentExperimentComparison == null || shiftedExperimentals)
                         sweet.ClearListsTablesFigures(false);
                 }
             }
