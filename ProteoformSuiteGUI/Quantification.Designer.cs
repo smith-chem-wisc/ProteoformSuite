@@ -279,6 +279,7 @@
             // 
             // splitContainer4.Panel1
             // 
+            this.splitContainer4.Panel1.AutoScroll = true;
             this.splitContainer4.Panel1.Controls.Add(this.groupBox1);
             // 
             // splitContainer4.Panel2
@@ -397,6 +398,7 @@
             // 
             // splitContainer5.Panel1
             // 
+            this.splitContainer5.Panel1.AutoScroll = true;
             this.splitContainer5.Panel1.Controls.Add(this.gb_quantDataDisplaySelection);
             // 
             // splitContainer5.Panel2
@@ -487,7 +489,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(362, 52);
+            this.label5.Location = new System.Drawing.Point(333, 52);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(63, 13);
             this.label5.TabIndex = 7;
@@ -496,7 +498,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(369, 78);
+            this.label4.Location = new System.Drawing.Point(340, 78);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(56, 13);
             this.label4.TabIndex = 6;
@@ -510,7 +512,7 @@
             0,
             0,
             65536});
-            this.nud_bkgdWidth.Location = new System.Drawing.Point(431, 48);
+            this.nud_bkgdWidth.Location = new System.Drawing.Point(402, 48);
             this.nud_bkgdWidth.Maximum = new decimal(new int[] {
             1,
             0,
@@ -539,7 +541,7 @@
             0,
             0,
             65536});
-            this.nud_bkgdShift.Location = new System.Drawing.Point(431, 74);
+            this.nud_bkgdShift.Location = new System.Drawing.Point(402, 74);
             this.nud_bkgdShift.Maximum = new decimal(new int[] {
             0,
             0,
@@ -675,6 +677,7 @@
             // 
             // splitContainer8.Panel1
             // 
+            this.splitContainer8.Panel1.AutoScroll = true;
             this.splitContainer8.Panel1.Controls.Add(this.groupBox2);
             // 
             // splitContainer8.Panel2
@@ -768,6 +771,7 @@
             // 
             // splitContainer9.Panel1
             // 
+            this.splitContainer9.Panel1.AutoScroll = true;
             this.splitContainer9.Panel1.Controls.Add(this.groupBox6);
             // 
             // splitContainer9.Panel2
@@ -1038,10 +1042,12 @@
             // 
             // splitContainer13.Panel1
             // 
+            this.splitContainer13.Panel1.AutoScroll = true;
             this.splitContainer13.Panel1.Controls.Add(this.gb_goThresholds);
             // 
             // splitContainer13.Panel2
             // 
+            this.splitContainer13.Panel2.AutoScroll = true;
             this.splitContainer13.Panel2.Controls.Add(this.gb_backgroundGoTerms);
             this.splitContainer13.Size = new System.Drawing.Size(477, 153);
             this.splitContainer13.SplitterDistance = 175;
@@ -1262,6 +1268,7 @@
             // 
             // splitContainer14.Panel1
             // 
+            this.splitContainer14.Panel1.AutoScroll = true;
             this.splitContainer14.Panel1.Controls.Add(this.btn_buildFamiliesWithSignificantChange);
             this.splitContainer14.Panel1.Controls.Add(this.btn_buildFamiliesAllGO);
             this.splitContainer14.Panel1.Controls.Add(this.cb_geneCentric);
@@ -1276,6 +1283,7 @@
             // 
             // splitContainer14.Panel2
             // 
+            this.splitContainer14.Panel2.AutoScroll = true;
             this.splitContainer14.Panel2.Controls.Add(this.label7);
             this.splitContainer14.Panel2.Controls.Add(this.cmbx_nodeLabel);
             this.splitContainer14.Panel2.Controls.Add(this.label14);
