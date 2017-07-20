@@ -120,8 +120,9 @@ namespace Test
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.read_in_td_hits();
             Assert.AreEqual(4, Sweet.lollipop.top_down_hits.Count);
-            Assert.AreEqual(1, Sweet.lollipop.topdownReader.topdown_ptms.Count);
+            Assert.AreEqual(2, Sweet.lollipop.topdownReader.topdown_ptms.Count);
             Assert.AreEqual(2, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
+            Assert.AreEqual(10892.196, Math.Round(Sweet.lollipop.top_down_hits.OrderByDescending(h => h.ptm_list.Count).First().theoretical_mass, 3));
             List<TopDownProteoform> topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits);
             Sweet.lollipop.target_proteoform_community.topdown_proteoforms = topdown_proteoforms.Where(p => p != null).ToArray();
             foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values)
