@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Proteomics;
 
 namespace ProteoformSuiteInternal
@@ -20,21 +18,10 @@ namespace ProteoformSuiteInternal
         public double agg_RT { get; set; }
         public TopDownHit root;
         public List<TopDownHit> topdown_hits;
-        public int bottom_up_PSMs
-        {
-            get
-            {
-                try
-                {
-                    return relationships.Sum(r => r.connected_proteoforms.OfType<TheoreticalProteoform>().Sum(t => t.psm_list.Count));
-                }
-                catch { return 0; }
-            }
-        }
+
 
         public TopDownProteoform(string accession, TopDownHit root, List<TopDownHit> hits) : base(accession)
         {
-            this.linked_proteoform_references = new LinkedList<Proteoform>().ToList();
             this.root = root;
             this.name = root.name;
             this.pfr = root.pfr;
@@ -52,7 +39,6 @@ namespace ProteoformSuiteInternal
 
         public TopDownProteoform(TopDownProteoform t) : base(t.accession)
         {
-            this.linked_proteoform_references = new LinkedList<Proteoform>().ToList();
             this.root = t.root;
             this.name = t.name;
             this.ptm_set = new PtmSet(t.ptm_set.ptm_combination);

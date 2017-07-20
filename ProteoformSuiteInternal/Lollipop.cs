@@ -618,6 +618,7 @@ namespace ProteoformSuiteInternal
 
         public void read_in_td_hits()
         {
+            topdownReader.topdown_ptms.Clear();
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
             {
                 top_down_hits.AddRange(topdownReader.ReadTDFile(file));
@@ -1477,7 +1478,7 @@ namespace ProteoformSuiteInternal
         {
             Sweet.lollipop.top_down_hits.Clear();
             Sweet.lollipop.td_relations.Clear();
-            Sweet.lollipop.topdownReader.topdown_ptms.Clear();
+            topdownReader.topdown_ptms.Clear();
             foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { Sweet.lollipop.target_proteoform_community }))
             {
                 community.topdown_proteoforms = new TopDownProteoform[0];

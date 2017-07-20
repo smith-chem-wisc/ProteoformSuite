@@ -21,13 +21,14 @@ namespace Test
                 TopDownHit t = new TopDownHit();
                 t.score = (10 + Convert.ToDouble(i));
                 t.retention_time = 50d;
-                t.accession = "accession";
-                t.sequence = "sequence";
                 t.ptm_list = new List<Ptm>();
+                t.pfr = "12345";
+                t.sequence = "SEQUENCE";
                 t.tdResultType = TopDownResultType.TightAbsoluteMass;
                 tdhList.Add(t);
                 t.pvalue = 1 / (i + 1);
             }
+            Sweet.lollipop.clear_td();
             Sweet.lollipop.top_down_hits = tdhList;
             Sweet.lollipop.target_proteoform_community.topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits).ToArray();
 
@@ -40,33 +41,41 @@ namespace Test
             tdhList[1].retention_time += Convert.ToDouble(Sweet.lollipop.retention_time_tolerance + 1);
             Sweet.lollipop.top_down_hits = tdhList;
             Sweet.lollipop.target_proteoform_community.topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits).ToArray();
+            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count());
 
-            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count()); //both topdown hits should aggregate to a single proteoform
-
-
-            //Test no aggregation different sequence
-            tdhList[1].retention_time = 10d;
-            tdhList[1].sequence = "differentSequence";
+            //Test no aggregation different pfr
+            tdhList[1].retention_time = tdhList[0].retention_time;
+            tdhList[1].pfr = "12346";
             Sweet.lollipop.top_down_hits = tdhList;
-            Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits);
-
+            Sweet.lollipop.target_proteoform_community.topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits).ToArray();
             Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count()); //both topdown hits should aggregate to a single proteoform
 
-            //Test no aggregation different accession
-            tdhList[1].sequence = "sequence";
-            tdhList[1].accession = "differentAccession";
+            //if hit score below threshold, don't aggregate
+            tdhList[1].pfr = "12345";
+            tdhList[1].score = 1;
+            Sweet.lollipop.min_score_td = 3;
             Sweet.lollipop.top_down_hits = tdhList;
-            Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits);
+            Sweet.lollipop.target_proteoform_community.topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits).ToArray();
+            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count());
+            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.topdown_proteoforms[0].topdown_hits.Count());
 
-            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count()); //both topdown hits should aggregate to a single proteoform
-
-            //Test no aggregation different ptms
-            tdhList[1].accession = "accession";
-            tdhList[1].ptm_list.Add(new Ptm()); 
+            //if hit rt above threshold dont aggregate
+            tdhList[1].score = 3;
+            tdhList[1].retention_time = 100;
+            Sweet.lollipop.max_RT_td = 90;
             Sweet.lollipop.top_down_hits = tdhList;
-            Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits);
+            Sweet.lollipop.target_proteoform_community.topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits).ToArray();
+            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count());
+            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.topdown_proteoforms[0].topdown_hits.Count());
 
-            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count()); //both topdown hits should aggregate to a single proteoform
+            //if hit rt below threshold dont aggregate
+            tdhList[1].score = 3;
+            tdhList[1].retention_time = 10;
+            Sweet.lollipop.min_RT_td = 20;
+            Sweet.lollipop.top_down_hits = tdhList;
+            Sweet.lollipop.target_proteoform_community.topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits).ToArray();
+            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count());
+            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.topdown_proteoforms[0].topdown_hits.Count());
         }
 
         [Test]
@@ -97,6 +106,32 @@ namespace Test
             Assert.AreEqual(19, Sweet.lollipop.target_proteoform_community.topdown_proteoforms[0].root.score);  //higher scoring topdown hit should be root.
             Assert.AreEqual(10, Sweet.lollipop.target_proteoform_community.topdown_proteoforms[0].topdown_hits.Count());  //higher scoring topdown hit should be root.
             Assert.IsTrue(Sweet.lollipop.target_proteoform_community.topdown_proteoforms[0].agg_RT < 52);
+        }
+
+        [Test]
+        public void TestTopdownReader()
+        {
+            Sweet.lollipop.clear_td();
+            Sweet.lollipop.max_RT_td = 120; 
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "test_td_hits_file.xlsx") }, Lollipop.acceptable_extensions[3], Lollipop.file_types[3], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.decoy_databases = 1;
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
+            Sweet.lollipop.read_in_td_hits();
+            Assert.AreEqual(4, Sweet.lollipop.top_down_hits.Count);
+            Assert.AreEqual(1, Sweet.lollipop.topdownReader.topdown_ptms.Count);
+            Assert.AreEqual(2, Sweet.lollipop.top_down_hits.Sum(h => h.ptm_list.Count));
+            List<TopDownProteoform> topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits);
+            Sweet.lollipop.target_proteoform_community.topdown_proteoforms = topdown_proteoforms.Where(p => p != null).ToArray();
+            foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values)
+            {
+                community.topdown_proteoforms = Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Select(e => new TopDownProteoform(e)).ToArray();
+            }
+            Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count());
+            Assert.AreEqual(3, Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].topdown_proteoforms.Count());
+            //made new td proteoform for decoy should not be same object
+            Assert.IsFalse(Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Any(t => Sweet.lollipop.decoy_proteoform_communities[Sweet.lollipop.decoy_community_name_prefix + "0"].topdown_proteoforms.Contains(t)));
         }
 
         [Test]

@@ -404,7 +404,6 @@ namespace Test
             Sweet.lollipop.target_proteoform_community = construct_community_with_td_proteoforms();
             //dont include td nodes
             ProteoformCommunity.include_td_nodes = false;
-            Sweet.lollipop.clear_all_families();
             Sweet.lollipop.construct_target_and_decoy_families();
             Assert.AreEqual(0, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.relationships.Any(r => r.Accepted)));
             Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.families.Count);
