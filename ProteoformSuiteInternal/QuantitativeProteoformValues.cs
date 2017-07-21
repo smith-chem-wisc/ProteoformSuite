@@ -116,7 +116,8 @@ namespace ProteoformSuiteInternal
 
         public void calculate_log2FoldChanges(string numerator_condition, string denominator_condition)
         {
-            log2FoldChanges = allBftIntensities.Values.Where(bft => bft.condition == numerator_condition).Select(bft => Math.Log(bft.intensity_sum, 2) - Math.Log(allBftIntensities[new Tuple<InputFile, string>(bft.input_file, denominator_condition)].intensity_sum)).ToList();
+            List<BiorepFractionTechrepIntensity> numeratorBfts = allBftIntensities.Values.Where(bft => bft.condition == numerator_condition).ToList();
+            log2FoldChanges = numeratorBfts.Select(bft => Math.Log(bft.intensity_sum, 2) - Math.Log(allBftIntensities[new Tuple<InputFile, string>(bft.input_file, denominator_condition)].intensity_sum, 2)).ToList();
             average_log2fc = log2FoldChanges.Average();
             stdev_log2fc = Math.Sqrt(log2FoldChanges.Sum(fc => Math.Pow(fc - average_log2fc, 2)) / (log2FoldChanges.Count - 1));
         }
@@ -173,7 +174,7 @@ namespace ProteoformSuiteInternal
                 Tuple<InputFile, string> x = new Tuple<InputFile, string>(bft.input_file, bft.input_file.lt_condition != bft.condition ? bft.input_file.lt_condition : bft.input_file.hv_condition);
                 decimal avglog2i = (decimal)fileCondition_avgLog2I[x];
                 decimal stdevlog2i = (decimal)fileCondition_stdevLog2I[x];
-                imputed_values.Add(new BiorepFractionTechrepIntensity(x.Item1, x.Item2, true, imputed_intensity(avglog2i, stdevlog2i)));
+                imputed_values.Add(new BiorepFractionTechrepIntensity(x.Item1, x.Item2, true, imputed_intensity(avglog2i + Sweet.lollipop.backgroundShift * stdevlog2i, stdevlog2i * Sweet.lollipop.backgroundWidth)));
             }
             return imputed_values;
         }
