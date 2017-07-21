@@ -72,6 +72,8 @@
             this.btn_refreshCalculation = new System.Windows.Forms.Button();
             this.splitContainer8 = new System.Windows.Forms.SplitContainer();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.nud_benjiHochFDR = new System.Windows.Forms.NumericUpDown();
             this.cb_significanceByFoldChange = new System.Windows.Forms.CheckBox();
             this.label20 = new System.Windows.Forms.Label();
             this.cmbx_volcanoChartSelection = new System.Windows.Forms.ComboBox();
@@ -140,8 +142,6 @@
             this.cmbx_nodeLabelPositioning = new System.Windows.Forms.ComboBox();
             this.cmbx_nodeLayout = new System.Windows.Forms.ComboBox();
             this.cmbx_colorScheme = new System.Windows.Forms.ComboBox();
-            this.nud_benjiHochFDR = new System.Windows.Forms.NumericUpDown();
-            this.label21 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -184,6 +184,7 @@
             this.splitContainer8.Panel2.SuspendLayout();
             this.splitContainer8.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_benjiHochFDR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer9)).BeginInit();
             this.splitContainer9.Panel1.SuspendLayout();
             this.splitContainer9.Panel2.SuspendLayout();
@@ -220,7 +221,6 @@
             this.splitContainer14.Panel2.SuspendLayout();
             this.splitContainer14.SuspendLayout();
             this.groupBox5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_benjiHochFDR)).BeginInit();
             this.SuspendLayout();
             // 
             // splitContainer1
@@ -704,6 +704,34 @@
             this.groupBox2.TabIndex = 27;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Volcano Plot";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(323, 74);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(90, 13);
+            this.label21.TabIndex = 16;
+            this.label21.Text = "Significance FDR";
+            // 
+            // nud_benjiHochFDR
+            // 
+            this.nud_benjiHochFDR.DecimalPlaces = 2;
+            this.nud_benjiHochFDR.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.nud_benjiHochFDR.Location = new System.Drawing.Point(267, 69);
+            this.nud_benjiHochFDR.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nud_benjiHochFDR.Name = "nud_benjiHochFDR";
+            this.nud_benjiHochFDR.Size = new System.Drawing.Size(50, 20);
+            this.nud_benjiHochFDR.TabIndex = 17;
+            this.nud_benjiHochFDR.ValueChanged += new System.EventHandler(this.nud_benjiHochFDR_ValueChanged);
             // 
             // cb_significanceByFoldChange
             // 
@@ -1576,34 +1604,6 @@
             this.cmbx_colorScheme.TabIndex = 89;
             this.cmbx_colorScheme.TextChanged += new System.EventHandler(this.cmbx_empty_TextChanged);
             // 
-            // nud_benjiHochFDR
-            // 
-            this.nud_benjiHochFDR.DecimalPlaces = 2;
-            this.nud_benjiHochFDR.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.nud_benjiHochFDR.Location = new System.Drawing.Point(267, 69);
-            this.nud_benjiHochFDR.Maximum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.nud_benjiHochFDR.Name = "nud_benjiHochFDR";
-            this.nud_benjiHochFDR.Size = new System.Drawing.Size(50, 20);
-            this.nud_benjiHochFDR.TabIndex = 17;
-            this.nud_benjiHochFDR.ValueChanged += new System.EventHandler(this.nud_benjiHochFDR_ValueChanged);
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(323, 74);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(90, 13);
-            this.label21.TabIndex = 16;
-            this.label21.Text = "Significance FDR";
-            // 
             // Quantification
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1662,6 +1662,7 @@
             this.splitContainer8.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nud_benjiHochFDR)).EndInit();
             this.splitContainer9.Panel1.ResumeLayout(false);
             this.splitContainer9.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer9)).EndInit();
@@ -1704,7 +1705,6 @@
             this.splitContainer14.ResumeLayout(false);
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.nud_benjiHochFDR)).EndInit();
             this.ResumeLayout(false);
 
         }

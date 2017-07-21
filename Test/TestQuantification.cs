@@ -111,7 +111,7 @@ namespace Test
             Sweet.lollipop.input_files = quant_components_list.Select(c => c.input_file).Distinct().ToList();
             Sweet.lollipop.getConditionBiorepFractionLabels(true, Sweet.lollipop.input_files);
 
-            e1.make_biorepIntensityList(e1.lt_quant_components, e1.hv_quant_components, new List<InputFile>(), Sweet.lollipop.ltConditionsBioReps.Keys, Sweet.lollipop.hvConditionsBioReps.Keys);
+            e1.make_biorepIntensityList(e1.lt_quant_components, e1.hv_quant_components, Sweet.lollipop.ltConditionsBioReps.Keys, Sweet.lollipop.hvConditionsBioReps.Keys);
             Assert.AreEqual(4, e1.biorepIntensityList.Count);
             Assert.AreEqual(2, e1.biorepIntensityList.Count(b => b.biorep == "1"));
             Assert.AreEqual(2, e1.biorepIntensityList.Count(b => b.biorep == "2"));
@@ -155,7 +155,7 @@ namespace Test
 
             Sweet.lollipop.input_files = quant_components_list.Select(c => c.input_file).Distinct().ToList();
             Sweet.lollipop.getConditionBiorepFractionLabels(true, Sweet.lollipop.input_files);
-            e2.make_biorepIntensityList(e2.lt_quant_components, e2.hv_quant_components, new List<InputFile>(), Sweet.lollipop.ltConditionsBioReps.Keys, Sweet.lollipop.hvConditionsBioReps.Keys);
+            e2.make_biorepIntensityList(e2.lt_quant_components, e2.hv_quant_components, Sweet.lollipop.ltConditionsBioReps.Keys, Sweet.lollipop.hvConditionsBioReps.Keys);
             Assert.AreEqual(4 * 2, e2.biorepIntensityList.Count);
             Assert.AreEqual(2, e2.biorepIntensityList.Count(b => b.biorep == "1"));
             Assert.AreEqual(2, e2.biorepIntensityList.Count(b => b.biorep == "2"));
@@ -404,18 +404,18 @@ namespace Test
                 db.Add(new DummyBiorepable(ConstructorsForTesting.InputFile("path.txt", Labeling.NeuCode, Purpose.Quantification, "light", "heavy", 1.ToString(), (-1).ToString(), (-1).ToString()), 1d));
             }
 
-            List<BiorepIntensity> bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, db, new List<InputFile>(), lightConditions, heavyConditions);
+            List<BiorepIntensity> bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, db, lightConditions, heavyConditions);
             Assert.AreEqual(2, bril.Count());
 
             for (int i = 0; i < 6; i++)
             {
                 db.Add(new DummyBiorepable(ConstructorsForTesting.InputFile("path.txt", Labeling.NeuCode, Purpose.Quantification, "light", "heavy", 2.ToString(), (-1).ToString(), (-1).ToString()), 2d));
             }
-            bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, db, new List<InputFile>(), lightConditions, heavyConditions);
+            bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, db, lightConditions, heavyConditions);
             Assert.AreEqual(4, bril.Count());
 
             Sweet.lollipop.neucode_labeled = false;
-            bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, new List<DummyBiorepable>(), new List<InputFile>(), lightConditions, heavyConditions);
+            bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, new List<DummyBiorepable>(), lightConditions, heavyConditions);
             Assert.AreEqual(2, bril.Count());
         }
 
@@ -436,7 +436,7 @@ namespace Test
                 db.Add(new DummyBiorepable(ConstructorsForTesting.InputFile("path.txt", Labeling.NeuCode, Purpose.Quantification, "heavy", "light", 1.ToString(), (-1).ToString(), (-1).ToString()), 1d));
             }
 
-            List<BiorepIntensity> bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, db, new List<InputFile>(), lightConditions, heavyConditions);
+            List<BiorepIntensity> bril = ConstructorsForTesting.ExperimentalProteoform("E").make_biorepIntensityList(db, db, lightConditions, heavyConditions);
             Assert.AreEqual(2, bril.Count());
         }
 
@@ -864,6 +864,8 @@ namespace Test
         public void test_get_repressed_or_induced_proteins()
         {
             Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.significance_by_permutation = true;
+            Sweet.lollipop.significance_by_log2FC = false;
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
@@ -941,24 +943,43 @@ namespace Test
         [Test]
         public void get_interesting_pfs()
         {
+            Sweet.lollipop = new Lollipop();
             ExperimentalProteoform ex = ConstructorsForTesting.ExperimentalProteoform("E1");
             ExperimentalProteoform fx = ConstructorsForTesting.ExperimentalProteoform("E2");
             ExperimentalProteoform gx = ConstructorsForTesting.ExperimentalProteoform("E3");
             ExperimentalProteoform hx = ConstructorsForTesting.ExperimentalProteoform("E4");
+            ex.quant.logFoldChange = 12;
+            ex.quant.significant_foldchange = true;
+            ex.quant.intensitySum = 2;
+            fx.quant.logFoldChange = 12;
+            fx.quant.significant_foldchange = true;
+            fx.quant.intensitySum = 2;
+            List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
+            List<ExperimentalProteoform> interesting = Sweet.lollipop.getInterestingProteoforms(exps, 10, 0.5m, 1).ToList();
+            Assert.AreEqual(2, interesting.Count);
+
+            Sweet.lollipop.significance_by_permutation = true;
+            Sweet.lollipop.significance_by_log2FC = false;
+            ex = ConstructorsForTesting.ExperimentalProteoform("E1");
+            fx = ConstructorsForTesting.ExperimentalProteoform("E2");
+            gx = ConstructorsForTesting.ExperimentalProteoform("E3");
+            hx = ConstructorsForTesting.ExperimentalProteoform("E4");
             ex.quant.logFoldChange = 12;
             ex.quant.significant_tusher = true;
             ex.quant.intensitySum = 2;
             fx.quant.logFoldChange = 12;
             fx.quant.significant_tusher = true;
             fx.quant.intensitySum = 2;
-            List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
-            List<ExperimentalProteoform> interesting = Sweet.lollipop.getInterestingProteoforms(exps, 10, 0.5m, 1).ToList();
+            exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
+            interesting = Sweet.lollipop.getInterestingProteoforms(exps, 10, 0.5m, 1).ToList();
             Assert.AreEqual(2, interesting.Count);
         }
 
         [Test]
         public void get_interesting_families()
         {
+            Sweet.lollipop.significance_by_permutation = true;
+            Sweet.lollipop.significance_by_log2FC = false;
             ProteinWithGoTerms p1 = new ProteinWithGoTerms("", "T1", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             ProteinWithGoTerms p2 = new ProteinWithGoTerms("", "T2", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
             ProteinWithGoTerms p3 = new ProteinWithGoTerms("", "T3", new List<Tuple<string, string>> { new Tuple<string, string>("", "") }, new Dictionary<int, List<Modification>>(), new List<ProteolysisProduct> { new ProteolysisProduct(0, 0, "") }, "T2", "T3", true, false, new List<DatabaseReference>(), new List<GoTerm>());
@@ -1077,13 +1098,13 @@ namespace Test
             Assert.True(ResultsSummaryGenerator.generate_full_report().Length > 0);
         }
 
-        // work in progress
         [Test]
-        public void full_quant_test() // see proteoform_quantification_minimal_test.xlsx in the Examples folder for a full excel workup on this example
+        public void full_log2fc_quant_test() // see biorep_fraction_techrep_intensities_logFC_ttest_minimal.xlsx in the Examples folder for a full excel workup on this example
         {
             Sweet.lollipop = new Lollipop();
             string[] table = File.ReadAllLines(Path.Combine(TestContext.CurrentContext.TestDirectory, @"full_log2FC_quant_test_table.txt"));
-            List<Tuple<string, string>> condition_bioreps = new List<Tuple<string, string>>();
+            List<string> conditions = new List<string>();
+            List<Tuple<string, string, string, string>> condition_bioreps = new List<Tuple<string, string, string, string>>();
             List<ExperimentalProteoform> prots = new List<ExperimentalProteoform>();
             for (int i = 0; i < table.Length; i++)
             {
@@ -1091,12 +1112,13 @@ namespace Test
                 if (line.Length < 7) return;
                 if (i == 0)
                 {
-                    condition_bioreps = Enumerable.Range(1, line.Length - 1).Select(x => line[x].Split('_')).Select(duple => new Tuple<string, string>(duple[0], duple[1])).ToList();
-                    Sweet.lollipop.input_files = condition_bioreps.Select(kv => ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, kv.Item1, "", kv.Item2, (-1).ToString(), (-1).ToString())).ToList();
-                    Sweet.lollipop.getConditionBiorepFractionLabels(false, Sweet.lollipop.input_files);
-                    Sweet.lollipop.numerator_condition = Sweet.lollipop.conditionsBioReps.Keys.FirstOrDefault(x => x.StartsWith("n"));
-                    Sweet.lollipop.denominator_condition = Sweet.lollipop.conditionsBioReps.Keys.FirstOrDefault(x => x.StartsWith("s"));
-                    Sweet.lollipop.induced_condition = Sweet.lollipop.conditionsBioReps.Keys.FirstOrDefault(x => x.StartsWith("s"));
+                    condition_bioreps = Enumerable.Range(1, line.Length - 1).Select(x => line[x].Split('_')).Select(duple => new Tuple<string, string, string, string>(duple[0], duple[1], duple[2], duple[3])).ToList();
+                    conditions = condition_bioreps.Select(x => x.Item1).Distinct().ToList();
+                    Sweet.lollipop.input_files = condition_bioreps.DistinctBy(x => x.Item2 + x.Item3 + x.Item4).Select(kv => ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, conditions[0], conditions[1], kv.Item2, kv.Item3, kv.Item4)).ToList();
+                    Sweet.lollipop.getConditionBiorepFractionLabels(true, Sweet.lollipop.input_files);
+                    Sweet.lollipop.numerator_condition = Sweet.lollipop.conditionsBioReps.Keys.FirstOrDefault(x => x.StartsWith("Stress"));
+                    Sweet.lollipop.denominator_condition = Sweet.lollipop.conditionsBioReps.Keys.FirstOrDefault(x => x.StartsWith("Normal"));
+                    Sweet.lollipop.induced_condition = Sweet.lollipop.conditionsBioReps.Keys.FirstOrDefault(x => x.StartsWith("Stress"));
                 }
                 else
                 {
@@ -1106,9 +1128,14 @@ namespace Test
                         Component c = new Component();
                         string condition = table[0].Split('\t')[j].Split('_')[0];
                         string biorep = table[0].Split('\t')[j].Split('_')[1];
-                        c.input_file = Sweet.lollipop.input_files.FirstOrDefault(f => f.lt_condition == condition && f.biological_replicate == biorep);
-                        c.intensity_sum = Convert.ToDouble(line[j]);
-                        ep.lt_quant_components.Add(c);
+                        string fraction = table[0].Split('\t')[j].Split('_')[2];
+                        string techrep = table[0].Split('\t')[j].Split('_')[3];
+                        c.input_file = Sweet.lollipop.input_files.FirstOrDefault(f => f.biological_replicate == biorep && f.fraction == fraction && f.technical_replicate == techrep);
+                        bool is_number = Double.TryParse(line[j], out double value);
+                        if (!is_number) continue; // many don't have values
+                        c.intensity_sum = value;
+                        if (condition == conditions[0]) ep.lt_quant_components.Add(c);
+                        else ep.hv_quant_components.Add(c);
                     }
                     ep.family = new ProteoformFamily(ep);
                     ep.family.construct_family();
@@ -1119,6 +1146,43 @@ namespace Test
             Sweet.lollipop.quantify();
             Sweet.lollipop.calculate_log2fc_statistics();
 
+            // Check mixing normalization
+            List<BiorepFractionTechrepIntensity> allBfts = Sweet.lollipop.satisfactoryProteoforms.SelectMany(pf => pf.bftIntensityList).ToList();
+            Assert.AreEqual(4948, allBfts.Count);
+            Assert.AreEqual(Math.Round(allBfts.Where(bft => bft.condition == conditions[0]).Sum(bft => bft.intensity_sum), 1), Math.Round(allBfts.Where(bft => bft.condition == conditions[1]).Sum(bft => bft.intensity_sum), 1));
+
+            //Check that all values are imputed
+            Assert.True(Sweet.lollipop.fileCondition_avgLog2I.Values.All(v => 16.4 < v && v < 26.9));
+            Assert.True(Sweet.lollipop.fileCondition_stdevLog2I.Values.All(v => 0.66 < v && v < 3.6));
+            Assert.AreEqual(5242, Sweet.lollipop.satisfactoryProteoforms.Sum(pf => pf.quant.allBftIntensities.Values.Count));
+
+            Assert.True(0 < Sweet.lollipop.satisfactoryProteoforms.Count(pf => pf.quant.pValue_uncorrected < 0.0001));
+            Assert.True(0 < Sweet.lollipop.satisfactoryProteoforms.Count(pf => pf.quant.significant_foldchange));
+        }
+
+        [Test]
+        public void ttest()
+        {
+            Assert.AreEqual(1e-5, Math.Round(ExtensionMethods.Student2T(11.2, 7), 6));
+            Assert.AreEqual(0.900, Math.Round(ExtensionMethods.Student2T(0.127379, 21), 3));
+        }
+
+        //Example saved in benjihoch.xlsx in Examples folder
+        [Test]
+        public void benjiHoch()
+        {
+            Sweet.lollipop = new Lollipop();
+
+            for(int i = 1; i <= 100; i++)
+            {
+                ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("");
+                e.quant.pValue_uncorrected = ExtensionMethods.Student2T((double)i / 10, 10);
+                Sweet.lollipop.satisfactoryProteoforms.Add(e);
+            }
+
+            Sweet.lollipop.establish_benjiHoch_significance();
+
+            Assert.AreEqual(77, Sweet.lollipop.satisfactoryProteoforms.Count(pf => pf.quant.significant_foldchange));
         }
     }
 }

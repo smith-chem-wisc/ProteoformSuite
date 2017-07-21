@@ -262,7 +262,7 @@ namespace ProteoformSuiteInternal
 
         #region Quantitation Public Method
 
-        public List<BiorepIntensity> make_biorepIntensityList<T>(List<T> lt_quant_components, List<T> hv_quant_components, List<InputFile> input_files, IEnumerable<string> ltConditionStrings, IEnumerable<string> hvConditionStrings)
+        public List<BiorepIntensity> make_biorepIntensityList<T>(List<T> lt_quant_components, List<T> hv_quant_components, IEnumerable<string> ltConditionStrings, IEnumerable<string> hvConditionStrings)
             where T : IBiorepable
         {
             quant = new QuantitativeProteoformValues(this); //Reset quantitation if starting over from biorep requirements
@@ -273,19 +273,11 @@ namespace ProteoformSuiteInternal
             foreach (string condition in ltConditionStrings.Concat(hvConditionStrings).Distinct().ToList())
             {
                 List<T> quants_from_condition = lt_quant_components.Where(c => c.input_file.lt_condition == condition).Concat(hv_quant_components.Where(c => c.input_file.hv_condition == condition)).ToList();
+                List<InputFile> files = quants_from_condition.Select(x => x.input_file).ToList();
                 List<string> bioreps = quants_from_condition.Select(c => c.input_file.biological_replicate).Distinct().ToList();
-                List<string> fractions = quants_from_condition.Select(c => c.input_file.fraction).Distinct().ToList();
-                List<string> techreps = quants_from_condition.Select(c => c.input_file.technical_replicate).Distinct().ToList();
-                foreach (string b in bioreps)
-                {
-                    List<BiorepFractionTechrepIntensity> bft =
-                        (from fract in fractions
-                        from tech in techreps
-                        select new BiorepFractionTechrepIntensity(input_files.FirstOrDefault(f => f.biological_replicate == b && f.fraction == fract && f.technical_replicate == tech), condition, false, quants_from_condition.Where(q => q.input_file.biological_replicate == b && q.input_file.fraction == fract && q.input_file.technical_replicate == tech).Sum(q => q.intensity_sum)))
-                        .ToList();
-                    biorepIntensityList.Add(new BiorepIntensity(false, b, condition, quants_from_condition.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum)));
-                    bftIntensityList.AddRange(bft);
-                }
+                biorepIntensityList.AddRange(bioreps.Select(b => new BiorepIntensity(false, b, condition, quants_from_condition.Where(c => c.input_file.biological_replicate == b).Sum(i => i.intensity_sum))));
+                List<Tuple<string, string, string>> bfts = quants_from_condition.Select(c => new Tuple<string, string, string>(c.input_file.biological_replicate, c.input_file.fraction, c.input_file.technical_replicate)).Distinct().ToList();
+                bftIntensityList.AddRange(bfts.Select(x => new BiorepFractionTechrepIntensity(files.FirstOrDefault(f => f.biological_replicate == x.Item1 && f.fraction == x.Item2 && f.technical_replicate == x.Item3), condition, false, quants_from_condition.Where(q => q.input_file.biological_replicate == x.Item1 && q.input_file.fraction == x.Item2 && q.input_file.technical_replicate == x.Item3).Sum(q => q.intensity_sum))));
             }
 
             this.biorepIntensityList = biorepIntensityList;
