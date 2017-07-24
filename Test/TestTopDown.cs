@@ -76,6 +76,18 @@ namespace Test
             Sweet.lollipop.target_proteoform_community.topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits).ToArray();
             Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count());
             Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.topdown_proteoforms[0].topdown_hits.Count());
+
+            //if hits have same scan # and pvalue, should choose higher scoring one only, remove other one.
+            tdhList[1].retention_time = tdhList[0].retention_time;
+            tdhList[1].ms2ScanNumber = 100;
+            tdhList[0].ms2ScanNumber = 100;
+            tdhList[1].pvalue = .01;
+            tdhList[0].pvalue = 0.01;
+            Sweet.lollipop.top_down_hits = tdhList;
+            Sweet.lollipop.target_proteoform_community.topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits).ToArray();
+            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count());
+            Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.topdown_proteoforms[0].topdown_hits.Count());
+            Assert.AreEqual(10, Sweet.lollipop.target_proteoform_community.topdown_proteoforms[0].topdown_hits[0].score);
         }
 
         [Test]
