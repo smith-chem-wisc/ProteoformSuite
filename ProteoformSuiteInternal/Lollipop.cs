@@ -1312,7 +1312,7 @@ namespace ProteoformSuiteInternal
             }
         }
 
-        public string calibrate_files()
+        public string get_file_descriptions()
         {
             //determine biorep, techrep, fraction of each raw file, component file, and topdown hit
             foreach (string line in file_descriptions.Get(1, file_descriptions.Length))
@@ -1344,19 +1344,33 @@ namespace ProteoformSuiteInternal
                 return "Error in file descriptions file - top-down hit(s) with no matching description.";
             if (input_files.Where(f => f.purpose == Purpose.RawFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == 0))
                 return "Label fraction, biological replicate, and techincal replicate of input files.";
+            else return null;
+        }
+
+        public string get_td_hit_chargestates()
+        {
             foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && f.topdown_file))
             {
                 IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = ThermoStaticData.LoadAllStaticData(raw_file.complete_path);
                 Parallel.ForEach(Sweet.lollipop.td_hits_calibration.Where(f => f.filename == raw_file.filename).ToList(), hit =>
                 {
-                    int scanNum = hit.ms2ScanNumber;
-                    while (scanNum < myMsDataFile.NumSpectra && myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
-                    hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(hit.ms2ScanNumber) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge 
+                    int scanNum = myMsDataFile.GetMsScansInTimeRange(hit.retention_time - 0.00001, hit.retention_time + .00001).First().OneBasedScanNumber;
+                    hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge 
                     hit.mz = hit.reported_mass.ToMz(hit.charge);
+                    while (scanNum < myMsDataFile.NumSpectra && myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
                     hit.retention_time = myMsDataFile.GetOneBasedScan(scanNum).RetentionTime;
                 });
             }
-            if (td_hits_calibration.Any(h => h.charge == 0)) return "Error: need to input all raw files for top-down hits.";
+            if (td_hits_calibration.Any(h => h.charge == 0)) return "Error: need to input all raw files for top-down hits. Be sure top-down file box is checked.";
+            else return null;
+        }
+
+        public string calibrate_files()
+        {
+            string message = get_file_descriptions();
+            if (message != null) return message;
+            message = get_td_hit_chargestates();
+            if (message != null) return message;
 
             foreach (int biological_replicate in input_files.Select(f => f.biological_replicate).Distinct())
             {
@@ -1390,7 +1404,7 @@ namespace ProteoformSuiteInternal
 
         public bool get_calibration_points(Calibration calibration, InputFile raw_file)
         {
-            List<TopDownHit> hits = td_hits_calibration.Where(h => h.biological_replicate == raw_file.biological_replicate && h.fraction == raw_file.fraction && (!raw_file.topdown_file || h.technical_replicate == raw_file.technical_replicate) && h.tdResultType == TopDownResultType.TightAbsoluteMass && h.score >= 40).ToList();
+            List<TopDownHit> hits = td_hits_calibration.Where(h => h.biological_replicate == raw_file.biological_replicate && h.fraction == raw_file.fraction && (!raw_file.topdown_file || h.technical_replicate == raw_file.technical_replicate) && h.score >= 40).ToList();
             return calibration.Run_TdMzCal(raw_file, hits, raw_file.topdown_file, raw_file.biological_replicate, raw_file.fraction, raw_file.technical_replicate);
         }
 
