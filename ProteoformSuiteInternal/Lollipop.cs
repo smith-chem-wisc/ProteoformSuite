@@ -1355,6 +1355,7 @@ namespace ProteoformSuiteInternal
                 Parallel.ForEach(Sweet.lollipop.td_hits_calibration.Where(f => f.filename == raw_file.filename).ToList(), hit =>
                 {
                     int scanNum = myMsDataFile.GetMsScansInTimeRange(hit.retention_time - 0.00001, hit.retention_time + .00001).First().OneBasedScanNumber;
+                    hit.ms2ScanNumber = scanNum;
                     hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge 
                     hit.mz = hit.reported_mass.ToMz(hit.charge);
                     while (scanNum < myMsDataFile.NumSpectra && myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
