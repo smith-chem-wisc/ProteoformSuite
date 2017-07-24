@@ -18,8 +18,8 @@ namespace ProteoformSuiteInternal
         public double fineResolution = 0.1;
 
         //CALIBRATION WITH TD HITS
-        private int numMs1MassChargeCombinationsConsidered;
-        private int numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
+        public int numMs1MassChargeCombinationsConsidered;
+        public int numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
         private IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile;
 
         public bool Run_TdMzCal(InputFile file, List<TopDownHit> identifications, bool td_file, int bio_rep, int fraction, int tech_rep)
@@ -194,54 +194,61 @@ namespace ProteoformSuiteInternal
             
             // Set of peaks, identified by m/z and retention time. If a peak is in here, it means it has been a part of an accepted identification, and should be rejected
             var peaksAddedFromMS1HashSet = new HashSet<Tuple<double, int>>();
-            foreach (TopDownHit identification in identifications)
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\" + Sweet.time_stamp() + ".txt"))
             {
-                List<int> scanNumbers = new List<int>() { identification.ms2ScanNumber };
-                int proteinCharge = identification.charge;
-
-                Component matching_component = null;
-                if (!td_file) //if calibrating across files find component with matching mass and retention time
+                foreach (TopDownHit identification in identifications)
                 {
-                    //look around theoretical mass of topdown hit identified proteoforms - 10 ppm and 5 minutes            
-                     double hit_mass = (Sweet.lollipop.neucode_labeled ? (identification.theoretical_mass - (identification.sequence.Count(s => s == 'K') * 128.094963) + (identification.sequence.Count(s => s == 'K') * 136.109162)) : identification.mz.ToMass(identification.charge));
-                     matching_component = Sweet.lollipop.calibration_components.Where(c => c.input_file.biological_replicate == bio_rep && c.input_file.fraction == fraction
-                && Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass ) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
-                && Math.Abs(c.rt_apex- identification.retention_time) < 5.0 ).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass)).FirstOrDefault();
-                    if (matching_component == null) continue;
-                    ChargeState cs = matching_component.charge_states.OrderByDescending(c => c.intensity).FirstOrDefault();
-                    scanNumbers.Clear();
-                    for (int i = Convert.ToInt16(matching_component.scan_range.Split('-')[0]); i <= Convert.ToInt16(matching_component.scan_range.Split('-')[1]); i++)
+                    List<int> scanNumbers = new List<int>() { identification.ms2ScanNumber };
+                    int proteinCharge = identification.charge;
+
+                    Component matching_component = null;
+                    if (!td_file) //if calibrating across files find component with matching mass and retention time
                     {
-                        scanNumbers.Add(i);
+                        //look around theoretical mass of topdown hit identified proteoforms - 10 ppm and 5 minutes            
+                        double hit_mass = (Sweet.lollipop.neucode_labeled ? (identification.theoretical_mass - (identification.sequence.Count(s => s == 'K') * 128.094963) + (identification.sequence.Count(s => s == 'K') * 136.109162)) : identification.mz.ToMass(identification.charge));
+                        matching_component = Sweet.lollipop.calibration_components.Where(c => c.input_file.biological_replicate == bio_rep && c.input_file.fraction == fraction
+                   && Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass) * 1e6 / c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) < 10
+                   && Math.Abs(c.rt_apex - identification.retention_time) < 5.0).OrderBy(c => Math.Abs(c.charge_states.OrderByDescending(s => s.intensity).First().mz_centroid.ToMass(c.charge_states.OrderByDescending(s => s.intensity).First().charge_count) - hit_mass)).FirstOrDefault();
+                        if (matching_component == null) continue;
+                        ChargeState cs = matching_component.charge_states.OrderByDescending(c => c.intensity).FirstOrDefault();
+                        scanNumbers.Clear();
+                        for (int i = Convert.ToInt16(matching_component.scan_range.Split('-')[0]); i <= Convert.ToInt16(matching_component.scan_range.Split('-')[1]); i++)
+                        {
+                            scanNumbers.Add(i);
+                        }
+                        proteinCharge = matching_component.charge_states.OrderByDescending(c => c.intensity).First().charge_count;
                     }
-                    proteinCharge = matching_component.charge_states.OrderByDescending(c => c.intensity).First().charge_count;
-                }
 
-                var SequenceWithChemicalFormulas = identification.GetSequenceWithChemicalFormula();
-                if (SequenceWithChemicalFormulas == null)
-                {
-                    continue;
-                }
-                Proteomics.Peptide coolPeptide = new Proteomics.Peptide(SequenceWithChemicalFormulas);
+                    var SequenceWithChemicalFormulas = identification.GetSequenceWithChemicalFormula();
+                    if (SequenceWithChemicalFormulas == null)
+                    {
+                        continue;
+                    }
+                    Proteomics.Peptide coolPeptide = new Proteomics.Peptide(SequenceWithChemicalFormulas);
 
-                // Calculate isotopic distribution of the full peptide
+                    // Calculate isotopic distribution of the full peptide
 
-                var dist = IsotopicDistribution.GetDistribution(coolPeptide.GetChemicalFormula(), 0.1, 0.001);
+                    var dist = IsotopicDistribution.GetDistribution(coolPeptide.GetChemicalFormula(), 0.1, 0.001);
 
-                double[] masses = dist.Masses.ToArray();
-                double[] intensities = dist.Intensities.ToArray();
+                    double[] masses = dist.Masses.ToArray();
+                    double[] intensities = dist.Intensities.ToArray();
 
-                Array.Sort(intensities, masses, Comparer<double>.Create((x, y) => y.CompareTo(x)));
+                    Array.Sort(intensities, masses, Comparer<double>.Create((x, y) => y.CompareTo(x)));
 
-                numMs1MassChargeCombinationsConsidered = 0;
-                numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks = 0;
+                    numMs1MassChargeCombinationsConsidered = 0;
+                    numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks = 0;
 
-                foreach (int scanNumber in scanNumbers)
-                {
-                    res.Ms1List.AddRange(SearchMS1Spectra(masses, intensities, scanNumber, -1, peaksAddedFromMS1HashSet, proteinCharge, identification));
-                    res.Ms1List.AddRange(SearchMS1Spectra(masses, intensities, scanNumber, 1, peaksAddedFromMS1HashSet, proteinCharge, identification));
-                    res.numMs1MassChargeCombinationsConsidered += numMs1MassChargeCombinationsConsidered;
-                    res.numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks += numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
+                    foreach (int scanNumber in scanNumbers)
+                    {
+                        res.Ms1List.AddRange(SearchMS1Spectra(masses, intensities, scanNumber, -1, peaksAddedFromMS1HashSet, proteinCharge, identification));
+                        res.Ms1List.AddRange(SearchMS1Spectra(masses, intensities, scanNumber, 1, peaksAddedFromMS1HashSet, proteinCharge, identification));
+                        res.numMs1MassChargeCombinationsConsidered += numMs1MassChargeCombinationsConsidered;
+                        res.numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks += numMs1MassChargeCombinationsThatAreIgnoredBecauseOfTooManyPeaks;
+                    }
+                    foreach(var p in res.Ms1List)
+                    {
+                        writer.WriteLine(identification.reported_mass + "\t" + p.mz + "\t" + p.retentionTime + "\t" + p.Label);
+                    }
                 }
             }
             return res;

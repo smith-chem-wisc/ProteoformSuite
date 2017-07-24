@@ -17,6 +17,7 @@ namespace Test
         [Test]
         public void get_file_descriptions()
         {
+            Sweet.lollipop = new Lollipop();
             Sweet.lollipop.file_descriptions = new string[]
             {
                 "filedescriptions\tbiorep\tfraction\ttechrep",
@@ -31,12 +32,15 @@ namespace Test
                 "badFileValue\ta\t1\t1"
             };
             Assert.AreEqual("Error in file descriptions file values", Sweet.lollipop.get_file_descriptions());
+            Assert.AreEqual("Error in file descriptions file values", Sweet.lollipop.calibrate_files());
+
             Sweet.lollipop.file_descriptions = new string[]
             {
                 "filedescriptions\tbiorep\tfraction\ttechrep",
                 "badFileValue\t1\ta\t1"
             };
             Assert.AreEqual("Error in file descriptions file values", Sweet.lollipop.get_file_descriptions());
+            Assert.AreEqual("Error in file descriptions file values", Sweet.lollipop.calibrate_files());
 
             Sweet.lollipop.file_descriptions = new string[]
             {
@@ -44,6 +48,7 @@ namespace Test
                 "badFileValue\t1\t1\ta"
             };
             Assert.AreEqual("Error in file descriptions file values", Sweet.lollipop.get_file_descriptions());
+            Assert.AreEqual("Error in file descriptions file values", Sweet.lollipop.calibrate_files());
 
 
             Sweet.lollipop.file_descriptions = new string[]
@@ -58,6 +63,7 @@ namespace Test
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.read_in_calibration_td_hits();
             Assert.AreEqual("Error in file descriptions file - top-down hit(s) with no matching description.", Sweet.lollipop.get_file_descriptions());
+            Assert.AreEqual("Error in file descriptions file - top-down hit(s) with no matching description.", Sweet.lollipop.calibrate_files());
 
             Sweet.lollipop.file_descriptions = new string[]
             {
@@ -69,10 +75,12 @@ namespace Test
             Sweet.lollipop.input_files.Clear();
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "noisy.xlsx") }, Lollipop.acceptable_extensions[5], Lollipop.file_types[5], Sweet.lollipop.input_files, false);
             Assert.AreEqual("Label fraction, biological replicate, and techincal replicate of input files.", Sweet.lollipop.get_file_descriptions());
+            Assert.AreEqual("Label fraction, biological replicate, and techincal replicate of input files.", Sweet.lollipop.calibrate_files());
 
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().fraction = 4;
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[6], Lollipop.file_types[6], Sweet.lollipop.input_files, false);
             Assert.AreEqual("Label fraction, biological replicate, and techincal replicate of input files.", Sweet.lollipop.get_file_descriptions());
+            Assert.AreEqual("Label fraction, biological replicate, and techincal replicate of input files.", Sweet.lollipop.calibrate_files());
 
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).First().fraction = 4;
             Assert.IsNull(Sweet.lollipop.get_file_descriptions());
@@ -85,14 +93,27 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[6], Lollipop.file_types[6], Sweet.lollipop.input_files, false);
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).First().fraction = 5;
 
+            Sweet.lollipop.file_descriptions = new string[]
+            {
+               "filedescriptions\tbiorep\tfraction\ttechrep",
+               "10-28-16_A17C_td_yeast_4uscan_fract5_rep2.mzML\t1\t5\t2",
+               "10-26-16_A17B_td_yeast_4uscan_fract4_rep2.mzML\t1\t4\t2",
+               "10-26-16_A17B_td_yeast_4uscan_fract4_rep1.mzML\t1\t4\t1"
+            };
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "test_td_hits_file.xlsx") }, Lollipop.acceptable_extensions[7], Lollipop.file_types[7], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.read_in_calibration_td_hits();
             Assert.AreEqual("Error: need to input all raw files for top-down hits. Be sure top-down file box is checked.", Sweet.lollipop.get_td_hit_chargestates());
+            Assert.AreEqual("Error: need to input all raw files for top-down hits. Be sure top-down file box is checked.", Sweet.lollipop.calibrate_files());
 
             Sweet.lollipop.input_files.Clear();
+            Sweet.lollipop.file_descriptions = new string[]
+            {
+               "filedescriptions\tbiorep\tfraction\ttechrep",
+               "10-28-16_A17C_td_yeast_4uscan_fract5_rep1.mzML\t1\t5\t1",
+            };
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[6], Lollipop.file_types[6], Sweet.lollipop.input_files, false);
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).First().fraction = 5;
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).First().topdown_file = true;
@@ -101,16 +122,21 @@ namespace Test
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.read_in_calibration_td_hits();
+            Assert.AreEqual(0, Sweet.lollipop.td_hits_calibration.OrderByDescending(h => h.score).First().charge);
+            Assert.AreEqual(0, Math.Round(Sweet.lollipop.td_hits_calibration.OrderByDescending(h => h.score).First().mz, 2));
+            Assert.AreEqual(1873, Sweet.lollipop.td_hits_calibration.OrderByDescending(h => h.score).First().ms2ScanNumber);
+            Assert.AreEqual(45.04, Math.Round(Sweet.lollipop.td_hits_calibration.OrderByDescending(h => h.score).First().retention_time, 2));
             Assert.IsNull(Sweet.lollipop.get_td_hit_chargestates());
             Assert.AreEqual(13, Sweet.lollipop.td_hits_calibration.OrderByDescending(h => h.score).First().charge);
             Assert.AreEqual(503.60, Math.Round(Sweet.lollipop.td_hits_calibration.OrderByDescending(h => h.score).First().mz, 2));
-            Assert.AreEqual(1873, Sweet.lollipop.td_hits_calibration.OrderByDescending(h => h.score).First().ms2ScanNumber);
+            Assert.AreEqual(38, Sweet.lollipop.td_hits_calibration.OrderByDescending(h => h.score).First().ms2ScanNumber);
             Assert.AreEqual(45.00, Math.Round(Sweet.lollipop.td_hits_calibration.OrderByDescending(h => h.score).First().retention_time, 2));
         } 
         
         [Test]
         public void calibrate_td_file()
         {
+            Sweet.lollipop.carbamidomethylation = false;
             //get raw file
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[6], Lollipop.file_types[6], Sweet.lollipop.input_files, false);
@@ -123,31 +149,33 @@ namespace Test
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().topdown_file = true;
 
             //td calibration hits -- treat as same file as topdown file
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "test_td_hits_file.xlsx") }, Lollipop.acceptable_extensions[7], Lollipop.file_types[7], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration.xlsx") }, Lollipop.acceptable_extensions[7], Lollipop.file_types[7], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.file_descriptions = new string[]
             {
                "filedescriptions\tbiorep\tfraction\ttechrep",
-               "10-28-16_A17C_td_yeast_4uscan_fract5_rep1\t1\t5\t1"
+               "05-26-17_B7A_yeast_td_fract5_rep1\t1\t5\t1"
             };
+            Sweet.lollipop.read_in_calibration_td_hits();
+            Assert.AreEqual(6, Sweet.lollipop.td_hits_calibration.Count);
+            Assert.AreEqual(5, Sweet.lollipop.td_hits_calibration.Count(h => h.score > 40));
             Assert.AreEqual("Successfully calibrated files.", Sweet.lollipop.calibrate_files());
-
+            Assert.AreEqual(10, Sweet.lollipop.calibration_components.Count);
+            Assert.AreEqual(91, Sweet.lollipop.file_mz_correction.Count);
+            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz == h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed      
         }
 
         [Test]
         public void calibrate_intact_file_with_td_results()
         {
+            Sweet.lollipop.carbamidomethylation = false;
             //get raw file
             Sweet.lollipop = new Lollipop();
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[6], Lollipop.file_types[6], Sweet.lollipop.input_files, false);
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).First().fraction = 5;
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).First().topdown_file = true;
-
-            //add same raw file -- treat as intact-only file NOT td file.
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.raw") }, Lollipop.acceptable_extensions[6], Lollipop.file_types[6], Sweet.lollipop.input_files, false);
-            Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).First().fraction = 5;
 
             //get deconvolution results - same file as topdown file
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "05-26-17_B7A_yeast_td_fract5_rep1.xlsx") }, Lollipop.acceptable_extensions[5], Lollipop.file_types[5], Sweet.lollipop.input_files, false);
@@ -155,16 +183,22 @@ namespace Test
             Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.CalibrationIdentification).First().topdown_file = true;
 
             //td calibration hits -- treat as same file as topdown file
-            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "test_td_hits_file.xlsx") }, Lollipop.acceptable_extensions[7], Lollipop.file_types[7], Sweet.lollipop.input_files, false);
+            Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "test_topdown_hits_calibration.xlsx") }, Lollipop.acceptable_extensions[7], Lollipop.file_types[7], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "uniprot_yeast_test_12entries.xml") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(TestContext.CurrentContext.TestDirectory, "ptmlist.txt") }, Lollipop.acceptable_extensions[2], Lollipop.file_types[2], Sweet.lollipop.input_files, false);
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(TestContext.CurrentContext.TestDirectory);
             Sweet.lollipop.file_descriptions = new string[]
             {
                "filedescriptions\tbiorep\tfraction\ttechrep",
-               "10-28-16_A17C_td_yeast_4uscan_fract5_rep1\t1\t5\t1"
+               "05-26-17_B7A_yeast_td_fract5_rep1\t1\t5\t1"
             };
+            Sweet.lollipop.read_in_calibration_td_hits();
+            Assert.AreEqual(6, Sweet.lollipop.td_hits_calibration.Count);
+            Assert.AreEqual(5, Sweet.lollipop.td_hits_calibration.Count(h => h.score > 40));
             Assert.AreEqual("Successfully calibrated files.", Sweet.lollipop.calibrate_files());
+            Assert.AreEqual(10, Sweet.lollipop.calibration_components.Count);
+            Assert.AreEqual(91, Sweet.lollipop.file_mz_correction.Count);
+            Assert.IsFalse(Sweet.lollipop.td_hits_calibration.Any(h => h.mz == h.reported_mass.ToMz(h.charge))); //if calibrated, hit mz is changed      
         }
 
         [Test]
