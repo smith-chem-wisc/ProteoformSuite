@@ -215,7 +215,6 @@ namespace Test
             hit.sequence = "ASDACSDASD";
             hit.ptm_list = new List<Ptm>() { new Ptm(1, badCtermMod) };
             Assert.IsNull(hit.GetSequenceWithChemicalFormula());
-
         }
     }
 }
