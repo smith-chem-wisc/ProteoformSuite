@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
- 
+
 namespace ProteoformSuiteGUI
 {
     public partial class ExperimentTheoreticalComparison : Form, ISweetForm
@@ -79,7 +79,6 @@ namespace ProteoformSuiteGUI
 
             foreach (var series in ct_ET_Histogram.Series) series.Points.Clear();
             foreach (var series in ct_ET_peakList.Series) series.Points.Clear();
-
             dgv_ET_Relations.DataSource = null;
             dgv_ET_Peak_List.DataSource = null;
             dgv_ET_Relations.Rows.Clear();
@@ -406,6 +405,13 @@ namespace ProteoformSuiteGUI
         private void nUD_PeakWidthBase_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.peak_width_base_et = Convert.ToDouble(nUD_PeakWidthBase.Value);
+        }
+
+
+        //Check box to allow whether theoreticals used to create ET pairs must have at least one BU PSM or have been osbsreved in TD 
+        private void cb_TDBUpsm_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.limit_theoreticals_to_BU_or_TD_observed = cb_TDBUpsm.Checked;
         }
 
         // ET pairs with [Peak Center Count] AND ET peaks with [Peak Count] above this value are considered acceptable for use in proteoform family. this will be eventually set following ED analysis.

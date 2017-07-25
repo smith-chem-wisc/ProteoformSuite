@@ -4132,8 +4132,8 @@ TG   Lysine.
 PA   Amino acid side chain.
 PP   Anywhere.
 CF   C3 H7
-MM   43.054227
-MA   43.09
+MM   42.04695
+MA   42.04
 LC   Intracellular localisation.
 TR   Bacteria; taxId:2 (Bacteria).
 TR   Eukaryota; taxId:2759 (Eukaryota).

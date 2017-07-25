@@ -142,6 +142,11 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Environment.CurrentDirectory);
             tb_totalTheoreticalProteoforms.Text = Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length.ToString();
             FillTablesAndCharts();
+            if (BottomUpReader.bottom_up_PTMs_not_in_dictionary.Count() > 0)
+            {
+                MessageBox.Show("Warning: the following PTMs in the .mzid file were not matched with any PTMs in the theoretical database: " +
+                    String.Join(", ", BottomUpReader.bottom_up_PTMs_not_in_dictionary));
+            }
         }
 
         public bool ReadyToRunTheGamut()
@@ -374,5 +379,6 @@ namespace ProteoformSuiteGUI
         }
 
         #endregion Modification Names Private Methods
+
     }
 }

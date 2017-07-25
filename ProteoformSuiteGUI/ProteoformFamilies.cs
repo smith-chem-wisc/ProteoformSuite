@@ -6,6 +6,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Threading.Tasks;
 
 namespace ProteoformSuiteGUI
 {
@@ -26,6 +27,8 @@ namespace ProteoformSuiteGUI
 
         public void initialize_every_time()
         {
+            cb_include_td_nodes.Enabled = Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Length > 0;
+            cb_include_td_nodes.Checked = cb_include_td_nodes.Enabled;
             tb_familyBuildFolder.Text = Sweet.lollipop.family_build_folder_path;
             nud_decimalRoundingLabels.Value = Convert.ToDecimal(Sweet.lollipop.deltaM_edge_display_rounding);
             cb_buildAsQuantitative.Enabled = Sweet.lollipop.qVals.Count > 0;
@@ -76,7 +79,7 @@ namespace ProteoformSuiteGUI
 
         public bool ReadyToRunTheGamut()
         {
-            return Sweet.lollipop.target_proteoform_community.has_e_proteoforms;
+            return Sweet.lollipop.target_proteoform_community.has_e_proteoforms || Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Length > 0;
         }
 
         public void RunTheGamut()
@@ -346,7 +349,8 @@ namespace ProteoformSuiteGUI
         private void btn_inclusion_list_all_families_Click(object sender, EventArgs e)
         {
             List<ExperimentalProteoform> proteoforms = new List<ExperimentalProteoform>();
-            if (cb_identified_families.Checked) proteoforms.AddRange(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => p.linked_proteoform_references != null).ToList());
+            //identified experimentals --> not in ETD relation and not adduct (sulfate, sds, etc)
+            if (cb_identified_families.Checked) proteoforms.AddRange(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => p.linked_proteoform_references != null && p.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) == 0 && !p.adduct).ToList());
             if (cb_unidentified_families.Checked) proteoforms.AddRange(Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(p => p.linked_proteoform_references == null).ToList());
             if (cb_orphans.Checked) proteoforms.AddRange(Sweet.lollipop.target_proteoform_community.families.Where(f => f.relations.Count == 0).SelectMany(f => f.experimental_proteoforms).ToList());
             write_inclusion_list(proteoforms);
@@ -388,10 +392,23 @@ namespace ProteoformSuiteGUI
             ProteoformCommunity.gene_centric_families = cb_geneCentric.Checked;
         }
 
+        private void cb_include_td_nodes_CheckedChanged(object sender, EventArgs e)
+        {
+            ProteoformCommunity.include_td_nodes = cb_include_td_nodes.Checked;
+        }
+
         private void tb_likelyCleavages_TextChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.likely_cleavages = tb_likelyCleavages.Text.Split(',');
         }
+
+        private void cb_count_adducts_as_id_CheckedChanged(object sender, EventArgs e)
+        {
+            Sweet.lollipop.count_adducts_as_identifications = cb_count_adducts_as_id.Checked;
+            update_figures_of_merit();
+        }
+
+
 
         private void cmbx_empty_TextChanged(object sender, EventArgs e) { }
 

@@ -7,6 +7,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.IO;
+
 
 namespace ProteoformSuiteGUI
 {
@@ -67,6 +69,8 @@ namespace ProteoformSuiteGUI
             dgv_EE_Peaks.DataSource = null;
             dgv_EE_Relations.Rows.Clear();
             dgv_EE_Peaks.Rows.Clear();
+
+            cb_automate_peak_acceptance.Checked = false;
 
             if (clear_following)
             {
@@ -203,6 +207,7 @@ namespace ProteoformSuiteGUI
             (MdiParent as ProteoformSweet).proteoformFamilies.ClearListsTablesFigures(true);
         }
 
+
         #endregion EE Peak List Private Methods
 
         #region Histogram Private Methods
@@ -300,6 +305,54 @@ namespace ProteoformSuiteGUI
         private void nUD_MaxRetTimeDifference_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.ee_max_RetentionTime_difference = Convert.ToDouble(nUD_MaxRetTimeDifference.Value);
+        }
+
+        private void cb_automate_peak_acceptance_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cb_automate_peak_acceptance.Checked)
+            {
+                DialogResult d = MessageBox.Show("Would you like to use all ptmsets created from the PTM list in the Theoretical Database? ", "Auto Peak Acceptance", MessageBoxButtons.YesNoCancel);
+                if (d == DialogResult.Yes)
+                {
+                    Parallel.ForEach(Sweet.lollipop.ee_peaks.Where(p => p.peak_relation_group_count >= Sweet.lollipop.min_peak_count_ee), peak =>
+                    {
+                        peak.Accepted = Sweet.lollipop.theoretical_database.all_possible_ptmsets.Where(s => s.ptm_combination.Count == 1 || !s.ptm_combination.Select(ptm => ptm.modification).Any(m => m.monoisotopicMass == 0)).Where(m => Math.Abs(m.mass - (peak.DeltaMass)) <= Sweet.lollipop.peak_width_base_ee / 2).Count() > 0;
+                        Parallel.ForEach(peak.grouped_relations, r => r.Accepted = peak.Accepted);
+                    });
+                }
+                else if (d == DialogResult.No)
+                {
+                    MessageBox.Show("Please select a text file with peak masses to accept.");
+                    OpenFileDialog ofd = new OpenFileDialog();
+                    ofd.Filter = "Accepted Delta Mass List (*.txt)| *.txt";
+                    DialogResult dr = ofd.ShowDialog();
+                    if (dr == DialogResult.OK)
+                    {
+                        string[] delta_masses = File.ReadAllLines(ofd.FileName);
+                        List<double> masses = new List<double>();
+                        foreach (string delta_mass in delta_masses)
+                        {
+                            try
+                            {
+                                masses.Add(Convert.ToDouble(delta_mass));
+                            }
+                            catch { continue; }
+                        }
+                        if (masses.Count > 0)
+                        {
+                            Parallel.ForEach(Sweet.lollipop.ee_peaks.Where(p => p.peak_relation_group_count >= Sweet.lollipop.min_peak_count_ee), peak =>
+                            {
+                                peak.Accepted = Math.Abs(peak.DeltaMass - masses.OrderBy(m => Math.Abs(m - peak.DeltaMass)).First()) <= Sweet.lollipop.peak_width_base_ee / 2;
+                                Parallel.ForEach(peak.grouped_relations, r => r.Accepted = peak.Accepted);
+                            });
+                        }
+                    }
+                    else return;
+                }
+                else return;
+                Parallel.ForEach(Sweet.lollipop.ef_relations.Values.SelectMany(v => v).Where(r => r.peak != null), pRelation => pRelation.Accepted = pRelation.peak.Accepted);
+                dgv_EE_Peaks.Refresh();
+            }
         }
 
         #endregion Parameters Private Methods

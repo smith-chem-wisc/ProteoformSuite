@@ -380,10 +380,10 @@ namespace ProteoformSuiteGUI
 
             if (Sweet.lollipop.avgSortedPermutationRelativeDifferences.Count > 0 && Sweet.lollipop.sortedProteoformRelativeDifferences.Count > 0)
             {
-                //ct_relativeDifference.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(SaveState.lollipop.sortedAvgPermutationTestStatistics.First()));
-                //ct_relativeDifference.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(SaveState.lollipop.sortedAvgPermutationTestStatistics.Last()));
-                //ct_relativeDifference.ChartAreas[0].AxisY.Minimum = Math.Min(Convert.ToDouble(Math.Floor(negativeOffsetFunction(SaveState.lollipop.sortedAvgPermutationTestStatistics.First()))), Convert.ToDouble(Math.Floor(SaveState.lollipop.sortedProteoformTestStatistics.First())));
-                //ct_relativeDifference.ChartAreas[0].AxisY.Maximum = Math.Max(Convert.ToDouble(Math.Ceiling(positiveOffsetFunction(SaveState.lollipop.sortedAvgPermutationTestStatistics.Last()))), Convert.ToDouble(Math.Ceiling(SaveState.lollipop.sortedProteoformTestStatistics.Last())));
+                //ct_relativeDifference.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(Sweet.lollipop.sortedAvgPermutationTestStatistics.First()));
+                //ct_relativeDifference.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(Sweet.lollipop.sortedAvgPermutationTestStatistics.Last()));
+                //ct_relativeDifference.ChartAreas[0].AxisY.Minimum = Math.Min(Convert.ToDouble(Math.Floor(negativeOffsetFunction(Sweet.lollipop.sortedAvgPermutationTestStatistics.First()))), Convert.ToDouble(Math.Floor(Sweet.lollipop.sortedProteoformTestStatistics.First())));
+                //ct_relativeDifference.ChartAreas[0].AxisY.Maximum = Math.Max(Convert.ToDouble(Math.Ceiling(positiveOffsetFunction(Sweet.lollipop.sortedAvgPermutationTestStatistics.Last()))), Convert.ToDouble(Math.Ceiling(Sweet.lollipop.sortedProteoformTestStatistics.Last())));
                 ct_relativeDifference.ChartAreas[0].AxisX.Minimum = -max_test_stat_unit;
                 ct_relativeDifference.ChartAreas[0].AxisX.Maximum = max_test_stat_unit;
                 ct_relativeDifference.ChartAreas[0].AxisY.Minimum = -max_test_stat_unit;

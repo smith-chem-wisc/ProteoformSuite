@@ -31,6 +31,7 @@ namespace ProteoformSuiteInternal
         public string agg_mass_list { get { return String.Join("; ", experimental_proteoforms.Select(p => Math.Round(p.agg_mass, Sweet.lollipop.deltaM_edge_display_rounding))); } }
         public List<ExperimentalProteoform> experimental_proteoforms { get; private set; }
         public List<TheoreticalProteoform> theoretical_proteoforms { get; private set; }
+        public List<TopDownProteoform> topdown_proteoforms { get; set; }
         public List<GeneName> gene_names { get; private set; }
         public List<ProteoformRelation> relations { get; private set; }
         public List<Proteoform> proteoforms { get; private set; }
@@ -69,33 +70,55 @@ namespace ProteoformSuiteInternal
 
         public void identify_experimentals()
         {
-            HashSet<ExperimentalProteoform> identified_experimentals = new HashSet<ExperimentalProteoform>();
+
+            HashSet<Proteoform> identified_experimentals = new HashSet<Proteoform>(); //identified experimentals are topdown proteoforms or experimental proteoforms
             Parallel.ForEach(theoretical_proteoforms, t =>
             {
                 lock (identified_experimentals)
-                    foreach (ExperimentalProteoform e in t.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
+                    foreach (Proteoform e in t.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
                     {
                         identified_experimentals.Add(e);
                     }
             });
 
-            //Continue looking for new experimental identifications until no more remain to be identified
-            List<ExperimentalProteoform> newly_identified_experimentals = new List<ExperimentalProteoform>(identified_experimentals);
+            //Continue looking for new topdown identifications until no more remain to be identified
+            //begin with lowest delta mass experimental
+            List<Proteoform> newly_identified_experimentals = new List<Proteoform>(identified_experimentals.Where(p => (p as TopDownProteoform) != null).OrderBy(p => p.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) > 0 ? p.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).First().DeltaMass - p.relationships.Where(r => r.RelationType == ProteoformComparison.ExperimentalTopDown).First().candidate_ptmset.mass : 1e6)).ToList();
             int last_identified_count = identified_experimentals.Count - 1;
             while (newly_identified_experimentals.Count > 0 && identified_experimentals.Count > last_identified_count)
             {
                 last_identified_count = identified_experimentals.Count;
-                HashSet<ExperimentalProteoform> tmp_new_experimentals = new HashSet<ExperimentalProteoform>();
+                HashSet<Proteoform> tmp_new_experimentals = new HashSet<Proteoform>();
+                foreach (Proteoform id_experimental in newly_identified_experimentals)
+                {
+                    lock (identified_experimentals) lock (tmp_new_experimentals)
+                            foreach (Proteoform new_e in id_experimental.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
+                            {
+                                identified_experimentals.Add(new_e);
+                                tmp_new_experimentals.Add(new_e);
+                            }
+                }
+                newly_identified_experimentals = new List<Proteoform>(tmp_new_experimentals);
+            }
+
+
+            //Continue looking for new experimental identifications until no more remain to be identified
+            newly_identified_experimentals = new List<Proteoform>(identified_experimentals.Where(p => (p as ExperimentalProteoform) != null));
+            last_identified_count = identified_experimentals.Count - 1;
+            while (newly_identified_experimentals.Count > 0 && identified_experimentals.Count > last_identified_count)
+            {
+                last_identified_count = identified_experimentals.Count;
+                HashSet<Proteoform> tmp_new_experimentals = new HashSet<Proteoform>();
                 Parallel.ForEach(newly_identified_experimentals, id_experimental =>
                 {
                     lock (identified_experimentals) lock (tmp_new_experimentals)
-                        foreach (ExperimentalProteoform new_e in id_experimental.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
-                        {
-                            identified_experimentals.Add(new_e);
-                            tmp_new_experimentals.Add(new_e);
-                        }
+                            foreach (Proteoform new_e in id_experimental.identify_connected_experimentals(Sweet.lollipop.theoretical_database.all_possible_ptmsets, Sweet.lollipop.theoretical_database.all_mods_with_mass))
+                            {
+                                identified_experimentals.Add(new_e);
+                                tmp_new_experimentals.Add(new_e);
+                            }
                 });
-                newly_identified_experimentals = new List<ExperimentalProteoform>(tmp_new_experimentals);
+                newly_identified_experimentals = new List<Proteoform>(tmp_new_experimentals);
             }
         }
 
@@ -115,6 +138,7 @@ namespace ProteoformSuiteInternal
         {
             theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
             gene_names = theoretical_proteoforms.Select(t => t.gene_name).ToList();
+            topdown_proteoforms = proteoforms.OfType<TopDownProteoform>().ToList();
             experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
             relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.Accepted))).ToList();
         }

@@ -20,16 +20,15 @@ namespace Test
         public void testFindRawNeuCodePairsMethod()
         {
             //reading in test excel file, process raw components before testing neucode pairs.
-            Sweet.lollipop.correctionFactors = null;
             Sweet.lollipop.raw_experimental_components.Clear();
-            Func<InputFile, IEnumerable<Component>> componentReader = c => new ComponentReader().read_components_from_xlsx(c, Sweet.lollipop.correctionFactors);
+            Func<InputFile, IEnumerable<Component>> componentReader = c => new ComponentReader().read_components_from_xlsx(c, true);
             InputFile noisy = new InputFile(Path.Combine(TestContext.CurrentContext.TestDirectory, "noisy.xlsx"), Labeling.NeuCode, Purpose.Identification);
             Sweet.lollipop.input_files.Add(noisy);
 
             string inFileId = noisy.UniqueId.ToString();
 
             Sweet.lollipop.neucode_labeled = true;
-            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification);
+            Sweet.lollipop.process_raw_components(Sweet.lollipop.input_files, Sweet.lollipop.raw_experimental_components, Purpose.Identification, true);
             Assert.AreEqual(223, Sweet.lollipop.raw_experimental_components.Count);
 
             //Check the validity of one component read from the Excel file

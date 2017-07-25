@@ -151,7 +151,7 @@
             this.splitContainer2.SplitterDistance = 472;
             this.splitContainer2.SplitterWidth = 3;
             this.splitContainer2.TabIndex = 0;
-            // 
+            //
             // label9
             // 
             this.label9.AutoSize = true;
@@ -262,7 +262,7 @@
             this.nUD_RetTimeToleranace.Location = new System.Drawing.Point(170, 44);
             this.nUD_RetTimeToleranace.Margin = new System.Windows.Forms.Padding(2, 1, 2, 1);
             this.nUD_RetTimeToleranace.Maximum = new decimal(new int[] {
-            10,
+            200,
             0,
             0,
             0});

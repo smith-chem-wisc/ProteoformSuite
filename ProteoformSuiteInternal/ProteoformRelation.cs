@@ -13,7 +13,9 @@ namespace ProteoformSuiteInternal
         ExperimentalTheoretical, //Experiment-Theoretical comparisons
         ExperimentalDecoy, //Experiment-Decoy comparisons
         ExperimentalExperimental, //Experiment-Experiment comparisons
-        ExperimentalFalse  //Experiment-Experiment comparisons using unequal lysine counts
+        ExperimentalFalse,  //Experiment-Experiment comparisons using unequal lysine counts
+        ExperimentalTopDown, //Experiment-TopDown comparisons
+        TheoreticalTopDown //Theoretical-TopDown comparisons 
     }
 
     //I have not used MassDifference objects in the logic, since it is better to cast the comparisons immediately as
@@ -55,6 +57,7 @@ namespace ProteoformSuiteInternal
         /// ProteoformRelation.accepted may not be the same as DeltaMassPeak.peak_accepted, which denotes whether the peak is accepted.
         /// </summary>
         public bool Accepted { get; set; }
+
 
         #endregion Public Properties
 
@@ -151,9 +154,9 @@ namespace ProteoformSuiteInternal
         {
             ProteoformRelation r2 = obj as ProteoformRelation;
             return r2 != null &&
-                (InstanceId == r2.InstanceId ||
-                connected_proteoforms[0] == r2.connected_proteoforms[1] && connected_proteoforms[1] == r2.connected_proteoforms[0] ||
-                connected_proteoforms[0] == r2.connected_proteoforms[0] && connected_proteoforms[1] == r2.connected_proteoforms[1]);
+                (InstanceId == r2.InstanceId) ||
+                (connected_proteoforms[0] == r2.connected_proteoforms[1] && connected_proteoforms[1] == r2.connected_proteoforms[0]) ||
+                (connected_proteoforms[0] == r2.connected_proteoforms[0] && connected_proteoforms[1] == r2.connected_proteoforms[1]);
         }
 
         public override int GetHashCode()

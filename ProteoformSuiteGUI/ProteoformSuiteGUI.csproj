@@ -145,6 +145,8 @@
     <Compile Include="DisplayObjects\DisplayDeltaMassPeak.cs" />
     <Compile Include="DisplayObjects\DisplayNeuCodePair.cs" />
     <Compile Include="DisplayObjects\DisplayProteoformFamily.cs" />
+    <Compile Include="DisplayObjects\DisplayBottomUpPSM.cs" />
+    <Compile Include="DisplayObjects\DisplayTopDownProteoform.cs" />
     <Compile Include="DisplayObjects\DisplayTheoreticalProteoform.cs" />
     <Compile Include="DisplayObjects\DisplayInputFile.cs" />
     <Compile Include="DisplayObjects\DisplayChargeState.cs" />
@@ -155,6 +157,12 @@
     <Compile Include="DisplayObjects\DisplayQuantitativeValues.cs" />
     <Compile Include="DisplayObjects\DisplayProteoformRelation.cs" />
     <Compile Include="DisplayObjects\DisplayUnlocalizedModification.cs" />
+    <Compile Include="IdentifiedProteoforms.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IdentifiedProteoforms.Designer.cs">
+      <DependentUpon>IdentifiedProteoforms.cs</DependentUpon>
+    </Compile>
     <Compile Include="ISweetForm.cs" />
     <Compile Include="DGVExcelWriter.cs" />
     <Compile Include="DisplayUtility.cs" />
@@ -222,6 +230,12 @@
     <Compile Include="TheoreticalDatabase.Designer.cs">
       <DependentUpon>TheoreticalDatabase.cs</DependentUpon>
     </Compile>
+    <Compile Include="TopDown.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TopDown.Designer.cs">
+      <DependentUpon>TopDown.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="AggregatedProteoforms.resx">
       <DependentUpon>AggregatedProteoforms.cs</DependentUpon>
     </EmbeddedResource>
@@ -230,6 +244,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ExperimentTheoreticalComparison.resx">
       <DependentUpon>ExperimentTheoreticalComparison.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IdentifiedProteoforms.resx">
+      <DependentUpon>IdentifiedProteoforms.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProteoformFamilies.resx">
       <DependentUpon>ProteoformFamilies.cs</DependentUpon>
@@ -264,6 +281,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="TheoreticalDatabase.resx">
       <DependentUpon>TheoreticalDatabase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TopDown.resx">
+      <DependentUpon>TopDown.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="ClassDiagram1.cd" />
     <None Include="packages.config">

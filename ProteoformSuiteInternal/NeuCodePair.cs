@@ -39,15 +39,14 @@ namespace ProteoformSuiteInternal
             calculate_properties();
         }
 
-        public NeuCodePair(Component neucodeLight, Component neucodeHeavy)
-            : base(neucodeLight) //need this to open and read in tsv files
+        public NeuCodePair()
+        { }
+
+        public NeuCodePair(Component neucodeLight, Component neucodeHeavy): base(neucodeLight) 
         {
             this.neuCodeLight = neucodeLight;
             this.neuCodeHeavy = neucodeHeavy;
         }
-
-        public NeuCodePair()
-        { }
 
         #endregion Public Constructors
 

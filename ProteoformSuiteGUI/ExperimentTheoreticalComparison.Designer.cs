@@ -42,11 +42,13 @@
             this.splitContainer4 = new System.Windows.Forms.SplitContainer();
             this.tb_IdentifiedProteoforms = new System.Windows.Forms.TextBox();
             this.tb_TotalPeaks = new System.Windows.Forms.TextBox();
+            this.cb_Graph_lowerThreshold = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
             this.splitContainer5 = new System.Windows.Forms.SplitContainer();
             this.dgv_ET_Peak_List = new System.Windows.Forms.DataGridView();
             this.ct_ET_peakList = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.cb_TDBUpsm = new System.Windows.Forms.CheckBox();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.cb_discoveryHistogram = new System.Windows.Forms.CheckBox();
             this.cb_Graph_lowerThreshold = new System.Windows.Forms.CheckBox();
@@ -155,6 +157,7 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.Controls.Add(this.cb_TDBUpsm);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox6);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox5);
             this.splitContainer3.Panel2.Controls.Add(this.bt_compare_ET);
@@ -292,6 +295,17 @@
             this.ct_ET_peakList.TabIndex = 1;
             this.ct_ET_peakList.Text = "chart1";
             // 
+            // cb_TDBUpsm
+            // 
+            this.cb_TDBUpsm.AutoSize = true;
+            this.cb_TDBUpsm.Location = new System.Drawing.Point(3, 22);
+            this.cb_TDBUpsm.Name = "cb_TDBUpsm";
+            this.cb_TDBUpsm.Size = new System.Drawing.Size(217, 17);
+            this.cb_TDBUpsm.TabIndex = 33;
+            this.cb_TDBUpsm.Text = "Limit to theoreticals with TD or BU PSMs";
+            this.cb_TDBUpsm.UseVisualStyleBackColor = true;
+            this.cb_TDBUpsm.CheckedChanged += new System.EventHandler(this.cb_TDBUpsm_CheckedChanged);
+            //
             // groupBox6
             // 
             this.groupBox6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -861,6 +875,7 @@
         private System.Windows.Forms.SplitContainer splitContainer5;
         private System.Windows.Forms.DataGridView dgv_ET_Peak_List;
         private System.Windows.Forms.Button bt_compare_ET;
+        private System.Windows.Forms.CheckBox cb_TDBUpsm;
         private System.Windows.Forms.TextBox tb_max_accepted_fdr;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.DataGridView dgv_ET_Relations;

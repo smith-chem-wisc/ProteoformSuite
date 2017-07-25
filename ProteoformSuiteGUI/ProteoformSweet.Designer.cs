@@ -43,6 +43,7 @@
             this.theoreticalProteoformDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.experimentTheoreticalComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.experimentExperimentComparisonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.topdownResultsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.proteoformFamilyAssignmentToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quantificationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resultsSummaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,6 +51,7 @@
             this.saveMethodToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.loadSettingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadRunToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.identifiedProteoformsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -116,7 +118,9 @@
             this.theoreticalProteoformDatabaseToolStripMenuItem,
             this.experimentTheoreticalComparisonToolStripMenuItem,
             this.experimentExperimentComparisonToolStripMenuItem,
+            this.topdownResultsToolStripMenuItem,
             this.proteoformFamilyAssignmentToolStripMenuItem,
+            this.identifiedProteoformsToolStripMenuItem,
             this.quantificationToolStripMenuItem,
             this.resultsSummaryToolStripMenuItem});
             this.resultsToolStripMenuItem.Name = "resultsToolStripMenuItem";
@@ -172,6 +176,13 @@
             this.experimentExperimentComparisonToolStripMenuItem.Text = "Experiment - Experiment Comparison";
             this.experimentExperimentComparisonToolStripMenuItem.Click += new System.EventHandler(this.experimentExperimentComparisonToolStripMenuItem_Click);
             // 
+            // topdownResultsToolStripMenuItem
+            // 
+            this.topdownResultsToolStripMenuItem.Name = "topdownResultsToolStripMenuItem";
+            this.topdownResultsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.topdownResultsToolStripMenuItem.Text = "Top-down Results";
+            this.topdownResultsToolStripMenuItem.Click += new System.EventHandler(this.topdownResultsToolStripMenuItem_Click);
+            // 
             // proteoformFamilyAssignmentToolStripMenuItem
             // 
             this.proteoformFamilyAssignmentToolStripMenuItem.Name = "proteoformFamilyAssignmentToolStripMenuItem";
@@ -224,6 +235,13 @@
             this.loadRunToolStripMenuItem.Text = "Load && Run";
             this.loadRunToolStripMenuItem.Click += new System.EventHandler(this.loadRunToolStripMenuItem_Click);
             // 
+            // identifiedProteoformsToolStripMenuItem
+            // 
+            this.identifiedProteoformsToolStripMenuItem.Name = "identifiedProteoformsToolStripMenuItem";
+            this.identifiedProteoformsToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.identifiedProteoformsToolStripMenuItem.Text = "Identified Proteoforms";
+            this.identifiedProteoformsToolStripMenuItem.Click += new System.EventHandler(this.identifiedProteoformsToolStripMenuItem_Click);
+            // 
             // ProteoformSweet
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
@@ -268,7 +286,9 @@
         private System.Windows.Forms.ToolStripMenuItem quantificationToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportTablesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadSettingsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem topdownResultsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportAllTablesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem identifiedProteoformsToolStripMenuItem;
     }
 }
 

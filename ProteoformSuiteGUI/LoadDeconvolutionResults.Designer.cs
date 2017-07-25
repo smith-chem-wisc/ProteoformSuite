@@ -76,6 +76,7 @@
             this.lb_filter3 = new System.Windows.Forms.Label();
             this.splitContainer16 = new System.Windows.Forms.SplitContainer();
             this.splitContainer24 = new System.Windows.Forms.SplitContainer();
+            this.bt_calibrate = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.splitContainer27 = new System.Windows.Forms.SplitContainer();
             this.tb_resultsFolder = new System.Windows.Forms.TextBox();
@@ -176,6 +177,7 @@
             this.splitContainer16.Panel2.SuspendLayout();
             this.splitContainer16.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer24)).BeginInit();
+            this.splitContainer24.Panel1.SuspendLayout();
             this.splitContainer24.Panel2.SuspendLayout();
             this.splitContainer24.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -685,7 +687,7 @@
             // rb_chemicalCalibration
             // 
             this.rb_chemicalCalibration.AutoSize = true;
-            this.rb_chemicalCalibration.Location = new System.Drawing.Point(18, 46);
+            this.rb_chemicalCalibration.Location = new System.Drawing.Point(18, 40);
             this.rb_chemicalCalibration.Name = "rb_chemicalCalibration";
             this.rb_chemicalCalibration.Size = new System.Drawing.Size(120, 17);
             this.rb_chemicalCalibration.TabIndex = 57;
@@ -878,12 +880,28 @@
             this.splitContainer24.Location = new System.Drawing.Point(0, 0);
             this.splitContainer24.Name = "splitContainer24";
             // 
+            // splitContainer24.Panel1
+            // 
+            this.splitContainer24.Panel1.Controls.Add(this.bt_calibrate);
+            // 
             // splitContainer24.Panel2
             // 
             this.splitContainer24.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer24.Size = new System.Drawing.Size(850, 42);
             this.splitContainer24.SplitterDistance = 283;
             this.splitContainer24.TabIndex = 0;
+            // 
+            // bt_calibrate
+            // 
+            this.bt_calibrate.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bt_calibrate.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+            this.bt_calibrate.Location = new System.Drawing.Point(0, 0);
+            this.bt_calibrate.Name = "bt_calibrate";
+            this.bt_calibrate.Size = new System.Drawing.Size(283, 42);
+            this.bt_calibrate.TabIndex = 39;
+            this.bt_calibrate.Text = "Calibrate";
+            this.bt_calibrate.UseVisualStyleBackColor = true;
+            this.bt_calibrate.Click += new System.EventHandler(this.bt_calibrate_Click);
             // 
             // groupBox2
             // 
@@ -1108,6 +1126,7 @@
             this.splitContainer16.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer16)).EndInit();
             this.splitContainer16.ResumeLayout(false);
+            this.splitContainer24.Panel1.ResumeLayout(false);
             this.splitContainer24.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer24)).EndInit();
             this.splitContainer24.ResumeLayout(false);
@@ -1186,5 +1205,6 @@
         private System.Windows.Forms.RadioButton rb_unlabeled;
         private System.Windows.Forms.RadioButton rb_standardOptions;
         private System.Windows.Forms.RadioButton rb_chemicalCalibration;
+        private System.Windows.Forms.Button bt_calibrate;
     }
 }

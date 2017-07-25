@@ -192,6 +192,7 @@ namespace Test
         {
             ProteoformRelation pp = new ProteoformRelation(p1, p2, ProteoformComparison.ExperimentalExperimental, 0, TestContext.CurrentContext.TestDirectory);
             DeltaMassPeak ppp = new DeltaMassPeak(pp, new HashSet<ProteoformRelation> { pp });
+            pp.Accepted = true;
             pp.peak = ppp;
             pp.Accepted = true;
             ppp.Accepted = true;

@@ -33,19 +33,19 @@ namespace ProteoformSuiteInternal
 
         public Purpose purpose { get; set; }
 
+        //for raw files
+        public bool topdown_file { get; set; }
 
         //For identification files
         public ComponentReader reader = new ComponentReader();
 
-        public bool matchingCalibrationFile { get; set; } = false;
-
         public Labeling label { get; set; }
 
 
-        // For quantitation files
+        // For quantitation files or calibration
         public int biological_replicate { get; set; } = 1;
 
-        //public int fraction { get; set; } = 1;
+        public int fraction { get; set; } = 0;
 
         public int technical_replicate { get; set; } = 1;
 
@@ -56,6 +56,8 @@ namespace ProteoformSuiteInternal
 
         //For database files
         public bool ContaminantDB { get; set; } = false;
+
+        //For top-down files
 
         #endregion Public Properties
 
@@ -90,7 +92,11 @@ namespace ProteoformSuiteInternal
     {
         Identification,
         Quantification,
-        Calibration,
+        BottomUp,
+        TopDown,
+        RawFile,
+        CalibrationIdentification,
+        CalibrationTopDown,
         ProteinDatabase,
         PtmList
     }

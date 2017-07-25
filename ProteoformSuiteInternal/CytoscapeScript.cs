@@ -126,8 +126,8 @@ namespace ProteoformSuiteInternal
             if (folder_path == "" || !Directory.Exists(folder_path))
                 return "Please choose a folder in which the families will be built, so you can load them into Cytoscape.";
 
-            if (families.Any(f => f.experimental_proteoforms.Count == 0))
-                return "Error: there is a family with zero experimental proteoforms.";
+            if (families.Any(f => f.experimental_proteoforms.Count == 0 && f.topdown_proteoforms.Count == 0))
+                return "Error: there is a family with zero experimental or top-down proteoforms.";
 
             string nodes_path = Path.Combine(folder_path, file_prefix + node_file_prefix + time_stamp + node_file_extension);
             string edges_path = Path.Combine(folder_path, file_prefix + edge_file_prefix + time_stamp + edge_file_extension);
@@ -213,6 +213,7 @@ namespace ProteoformSuiteInternal
         public static string unmodified_theoretical_label = "theoretical";
         public static string modified_theoretical_label = "modified_theoretical";
         public static string gene_name_label = "gene_name";
+        public static string td_label = "topdown";
 
         //Other
         public static string mock_intensity = "20"; //set all theoretical proteoforms with observations=20 for node sizing purposes
@@ -234,7 +235,8 @@ namespace ProteoformSuiteInternal
 
             foreach (ProteoformRelation r in families.SelectMany(f => f.relations).Distinct())
             {
-                string delta_mass = Math.Round(r.peak.DeltaMass, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
+                double mass_label = (r.RelationType == ProteoformComparison.ExperimentalTopDown || r.RelationType == ProteoformComparison.TheoreticalTopDown)? r.DeltaMass : r.peak.DeltaMass;
+                string delta_mass = Math.Round(mass_label, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
                 bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.id != "Unmodified");
                 edge_table.Rows.Add
                 (
@@ -255,7 +257,7 @@ namespace ProteoformSuiteInternal
                     string gene_name = t.gene_name.get_prefered_name(preferred_gene_label);
                     if (gene_name != null)
                     {
-                        edge_table.Rows.Add
+                        edge_table.Rows.Add 
                         (
                             get_proteoform_shared_name(t, node_label, double_rounding),
                             t.lysine_count,
@@ -298,10 +300,10 @@ namespace ProteoformSuiteInternal
                 case 0: //arbitrary circle
                 case 2: //mass circle
                 default:
-                    layout_order = families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().Concat(theoreticals).OrderBy(p => p.modified_mass);
+                    layout_order = families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().Concat(theoreticals).Concat(families.SelectMany(f => f.topdown_proteoforms)).OrderBy(p => p.modified_mass);
                     break;
                 case 1: //mass-based spiral
-                    layout_order = theoreticals.OrderByDescending(p => p.modified_mass).OfType<Proteoform>().Concat(families.SelectMany(f => f.experimental_proteoforms).OrderBy(p => p.modified_mass));
+                    layout_order = theoreticals.OrderByDescending(p => p.modified_mass).OfType<Proteoform>().Concat(families.SelectMany(f => f.experimental_proteoforms).OfType<Proteoform>().Concat(families.SelectMany(f => f.topdown_proteoforms)).OrderBy(p => p.modified_mass));
                     break;
             }
 
@@ -312,6 +314,11 @@ namespace ProteoformSuiteInternal
                 if (p as TheoreticalProteoform != null)
                 {
                     string node_type = String.Equals(p.ptm_description, "unmodified", StringComparison.CurrentCultureIgnoreCase) ? unmodified_theoretical_label : modified_theoretical_label;
+                    node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity, "", layout_rank);
+                }
+                if (p as TopDownProteoform != null)
+                {
+                    string node_type = td_label;
                     node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity, "", layout_rank);
                 }
 
@@ -365,7 +372,11 @@ namespace ProteoformSuiteInternal
 
                 layout_rank++;
             }
-
+            foreach (TopDownProteoform p in families.SelectMany(f => f.topdown_proteoforms.ToList()))
+            {
+                string node_type = p.ptm_description;
+                node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity }) + Environment.NewLine;
+            }
             if (gene_centric_families)
             {
                 foreach (string gene_name in theoreticals.Select(t => t.gene_name.get_prefered_name(preferred_gene_label)).Distinct())
@@ -406,14 +417,19 @@ namespace ProteoformSuiteInternal
                 ExperimentalProteoform e = p as ExperimentalProteoform;
                 string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + e.accession;
                 if (node_label == Lollipop.node_labels[1] && e.linked_proteoform_references != null && e.linked_proteoform_references.Count > 0)
-                    name += " " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession 
-                          + " " + (e.ptm_set.ptm_combination.Count == 0 ? 
-                            "Unmodified" : 
+                    name += " " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession
+                          + " " + (e.ptm_set.ptm_combination.Count == 0 ?
+                            "Unmodified" :
                             String.Join("; ", e.ptm_set.ptm_combination.Select(ptm => Sweet.lollipop.theoretical_database.unlocalized_lookup[ptm.modification].id)));
                 return name;
             }
 
             else if (p as TheoreticalProteoform != null)
+            {
+                return p.accession + " " + p.ptm_description;
+            }
+
+            else if (p as TopDownProteoform != null)
             {
                 return p.accession + " " + p.ptm_description;
             }
@@ -614,9 +630,9 @@ namespace ProteoformSuiteInternal
                 writer.WriteEndElement();
 
                 //NODE PROPERTIES
-                double max_total_intensity = quantitative ?
-                    (double)all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.quant.intensitySum) :
-                    all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity);
+                double max_total_intensity = all_families.SelectMany(f => f.experimental_proteoforms).Count() > 0 ? ( quantitative ?
+                   (double)all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.quant.intensitySum) :
+                   all_families.SelectMany(f => f.experimental_proteoforms).Max(p => p.agg_intensity)) : 1e6;
                 writer.WriteStartElement("node");
                 writer.WriteStartElement("dependency");
                 writer.WriteAttributeString("name", "nodeCustomGraphicsSizeSync");
@@ -656,6 +672,7 @@ namespace ProteoformSuiteInternal
                             new Tuple<string, string>(not_quantified, experimental_notQuantified_label),
                             new Tuple<string, string>(color_schemes[color_scheme][1], modified_theoretical_label),
                             new Tuple<string, string>(color_schemes[color_scheme][2], unmodified_theoretical_label),
+                            new Tuple<string, string>(color_schemes[color_scheme][6], td_label),
                             new Tuple<string, string>(color_schemes[color_scheme][4], gene_name_label)
                             //new Tuple<string, string>(color_schemes[color_scheme][4], transcript_name_label)
                         });

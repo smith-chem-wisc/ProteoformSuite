@@ -24,9 +24,10 @@ namespace ProteoformSuiteGUI
         public ExperimentExperimentComparison experimentExperimentComparison = new ExperimentExperimentComparison();
         public ProteoformFamilies proteoformFamilies = new ProteoformFamilies();
         public Quantification quantification = new Quantification();
+        public TopDown topDown = new TopDown();
+        public IdentifiedProteoforms identifiedProteoforms = new IdentifiedProteoforms();
         public ResultsSummary resultsSummary = new ResultsSummary();
         public List<ISweetForm> forms = new List<ISweetForm>();
-        public static bool run_when_form_loads;
 
         #endregion Public Fields
 
@@ -67,6 +68,7 @@ namespace ProteoformSuiteGUI
 
         private void InitializeForms()
         {
+
             forms = new List<ISweetForm>
             {
                 loadDeconvolutionResults,
@@ -76,6 +78,8 @@ namespace ProteoformSuiteGUI
                 theoreticalDatabase,
                 experimentalTheoreticalComparison,
                 experimentExperimentComparison,
+                topDown,
+                identifiedProteoforms,
                 proteoformFamilies,
                 quantification,
                 resultsSummary
@@ -151,6 +155,16 @@ namespace ProteoformSuiteGUI
             showForm(proteoformFamilies);
             proteoformFamilies.initialize_every_time();
         }
+        private void topdownResultsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(topDown);
+        }
+
+        private void identifiedProteoformsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            showForm(identifiedProteoforms);
+            if (identifiedProteoforms.ReadyToRunTheGamut()) identifiedProteoforms.RunTheGamut();
+        }
 
         private void quantificationToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -165,6 +179,7 @@ namespace ProteoformSuiteGUI
             showForm(resultsSummary);
         }
 
+    
         #endregion RESULTS TOOL STRIP Private Methods
 
         #region FILE TOOL STRIP Private Methods

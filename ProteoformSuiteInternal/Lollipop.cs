@@ -7,6 +7,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using UsefulProteomicsDatabases;
+using Chemistry;
+using MassSpectrometry;
+using IO.Thermo;
 
 namespace ProteoformSuiteInternal
 {
@@ -47,7 +50,11 @@ namespace ProteoformSuiteInternal
             "Proteoform Identification Results (.xlsx)",
             "Proteoform Quantification Results (.xlsx)",
             "Protein Databases and PTM Lists (.xml, .xml.gz, .fasta, .txt)",
-            "Deconvolution Calibration Files (.txt, .tsv)",
+            "Top-Down Results (Unlabeled) (.xlsx)",
+            "Bottom-Up Results MzIdentML (.mzid)",
+            "Uncalibrated Proteoform Identification Results (.xlsx)",
+            "Raw Files (.raw)",
+             "Uncalibrated Top-Down Results (Unlabeled) (.xlsx)"
         };
 
         public static List<string>[] acceptable_extensions = new List<string>[]
@@ -55,7 +62,12 @@ namespace ProteoformSuiteInternal
             new List<string> { ".xlsx" },
             new List<string> { ".xlsx" },
             new List<string> { ".xml", ".gz", ".fasta", ".txt" },
-            new List<string> { ".txt", ".tsv" },
+            new List<string> { ".xlsx" },
+            new List<string> { ".mzid" },
+            new List<string> { ".xlsx" },
+            new List<string> {".raw"},
+            new List<string> { ".xlsx" }
+
         };
 
         public static string[] file_filters = new string[]
@@ -63,7 +75,12 @@ namespace ProteoformSuiteInternal
             "Excel Files (*.xlsx) | *.xlsx",
             "Excel Files (*.xlsx) | *.xlsx",
             "Protein Databases and PTM Text Files (*.xml, *.xml.gz, *.fasta, *.txt) | *.xml;*.xml.gz;*.fasta;*.txt",
-            "Text Files (*.txt, *.tsv) | *.tsv;*.txt",
+            "Excel Files (*.xlsx) | *.xlsx",
+            "MZIdentML Files (*.mzid) | *.mzid",
+            "Excel Files (*.xlsx) | *.xlsx",
+            "Raw Files (*.raw) | *.raw",
+            "Excel Files (*.xlsx) | *.xlsx",
+  
         };
 
         public static List<Purpose>[] file_types = new List<Purpose>[]
@@ -71,7 +88,12 @@ namespace ProteoformSuiteInternal
             new List<Purpose> { Purpose.Identification },
             new List<Purpose> { Purpose.Quantification },
             new List<Purpose> { Purpose.ProteinDatabase, Purpose.PtmList },
-            new List<Purpose> { Purpose.Calibration },
+            new List<Purpose> { Purpose.TopDown },
+            new List<Purpose> { Purpose.BottomUp },
+            new List<Purpose> { Purpose.CalibrationIdentification },
+            new List<Purpose> {Purpose.RawFile },
+            new List<Purpose> { Purpose.CalibrationTopDown }
+
         };
 
         public void enter_input_files(string[] files, IEnumerable<string> acceptable_extensions, List<Purpose> purposes, List<InputFile> destination, bool user_directed)
@@ -115,36 +137,12 @@ namespace ProteoformSuiteInternal
             Loaders.LoadUniprot(Path.Combine(current_directory, "ptmlist.txt"), Loaders.GetFormalChargesDictionary(Loaders.LoadPsiMod(Path.Combine(current_directory, "PSI-MOD.obo2.xml"))));
             Sweet.lollipop.enter_input_files(new string[] { Path.Combine(Environment.CurrentDirectory, "ptmlist.txt") }, acceptable_extensions[2], file_types[2], Sweet.lollipop.input_files, true);
         }
-
-        public string match_calibration_files()
-        {
-            string return_message = "";
-
-            // Look for results files with the same filename as a calibration file, and show that they're matched
-            foreach (InputFile file in get_files(input_files, Purpose.Calibration))
-            {
-                if (input_files.Where(f => f.purpose != Purpose.Calibration).Select(f => f.filename).Contains(file.filename))
-                {
-                    IEnumerable<InputFile> matching_files = input_files.Where(f => f.purpose != Purpose.Calibration && f.filename == file.filename);
-                    InputFile matching_file = matching_files.First();
-                    if (matching_files.Count() != 1)
-                        return_message += "Warning: There is more than one results file named " + file.filename + ". Will only match calibration to the first one from " + matching_file.purpose.ToString() + "." + Environment.NewLine;
-                    file.matchingCalibrationFile = true;
-                    matching_file.matchingCalibrationFile = true;
-                }
-            }
-
-            if (get_files(input_files, Purpose.Calibration).Count() > 0 && !get_files(input_files, Purpose.Calibration).Any(f => f.matchingCalibrationFile))
-                return_message += "To use calibration files, please give them the same filenames as the deconvolution results to which they correspond.";
-
-            return return_message;
-        }
+       
 
         #endregion Input Files
 
         #region RAW EXPERIMENTAL COMPONENTS Public Fields
 
-        public List<Correction> correctionFactors = null;
         public List<Component> raw_experimental_components = new List<Component>();
         public List<Component> raw_quantification_components = new List<Component>();
         public bool neucode_labeled = true;
@@ -153,16 +151,11 @@ namespace ProteoformSuiteInternal
 
         #region RAW EXPERIMENTAL COMPONENTS
 
-        public void process_raw_components(List<InputFile> input_files, List<Component> destination, Purpose purpose)
+        public void process_raw_components(List<InputFile> input_files, List<Component> destination, Purpose purpose, bool remove_missed_monos_and_harmonics)
         {
-            if (get_files(input_files, Purpose.Calibration).Count() > 0)
-            {
-                correctionFactors = get_files(input_files, Purpose.Calibration).SelectMany(file => Correction.CorrectionFactorInterpolation(read_corrections(file))).ToList();
-            }
-
             Parallel.ForEach(input_files.Where(f => f.purpose == purpose).ToList(), file =>
             {
-                List<Component> someComponents = file.reader.read_components_from_xlsx(file, correctionFactors);
+                List<Component> someComponents = file.reader.read_components_from_xlsx(file, remove_missed_monos_and_harmonics);
                 lock (destination) destination.AddRange(someComponents);
             });
 
@@ -177,23 +170,6 @@ namespace ProteoformSuiteInternal
                 {
                     find_neucode_pairs(inputFile.reader.final_components.Where(c => c.scan_range == scan_range), raw_neucode_pairs, heavy_hashed_pairs);
                 }
-            }
-        }
-
-        public IEnumerable<Correction> read_corrections(InputFile file)
-        {
-            string filepath = file.directory + "\\" + file.filename + file.extension;
-            string filename = file.filename;
-
-            string[] correction_lines = File.ReadAllLines(filepath);
-            for (int i = 1; i < correction_lines.Length; i++)
-            {
-                string[] parts = correction_lines[i].Split('\t');
-                if (parts.Length < 2) continue;
-                int scan_number = Convert.ToInt32(parts[0]);
-                double correction = Double.NaN;
-                correction = Convert.ToDouble(parts[1]);
-                yield return new Correction(filename, scan_number, correction);
             }
         }
 
@@ -317,7 +293,9 @@ namespace ProteoformSuiteInternal
             vetted_proteoforms = two_pass_validation ?
                 vetExperimentalProteoforms(candidateExperimentalProteoforms, raw_experimental_components, vetted_proteoforms) :
                 candidateExperimentalProteoforms;
+
             target_proteoform_community.experimental_proteoforms = vetted_proteoforms.ToArray();
+            target_proteoform_community.community_number = -100;
             foreach (ProteoformCommunity community in decoy_proteoform_communities.Values)
             {
                 community.experimental_proteoforms = Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Select(e => new ExperimentalProteoform(e)).ToArray();
@@ -346,6 +324,10 @@ namespace ProteoformSuiteInternal
         public List<ExperimentalProteoform> createProteoforms(IEnumerable<NeuCodePair> raw_neucode_pairs, IEnumerable<Component> raw_experimental_components, int min_num_CS)
         {
             List<ExperimentalProteoform> candidateExperimentalProteoforms = new List<ExperimentalProteoform>();
+            ordered_components = new Component[0];
+            remaining_components.Clear();
+            remaining_verification_components.Clear();
+            vetted_proteoforms.Clear();
 
             // Only aggregate acceptable components (and neucode pairs). Intensity sum from overlapping charge states includes all charge states if not a neucode pair.
             ordered_components = neucode_labeled ?
@@ -368,7 +350,6 @@ namespace ProteoformSuiteInternal
                     active.Add(t);
                     root = find_next_root(remaining_components, running);
                 }
-
                 foreach (Thread t in active) t.Join();
                 foreach (ExperimentalProteoform e in running) remaining_components = remaining_components.Except(e.aggregated_components).ToList();
 
@@ -434,7 +415,6 @@ namespace ProteoformSuiteInternal
                 {
                     if (e.lt_verification_components.Count > 0 || neucode_labeled && e.lt_verification_components.Count > 0 && e.hv_verification_components.Count > 0)
                     {
-                        // e.accepted = true; this is set based on the e properties
                         vetted_proteoforms.Add(e);
                     }
                     foreach (Component c in e.lt_verification_components.Concat(e.hv_verification_components).ToList())
@@ -523,7 +503,6 @@ namespace ProteoformSuiteInternal
         #endregion AGGREGATED PROTEOFORMS
 
         #region THEORETICAL DATABASE Public Fields
-
         public bool methionine_oxidation = true;
         public bool carbamidomethylation = true;
         public bool methionine_cleavage = true;
@@ -543,12 +522,12 @@ namespace ProteoformSuiteInternal
         public int mod_rank_second_quartile = 0;
         public int mod_rank_third_quartile = 0;
         public TheoreticalProteoformDatabase theoretical_database = new TheoreticalProteoformDatabase();
-
+        public List<BottomUpPSM> BottomUpPSMList = new List<BottomUpPSM>();
         #endregion THEORETICAL DATABASE Public Fields
 
         #region ET,ED,EE,EF COMPARISONS Public Fields
 
-        public double ee_max_mass_difference = 1100;
+        public double ee_max_mass_difference = 300;
         public double ee_max_RetentionTime_difference = 2.5;
         public double et_low_mass_difference = -300;
         public double et_high_mass_difference = 350;
@@ -558,6 +537,7 @@ namespace ProteoformSuiteInternal
         public double peak_width_base_ee = 0.03;
         public double min_peak_count_et = 4;
         public double min_peak_count_ee = 10;
+        public bool limit_theoreticals_to_BU_or_TD_observed = false;
         public int relation_group_centering_iterations = 2;  // is this just arbitrary? whys is it specified here?
         public List<ProteoformRelation> et_relations = new List<ProteoformRelation>();
         public List<ProteoformRelation> ee_relations = new List<ProteoformRelation>();
@@ -565,6 +545,7 @@ namespace ProteoformSuiteInternal
         public Dictionary<string, List<ProteoformRelation>> ef_relations = new Dictionary<string, List<ProteoformRelation>>();
         public List<DeltaMassPeak> et_peaks = new List<DeltaMassPeak>();
         public List<DeltaMassPeak> ee_peaks = new List<DeltaMassPeak>();
+        public List<ProteoformRelation> td_relations = new List<ProteoformRelation>(); //td data
 
         public void relate_ed()
         {
@@ -621,11 +602,82 @@ namespace ProteoformSuiteInternal
             else if (add_action)
                 Sweet.unaccept_peak_action(peak);
         }
-
         #endregion ET,ED,EE,EF COMPARISONS Public Fields
 
-        #region PROTEOFORM FAMILIES Public Fields
+        #region TOPDOWN 
+        public double min_RT_td = 40.0;
+        public double max_RT_td = 90.0;
+        public double min_score_td = 3.0;
+        public bool biomarker = true;
+        public bool tight_abs_mass = true;
+        public List<TopDownHit> top_down_hits = new List<TopDownHit>();
+        public TopDownReader topdownReader = new TopDownReader();
+        //C-score > 40: proteoform is both identified and fully characterized; 
+        //3 ≤ Cscore≤ 40: proteoform is identified, but only partially characterized; 
+        //C-score < 3: proteoform is neither identified nor characterized.
 
+        public void read_in_td_hits()
+        {
+            topdownReader.topdown_ptms.Clear();
+            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.TopDown).ToList())
+            {
+                top_down_hits.AddRange(topdownReader.ReadTDFile(file));
+            }
+        }
+
+        public List<TopDownProteoform> AggregateTdHits(List<TopDownHit> top_down_hits)
+        {
+            //group hits into topdown proteoforms by accession/theoretical AND observed mass
+            List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
+            List<TopDownHit> unprocessed_td_hits = top_down_hits.Where(h => h.score >= min_score_td && h.ms2_retention_time >= min_RT_td && h.ms2_retention_time <= max_RT_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
+
+            List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
+            while(unprocessed_td_hits.Count > 0)
+            {
+                TopDownHit root = unprocessed_td_hits[0];
+                remaining_td_hits.Add(root);
+                unprocessed_td_hits = unprocessed_td_hits.Except(unprocessed_td_hits.Where(h => h.pvalue == root.pvalue && h.ms2ScanNumber == root.ms2ScanNumber && h.filename == root.filename)).ToList();
+            }
+
+            List<string> PFRs = remaining_td_hits.Select(h => h.pfr).Distinct().ToList();
+            Parallel.ForEach(PFRs, pfr =>
+            {
+                List<TopDownHit> hits_by_pfr = remaining_td_hits.Where(h => h.pfr == pfr).ToList();
+                List<TopDownProteoform> first_aggregation = new List<TopDownProteoform>();
+                //aggregate to td hit w/ highest c-score as root - 1st average for retention time
+                while (hits_by_pfr.Count > 0)
+                {
+                    TopDownHit root = hits_by_pfr[0];
+                    //ambiguous results - only include higher scoring one (if same scan, file, and p-value)
+                    //find topdownhits within RT tol --> first average
+                    double first_RT_average = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - root.ms2_retention_time) <= Convert.ToDouble(retention_time_tolerance) && h.pfr == root.pfr).Select(h => h.ms2_retention_time).Average();
+                    List<TopDownHit> hits_to_aggregate = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance) && h.pfr == root.pfr).OrderByDescending(h => h.score).ToList();
+                    root = hits_to_aggregate[0];
+                    //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
+                    TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, hits_to_aggregate);
+                    hits_by_pfr = hits_by_pfr.Except(new_pf.topdown_hits).ToList();
+
+                    //could have cases where topdown proteoforms same accession, mass, diff PTMs --> need a diff accession
+                    lock (topdown_proteoforms)
+                    {
+                        int count = topdown_proteoforms.Count(t => t.accession.Contains(new_pf.accession));
+                        if (count > 0)
+                        {
+                            string[] old_accession = new_pf.accession.Split('_');
+                            new_pf.accession = old_accession[0] + "_TD" + count + "_" + old_accession[2] + old_accession[3] + "_" + old_accession[4];
+                        }
+                        topdown_proteoforms.Add(new_pf);
+                    }
+                }
+
+            });
+            return topdown_proteoforms;
+        }
+     
+        #endregion TOPDOWN 
+
+        #region PROTEOFORM FAMILIES Public Fields
+        public bool count_adducts_as_identifications = false;
         public string family_build_folder_path = "";
 
         public int deltaM_edge_display_rounding = 2;
@@ -1193,8 +1245,8 @@ namespace ProteoformSuiteInternal
             else
             {
                 backgroundProteinsForGoAnalysis = allTheoreticalProteins ?
-                    theoretical_database.expanded_proteins.DistinctBy(pwg => pwg.Accession.Split('_')[0]).ToList() : 
-                    allDetectedProteins ?  
+                    theoretical_database.expanded_proteins.DistinctBy(pwg => pwg.Accession.Split('_')[0]).ToList() :
+                    allDetectedProteins ?
                         observedProteins :
                         quantifiedProteins;
             }
@@ -1241,6 +1293,143 @@ namespace ProteoformSuiteInternal
 
         #endregion GO-TERMS AND GO-TERM SIGNIFICANCE
 
+        #region CALIBRATION
+        public List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
+        public Dictionary<Tuple<string, double>, double> file_mz_correction = new Dictionary<Tuple<string, double>, double>();
+        public Dictionary<Tuple<string, int, double>, double> td_hit_correction = new Dictionary<Tuple<string, int, double>, double>();
+        public List<Component> calibration_components = new List<Component>();
+        public string[] file_descriptions; 
+
+        public void read_in_calibration_td_hits()
+        {
+            td_hits_calibration.Clear();
+            file_mz_correction.Clear();
+            td_hit_correction.Clear();
+            calibration_components.Clear();
+            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
+            {
+                td_hits_calibration.AddRange(topdownReader.ReadTDFile(file));
+            }
+        }
+
+        public string get_file_descriptions()
+        {
+            //determine biorep, techrep, fraction of each raw file, component file, and topdown hit
+            foreach (string line in file_descriptions.Get(1, file_descriptions.Length))
+            {
+                int biological_replicate;
+                int fraction;
+                int technical_replicate;
+                string[] file_description = line.Split('\t');
+                if (file_descriptions.Count(d => d.Split('\t')[0] == file_description[0]) > 1)
+                    return "Error in file descriptions file - multiple entries for one filename";
+                try
+                {
+                    biological_replicate = Convert.ToInt32(file_description[1]);
+                    fraction = Convert.ToInt32(file_description[2]);
+                    technical_replicate = Convert.ToInt32(file_description[3]);
+                }
+                catch
+                {
+                    return "Error in file descriptions file values";
+                }
+                Parallel.ForEach(td_hits_calibration.Where(h => h.filename == file_description[0].Split('.')[0]), h =>
+                {
+                    h.biological_replicate = biological_replicate;
+                    h.fraction = fraction;
+                    h.technical_replicate = technical_replicate;
+                });
+            }
+            if (td_hits_calibration.Any(h => h.fraction == 0))
+                return "Error in file descriptions file - top-down hit(s) with no matching description.";
+            if (input_files.Where(f => f.purpose == Purpose.RawFile || f.purpose == Purpose.CalibrationIdentification).Any(f => f.fraction == 0))
+                return "Label fraction, biological replicate, and techincal replicate of input files.";
+            else return null;
+        }
+
+        public string get_td_hit_chargestates()
+        {
+            foreach (InputFile raw_file in input_files.Where(f => f.purpose == Purpose.RawFile && f.topdown_file))
+            {
+                IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = ThermoStaticData.LoadAllStaticData(raw_file.complete_path);
+                Parallel.ForEach(Sweet.lollipop.td_hits_calibration.Where(f => f.filename == raw_file.filename).ToList(), hit =>
+                {
+                    int scanNum = myMsDataFile.GetMsScansInTimeRange(hit.ms2_retention_time - 0.00001, hit.ms2_retention_time + .00001).First().OneBasedScanNumber;
+                    hit.ms2ScanNumber = scanNum;
+                    hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge 
+                    hit.mz = hit.reported_mass.ToMz(hit.charge);
+                    while (scanNum < myMsDataFile.NumSpectra && myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
+                    hit.ms1_retention_time = myMsDataFile.GetOneBasedScan(scanNum).RetentionTime;
+                });
+            }
+            if (td_hits_calibration.Any(h => h.charge == 0)) return "Error: need to input all raw files for top-down hits. Be sure top-down file box is checked.";
+            else return null;
+        }
+
+        public string calibrate_files()
+        {
+            string message = get_file_descriptions();
+            if (message != null) return message;
+            message = get_td_hit_chargestates();
+            if (message != null) return message;
+
+            foreach (int biological_replicate in input_files.Select(f => f.biological_replicate).Distinct())
+            {
+                foreach (int fraction in input_files.Where(f => f.biological_replicate == biological_replicate).Select(f => f.fraction).Distinct())
+                {
+                    foreach (int technical_replicate in input_files.Where(f => f.biological_replicate == biological_replicate && f.fraction == fraction).Select(f => f.technical_replicate).Distinct())
+                    {
+                        Calibration calibration = new Calibration();
+                        foreach(InputFile file in input_files.Where(f => f.purpose == Purpose.RawFile && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate))
+                        {
+                            process_raw_components(input_files.Where(f => f.purpose == Purpose.CalibrationIdentification && f.topdown_file == file.topdown_file && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate).ToList(), calibration_components, Purpose.CalibrationIdentification, false);
+                            bool calibrated = get_calibration_points(calibration, file);
+                            if (calibrated)
+                            {
+                                determine_component_shift(calibration, file.topdown_file, biological_replicate, fraction, technical_replicate);
+                                List<InputFile> files = input_files.Where(f => f.topdown_file == file.topdown_file && f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate).ToList();
+                                foreach (InputFile f in files) calibration.calibrate_components_in_xlsx(f);
+                            }
+                        }
+                    }
+                }
+            }
+            Calibration cali = new Calibration();
+            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
+            {
+                cali.calibrate_td_hits_file(file);
+            }
+            return "Successfully calibrated files.";
+        }
+
+
+        public bool get_calibration_points(Calibration calibration, InputFile raw_file)
+        {
+            List<TopDownHit> hits = td_hits_calibration.Where(h => h.biological_replicate == raw_file.biological_replicate && h.fraction == raw_file.fraction && (!raw_file.topdown_file || h.technical_replicate == raw_file.technical_replicate) && h.score >= 40).ToList();
+            return calibration.Run_TdMzCal(raw_file, hits, raw_file.topdown_file, raw_file.biological_replicate, raw_file.fraction, raw_file.technical_replicate);
+        }
+
+        public void determine_component_shift(Calibration calibration, bool topdown_file, int biological_replicate, int fraction, int technical_replicate)
+        {
+            Parallel.ForEach(calibration_components.Where(c =>c.input_file.topdown_file == topdown_file && c.input_file.biological_replicate == biological_replicate && c.input_file.fraction == fraction && c.input_file.technical_replicate == technical_replicate), c =>
+            {
+                foreach (ChargeState cs in c.charge_states)
+                {
+                    var key = new Tuple<string, double>(c.input_file.filename, Math.Round(cs.intensity, 0));
+                    lock (file_mz_correction)
+                    {
+                        if (!file_mz_correction.ContainsKey(key))
+                        {
+                            file_mz_correction.Add(key, cs.mz_centroid);
+                        }
+                    }
+                }
+
+            });
+        }
+
+        #endregion CALIBRATION 
+
         #region RESULTS Public Field
 
         public string results_folder = "";
@@ -1273,8 +1462,6 @@ namespace ProteoformSuiteInternal
                     p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical || r.RelationType == ProteoformComparison.ExperimentalDecoy);
                     p.family = null;
                 }
-
-                et_peaks.RemoveAll(k => k.RelationType == ProteoformComparison.ExperimentalTheoretical || k.RelationType == ProteoformComparison.ExperimentalDecoy);
             }
         }
 
@@ -1294,8 +1481,19 @@ namespace ProteoformSuiteInternal
                     p.linked_proteoform_references = null;
                     p.gene_name = null;
                 }
+            }
+        }
 
-                ee_peaks.RemoveAll(k => k.RelationType == ProteoformComparison.ExperimentalExperimental || k.RelationType == ProteoformComparison.ExperimentalFalse);
+        public void clear_td()
+        {
+            Sweet.lollipop.top_down_hits.Clear();
+            Sweet.lollipop.td_relations.Clear();
+            topdownReader.topdown_ptms.Clear();
+            foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { Sweet.lollipop.target_proteoform_community }))
+            {
+                community.topdown_proteoforms = new TopDownProteoform[0];
+                foreach (Proteoform p in community.experimental_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTopDown);
+                foreach (Proteoform p in community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.TheoreticalTopDown);
             }
         }
 

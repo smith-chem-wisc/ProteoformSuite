@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace ProteoformSuiteInternal
 {
@@ -13,16 +14,17 @@ namespace ProteoformSuiteInternal
 
         public void ExportToExcel(List<DataGridView> dgvs, string sheet_prefix)
         {
-            if (dgvs == null)
+            if (dgvs == null || dgvs.Count(d => d.DataSource != null) == 0)
                 return;
 
-            foreach (DataGridView dgv in dgvs)
+            foreach (DataGridView dgv in dgvs.Where(d => d.DataSource != null))
             {
                 DataTable dt = new DataTable();
                 foreach (DataGridViewColumn col in dgv.Columns)
                 {
                     dt.Columns.Add(col.HeaderText);
                 }
+
 
                 foreach(DataGridViewRow row in dgv.Rows)
                 {
@@ -65,8 +67,8 @@ namespace ProteoformSuiteInternal
 
         public void SaveToExcel(string filename)
         {
-            workbook.SaveAs(filename);
+            if (workbook.Worksheets.Count > 0)
+                workbook.SaveAs(filename);
         }
     }
 }
-

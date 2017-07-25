@@ -148,7 +148,6 @@ namespace ProteoformSuiteInternal
             this.charge_states = c.charge_states;
             this.intensity_sum_olcs = c.intensity_sum_olcs;
             this.accepted = c.accepted;
-
             this.num_detected_intervals = c.num_detected_intervals;
             if (c.charge_states.Count > 0) this.charge_states = c.charge_states;
             else this.num_charge_states = c.num_charge_states;
@@ -158,10 +157,9 @@ namespace ProteoformSuiteInternal
         #endregion Constructors
 
         #region Public Methods
-
-        public void add_charge_state(List<string> charge_row, double correction)
+        public void add_charge_state(List<string> charge_row)
         {
-            charge_states.Add(new ChargeState(charge_row, correction));
+            charge_states.Add(new ChargeState(charge_row));
         }
 
         public void calculate_properties()
@@ -237,8 +235,7 @@ namespace ProteoformSuiteInternal
                 }
             }
             return this;
-        } 
-
+        }
         #endregion Public Methods
     }
 }

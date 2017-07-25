@@ -90,6 +90,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConstructorsForTesting.cs" />
+    <Compile Include="TestCalibration.cs" />
+    <Compile Include="TestTopDown.cs" />
     <Compile Include="TestAggregationMethods.cs" />
     <Compile Include="TestBigRational.cs" />
     <Compile Include="TestComponent.cs" />
@@ -102,7 +104,6 @@
     <Compile Include="TestSaveState.cs" />
     <Compile Include="TestExperimentalProteoform.cs" />
     <Compile Include="TestFindRawComponentsAndNeuCodePairs.cs" />
-    <Compile Include="TestCorrectionFactorInterpolation.cs" />
     <Compile Include="TestLoadAndRun.cs" />
     <Compile Include="TestModification.cs" />
     <Compile Include="TestAminoAcidMasses.cs" />
@@ -114,6 +115,12 @@
     <Compile Include="TestTheoreticalDatabaseCreate.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="05-26-17_B7A_yeast_td_fract5_rep1.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="BU_result_sliced-raw_5ppmAroundZero.mzid">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="example_corrections.tsv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -127,6 +134,12 @@
     <None Include="test_directory\two.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="test_td_hits_file.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="test_topdown_hits_calibration.xlsx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ProteoformSuiteInternal\ProteoformSuiteInternal.csproj">
@@ -138,6 +151,9 @@
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="05-26-17_B7A_yeast_td_fract5_rep1.raw">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="amino_acids_duplicates.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

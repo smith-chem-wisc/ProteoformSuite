@@ -49,8 +49,8 @@ namespace Test
             asdf.Add(ConstructorsForTesting.get_modWithMass("asdf", 0));
             asdf.Add(ConstructorsForTesting.get_modWithMass("asd", 0));
             asdf.Add(ConstructorsForTesting.get_modWithMass("asdf", 0));
-            asdf.Add(ConstructorsForTesting.InputFile(@"fake.txt", Labeling.NeuCode, Purpose.Calibration, "", "", 1, 1, 1));
-            asdf.Add(ConstructorsForTesting.InputFile(@"ake.txt", Labeling.NeuCode, Purpose.Calibration, "", "", 1, 1, 1));
+            asdf.Add(ConstructorsForTesting.InputFile(@"fake.xlsx", Labeling.NeuCode, Purpose.CalibrationIdentification, "", "", 1, 1, 1));
+            asdf.Add(ConstructorsForTesting.InputFile(@"ake.xlsx", Labeling.NeuCode, Purpose.CalibrationIdentification, "", "", 1, 1, 1));
             Assert.AreEqual(5, asdf.Count);
             Assert.AreEqual(3, ExtensionMethods.filter(asdf, "f").Count());
         }

@@ -34,12 +34,12 @@ namespace Test
                 c.weighted_monoisotopic_mass = mass;
                 if (counter == 3)
                 {
-                    ChargeState cs1 = new ChargeState(10, 100d, (mass + 10d * Lollipop.PROTON_MASS) / 10d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                    ChargeState cs1 = new ChargeState(10, 100d, (mass + 10d * Lollipop.PROTON_MASS) / 10d);//(int charge_count, double intensity, double mz_centroid)
                     c.charge_states.Add(cs1);
                 }
                 else
                 {
-                    ChargeState cs1 = new ChargeState(10, 50d, (mass + 10d * Lollipop.PROTON_MASS) / 10d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                    ChargeState cs1 = new ChargeState(10, 50d, (mass + 10d * Lollipop.PROTON_MASS) / 10d);//(int charge_count, double intensity, double mz_centroid)
                     c.charge_states.Add(cs1);
                 }
 
@@ -64,12 +64,12 @@ namespace Test
 
                 if (counter == 10)
                 {
-                    ChargeState cs1 = new ChargeState(10, 100d, (c.weighted_monoisotopic_mass + 10d * Lollipop.PROTON_MASS) / 10d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                    ChargeState cs1 = new ChargeState(10, 100d, (c.weighted_monoisotopic_mass + 10d * Lollipop.PROTON_MASS) / 10d);//(int charge_count, double intensity, double mz_centroid)
                     c.charge_states.Add(cs1);
                 }
                 else
                 {
-                    ChargeState cs1 = new ChargeState(10, 50d, (c.weighted_monoisotopic_mass + 10d * Lollipop.PROTON_MASS) / 10d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                    ChargeState cs1 = new ChargeState(10, 50d, (c.weighted_monoisotopic_mass + 10d * Lollipop.PROTON_MASS) / 10d);//(int charge_count, double intensity, double mz_centroid)
                     c.charge_states.Add(cs1);
                 }
 
@@ -107,19 +107,19 @@ namespace Test
 
                 if (mass == 1000d)
                 {
-                    ChargeState cs1 = new ChargeState(10, 1000d, (c.weighted_monoisotopic_mass + 10d * Lollipop.PROTON_MASS) / 10d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                    ChargeState cs1 = new ChargeState(10, 1000d, (c.weighted_monoisotopic_mass + 10d * Lollipop.PROTON_MASS) / 10d);//(int charge_count, double intensity, double mz_centroid)
                     c.charge_states.Add(cs1);
                 }
                 else
                 {
                     if (mass == 1000d / 2d || mass == 1000d / 3d)
                     {
-                        ChargeState cs1 = new ChargeState(10, 5d, (c.weighted_monoisotopic_mass + 10d * Lollipop.PROTON_MASS) / 10d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                        ChargeState cs1 = new ChargeState(10, 5d, (c.weighted_monoisotopic_mass + 10d * Lollipop.PROTON_MASS) / 10d);//(int charge_count, double intensity, double mz_centroid)
                         c.charge_states.Add(cs1);
                     }
                     else
                     {
-                        ChargeState cs1 = new ChargeState(10, 1d, (c.weighted_monoisotopic_mass + 10d * Lollipop.PROTON_MASS) / 10d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                        ChargeState cs1 = new ChargeState(10, 1d, (c.weighted_monoisotopic_mass + 10d * Lollipop.PROTON_MASS) / 10d);//(int charge_count, double intensity, double mz_centroid)
                         c.charge_states.Add(cs1);
                     }
                 }
@@ -155,7 +155,7 @@ namespace Test
 
                 for (int j = 1; j < 6; j++)
                 {
-                    ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                    ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j);//(int charge_count, double intensity, double mz_centroid)
                     c.charge_states.Add(cs);
                 }
                 c.scan_range = "1-2";
@@ -188,7 +188,7 @@ namespace Test
 
                 for (int j = 1; j < 4; j++)
                 {
-                    ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                    ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j);//(int charge_count, double intensity, double mz_centroid)
                     c.charge_states.Add(cs);
                 }
                 c.scan_range = "1-2";
@@ -224,7 +224,7 @@ namespace Test
                 {
                     for (int j = 1; j < 4; j++)
                     {
-                        ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                        ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j);//(int charge_count, double intensity, double mz_centroid)
                         c.charge_states.Add(cs);
                     }
                 }
@@ -232,7 +232,7 @@ namespace Test
                 {
                     for (int j = 1; j < 3; j++)
                     {
-                        ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                        ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j);//(int charge_count, double intensity, double mz_centroid)
                         c.charge_states.Add(cs);
                     }
                 }
@@ -270,7 +270,7 @@ namespace Test
                 {
                     for (int j = 1; j < 4; j++)
                     {
-                        ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                        ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j);//(int charge_count, double intensity, double mz_centroid)
                         c.charge_states.Add(cs);
                     }
                 }
@@ -278,7 +278,7 @@ namespace Test
                 {
                     for (int j = 1; j < 3; j++)
                     {
-                        ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+                        ChargeState cs = new ChargeState(j, 100d, (mass + j * Lollipop.PROTON_MASS) / j);//(int charge_count, double intensity, double mz_centroid)
                         c.charge_states.Add(cs);
                     }
                 }
@@ -303,7 +303,7 @@ namespace Test
             Component c1 = new Component();
             c1.input_file = new InputFile("path", Purpose.Identification);
             c1.id = 1.ToString();
-            ChargeState csOne = new ChargeState(10, 200d, 100.8068165d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction) ** Because of NeuCode correction, this mass is stepped down by 2.0046 Da to make sure it's a neucode pair
+            ChargeState csOne = new ChargeState(10, 200d, 100.8068165d);//(int charge_count, double intensity, double mz_centroid) ** Because of NeuCode correction, this mass is stepped down by 2.0046 Da to make sure it's a neucode pair
             c1.charge_states.Add(csOne);
             c1.scan_range = "1-2";
             c1.calculate_properties();
@@ -312,7 +312,7 @@ namespace Test
             Component c2 = new Component();
             c2.input_file = new InputFile("path", Purpose.Identification);
             c2.id = 2.ToString();
-            ChargeState csTwo = new ChargeState(10, 100d, 101.057698, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+            ChargeState csTwo = new ChargeState(10, 100d, 101.057698);//(int charge_count, double intensity, double mz_centroid)
             c2.charge_states.Add(csTwo);
             c2.scan_range = "1-2";
             c2.calculate_properties();
@@ -321,7 +321,7 @@ namespace Test
             Component c3 = new Component();
             c3.input_file = new InputFile("path", Purpose.Identification);
             c3.id = 3.ToString();
-            ChargeState csThree = new ChargeState(10, 50d, 201.1081195d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+            ChargeState csThree = new ChargeState(10, 50d, 201.1081195d);//(int charge_count, double intensity, double mz_centroid)
             c3.charge_states.Add(csThree);
             c3.scan_range = "1-2";
             c3.calculate_properties();

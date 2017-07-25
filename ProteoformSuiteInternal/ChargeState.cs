@@ -12,36 +12,37 @@ namespace ProteoformSuiteInternal
         public double intensity { get; set; } //value from deconv 4.0
         public double mz_centroid { get; set; } //value from deconv 4.0
         public double calculated_mass { get; set; }  // the value reported by decon 4.0 is incorrect, so we calculate it from m/z and charge (including correction when necessary)
+        public double signal_to_noise { get; set; }
+        public int isotopic_peaks_left_averagine { get; set; }
+        public int isotopic_peaks_right_averagine { get; set; }
 
         #endregion Public Properties
 
         #region Public Constructors
 
-        public ChargeState(List<string> charge_row, double mz_correction) //the correction used is determined from measurement of lock-mass compound. It is read in at the same time the data is read in. We do not keep track of the correction because it adds confusion when charge states are combined.
+        public ChargeState(List<string> charge_row)
         {
             this.charge_count = Convert.ToInt32(charge_row[0]);
             this.intensity = Convert.ToDouble(charge_row[1]);
-            this.mz_centroid = correct_calculated_mz(Convert.ToDouble(charge_row[2]), mz_correction); //no point to keeping the uncorrected mz if there is a correction.
+            this.mz_centroid = Convert.ToDouble(charge_row[2]);
+            this.signal_to_noise = charge_row.Count > 4 ? Convert.ToDouble(charge_row[4]) : 0;
+            this.isotopic_peaks_left_averagine = charge_row.Count > 4 ? Convert.ToInt16(charge_row[5]) : 0;
+            this.isotopic_peaks_right_averagine = charge_row.Count > 4 ? Convert.ToInt16(charge_row[6]) : 0;
             this.calculated_mass = correct_calculated_mass();
         }
 
         //For testing
-        public ChargeState(int charge_count, double intensity, double mz_centroid, double mz_correction)
+        public ChargeState(int charge_count, double intensity, double mz_centroid)
         {
             this.charge_count = charge_count;
             this.intensity = intensity;
-            this.mz_centroid = correct_calculated_mz(mz_centroid, mz_correction);
+            this.mz_centroid = mz_centroid;
             this.calculated_mass = correct_calculated_mass();
         }
 
         #endregion Public Constructors
 
         #region Public Methods
-
-        public double correct_calculated_mz(double mz, double mz_correction) // the correction is a linear shift to m/z
-        {
-            return (mz + mz_correction);//Thermo deconvolution 4.0 miscalculates the monoisotopic mass from the reported mz and charge state values.
-        }
 
         public double correct_calculated_mass() // the correction is a linear shift to m/z
         {

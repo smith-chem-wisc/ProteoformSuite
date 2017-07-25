@@ -40,7 +40,7 @@ namespace Test
             InputFile componentInputFile2 = new InputFile("fake.txt", Purpose.Identification);
             Component createdComponent2 = new Component(component2Values, componentInputFile2);
 
-            ChargeState cs1 = new ChargeState(10, 200d, 100d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+            ChargeState cs1 = new ChargeState(10, 200d, 100d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
             createdComponent2.charge_states.Add(cs1);
             createdComponent2.calculate_properties();
             Assert.AreEqual(componentInputFile2.UniqueId + "_2", createdComponent2.id);
@@ -66,12 +66,12 @@ namespace Test
             List<string> component3Values = new List<string> { "2", "989.9", "99.9", "5", "6", "0.02", "88.8", "0.888", "10-15", "11.1-12.2", "10.55" };
             InputFile componentInputFile3 = new InputFile("fake.txt", Purpose.Identification);
             Component createdComponent3 = new Component(component3Values, componentInputFile3);
-            ChargeState cs1 = new ChargeState(10, 200d, 100d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+            ChargeState cs1 = new ChargeState(10, 200d, 100d);//(int charge_count, double intensity, double mz_centroid)
             createdComponent3.charge_states.Add(cs1);
 
             List<string> component4Values = new List<string> { "2", "989.9", "99.9", "5", "6", "0.02", "88.8", "0.888", "10-15", "11.1-12.2", "10.55" };
             Component createdComponent4 = new Component(component3Values, componentInputFile3);
-            ChargeState cs2 = new ChargeState(11, 300d, 91.0006615d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+            ChargeState cs2 = new ChargeState(11, 300d, 91.0006615d);//(int charge_count, double intensity, double mz_centroid)
             createdComponent4.charge_states.Add(cs1);
             createdComponent4.charge_states.Add(cs2);
 
@@ -92,13 +92,13 @@ namespace Test
             List<string> component3Values = new List<string> { "2", "989.9", "99.9", "5", "6", "0.02", "88.8", "0.888", "10-15", "11.1-12.2", "10.55" };
             InputFile componentInputFile3 = new InputFile("fake.txt", Purpose.Identification);
             Component createdComponent3 = new Component(component3Values, componentInputFile3);
-            ChargeState cs1 = new ChargeState(10, 200d, 100d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+            ChargeState cs1 = new ChargeState(10, 200d, 100d);//(int charge_count, double intensity, double mz_centroid)
             createdComponent3.charge_states.Add(cs1);
 
             List<string> component4Values = new List<string> { "2", "990.9", "99.9", "5", "6", "0.02", "88.8", "0.888", "10-15", "11.1-12.2", "10.55" };
             Component createdComponent4 = new Component(component3Values, componentInputFile3);
-            ChargeState cs2 = new ChargeState(10, 300d, 100.10023d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
-            ChargeState cs3 = new ChargeState(11, 500d, 91.09177968d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+            ChargeState cs2 = new ChargeState(10, 300d, 100.10023d);//(int charge_count, double intensity, double mz_centroid)
+            ChargeState cs3 = new ChargeState(11, 500d, 91.09177968d);//(int charge_count, double intensity, double mz_centroid)
             createdComponent4.charge_states.Add(cs2);
             createdComponent4.charge_states.Add(cs3);
 
@@ -117,13 +117,13 @@ namespace Test
             List<string> component3Values = new List<string> { "2", "989.9", "99.9", "5", "6", "0.02", "88.8", "0.888", "10-15", "11.1-12.2", "10.55" };
             InputFile componentInputFile3 = new InputFile("fake.txt", Purpose.Identification);
             Component createdComponent3 = new Component(component3Values, componentInputFile3);
-            ChargeState cs1 = new ChargeState(10, 200d, 100d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+            ChargeState cs1 = new ChargeState(10, 200d, 100d);//(int charge_count, double intensity, double mz_centroid)
             createdComponent3.charge_states.Add(cs1);
 
             List<string> component4Values = new List<string> { "2", "990.9", "99.9", "5", "6", "0.02", "88.8", "0.888", "10-15", "11.1-12.2", "10.55" };
             Component createdComponent4 = new Component(component3Values, componentInputFile3);
-            ChargeState cs2 = new ChargeState(10, 300d, 99.89977d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
-            ChargeState cs3 = new ChargeState(11, 500d, 90.90954331d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+            ChargeState cs2 = new ChargeState(10, 300d, 99.89977d);//(int charge_count, double intensity, double mz_centroid)
+            ChargeState cs3 = new ChargeState(11, 500d, 90.90954331d);//(int charge_count, double intensity, double mz_centroid)
             createdComponent4.charge_states.Add(cs2);
             createdComponent4.charge_states.Add(cs3);
 
@@ -142,12 +142,12 @@ namespace Test
             List<string> component3Values = new List<string> { "2", "989.9", "99.9", "5", "6", "0.02", "88.8", "0.888", "10-15", "11.1-12.2", "10.55" };
             InputFile componentInputFile3 = new InputFile("fake.txt", Purpose.Identification);
             Component createdComponent3 = new Component(component3Values, componentInputFile3);
-            ChargeState cs1 = new ChargeState(10, 200d, 100d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+            ChargeState cs1 = new ChargeState(10, 200d, 100d);//(int charge_count, double intensity, double mz_centroid)
             createdComponent3.charge_states.Add(cs1);
 
             List<string> component4Values = new List<string> { "2", "990.9", "99.9", "5", "6", "0.02", "88.8", "0.888", "10-15", "11.1-12.2", "10.55" };
             Component createdComponent4 = new Component(component3Values, componentInputFile3);
-            ChargeState cs2 = new ChargeState(11, 500d, 91.09177968d, 0d);//(int charge_count, double intensity, double mz_centroid, double mz_correction)
+            ChargeState cs2 = new ChargeState(11, 500d, 91.09177968d);//(int charge_count, double intensity, double mz_centroid)
             createdComponent4.charge_states.Add(cs2);
 
             createdComponent3.mergeTheseComponents(createdComponent4);
@@ -162,7 +162,7 @@ namespace Test
         [Test]
         public void testSetValuesWithExistingChargeStates()
         {
-            ChargeState chargeState1 = new ChargeState(10, 1, 100, 0);
+            ChargeState chargeState1 = new ChargeState(10, 1, 100);
             testComponent1.charge_states.Add(chargeState1);
             testComponent1.calculate_properties();
             Assert.AreEqual(1, testComponent1.num_charge_states);
@@ -181,11 +181,11 @@ namespace Test
     [TestFixture]
     class TestChargeState
     {
-        ChargeState testChargeStateNoCorrection = new ChargeState(10, 1, 100, 0);
-        ChargeState testChargeStateList = new ChargeState(new List<string> { Convert.ToString(10), Convert.ToString(1), Convert.ToString(100) }, 0);
-        ChargeState testChargeStateWithCorrection = new ChargeState(10, 1, 100, 0.1);
-        ChargeState mergeChargeState1 = new ChargeState(10, 1, 100, 0);
-        ChargeState mergeChargeState2 = new ChargeState(10, 1, 100, 0.1);
+        ChargeState testChargeStateNoCorrection = new ChargeState(10, 1, 100);
+        ChargeState testChargeStateList = new ChargeState(new List<string> { Convert.ToString(10), Convert.ToString(1), Convert.ToString(100) });
+        ChargeState testChargeStateWithCorrection = new ChargeState(10, 1, 100.1);
+        ChargeState mergeChargeState1 = new ChargeState(10, 1, 100);
+        ChargeState mergeChargeState2 = new ChargeState(10, 1, 100.1);
 
         [Test]
         public void testUncorrected()

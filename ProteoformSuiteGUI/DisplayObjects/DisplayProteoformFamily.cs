@@ -49,6 +49,11 @@ namespace ProteoformSuiteGUI
             get { return f.theoretical_proteoforms.Count; }
         }
 
+        public int topdown_count
+        {
+            get { return f.topdown_proteoforms.Count; }
+        }
+
         public string accession_list
         {
             get { return f.accession_list; }
@@ -89,6 +94,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(gene_list)].HeaderText = "Gene Names";
             dgv.Columns[nameof(experimentals_list)].HeaderText = "Experimental Accessions";
             dgv.Columns[nameof(agg_mass_list)].HeaderText = "Experimental Aggregated Masses";
+            dgv.Columns[nameof(topdown_count)].HeaderText = "TopDown Proteoforms";
         }
 
         #endregion

@@ -11,7 +11,7 @@ using System.Text;
 namespace Test
 {
     [TestFixture]
-    class TestSaveState
+    class TestSweet
     {
 
         #region Setup

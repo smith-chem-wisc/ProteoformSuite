@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using System.IO;
 
 namespace ProteoformSuiteGUI
 {
@@ -85,21 +86,12 @@ namespace ProteoformSuiteGUI
                 if (rb_neucode.Checked) f.label = Labeling.NeuCode;
                 if (rb_unlabeled.Checked) f.label = Labeling.Unlabeled;
             }
-
-            match_files();
             populate_file_lists();
         }
 
         private void rb_unlabeled_CheckedChanged(object sender, EventArgs e)
         { }
 
-        private void match_files()
-        {
-            string message = Sweet.lollipop.match_calibration_files();
-            refresh_dgvs();
-            if (message != "")
-                MessageBox.Show(message);
-        }
 
         private void rb_standardOptions_CheckedChanged(object sender, EventArgs e)
         {
@@ -115,24 +107,41 @@ namespace ProteoformSuiteGUI
         {
             populate_file_lists();
         }
+        private void rb_topdown_CheckedChanged(object sender, EventArgs e)
+        {
+            populate_file_lists();
+        }
 
         private void populate_file_lists()
         {
             cmb_loadTable1.Items.Clear();
             cmb_loadTable2.Items.Clear();
             cmb_loadTable3.Items.Clear();
-            for (int i = 0; i < 4; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
-            for (int i = 0; i < 4; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
-            for (int i = 0; i < 4; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 5; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 5; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
+            for (int i = 0; i < 5; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]);
             cmb_loadTable1.SelectedIndex = 0;
             cmb_loadTable2.SelectedIndex = 1;
             cmb_loadTable3.SelectedIndex = 2;
+            bt_calibrate.Visible = false;
+
+            cmb_loadTable1.Enabled = true;
+            cmb_loadTable2.Enabled = true;
+            cmb_loadTable3.Enabled = true;
 
             if (rb_chemicalCalibration.Checked)
             {
-                cmb_loadTable1.SelectedIndex = 0;
-                cmb_loadTable2.SelectedIndex = 1;
-                cmb_loadTable3.SelectedIndex = 3;
+                for (int i = 5; i < 8; i++) cmb_loadTable1.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 5; i < 8; i++) cmb_loadTable2.Items.Add(Lollipop.file_lists[i]);
+                for (int i = 5; i < 8; i++) cmb_loadTable3.Items.Add(Lollipop.file_lists[i]); bt_calibrate.Visible = true;
+                cmb_loadTable1.SelectedIndex = 5;
+                cmb_loadTable2.SelectedIndex = 6;
+                cmb_loadTable3.SelectedIndex = 7;
+
+                cmb_loadTable1.Enabled = false;
+                cmb_loadTable2.Enabled = false;
+                cmb_loadTable3.Enabled = false;
+
             }
 
             lb_filter1.Text = Lollipop.file_lists[cmb_loadTable1.SelectedIndex];
@@ -182,7 +191,7 @@ namespace ProteoformSuiteGUI
         {
             string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
             Sweet.lollipop.enter_input_files(files, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files, true);
-            match_files();
+            refresh_dgvs();
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
         }
@@ -272,7 +281,7 @@ namespace ProteoformSuiteGUI
             if (dr == DialogResult.OK)
             {
                 Sweet.lollipop.enter_input_files(openFileDialog.FileNames, Lollipop.acceptable_extensions[cmb.SelectedIndex], Lollipop.file_types[cmb.SelectedIndex], Sweet.lollipop.input_files, true);
-                match_files();
+                refresh_dgvs();
             }
 
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
@@ -281,7 +290,6 @@ namespace ProteoformSuiteGUI
         #endregion ADD BUTTONS Private Methods
 
         #region CLEAR BUTTONS Private Methods
-
         private void btn_clearFiles1_Click(object sender, EventArgs e)
         {
             clear_files(cmb_loadTable1, dgv_loadFiles1);
@@ -300,7 +308,7 @@ namespace ProteoformSuiteGUI
         private void clear_files(ComboBox cmb, DataGridView dgv)
         {
             Sweet.lollipop.input_files = Sweet.lollipop.input_files.Except(Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex])).ToList();
-            match_files();
+            refresh_dgvs();
             DisplayUtility.FillDataGridView(dgv, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Lollipop.file_types[cmb.SelectedIndex]).Select(f => new DisplayInputFile(f)));
             DisplayInputFile.FormatInputFileTable(dgv, Lollipop.file_types[cmb.SelectedIndex]);
         }
@@ -314,7 +322,6 @@ namespace ProteoformSuiteGUI
             if (successful_run) MessageBox.Show("Successfully ran method. Feel free to explore using the Results menu.", "Full Run");
             else MessageBox.Show("Method did not successfully run.", "Full Run");
         }
-
         private void bt_clearResults_Click(object sender, EventArgs e)
         {
             Sweet.lollipop = new Lollipop();
@@ -386,13 +393,37 @@ namespace ProteoformSuiteGUI
             lb_filter3.Text = cmb_loadTable1.SelectedItem.ToString();
         }
 
+        private void bt_calibrate_Click(object sender, EventArgs e)
+        {
+            if (Sweet.lollipop.input_files.Where(f => f.purpose == Purpose.RawFile).Count() == 0)
+            {
+                MessageBox.Show("Please enter raw files to calibrate."); return;
+            }
+            if (Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length == 0)
+            {
+                MessageBox.Show("First create a theoretical proteoform database. On the Results tab, select Theoretical Proteoform Database.");
+                return;
+            }
+            MessageBox.Show("Please select file with columns of top-down hits filename, biological replicate, fraction, and technical replicate #'s.");
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Title = "File Descriptions";
+            openFileDialog.Filter = ".tsv Files (*.tsv) | *.tsv";
+            openFileDialog.Multiselect = false;
+            DialogResult dr = openFileDialog.ShowDialog();
+            if (dr == DialogResult.OK)
+            {
+                Sweet.lollipop.file_descriptions = File.ReadAllLines(openFileDialog.FileName);
+            }
+            else return;
+            Sweet.lollipop.read_in_calibration_td_hits();
+            MessageBox.Show(Sweet.lollipop.calibrate_files());
+        }
+        #endregion CHANGED TABLE SELECTION Private Methods
+
         //Do nothing when text changes
         private void cmb_loadTable1_TextChanged(object sender, EventArgs e) { }
         private void cmb_loadTable2_TextChanged(object sender, EventArgs e) { }
         private void cmb_loadTable3_TextChanged(object sender, EventArgs e) { }
-
-
-        #endregion CHANGED TABLE SELECTION Private Methods
 
         #region CHANGE ALL CELLS private methods
 
@@ -500,7 +531,7 @@ namespace ProteoformSuiteGUI
         {
             if (dgv.Rows[e.RowIndex].IsNewRow)
                 return;
-            if (dgv[e.ColumnIndex, e.RowIndex].ValueType == typeof(int) && (!int.TryParse(e.FormattedValue.ToString(), out int x) || x < 1))
+            if (dgv[e.ColumnIndex, e.RowIndex].ValueType == typeof(int) && (!int.TryParse(e.FormattedValue.ToString(), out int x) || x < 0))
             {
                 e.Cancel = true;
                 MessageBox.Show("Please use positive integers for biological replicate labels.");

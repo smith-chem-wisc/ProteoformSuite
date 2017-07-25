@@ -26,22 +26,58 @@ namespace ProteoformSuiteGUI
 
         #region Public Properties
 
-        // For all files
-        public int UniqueId
-        {
-            get { return file.UniqueId; }
-        }
 
         public string Filename
         {
             get { return file.filename; }
         }
 
-        public Purpose Purpose
+        // For identification and quantification files
+        public int biological_replicate
         {
-            get { return file.purpose; }
+            get
+            {
+                return file.biological_replicate;
+            }
+            set
+            {
+                Sweet.change_file(file, file.biological_replicate, nameof(file.biological_replicate), file.biological_replicate.ToString(), value.ToString());
+                file.biological_replicate = value;
+            }
         }
 
+
+        public int Fraction
+        {
+            get { return file.fraction; }
+            set
+            {
+                Sweet.change_file(file, file.fraction, nameof(file.fraction), file.fraction.ToString(), value.ToString());
+                file.fraction = value;
+            }
+        }
+
+        public int technical_replicate
+        {
+            get { return file.technical_replicate; }
+            set
+            {
+                Sweet.change_file(file, file.technical_replicate, nameof(file.technical_replicate), file.technical_replicate.ToString(), value.ToString());
+                file.technical_replicate = value;
+            }
+        }
+
+        public bool topdown_file
+        {
+            get
+            {
+                return file.topdown_file;
+            }
+            set
+            {
+                file.topdown_file = value;
+            }
+        }
 
         //For protein databases
         public bool ContaminantDB
@@ -57,33 +93,6 @@ namespace ProteoformSuiteGUI
             }
         }
 
-
-        // For quantification files
-        public int biological_replicate
-        {
-            get
-            {
-                return file.biological_replicate;
-            }
-            set
-            {
-                Sweet.change_file(file, file.biological_replicate, nameof(file.biological_replicate), file.biological_replicate.ToString(), value.ToString());
-                file.biological_replicate = value;
-            }
-        }
-
-        //public int Fraction
-        //{
-        //    get
-        //    {
-        //        return file.fraction;
-        //    }
-        //    set
-        //    {
-        //        file.fraction = value;
-        //    }
-        //}
-
         public string lt_condition
         {
             get
@@ -97,8 +106,9 @@ namespace ProteoformSuiteGUI
             }
         }
 
+
         public string hv_condition
-        {
+        { 
             get
             {
                 return file.hv_condition;
@@ -107,16 +117,6 @@ namespace ProteoformSuiteGUI
             {
                 Sweet.change_file(file, file.hv_condition, nameof(file.hv_condition), file.hv_condition.ToString(), value.ToString());
                 file.hv_condition = value;
-            }
-        }
-
-
-        // For identification files
-        public bool matchingCalibrationFile
-        {
-            get
-            {
-                return file.matchingCalibrationFile;
             }
         }
 
@@ -133,8 +133,6 @@ namespace ProteoformSuiteGUI
             }
         }
 
-
-
         // Other for all files
         public string complete_path
         {
@@ -145,6 +143,18 @@ namespace ProteoformSuiteGUI
         {
             get { return file.directory; }
         }
+
+        public Purpose Purpose
+        {
+            get { return file.purpose; }
+        }
+
+        // For all files
+        public int UniqueId
+        {
+            get { return file.UniqueId; }
+        }
+
 
         #endregion Public Properties
 
@@ -159,11 +169,11 @@ namespace ProteoformSuiteGUI
             //HEADERS
             dgv.Columns[nameof(UniqueId)].HeaderText = "File ID";
             dgv.Columns[nameof(complete_path)].HeaderText = "File Path";
-            dgv.Columns[nameof(matchingCalibrationFile)].HeaderText = "Matching Calibration File";
             dgv.Columns[nameof(biological_replicate)].HeaderText = "Biological Replicate";
             dgv.Columns[nameof(lt_condition)].HeaderText = Sweet.lollipop.neucode_labeled ? "NeuCode Light Condition" : "Condition";
             dgv.Columns[nameof(hv_condition)].HeaderText = "NeuCode Heavy Condition";
             dgv.Columns[nameof(ContaminantDB)].HeaderText = "Contaminant Database";
+            dgv.Columns[nameof(topdown_file)].HeaderText = "Top-down File";
 
             //EDITABILITY
             dgv.Columns[nameof(UniqueId)].ReadOnly = true;
@@ -171,16 +181,16 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(Directory)].ReadOnly = true;
             dgv.Columns[nameof(Filename)].ReadOnly = true;
             dgv.Columns[nameof(Purpose)].ReadOnly = true;
-            dgv.Columns[nameof(matchingCalibrationFile)].ReadOnly = true;
 
             //VISIBILITY
-            dgv.Columns[nameof(matchingCalibrationFile)].Visible = dgv_purposes.Contains(Purpose.Calibration) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(Labeling)].Visible = dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(biological_replicate)].Visible = dgv_purposes.Contains(Purpose.Quantification);
-            //dgv.Columns[nameof(Fraction)].Visible = dgv_purposes.Contains(Purpose.Quantification);
-            dgv.Columns[nameof(lt_condition)].Visible = dgv_purposes.Contains(Purpose.Quantification);
+            dgv.Columns[nameof(Labeling)].Visible = dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
+            dgv.Columns[nameof(biological_replicate)].Visible = dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
+            dgv.Columns[nameof(Fraction)].Visible = dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
+            dgv.Columns[nameof(lt_condition)].Visible = dgv_purposes.Contains(Purpose.Quantification) || dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
+            dgv.Columns[nameof(technical_replicate)].Visible = dgv_purposes.Contains(Purpose.CalibrationIdentification) || dgv_purposes.Contains(Purpose.RawFile);
             dgv.Columns[nameof(hv_condition)].Visible = Sweet.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(ContaminantDB)].Visible = dgv_purposes.Contains(Purpose.ProteinDatabase);
+            dgv.Columns[nameof(topdown_file)].Visible = dgv_purposes.Contains(Purpose.RawFile) || dgv_purposes.Contains(Purpose.CalibrationIdentification);
         }
 
         #endregion

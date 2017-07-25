@@ -104,6 +104,11 @@ namespace ProteoformSuiteGUI
             get { return t.goTerm_IDs; }
         }
 
+        public int bottomUpPSMcount
+        {
+            get { return t.psm_list.Count;  }
+        }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -127,6 +132,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(lysine_count)].HeaderText = "Lysine Count";
             dgv.Columns[nameof(goTerm_IDs)].HeaderText = "GO Term IDs";
             dgv.Columns[nameof(gene_name)].HeaderText = "Gene Name";
+            dgv.Columns[nameof(bottomUpPSMcount)].HeaderText = "Bottom-Up PSM Count";
 
             dgv.AllowUserToAddRows = false;
         }
