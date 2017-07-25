@@ -14,18 +14,6 @@ namespace ProteoformSuiteInternal
 
         #endregion Public Fields
 
-        #region Public Methods
-
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("Constant");
-            sb.Append(" a = " + a);
-            return sb.ToString();
-        }
-
-        #endregion Public Methods
-
         #region Internal Methods
 
         internal override double Predict(double[] t)

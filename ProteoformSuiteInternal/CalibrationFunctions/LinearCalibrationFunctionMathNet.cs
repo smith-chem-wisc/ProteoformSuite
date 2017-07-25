@@ -27,19 +27,6 @@ namespace ProteoformSuiteInternal
 
         #endregion Public Constructors
 
-        #region Public Methods
-
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.Append("Linear");
-            sb.Append(" numFeatures: " + numFeatures);
-            sb.Append(" transform num outputs: " + transformFunction.numOutputs);
-            return sb.ToString();
-        }
-
-        #endregion Public Methods
-
         #region Internal Methods
 
         internal override double Predict(double[] t)
