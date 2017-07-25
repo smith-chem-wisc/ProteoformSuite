@@ -60,7 +60,7 @@ namespace ProteoformSuiteInternal
         {
             this.monoisotopic_mass = topdown_hits.Select(h => (h.reported_mass - Math.Round(h.reported_mass - h.theoretical_mass, 0) * Lollipop.MONOISOTOPIC_UNIT_MASS)).Average();
             this.modified_mass = this.monoisotopic_mass;
-            this.agg_RT = topdown_hits.Select(h => h.retention_time).Average();
+            this.agg_RT = topdown_hits.Select(h => h.ms2_retention_time).Average();
         }
     }
 }

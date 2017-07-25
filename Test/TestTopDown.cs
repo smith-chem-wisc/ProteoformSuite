@@ -20,7 +20,7 @@ namespace Test
             {
                 TopDownHit t = new TopDownHit();
                 t.score = (10 + Convert.ToDouble(i));
-                t.retention_time = 50d;
+                t.ms2_retention_time = 50d;
                 t.ptm_list = new List<Ptm>();
                 t.pfr = "12345";
                 t.sequence = "SEQUENCE";
@@ -38,13 +38,13 @@ namespace Test
             Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.topdown_proteoforms[0].topdown_hits.Count());  //higher scoring topdown hit should be root.
 
             //Test no aggregation outside retention time range
-            tdhList[1].retention_time += Convert.ToDouble(Sweet.lollipop.retention_time_tolerance + 1);
+            tdhList[1].ms2_retention_time += Convert.ToDouble(Sweet.lollipop.retention_time_tolerance + 1);
             Sweet.lollipop.top_down_hits = tdhList;
             Sweet.lollipop.target_proteoform_community.topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits).ToArray();
             Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count());
 
             //Test no aggregation different pfr
-            tdhList[1].retention_time = tdhList[0].retention_time;
+            tdhList[1].ms2_retention_time = tdhList[0].ms2_retention_time;
             tdhList[1].pfr = "12346";
             Sweet.lollipop.top_down_hits = tdhList;
             Sweet.lollipop.target_proteoform_community.topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits).ToArray();
@@ -61,7 +61,7 @@ namespace Test
 
             //if hit rt above threshold dont aggregate
             tdhList[1].score = 3;
-            tdhList[1].retention_time = 100;
+            tdhList[1].ms2_retention_time = 100;
             Sweet.lollipop.max_RT_td = 90;
             Sweet.lollipop.top_down_hits = tdhList;
             Sweet.lollipop.target_proteoform_community.topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits).ToArray();
@@ -70,7 +70,7 @@ namespace Test
 
             //if hit rt below threshold dont aggregate
             tdhList[1].score = 3;
-            tdhList[1].retention_time = 10;
+            tdhList[1].ms2_retention_time = 10;
             Sweet.lollipop.min_RT_td = 20;
             Sweet.lollipop.top_down_hits = tdhList;
             Sweet.lollipop.target_proteoform_community.topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits).ToArray();
@@ -78,7 +78,7 @@ namespace Test
             Assert.AreEqual(1, Sweet.lollipop.target_proteoform_community.topdown_proteoforms[0].topdown_hits.Count());
 
             //if hits have same scan # and pvalue, should choose higher scoring one only, remove other one.
-            tdhList[1].retention_time = tdhList[0].retention_time;
+            tdhList[1].ms2_retention_time = tdhList[0].ms2_retention_time;
             tdhList[1].ms2ScanNumber = 100;
             tdhList[0].ms2ScanNumber = 100;
             tdhList[1].pvalue = .01;
@@ -99,7 +99,7 @@ namespace Test
             {
                 TopDownHit t = new TopDownHit();
                 t.score = (10 + Convert.ToDouble(i));
-                t.retention_time = 50;
+                t.ms2_retention_time = 50;
                 t.accession = "accession";
                 t.sequence = "sequence";
                 t.pvalue = (double) 1 / (i + 1);
@@ -108,7 +108,7 @@ namespace Test
                 tdhList.Add(t);
             }
 
-            tdhList[9].retention_time = 52;
+            tdhList[9].ms2_retention_time = 52;
 
             Sweet.lollipop.top_down_hits = tdhList;
             Sweet.lollipop.target_proteoform_community.topdown_proteoforms = Sweet.lollipop.AggregateTdHits(Sweet.lollipop.top_down_hits).ToArray();

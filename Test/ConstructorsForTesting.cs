@@ -118,7 +118,7 @@ namespace Test
             TopDownHit h = new TopDownHit();
             h.reported_mass = modified_mass;
             h.theoretical_mass = modified_mass;
-            h.retention_time = retention_time;
+            h.ms2_retention_time = retention_time;
             h.sequence = "MSSSSSSSSSS";
             h.start_index = 10;
             h.stop_index = 20;
