@@ -629,7 +629,7 @@ namespace ProteoformSuiteInternal
         {
             //group hits into topdown proteoforms by accession/theoretical AND observed mass
             List<TopDownProteoform> topdown_proteoforms = new List<TopDownProteoform>();
-            List<TopDownHit> unprocessed_td_hits = top_down_hits.Where(h => h.score >= min_score_td && h.retention_time >= min_RT_td && h.retention_time <= max_RT_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
+            List<TopDownHit> unprocessed_td_hits = top_down_hits.Where(h => h.score >= min_score_td && h.ms2_retention_time >= min_RT_td && h.ms2_retention_time <= max_RT_td && ((biomarker && h.tdResultType == TopDownResultType.Biomarker) || (tight_abs_mass && h.tdResultType == TopDownResultType.TightAbsoluteMass))).OrderByDescending(h => h.score).ToList();
 
             List<TopDownHit> remaining_td_hits = new List<TopDownHit>();
             while(unprocessed_td_hits.Count > 0)
@@ -650,8 +650,8 @@ namespace ProteoformSuiteInternal
                     TopDownHit root = hits_by_pfr[0];
                     //ambiguous results - only include higher scoring one (if same scan, file, and p-value)
                     //find topdownhits within RT tol --> first average
-                    double first_RT_average = hits_by_pfr.Where(h => Math.Abs(h.retention_time - root.retention_time) <= Convert.ToDouble(retention_time_tolerance) && h.pfr == root.pfr).Select(h => h.retention_time).Average();
-                    List<TopDownHit> hits_to_aggregate = hits_by_pfr.Where(h => Math.Abs(h.retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance) && h.pfr == root.pfr).OrderByDescending(h => h.score).ToList();
+                    double first_RT_average = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - root.ms2_retention_time) <= Convert.ToDouble(retention_time_tolerance) && h.pfr == root.pfr).Select(h => h.ms2_retention_time).Average();
+                    List<TopDownHit> hits_to_aggregate = hits_by_pfr.Where(h => Math.Abs(h.ms2_retention_time - first_RT_average) <= Convert.ToDouble(retention_time_tolerance) && h.pfr == root.pfr).OrderByDescending(h => h.score).ToList();
                     root = hits_to_aggregate[0];
                     //candiate topdown hits are those with the same theoretical accession and PTMs --> need to also be within RT tolerance used for agg
                     TopDownProteoform new_pf = new TopDownProteoform(root.accession, root, hits_to_aggregate);
@@ -1354,12 +1354,12 @@ namespace ProteoformSuiteInternal
                 IMsDataFile<IMsDataScan<IMzSpectrum<IMzPeak>>> myMsDataFile = ThermoStaticData.LoadAllStaticData(raw_file.complete_path);
                 Parallel.ForEach(Sweet.lollipop.td_hits_calibration.Where(f => f.filename == raw_file.filename).ToList(), hit =>
                 {
-                    int scanNum = myMsDataFile.GetMsScansInTimeRange(hit.retention_time - 0.00001, hit.retention_time + .00001).First().OneBasedScanNumber;
+                    int scanNum = myMsDataFile.GetMsScansInTimeRange(hit.ms2_retention_time - 0.00001, hit.ms2_retention_time + .00001).First().OneBasedScanNumber;
                     hit.ms2ScanNumber = scanNum;
                     hit.charge = Convert.ToInt16(Math.Round(hit.reported_mass / (double)(myMsDataFile.GetOneBasedScan(scanNum) as ThermoScanWithPrecursor).IsolationMz, 0)); //m / (m/z)  round to get charge 
                     hit.mz = hit.reported_mass.ToMz(hit.charge);
                     while (scanNum < myMsDataFile.NumSpectra && myMsDataFile.GetOneBasedScan(scanNum).MsnOrder > 1) scanNum--;
-                    hit.retention_time = myMsDataFile.GetOneBasedScan(scanNum).RetentionTime;
+                    hit.ms1_retention_time = myMsDataFile.GetOneBasedScan(scanNum).RetentionTime;
                 });
             }
             if (td_hits_calibration.Any(h => h.charge == 0)) return "Error: need to input all raw files for top-down hits. Be sure top-down file box is checked.";
@@ -1462,8 +1462,6 @@ namespace ProteoformSuiteInternal
                     p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical || r.RelationType == ProteoformComparison.ExperimentalDecoy);
                     p.family = null;
                 }
-
-                et_peaks.RemoveAll(k => k.RelationType == ProteoformComparison.ExperimentalTheoretical || k.RelationType == ProteoformComparison.ExperimentalDecoy);
             }
         }
 
@@ -1483,8 +1481,6 @@ namespace ProteoformSuiteInternal
                     p.linked_proteoform_references = null;
                     p.gene_name = null;
                 }
-
-                ee_peaks.RemoveAll(k => k.RelationType == ProteoformComparison.ExperimentalExperimental || k.RelationType == ProteoformComparison.ExperimentalFalse);
             }
         }
 

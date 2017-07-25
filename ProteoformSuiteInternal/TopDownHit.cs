@@ -11,7 +11,7 @@ namespace ProteoformSuiteInternal
     public class TopDownHit
     {
         public int ms2ScanNumber { get; set; }
-        public double retention_time { get; set; }
+        public double ms2_retention_time { get; set; }
         public string filename { get; set; }
         public string uniprot_id { get; set; }
         public string sequence { get; set; }
@@ -34,6 +34,7 @@ namespace ProteoformSuiteInternal
         public int fraction { get; set; } = 0;
         public double mz { get; set; }
         public int charge { get; set; }
+        public double ms1_retention_time { get; set; }
 
 
         public TopDownHit(Dictionary<char, double> aaIsotopeMassList, InputFile file, TopDownResultType tdResultType, string accession, string pfr, string uniprot_id, string name, string sequence, int start_index, int stop_index, List<Ptm> modifications, double reported_mass, double theoretical_mass, int scan, double retention_time, string filename, double pvalue, double score)
@@ -51,7 +52,7 @@ namespace ProteoformSuiteInternal
             this.reported_mass = reported_mass;
             this.theoretical_mass = CalculateProteoformMass(sequence, aaIsotopeMassList) + ptm_list.Sum(p => p.modification.monoisotopicMass);
             this.ms2ScanNumber = scan;
-            this.retention_time = retention_time;
+            this.ms2_retention_time = retention_time;
             this.filename = filename;
             this.score = score;
             this.pvalue = pvalue;
@@ -71,7 +72,7 @@ namespace ProteoformSuiteInternal
             this.reported_mass = h.reported_mass;
             this.theoretical_mass = h.theoretical_mass;
             this.ms2ScanNumber = h.ms2ScanNumber; ;
-            this.retention_time = h.retention_time;
+            this.ms2_retention_time = h.ms2_retention_time;
             this.filename = h.filename;
             this.pvalue = pvalue;
             this.score = h.score;
