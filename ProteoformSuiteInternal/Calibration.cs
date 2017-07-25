@@ -51,13 +51,6 @@ namespace ProteoformSuiteInternal
                     break;
                 trainingPointCounts.Add(dataPointAcquisitionResult.Ms1List.Count);
             }
-
-            //calibrate topdown hits if this is topdown file....
-            foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration.Where(h => h.filename == file.filename))
-            {
-                Tuple<string, int, double> key = new Tuple<string, int, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);
-                if (!Sweet.lollipop.td_hit_correction.ContainsKey(key)) lock (Sweet.lollipop.td_hit_correction) Sweet.lollipop.td_hit_correction.Add(key, hit.mz.ToMass(hit.charge));
-            }
             return true;
         }
 
