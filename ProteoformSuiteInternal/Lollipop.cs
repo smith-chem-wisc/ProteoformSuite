@@ -1318,7 +1318,7 @@ namespace ProteoformSuiteInternal
             foreach (string line in file_descriptions.Get(1, file_descriptions.Length))
             {
                 int biological_replicate;
-                int fraction;
+                int fraction; 
                 int technical_replicate;
                 string[] file_description = line.Split('\t');
                 if (file_descriptions.Count(d => d.Split('\t')[0] == file_description[0]) > 1)
