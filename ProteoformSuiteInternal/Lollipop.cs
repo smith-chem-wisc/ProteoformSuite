@@ -1305,7 +1305,7 @@ namespace ProteoformSuiteInternal
             td_hits_calibration.Clear();
             file_mz_correction.Clear();
             td_hit_correction.Clear();
-            calibration_components.Clear();
+            calibration_components.Clear(); 
             foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
             {
                 td_hits_calibration.AddRange(topdownReader.ReadTDFile(file));
