@@ -1298,7 +1298,8 @@ namespace ProteoformSuiteInternal
         public Dictionary<Tuple<string, double>, double> file_mz_correction = new Dictionary<Tuple<string, double>, double>();
         public Dictionary<Tuple<string, int, double>, double> td_hit_correction = new Dictionary<Tuple<string, int, double>, double>();
         public List<Component> calibration_components = new List<Component>();
-        public string[] file_descriptions; 
+        public string[] file_descriptions;
+        public List<string> filenames_did_not_calibrate = new List<string>();
 
         public void read_in_calibration_td_hits()
         {
@@ -1386,20 +1387,21 @@ namespace ProteoformSuiteInternal
                             bool calibrated = get_calibration_points(calibration, file);
                             if (calibrated)
                             {
-                                determine_component_shift(calibration, file.topdown_file, biological_replicate, fraction, technical_replicate);
+                                determine_shifts(file.filename, file.topdown_file, biological_replicate, fraction, technical_replicate);
                                 List<InputFile> files = input_files.Where(f => f.topdown_file == file.topdown_file && f.purpose == Purpose.CalibrationIdentification && f.biological_replicate == biological_replicate && f.fraction == fraction && f.technical_replicate == technical_replicate).ToList();
                                 foreach (InputFile f in files) calibration.calibrate_components_in_xlsx(f);
                             }
+                            else filenames_did_not_calibrate.Add(file.filename);
                         }
                     }
                 }
             }
             Calibration cali = new Calibration();
-            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown))
+            foreach (InputFile file in input_files.Where(f => f.purpose == Purpose.CalibrationTopDown && td_hits_calibration.Any(h => h.file == f && td_hit_correction.ContainsKey(new Tuple<string, int, double>(h.filename, h.ms2ScanNumber, h.reported_mass)))))
             {
                 cali.calibrate_td_hits_file(file);
             }
-            return "Successfully calibrated files.";
+            return "Successfully calibrated files." + ((filenames_did_not_calibrate.Count > 0) ? (" The following files did not calibrate due to not enough calibration points: " + String.Join(", ", filenames_did_not_calibrate.Distinct())) : "");
         }
 
 
@@ -1409,7 +1411,7 @@ namespace ProteoformSuiteInternal
             return calibration.Run_TdMzCal(raw_file, hits, raw_file.topdown_file, raw_file.biological_replicate, raw_file.fraction, raw_file.technical_replicate);
         }
 
-        public void determine_component_shift(Calibration calibration, bool topdown_file, int biological_replicate, int fraction, int technical_replicate)
+        public void determine_shifts(string td_filename, bool topdown_file, int biological_replicate, int fraction, int technical_replicate)
         {
             Parallel.ForEach(calibration_components.Where(c =>c.input_file.topdown_file == topdown_file && c.input_file.biological_replicate == biological_replicate && c.input_file.fraction == fraction && c.input_file.technical_replicate == technical_replicate), c =>
             {
@@ -1420,12 +1422,19 @@ namespace ProteoformSuiteInternal
                     {
                         if (!file_mz_correction.ContainsKey(key))
                         {
-                            file_mz_correction.Add(key, cs.mz_centroid);
+                            file_mz_correction.Add(key, Math.Round(cs.mz_centroid, 5));
                         }
                     }
                 }
 
             });
+
+            //calibrate topdown hits if this is topdown file....
+            foreach (TopDownHit hit in Sweet.lollipop.td_hits_calibration.Where(h => h.filename == td_filename))
+            {
+                Tuple<string, int, double> key = new Tuple<string, int, double>(hit.filename, hit.ms2ScanNumber, hit.reported_mass);
+                if (!Sweet.lollipop.td_hit_correction.ContainsKey(key)) lock (Sweet.lollipop.td_hit_correction) Sweet.lollipop.td_hit_correction.Add(key, Math.Round(hit.mz.ToMass(hit.charge), 8));
+            }
         }
 
         #endregion CALIBRATION 
