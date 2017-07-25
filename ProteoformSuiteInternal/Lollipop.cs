@@ -1311,7 +1311,7 @@ namespace ProteoformSuiteInternal
                 td_hits_calibration.AddRange(topdownReader.ReadTDFile(file));
             }
         }
-         
+
         public string get_file_descriptions()
         {
             //determine biorep, techrep, fraction of each raw file, component file, and topdown hit
