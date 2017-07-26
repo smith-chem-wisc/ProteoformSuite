@@ -70,7 +70,9 @@ namespace ProteoformSuiteGUI
         public bool ReadyToRunTheGamut()
         {
             return Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count() > 0 
-                && Sweet.lollipop.target_proteoform_community.families.Count > 0;
+                && Sweet.lollipop.target_proteoform_community.families.Count > 0
+                // and all of the files need to have unique bio/fract/tech replicate annotations for logFC analysis
+                && Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Select(f => f.biological_replicate + f.fraction + f.technical_replicate).Distinct().Count() == Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count();
         }
 
         public void FillTablesAndCharts()
@@ -119,6 +121,7 @@ namespace ProteoformSuiteGUI
             cmbx_edgeLabel.Items.AddRange(Lollipop.edge_labels);
 
             //Initialize display options
+            cmbx_volcanoChartSelection.Items.AddRange(volcano_selections);
             cmbx_colorScheme.Items.AddRange(CytoscapeScript.color_scheme_names);
             cmbx_nodeLayout.Items.AddRange(Lollipop.node_positioning);
             cmbx_nodeLabelPositioning.Items.AddRange(CytoscapeScript.node_label_positions);
@@ -128,6 +131,7 @@ namespace ProteoformSuiteGUI
             cb_redBorder.Checked = true;
             cb_boldLabel.Checked = true;
 
+            cmbx_volcanoChartSelection.SelectedIndex = 0;
             cmbx_colorScheme.SelectedIndex = 1;
             cmbx_nodeLayout.SelectedIndex = 1;
             cmbx_nodeLabelPositioning.SelectedIndex = 0;
@@ -245,6 +249,8 @@ namespace ProteoformSuiteGUI
                 MessageBox.Show("Please aggregate proteoform observations.", "Quantification");
             else if (Sweet.lollipop.target_proteoform_community.families.Count <= 0)
                 MessageBox.Show("Please construct proteoform families.", "Quantification");
+            else if (Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Select(f => f.biological_replicate + f.fraction + f.technical_replicate).Distinct().Count() != Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification).Count())
+                MessageBox.Show("Please label each quantification input file with a unique set of labels, i.e. biological replicate, fraction, and technical replicate.", "Quantification");
         }
 
         private void cmbx_ratioNumerator_SelectedIndexChanged(object sender, EventArgs e)
@@ -333,17 +339,18 @@ namespace ProteoformSuiteGUI
             foreach (QuantitativeProteoformValues qValue in Sweet.lollipop.qVals)
             {
                 if (qValue.significant_tusher && Sweet.lollipop.significance_by_permutation || qValue.significant_foldchange && Sweet.lollipop.significance_by_log2FC)
-                    ct_volcano_logFold_logP.Series["significantlogFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.pValue_uncorrected : (double)qValue.pValue_randomization));
+                    ct_volcano_logFold_logP.Series["significantlogFold_logP"].Points.AddXY(plot_selection == 0 ? qValue.average_log2fc : (double)qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.pValue_uncorrected : (double)qValue.pValue_randomization));
                 else
-                    ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.pValue_uncorrected : (double)qValue.pValue_randomization));
+                    ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(plot_selection == 0 ? qValue.average_log2fc : (double)qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.pValue_uncorrected : (double)qValue.pValue_randomization));
             }
 
             if (Sweet.lollipop.qVals.Count > 0)
             {
-                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(Sweet.lollipop.qVals.Min(q => q.logFoldChange)));
-                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(Sweet.lollipop.qVals.Max(q => q.logFoldChange)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(Sweet.lollipop.qVals.Min(q => plot_selection == 0 ? q.average_log2fc : (double)q.logFoldChange)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(Sweet.lollipop.qVals.Max(q => plot_selection == 0 ? q.average_log2fc : (double)q.logFoldChange)));
                 ct_volcano_logFold_logP.ChartAreas[0].AxisY.Minimum = Math.Floor(Sweet.lollipop.qVals.Min(q => -Math.Log10(plot_selection == 0 ? q.pValue_uncorrected : (double)q.pValue_randomization)));
                 ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = Math.Ceiling(Sweet.lollipop.qVals.Max(q => -Math.Log10(plot_selection == 0 ? q.pValue_uncorrected : (double)q.pValue_randomization)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum > 30 ? 30 : ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum;
             }
         }
 
@@ -450,7 +457,7 @@ namespace ProteoformSuiteGUI
 
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
-                if (pf.quant.significant_tusher)
+                if (pf.quant.significant_tusher && Sweet.lollipop.significance_by_permutation || pf.quant.significant_foldchange && Sweet.lollipop.significance_by_log2FC)
                     ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.scatter, pf.quant.relative_difference);
                 else
                     ct_relativeDifference.Series["Quantified"].Points.AddXY(pf.quant.scatter, pf.quant.relative_difference);
@@ -539,7 +546,7 @@ namespace ProteoformSuiteGUI
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
                 decimal rel_diff = pf.quant.relative_difference;
-                if (pf.quant.significant_tusher)
+                if (pf.quant.significant_tusher && Sweet.lollipop.significance_by_permutation || pf.quant.significant_foldchange && Sweet.lollipop.significance_by_log2FC)
                     ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.roughSignificanceFDR, rel_diff);
                 else
                     ct_relativeDifference.Series["Quantified"].Points.AddXY(pf.quant.roughSignificanceFDR, rel_diff);
