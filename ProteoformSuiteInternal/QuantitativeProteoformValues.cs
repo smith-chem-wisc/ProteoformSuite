@@ -125,7 +125,6 @@ namespace ProteoformSuiteInternal
         public void calculate_log2TestStatistics(double log2FC_population_average)
         {
             tTestStatistic = (average_log2fc - log2FC_population_average) / (stdev_log2fc / Math.Sqrt(log2FoldChanges.Count));
-
         }
 
         #endregion Fold Change Analysis Methods

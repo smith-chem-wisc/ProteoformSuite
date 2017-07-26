@@ -223,40 +223,40 @@ namespace ProteoformSuiteInternal
                 foreach (Component higher_component in higher_mass_components)
                 {
                     lock (lower_component) lock (higher_component) // Turns out the LINQ queries in here, especially for overlapping_charge_states, aren't thread safe
-                    {
-                        double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
-                        if (mass_difference < 6)
                         {
-                            List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList();
-                            List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList();
-                            List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
-                            lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                            higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                            double lower_intensity = lower_component.intensity_sum_olcs;
-                            double higher_intensity = higher_component.intensity_sum_olcs;
-                            bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
-                            if (lower_intensity > 0 && higher_intensity > 0)
+                            double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
+                            if (mass_difference < 6)
                             {
-                                NeuCodePair pair = lower_intensity > higher_intensity ?
-                                    new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
-                                    new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
+                                List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList();
+                                List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList();
+                                List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
+                                lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                                higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                                double lower_intensity = lower_component.intensity_sum_olcs;
+                                double higher_intensity = higher_component.intensity_sum_olcs;
+                                bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
+                                if (lower_intensity > 0 && higher_intensity > 0)
+                                {
+                                    NeuCodePair pair = lower_intensity > higher_intensity ?
+                                        new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
+                                        new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
 
                                     if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + MONOISOTOPIC_UNIT_MASS) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
                                         lock (pairsInScanRange) pairsInScanRange.Add(pair);
+                                }
                             }
                         }
-                    }
                 }
             });
 
             foreach (NeuCodePair pair in pairsInScanRange
                 .OrderBy(p => Math.Min(p.neuCodeLight.weighted_monoisotopic_mass, p.neuCodeHeavy.weighted_monoisotopic_mass)) //lower_component
                 .ThenBy(p => Math.Max(p.neuCodeLight.weighted_monoisotopic_mass, p.neuCodeHeavy.weighted_monoisotopic_mass)) //higher_component
-                .ToList()) 
+                .ToList())
             {
                 lock (heavy_hashed_pairs)
                 {
-                    if (!heavy_hashed_pairs.TryGetValue(pair.neuCodeLight, out List<NeuCodePair> these_pairs) 
+                    if (!heavy_hashed_pairs.TryGetValue(pair.neuCodeLight, out List<NeuCodePair> these_pairs)
                         || !these_pairs.Any(p => p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity, is probably correct, and that that component should not get reuused as a light.)
                     {
                         lock (destination)
@@ -536,7 +536,7 @@ namespace ProteoformSuiteInternal
         public double ptmset_mass_tolerance = 0.00001;
         public bool combine_identical_sequences = true;
         public bool combine_theoretical_proteoforms_byMass = true;
-        public string[] mod_types_to_exclude = new string[] { "Metal", "PeptideTermMod", "TrypticProduct" };
+        public string[] mod_types_to_exclude = new string[] { "Metal", "PeptideTermMod", "TrypticProduct", "TrypsinDigestedMod" };
         public Dictionary<double, int> modification_ranks = new Dictionary<double, int>();
         public int mod_rank_sum_threshold = 0; // set to the maximum rank of any single modification
         public int mod_rank_first_quartile = 0; // approximate quartiles used for heuristics with unranked modifications
@@ -678,8 +678,7 @@ namespace ProteoformSuiteInternal
         public Dictionary<string, List<string>> conditionsBioReps = new Dictionary<string, List<string>>();
         public Dictionary<string, List<string>> ltConditionsBioReps = new Dictionary<string, List<string>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
         public Dictionary<string, List<string>> hvConditionsBioReps = new Dictionary<string, List<string>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
-        public Dictionary<string, List<string>> quantBioFracCombos; //this dictionary has an integer list of bioreps with an integer list of observed fractions. this way we can be missing reps and fractions.
-        public List<Tuple<string, string, double>> normalizationFactors;
+        public Dictionary<string, List<string>> quantBioFracCombos = new Dictionary<string, List<string>>(); //this dictionary has an integer list of bioreps with an integer list of observed fractions. this way we can be missing reps and fractions.
 
         #endregion QUANTIFICATION SETUP Public Fields
 
@@ -728,14 +727,8 @@ namespace ProteoformSuiteInternal
             minBiorepsWithObservations = countOfBioRepsInOneCondition > 0 ? countOfBioRepsInOneCondition : 1;
 
             //getBiorepsFractionsList
-            quantBioFracCombos = new Dictionary<string, List<string>>();
             List<string> bioreps = input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
-            List<string> fractions = new List<string>();
-            foreach (string b in bioreps)
-            {
-                //fractions = input_files.Where(q => q.purpose == Purpose.Quantification).Where(rep => rep.biological_replicate == b).Select(f => f.fraction).Distinct().ToList();
-                quantBioFracCombos.Add(b, fractions);
-            }
+            quantBioFracCombos = bioreps.ToDictionary(b => b, b => input_files.Where(q => q.purpose == Purpose.Quantification && q.biological_replicate == b).Select(f => f.fraction).Distinct().ToList());
         }
 
         #endregion QUANTIFICATION SETUP
@@ -806,7 +799,7 @@ namespace ProteoformSuiteInternal
 
         // "Local FDR" calculated using the relative difference of each proteoform as both minimumPassingNegativeTestStatistic & minimumPassingPositiveTestStatisitic. This is an unofficial extension of the statisitical analysis above.
         public bool useLocalFdrCutoff = false;
-        public decimal localFdrCutoff = 0.05m; 
+        public decimal localFdrCutoff = 0.05m;
 
         #endregion QUANTIFICATION Public Fields
 
@@ -1007,7 +1000,7 @@ namespace ProteoformSuiteInternal
             foreach (BiorepFractionTechrepIntensity bft in allOriginalBfts)
             {
                 Tuple<InputFile, string> key1 = new Tuple<InputFile, string>(bft.input_file, bft.condition);
-                 bool yep = fileCondition_intensities.TryGetValue(key1, out List<double> intensities1);
+                bool yep = fileCondition_intensities.TryGetValue(key1, out List<double> intensities1);
                 if (yep) intensities1.Add(bft.intensity_sum);
                 else fileCondition_intensities.Add(key1, new List<double> { bft.intensity_sum });
 
@@ -1019,7 +1012,7 @@ namespace ProteoformSuiteInternal
 
             fileCondition_avgLog2I = fileCondition_intensities.ToDictionary(kv => kv.Key, kv => kv.Value.Average(x => Math.Log(x, 2)));
             conditionBiorepIntensitySums = conditionBiorep_intensities.ToDictionary(kv => kv.Key, kv => kv.Value.Sum()); // this is the linear intensity sum
-            
+
             foreach (BiorepFractionTechrepIntensity bft in allOriginalBfts)
             {
                 Tuple<InputFile, string> x = new Tuple<InputFile, string>(bft.input_file, bft.condition);
@@ -1041,17 +1034,25 @@ namespace ProteoformSuiteInternal
                 pf.quant.normalize_bft_intensities(conditionBiorepNormalizationDivisors));
 
             // Calculate log2 fold changes
-            //Parallel.ForEach(satisfactoryProteoforms, pf =>
-            foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
-                pf.quant.calculate_log2FoldChanges(numerator_condition, denominator_condition);
+            Parallel.ForEach(satisfactoryProteoforms, pf =>
+                pf.quant.calculate_log2FoldChanges(numerator_condition, denominator_condition));
             List<double> all_log2fc = satisfactoryProteoforms.SelectMany(pf => pf.quant.log2FoldChanges).ToList();
             log2FC_population_average = all_log2fc.Average(); // caution: average of averages is usally incorrect
             log2FC_population_stdev = Math.Sqrt(all_log2fc.Sum(x => Math.Pow(x - log2FC_population_average, 2)) / all_log2fc.Count); // caution: average of averages is usally incorrect
+
+            // Calculate p-values
             foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
             {
                 pf.quant.tTestStatistic = (pf.quant.average_log2fc - log2FC_population_average) / (pf.quant.stdev_log2fc / Math.Sqrt(pf.quant.log2FoldChanges.Count));
-                pf.quant.pValue_uncorrected = ExtensionMethods.Student2T(pf.quant.tTestStatistic, pf.quant.log2FoldChanges.Count - 1); // using a two-tailed test. Null hypothesis is that our value x is equal to the mean. Alternative hypothesis is in either direction.
+                pf.quant.pValue_uncorrected = ExtensionMethods.Student2T(pf.quant.tTestStatistic, conditionsBioReps.Values.SelectMany(x => x).Distinct().Count() - 1); // using a two-tailed test. Null hypothesis is that our value x is equal to the mean. Alternative hypothesis is in either direction.
+
+                if (pf.quant.pValue_uncorrected <= 0)
+                    pf.quant.pValue_uncorrected = Double.Epsilon;
+                if (pf.quant.pValue_uncorrected > 1)
+                    pf.quant.pValue_uncorrected = 1;
             }
+
+            // Benjimini-Hochberg correction
             establish_benjiHoch_significance();
         }
 
@@ -1169,6 +1170,14 @@ namespace ProteoformSuiteInternal
                 permutedRelativeDifferences.Add(relativeDifferences);
             }
             return permutedRelativeDifferences;
+        }
+
+        public List<List<decimal>> compute_balanced_fraction_permutation_relDiff(Dictionary<string, List<string>> conditionsBioReps, Dictionary<string, List<string>> biorepFractions, List<InputFile> input_files, string induced_condition, List<ExperimentalProteoform> satisfactoryProteoforms, decimal sKnot_minFoldChange)
+        {
+            List<string> bioreps = biorepFractions.Keys.ToList();
+            List<string> fractions = biorepFractions.Values.SelectMany(x => x).Distinct().ToList();
+            List<Tuple<string, string>> biorepFracts = biorepFractions.SelectMany(kv => kv.Value.Select(v => new Tuple<string, string>(kv.Key, v))).ToList();
+            List<Tuple<string, string>> allInduced = 
         }
 
         public void computeSortedRelativeDifferences(List<ExperimentalProteoform> satisfactoryProteoforms, List<List<decimal>> permutedRelativeDifferences)
