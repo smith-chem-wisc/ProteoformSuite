@@ -185,10 +185,22 @@ namespace ProteoformSuiteInternal
         {
             foreach (Component c in Sweet.lollipop.remaining_quantification_components)
             {
-                if (includes_neucode_component(c, this, true))
+                bool lt_includes = includes_neucode_component(c, this, true);
+                bool hv_includes = includes_neucode_component(c, this, false);
+
+                if (lt_includes && !hv_includes)
                     lt_quant_components.Add(c);
-                if (includes_neucode_component(c, this, false))
+                else if (hv_includes && !lt_includes)
                     hv_quant_components.Add(c);
+                else if (hv_includes && lt_includes)
+                {
+                    double lt_diff = minimum_mass_difference(c, agg_mass);
+                    double hv_diff = minimum_mass_difference(c, agg_mass + lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT);
+                    if (lt_diff < hv_diff)
+                        lt_quant_components.Add(c);
+                    else if (hv_diff < lt_diff)
+                        hv_quant_components.Add(c);
+                }
             }
 
             //lt_quant_components.AddRange(Lollipop.remaining_components.Where(r => this.includes(r, this, true)));
@@ -256,6 +268,22 @@ namespace ProteoformSuiteInternal
                     return true; //Return a true result immediately; acts as an OR between these conditions
             }
             return false;
+        }
+
+        private double minimum_mass_difference(Component candidate, double corrected_mass)
+        {
+            foreach (int missed_mono_count in Sweet.lollipop.missed_monoisotopics_range)
+            {
+                double shift = missed_mono_count * Lollipop.MONOISOTOPIC_UNIT_MASS;
+                double shifted_mass = corrected_mass + shift;
+                double mass_tolerance = shifted_mass / 1000000 * Sweet.lollipop.mass_tolerance;
+                double low = shifted_mass - mass_tolerance;
+                double high = shifted_mass + mass_tolerance;
+                bool tolerable_mass = candidate.weighted_monoisotopic_mass >= low && candidate.weighted_monoisotopic_mass <= high;
+                if (tolerable_mass)
+                    return Math.Abs(candidate.weighted_monoisotopic_mass - corrected_mass); //Return a true result immediately; acts as an OR between these conditions
+            }
+            return Double.NaN;
         }
 
         #endregion Aggregation Private Methods

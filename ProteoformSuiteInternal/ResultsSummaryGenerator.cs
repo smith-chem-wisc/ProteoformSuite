@@ -360,14 +360,14 @@ namespace ProteoformSuiteInternal
                         {
                             foreach (InputFile f in input_files.Where(f => (f.lt_condition == condition_bioreps.Key || f.hv_condition == condition_bioreps.Key) && f.biological_replicate == biorep))
                             {
-                                BiorepFractionTechrepIntensity bft = pf.quant.allBftIntensities[new Tuple<InputFile, string>(f, condition_bioreps.Key)];
+                                pf.quant.allBftIntensities.TryGetValue(new Tuple<InputFile, string>(f, condition_bioreps.Key), out BiorepFractionTechrepIntensity bft);
                                 double value = bft != null ? !bft.imputed || include_imputation ? bft.intensity_sum : double.NaN : double.NaN;
                                 row[condition_bioreps.Key + "_" + biorep + "_" + f.fraction + "_" + f.technical_replicate] = value;
                             }
                         }
                         else
                         {
-                            BiorepIntensity br = pf.quant.allIntensities[new Tuple<string, string>(condition_bioreps.Key, biorep)];
+                            pf.quant.allIntensities.TryGetValue(new Tuple<string, string>(condition_bioreps.Key, biorep), out BiorepIntensity br);
                             double value = br != null ? !br.imputed || include_imputation ? br.intensity_sum : double.NaN : double.NaN;
                             row[condition_bioreps.Key + "_" + biorep] = value;
                         }
