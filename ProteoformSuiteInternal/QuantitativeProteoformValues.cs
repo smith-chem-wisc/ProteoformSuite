@@ -63,7 +63,7 @@ namespace ProteoformSuiteInternal
 
         #region Public Methods
 
-        public void impute_biorep_intensities_and_determine_test_statistics(List<BiorepIntensity> biorepIntensityList, Dictionary<string, List<string>> conditionBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal bkgdAverageIntensity, decimal bkgdStDev, decimal sKnot)
+        public void impute_biorep_intensities(List<BiorepIntensity> biorepIntensityList, Dictionary<string, List<string>> conditionBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal bkgdAverageIntensity, decimal bkgdStDev, decimal sKnot)
         {
             //bkgdAverageIntensity is log base 2
             //bkgdStDev is log base 2
@@ -74,17 +74,23 @@ namespace ProteoformSuiteInternal
             numeratorIntensitySum = (decimal)numeratorOriginalBiorepIntensities.Sum(i => i.intensity_sum) + (decimal)numeratorImputedIntensities.Sum(i => i.intensity_sum);
             List<BiorepIntensity> allNumeratorIntensities = numeratorOriginalBiorepIntensities.Concat(numeratorImputedIntensities).ToList();
 
-            List<BiorepIntensity> allDenominatorIntensities = new List<BiorepIntensity>();
             denominatorOriginalBiorepIntensities = biorepIntensityList.Where(b => b.condition == denominator_condition).ToList();
             denominatorImputedIntensities = imputedIntensities(denominatorOriginalBiorepIntensities, bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition]);
             denominatorIntensitySum = (decimal)denominatorOriginalBiorepIntensities.Sum(i => i.intensity_sum) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity_sum);
-            allDenominatorIntensities = denominatorOriginalBiorepIntensities.Concat(denominatorImputedIntensities).ToList();
+            List<BiorepIntensity> allDenominatorIntensities = denominatorOriginalBiorepIntensities.Concat(denominatorImputedIntensities).ToList();
 
-            allIntensities = allNumeratorIntensities.Concat(allDenominatorIntensities).ToDictionary(x => new Tuple<string, string>(x.condition, x.biorep), x => x);
+            allIntensities = allNumeratorIntensities.Concat(allDenominatorIntensities).ToDictionary(x => new Tuple<string, string>(x.condition, x.biorep), x => x);            
+        }
+
+        public void determine_proteoform_statistics(List<BiorepIntensity> biorepIntensityList, Dictionary<string, List<string>> conditionBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal bkgdAverageIntensity, decimal bkgdStDev, decimal sKnot)
+        {
+            List<BiorepIntensity> allNumeratorIntensities = numeratorOriginalBiorepIntensities.Concat(numeratorImputedIntensities).ToList();
+            List<BiorepIntensity> allDenominatorIntensities = denominatorOriginalBiorepIntensities.Concat(denominatorImputedIntensities).ToList();
 
             intensitySum = numeratorIntensitySum + denominatorIntensitySum;
             logFoldChange = (decimal)Math.Log((double)numeratorIntensitySum / (double)denominatorIntensitySum, 2);
-            pValue_randomization = Randomization_PValue(logFoldChange, allNumeratorIntensities, allDenominatorIntensities);
+
+            //pValue_randomization = Randomization_PValue(logFoldChange, allNumeratorIntensities, allDenominatorIntensities);
 
             // We are using linear intensities, like in Tusher et al. (2001).
             // This is a non-parametric test, and so it makes no assumptions about the incoming probability distribution, unlike a simple t-test.
