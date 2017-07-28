@@ -136,13 +136,6 @@ namespace ProteoformSuiteInternal
             string style_name = "ProteoformFamilies" + time_stamp;
 
             IEnumerable<TheoreticalProteoform> theoreticals = families.SelectMany(f => f.theoretical_proteoforms);
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\infamiliescytoscape....txt"))
-            {
-                foreach (var t in theoreticals)
-                {
-                    writer.WriteLine(t.accession);
-                }
-            }
             //Dictionary<string, GeneName> gene_dict = new Dictionary<string, GeneName>();
             //if (gene_centric_families)
             //    foreach (TheoreticalProteoform t in theoreticals)
