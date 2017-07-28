@@ -54,13 +54,6 @@ namespace ProteoformSuiteInternal
         public void construct_family()
         {
             proteoforms = new HashSet<Proteoform>(construct_family(new List<Proteoform> { seed })).ToList();
-            if (proteoforms.Any(p => p.accession.Contains("P00359_2full332_1G_P1")))
-            {
-                //lschaffer2
-                string ok = "OK";
-
-            ///
-            }
             separate_proteoforms();
         }
 
