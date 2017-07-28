@@ -1,5 +1,9 @@
 ﻿using ProteoformSuiteInternal;
 using System.Windows.Forms;
+using System.Linq;
+using System;
+using System.Data;
+
 
 namespace ProteoformSuiteGUI
 {
@@ -108,6 +112,11 @@ namespace ProteoformSuiteGUI
         {
             get { return t.psm_list.Count;  }
         }
+        
+        public string groupedAccessions
+        {
+            get { return String.Join(", ", t.ExpandedProteinList.SelectMany(p => p.AccessionList).Select(a => a.Split('_')[0]).Distinct()); }
+        }
 
         #endregion Public Properties
 
@@ -133,10 +142,11 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(goTerm_IDs)].HeaderText = "GO Term IDs";
             dgv.Columns[nameof(gene_name)].HeaderText = "Gene Name";
             dgv.Columns[nameof(bottomUpPSMcount)].HeaderText = "Bottom-Up PSM Count";
+            dgv.Columns[nameof(groupedAccessions)].HeaderText = "Grouped Theoretical Accessions";
 
             dgv.AllowUserToAddRows = false;
         }
-
+        
         #endregion
 
     }

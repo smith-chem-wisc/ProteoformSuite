@@ -182,7 +182,7 @@ namespace Test
     class TestChargeState
     {
         ChargeState testChargeStateNoCorrection = new ChargeState(10, 1, 100);
-        ChargeState testChargeStateList = new ChargeState(new List<string> { Convert.ToString(10), Convert.ToString(1), Convert.ToString(100) });
+        ChargeState testChargeStateList = new ChargeState(new List<string> { Convert.ToString(10), Convert.ToString(1), Convert.ToString(100), Convert.ToString(10000) });
         ChargeState testChargeStateWithCorrection = new ChargeState(10, 1, 100.1);
         ChargeState mergeChargeState1 = new ChargeState(10, 1, 100);
         ChargeState mergeChargeState2 = new ChargeState(10, 1, 100.1);

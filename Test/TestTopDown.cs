@@ -200,21 +200,28 @@ namespace Test
             Assert.AreEqual(5, td_relations.Count);
 
             //td3 shouldnt have any etd relations (wrong rt)
-            Assert.AreEqual(0, td3.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
+            Assert.AreEqual(0, td3.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental));
 
             //2 etd
-            Assert.AreEqual(2, td_relations.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
+            Assert.AreEqual(2, td_relations.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental));
             Assert.AreEqual(0, pf3.relationships.Count);
             Assert.AreEqual(1, pf1.relationships.Count);
             Assert.AreEqual(1, pf2.relationships.Count);
             Assert.AreEqual(-1, Math.Round(pf2.relationships.First().DeltaMass, 0));
-            //2 ttd
-            Assert.AreEqual(3, td_relations.Count(r => r.RelationType == ProteoformComparison.TheoreticalTopDown));
-            Assert.AreEqual(1, td1.relationships.Count(r => r.RelationType == ProteoformComparison.TheoreticalTopDown));
-            Assert.AreEqual(1, td2.relationships.Count(r => r.RelationType == ProteoformComparison.TheoreticalTopDown));
-            //added a new theoretical because couldn't form relation with one of the topdowns.
+            //3 ttd
+            Assert.AreEqual(3, td_relations.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical));
+            Assert.AreEqual(1, td1.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical));
+            Assert.AreEqual(1, td2.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical));
+            //added 2 new theoreticals because couldn't form relation with one of the topdowns.
             Assert.AreEqual(3, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
-
+            Assert.AreEqual(2, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Count(t => t.topdown_theoretical));
+            //if do ET, should only for relations with non topdown theoreticals
+            Sweet.lollipop.target_proteoform_community.experimental_proteoforms.ToList().Add(ConstructorsForTesting.ExperimentalProteoform("E4", 1087.03, 1, true));
+            Sweet.lollipop.et_relations = Sweet.lollipop.target_proteoform_community.relate(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, ProteoformComparison.ExperimentalTheoretical, true, TestContext.CurrentContext.TestDirectory, true);
+            Assert.AreEqual(2, Sweet.lollipop.et_relations.Count);
+            Assert.AreEqual(0, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Where(t => t.topdown_theoretical).Sum(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTheoretical)));
+            //be sure some are 0 distance mass from an experimental -- didn't form relation due to being topdown theoretical. 
+            Assert.IsTrue(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Any(t => t.topdown_theoretical && Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Any(e => e.modified_mass == t.modified_mass)));
 
             //experimental w/ multiple topdowns should relate to the one closest to 0, not with MM errors, regardless of order td relations made in
             Sweet.lollipop.clear_td();
@@ -224,9 +231,9 @@ namespace Test
             Sweet.lollipop.target_proteoform_community.topdown_proteoforms.OrderBy(p => p.modified_mass);
             td_relations = Sweet.lollipop.target_proteoform_community.relate_td();
 
-            Assert.AreEqual(1, pf1.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
-            Assert.AreEqual(1, td3.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
-            Assert.AreEqual(0, td4.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
+            Assert.AreEqual(1, pf1.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental));
+            Assert.AreEqual(1, td3.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental));
+            Assert.AreEqual(0, td4.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental));
             Assert.AreEqual(3, td_relations.Count);
 
             //try in other order of topdown (other relation added first, needs to be removed)
@@ -236,9 +243,9 @@ namespace Test
             Sweet.lollipop.target_proteoform_community.topdown_proteoforms = new List<TopDownProteoform> { td3, td4 }.ToArray();
             Sweet.lollipop.target_proteoform_community.topdown_proteoforms.OrderByDescending(p => p.modified_mass);
             td_relations = Sweet.lollipop.target_proteoform_community.relate_td();
-            Assert.AreEqual(1, pf1.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
-            Assert.AreEqual(1, td3.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
-            Assert.AreEqual(0, td4.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown));
+            Assert.AreEqual(1, pf1.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental));
+            Assert.AreEqual(1, td3.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental));
+            Assert.AreEqual(0, td4.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental));
             Assert.AreEqual(3, td_relations.Count);
         }
     }

@@ -1295,7 +1295,7 @@ namespace ProteoformSuiteInternal
 
         #region CALIBRATION
         public List<TopDownHit> td_hits_calibration = new List<TopDownHit>();
-        public Dictionary<Tuple<string, double>, double> file_mz_correction = new Dictionary<Tuple<string, double>, double>();
+        public Dictionary<Tuple<string, double, double>, double> file_mz_correction = new Dictionary<Tuple<string, double, double>, double>();
         public Dictionary<Tuple<string, int, double>, double> td_hit_correction = new Dictionary<Tuple<string, int, double>, double>();
         public List<Component> calibration_components = new List<Component>();
         public string[] file_descriptions;
@@ -1417,7 +1417,7 @@ namespace ProteoformSuiteInternal
             {
                 foreach (ChargeState cs in c.charge_states)
                 {
-                    var key = new Tuple<string, double>(c.input_file.filename, Math.Round(cs.intensity, 0));
+                    var key = new Tuple<string, double, double>(c.input_file.filename, Math.Round(cs.intensity, 0), Math.Round(cs.reported_mass, 2));
                     lock (file_mz_correction)
                     {
                         if (!file_mz_correction.ContainsKey(key))
@@ -1501,8 +1501,9 @@ namespace ProteoformSuiteInternal
             foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values.Concat(new List<ProteoformCommunity> { Sweet.lollipop.target_proteoform_community }))
             {
                 community.topdown_proteoforms = new TopDownProteoform[0];
-                foreach (Proteoform p in community.experimental_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.ExperimentalTopDown);
-                foreach (Proteoform p in community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.TheoreticalTopDown);
+                foreach (Proteoform p in community.experimental_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.TopdownExperimental);
+                foreach (Proteoform p in community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.TopdownTheoretical);
+                community.theoretical_proteoforms.ToList().RemoveAll(t => t.topdown_theoretical);
             }
         }
 

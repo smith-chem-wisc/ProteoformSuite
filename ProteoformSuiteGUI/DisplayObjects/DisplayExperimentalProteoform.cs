@@ -139,7 +139,7 @@ namespace ProteoformSuiteGUI
         //needs to be at same time and mass
         public int etd_relations
         {
-            get { return e.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown); }
+            get { return e.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental); }
         }
 
         public int other_topdown

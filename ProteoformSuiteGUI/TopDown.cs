@@ -63,10 +63,10 @@ namespace ProteoformSuiteGUI
             {
                 c.relate_td();
             });
-            if (Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TheoreticalTopDown) == 0) > 0)
+            if (Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Count(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) == 0) > 0)
             {
                 MessageBox.Show("Warning: Top-down proteoforms with the following accessions were not matched to a theoretical proteoform in the theoretical database: "
-                     + String.Join(", ", Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Where(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TheoreticalTopDown) == 0).Select(t => t.accession.Split('_')[0]).Distinct()));
+                     + String.Join(", ", Sweet.lollipop.target_proteoform_community.topdown_proteoforms.Where(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) == 0).Select(t => t.accession.Split('_')[0]).Distinct()));
             }
             FillTablesAndCharts();
         }

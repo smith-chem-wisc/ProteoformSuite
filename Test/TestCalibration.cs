@@ -211,7 +211,7 @@ namespace Test
             foreach (ChargeState cs in calibrated_components.SelectMany(c => c.charge_states))
             {
                 double corrected_mz;
-                Assert.True(Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double>("05-26-17_B7A_yeast_td_fract5_rep1", Math.Round(cs.intensity, 0)), out corrected_mz));
+                Assert.True(Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>("05-26-17_B7A_yeast_td_fract5_rep1", Math.Round(cs.intensity, 0), Math.Round(cs.reported_mass, 2)), out corrected_mz));
                 Assert.AreEqual(corrected_mz, cs.mz_centroid, 5);
                 Assert.False(uncalibrated_components.SelectMany(c => c.charge_states).Any(p => p.mz_centroid == cs.mz_centroid));
             }
@@ -295,7 +295,7 @@ namespace Test
             foreach (ChargeState cs in calibrated_components.SelectMany(c => c.charge_states))
             {
                 double corrected_mz;
-                Assert.True(Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double>("05-26-17_B7A_yeast_td_fract5_rep1", Math.Round(cs.intensity, 0)), out corrected_mz));
+                Assert.True(Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>("05-26-17_B7A_yeast_td_fract5_rep1", Math.Round(cs.intensity, 0), Math.Round(cs.reported_mass, 2)), out corrected_mz));
                 Assert.AreEqual(corrected_mz, cs.mz_centroid, 5);
                 Assert.False(uncalibrated_components.SelectMany(c => c.charge_states).Any(p => p.mz_centroid == cs.mz_centroid));
             }
@@ -375,7 +375,7 @@ namespace Test
             foreach (ChargeState cs in calibrated_components.SelectMany(c => c.charge_states))
             {
                 double corrected_mz;
-                Assert.True(Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double>("05-26-17_B7A_yeast_td_fract5_rep1", Math.Round(cs.intensity, 0)), out corrected_mz));
+                Assert.True(Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>("05-26-17_B7A_yeast_td_fract5_rep1", Math.Round(cs.intensity, 0), Math.Round(cs.reported_mass, 2)), out corrected_mz));
                 Assert.AreEqual(corrected_mz, cs.mz_centroid, 5);
                 Assert.False(uncalibrated_components.SelectMany(c => c.charge_states).Any(p => p.mz_centroid == cs.mz_centroid));
             }

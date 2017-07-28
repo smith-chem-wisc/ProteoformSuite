@@ -136,6 +136,13 @@ namespace ProteoformSuiteInternal
             string style_name = "ProteoformFamilies" + time_stamp;
 
             IEnumerable<TheoreticalProteoform> theoreticals = families.SelectMany(f => f.theoretical_proteoforms);
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\infamiliescytoscape....txt"))
+            {
+                foreach (var t in theoreticals)
+                {
+                    writer.WriteLine(t.accession);
+                }
+            }
             //Dictionary<string, GeneName> gene_dict = new Dictionary<string, GeneName>();
             //if (gene_centric_families)
             //    foreach (TheoreticalProteoform t in theoreticals)
@@ -235,7 +242,7 @@ namespace ProteoformSuiteInternal
 
             foreach (ProteoformRelation r in families.SelectMany(f => f.relations).Distinct())
             {
-                double mass_label = (r.RelationType == ProteoformComparison.ExperimentalTopDown || r.RelationType == ProteoformComparison.TheoreticalTopDown)? r.DeltaMass : r.peak.DeltaMass;
+                double mass_label = (r.RelationType == ProteoformComparison.TopdownExperimental || r.RelationType == ProteoformComparison.TopdownTheoretical)? r.DeltaMass : r.peak.DeltaMass;
                 string delta_mass = Math.Round(mass_label, double_rounding).ToString("0." + String.Join("", Enumerable.Range(0, double_rounding).Select(i => "0")));
                 bool append_ptmlist = r.represented_ptmset != null && (r.RelationType != ProteoformComparison.ExperimentalTheoretical || r.represented_ptmset.ptm_combination.First().modification.id != "Unmodified");
                 edge_table.Rows.Add
@@ -371,11 +378,6 @@ namespace ProteoformSuiteInternal
                 }
 
                 layout_rank++;
-            }
-            foreach (TopDownProteoform p in families.SelectMany(f => f.topdown_proteoforms.ToList()))
-            {
-                string node_type = p.ptm_description;
-                node_rows += String.Join("\t", new List<string> { get_proteoform_shared_name(p, node_label, double_rounding), node_type, mock_intensity }) + Environment.NewLine;
             }
             if (gene_centric_families)
             {

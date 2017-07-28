@@ -408,7 +408,7 @@ namespace ProteoformSuiteInternal
                     if (Regex.IsMatch(row.Cell(2).Value.ToString(), @"^\d+$"))
                     {
                         double value;
-                        if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double>(file.filename, Math.Round(row.Cell(3).GetDouble(), 0)), out value))
+                        if (Sweet.lollipop.file_mz_correction.TryGetValue(new Tuple<string, double, double>(file.filename, Math.Round(row.Cell(3).GetDouble(), 0), Math.Round(row.Cell(5).GetDouble(), 2)), out value))
                         {
                             row.Cell(4).SetValue(value);
                         }

@@ -108,6 +108,17 @@ namespace ProteoformSuiteInternal
             process_entries(expanded_proteins, variableModifications);
             process_decoys(expanded_proteins, variableModifications);
 
+            if (Sweet.lollipop.combine_theoretical_proteoforms_byMass)
+            {
+                Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = group_proteoforms_by_mass(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms);
+                add_theoreticals_to_accession_dictionary(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, Sweet.lollipop.target_proteoform_community.community_number);
+                 foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values)
+                {
+                    community.theoretical_proteoforms = group_proteoforms_by_mass(community.theoretical_proteoforms);
+                    add_theoreticals_to_accession_dictionary(community.theoretical_proteoforms, community.community_number);
+                }
+            }
+
             //read in BU results if available
             Sweet.lollipop.BottomUpPSMList.Clear();
             BottomUpReader.bottom_up_PTMs_not_in_dictionary.Clear();
@@ -116,13 +127,15 @@ namespace ProteoformSuiteInternal
                 Sweet.lollipop.BottomUpPSMList.AddRange(BottomUpReader.ReadBUFile(file.complete_path, theoreticals_by_accession.Values.ToList()));
             }
 
-            if (Sweet.lollipop.combine_theoretical_proteoforms_byMass)
+        }
+
+        private void add_theoreticals_to_accession_dictionary(TheoreticalProteoform[] theoreticals, int community_number)
+        {
+            foreach (TheoreticalProteoform t in theoreticals)
             {
-                Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = group_proteoforms_by_mass(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms);
-                foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values)
-                {
-                    community.theoretical_proteoforms = group_proteoforms_by_mass(community.theoretical_proteoforms);
-                }
+                foreach (string t_accession in t.ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct())
+                    if (theoreticals_by_accession[community_number].ContainsKey(t_accession)) theoreticals_by_accession[community_number][t_accession].Add(t);
+                    else theoreticals_by_accession[community_number].Add(t_accession, new List<TheoreticalProteoform>() { t });
             }
         }
 
@@ -468,12 +481,11 @@ namespace ProteoformSuiteInternal
                     check_contaminants,
                     theoretical_proteins);
 
-                lock (theoreticals_by_accession)
+                if (!Sweet.lollipop.combine_theoretical_proteoforms_byMass)
                 {
-                    foreach (string t_accession in new_theoretical.ExpandedProteinList.SelectMany(p => p.AccessionList.Select(a => a.Split('_')[0])).Distinct()) 
+                    lock (theoreticals_by_accession)
                     {
-                        if (theoreticals_by_accession[decoy_number].ContainsKey(t_accession)) theoreticals_by_accession[decoy_number][t_accession].Add(new_theoretical);
-                        else theoreticals_by_accession[decoy_number].Add(t_accession, new List<TheoreticalProteoform>() { new_theoretical });
+                        add_theoreticals_to_accession_dictionary(new TheoreticalProteoform[1] { new_theoretical }, decoy_number);
                     }
                 }
                 lock (theoretical_proteoforms) theoretical_proteoforms.Add(new_theoretical);

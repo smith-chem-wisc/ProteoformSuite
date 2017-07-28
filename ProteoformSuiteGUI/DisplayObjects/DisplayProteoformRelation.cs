@@ -158,7 +158,9 @@ namespace ProteoformSuiteGUI
             {
                 return connected_proteoforms[1] as ExperimentalProteoform != null ?
                     ((ExperimentalProteoform)connected_proteoforms[1]).agg_mass :
-                    ((TheoreticalProteoform)connected_proteoforms[1]).modified_mass;
+                    connected_proteoforms[1] as TheoreticalProteoform != null ?
+                    ((TheoreticalProteoform)connected_proteoforms[1]).modified_mass :
+                    ((TopDownProteoform)connected_proteoforms[1]).modified_mass;
             }
         }
 

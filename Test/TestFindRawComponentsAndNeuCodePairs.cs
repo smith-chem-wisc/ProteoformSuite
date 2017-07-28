@@ -51,6 +51,7 @@ namespace Test
             Assert.AreEqual("413-415", c1.scan_range);
             Assert.AreEqual("56.250-56.510", c1.rt_range);
             Assert.AreEqual(Math.Round(56.3809775, 7), Math.Round(c1.rt_apex, 7));
+            Assert.AreEqual(8981.69, Math.Round(c1.charge_states.OrderBy(s => s.charge_count).First().reported_mass, 2));
 
             //testing intensity ratio
             NeuCodePair neucode_pair = Sweet.lollipop.raw_neucode_pairs.Where(i => i.neuCodeHeavy.id == inFileId + "_5" && i.neuCodeLight.id == inFileId + "_1").First();
