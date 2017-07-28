@@ -46,7 +46,7 @@ namespace ProteoformSuiteInternal
                     charge_row_index = 0;
                     scan_range = cellStrings[8];
                 }
-                else if (cellStrings.Count == 4 || cellStrings.Count == 7) //charge-state row
+                else if (cellStrings.Count == 4) //charge-state row
                 {
                     if (charge_row_index == 0)
                     {

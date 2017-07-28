@@ -51,7 +51,6 @@
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgv_proteoform_family_members = new System.Windows.Forms.DataGridView();
             this.cb_include_td_nodes = new System.Windows.Forms.CheckBox();
-            this.bt_check_id_experimentals_TD = new System.Windows.Forms.Button();
             this.rtb_proteoformFamilyResults = new System.Windows.Forms.RichTextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.cb_count_adducts_as_id = new System.Windows.Forms.CheckBox();
@@ -342,7 +341,6 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.cb_include_td_nodes);
-            this.splitContainer3.Panel2.Controls.Add(this.bt_check_id_experimentals_TD);
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);
@@ -389,13 +387,6 @@
             this.cb_include_td_nodes.Text = "Include Topdown Proteoforms";
             this.cb_include_td_nodes.UseVisualStyleBackColor = true;
             this.cb_include_td_nodes.CheckedChanged += new System.EventHandler(this.cb_include_td_nodes_CheckedChanged);
-            //
-            // bt_check_id_experimentals_TD
-            // 
-            this.bt_check_id_experimentals_TD.Location = new System.Drawing.Point(0, 0);
-            this.bt_check_id_experimentals_TD.Name = "bt_check_id_experimentals_TD";
-            this.bt_check_id_experimentals_TD.Size = new System.Drawing.Size(75, 23);
-            this.bt_check_id_experimentals_TD.TabIndex = 67;
             // 
             // rtb_proteoformFamilyResults
             // 
@@ -755,7 +746,6 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.RichTextBox rtb_proteoformFamilyResults;
         private System.Windows.Forms.CheckBox cb_count_adducts_as_id;
-        private System.Windows.Forms.Button bt_check_id_experimentals_TD;
         public System.Windows.Forms.CheckBox cb_include_td_nodes;
     }
 }

@@ -554,15 +554,15 @@ namespace Test
             Assert.IsNotEmpty(target.topdown_proteoforms);
             Assert.IsNotEmpty(decoy.topdown_proteoforms);
             Assert.IsNotEmpty(Sweet.lollipop.td_relations);
-            Assert.IsTrue(target.theoretical_proteoforms.Any(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TheoreticalTopDown) > 0));
-            Assert.IsTrue(target.experimental_proteoforms.Any(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) > 0));
+            Assert.IsTrue(target.theoretical_proteoforms.Any(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) > 0));
+            Assert.IsTrue(target.experimental_proteoforms.Any(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
             Sweet.lollipop.clear_td();
             Assert.AreEqual(0, Sweet.lollipop.top_down_hits.Count);
             Assert.IsEmpty(target.topdown_proteoforms);
             Assert.IsEmpty(decoy.topdown_proteoforms);
             Assert.IsEmpty(Sweet.lollipop.td_relations);
-            Assert.IsFalse(target.theoretical_proteoforms.Any(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TheoreticalTopDown) > 0));
-            Assert.IsFalse(target.experimental_proteoforms.Any(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.ExperimentalTopDown) > 0));
+            Assert.IsFalse(target.theoretical_proteoforms.Any(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownTheoretical) > 0));
+            Assert.IsFalse(target.experimental_proteoforms.Any(t => t.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0));
         }
 
         [Test]

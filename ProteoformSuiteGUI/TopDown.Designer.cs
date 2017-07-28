@@ -227,6 +227,11 @@
             // 
             this.nUD_max_RT_td.DecimalPlaces = 1;
             this.nUD_max_RT_td.Location = new System.Drawing.Point(565, 26);
+            this.nUD_max_RT_td.Maximum = new decimal(new int[] {
+            200,
+            0,
+            0,
+            0});
             this.nUD_max_RT_td.Name = "nUD_max_RT_td";
             this.nUD_max_RT_td.Size = new System.Drawing.Size(75, 20);
             this.nUD_max_RT_td.TabIndex = 8;
