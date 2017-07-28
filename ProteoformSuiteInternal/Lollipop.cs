@@ -1115,7 +1115,9 @@ namespace ProteoformSuiteInternal
                 eP.quant.impute_biorep_intensities(eP.biorepIntensityList, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, bkgdAverageIntensity, bkgdStDev, sKnot_minFoldChange);
             }
             if (define_histogram) defineSelectObservedWithImputedIntensityDistribution(satisfactoryProteoforms, logSelectIntensityWithImputationHistogram);
-            //normalize_protoeform_intensities(satisfactoryProteoforms);
+
+            normalize_protoeform_intensities(satisfactoryProteoforms);
+
             foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
             {
                 eP.quant.determine_proteoform_statistics(eP.biorepIntensityList, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, bkgdAverageIntensity, bkgdStDev, sKnot_minFoldChange);
