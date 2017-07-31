@@ -83,7 +83,7 @@ namespace ProteoformSuiteInternal
 
             //Continue looking for new topdown identifications until no more remain to be identified
             //begin with lowest delta mass experimental
-            List<Proteoform> newly_identified_experimentals = new List<Proteoform>(identified_experimentals.Where(p => (p as TopDownProteoform) != null).OrderBy(p => p.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0 ? p.relationships.Where(r => r.RelationType == ProteoformComparison.TopdownExperimental).First().DeltaMass - p.relationships.Where(r => r.RelationType == ProteoformComparison.TopdownExperimental).First().candidate_ptmset.mass : 1e6)).ToList();
+            List<Proteoform> newly_identified_experimentals = new List<Proteoform>(identified_experimentals.Where(p => (p as TopDownProteoform) != null).OrderBy(p => p.relationships.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental) > 0 ? Math.Abs( p.relationships.Where(r => r.RelationType == ProteoformComparison.TopdownExperimental).First().DeltaMass - p.relationships.Where(r => r.RelationType == ProteoformComparison.TopdownExperimental).First().candidate_ptmset.mass) : 1e6)).ToList();
             int last_identified_count = identified_experimentals.Count - 1;
             while (newly_identified_experimentals.Count > 0 && identified_experimentals.Count > last_identified_count)
             {
@@ -136,9 +136,8 @@ namespace ProteoformSuiteInternal
 
         private void separate_proteoforms()
         {
-            proteoforms = proteoforms.Distinct().ToList();
             theoretical_proteoforms = proteoforms.OfType<TheoreticalProteoform>().ToList();
-            gene_names = theoretical_proteoforms.Select(t => t.gene_name).Distinct().ToList();
+            gene_names = theoretical_proteoforms.Select(t => t.gene_name).ToList();
             topdown_proteoforms = proteoforms.OfType<TopDownProteoform>().ToList();
             experimental_proteoforms = proteoforms.OfType<ExperimentalProteoform>().ToList();
             relations = new HashSet<ProteoformRelation>(proteoforms.SelectMany(p => p.relationships.Where(r => r.Accepted))).ToList();

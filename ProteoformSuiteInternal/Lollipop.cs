@@ -1504,6 +1504,13 @@ namespace ProteoformSuiteInternal
                 foreach (Proteoform p in community.experimental_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.TopdownExperimental);
                 foreach (Proteoform p in community.theoretical_proteoforms) p.relationships.RemoveAll(r => r.RelationType == ProteoformComparison.TopdownTheoretical);
                 community.theoretical_proteoforms.ToList().RemoveAll(t => t.topdown_theoretical);
+                if (theoretical_database.theoreticals_by_accession.ContainsKey(community.community_number))
+                {
+                    Parallel.ForEach(theoretical_database.theoreticals_by_accession[community.community_number], list =>
+                    {
+                        list.Value.RemoveAll(t => t.topdown_theoretical);
+                    });
+                }
             }
         }
 

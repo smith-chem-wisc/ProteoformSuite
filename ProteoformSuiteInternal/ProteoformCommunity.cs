@@ -103,7 +103,7 @@ namespace ProteoformSuiteInternal
                         && pf1 != pf2
                         && (pf1.modified_mass - pf2.modified_mass <= Sweet.lollipop.ee_max_mass_difference)
                         && (!Sweet.lollipop.neucode_labeled || Math.Abs(pf1.lysine_count - pf2.lysine_count) > Sweet.lollipop.maximum_missed_lysines)
-                        && (Sweet.lollipop.neucode_labeled || Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2 as ExperimentalProteoform).agg_rt) > Sweet.lollipop.ee_max_RetentionTime_difference)
+                        && (Sweet.lollipop.neucode_labeled || Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2 as ExperimentalProteoform).agg_rt) > 2 * Sweet.lollipop.ee_max_RetentionTime_difference)
                         && (!Sweet.lollipop.neucode_labeled || Math.Abs((pf1 as ExperimentalProteoform).agg_rt - (pf2 as ExperimentalProteoform).agg_rt) <= Sweet.lollipop.ee_max_RetentionTime_difference);
                 default:
                     return false;
@@ -209,7 +209,7 @@ namespace ProteoformSuiteInternal
                     double mass_tol = (mass + shift) / 1000000 * Convert.ToInt32(Sweet.lollipop.mass_tolerance);
                     double low = mass + shift - mass_tol;
                     double high = mass + shift + mass_tol;
-                    List<ExperimentalProteoform> matching_e = experimental_proteoforms.Where(ep => ep.modified_mass >= low && ep.modified_mass <= high
+                    List<ExperimentalProteoform> matching_e = experimental_proteoforms.Where(ep => ep.accepted && ep.modified_mass >= low && ep.modified_mass <= high
                         && Math.Abs(ep.agg_rt - topdown.agg_RT) <= Convert.ToDouble(Sweet.lollipop.retention_time_tolerance)).ToList();
                     foreach (ExperimentalProteoform e in matching_e)
                     {
@@ -360,7 +360,16 @@ namespace ProteoformSuiteInternal
             {
                 t.Accepted = include_td_nodes;
             });
-
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\theoreticals.txt"))
+            {
+                    foreach (var t in theoretical_proteoforms)
+                        writer.WriteLine(t.accession);
+            }
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\topdown_T_Relationships.txt"))
+            {
+                    foreach (var t in topdown_proteoforms.SelectMany(t => t.relationships.Where(r => r.RelationType == ProteoformComparison.TopdownTheoretical).Select(b => b.connected_proteoforms[1])))
+                        writer.WriteLine(t.accession);
+            }
             List<Proteoform> proteoforms = new List<Proteoform>();
             proteoforms.AddRange(this.experimental_proteoforms.Where(e => e.accepted).ToList());
             if (include_td_nodes) proteoforms.AddRange(topdown_proteoforms); //want to include families with no E proteoforms, only topdown proteoforms. For now, only non-targeted topdown proteoforms
@@ -407,8 +416,33 @@ namespace ProteoformSuiteInternal
                 running.Clear();
                 active.Clear();
             }
-            if (gene_centric_families) families = combine_gene_families(families).ToList();
+            
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\aftermakingfams.txt"))
+            {
+                foreach(var f in families)
+                {
+                    foreach (var t in f.theoretical_proteoforms)
+                        writer.WriteLine(f.family_id + "\t" + t.accession);
+                }
+            }
+                if (gene_centric_families) families = combine_gene_families(families).ToList();
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\aftercombinegenefamilies.txt"))
+            {
+                foreach (var f in families)
+                {
+                    foreach (var t in f.theoretical_proteoforms)
+                        writer.WriteLine(f.family_id + "\t" + t.accession);
+                }
+            }
             Parallel.ForEach(families, f => f.identify_experimentals());
+            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\afteridentifyexperimentals.txt"))
+            {
+                foreach (var f in families)
+                {
+                    foreach (var t in f.theoretical_proteoforms)
+                        writer.WriteLine(f.family_id + "\t" + t.accession);
+                }
+            }
             return families;
         }
 

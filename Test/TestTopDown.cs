@@ -223,8 +223,21 @@ namespace Test
             //be sure some are 0 distance mass from an experimental -- didn't form relation due to being topdown theoretical. 
             Assert.IsTrue(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Any(t => t.topdown_theoretical && Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Any(e => e.modified_mass == t.modified_mass)));
 
+            //if experimental is unaccepted, do not make td relations
+            Sweet.lollipop.clear_td();
+            Sweet.lollipop.target_proteoform_community.topdown_proteoforms = new List<TopDownProteoform> { td1, td2, td3 }.ToArray();
+            pf1.accepted = false;
+            td_relations = Sweet.lollipop.target_proteoform_community.relate_td();
+            //1 etd
+            Assert.AreEqual(0, pf1.relationships.Count);
+            Assert.AreEqual(1, td_relations.Count(r => r.RelationType == ProteoformComparison.TopdownExperimental));
+            Assert.AreEqual(0, pf3.relationships.Count);
+            Assert.AreEqual(1, pf2.relationships.Count);
+
+
             //experimental w/ multiple topdowns should relate to the one closest to 0, not with MM errors, regardless of order td relations made in
             Sweet.lollipop.clear_td();
+            pf1.accepted = true;
              td3 = ConstructorsForTesting.TopDownProteoform("ACCESSION_3", 1000.0, 45);
             TopDownProteoform td4 = ConstructorsForTesting.TopDownProteoform("ACCESSION_4", 1001.0, 45);
             Sweet.lollipop.target_proteoform_community.topdown_proteoforms = new List<TopDownProteoform> { td3, td4 }.ToArray();
