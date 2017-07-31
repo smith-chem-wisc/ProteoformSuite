@@ -287,16 +287,16 @@ namespace ProteoformSuiteInternal
                     t.Join();
                 }
 
-                remaining = new Stack<ProteoformFamily>(remaining.Except(running));
                 foreach (ProteoformFamily family in running)
                 {
-                    if (!cumulative_proteoforms.Contains(family.proteoforms.First()))
+                    if (!family.proteoforms.Any(p => cumulative_proteoforms.Contains(p)))
                     {
                         cumulative_proteoforms.AddRange(family.proteoforms);
                         Parallel.ForEach(family.proteoforms, p => { lock (p) p.family = family; });
                         yield return family;
                     }
                 }
+                remaining = new Stack<ProteoformFamily>(remaining.Except(remaining.Where(f => f.proteoforms.Any(p => cumulative_proteoforms.Contains(p)))));
 
                 running.Clear();
                 active.Clear();
