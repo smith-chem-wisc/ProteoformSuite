@@ -104,9 +104,9 @@
   <ItemGroup>
     <Compile Include="AminoAcidMasses.cs" />
     <Compile Include="BigRational.cs" />
-    <Compile Include="BiorepFractionTechrepIntensity.cs" />
-    <Compile Include="BiorepIntensity.cs" />
-    <Compile Include="BiorepTechrepIntensity.cs" />
+    <Compile Include="Intensities\BiorepFractionTechrepIntensity.cs" />
+    <Compile Include="Intensities\BiorepIntensity.cs" />
+    <Compile Include="Intensities\BiorepTechrepIntensity.cs" />
     <Compile Include="ChargeState.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Correction.cs" />
@@ -121,6 +121,8 @@
     <Compile Include="IBiorepable.cs" />
     <Compile Include="IMassDifference.cs" />
     <Compile Include="InputFile.cs" />
+    <Compile Include="Log2FoldChangeAnalysis.cs" />
+    <Compile Include="Log2FoldChangeValues.cs" />
     <Compile Include="Lollipop.cs" />
     <Compile Include="Ptm.cs" />
     <Compile Include="PtmCombos.cs" />
@@ -133,6 +135,7 @@
     <Compile Include="ProteoformCommunity.cs" />
     <Compile Include="ProteoformFamily.cs" />
     <Compile Include="ProteoformRelation.cs" />
+    <Compile Include="QuantificationDistributions.cs" />
     <Compile Include="QuantitativeProteoformValues.cs" />
     <Compile Include="ResultsSummaryGenerator.cs" />
     <Compile Include="SafeRandom.cs" />
@@ -140,6 +143,10 @@
     <Compile Include="TheoreticalProteoform.cs" />
     <Compile Include="TheoreticalProteoformDatabase.cs" />
     <Compile Include="TheoreticalProteoformGroup.cs" />
+    <Compile Include="TusherAnalysis1.cs" />
+    <Compile Include="TusherAnalysis2.cs" />
+    <Compile Include="TusherValues1.cs" />
+    <Compile Include="TusherValues2.cs" />
     <Compile Include="UnlocalizedModification.cs" />
   </ItemGroup>
   <ItemGroup>

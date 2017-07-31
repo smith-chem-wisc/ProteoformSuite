@@ -346,9 +346,9 @@ namespace ProteoformSuiteInternal
                     {
                         tooltip += "\\n\\nQuantitation Results:" +
                         String.Join("; ", new string[] {
-                            "Q-Value = " + ep.quant.roughSignificanceFDR.ToString(),
+                            "Q-Value = " + ep.quant.TusherValues1.roughSignificanceFDR.ToString(),
                             "Log2FC = " + ep.quant.logFoldChange.ToString(),
-                            "Significant = " + ep.quant.significant_tusher.ToString(),
+                            "Significant = " + ep.quant.TusherValues1.significant.ToString(),
                             Sweet.lollipop.numerator_condition + " Quantitative Component Count = " + ep.lt_quant_components.Count.ToString(),
                             Sweet.lollipop.denominator_condition + " Quantitative Component Count = " + ep.hv_quant_components.Count.ToString(),
                             "Abundant Component for Manual Validation of Quantification: " + ep.manual_validation_quant
@@ -356,7 +356,7 @@ namespace ProteoformSuiteInternal
                     }
 
                     if (quantitative && ep.quant.intensitySum != 0)
-                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.numeratorIntensitySum).ToString(), ((double)ep.quant.denominatorIntensitySum).ToString(), ep.quant.significant_tusher.ToString(), get_piechart_string(color_scheme));
+                        node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, ((double)ep.quant.TusherValues1.numeratorIntensitySum).ToString(), ((double)ep.quant.TusherValues1.denominatorIntensitySum).ToString(), ep.quant.TusherValues1.significant.ToString(), get_piechart_string(color_scheme));
                     else if (quantitative)
                         node_table.Rows.Add(get_proteoform_shared_name(p, node_label, double_rounding), node_type, total_intensity, tooltip, layout_rank, "", "", "", "");
                     else
