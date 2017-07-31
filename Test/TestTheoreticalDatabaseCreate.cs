@@ -126,6 +126,12 @@ namespace Test
             Assert.AreEqual(3, signalpeps.Count);
             Assert.AreEqual(13, Sweet.lollipop.theoretical_database.theoreticals_by_accession[-100].Count);
             Assert.AreEqual(25, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
+
+            //if don't combine by mass, need to make theoretical accession dictionary still
+            Sweet.lollipop.combine_theoretical_proteoforms_byMass = false;
+            Sweet.lollipop.theoretical_database.theoretical_proteins.Clear();
+            Sweet.lollipop.theoretical_database.get_theoretical_proteoforms(Path.Combine(TestContext.CurrentContext.TestDirectory));
+            Assert.AreEqual(13, Sweet.lollipop.theoretical_database.theoreticals_by_accession[-100].Count);
         }
 
         [Test]
