@@ -131,7 +131,6 @@ namespace ProteoformSuiteInternal
              List<ProteoformRelation> td_relations = new List<ProteoformRelation>();
             int max_missed_monoisotopics = Convert.ToInt32(Sweet.lollipop.maximum_missed_monos);
             List<int> missed_monoisotopics_range = Enumerable.Range(-max_missed_monoisotopics, max_missed_monoisotopics * 2 + 1).ToList();
-            int counter = 1;
             foreach (TopDownProteoform topdown in topdown_proteoforms)
             {
                 //match each td proteoform group to the closest theoretical w/ same accession and modifications. (if no match always make relationship with unmodified)
@@ -163,7 +162,9 @@ namespace ProteoformSuiteInternal
                         if (t == null) t = candidate_theoreticals.Where(r => r.ptm_set.ptm_combination.Count == 0).FirstOrDefault();
                         if (t != null)
                         {
-                            TheoreticalProteoform new_t = new TheoreticalProteoform(topdown.accession + "_" + counter, t.description, t.ExpandedProteinList, (topdown.theoretical_mass - topdown.ptm_set.mass), topdown.lysine_count, topdown.ptm_set, t.is_target, false, null);
+                            string[] a = topdown.accession.Split('_');
+                            int count = candidate_theoreticals.Where(c => c.topdown_theoretical).Count(c => c.accession.Split('_')[1] == a[4]) + 1;
+                            TheoreticalProteoform new_t = new TheoreticalProteoform(a[0] + "_" + a[4] + "_" + count + "TD", t.description, t.ExpandedProteinList, (topdown.theoretical_mass - topdown.ptm_set.mass), topdown.lysine_count, topdown.ptm_set, t.is_target, false, null);
                             new_t.contaminant = false;
                             new_t.psm_list = t.psm_list;
                             new_t.sequence = topdown.sequence;
@@ -182,7 +183,6 @@ namespace ProteoformSuiteInternal
                                     theoretical_proteoforms = theoretical_proteoforms.Concat(new List<TheoreticalProteoform> { new_t }).ToArray();
                                     Sweet.lollipop.theoretical_database.theoreticals_by_accession[community_number][new_t.accession.Split('_')[0]].Add(new_t);
                                     best_ttd_relation = relation;
-                                    counter++;
                                 }
                             }
                         }
@@ -361,16 +361,7 @@ namespace ProteoformSuiteInternal
             {
                 t.Accepted = include_td_nodes;
             });
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\theoreticals.txt"))
-            {
-                    foreach (var t in theoretical_proteoforms)
-                        writer.WriteLine(t.accession);
-            }
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\topdown_T_Relationships.txt"))
-            {
-                    foreach (var t in topdown_proteoforms.SelectMany(t => t.relationships.Where(r => r.RelationType == ProteoformComparison.TopdownTheoretical).Select(b => b.connected_proteoforms[1])))
-                        writer.WriteLine(t.accession);
-            }
+
             List<Proteoform> proteoforms = new List<Proteoform>();
             proteoforms.AddRange(this.experimental_proteoforms.Where(e => e.accepted).ToList());
             if (include_td_nodes) proteoforms.AddRange(topdown_proteoforms); //want to include families with no E proteoforms, only topdown proteoforms. For now, only non-targeted topdown proteoforms
@@ -417,33 +408,8 @@ namespace ProteoformSuiteInternal
                 running.Clear();
                 active.Clear();
             }
-            
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\aftermakingfams.txt"))
-            {
-                foreach(var f in families)
-                {
-                    foreach (var t in f.theoretical_proteoforms)
-                        writer.WriteLine(f.family_id + "\t" + t.accession);
-                }
-            }
-                if (gene_centric_families) families = combine_gene_families(families).ToList();
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\aftercombinegenefamilies.txt"))
-            {
-                foreach (var f in families)
-                {
-                    foreach (var t in f.theoretical_proteoforms)
-                        writer.WriteLine(f.family_id + "\t" + t.accession);
-                }
-            }
+            if (gene_centric_families) families = combine_gene_families(families).ToList();
             Parallel.ForEach(families, f => f.identify_experimentals());
-            using (var writer = new StreamWriter("C:\\users\\lschaffer2\\desktop\\afteridentifyexperimentals.txt"))
-            {
-                foreach (var f in families)
-                {
-                    foreach (var t in f.theoretical_proteoforms)
-                        writer.WriteLine(f.family_id + "\t" + t.accession);
-                }
-            }
             return families;
         }
 

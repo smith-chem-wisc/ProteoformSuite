@@ -410,7 +410,7 @@ namespace ProteoformSuiteInternal
             if (p as ExperimentalProteoform != null)
             {
                 ExperimentalProteoform e = p as ExperimentalProteoform;
-                string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + e.accession;
+                string name = Math.Round(e.agg_mass, double_rounding) + "_Da_" + Math.Round(e.agg_rt, double_rounding) + "_min_"  + e.accession;
                 if (node_label == Lollipop.node_labels[1] && e.linked_proteoform_references != null && e.linked_proteoform_references.Count > 0)
                     name += " " + (e.linked_proteoform_references.First() as TheoreticalProteoform).accession
                           + " " + (e.ptm_set.ptm_combination.Count == 0 ?
@@ -426,7 +426,7 @@ namespace ProteoformSuiteInternal
 
             else if (p as TopDownProteoform != null)
             {
-                return p.accession + " " + p.ptm_description;
+                return p.accession + "_" + Math.Round((p as TopDownProteoform).agg_RT, double_rounding) + "_min " + p.ptm_description;
             }
 
             else

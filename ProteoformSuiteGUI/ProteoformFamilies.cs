@@ -104,6 +104,8 @@ namespace ProteoformSuiteGUI
             dgv_main.Rows.Clear();
             dgv_proteoform_family_members.DataSource = null;
             dgv_proteoform_family_members.Rows.Clear();
+            tb_tableFilter.Clear();
+            rtb_proteoformFamilyResults.Clear();
 
             if (clear_following)
             {
@@ -235,6 +237,16 @@ namespace ProteoformSuiteGUI
                 {
                     DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.experimental_proteoforms.Select(e => new DisplayExperimentalProteoform(e)));
                     DisplayExperimentalProteoform.FormatAggregatesTable(dgv_proteoform_family_members);
+                }
+                else dgv_proteoform_family_members.Rows.Clear();
+            }
+
+            else if (new List<string> { nameof(DisplayProteoformFamily.topdown_count) }.Contains(dgv_main.Columns[column_index].Name))
+            {
+                if (selected_family.topdown_proteoforms.Count > 0)
+                {
+                    DisplayUtility.FillDataGridView(dgv_proteoform_family_members, selected_family.topdown_proteoforms.Select(td => new DisplayTopDownProteoform(td)));
+                    DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_proteoform_family_members);
                 }
                 else dgv_proteoform_family_members.Rows.Clear();
             }

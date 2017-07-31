@@ -83,6 +83,8 @@ namespace ProteoformSuiteGUI
             dgv_ET_Peak_List.DataSource = null;
             dgv_ET_Relations.Rows.Clear();
             dgv_ET_Peak_List.Rows.Clear();
+            tb_peakTableFilter.Clear();
+            tb_relationTableFilter.Clear();
 
             if (clear_following)
             {

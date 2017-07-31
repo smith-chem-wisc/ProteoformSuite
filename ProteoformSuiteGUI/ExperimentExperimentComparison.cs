@@ -69,7 +69,8 @@ namespace ProteoformSuiteGUI
             dgv_EE_Peaks.DataSource = null;
             dgv_EE_Relations.Rows.Clear();
             dgv_EE_Peaks.Rows.Clear();
-
+            tb_peakTableFilter.Clear();
+            tb_relationTableFilter.Clear();
             cb_automate_peak_acceptance.Checked = false;
 
             if (clear_following)
@@ -270,6 +271,7 @@ namespace ProteoformSuiteGUI
             StripLine lowerCountBound_stripline = new StripLine() { BorderColor = Color.Red, IntervalOffset = Sweet.lollipop.min_peak_count_ee };
             ct_EE_Histogram.ChartAreas[0].AxisY.StripLines.Add(lowerCountBound_stripline);
             update_figures_of_merit();
+            cb_automate_peak_acceptance.Checked = false;
             (MdiParent as ProteoformSweet).proteoformFamilies.ClearListsTablesFigures(true);
         }
 

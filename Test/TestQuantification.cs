@@ -517,7 +517,7 @@ namespace Test
             double log_stdev = Math.Sqrt(log_sum / (allIntensity.Count - 1));
 
             Assert.AreEqual(20.00, Math.Round(log_average, 2));
-            Assert.AreEqual(1.00d, Math.Round(log_stdev, 2));
+            Assert.AreEqual(1.00, Math.Round(log_stdev, 2));
         }
 
         [Test]
