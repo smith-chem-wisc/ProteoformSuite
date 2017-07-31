@@ -45,6 +45,8 @@
             this.bt_td_relations = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.tb_tdProteoforms = new System.Windows.Forms.TextBox();
+            this.tb_tableFilter = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -137,6 +139,8 @@
             // 
             // splitContainer3.Panel1
             // 
+            this.splitContainer3.Panel1.Controls.Add(this.label2);
+            this.splitContainer3.Panel1.Controls.Add(this.tb_tableFilter);
             this.splitContainer3.Panel1.Controls.Add(this.label5);
             this.splitContainer3.Panel1.Controls.Add(this.label4);
             this.splitContainer3.Panel1.Controls.Add(this.label3);
@@ -282,6 +286,23 @@
             this.tb_tdProteoforms.Size = new System.Drawing.Size(100, 20);
             this.tb_tdProteoforms.TabIndex = 0;
             // 
+            // tb_tableFilter
+            // 
+            this.tb_tableFilter.Location = new System.Drawing.Point(13, 45);
+            this.tb_tableFilter.Name = "tb_tableFilter";
+            this.tb_tableFilter.Size = new System.Drawing.Size(129, 20);
+            this.tb_tableFilter.TabIndex = 15;
+            this.tb_tableFilter.TextChanged += new System.EventHandler(this.tb_tableFilter_TextChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(148, 48);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(59, 13);
+            this.label2.TabIndex = 16;
+            this.label2.Text = "Table Filter";
+            // 
             // TopDown
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -333,5 +354,7 @@
         private System.Windows.Forms.NumericUpDown nUD_min_score_td;
         private System.Windows.Forms.NumericUpDown nUD_max_RT_td;
         private System.Windows.Forms.NumericUpDown nUD_min_RT_td;
+        private System.Windows.Forms.TextBox tb_tableFilter;
+        private System.Windows.Forms.Label label2;
     }
 }

@@ -76,8 +76,8 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.clear_td();
             dgv_TD_proteoforms.DataSource = null;
             dgv_TD_proteoforms.Rows.Clear();
-            tb_tdProteoforms.Text = "";
-            
+            tb_tdProteoforms.Clear();
+            tb_tableFilter.Clear();
             if (clear_following)
             {
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
@@ -241,6 +241,16 @@ namespace ProteoformSuiteGUI
         private void cb_biomarker_CheckedChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.biomarker = cb_biomarker.Checked;
+        }
+
+        private void tb_tableFilter_TextChanged(object sender, EventArgs e)
+        {
+            IEnumerable<object> selected_td = tb_tableFilter.Text == "" ?
+               Sweet.lollipop.target_proteoform_community.topdown_proteoforms :
+               ExtensionMethods.filter(Sweet.lollipop.target_proteoform_community.topdown_proteoforms, tb_tableFilter.Text);
+            DisplayUtility.FillDataGridView(dgv_TD_proteoforms, selected_td.OfType<TopDownProteoform>().Select(t => new DisplayTopDownProteoform(t)));
+            DisplayTopDownProteoform.FormatTopDownProteoformTable(dgv_TD_proteoforms);
+
         }
     }
 }

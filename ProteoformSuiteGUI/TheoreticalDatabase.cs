@@ -162,7 +162,9 @@ namespace ProteoformSuiteGUI
             dgv_loadFiles.Rows.Clear();
             dgv_unlocalizedModifications.DataSource = null;
             dgv_unlocalizedModifications.Rows.Clear();
-
+            tb_modTableFilter.Clear();
+            tb_tableFilter.Clear();
+            tb_totalTheoreticalProteoforms.Clear();
             if (clear_following)
             {
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
