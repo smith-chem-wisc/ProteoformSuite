@@ -1,64 +1,132 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
     public class TusherValues2
     {
+
         #region Tusher Analysis Properties
 
-        public List<BiorepTechrepIntensity> numeratorOriginalBiorepTechrepIntensities { get; set; }
-        public List<BiorepTechrepIntensity> denominatorOriginalBiorepTechrepIntensities { get; set; }
-        public List<BiorepTechrepIntensity> numeratorImputedBiorepTechrepIntensities { get; set; }
-        public List<BiorepTechrepIntensity> denominatorImputedBiorepTechrepIntensities { get; set; }
-        public Dictionary<Tuple<string, string, string>, BiorepTechrepIntensity> allBiotechIntensities { get; set; }
+        public List<BiorepTechrepIntensity> numeratorOriginalIntensities { get; set; }
+        public List<BiorepTechrepIntensity> denominatorOriginalIntensities { get; set; }
+        public List<BiorepTechrepIntensity> numeratorImputedIntensities { get; set; }
+        public List<BiorepTechrepIntensity> denominatorImputedIntensities { get; set; }
+        public Dictionary<Tuple<string, string, string>, BiorepTechrepIntensity> allIntensities { get; set; }
 
         public decimal numeratorIntensitySum { get; set; } = 0;
         public decimal denominatorIntensitySum { get; set; } = 0;
         public decimal scatter { get; set; } = 0;
-        public bool significant_tusher { get; set; } = false;
+        public bool significant { get; set; } = false;
         public decimal relative_difference { get; set; }
         public decimal correspondingAvgSortedRelDiff { get; set; }
         public decimal roughSignificanceFDR { get; set; } = 0;
 
         #endregion Tusher Analysis Properties
 
-        public static List<List<decimal>> compute_balanced_biorep_permutation_relativeDifferences(Dictionary<string, List<string>> conditionsBioReps, List<InputFile> input_files, string induced_condition, List<ExperimentalProteoform> satisfactoryProteoforms, decimal sKnot_minFoldChange)
+        #region Public Methods
+
+        public void impute_biorep_intensities(List<BiorepTechrepIntensity> intensities, Dictionary<string, List<string>> conditionBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal bkgdAverageIntensity, decimal bkgdStDev, decimal sKnot)
         {
-            if (!conditionsBioReps.All(x => x.Value.OrderBy(y => y).SequenceEqual(conditionsBioReps.First().Value.OrderBy(z => z))))
-                throw new ArgumentException("Error: Permutation analysis doesn't currently handle unbalanced experimental designs.");
-            if (conditionsBioReps.Count > 2)
-                throw new ArgumentException("Error: Permutation analysis doesn't currently handle experimental designs with more than 2 conditions.");
+            //bkgdAverageIntensity is log base 2
+            //bkgdStDev is log base 2
 
-            List<InputFile> files = Sweet.lollipop.get_files(input_files, Purpose.Quantification).ToList();
-            List<string> bioreps = files.Select(f => f.biological_replicate).Distinct().ToList();
+            significant = false;
+            numeratorOriginalIntensities = intensities.Where(b => b.condition == numerator_condition).ToList();
+            numeratorImputedIntensities = imputedIntensities(numeratorOriginalIntensities, bkgdAverageIntensity, bkgdStDev, numerator_condition, conditionBioReps[numerator_condition]);
+            numeratorIntensitySum = (decimal)numeratorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)numeratorImputedIntensities.Sum(i => i.intensity_sum);
+            List<BiorepTechrepIntensity> allNumeratorIntensities = numeratorOriginalIntensities.Concat(numeratorImputedIntensities).ToList();
 
-            List<Tuple<string, string, string>> all = files.Select(f => new Tuple<string, string, string>(f.lt_condition, f.biological_replicate, f.technical_replicate))
-                .Concat(files.Select(f => new Tuple<string, string, string>(f.hv_condition, f.biological_replicate, f.technical_replicate))).ToList();
-            List<Tuple<string, string, string>> allInduced = all.Where(x => x.Item1 == induced_condition).ToList();
-            List<Tuple<string, string, string>> allUninduced = all.Where(x => x.Item1 != induced_condition).ToList();
-            List<IEnumerable<Tuple<string, string, string>>> permutations = ExtensionMethods.Combinations(all, allInduced.Count).ToList();
-            List<IEnumerable<Tuple<string, string, string>>> balanced_permutations_induced = permutations.Where(p =>
-                !p.SequenceEqual(allInduced) // not the original set
-                && bioreps.All(rep => p.Count(x => x.Item2 == rep) == allInduced.Count(x => x.Item2 == rep))) // the number of each biorep should be the same as the original set
-                .ToList();
+            denominatorOriginalIntensities = intensities.Where(b => b.condition == denominator_condition).ToList();
+            denominatorImputedIntensities = imputedIntensities(denominatorOriginalIntensities, bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition]);
+            denominatorIntensitySum = (decimal)denominatorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity_sum);
+            List<BiorepTechrepIntensity> allDenominatorIntensities = denominatorOriginalIntensities.Concat(denominatorImputedIntensities).ToList();
 
-            List<List<decimal>> permutedRelativeDifferences = new List<List<decimal>>(); // each internal list is sorted
-            foreach (IEnumerable<Tuple<string, string, string>> induced in balanced_permutations_induced)
-            {
-                List<decimal> relativeDifferences = new List<decimal>();
-                foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
-                {
-                    List<BiorepIntensity> induced_intensities = induced.Select(x => pf.quant.TusherValues1.allIntensities[x]).ToList();
-                    List<BiorepIntensity> uninduced_intensities = pf.quant.TusherValues1.allIntensities.Values.Except(induced_intensities).ToList();
-                    relativeDifferences.Add(pf.quant.TusherValues1.getSingleTestStatistic(induced_intensities, uninduced_intensities, pf.quant.TusherValues1.StdDev(induced_intensities, uninduced_intensities), sKnot_minFoldChange));
-                }
-                permutedRelativeDifferences.Add(relativeDifferences);
-            }
-            return permutedRelativeDifferences;
+            allIntensities = allNumeratorIntensities.Concat(allDenominatorIntensities).ToDictionary(x => new Tuple<string, string, string>(x.condition, x.biorep, x.techrep), x => x);
         }
+
+        public void determine_proteoform_statistics(string induced_condition, decimal sKnot)
+        {
+            List<BiorepTechrepIntensity> allNumeratorIntensities = numeratorOriginalIntensities.Concat(numeratorImputedIntensities).ToList();
+            List<BiorepTechrepIntensity> allDenominatorIntensities = denominatorOriginalIntensities.Concat(denominatorImputedIntensities).ToList();
+
+            // We are using linear intensities, like in Tusher et al. (2001).
+            // This is a non-parametric test, and so it makes no assumptions about the incoming probability distribution, unlike a simple t-test.
+            // Therefore, the right-skewed intensity distributions is okay for this test.
+            scatter = StdDev(allNumeratorIntensities, allDenominatorIntensities);
+            List<BiorepTechrepIntensity> induced = allIntensities.Where(kv => kv.Key.Item1 == induced_condition).Select(kv => kv.Value).ToList();
+            List<BiorepTechrepIntensity> uninduced = allIntensities.Where(kv => kv.Key.Item1 != induced_condition).Select(kv => kv.Value).ToList();
+            relative_difference = getSingleTestStatistic(induced, uninduced, scatter, sKnot);
+        }
+
+        /// <summary>
+        /// Returns imputed intensities for a certain condition for biological replicates this proteoform was not observed in.
+        /// </summary>
+        /// <param name="observedBioreps"></param>
+        /// <param name="bkgdAverageIntensity"></param>
+        /// <param name="bkgdStDev"></param>
+        /// <param name="condition"></param>
+        /// <param name="bioreps"></param>
+        /// <returns></returns>
+        public static List<BiorepTechrepIntensity> imputedIntensities(List<BiorepTechrepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev, string condition, List<string> bioreps)
+        {
+            //bkgdAverageIntensity is log base 2
+            //bkgdStDev is log base 2
+
+            List<Tuple<string, string>> bt = observedBioreps.Select(x => new Tuple<string, string>(x.biorep, x.techrep)).Distinct().ToList();
+
+            return (
+                from x in bt
+                where !observedBioreps.Any(k => k.condition == condition && k.biorep == x.Item1 && k.techrep == x.Item2)
+                select new BiorepTechrepIntensity(true, x.Item1, condition, x.Item2, QuantitativeProteoformValues.imputed_intensity(bkgdAverageIntensity, bkgdStDev)))
+                .ToList();
+        }
+
+        #endregion Public Methods
+
+        #region Relative Difference Methods
+
+        /// <summary>
+        /// Calculates the pooled standard deviation across unlogged intensities for the two conditions for this proteoform.
+        /// This is known as the "scatter s(i)" in the Tusher et al. paper.
+        /// </summary>
+        /// <param name="allInduced"></param>
+        /// <param name="allUninduced"></param>
+        /// <returns></returns>
+        public decimal StdDev(IEnumerable<BiorepTechrepIntensity> allInduced, IEnumerable<BiorepTechrepIntensity> allUninduced)
+        {
+            int numerator_count = allInduced.Count();
+            int denominator_count = allUninduced.Count();
+            if ((numerator_count + denominator_count) == 2)
+                return 1000000m;
+
+            decimal a = (decimal)((1d / (double)numerator_count + 1d / (double)denominator_count) / ((double)numerator_count + (double)denominator_count - 2d));
+            double avgNumerator = allInduced.Average(x => x.intensity_sum);
+            double avgDenominator = allUninduced.Average(x => x.intensity_sum);
+            decimal numeratorSumSquares = allInduced.Sum(n => (decimal)Math.Pow(n.intensity_sum - avgNumerator, 2d));
+            decimal denominatorSumSquares = allUninduced.Sum(d => (decimal)Math.Pow(d.intensity_sum - avgDenominator, 2d));
+            decimal stdev = (decimal)Math.Sqrt((double)((numeratorSumSquares + denominatorSumSquares) * a));
+            return stdev;
+        }
+
+        /// <summary>
+        /// This is the relative difference from Tusher, et al. (2001) using unlogged intensity values
+        /// d(i) = { Average(measurement x from state I) - Average(measurement x from state U) } / { (pooled std dev from I and U) - s_knot }
+        /// </summary>
+        /// <param name="allInduced"></param>
+        /// <param name="allUninduced"></param>
+        /// <param name="pooledStdDev"></param>
+        /// <param name="sKnot">
+        /// A constant intended to "minimize the coefficient of variation"
+        /// </param>
+        /// <returns></returns>
+        public decimal getSingleTestStatistic(List<BiorepTechrepIntensity> allInduced, List<BiorepTechrepIntensity> allUninduced, decimal pooledStdDev, decimal sKnot)
+        {
+            double t = (allInduced.Average(l => l.intensity_sum) - allUninduced.Average(h => h.intensity_sum)) / ((double)(pooledStdDev + sKnot));
+            return (decimal)t;
+        }
+
+        #endregion Relative Difference Methods
     }
 }

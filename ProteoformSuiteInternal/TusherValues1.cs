@@ -51,10 +51,6 @@ namespace ProteoformSuiteInternal
             List<BiorepIntensity> allNumeratorIntensities = numeratorOriginalBiorepIntensities.Concat(numeratorImputedIntensities).ToList();
             List<BiorepIntensity> allDenominatorIntensities = denominatorOriginalBiorepIntensities.Concat(denominatorImputedIntensities).ToList();
 
-            //intensitySum = numeratorIntensitySum + denominatorIntensitySum;
-            //logFoldChange = (decimal)Math.Log((double)numeratorIntensitySum / (double)denominatorIntensitySum, 2);
-            //pValue_randomization = Randomization_PValue(logFoldChange, allNumeratorIntensities, allDenominatorIntensities);
-
             // We are using linear intensities, like in Tusher et al. (2001).
             // This is a non-parametric test, and so it makes no assumptions about the incoming probability distribution, unlike a simple t-test.
             // Therefore, the right-skewed intensity distributions is okay for this test.

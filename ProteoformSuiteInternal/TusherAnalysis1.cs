@@ -22,6 +22,7 @@ namespace ProteoformSuiteInternal
             foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
             {
                 eP.quant.TusherValues1.determine_proteoform_statistics(eP.biorepIntensityList, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, bkgdAverageIntensity, bkgdStDev, sKnot_minFoldChange);
+                eP.quant.determine_statistics();
             }
 
             return satisfactoryProteoforms.Where(eP => eP.accepted == true).Select(e => e.quant).ToList();
@@ -51,7 +52,7 @@ namespace ProteoformSuiteInternal
             // Zero-center the intensities for each proteoform
             foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
             {
-                double avg_biorepintensity = pf.quant.TusherValues1.allIntensities.Values.Average(b => b.intensity_sum);
+                double avg_biorepintensity = pf.quant.TusherValues1.allIntensities.Values.Average(b => b.intensity_sum); // row average (for this proteoform)
                 foreach (BiorepIntensity b in pf.quant.TusherValues1.allIntensities.Values)
                 {
                     b.intensity_sum = b.intensity_sum - avg_biorepintensity;

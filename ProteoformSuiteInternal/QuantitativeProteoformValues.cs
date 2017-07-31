@@ -23,6 +23,7 @@ namespace ProteoformSuiteInternal
         #region Public Fields
 
         public TusherValues1 TusherValues1 = new TusherValues1();
+        public TusherValues2 TusherValues2 = new TusherValues2();
         public Log2FoldChangeValues Log2FoldChangeValues = new Log2FoldChangeValues();
 
         #endregion Public Fields
@@ -39,6 +40,13 @@ namespace ProteoformSuiteInternal
         #endregion Public Constructor
 
         #region Public Methods
+
+        public void determine_statistics()
+        {
+            intensitySum = TusherValues1.numeratorIntensitySum + TusherValues1.denominatorIntensitySum;
+            logFoldChange = (decimal)Math.Log((double)TusherValues1.numeratorIntensitySum / (double)TusherValues1.denominatorIntensitySum, 2);
+            pValue_randomization = Randomization_PValue(logFoldChange, TusherValues1.numeratorOriginalBiorepIntensities.Concat(TusherValues1.numeratorImputedIntensities).ToList(), TusherValues1.denominatorOriginalBiorepIntensities.Concat(TusherValues1.denominatorImputedIntensities).ToList());
+        }
 
         /// <summary>
         /// Computes an intensity from a background distribution of intensity I and standard deviation s.

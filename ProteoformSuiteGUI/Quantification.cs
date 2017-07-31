@@ -671,7 +671,9 @@ namespace ProteoformSuiteGUI
             {
                 ct_proteoformIntensities.ChartAreas[0].AxisX.Title = "Avg. Intensity, " + Sweet.lollipop.numerator_condition;
                 ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "Avg. Intensity, " + Sweet.lollipop.denominator_condition;
-                foreach (ExperimentalProteoform pf in selection == 4 ? Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(pf => pf.quant.TusherValues1.numeratorOriginalBiorepIntensities != null && pf.quant.TusherValues1.denominatorOriginalBiorepIntensities != null).ToList() :  Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.TusherValues1.numeratorOriginalBiorepIntensities != null && pf.quant.TusherValues1.denominatorOriginalBiorepIntensities != null).ToList())
+                foreach (ExperimentalProteoform pf in selection == 4 ? 
+                    Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(pf => pf.quant.TusherValues1.numeratorOriginalBiorepIntensities != null && pf.quant.TusherValues1.denominatorOriginalBiorepIntensities != null).ToList() : 
+                    Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.TusherValues1.numeratorOriginalBiorepIntensities != null && pf.quant.TusherValues1.denominatorOriginalBiorepIntensities != null).ToList())
                 {
                     ct_proteoformIntensities.Series["Intensities"].Points.AddXY(pf.quant.TusherValues1.numeratorOriginalBiorepIntensities == null || pf.quant.TusherValues1.numeratorOriginalBiorepIntensities.Count == 0 ? 0 : pf.quant.TusherValues1.numeratorOriginalBiorepIntensities.Average(x => x.intensity_sum), pf.quant.TusherValues1.denominatorOriginalBiorepIntensities == null || pf.quant.TusherValues1.denominatorOriginalBiorepIntensities.Count == 0 ? 0 : pf.quant.TusherValues1.denominatorOriginalBiorepIntensities.Average(x => x.intensity_sum));
                 }
