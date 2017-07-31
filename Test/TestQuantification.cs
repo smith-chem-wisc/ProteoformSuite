@@ -516,7 +516,7 @@ namespace Test
             double log_sum = allIntensity.Sum(d => Math.Pow(Math.Log(d, 2) - log_average, 2));
             double log_stdev = Math.Sqrt(log_sum / (allIntensity.Count - 1));
 
-            Assert.AreEqual(20d, Math.Round(log_average, 2));
+            Assert.AreEqual(20.00, Math.Round(log_average, 2));
             Assert.AreEqual(1.00d, Math.Round(log_stdev, 2));
         }
 

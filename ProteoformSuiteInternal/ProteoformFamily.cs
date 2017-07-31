@@ -57,6 +57,11 @@ namespace ProteoformSuiteInternal
             separate_proteoforms();
         }
 
+        public static void reset_family_counter()
+        {
+            family_counter = 0;
+        }
+
         public void merge_families(List<ProteoformFamily> families)
         {
             IEnumerable<ProteoformFamily> gene_family =
