@@ -77,7 +77,10 @@ namespace ProteoformSuiteGUI
                 for (int i = ((ProteoformSweet)MdiParent).forms.IndexOf(this) + 1; i < ((ProteoformSweet)MdiParent).forms.Count; i++)
                 {
                     ISweetForm sweet = ((ProteoformSweet)MdiParent).forms[i];
-                    sweet.ClearListsTablesFigures(false);
+                    if (sweet as TopDown == null)
+                    {
+                        sweet.ClearListsTablesFigures(false);
+                    }
                 }
             }
         }

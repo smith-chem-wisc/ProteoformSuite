@@ -124,7 +124,7 @@ namespace Test
             Assert.AreEqual(2, peptides.Count);
             Assert.AreEqual(3, propeps.Count);
             Assert.AreEqual(3, signalpeps.Count);
-
+            Assert.AreEqual(13, Sweet.lollipop.theoretical_database.theoreticals_by_accession[-100].Count);
             Assert.AreEqual(25, Sweet.lollipop.target_proteoform_community.theoretical_proteoforms.Length);
         }
 
