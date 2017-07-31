@@ -106,6 +106,7 @@
     <Compile Include="BigRational.cs" />
     <Compile Include="BiorepFractionTechrepIntensity.cs" />
     <Compile Include="BiorepIntensity.cs" />
+    <Compile Include="BiorepTechrepIntensity.cs" />
     <Compile Include="ChargeState.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Correction.cs" />

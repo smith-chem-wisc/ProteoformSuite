@@ -130,6 +130,40 @@ namespace Test
             Assert.AreEqual(0, Sweet.lollipop.remaining_quantification_components.Count);
         }
 
+        [Test]
+        public void assign_quant_components_large_tolerance_split_range()
+        {
+            Sweet.lollipop = new Lollipop();
+            Sweet.lollipop.mass_tolerance = 10; //ppm
+            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-3, 3 * 2 + 1).ToList();
+            ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("", 20000, 2, true); // tolerance is 0.2 Da
+            double hv_mass = e.agg_mass + e.lysine_count * Lollipop.NEUCODE_LYSINE_MASS_SHIFT; // 20000.0703
+
+            Component bb = new Component();
+            Component cc = new Component();
+            Component dd = new Component();
+            Component ee = new Component();
+            Component ff = new Component();
+            Component gg = new Component();
+            Component hh = new Component();
+            Component ii = new Component();
+            bb.weighted_monoisotopic_mass = 19999.79;
+            cc.weighted_monoisotopic_mass = 19999.99;
+            dd.weighted_monoisotopic_mass = 20000;
+            ee.weighted_monoisotopic_mass = 20000.03;
+            //boundary is 20000.036
+            ff.weighted_monoisotopic_mass = 20000.04;
+            gg.weighted_monoisotopic_mass = 20000.07;
+            hh.weighted_monoisotopic_mass = 20000.08;
+            ii.weighted_monoisotopic_mass = 20000.28;
+
+            Sweet.lollipop.remaining_quantification_components = new HashSet<Component> { bb, cc, dd, ee, ff, gg, hh, ii };
+            e.assign_quantitative_components();
+            Assert.AreEqual(3, e.lt_quant_components.Count);
+            Assert.AreEqual(3, e.hv_quant_components.Count);
+            Assert.False(e.lt_quant_components.Any(c => e.hv_quant_components.Contains(c)));
+        }
+
 
         [Test]
         public void full_agg()
@@ -201,6 +235,7 @@ namespace Test
             Sweet.lollipop.neucode_labeled = false;
             Sweet.lollipop.remaining_components = new List<Component>(components);
             Sweet.lollipop.remaining_verification_components = new HashSet<Component>(components);
+            Sweet.lollipop.missed_monoisotopics_range = Enumerable.Range(-3, 3 * 2 + 1).ToList();
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             e.root = components[0];
             e.aggregate();
