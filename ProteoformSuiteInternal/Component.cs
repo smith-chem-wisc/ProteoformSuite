@@ -240,5 +240,6 @@ namespace ProteoformSuiteInternal
         } 
 
         #endregion Public Methods
+
     }
 }
