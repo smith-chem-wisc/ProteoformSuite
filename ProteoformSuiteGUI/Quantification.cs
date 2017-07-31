@@ -33,15 +33,15 @@ namespace ProteoformSuiteGUI
         {
             ClearListsTablesFigures(true);
             Sweet.lollipop.quantify();
-            Sweet.lollipop.calculate_log2fc_statistics();
+            Log2FoldChangeAnalysis.calculate_log2fc_statistics();
             Sweet.lollipop.GO_analysis();
             FillTablesAndCharts();
         }
 
         public void ClearListsTablesFigures(bool clear_following)
         {
-            Sweet.lollipop.logIntensityHistogram.Clear();
-            Sweet.lollipop.logSelectIntensityHistogram.Clear();
+            Sweet.lollipop.distributions.logIntensityHistogram.Clear();
+            Sweet.lollipop.distributions.logSelectIntensityHistogram.Clear();
             Sweet.lollipop.satisfactoryProteoforms.Clear();
             Sweet.lollipop.qVals.Clear();
             Sweet.lollipop.quantifiedProteins.Clear();
@@ -87,8 +87,8 @@ namespace ProteoformSuiteGUI
                 plotAllPermutedTestStatistics();
             DisplayUtility.FillDataGridView(dgv_quantification_results, Sweet.lollipop.qVals.Select(q => new DisplayQuantitativeValues(q)));
             DisplayQuantitativeValues.FormatGridView(dgv_quantification_results);
-            tb_avgIntensity.Text = Math.Round(Sweet.lollipop.selectAverageIntensity, 1).ToString();
-            tb_stdevIntensity.Text = Math.Round(Sweet.lollipop.selectStDev, 3).ToString();
+            tb_avgIntensity.Text = Math.Round(Sweet.lollipop.distributions.selectAverageIntensity, 1).ToString();
+            tb_stdevIntensity.Text = Math.Round(Sweet.lollipop.distributions.selectStDev, 3).ToString();
             tb_FDR.Text = Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4).ToString();
             volcanoPlot();
             plotBiorepIntensities();
@@ -273,8 +273,8 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.backgroundShift = nud_bkgdShift.Value;
             if (Sweet.lollipop.qVals.Count <= 0)
                 return;
-            Sweet.lollipop.defineAllObservedIntensityDistribution(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.logIntensityHistogram);
-            Sweet.lollipop.defineBackgroundIntensityDistribution(Sweet.lollipop.quantBioFracCombos, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.backgroundShift, Sweet.lollipop.backgroundWidth);
+            Sweet.lollipop.distributions.defineAllObservedIntensityDistribution(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.distributions.logIntensityHistogram);
+            Sweet.lollipop.distributions.defineBackgroundIntensityDistribution(Sweet.lollipop.quantBioFracCombos, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.condition_count, Sweet.lollipop.backgroundShift, Sweet.lollipop.backgroundWidth);
         }
 
         private void nud_bkgdWidth_ValueChanged(object sender, EventArgs e)
@@ -282,8 +282,8 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.backgroundWidth = nud_bkgdWidth.Value;
             if (Sweet.lollipop.qVals.Count <= 0)
                 return;
-            Sweet.lollipop.defineAllObservedIntensityDistribution(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.logIntensityHistogram);
-            Sweet.lollipop.defineBackgroundIntensityDistribution(Sweet.lollipop.quantBioFracCombos, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.backgroundShift, Sweet.lollipop.backgroundWidth);
+            Sweet.lollipop.distributions.defineAllObservedIntensityDistribution(Sweet.lollipop.target_proteoform_community.experimental_proteoforms, Sweet.lollipop.distributions.logIntensityHistogram);
+            Sweet.lollipop.distributions.defineBackgroundIntensityDistribution(Sweet.lollipop.quantBioFracCombos, Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.condition_count, Sweet.lollipop.backgroundShift, Sweet.lollipop.backgroundWidth);
         }
 
         private void cmbx_observationsTypeRequired_SelectedIndexChanged(object sender, EventArgs e)
@@ -338,18 +338,18 @@ namespace ProteoformSuiteGUI
 
             foreach (QuantitativeProteoformValues qValue in Sweet.lollipop.qVals)
             {
-                if (qValue.significant_tusher && Sweet.lollipop.significance_by_permutation || qValue.significant_foldchange && Sweet.lollipop.significance_by_log2FC)
-                    ct_volcano_logFold_logP.Series["significantlogFold_logP"].Points.AddXY(plot_selection == 0 ? qValue.average_log2fc : (double)qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.pValue_uncorrected : (double)qValue.pValue_randomization));
+                if (qValue.TusherValues1.significant && Sweet.lollipop.significance_by_permutation || qValue.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
+                    ct_volcano_logFold_logP.Series["significantlogFold_logP"].Points.AddXY(plot_selection == 0 ? qValue.Log2FoldChangeValues.average_log2fc : (double)qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.Log2FoldChangeValues.pValue_uncorrected : (double)qValue.pValue_randomization));
                 else
-                    ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(plot_selection == 0 ? qValue.average_log2fc : (double)qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.pValue_uncorrected : (double)qValue.pValue_randomization));
+                    ct_volcano_logFold_logP.Series["logFold_logP"].Points.AddXY(plot_selection == 0 ? qValue.Log2FoldChangeValues.average_log2fc : (double)qValue.logFoldChange, -Math.Log10(plot_selection == 0 ? qValue.Log2FoldChangeValues.pValue_uncorrected : (double)qValue.pValue_randomization));
             }
 
             if (Sweet.lollipop.qVals.Count > 0)
             {
-                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(Sweet.lollipop.qVals.Min(q => plot_selection == 0 ? q.average_log2fc : (double)q.logFoldChange)));
-                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(Sweet.lollipop.qVals.Max(q => plot_selection == 0 ? q.average_log2fc : (double)q.logFoldChange)));
-                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Minimum = Math.Floor(Sweet.lollipop.qVals.Min(q => -Math.Log10(plot_selection == 0 ? q.pValue_uncorrected : (double)q.pValue_randomization)));
-                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = Math.Ceiling(Sweet.lollipop.qVals.Max(q => -Math.Log10(plot_selection == 0 ? q.pValue_uncorrected : (double)q.pValue_randomization)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Minimum = Convert.ToDouble(Math.Floor(Sweet.lollipop.qVals.Min(q => plot_selection == 0 ? q.Log2FoldChangeValues.average_log2fc : (double)q.logFoldChange)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum = Convert.ToDouble(Math.Ceiling(Sweet.lollipop.qVals.Max(q => plot_selection == 0 ? q.Log2FoldChangeValues.average_log2fc : (double)q.logFoldChange)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Minimum = Math.Floor(Sweet.lollipop.qVals.Min(q => -Math.Log10(plot_selection == 0 ? q.Log2FoldChangeValues.pValue_uncorrected : (double)q.pValue_randomization)));
+                ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = Math.Ceiling(Sweet.lollipop.qVals.Max(q => -Math.Log10(plot_selection == 0 ? q.Log2FoldChangeValues.pValue_uncorrected : (double)q.pValue_randomization)));
                 ct_volcano_logFold_logP.ChartAreas[0].AxisY.Maximum = ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum > 30 ? 30 : ct_volcano_logFold_logP.ChartAreas[0].AxisX.Maximum;
             }
         }
@@ -376,7 +376,7 @@ namespace ProteoformSuiteGUI
         private void nud_benjiHochFDR_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.benjiHoch_fdr = (double)nud_benjiHochFDR.Value;
-            Sweet.lollipop.establish_benjiHoch_significance();
+            Log2FoldChangeAnalysis.establish_benjiHoch_significance();
             volcanoPlot();
         }
 
@@ -413,14 +413,14 @@ namespace ProteoformSuiteGUI
             int max_test_stat_unit = 0;
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
-                if (pf.quant.significant_tusher && Sweet.lollipop.significance_by_permutation || pf.quant.significant_foldchange && Sweet.lollipop.significance_by_log2FC)
-                    ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.correspondingAvgSortedRelDiff, pf.quant.relative_difference);
+                if (pf.quant.TusherValues1.significant && Sweet.lollipop.significance_by_permutation || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
+                    ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.TusherValues1.correspondingAvgSortedRelDiff, pf.quant.TusherValues1.relative_difference);
                 else
-                    ct_relativeDifference.Series["Quantified"].Points.AddXY(pf.quant.correspondingAvgSortedRelDiff, pf.quant.relative_difference);
-                if (Math.Ceiling(Math.Abs(pf.quant.correspondingAvgSortedRelDiff)) > max_test_stat_unit)
-                    max_test_stat_unit = (int)Math.Ceiling(Math.Abs(pf.quant.correspondingAvgSortedRelDiff));
-                if (Math.Ceiling(Math.Abs(pf.quant.relative_difference)) > max_test_stat_unit)
-                    max_test_stat_unit = (int)Math.Ceiling(Math.Abs(pf.quant.relative_difference));
+                    ct_relativeDifference.Series["Quantified"].Points.AddXY(pf.quant.TusherValues1.correspondingAvgSortedRelDiff, pf.quant.TusherValues1.relative_difference);
+                if (Math.Ceiling(Math.Abs(pf.quant.TusherValues1.correspondingAvgSortedRelDiff)) > max_test_stat_unit)
+                    max_test_stat_unit = (int)Math.Ceiling(Math.Abs(pf.quant.TusherValues1.correspondingAvgSortedRelDiff));
+                if (Math.Ceiling(Math.Abs(pf.quant.TusherValues1.relative_difference)) > max_test_stat_unit)
+                    max_test_stat_unit = (int)Math.Ceiling(Math.Abs(pf.quant.TusherValues1.relative_difference));
             }
 
             if (Sweet.lollipop.avgSortedPermutationRelativeDifferences.Count > 0 && Sweet.lollipop.sortedProteoformRelativeDifferences.Count > 0)
@@ -457,14 +457,14 @@ namespace ProteoformSuiteGUI
 
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
-                if (pf.quant.significant_tusher && Sweet.lollipop.significance_by_permutation || pf.quant.significant_foldchange && Sweet.lollipop.significance_by_log2FC)
-                    ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.scatter, pf.quant.relative_difference);
+                if (pf.quant.TusherValues1.significant && Sweet.lollipop.significance_by_permutation || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
+                    ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.TusherValues1.scatter, pf.quant.TusherValues1.relative_difference);
                 else
-                    ct_relativeDifference.Series["Quantified"].Points.AddXY(pf.quant.scatter, pf.quant.relative_difference);
+                    ct_relativeDifference.Series["Quantified"].Points.AddXY(pf.quant.TusherValues1.scatter, pf.quant.TusherValues1.relative_difference);
 
-                if (pf.quant.scatter < min_scatter) min_scatter = pf.quant.scatter;
-                if (pf.quant.scatter > max_scatter) max_scatter = pf.quant.scatter;
-                if (Math.Abs(pf.quant.relative_difference) > max_stat) max_stat = Math.Abs(pf.quant.relative_difference);
+                if (pf.quant.TusherValues1.scatter < min_scatter) min_scatter = pf.quant.TusherValues1.scatter;
+                if (pf.quant.TusherValues1.scatter > max_scatter) max_scatter = pf.quant.TusherValues1.scatter;
+                if (Math.Abs(pf.quant.TusherValues1.relative_difference) > max_stat) max_stat = Math.Abs(pf.quant.TusherValues1.relative_difference);
             }
 
             ct_relativeDifference.ChartAreas[0].AxisX.Minimum = 1;
@@ -545,16 +545,16 @@ namespace ProteoformSuiteGUI
 
             foreach (ExperimentalProteoform pf in Sweet.lollipop.satisfactoryProteoforms)
             {
-                decimal rel_diff = pf.quant.relative_difference;
-                if (pf.quant.significant_tusher && Sweet.lollipop.significance_by_permutation || pf.quant.significant_foldchange && Sweet.lollipop.significance_by_log2FC)
-                    ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.roughSignificanceFDR, rel_diff);
+                decimal rel_diff = pf.quant.TusherValues1.relative_difference;
+                if (pf.quant.TusherValues1.significant && Sweet.lollipop.significance_by_permutation || pf.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC)
+                    ct_relativeDifference.Series["Significant"].Points.AddXY(pf.quant.TusherValues1.roughSignificanceFDR, rel_diff);
                 else
-                    ct_relativeDifference.Series["Quantified"].Points.AddXY(pf.quant.roughSignificanceFDR, rel_diff);
+                    ct_relativeDifference.Series["Quantified"].Points.AddXY(pf.quant.TusherValues1.roughSignificanceFDR, rel_diff);
 
-                if (pf.quant.roughSignificanceFDR < min_fdr) min_fdr = pf.quant.roughSignificanceFDR;
-                if (pf.quant.roughSignificanceFDR > max_fdr) max_fdr = pf.quant.roughSignificanceFDR;
-                if (pf.quant.relative_difference < min_stat) min_stat = rel_diff;
-                if (pf.quant.relative_difference > max_stat) max_stat = rel_diff;
+                if (pf.quant.TusherValues1.roughSignificanceFDR < min_fdr) min_fdr = pf.quant.TusherValues1.roughSignificanceFDR;
+                if (pf.quant.TusherValues1.roughSignificanceFDR > max_fdr) max_fdr = pf.quant.TusherValues1.roughSignificanceFDR;
+                if (pf.quant.TusherValues1.relative_difference < min_stat) min_stat = rel_diff;
+                if (pf.quant.TusherValues1.relative_difference > max_stat) max_stat = rel_diff;
             }
 
             ct_relativeDifference.ChartAreas[0].AxisX.Minimum = (double)Math.Floor(min_fdr);
@@ -584,7 +584,7 @@ namespace ProteoformSuiteGUI
             Sweet.lollipop.offsetTestStatistics = nud_Offset.Value;
             if (Sweet.lollipop.satisfactoryProteoforms.Count <= 0)
                 return;
-            Sweet.lollipop.reestablishSignficance();
+            TusherAnalysis1.reestablishSignficance();
             if (cb_useLocalFdrCutoff.Checked)
                 plotObservedRelativeDifferenceVsFdr();
             else if (new int[] { 0 }.Contains(cmbx_relativeDifferenceChartSelection.SelectedIndex))
@@ -618,7 +618,7 @@ namespace ProteoformSuiteGUI
         private void cb_useLocalFdrCutoff_CheckedChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.useLocalFdrCutoff = cb_useLocalFdrCutoff.Checked;
-            Sweet.lollipop.reestablishSignficance();
+            TusherAnalysis1.reestablishSignficance();
 
             if (cb_useLocalFdrCutoff.Checked)
                 plotObservedRelativeDifferenceVsFdr();
@@ -636,7 +636,7 @@ namespace ProteoformSuiteGUI
         private void nud_localFdrCutoff_ValueChanged(object sender, EventArgs e)
         {
             Sweet.lollipop.localFdrCutoff = nud_localFdrCutoff.Value;
-            Sweet.lollipop.reestablishSignficance();
+            TusherAnalysis1.reestablishSignficance();
             if (cb_useLocalFdrCutoff.Checked)
                 plotObservedRelativeDifferenceVsFdr();
         }
@@ -671,9 +671,9 @@ namespace ProteoformSuiteGUI
             {
                 ct_proteoformIntensities.ChartAreas[0].AxisX.Title = "Avg. Intensity, " + Sweet.lollipop.numerator_condition;
                 ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "Avg. Intensity, " + Sweet.lollipop.denominator_condition;
-                foreach (ExperimentalProteoform pf in selection == 4 ? Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(pf => pf.quant.numeratorOriginalBiorepIntensities != null && pf.quant.denominatorOriginalBiorepIntensities != null).ToList() :  Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.numeratorOriginalBiorepIntensities != null && pf.quant.denominatorOriginalBiorepIntensities != null).ToList())
+                foreach (ExperimentalProteoform pf in selection == 4 ? Sweet.lollipop.target_proteoform_community.experimental_proteoforms.Where(pf => pf.quant.TusherValues1.numeratorOriginalBiorepIntensities != null && pf.quant.TusherValues1.denominatorOriginalBiorepIntensities != null).ToList() :  Sweet.lollipop.satisfactoryProteoforms.Where(pf => pf.quant.TusherValues1.numeratorOriginalBiorepIntensities != null && pf.quant.TusherValues1.denominatorOriginalBiorepIntensities != null).ToList())
                 {
-                    ct_proteoformIntensities.Series["Intensities"].Points.AddXY(pf.quant.numeratorOriginalBiorepIntensities == null || pf.quant.numeratorOriginalBiorepIntensities.Count == 0 ? 0 : pf.quant.numeratorOriginalBiorepIntensities.Average(x => x.intensity_sum), pf.quant.denominatorOriginalBiorepIntensities == null || pf.quant.denominatorOriginalBiorepIntensities.Count == 0 ? 0 : pf.quant.denominatorOriginalBiorepIntensities.Average(x => x.intensity_sum));
+                    ct_proteoformIntensities.Series["Intensities"].Points.AddXY(pf.quant.TusherValues1.numeratorOriginalBiorepIntensities == null || pf.quant.TusherValues1.numeratorOriginalBiorepIntensities.Count == 0 ? 0 : pf.quant.TusherValues1.numeratorOriginalBiorepIntensities.Average(x => x.intensity_sum), pf.quant.TusherValues1.denominatorOriginalBiorepIntensities == null || pf.quant.TusherValues1.denominatorOriginalBiorepIntensities.Count == 0 ? 0 : pf.quant.TusherValues1.denominatorOriginalBiorepIntensities.Average(x => x.intensity_sum));
                 }
                 return;
             }
@@ -691,26 +691,26 @@ namespace ProteoformSuiteGUI
             ct_proteoformIntensities.ChartAreas[0].AxisY.Title = "Count";
 
             foreach (KeyValuePair<decimal, int> entry in selection == 3 ? 
-                Sweet.lollipop.logSelectIntensityWithImputationHistogram : 
-                new int[] { 1, 2 }.Contains(selection) ? Sweet.lollipop.logSelectIntensityHistogram :
-                    Sweet.lollipop.logIntensityHistogram)
+                Sweet.lollipop.distributions.logSelectIntensityWithImputationHistogram : 
+                new int[] { 1, 2 }.Contains(selection) ? Sweet.lollipop.distributions.logSelectIntensityHistogram :
+                    Sweet.lollipop.distributions.logIntensityHistogram)
             {
                 ct_proteoformIntensities.Series["Intensities"].Points.AddXY(entry.Key, entry.Value);
 
                 decimal gaussian_height = selection == 3 ?
-                    Sweet.lollipop.selectWithImputationGaussianHeight :
-                    new int[] { 1, 2 }.Contains(selection) ? Sweet.lollipop.selectWithImputationGaussianHeight :
-                        Sweet.lollipop.allObservedGaussianHeight;
+                    Sweet.lollipop.distributions.selectWithImputationGaussianHeight :
+                    new int[] { 1, 2 }.Contains(selection) ? Sweet.lollipop.distributions.selectWithImputationGaussianHeight :
+                        Sweet.lollipop.distributions.allObservedGaussianHeight;
                 decimal average_intensity = selection == 3 ?
-                    Sweet.lollipop.selectWithImputationAverageIntensity :
-                    new int[] { 1, 2 }.Contains(selection) ? Sweet.lollipop.selectWithImputationAverageIntensity :
-                        Sweet.lollipop.allObservedAverageIntensity;
+                    Sweet.lollipop.distributions.selectWithImputationAverageIntensity :
+                    new int[] { 1, 2 }.Contains(selection) ? Sweet.lollipop.distributions.selectWithImputationAverageIntensity :
+                        Sweet.lollipop.distributions.allObservedAverageIntensity;
                 decimal std_dev = selection == 3 ?
-                    Sweet.lollipop.selectWithImputationStDev :
-                    new int[] { 1, 2 }.Contains(selection) ? Sweet.lollipop.selectWithImputationStDev :
-                        Sweet.lollipop.allObservedStDev;
+                    Sweet.lollipop.distributions.selectWithImputationStDev :
+                    new int[] { 1, 2 }.Contains(selection) ? Sweet.lollipop.distributions.selectWithImputationStDev :
+                        Sweet.lollipop.distributions.allObservedStDev;
                 double gaussIntensity = ((double)gaussian_height) * Math.Exp(-Math.Pow(((double)entry.Key - (double)average_intensity), 2) / (2d * Math.Pow((double)std_dev, 2)));
-                double bkgd_gaussIntensity = ((double)Sweet.lollipop.bkgdGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)Sweet.lollipop.bkgdAverageIntensity), 2) / (2d * Math.Pow((double)Sweet.lollipop.bkgdStDev, 2)));
+                double bkgd_gaussIntensity = ((double)Sweet.lollipop.distributions.bkgdGaussianHeight) * Math.Exp(-Math.Pow(((double)entry.Key - (double)Sweet.lollipop.distributions.bkgdAverageIntensity), 2) / (2d * Math.Pow((double)Sweet.lollipop.distributions.bkgdStDev, 2)));
                 double sumIntensity = gaussIntensity + bkgd_gaussIntensity;
                 ct_proteoformIntensities.Series["Fit"].Points.AddXY(entry.Key, gaussIntensity);
 

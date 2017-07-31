@@ -205,10 +205,10 @@ namespace ProteoformSuiteInternal
             string report = "";
 
             report += Sweet.lollipop.satisfactoryProteoforms.Count.ToString() + "\tQuantified Experimental Proteoforms (Threshold for Quantification: " + Sweet.lollipop.minBiorepsWithObservations.ToString() + " = " + Sweet.lollipop.observation_requirement + ")" + Environment.NewLine;
-            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant_tusher && Sweet.lollipop.significance_by_permutation || p.quant.significant_foldchange && Sweet.lollipop.significance_by_log2FC).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + Sweet.lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
+            report += Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant && Sweet.lollipop.significance_by_permutation || p.quant.Log2FoldChangeValues.significant && Sweet.lollipop.significance_by_log2FC).ToString() + "\tExperimental Proteoforms with Significant Change (Threshold for Significance: Log2FoldChange > " + Sweet.lollipop.minProteoformFoldChange.ToString() + ", & Total Intensity from Quantification > " + Sweet.lollipop.minProteoformIntensity.ToString() + ", & Q-Value < " + Sweet.lollipop.maxGoTermFDR.ToString() + ")" + Environment.NewLine;
             report += Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4).ToString() + "\tFDR for Significance Conclusion (Offset of " + Math.Round(Sweet.lollipop.offsetTestStatistics, 1).ToString() + " from d(i) = dE(i) line)" + Environment.NewLine;
-            report += Math.Round(Sweet.lollipop.selectAverageIntensity, 4).ToString() + "\tAverage Log2 Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
-            report += Math.Round(Sweet.lollipop.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.distributions.selectAverageIntensity, 4).ToString() + "\tAverage Log2 Intensity Quantified Experimental Proteoform Observations" + Environment.NewLine;
+            report += Math.Round(Sweet.lollipop.distributions.selectStDev, 2).ToString() + "\tLog2 Intensity Standard Deviation for Quantified Experimental Proteoform" + Environment.NewLine;
             report += Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms, Sweet.lollipop.minProteoformFoldChange, Sweet.lollipop.maxGoTermFDR, Sweet.lollipop.minProteoformIntensity).Count.ToString() + "\tProteoform Families with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.inducedOrRepressedProteins.Count.ToString() + "\tIdentified Proteins with Significant Change" + Environment.NewLine;
             report += Sweet.lollipop.goTermNumbers.Count(g => g.by < (double)Sweet.lollipop.maxGoTermFDR).ToString() + "\tGO Terms of Significance (Benjimini-Yekeulti p-value < " + Sweet.lollipop.maxGoTermFDR.ToString() + "): " + Environment.NewLine;
@@ -289,7 +289,7 @@ namespace ProteoformSuiteInternal
 
             foreach (ExperimentalProteoform e in Sweet.lollipop.target_proteoform_community.families.SelectMany(f => f.experimental_proteoforms)
                 .Where(e => e.linked_proteoform_references != null)
-                .OrderByDescending(e => (Sweet.lollipop.significance_by_log2FC ? e.quant.significant_foldchange : e.quant.significant_tusher) ? 1 : 0)
+                .OrderByDescending(e => (Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : e.quant.TusherValues1.significant) ? 1 : 0)
                 .ThenBy(e => (e.linked_proteoform_references.First() as TheoreticalProteoform).accession)
                 .ThenBy(e => e.ptm_set.ptm_combination.Count))
             {
@@ -304,9 +304,9 @@ namespace ProteoformSuiteInternal
                     e.modified_mass - e.linked_proteoform_references.Last().modified_mass,
                     e.agg_rt,
                     e.agg_intensity,
-                    e.quant.numeratorIntensitySum,
-                    e.quant.denominatorIntensitySum,
-                    Sweet.lollipop.significance_by_log2FC ? e.quant.significant_foldchange : e.quant.significant_tusher
+                    e.quant.TusherValues1.numeratorIntensitySum,
+                    e.quant.TusherValues1.denominatorIntensitySum,
+                    Sweet.lollipop.significance_by_log2FC ? e.quant.Log2FoldChangeValues.significant : e.quant.TusherValues1.significant
                 );
             }
 
@@ -360,14 +360,14 @@ namespace ProteoformSuiteInternal
                         {
                             foreach (InputFile f in input_files.Where(f => (f.lt_condition == condition_bioreps.Key || f.hv_condition == condition_bioreps.Key) && f.biological_replicate == biorep))
                             {
-                                pf.quant.allBftIntensities.TryGetValue(new Tuple<InputFile, string>(f, condition_bioreps.Key), out BiorepFractionTechrepIntensity bft);
+                                pf.quant.Log2FoldChangeValues.allBftIntensities.TryGetValue(new Tuple<InputFile, string>(f, condition_bioreps.Key), out BiorepFractionTechrepIntensity bft);
                                 double value = bft != null ? !bft.imputed || include_imputation ? bft.intensity_sum : double.NaN : double.NaN;
                                 row[condition_bioreps.Key + "_" + biorep + "_" + f.fraction + "_" + f.technical_replicate] = value;
                             }
                         }
                         else
                         {
-                            pf.quant.allIntensities.TryGetValue(new Tuple<string, string>(condition_bioreps.Key, biorep), out BiorepIntensity br);
+                            pf.quant.TusherValues1.allIntensities.TryGetValue(new Tuple<string, string>(condition_bioreps.Key, biorep), out BiorepIntensity br);
                             double value = br != null ? !br.imputed || include_imputation ? br.intensity_sum : double.NaN : double.NaN;
                             row[condition_bioreps.Key + "_" + biorep] = value;
                         }

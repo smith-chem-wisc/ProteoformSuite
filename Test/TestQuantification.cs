@@ -124,12 +124,12 @@ namespace Test
             string induced_condition = Sweet.lollipop.hvConditionsBioReps.Keys.First();
             Dictionary<string, List<string>> cbr = e1.biorepIntensityList.Select(x => x.condition).Distinct().ToDictionary(c => c, c => e1.biorepIntensityList.Where(br => br.condition == c).Select(br => br.biorep).Distinct().ToList());
 
-            Sweet.lollipop.compute_proteoform_statistics(new List<ExperimentalProteoform> { e1 }, (decimal)10.000, (decimal)10.000, cbr, numerator_condition, denominator_condition, induced_condition, 1, false);
+            TusherAnalysis1.compute_proteoform_statistics(new List<ExperimentalProteoform> { e1 }, (decimal)10.000, (decimal)10.000, cbr, numerator_condition, denominator_condition, induced_condition, 1, false);
 
-            Assert.AreEqual(2, e1.quant.numeratorOriginalBiorepIntensities.Count);
-            Assert.AreEqual(2, e1.quant.denominatorOriginalBiorepIntensities.Count);
-            Assert.AreEqual(0d /*200d*/, e1.quant.numeratorOriginalBiorepIntensities.Sum(i => i.intensity_sum));
-            Assert.AreEqual(0d /*105d*/, e1.quant.denominatorOriginalBiorepIntensities.Sum(i => i.intensity_sum));
+            Assert.AreEqual(2, e1.quant.TusherValues1.numeratorOriginalBiorepIntensities.Count);
+            Assert.AreEqual(2, e1.quant.TusherValues1.denominatorOriginalBiorepIntensities.Count);
+            Assert.AreEqual(0d /*200d*/, e1.quant.TusherValues1.numeratorOriginalBiorepIntensities.Sum(i => i.intensity_sum));
+            Assert.AreEqual(0d /*105d*/, e1.quant.TusherValues1.denominatorOriginalBiorepIntensities.Sum(i => i.intensity_sum));
             Assert.AreEqual(305d, e1.quant.intensitySum);
             Assert.AreEqual(0.929610672108602M, e1.quant.logFoldChange);
             Assert.True(0 <= e1.quant.pValue_randomization && e1.quant.pValue_randomization <= 1);
@@ -170,12 +170,12 @@ namespace Test
             string induced_condition = "heavy";
             Dictionary<string, List<string>> cbr = e2.biorepIntensityList.Select(x => x.condition).Distinct().ToDictionary(c => c, c => e2.biorepIntensityList.Where(br => br.condition == c).Select(br => br.biorep).Distinct().ToList());
 
-            Sweet.lollipop.compute_proteoform_statistics(new List<ExperimentalProteoform> { e2 }, (decimal)10.000, (decimal)10.000, cbr, numerator_condition, denominator_condition, induced_condition, 1, false);
+            TusherAnalysis1.compute_proteoform_statistics(new List<ExperimentalProteoform> { e2 }, (decimal)10.000, (decimal)10.000, cbr, numerator_condition, denominator_condition, induced_condition, 1, false);
 
-            Assert.AreEqual(4, e2.quant.numeratorOriginalBiorepIntensities.Count);
-            Assert.AreEqual(4, e2.quant.denominatorOriginalBiorepIntensities.Count);
-            Assert.AreEqual(0d /*298d*/, e2.quant.numeratorOriginalBiorepIntensities.Sum(i => i.intensity_sum));
-            Assert.AreEqual(0d /*307d*/, e2.quant.denominatorOriginalBiorepIntensities.Sum(i => i.intensity_sum));
+            Assert.AreEqual(4, e2.quant.TusherValues1.numeratorOriginalBiorepIntensities.Count);
+            Assert.AreEqual(4, e2.quant.TusherValues1.denominatorOriginalBiorepIntensities.Count);
+            Assert.AreEqual(0d /*298d*/, e2.quant.TusherValues1.numeratorOriginalBiorepIntensities.Sum(i => i.intensity_sum));
+            Assert.AreEqual(0d /*307d*/, e2.quant.TusherValues1.denominatorOriginalBiorepIntensities.Sum(i => i.intensity_sum));
             Assert.AreEqual(605d, e2.quant.intensitySum);
             Assert.AreEqual(-0.0429263249080178M, e2.quant.logFoldChange);
             Assert.True(0 <= e2.quant.pValue_randomization && e2.quant.pValue_randomization <= 1);
@@ -188,7 +188,7 @@ namespace Test
         {
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("E");
             List<BiorepIntensity> singleton_list = new List<BiorepIntensity> { new BiorepIntensity(false, 1.ToString(), "", 0) };
-            Assert.True(e.quant.StdDev(singleton_list, singleton_list) > 0);
+            Assert.True(e.quant.TusherValues1.StdDev(singleton_list, singleton_list) > 0);
         }
 
         [Test]
@@ -198,7 +198,7 @@ namespace Test
             Dictionary<string, List<string>> unbalanced_design = new Dictionary<string, List<string>> { { "n", new List<string> { 1.ToString(), 2.ToString() } }, { "s", new List<string> { 1.ToString() } } };
             try
             {
-                Sweet.lollipop.compute_balanced_biorep_permutation_relativeDifferences(unbalanced_design, "s", new List<ExperimentalProteoform>(), 0);
+                TusherAnalysis1.compute_balanced_biorep_permutation_relativeDifferences(unbalanced_design, "s", new List<ExperimentalProteoform>(), 0);
             }
             catch (ArgumentException ex)
             {
@@ -218,12 +218,12 @@ namespace Test
             BiorepIntensity b7 = new BiorepIntensity(false, 3.ToString(), "s", 100);
             List<BiorepIntensity> uninduced = new List<BiorepIntensity> { b1, b2, b3 };
             List<BiorepIntensity> induced = new List<BiorepIntensity> { b5, b6, b7 };
-            e.quant.numeratorOriginalBiorepIntensities = uninduced;
-            e.quant.denominatorOriginalBiorepIntensities = induced;
-            e.quant.allIntensities = induced.Concat(uninduced).ToDictionary(b => new Tuple<string, string>(b.condition, b.biorep), b => b);
+            e.quant.TusherValues1.numeratorOriginalBiorepIntensities = uninduced;
+            e.quant.TusherValues1.denominatorOriginalBiorepIntensities = induced;
+            e.quant.TusherValues1.allIntensities = induced.Concat(uninduced).ToDictionary(b => new Tuple<string, string>(b.condition, b.biorep), b => b);
             Dictionary<string, List<string>> cbr = new Dictionary<string, List<string>> { { "n", new List<string> { 1.ToString(), 2.ToString(), 3.ToString() } }, { "s", new List<string> { 1.ToString(), 2.ToString(), 3.ToString() } } };
             List<ExperimentalProteoform> satisfy = new List<ExperimentalProteoform> { e };
-            List<List<decimal>> perms = Sweet.lollipop.compute_balanced_biorep_permutation_relativeDifferences(cbr, "s", satisfy, 1);
+            List<List<decimal>> perms = TusherAnalysis1.compute_balanced_biorep_permutation_relativeDifferences(cbr, "s", satisfy, 1);
             Assert.AreEqual(3, perms.Count);
             Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v, 4) == 0.7185m));
             Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v, 4) == 0.6867m));
@@ -244,12 +244,12 @@ namespace Test
             BiorepIntensity b8 = new BiorepIntensity(false, 4.ToString(), "s", 102);
             List<BiorepIntensity> uninduced = new List<BiorepIntensity> { b1, b2, b3, b4 };
             List<BiorepIntensity> induced = new List<BiorepIntensity> { b5, b6, b7, b8 };
-            e.quant.numeratorOriginalBiorepIntensities = uninduced;
-            e.quant.denominatorOriginalBiorepIntensities = induced;
-            e.quant.allIntensities = induced.Concat(uninduced).ToDictionary(b => new Tuple<string, string>(b.condition, b.biorep), b => b);
+            e.quant.TusherValues1.numeratorOriginalBiorepIntensities = uninduced;
+            e.quant.TusherValues1.denominatorOriginalBiorepIntensities = induced;
+            e.quant.TusherValues1.allIntensities = induced.Concat(uninduced).ToDictionary(b => new Tuple<string, string>(b.condition, b.biorep), b => b);
             Dictionary<string, List<string>> cbr = new Dictionary<string, List<string>> { { "n", new List<string> { 1.ToString(), 2.ToString(), 3.ToString(), 4.ToString() } }, { "s", new List<string> { 1.ToString(), 2.ToString(), 3.ToString(), 4.ToString() } } };
             List<ExperimentalProteoform> satisfy = new List<ExperimentalProteoform> { e };
-            List<List<decimal>> perms = Sweet.lollipop.compute_balanced_biorep_permutation_relativeDifferences(cbr, "s", satisfy, 1);
+            List<List<decimal>> perms = TusherAnalysis1.compute_balanced_biorep_permutation_relativeDifferences(cbr, "s", satisfy, 1);
             Assert.AreEqual(6, perms.Count);
             Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v, 4) == 20.6704m));
             Assert.AreEqual(1, perms.SelectMany(x => x).Count(v => Math.Round(v, 4) == -20.6704m));
@@ -454,18 +454,18 @@ namespace Test
                     if (i == 0) permutedStats.Add(new List<decimal>());
                     permutedStats[j].Add(j);
                 }
-                e.quant.relative_difference = ((decimal)i / 10);
+                e.quant.TusherValues1.relative_difference = ((decimal)i / 10);
                 satisfactoryProteoforms.Add(e);
             }
 
-            Sweet.lollipop.computeSortedRelativeDifferences(satisfactoryProteoforms, permutedStats);
-            Sweet.lollipop.computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, permutedStats.SelectMany(x => x).ToList(), Sweet.lollipop.sortedProteoformRelativeDifferences);
+            TusherAnalysis1.computeSortedRelativeDifferences(satisfactoryProteoforms, permutedStats);
+            TusherAnalysis1.computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, permutedStats.SelectMany(x => x).ToList(), Sweet.lollipop.sortedProteoformRelativeDifferences);
 
             //testStatistic = 0.2m;
-            Assert.AreEqual(1.125, satisfactoryProteoforms[2].quant.roughSignificanceFDR);
+            Assert.AreEqual(1.125, satisfactoryProteoforms[2].quant.TusherValues1.roughSignificanceFDR);
 
             //testStatistic = 0.8m;
-            Assert.AreEqual(4.5, satisfactoryProteoforms[8].quant.roughSignificanceFDR);
+            Assert.AreEqual(4.5, satisfactoryProteoforms[8].quant.TusherValues1.roughSignificanceFDR);
         }
 
         [Test]
@@ -524,7 +524,7 @@ namespace Test
         public void test_imputedIntensities()
         {
             List<BiorepIntensity> briList = new List<BiorepIntensity>();
-            List<BiorepIntensity> imputed = QuantitativeProteoformValues.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<string> { 0.ToString(), 1.ToString(), 2.ToString() });
+            List<BiorepIntensity> imputed = TusherValues1.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<string> { 0.ToString(), 1.ToString(), 2.ToString() });
             //we started with no real observations but there were three observed bioreps in the experiment. Therefore, we need 0 imputed bioreps.
             Assert.AreEqual(3, imputed.Count(b => b.imputed));
             Assert.AreEqual("light", imputed[0].condition);
@@ -534,7 +534,7 @@ namespace Test
 
             imputed.Clear();
             briList.Add(new BiorepIntensity(false, 0.ToString(), "light", 1000d));
-            imputed.AddRange(QuantitativeProteoformValues.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<string> { 0.ToString(), 1.ToString(), 2.ToString() }));
+            imputed.AddRange(TusherValues1.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<string> { 0.ToString(), 1.ToString(), 2.ToString() }));
 
             Assert.AreEqual(2, imputed.Count(b => b.imputed));//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
             Assert.AreEqual(0, imputed.Count(b => !b.imputed));//we started with one real observation but there were three observed bioreps in the experiment. Therefore we need 2 imputed bioreps
@@ -549,7 +549,7 @@ namespace Test
             briList.Add(new BiorepIntensity(false, 0.ToString(), "light", 1000d));
             briList.Add(new BiorepIntensity(false, 1.ToString(), "light", 2000d));
             briList.Add(new BiorepIntensity(false, 2.ToString(), "light", 3000d));
-            imputed.AddRange(QuantitativeProteoformValues.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<string> { 0.ToString(), 1.ToString(), 2.ToString() }));
+            imputed.AddRange(TusherValues1.imputedIntensities(briList, (decimal)Math.Log(100d, 2), (decimal)Math.Log(5d, 2), "light", new List<string> { 0.ToString(), 1.ToString(), 2.ToString() }));
 
             Assert.AreEqual(0, imputed.Count(b => b.imputed));//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
             Assert.AreEqual(0, imputed.Count(b => !b.imputed));//we started with three real observations and there were three observed bioreps in the experiment. Therefore we need 0 imputed bioreps
@@ -580,18 +580,18 @@ namespace Test
             }
 
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { e };
-            List<decimal> rounded_intensities = Sweet.lollipop.define_intensity_distribution(exps.SelectMany(p => p.biorepIntensityList), histogram);
+            List<decimal> rounded_intensities = Sweet.lollipop.distributions.define_intensity_distribution(exps.SelectMany(p => p.biorepIntensityList), histogram);
 
             //12 intensity values, bundled in twos; therefore 6 rounded values
             Assert.AreEqual(12, rounded_intensities.Count);
             Assert.AreEqual(6, histogram.Keys.Count);
 
             //5 bins of width 0.1 and height 2; the first one gets swallowed up in smoothing
-            Assert.AreEqual(1, Sweet.lollipop.get_gaussian_area(histogram));
+            Assert.AreEqual(1, Sweet.lollipop.distributions.get_gaussian_area(histogram));
             histogram.Add(Math.Round((decimal)log2_intensity, 1), 1);
 
             //Added 1 bin of width 0.1 and height 1.5, since we're smoothing by taking width and the mean of the two adjacent bars
-            Assert.AreEqual(1.15, Sweet.lollipop.get_gaussian_area(histogram));
+            Assert.AreEqual(1.15, Sweet.lollipop.distributions.get_gaussian_area(histogram));
         }
 
         [Test]
@@ -612,43 +612,42 @@ namespace Test
             }
 
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { e };
-            List<decimal> rounded_intensities = Sweet.lollipop.define_intensity_distribution(exps.SelectMany(p => p.biorepIntensityList), histogram);
-            Sweet.lollipop.get_gaussian_area(histogram);
+            List<decimal> rounded_intensities = Sweet.lollipop.distributions.define_intensity_distribution(exps.SelectMany(p => p.biorepIntensityList), histogram);
+            Sweet.lollipop.distributions.get_gaussian_area(histogram);
 
             //ALL INTENSITIES
             //Test the standard deviation and other calculations
-            Sweet.lollipop.defineAllObservedIntensityDistribution(exps, histogram); // creates the histogram again, checking that it's cleared, too
-            Assert.AreEqual(0.4m, Sweet.lollipop.allObservedGaussianArea);
-            Assert.AreEqual(1.2m, Sweet.lollipop.allObservedAverageIntensity);
-            Assert.AreEqual(0.082m, Math.Round(Sweet.lollipop.allObservedStDev, 3));
-            Assert.AreEqual(1.95m, Math.Round(Sweet.lollipop.allObservedGaussianHeight, 2));
+            Sweet.lollipop.distributions.defineAllObservedIntensityDistribution(exps, histogram); // creates the histogram again, checking that it's cleared, too
+            Assert.AreEqual(0.4m, Sweet.lollipop.distributions.allObservedGaussianArea);
+            Assert.AreEqual(1.2m, Sweet.lollipop.distributions.allObservedAverageIntensity);
+            Assert.AreEqual(0.082m, Math.Round(Sweet.lollipop.distributions.allObservedStDev, 3));
+            Assert.AreEqual(1.95m, Math.Round(Sweet.lollipop.distributions.allObservedGaussianHeight, 2));
 
             //The rest of the calculations should be based off of selected, so setting those to zero
-            Sweet.lollipop.allObservedGaussianArea = 0;
-            Sweet.lollipop.allObservedAverageIntensity = 0;
-            Sweet.lollipop.allObservedStDev = 0;
-            Sweet.lollipop.allObservedGaussianHeight = 0;
+            Sweet.lollipop.distributions.allObservedGaussianArea = 0;
+            Sweet.lollipop.distributions.allObservedAverageIntensity = 0;
+            Sweet.lollipop.distributions.allObservedStDev = 0;
+            Sweet.lollipop.distributions.allObservedGaussianHeight = 0;
 
             //SELECTED INTENSITIES
-            Sweet.lollipop.defineSelectObservedIntensityDistribution(exps, histogram);
-            Assert.AreEqual(0.4m, Sweet.lollipop.selectGaussianArea);
-            Assert.AreEqual(1.2m, Sweet.lollipop.selectAverageIntensity);
-            Assert.AreEqual(0.082m, Math.Round(Sweet.lollipop.selectStDev, 3));
-            Assert.AreEqual(1.95m, Math.Round(Sweet.lollipop.selectGaussianHeight, 2)); //shouldn't this be calculated with the selectStDev? changed from //selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
+            Sweet.lollipop.distributions.defineSelectObservedIntensityDistribution(exps, histogram);
+            Assert.AreEqual(0.4m, Sweet.lollipop.distributions.selectGaussianArea);
+            Assert.AreEqual(1.2m, Sweet.lollipop.distributions.selectAverageIntensity);
+            Assert.AreEqual(0.082m, Math.Round(Sweet.lollipop.distributions.selectStDev, 3));
+            Assert.AreEqual(1.95m, Math.Round(Sweet.lollipop.distributions.selectGaussianHeight, 2)); //shouldn't this be calculated with the selectStDev? changed from //selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)observedStDev, 2));
 
             //SELECTED BACKGROUND
-            Sweet.lollipop.condition_count = e.biorepIntensityList.Select(b => b.condition).Distinct().Count();
             Dictionary<string, List<string>> qBioFractions = e.biorepIntensityList.Select(b => b.biorep).Distinct().ToDictionary(b => b, b => new List<string>());
-            Sweet.lollipop.defineBackgroundIntensityDistribution(qBioFractions, exps, -2, 0.5m);
-            Assert.AreEqual(1.04m, Math.Round(Sweet.lollipop.bkgdAverageIntensity, 2));
-            Assert.AreEqual(0.041m, Math.Round(Sweet.lollipop.bkgdStDev, 3));
-            Assert.AreEqual(0, Math.Round(Sweet.lollipop.bkgdGaussianHeight, 2));
+            Sweet.lollipop.distributions.defineBackgroundIntensityDistribution(qBioFractions, exps, e.biorepIntensityList.Select(b => b.condition).Distinct().Count(), -2, 0.5m);
+            Assert.AreEqual(1.04m, Math.Round(Sweet.lollipop.distributions.bkgdAverageIntensity, 2));
+            Assert.AreEqual(0.041m, Math.Round(Sweet.lollipop.distributions.bkgdStDev, 3));
+            Assert.AreEqual(0, Math.Round(Sweet.lollipop.distributions.bkgdGaussianHeight, 2));
 
             //unlabeled works similarly
-            Sweet.lollipop.defineBackgroundIntensityDistribution(qBioFractions, exps, -2, 0.5m);
-            Assert.AreEqual(1.04m, Math.Round(Sweet.lollipop.bkgdAverageIntensity, 2));
-            Assert.AreEqual(0.041m, Math.Round(Sweet.lollipop.bkgdStDev, 3));
-            Assert.AreEqual(0, Math.Round(Sweet.lollipop.bkgdGaussianHeight, 2));
+            Sweet.lollipop.distributions.defineBackgroundIntensityDistribution(qBioFractions, exps, e.biorepIntensityList.Select(b => b.condition).Distinct().Count(), -2, 0.5m);
+            Assert.AreEqual(1.04m, Math.Round(Sweet.lollipop.distributions.bkgdAverageIntensity, 2));
+            Assert.AreEqual(0.041m, Math.Round(Sweet.lollipop.distributions.bkgdStDev, 3));
+            Assert.AreEqual(0, Math.Round(Sweet.lollipop.distributions.bkgdGaussianHeight, 2));
         }
 
         [Test]
@@ -899,39 +898,39 @@ namespace Test
 
             //Nothing passing, but one thing passing for each
             ex.quant.logFoldChange = 12;
-            ex.quant.significant_tusher = false;
+            ex.quant.TusherValues1.significant = false;
             ex.quant.intensitySum = 0;
             fx.quant.logFoldChange = -12;
-            fx.quant.significant_tusher = false; ;
+            fx.quant.TusherValues1.significant = false; ;
             fx.quant.intensitySum = 0;
             gx.quant.logFoldChange = 8;
-            gx.quant.significant_tusher = true;
+            gx.quant.TusherValues1.significant = true;
             gx.quant.intensitySum = 0;
             hx.quant.logFoldChange = 8;
-            hx.quant.significant_tusher = false; ;
+            hx.quant.TusherValues1.significant = false; ;
             hx.quant.intensitySum = 2;
             List<ProteinWithGoTerms> prots = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
             Assert.AreEqual(0, prots.Count);
 
             //Nothing passing, but two things passing for each
             ex.quant.logFoldChange = 12;
-            ex.quant.significant_tusher = true;
+            ex.quant.TusherValues1.significant = true;
             ex.quant.intensitySum = 0;
             fx.quant.logFoldChange = -12;
-            fx.quant.significant_tusher = true;
+            fx.quant.TusherValues1.significant = true;
             fx.quant.intensitySum = 0;
             gx.quant.logFoldChange = 8;
-            gx.quant.significant_tusher = true;
+            gx.quant.TusherValues1.significant = true;
             gx.quant.intensitySum = 2;
             hx.quant.logFoldChange = 12;
-            hx.quant.significant_tusher = false; ;
+            hx.quant.TusherValues1.significant = false; ;
             hx.quant.intensitySum = 2;
             prots = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
             Assert.AreEqual(0, prots.Count);
 
             //Passing
             ex.quant.logFoldChange = 12;
-            ex.quant.significant_tusher = true;
+            ex.quant.TusherValues1.significant = true;
             ex.quant.intensitySum = 2;
             prots = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { ex, fx, gx }, 10, 0.5m, 1);
             Assert.AreEqual(1, prots.Count); // only taking one ET connection by definition in forming ET relations; only one is used in identify theoreticals
@@ -949,10 +948,10 @@ namespace Test
             ExperimentalProteoform gx = ConstructorsForTesting.ExperimentalProteoform("E3");
             ExperimentalProteoform hx = ConstructorsForTesting.ExperimentalProteoform("E4");
             ex.quant.logFoldChange = 12;
-            ex.quant.significant_foldchange = true;
+            ex.quant.Log2FoldChangeValues.significant = true;
             ex.quant.intensitySum = 2;
             fx.quant.logFoldChange = 12;
-            fx.quant.significant_foldchange = true;
+            fx.quant.Log2FoldChangeValues.significant = true;
             fx.quant.intensitySum = 2;
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
             List<ExperimentalProteoform> interesting = Sweet.lollipop.getInterestingProteoforms(exps, 10, 0.5m, 1).ToList();
@@ -965,10 +964,10 @@ namespace Test
             gx = ConstructorsForTesting.ExperimentalProteoform("E3");
             hx = ConstructorsForTesting.ExperimentalProteoform("E4");
             ex.quant.logFoldChange = 12;
-            ex.quant.significant_tusher = true;
+            ex.quant.TusherValues1.significant = true;
             ex.quant.intensitySum = 2;
             fx.quant.logFoldChange = 12;
-            fx.quant.significant_tusher = true;
+            fx.quant.TusherValues1.significant = true;
             fx.quant.intensitySum = 2;
             exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
             interesting = Sweet.lollipop.getInterestingProteoforms(exps, 10, 0.5m, 1).ToList();
@@ -996,10 +995,10 @@ namespace Test
             ExperimentalProteoform gx = ConstructorsForTesting.ExperimentalProteoform("E3");
             ExperimentalProteoform hx = ConstructorsForTesting.ExperimentalProteoform("E4");
             ex.quant.logFoldChange = 12;
-            ex.quant.significant_tusher = true;
+            ex.quant.TusherValues1.significant = true;
             ex.quant.intensitySum = 2;
             fx.quant.logFoldChange = 12;
-            fx.quant.significant_tusher = true;
+            fx.quant.TusherValues1.significant = true;
             fx.quant.intensitySum = 2;
             List<ExperimentalProteoform> exps = new List<ExperimentalProteoform> { ex, fx, gx, hx };
             ConstructorsForTesting.make_relation(gx, v);
@@ -1087,13 +1086,13 @@ namespace Test
 
         //    Assert.AreEqual(-1.65, Math.Round(Sweet.lollipop.minimumPassingNegativeTestStatistic, 2));
         //    Assert.AreEqual(4.49, Math.Round(Sweet.lollipop.minimumPassingPositiveTestStatisitic, 2));
-        //    Assert.AreEqual(13, Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant_tusher));
+        //    Assert.AreEqual(13, Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant));
         //    Assert.AreEqual(0.1538, Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4));
 
         //    //change up a parameter and reevaluate
         //    Sweet.lollipop.offsetTestStatistics = 0.8m;
         //    Sweet.lollipop.reestablishSignficance();
-        //    Assert.AreEqual(22, Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant_tusher));
+        //    Assert.AreEqual(22, Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant));
         //    Assert.AreEqual(0.1667, Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4));
 
         //    //rough test of quant summary
@@ -1140,7 +1139,7 @@ namespace Test
             Sweet.lollipop.target_proteoform_community.experimental_proteoforms = prots.ToArray();
             Sweet.lollipop.quantify();
             Assert.AreEqual(100, Sweet.lollipop.satisfactoryProteoforms.Count);
-            Assert.AreEqual(0, Sweet.lollipop.satisfactoryProteoforms.SelectMany(p => p.quant.allIntensities.Values.Where(br => br.imputed)).Count()); // avoiding imputation for this test
+            Assert.AreEqual(0, Sweet.lollipop.satisfactoryProteoforms.SelectMany(p => p.quant.TusherValues1.allIntensities.Values.Where(br => br.imputed)).Count()); // avoiding imputation for this test
 
             //real relative differences
             Assert.AreEqual(100, Sweet.lollipop.sortedProteoformRelativeDifferences.Count);
@@ -1156,13 +1155,13 @@ namespace Test
 
             Assert.AreEqual(Decimal.MinValue, Math.Round(Sweet.lollipop.minimumPassingNegativeTestStatistic, 2));
             Assert.AreEqual(5.77, Math.Round(Sweet.lollipop.minimumPassingPositiveTestStatisitic, 2));
-            Assert.AreEqual(1, Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant_tusher));
+            Assert.AreEqual(1, Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant));
             Assert.AreEqual(0, Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4));
 
             //change up a parameter and reevaluate
             Sweet.lollipop.offsetTestStatistics = 0.5m;
-            Sweet.lollipop.reestablishSignficance();
-            Assert.AreEqual(11, Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.significant_tusher));
+            TusherAnalysis1.reestablishSignficance();
+            Assert.AreEqual(11, Sweet.lollipop.satisfactoryProteoforms.Count(p => p.quant.TusherValues1.significant));
             Assert.AreEqual(0.2121, Math.Round(Sweet.lollipop.relativeDifferenceFDR, 4));
 
             //rough test of quant summary
@@ -1215,7 +1214,7 @@ namespace Test
             }
             Sweet.lollipop.target_proteoform_community.experimental_proteoforms = prots.ToArray();
             Sweet.lollipop.quantify();
-            Sweet.lollipop.calculate_log2fc_statistics();
+            Log2FoldChangeAnalysis.calculate_log2fc_statistics();
 
             // Check mixing normalization
             List<BiorepFractionTechrepIntensity> allBfts = Sweet.lollipop.satisfactoryProteoforms.SelectMany(pf => pf.bftIntensityList).ToList();
@@ -1225,7 +1224,7 @@ namespace Test
             //Check that all values are imputed
             Assert.True(Sweet.lollipop.fileCondition_avgLog2I.Values.All(v => 16.4 < v && v < 26.9));
             Assert.True(Sweet.lollipop.fileCondition_stdevLog2I.Values.All(v => 0.66 < v && v < 3.6));
-            Assert.AreEqual(5242, Sweet.lollipop.satisfactoryProteoforms.Sum(pf => pf.quant.allBftIntensities.Values.Count));
+            Assert.AreEqual(5242, Sweet.lollipop.satisfactoryProteoforms.Sum(pf => pf.quant.Log2FoldChangeValues.allBftIntensities.Values.Count));
 
             //Assert.True(0 < Sweet.lollipop.satisfactoryProteoforms.Count(pf => pf.quant.pValue_uncorrected < 0.0001));
             //Assert.True(0 < Sweet.lollipop.satisfactoryProteoforms.Count(pf => pf.quant.significant_foldchange));
@@ -1247,13 +1246,13 @@ namespace Test
             for(int i = 1; i <= 100; i++)
             {
                 ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("");
-                e.quant.pValue_uncorrected = ExtensionMethods.Student2T((double)i / 10, 10);
+                e.quant.Log2FoldChangeValues.pValue_uncorrected = ExtensionMethods.Student2T((double)i / 10, 10);
                 Sweet.lollipop.satisfactoryProteoforms.Add(e);
             }
 
-            Sweet.lollipop.establish_benjiHoch_significance();
+            Log2FoldChangeAnalysis.establish_benjiHoch_significance();
 
-            Assert.AreEqual(77, Sweet.lollipop.satisfactoryProteoforms.Count(pf => pf.quant.significant_foldchange));
+            Assert.AreEqual(77, Sweet.lollipop.satisfactoryProteoforms.Count(pf => pf.quant.Log2FoldChangeValues.significant));
         }
     }
 }

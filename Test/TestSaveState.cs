@@ -189,7 +189,7 @@ namespace Test
                 ConstructorsForTesting.InputFile("fake.txt", Labeling.NeuCode, Purpose.Quantification, "n", "s", "3", "2", "1"), //5
             };
             ExperimentalProteoform e = ConstructorsForTesting.ExperimentalProteoform("asdf");
-            e.quant.allIntensities = new Dictionary<Tuple<string, string>, BiorepIntensity>
+            e.quant.TusherValues1.allIntensities = new Dictionary<Tuple<string, string>, BiorepIntensity>
             {
                 {new Tuple<string, string>("n", 1.ToString()), new BiorepIntensity(false, 1.ToString(), "n", 1) },
                 {new Tuple<string, string>("n", 2.ToString()), new BiorepIntensity(true, 2.ToString(), "n", 1) },
@@ -200,7 +200,7 @@ namespace Test
             };
             Assert.False(ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, true, false).Contains("NaN"));
             Assert.True(ResultsSummaryGenerator.biological_replicate_intensities(new List<ExperimentalProteoform> { e }, input_files, conditionsBioReps, false, false).Contains("NaN"));
-            e.quant.allIntensities = new Dictionary<Tuple<string, string>, BiorepIntensity>
+            e.quant.TusherValues1.allIntensities = new Dictionary<Tuple<string, string>, BiorepIntensity>
             {
                 {new Tuple<string, string>("n", 1.ToString()), new BiorepIntensity(true, 1.ToString(), "n", 1) },
                 {new Tuple<string, string>("n", 2.ToString()), new BiorepIntensity(true, 2.ToString(), "n", 1) },
