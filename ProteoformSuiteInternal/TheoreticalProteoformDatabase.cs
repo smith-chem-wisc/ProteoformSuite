@@ -112,7 +112,7 @@ namespace ProteoformSuiteInternal
             {
                 Sweet.lollipop.target_proteoform_community.theoretical_proteoforms = group_proteoforms_by_mass(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms);
                 add_theoreticals_to_accession_dictionary(Sweet.lollipop.target_proteoform_community.theoretical_proteoforms, Sweet.lollipop.target_proteoform_community.community_number);
-                 foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values)
+                foreach (ProteoformCommunity community in Sweet.lollipop.decoy_proteoform_communities.Values)
                 {
                     community.theoretical_proteoforms = group_proteoforms_by_mass(community.theoretical_proteoforms);
                     add_theoreticals_to_accession_dictionary(community.theoretical_proteoforms, community.community_number);
