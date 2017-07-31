@@ -792,31 +792,25 @@ namespace ProteoformSuiteInternal
             IEnumerable<string> hvconditions = hvConditionsBioReps.Keys;
             List<string> conditions = ltconditions.Concat(hvconditions).Distinct().ToList();
 
-            computeBiorepIntensities(target_proteoform_community.experimental_proteoforms, ltconditions, hvconditions);
-            distributions.defineAllObservedIntensityDistribution(target_proteoform_community.experimental_proteoforms, distributions.logIntensityHistogram);
-
             satisfactoryProteoforms = determineProteoformsMeetingCriteria(conditions, target_proteoform_community.experimental_proteoforms, observation_requirement, minBiorepsWithObservations);
 
+            computeBiorepIntensities(target_proteoform_community.experimental_proteoforms, ltconditions, hvconditions);
+            distributions.defineAllObservedIntensityDistribution(target_proteoform_community.experimental_proteoforms, distributions.logIntensityHistogram);
             distributions.defineSelectObservedIntensityDistribution(satisfactoryProteoforms, distributions.logSelectIntensityHistogram);
             distributions.defineBackgroundIntensityDistribution(quantBioFracCombos, satisfactoryProteoforms, condition_count, backgroundShift, backgroundWidth);
 
             qVals = TusherAnalysis1.compute_proteoform_statistics(satisfactoryProteoforms, distributions.bkgdAverageIntensity, distributions.bkgdStDev, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, sKnot_minFoldChange, true); // includes normalization
-
             permutedRelativeDifferences = TusherAnalysis1.compute_balanced_biorep_permutation_relativeDifferences(conditionsBioReps, induced_condition, satisfactoryProteoforms, sKnot_minFoldChange);
             flattenedPermutedRelativeDifferences = permutedRelativeDifferences.SelectMany(x => x).ToList();
             TusherAnalysis1.computeSortedRelativeDifferences(satisfactoryProteoforms, permutedRelativeDifferences);
-
             relativeDifferenceFDR = TusherAnalysis1.computeRelativeDifferenceFDR(avgSortedPermutationRelativeDifferences, sortedProteoformRelativeDifferences, satisfactoryProteoforms, flattenedPermutedRelativeDifferences, offsetTestStatistics);
             TusherAnalysis1.computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, flattenedPermutedRelativeDifferences, sortedProteoformRelativeDifferences);
 
             observedProteins = getProteins(target_proteoform_community.experimental_proteoforms.Where(x => x.accepted));
-
             quantifiedProteins = getProteins(satisfactoryProteoforms);
-
             inducedOrRepressedProteins = getInducedOrRepressedProteins(satisfactoryProteoforms, minProteoformFoldChange, maxGoTermFDR, minProteoformIntensity);
         }
        
-
         public void computeBiorepIntensities(IEnumerable<ExperimentalProteoform> experimental_proteoforms, IEnumerable<string> ltconditions, IEnumerable<string> hvconditions)
         {
             Parallel.ForEach(experimental_proteoforms, eP => eP.make_biorepIntensityList(eP.lt_quant_components, eP.hv_quant_components, ltconditions, hvconditions));
