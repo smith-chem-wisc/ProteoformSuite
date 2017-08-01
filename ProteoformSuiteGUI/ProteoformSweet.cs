@@ -311,10 +311,11 @@ namespace ProteoformSuiteGUI
             }
 
             // Save the results
+            resultsSummary.InitializeParameterSet();
             if (Sweet.lollipop.results_folder != "")
             {
                 string timestamp = Sweet.time_stamp();
-                ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp);
+                ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp, resultsSummary.get_go_analysis());
                 save_all_plots(Sweet.lollipop.results_folder, timestamp);
             }
 

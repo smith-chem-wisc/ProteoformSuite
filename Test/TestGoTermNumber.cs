@@ -118,7 +118,7 @@ namespace Test
             e2.family = h;
             List<ExperimentalProteoform> fake_significant = new List<ExperimentalProteoform> { e1 };
             List<ProteinWithGoTerms> significant_proteins = Sweet.lollipop.getInducedOrRepressedProteins(fake_significant, 0, 1, 0);
-            List<GoTermNumber> gtn = Sweet.lollipop.getGoTermNumbers(significant_proteins, new List<ProteinWithGoTerms> { p1, p2, p3 });
+            List<GoTermNumber> gtn = Sweet.lollipop.TusherAnalysis1.GoAnalysis.getGoTermNumbers(significant_proteins, new List<ProteinWithGoTerms> { p1, p2, p3 });
             Assert.AreEqual(1, significant_proteins.Count);
             Assert.AreEqual(1, gtn.Count);
             Assert.AreEqual("1", gtn.First().Id);
@@ -178,16 +178,16 @@ namespace Test
             e1.family = f;
             u.family = h;
             e2.family = h;
-            Sweet.lollipop.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
-            Sweet.lollipop.allTheoreticalProteins = true;
+            Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
+            Sweet.lollipop.TusherAnalysis1.GoAnalysis.allTheoreticalProteins = true;
             Sweet.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
-            Sweet.lollipop.GO_analysis();
-            Assert.AreEqual(1, Sweet.lollipop.inducedOrRepressedProteins.Count);  // only taking one ET connection by definition in forming ET relations; only one is used in identify theoreticals
-            Assert.AreEqual(1, Sweet.lollipop.goTermNumbers.Count);
-            Assert.AreEqual("1", Sweet.lollipop.goTermNumbers.First().Id);
-            Assert.AreEqual(0 - (decimal)Math.Log(2d / 3d, 2), Sweet.lollipop.goTermNumbers.First().log_odds_ratio);
+            Sweet.lollipop.TusherAnalysis1.GoAnalysis.GO_analysis(Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins);
+            Assert.AreEqual(1, Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins.Count);  // only taking one ET connection by definition in forming ET relations; only one is used in identify theoreticals
+            Assert.AreEqual(1, Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.Count);
+            Assert.AreEqual("1", Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.First().Id);
+            Assert.AreEqual(0 - (decimal)Math.Log(2d / 3d, 2), Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.First().log_odds_ratio);
 
-            List<ProteoformFamily> fams = Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.goTermNumbers, families);
+            List<ProteoformFamily> fams = Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers, families);
             Assert.AreEqual(1, fams.Count);
             Assert.AreEqual(2, fams[0].theoretical_proteoforms.Count);
         }
@@ -252,17 +252,17 @@ namespace Test
             e1.family = f;
             u.family = h;
             e2.family = h;
-            Sweet.lollipop.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
-            Sweet.lollipop.allTheoreticalProteins = true;
+            Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(new List<ExperimentalProteoform> { e1 }, 0, 1, 0);
+            Sweet.lollipop.TusherAnalysis1.GoAnalysis.allTheoreticalProteins = true;
             Sweet.lollipop.theoretical_database.expanded_proteins = new ProteinWithGoTerms[] { p1, p2, p3 };
-            Sweet.lollipop.backgroundProteinsList = Path.Combine(TestContext.CurrentContext.TestDirectory, "test_protein_list.txt");
-            Sweet.lollipop.GO_analysis();
-            Assert.AreEqual(1, Sweet.lollipop.inducedOrRepressedProteins.Count);  // only taking one ET connection by definition in forming ET relations; only one is used in identify theoreticals
-            Assert.AreEqual(1, Sweet.lollipop.goTermNumbers.Count);
-            Assert.AreEqual("1", Sweet.lollipop.goTermNumbers.First().Id);
-            Assert.AreEqual(0 - (decimal)Math.Log(2d / 3d, 2), Sweet.lollipop.goTermNumbers.First().log_odds_ratio);
+            Sweet.lollipop.TusherAnalysis1.GoAnalysis.backgroundProteinsList = Path.Combine(TestContext.CurrentContext.TestDirectory, "test_protein_list.txt");
+            Sweet.lollipop.TusherAnalysis1.GoAnalysis.GO_analysis(Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins);
+            Assert.AreEqual(1, Sweet.lollipop.TusherAnalysis1.inducedOrRepressedProteins.Count);  // only taking one ET connection by definition in forming ET relations; only one is used in identify theoreticals
+            Assert.AreEqual(1, Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.Count);
+            Assert.AreEqual("1", Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.First().Id);
+            Assert.AreEqual(0 - (decimal)Math.Log(2d / 3d, 2), Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.First().log_odds_ratio);
 
-            List<ProteoformFamily> fams = Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.goTermNumbers, families);
+            List<ProteoformFamily> fams = Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers, families);
             Assert.AreEqual(1, fams.Count);
             Assert.AreEqual(2, fams[0].theoretical_proteoforms.Count);
         }

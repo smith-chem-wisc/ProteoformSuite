@@ -5,6 +5,7 @@ using System.Linq;
 namespace ProteoformSuiteInternal
 {
     public class TusherValues2
+        : IStatisiticalSignificance, ITusherValues
     {
 
         #region Tusher Analysis Properties
@@ -34,12 +35,12 @@ namespace ProteoformSuiteInternal
 
             significant = false;
             numeratorOriginalIntensities = intensities.Where(b => b.condition == numerator_condition).ToList();
-            numeratorImputedIntensities = imputedIntensities(numeratorOriginalIntensities, bkgdAverageIntensity, bkgdStDev, numerator_condition, conditionBioReps[numerator_condition]);
+            numeratorImputedIntensities = imputedIntensities(numeratorOriginalIntensities, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification), bkgdAverageIntensity, bkgdStDev, numerator_condition, conditionBioReps[numerator_condition]);
             numeratorIntensitySum = (decimal)numeratorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)numeratorImputedIntensities.Sum(i => i.intensity_sum);
             List<BiorepTechrepIntensity> allNumeratorIntensities = numeratorOriginalIntensities.Concat(numeratorImputedIntensities).ToList();
 
             denominatorOriginalIntensities = intensities.Where(b => b.condition == denominator_condition).ToList();
-            denominatorImputedIntensities = imputedIntensities(denominatorOriginalIntensities, bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition]);
+            denominatorImputedIntensities = imputedIntensities(denominatorOriginalIntensities, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification), bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition]);
             denominatorIntensitySum = (decimal)denominatorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity_sum);
             List<BiorepTechrepIntensity> allDenominatorIntensities = denominatorOriginalIntensities.Concat(denominatorImputedIntensities).ToList();
 
@@ -69,12 +70,12 @@ namespace ProteoformSuiteInternal
         /// <param name="condition"></param>
         /// <param name="bioreps"></param>
         /// <returns></returns>
-        public static List<BiorepTechrepIntensity> imputedIntensities(List<BiorepTechrepIntensity> observedBioreps, decimal bkgdAverageIntensity, decimal bkgdStDev, string condition, List<string> bioreps)
+        public static List<BiorepTechrepIntensity> imputedIntensities(List<BiorepTechrepIntensity> observedBioreps, IEnumerable<InputFile> files, decimal bkgdAverageIntensity, decimal bkgdStDev, string condition, List<string> bioreps)
         {
             //bkgdAverageIntensity is log base 2
             //bkgdStDev is log base 2
 
-            List<Tuple<string, string>> bt = observedBioreps.Select(x => new Tuple<string, string>(x.biorep, x.techrep)).Distinct().ToList();
+            List<Tuple<string, string>> bt = files.Select(x => new Tuple<string, string>(x.biological_replicate, x.technical_replicate)).Distinct().ToList();
 
             return (
                 from x in bt
@@ -128,5 +129,6 @@ namespace ProteoformSuiteInternal
         }
 
         #endregion Relative Difference Methods
+
     }
 }

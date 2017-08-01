@@ -166,8 +166,8 @@ namespace Test
             Sweet.lollipop.qVals.Add(e.quant);
             GoTermNumber g = new GoTermNumber(new GoTerm("id", "desc", Aspect.BiologicalProcess), 0, 0, 0, 0);
             g.by = -1;
-            Sweet.lollipop.goTermNumbers.Add(g);
-            ResultsSummaryGenerator.save_all(TestContext.CurrentContext.TestDirectory, Sweet.time_stamp());
+            Sweet.lollipop.TusherAnalysis1.GoAnalysis.goTermNumbers.Add(g);
+            ResultsSummaryGenerator.save_all(TestContext.CurrentContext.TestDirectory, Sweet.time_stamp(), Sweet.lollipop.TusherAnalysis1 as IGoAnalysis);
         }
 
         [Test]

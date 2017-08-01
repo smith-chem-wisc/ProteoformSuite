@@ -33,7 +33,7 @@ namespace ProteoformSuiteInternal
 
         public List<BiorepIntensity> biorepIntensityList { get; set; } = new List<BiorepIntensity>();
 
-        public List<BiorepTechrepIntensity> biotechIntensityList { get; set; } = new List<BiorepTechrepIntensity>();
+        public List<BiorepTechrepIntensity> biorepTechrepIntensityList { get; set; } = new List<BiorepTechrepIntensity>();
 
         public List<BiorepFractionTechrepIntensity> bftIntensityList { get; set; } = new List<BiorepFractionTechrepIntensity>(); 
 
@@ -295,7 +295,7 @@ namespace ProteoformSuiteInternal
         #region Quantitation Public Method
 
         public List<BiorepIntensity> make_biorepIntensityList<T>(List<T> lt_quant_components, List<T> hv_quant_components, IEnumerable<string> ltConditionStrings, IEnumerable<string> hvConditionStrings)
-            where T : IBiorepable
+            where T : IFileIntensity
         {
             quant = new QuantitativeProteoformValues(this); //Reset quantitation if starting over from biorep requirements
 
@@ -316,7 +316,7 @@ namespace ProteoformSuiteInternal
             }
 
             this.biorepIntensityList = biorepIntensityList;
-            this.biotechIntensityList = biotechIntensityList;
+            this.biorepTechrepIntensityList = biotechIntensityList;
             this.bftIntensityList = bftIntensityList;
             return biorepIntensityList;
         }

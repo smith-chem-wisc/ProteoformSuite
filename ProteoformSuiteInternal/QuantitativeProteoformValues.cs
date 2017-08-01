@@ -45,7 +45,7 @@ namespace ProteoformSuiteInternal
         {
             intensitySum = TusherValues1.numeratorIntensitySum + TusherValues1.denominatorIntensitySum;
             logFoldChange = (decimal)Math.Log((double)TusherValues1.numeratorIntensitySum / (double)TusherValues1.denominatorIntensitySum, 2);
-            pValue_randomization = Randomization_PValue(logFoldChange, TusherValues1.numeratorOriginalBiorepIntensities.Concat(TusherValues1.numeratorImputedIntensities).ToList(), TusherValues1.denominatorOriginalBiorepIntensities.Concat(TusherValues1.denominatorImputedIntensities).ToList());
+            //pValue_randomization = Randomization_PValue(logFoldChange, TusherValues1.numeratorOriginalIntensities.Concat(TusherValues1.numeratorImputedIntensities).ToList(), TusherValues1.denominatorOriginalIntensities.Concat(TusherValues1.denominatorImputedIntensities).ToList());
         }
 
         /// <summary>

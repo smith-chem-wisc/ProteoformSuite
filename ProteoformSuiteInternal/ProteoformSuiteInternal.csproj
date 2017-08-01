@@ -104,6 +104,7 @@
   <ItemGroup>
     <Compile Include="AminoAcidMasses.cs" />
     <Compile Include="BigRational.cs" />
+    <Compile Include="StatisticalAnalysis\GoAnalysis.cs" />
     <Compile Include="Intensities\BiorepFractionTechrepIntensity.cs" />
     <Compile Include="Intensities\BiorepIntensity.cs" />
     <Compile Include="Intensities\BiorepTechrepIntensity.cs" />
@@ -116,13 +117,18 @@
     <Compile Include="ExperimentalProteoform.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="GeneName.cs" />
-    <Compile Include="GoTermNumber.cs" />
+    <Compile Include="StatisticalAnalysis\GoTermNumber.cs" />
     <Compile Include="GoTerm.cs" />
-    <Compile Include="IBiorepable.cs" />
+    <Compile Include="Intensities\IFileIntensity.cs" />
     <Compile Include="IMassDifference.cs" />
     <Compile Include="InputFile.cs" />
-    <Compile Include="Log2FoldChangeAnalysis.cs" />
-    <Compile Include="Log2FoldChangeValues.cs" />
+    <Compile Include="Intensities\IBiorepIntensity.cs" />
+    <Compile Include="StatisticalAnalysis\IGoAnalysis.cs" />
+    <Compile Include="StatisticalAnalysis\IStatisiticalSignificance.cs" />
+    <Compile Include="StatisticalAnalysis\ITusherAnalysis.cs" />
+    <Compile Include="StatisticalAnalysis\ITusherValues.cs" />
+    <Compile Include="StatisticalAnalysis\Log2FoldChangeAnalysis.cs" />
+    <Compile Include="StatisticalAnalysis\Log2FoldChangeValues.cs" />
     <Compile Include="Lollipop.cs" />
     <Compile Include="Ptm.cs" />
     <Compile Include="PtmCombos.cs" />
@@ -135,7 +141,7 @@
     <Compile Include="ProteoformCommunity.cs" />
     <Compile Include="ProteoformFamily.cs" />
     <Compile Include="ProteoformRelation.cs" />
-    <Compile Include="QuantificationDistributions.cs" />
+    <Compile Include="StatisticalAnalysis\QuantificationDistributions.cs" />
     <Compile Include="QuantitativeProteoformValues.cs" />
     <Compile Include="ResultsSummaryGenerator.cs" />
     <Compile Include="SafeRandom.cs" />
@@ -143,10 +149,10 @@
     <Compile Include="TheoreticalProteoform.cs" />
     <Compile Include="TheoreticalProteoformDatabase.cs" />
     <Compile Include="TheoreticalProteoformGroup.cs" />
-    <Compile Include="TusherAnalysis1.cs" />
-    <Compile Include="TusherAnalysis2.cs" />
-    <Compile Include="TusherValues1.cs" />
-    <Compile Include="TusherValues2.cs" />
+    <Compile Include="StatisticalAnalysis\TusherAnalysis1.cs" />
+    <Compile Include="StatisticalAnalysis\TusherAnalysis2.cs" />
+    <Compile Include="StatisticalAnalysis\TusherValues1.cs" />
+    <Compile Include="StatisticalAnalysis\TusherValues2.cs" />
     <Compile Include="UnlocalizedModification.cs" />
   </ItemGroup>
   <ItemGroup>

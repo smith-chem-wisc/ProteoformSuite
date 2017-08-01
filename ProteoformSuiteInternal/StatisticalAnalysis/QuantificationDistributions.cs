@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
@@ -10,6 +8,8 @@ namespace ProteoformSuiteInternal
     {
 
         #region Public Fields
+
+        public ITusherAnalysis analysis;
 
         // Histograms
         public SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>(); // all intensities
@@ -38,11 +38,22 @@ namespace ProteoformSuiteInternal
 
         #endregion Public Fields
 
+        #region Public Constructor
+
+        public QuantitativeDistributions(ITusherAnalysis analysis)
+        {
+            this.analysis = analysis;
+        }
+
+        #endregion Public Constructor
+
         #region Public Methods
 
         public void defineAllObservedIntensityDistribution(IEnumerable<ExperimentalProteoform> experimental_proteoforms, SortedDictionary<decimal, int> logIntensityHistogram) // the distribution of all observed experimental proteoform biorep intensities
         {
-            IEnumerable<decimal> allIntensities = define_intensity_distribution(experimental_proteoforms.SelectMany(pf => pf.biorepIntensityList), logIntensityHistogram).Where(i => i > 1); //these are log2 values
+            IEnumerable<decimal> allIntensities = analysis as TusherAnalysis1 != null ?
+                define_intensity_distribution(experimental_proteoforms.SelectMany(pf => pf.biorepIntensityList), logIntensityHistogram).Where(i => i > 1) : //these are log2 values
+                define_intensity_distribution(experimental_proteoforms.SelectMany(pf => pf.biorepTechrepIntensityList), logIntensityHistogram).Where(i => i > 1); //these are log2 values
             allObservedAverageIntensity = allIntensities.Average();
             allObservedStDev = (decimal)Math.Sqrt(allIntensities.Average(v => Math.Pow((double)(v - allObservedAverageIntensity), 2))); //population stdev calculation, rather than sample
             allObservedGaussianArea = get_gaussian_area(logIntensityHistogram);
@@ -51,7 +62,9 @@ namespace ProteoformSuiteInternal
 
         public void defineSelectObservedIntensityDistribution(IEnumerable<ExperimentalProteoform> satisfactory_proteoforms, SortedDictionary<decimal, int> logSelectIntensityHistogram)
         {
-            IEnumerable<decimal> allRoundedIntensities = define_intensity_distribution(satisfactory_proteoforms.SelectMany(pf => pf.biorepIntensityList), logSelectIntensityHistogram).Where(i => i > 1); //these are log2 values
+            IEnumerable<decimal> allRoundedIntensities = analysis as TusherAnalysis1 != null ?
+                define_intensity_distribution(satisfactory_proteoforms.SelectMany(pf => pf.biorepIntensityList), logSelectIntensityHistogram).Where(i => i > 1) : //these are log2 values
+                define_intensity_distribution(satisfactory_proteoforms.SelectMany(pf => pf.biorepTechrepIntensityList), logSelectIntensityHistogram).Where(i => i > 1); //these are log2 values
             selectAverageIntensity = allRoundedIntensities.Average();
             selectStDev = (decimal)Math.Sqrt(allRoundedIntensities.Average(v => Math.Pow((double)(v - selectAverageIntensity), 2))); //population stdev calculation, rather than sample
             selectGaussianArea = get_gaussian_area(logSelectIntensityHistogram);
@@ -60,7 +73,9 @@ namespace ProteoformSuiteInternal
 
         public void defineSelectObservedWithImputedIntensityDistribution(IEnumerable<ExperimentalProteoform> satisfactory_proteoforms, SortedDictionary<decimal, int> logSelectIntensityHistogram)
         {
-            IEnumerable<decimal> allRoundedIntensities = define_intensity_distribution(satisfactory_proteoforms.SelectMany(pf => pf.quant.TusherValues1.allIntensities.Values).ToList(), logSelectIntensityWithImputationHistogram);
+            IEnumerable<decimal> allRoundedIntensities = analysis as TusherAnalysis1 != null ?
+                define_intensity_distribution(satisfactory_proteoforms.SelectMany(pf => pf.quant.TusherValues1.allIntensities.Values).ToList(), logSelectIntensityWithImputationHistogram) :
+                define_intensity_distribution(satisfactory_proteoforms.SelectMany(pf => pf.quant.TusherValues2.allIntensities.Values).ToList(), logSelectIntensityWithImputationHistogram);
             selectWithImputationAverageIntensity = allRoundedIntensities.Average();
             selectWithImputationStDev = (decimal)Math.Sqrt(allRoundedIntensities.Average(v => Math.Pow((double)(v - selectAverageIntensity), 2))); //population stdev calculation, rather than sample
             selectWithImputationGaussianArea = get_gaussian_area(logSelectIntensityHistogram);
@@ -80,7 +95,7 @@ namespace ProteoformSuiteInternal
             bkgdGaussianHeight = bkgdGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)bkgdStDev, 2));
         }
 
-        public List<decimal> define_intensity_distribution(IEnumerable<BiorepIntensity> intensities, SortedDictionary<decimal, int> histogram)
+        public List<decimal> define_intensity_distribution(IEnumerable<IBiorepIntensity> intensities, SortedDictionary<decimal, int> histogram)
         {
             histogram.Clear();
 
