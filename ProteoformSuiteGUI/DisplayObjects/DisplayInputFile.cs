@@ -59,7 +59,7 @@ namespace ProteoformSuiteGUI
 
 
         // For quantification files
-        public int biological_replicate
+        public string biological_replicate
         {
             get
             {
@@ -72,17 +72,31 @@ namespace ProteoformSuiteGUI
             }
         }
 
-        //public int Fraction
-        //{
-        //    get
-        //    {
-        //        return file.fraction;
-        //    }
-        //    set
-        //    {
-        //        file.fraction = value;
-        //    }
-        //}
+        public string Fraction
+        {
+            get
+            {
+                return file.fraction;
+            }
+            set
+            {
+                Sweet.change_file(file, file.biological_replicate, nameof(file.fraction), file.fraction.ToString(), value.ToString());
+                file.fraction = value;
+            }
+        }
+
+        public string TechnicalReplicate
+        {
+            get
+            {
+                return file.technical_replicate;
+            }
+            set
+            {
+                Sweet.change_file(file, file.biological_replicate, nameof(file.technical_replicate), file.technical_replicate.ToString(), value.ToString());
+                file.technical_replicate = value;
+            }
+        }
 
         public string lt_condition
         {
@@ -161,6 +175,7 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(complete_path)].HeaderText = "File Path";
             dgv.Columns[nameof(matchingCalibrationFile)].HeaderText = "Matching Calibration File";
             dgv.Columns[nameof(biological_replicate)].HeaderText = "Biological Replicate";
+            dgv.Columns[nameof(TechnicalReplicate)].HeaderText = "Technical Replicate";
             dgv.Columns[nameof(lt_condition)].HeaderText = Sweet.lollipop.neucode_labeled ? "NeuCode Light Condition" : "Condition";
             dgv.Columns[nameof(hv_condition)].HeaderText = "NeuCode Heavy Condition";
             dgv.Columns[nameof(ContaminantDB)].HeaderText = "Contaminant Database";
@@ -177,7 +192,8 @@ namespace ProteoformSuiteGUI
             dgv.Columns[nameof(matchingCalibrationFile)].Visible = dgv_purposes.Contains(Purpose.Calibration) || dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(Labeling)].Visible = dgv_purposes.Contains(Purpose.Identification) || dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(biological_replicate)].Visible = dgv_purposes.Contains(Purpose.Quantification);
-            //dgv.Columns[nameof(Fraction)].Visible = dgv_purposes.Contains(Purpose.Quantification);
+            dgv.Columns[nameof(Fraction)].Visible = dgv_purposes.Contains(Purpose.Quantification);
+            dgv.Columns[nameof(TechnicalReplicate)].Visible = dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(lt_condition)].Visible = dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(hv_condition)].Visible = Sweet.lollipop.neucode_labeled && dgv_purposes.Contains(Purpose.Quantification);
             dgv.Columns[nameof(ContaminantDB)].Visible = dgv_purposes.Contains(Purpose.ProteinDatabase);

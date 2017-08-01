@@ -338,6 +338,7 @@
             // 
             // splitContainer3.Panel2
             // 
+            this.splitContainer3.Panel2.AutoScroll = true;
             this.splitContainer3.Panel2.Controls.Add(this.rtb_proteoformFamilyResults);
             this.splitContainer3.Panel2.Controls.Add(this.groupBox2);
             this.splitContainer3.Panel2.Controls.Add(this.cb_geneCentric);

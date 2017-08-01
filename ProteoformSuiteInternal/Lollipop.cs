@@ -223,40 +223,40 @@ namespace ProteoformSuiteInternal
                 foreach (Component higher_component in higher_mass_components)
                 {
                     lock (lower_component) lock (higher_component) // Turns out the LINQ queries in here, especially for overlapping_charge_states, aren't thread safe
-                    {
-                        double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
-                        if (mass_difference < 6)
                         {
-                            List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList();
-                            List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList();
-                            List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
-                            lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                            higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
-                            double lower_intensity = lower_component.intensity_sum_olcs;
-                            double higher_intensity = higher_component.intensity_sum_olcs;
-                            bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
-                            if (lower_intensity > 0 && higher_intensity > 0)
+                            double mass_difference = higher_component.weighted_monoisotopic_mass - lower_component.weighted_monoisotopic_mass;
+                            if (mass_difference < 6)
                             {
-                                NeuCodePair pair = lower_intensity > higher_intensity ?
-                                    new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
-                                    new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
+                                List<int> lower_charges = lower_component.charge_states.Select(charge_state => charge_state.charge_count).ToList();
+                                List<int> higher_charges = higher_component.charge_states.Select(charge_states => charge_states.charge_count).ToList();
+                                List<int> overlapping_charge_states = lower_charges.Intersect(higher_charges).ToList();
+                                lower_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                                higher_component.calculate_sum_intensity_olcs(overlapping_charge_states);
+                                double lower_intensity = lower_component.intensity_sum_olcs;
+                                double higher_intensity = higher_component.intensity_sum_olcs;
+                                bool light_is_lower = true; //calculation different depending on if neucode light is the heavier/lighter component
+                                if (lower_intensity > 0 && higher_intensity > 0)
+                                {
+                                    NeuCodePair pair = lower_intensity > higher_intensity ?
+                                        new NeuCodePair(lower_component, higher_component, mass_difference, overlapping_charge_states, light_is_lower) : //lower mass is neucode light
+                                        new NeuCodePair(higher_component, lower_component, mass_difference, overlapping_charge_states, !light_is_lower); //higher mass is neucode light
 
                                     if (pair.weighted_monoisotopic_mass <= pair.neuCodeHeavy.weighted_monoisotopic_mass + MONOISOTOPIC_UNIT_MASS) // the heavy should be at higher mass. Max allowed is 1 dalton less than light.                                    
                                         lock (pairsInScanRange) pairsInScanRange.Add(pair);
+                                }
                             }
                         }
-                    }
                 }
             });
 
             foreach (NeuCodePair pair in pairsInScanRange
                 .OrderBy(p => Math.Min(p.neuCodeLight.weighted_monoisotopic_mass, p.neuCodeHeavy.weighted_monoisotopic_mass)) //lower_component
                 .ThenBy(p => Math.Max(p.neuCodeLight.weighted_monoisotopic_mass, p.neuCodeHeavy.weighted_monoisotopic_mass)) //higher_component
-                .ToList()) 
+                .ToList())
             {
                 lock (heavy_hashed_pairs)
                 {
-                    if (!heavy_hashed_pairs.TryGetValue(pair.neuCodeLight, out List<NeuCodePair> these_pairs) 
+                    if (!heavy_hashed_pairs.TryGetValue(pair.neuCodeLight, out List<NeuCodePair> these_pairs)
                         || !these_pairs.Any(p => p.neuCodeLight.intensity_sum > pair.neuCodeLight.intensity_sum)) // we found that any component previously used as a heavy, which has higher intensity, is probably correct, and that that component should not get reuused as a light.)
                     {
                         lock (destination)
@@ -536,7 +536,7 @@ namespace ProteoformSuiteInternal
         public double ptmset_mass_tolerance = 0.00001;
         public bool combine_identical_sequences = true;
         public bool combine_theoretical_proteoforms_byMass = true;
-        public string[] mod_types_to_exclude = new string[] { "Metal", "PeptideTermMod", "TrypticProduct" };
+        public string[] mod_types_to_exclude = new string[] { "Metal", "PeptideTermMod", "TrypticProduct", "TrypsinDigestedMod" };
         public Dictionary<double, int> modification_ranks = new Dictionary<double, int>();
         public int mod_rank_sum_threshold = 0; // set to the maximum rank of any single modification
         public int mod_rank_first_quartile = 0; // approximate quartiles used for heuristics with unranked modifications
@@ -675,11 +675,10 @@ namespace ProteoformSuiteInternal
 
         public int countOfBioRepsInOneCondition; //need this in quantification to select which proteoforms to perform calculations on.
         public int condition_count;
-        public Dictionary<string, List<int>> conditionsBioReps = new Dictionary<string, List<int>>();
-        public Dictionary<string, List<int>> ltConditionsBioReps = new Dictionary<string, List<int>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
-        public Dictionary<string, List<int>> hvConditionsBioReps = new Dictionary<string, List<int>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
-        public Dictionary<int, List<int>> quantBioFracCombos; //this dictionary has an integer list of bioreps with an integer list of observed fractions. this way we can be missing reps and fractions.
-        public List<Tuple<int, int, double>> normalizationFactors;
+        public Dictionary<string, List<string>> conditionsBioReps = new Dictionary<string, List<string>>();
+        public Dictionary<string, List<string>> ltConditionsBioReps = new Dictionary<string, List<string>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
+        public Dictionary<string, List<string>> hvConditionsBioReps = new Dictionary<string, List<string>>(); //key is the condition and value is the number of bioreps (not the list of bioreps)
+        public Dictionary<string, List<string>> quantBioFracCombos = new Dictionary<string, List<string>>(); //this dictionary has an integer list of bioreps with an integer list of observed fractions. this way we can be missing reps and fractions.
 
         #endregion QUANTIFICATION SETUP Public Fields
 
@@ -700,19 +699,19 @@ namespace ProteoformSuiteInternal
 
             foreach (string condition in ltConditions.Concat(hvConditions).Distinct().ToList())
             {
-                List<int> allbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition || f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                List<string> allbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition || f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 conditionsBioReps.Add(condition, allbioreps);
             }
 
             foreach (string condition in ltConditions)
             {
-                List<int> ltbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                List<string> ltbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.lt_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 ltConditionsBioReps.Add(condition, ltbioreps);
             }
 
             foreach (string condition in hvConditions)
             {
-                List<int> hvbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
+                List<string> hvbioreps = get_files(input_files, Purpose.Quantification).Where(f => f.hv_condition == condition).Select(b => b.biological_replicate).Distinct().ToList();
                 hvConditionsBioReps.Add(condition, hvbioreps);
             }
 
@@ -728,43 +727,13 @@ namespace ProteoformSuiteInternal
             minBiorepsWithObservations = countOfBioRepsInOneCondition > 0 ? countOfBioRepsInOneCondition : 1;
 
             //getBiorepsFractionsList
-            quantBioFracCombos = new Dictionary<int, List<int>>();
-            List<int> bioreps = input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
-            List<int> fractions = new List<int>();
-            foreach (int b in bioreps)
-            {
-                //fractions = input_files.Where(q => q.purpose == Purpose.Quantification).Where(rep => rep.biological_replicate == b).Select(f => f.fraction).Distinct().ToList();
-                quantBioFracCombos.Add(b, fractions);
-            }
+            List<string> bioreps = input_files.Where(q => q.purpose == Purpose.Quantification).Select(b => b.biological_replicate).Distinct().ToList();
+            quantBioFracCombos = bioreps.ToDictionary(b => b, b => input_files.Where(q => q.purpose == Purpose.Quantification && q.biological_replicate == b).Select(f => f.fraction).Distinct().ToList());
         }
 
         #endregion QUANTIFICATION SETUP
 
         #region QUANTIFICATION Public Fields
-
-        // Histograms
-        public SortedDictionary<decimal, int> logIntensityHistogram = new SortedDictionary<decimal, int>(); // all intensities
-        public SortedDictionary<decimal, int> logSelectIntensityHistogram = new SortedDictionary<decimal, int>(); // selected intensities
-        public SortedDictionary<decimal, int> logSelectIntensityWithImputationHistogram = new SortedDictionary<decimal, int>(); // selected intensities & imputed intensities
-
-        // Gaussian fit to histograms
-        public decimal allObservedAverageIntensity; //log base 2
-        public decimal allObservedStDev;
-        public decimal allObservedGaussianArea;
-        public decimal allObservedGaussianHeight;
-        public decimal selectAverageIntensity; //log base 2
-        public decimal selectStDev;
-        public decimal selectGaussianArea;
-        public decimal selectGaussianHeight;
-        public decimal selectWithImputationAverageIntensity;
-        public decimal selectWithImputationStDev;
-        public decimal selectWithImputationGaussianArea;
-        public decimal selectWithImputationGaussianHeight;
-        public decimal bkgdAverageIntensity; //log base 2
-        public decimal bkgdStDev;
-        public decimal bkgdGaussianHeight;
-        public decimal backgroundShift = -1.8m;
-        public decimal backgroundWidth = 0.5m;
 
         // Condition labels
         public string numerator_condition = ""; // numerator for fold change calculation
@@ -772,30 +741,40 @@ namespace ProteoformSuiteInternal
         public string induced_condition = ""; // induced condition for relative difference calculation
 
         // Selecting proteoforms for quantification
-        public static string[] observation_requirement_possibilities = new string[] { "Minimum Bioreps with Observations From Any Single Condition", "Minimum Bioreps with Observations From Any Condition", "Minimum Bioreps with Observations From Each Condition" };
+        public static string[] observation_requirement_possibilities = new string[] 
+        {
+            "Minimum Bioreps with Observations From Any Single Condition",
+            "Minimum Bioreps with Observations From Any Condition",
+            "Minimum Bioreps with Observations From Each Condition",
+            "Minimum Biorep+Techreps with Observations From Any Single Condition",
+            "Minimum Biorep+Techreps with Observations From Any Condition",
+            "Minimum Biorep+Techreps with Observations From Each Condition",
+        };
         public string observation_requirement = observation_requirement_possibilities[0];
         public int minBiorepsWithObservations = 1;
         public List<ExperimentalProteoform> satisfactoryProteoforms = new List<ExperimentalProteoform>(); // these are proteoforms meeting the required number of observations.
         public List<QuantitativeProteoformValues> qVals = new List<QuantitativeProteoformValues>(); // quantitative values associated with each selected proteoform
+        public bool significance_by_log2FC = true;
+        public bool significance_by_permutation = false;
+
+        // Imputation
+        public decimal backgroundShift = -1.8m;
+        public decimal backgroundWidth = 0.5m;
+
+        // Log2FC statistics
+        public Log2FoldChangeAnalysis Log2FoldChangeAnalysis = new Log2FoldChangeAnalysis();
 
         // Relative difference calculations with balanced permutations
-        public decimal sKnot_minFoldChange = 1m; // this is used in the original paper to correct for artificially high relative differences calculated at low intensities. Mass spec intensities are high enough in general that this is not a problem, so this is not customized by the user.
-        public List<decimal> sortedProteoformRelativeDifferences = new List<decimal>(); // real relative differences for each selected proteoform; sorted
-        public List<List<decimal>> permutedRelativeDifferences; // relative differences for each proteoform for each balanced permutation
-        public List<List<decimal>> sortedPermutedRelativeDifferences; // sorted relative differences for each balanced permutation
-        public List<decimal> avgSortedPermutationRelativeDifferences = new List<decimal>(); // average relative difference across sorted values for each balanced permutation
-        public List<decimal> flattenedPermutedRelativeDifferences; // all relative differences from permutations
-        public decimal offsetTestStatistics = 1m; // offset from expected relative differences (avgSortedPermutationRelativeDifferences); used to call significance with minimumPassingNegativeTestStatistic & minimumPassingPositiveTestStatisitic
-        public decimal minimumPassingNegativeTestStatistic; // the first NEGATIVE relative difference from a selected proteoform that exceeded the offset BELOW the expected relative differences (avg sorted permuted); everything equal to or BELOW this value is considered significant
-        public decimal minimumPassingPositiveTestStatisitic; // the first POSITIVE relative difference from a selected proteoform that exceeded the offset ABOVE the expected relative differences (avg sorted permuted); everything equal to or ABOVE this value is considered significant
-        public double relativeDifferenceFDR; // average # of permuted relative differences that pass minimumPassingNegativeTestStatistic & minimumPassingPositiveTestStatisitic, divided by the number of selected proteoforms that passed
+        public TusherAnalysis1 TusherAnalysis1 = new TusherAnalysis1();
+        public TusherAnalysis2 TusherAnalysis2 = new TusherAnalysis2();
         public List<ProteinWithGoTerms> observedProteins = new List<ProteinWithGoTerms>(); // This is the complete list of observed proteins
         public List<ProteinWithGoTerms> quantifiedProteins = new List<ProteinWithGoTerms>(); // This is the complete list of proteins that were quantified and included in any accepted proteoform family
-        public List<ProteinWithGoTerms> inducedOrRepressedProteins = new List<ProteinWithGoTerms>(); // This is the list of proteins from proteoforms that underwent significant induction or repression
+        public decimal offsetTestStatistics = 1m; // offset from expected relative differences (avgSortedPermutationRelativeDifferences); used to call significance with minimumPassingNegativeTestStatistic & minimumPassingPositiveTestStatisitic
+        public decimal sKnot_minFoldChange = 1m; // this is used in the original paper to correct for artificially high relative differences calculated at low intensities. Mass spec intensities are high enough in general that this is not a problem, so this is not customized by the user.
 
         // "Local FDR" calculated using the relative difference of each proteoform as both minimumPassingNegativeTestStatistic & minimumPassingPositiveTestStatisitic. This is an unofficial extension of the statisitical analysis above.
         public bool useLocalFdrCutoff = false;
-        public decimal localFdrCutoff = 0.05m; 
+        public decimal localFdrCutoff = 0.05m;
 
         #endregion QUANTIFICATION Public Fields
 
@@ -808,29 +787,34 @@ namespace ProteoformSuiteInternal
             List<string> conditions = ltconditions.Concat(hvconditions).Distinct().ToList();
 
             computeBiorepIntensities(target_proteoform_community.experimental_proteoforms, ltconditions, hvconditions);
-            defineAllObservedIntensityDistribution(target_proteoform_community.experimental_proteoforms, logIntensityHistogram);
-
             satisfactoryProteoforms = determineProteoformsMeetingCriteria(conditions, target_proteoform_community.experimental_proteoforms, observation_requirement, minBiorepsWithObservations);
-
-            defineSelectObservedIntensityDistribution(satisfactoryProteoforms, logSelectIntensityHistogram);
-            defineBackgroundIntensityDistribution(quantBioFracCombos, satisfactoryProteoforms, backgroundShift, backgroundWidth);
-
-            compute_proteoform_statistics(satisfactoryProteoforms, bkgdAverageIntensity, bkgdStDev, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, sKnot_minFoldChange);
-            defineSelectObservedWithImputedIntensityDistribution(satisfactoryProteoforms, logSelectIntensityWithImputationHistogram);
-
-            permutedRelativeDifferences = compute_balanced_biorep_permutation_relativeDifferences(conditionsBioReps, induced_condition, satisfactoryProteoforms, sKnot_minFoldChange);
-            flattenedPermutedRelativeDifferences = permutedRelativeDifferences.SelectMany(x => x).ToList();
-            computeSortedRelativeDifferences(satisfactoryProteoforms, permutedRelativeDifferences);
-
-            relativeDifferenceFDR = computeRelativeDifferenceFDR(avgSortedPermutationRelativeDifferences, sortedProteoformRelativeDifferences, satisfactoryProteoforms, flattenedPermutedRelativeDifferences, offsetTestStatistics);
-            computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, flattenedPermutedRelativeDifferences, sortedProteoformRelativeDifferences);
-
             observedProteins = getProteins(target_proteoform_community.experimental_proteoforms.Where(x => x.accepted));
-
             quantifiedProteins = getProteins(satisfactoryProteoforms);
+            qVals = satisfactoryProteoforms.Where(pf => pf.accepted).Select(pf => pf.quant).ToList();
 
-            inducedOrRepressedProteins = getInducedOrRepressedProteins(satisfactoryProteoforms, minProteoformFoldChange, maxGoTermFDR, minProteoformIntensity);
+            TusherAnalysis1.QuantitativeDistributions.defineAllObservedIntensityDistribution(target_proteoform_community.experimental_proteoforms, TusherAnalysis1.QuantitativeDistributions.logIntensityHistogram);
+            TusherAnalysis1.QuantitativeDistributions.defineSelectObservedIntensityDistribution(satisfactoryProteoforms, TusherAnalysis1.QuantitativeDistributions.logSelectIntensityHistogram);
+            TusherAnalysis1.QuantitativeDistributions.defineBackgroundIntensityDistribution(quantBioFracCombos, satisfactoryProteoforms, condition_count, backgroundShift, backgroundWidth);
 
+            TusherAnalysis2.QuantitativeDistributions.defineAllObservedIntensityDistribution(target_proteoform_community.experimental_proteoforms, TusherAnalysis2.QuantitativeDistributions.logIntensityHistogram);
+            TusherAnalysis2.QuantitativeDistributions.defineSelectObservedIntensityDistribution(satisfactoryProteoforms, TusherAnalysis2.QuantitativeDistributions.logSelectIntensityHistogram);
+            TusherAnalysis2.QuantitativeDistributions.defineBackgroundIntensityDistribution(quantBioFracCombos, satisfactoryProteoforms, condition_count, backgroundShift, backgroundWidth);
+
+            TusherAnalysis1.compute_proteoform_statistics(satisfactoryProteoforms, TusherAnalysis1.QuantitativeDistributions.bkgdAverageIntensity, TusherAnalysis1.QuantitativeDistributions.bkgdStDev, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, sKnot_minFoldChange, true); // includes normalization
+            TusherAnalysis1.permutedRelativeDifferences = TusherAnalysis1.compute_balanced_biorep_permutation_relativeDifferences(conditionsBioReps, induced_condition, satisfactoryProteoforms, sKnot_minFoldChange);
+            TusherAnalysis1.flattenedPermutedRelativeDifferences = TusherAnalysis1.permutedRelativeDifferences.SelectMany(x => x).ToList();
+            TusherAnalysis1.computeSortedRelativeDifferences(satisfactoryProteoforms, TusherAnalysis1.permutedRelativeDifferences);
+            TusherAnalysis1.relativeDifferenceFDR = TusherAnalysis1.computeRelativeDifferenceFDR(TusherAnalysis1.avgSortedPermutationRelativeDifferences, TusherAnalysis1.sortedProteoformRelativeDifferences, satisfactoryProteoforms, TusherAnalysis1.flattenedPermutedRelativeDifferences, offsetTestStatistics);
+            TusherAnalysis1.computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, TusherAnalysis1.flattenedPermutedRelativeDifferences, TusherAnalysis1.sortedProteoformRelativeDifferences);
+            TusherAnalysis1.inducedOrRepressedProteins = getInducedOrRepressedProteins(TusherAnalysis1 as ITusherAnalysis, satisfactoryProteoforms, TusherAnalysis1.GoAnalysis.minProteoformFoldChange, TusherAnalysis1.GoAnalysis.maxGoTermFDR, TusherAnalysis1.GoAnalysis.minProteoformIntensity);
+
+            TusherAnalysis2.compute_proteoform_statistics(satisfactoryProteoforms, TusherAnalysis2.QuantitativeDistributions.bkgdAverageIntensity, TusherAnalysis2.QuantitativeDistributions.bkgdStDev, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, sKnot_minFoldChange, true); // includes normalization
+            TusherAnalysis2.permutedRelativeDifferences = TusherAnalysis2.compute_balanced_biorep_permutation_relativeDifferences(conditionsBioReps, input_files, induced_condition, satisfactoryProteoforms, sKnot_minFoldChange);
+            TusherAnalysis2.flattenedPermutedRelativeDifferences = TusherAnalysis2.permutedRelativeDifferences.SelectMany(x => x).ToList();
+            TusherAnalysis2.computeSortedRelativeDifferences(satisfactoryProteoforms, TusherAnalysis2.permutedRelativeDifferences);
+            TusherAnalysis2.relativeDifferenceFDR = TusherAnalysis2.computeRelativeDifferenceFDR(TusherAnalysis2.avgSortedPermutationRelativeDifferences, TusherAnalysis2.sortedProteoformRelativeDifferences, satisfactoryProteoforms, TusherAnalysis2.flattenedPermutedRelativeDifferences, offsetTestStatistics);
+            TusherAnalysis2.computeIndividualExperimentalProteoformFDRs(satisfactoryProteoforms, TusherAnalysis2.flattenedPermutedRelativeDifferences, TusherAnalysis2.sortedProteoformRelativeDifferences);
+            TusherAnalysis2.inducedOrRepressedProteins = getInducedOrRepressedProteins(TusherAnalysis2 as ITusherAnalysis, satisfactoryProteoforms, TusherAnalysis2.GoAnalysis.minProteoformFoldChange, TusherAnalysis2.GoAnalysis.maxGoTermFDR, TusherAnalysis2.GoAnalysis.minProteoformIntensity);
         }
 
         public void computeBiorepIntensities(IEnumerable<ExperimentalProteoform> experimental_proteoforms, IEnumerable<string> ltconditions, IEnumerable<string> hvconditions)
@@ -841,282 +825,22 @@ namespace ProteoformSuiteInternal
         public List<ExperimentalProteoform> determineProteoformsMeetingCriteria(List<string> conditions, IEnumerable<ExperimentalProteoform> experimental_proteoforms, string observation_requirement, int minBiorepsWithObservations)
         {
             List<ExperimentalProteoform> satisfactory_proteoforms = new List<ExperimentalProteoform>();
-            if (observation_requirement.Contains("From Any Single Condition"))
+
+            if (observation_requirement.Contains("Bioreps") && observation_requirement.Contains("From Any Single Condition"))
                 satisfactory_proteoforms = experimental_proteoforms.Where(eP => conditions.Any(c => eP.biorepIntensityList.Where(bc => bc.condition == c).Select(bc => bc.biorep).Distinct().Count() >= minBiorepsWithObservations)).ToList();
-            if (observation_requirement.Contains("From Each Condition"))
+            if (observation_requirement.Contains("Bioreps") && observation_requirement.Contains("From Each Condition"))
                 satisfactory_proteoforms = experimental_proteoforms.Where(eP => conditions.All(c => eP.biorepIntensityList.Where(bc => bc.condition == c).Select(bc => bc.biorep).Distinct().Count() >= minBiorepsWithObservations)).ToList();
-            if (observation_requirement.Contains("From Any Condition"))
+            if (observation_requirement.Contains("Bioreps") && observation_requirement.Contains("From Any Condition"))
                 satisfactory_proteoforms = experimental_proteoforms.Where(eP => eP.biorepIntensityList.Select(bc => bc.condition + bc.biorep.ToString()).Distinct().Count() >= minBiorepsWithObservations).ToList();
+
+            if (observation_requirement.Contains("Biorep+Techreps") && observation_requirement.Contains("From Any Single Condition"))
+                satisfactory_proteoforms = experimental_proteoforms.Where(eP => conditions.Any(c => eP.biorepTechrepIntensityList.Where(bc => bc.condition == c).Select(bc => bc.biorep + bc.techrep).Distinct().Count() >= minBiorepsWithObservations)).ToList();
+            if (observation_requirement.Contains("Biorep+Techreps") && observation_requirement.Contains("From Each Condition"))
+                satisfactory_proteoforms = experimental_proteoforms.Where(eP => conditions.All(c => eP.biorepTechrepIntensityList.Where(bc => bc.condition == c).Select(bc => bc.biorep + bc.techrep).Distinct().Count() >= minBiorepsWithObservations)).ToList();
+            if (observation_requirement.Contains("Biorep+Techreps") && observation_requirement.Contains("From Any Condition"))
+                satisfactory_proteoforms = experimental_proteoforms.Where(eP => eP.biorepTechrepIntensityList.Select(bc => bc.condition + bc.biorep + bc.techrep).Distinct().Count() >= minBiorepsWithObservations).ToList();
+
             return satisfactory_proteoforms;
-        }
-
-        public void defineAllObservedIntensityDistribution(IEnumerable<ExperimentalProteoform> experimental_proteoforms, SortedDictionary<decimal, int> logIntensityHistogram) // the distribution of all observed experimental proteoform biorep intensities
-        {
-            IEnumerable<decimal> allIntensities = define_intensity_distribution(experimental_proteoforms.SelectMany(pf => pf.biorepIntensityList), logIntensityHistogram).Where(i => i > 1); //these are log2 values
-            allObservedAverageIntensity = allIntensities.Average();
-            allObservedStDev = (decimal)Math.Sqrt(allIntensities.Average(v => Math.Pow((double)(v - allObservedAverageIntensity), 2))); //population stdev calculation, rather than sample
-            allObservedGaussianArea = get_gaussian_area(logIntensityHistogram);
-            allObservedGaussianHeight = allObservedGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)allObservedStDev, 2));
-        }
-
-        public void defineSelectObservedIntensityDistribution(IEnumerable<ExperimentalProteoform> satisfactory_proteoforms, SortedDictionary<decimal, int> logSelectIntensityHistogram)
-        {
-            IEnumerable<decimal> allRoundedIntensities = define_intensity_distribution(satisfactory_proteoforms.SelectMany(pf => pf.biorepIntensityList), logSelectIntensityHistogram).Where(i => i > 1); //these are log2 values
-            selectAverageIntensity = allRoundedIntensities.Average();
-            selectStDev = (decimal)Math.Sqrt(allRoundedIntensities.Average(v => Math.Pow((double)(v - selectAverageIntensity), 2))); //population stdev calculation, rather than sample
-            selectGaussianArea = get_gaussian_area(logSelectIntensityHistogram);
-            selectGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)selectStDev, 2));
-        }
-
-        public void defineSelectObservedWithImputedIntensityDistribution(IEnumerable<ExperimentalProteoform> satisfactory_proteoforms, SortedDictionary<decimal, int> logSelectIntensityHistogram)
-        {
-            IEnumerable<decimal> allRoundedIntensities = define_intensity_distribution(satisfactoryProteoforms.SelectMany(pf => pf.quant.allIntensities.Values).ToList(), logSelectIntensityWithImputationHistogram);
-            selectWithImputationAverageIntensity = allRoundedIntensities.Average();
-            selectWithImputationStDev = (decimal)Math.Sqrt(allRoundedIntensities.Average(v => Math.Pow((double)(v - selectAverageIntensity), 2))); //population stdev calculation, rather than sample
-            selectWithImputationGaussianArea = get_gaussian_area(logSelectIntensityHistogram);
-            selectWithImputationGaussianHeight = selectGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)selectStDev, 2));
-        }
-
-        public List<decimal> define_intensity_distribution(IEnumerable<BiorepIntensity> intensities, SortedDictionary<decimal, int> histogram)
-        {
-            histogram.Clear();
-
-            List<decimal> rounded_intensities = (
-                from i in intensities
-                select Math.Round((decimal)Math.Log(i.intensity, 2), 1))
-                .ToList();
-
-            foreach (decimal roundedIntensity in rounded_intensities)
-            {
-                if (histogram.ContainsKey(roundedIntensity))
-                    histogram[roundedIntensity]++;
-                else
-                    histogram.Add(roundedIntensity, 1);
-            }
-
-            return rounded_intensities;
-        }
-
-        public decimal get_gaussian_area(SortedDictionary<decimal, int> histogram)
-        {
-            decimal gaussian_area = 0;
-            bool first = true;
-            decimal x1 = 0;
-            decimal y1 = 0;
-            foreach (KeyValuePair<decimal, int> entry in histogram)
-            {
-                if (first)
-                {
-                    x1 = entry.Key;
-                    y1 = (decimal)entry.Value;
-                    first = false;
-                }
-                else
-                {
-                    gaussian_area += (entry.Key - x1) * (y1 + ((decimal)entry.Value - y1) / 2);
-                    x1 = entry.Key;
-                    y1 = (decimal)entry.Value;
-                }
-            }
-            return gaussian_area;
-        }
-
-        public void defineBackgroundIntensityDistribution(Dictionary<int, List<int>> quantBioFracCombos, List<ExperimentalProteoform> satisfactoryProteoforms, decimal backgroundShift, decimal backgroundWidth)
-        {
-            bkgdAverageIntensity = selectAverageIntensity + backgroundShift * selectStDev;
-            bkgdStDev = selectStDev * backgroundWidth;
-
-            int numMeasurableIntensities = quantBioFracCombos.Keys.Count * condition_count * satisfactoryProteoforms.Count; // all bioreps, all light conditions + all heavy conditions, all satisfactory proteoforms
-            int numMeasuredIntensities = satisfactoryProteoforms.Sum(eP => eP.biorepIntensityList.Count); //biorep intensities are created to be unique to the light/heavy + condition + biorep
-            int numMissingIntensities = numMeasurableIntensities - numMeasuredIntensities; //this could be negative if there were tons more quantitative intensities
-
-            decimal bkgdGaussianArea = selectGaussianArea / (decimal)numMeasuredIntensities * (decimal)numMissingIntensities;
-            bkgdGaussianHeight = bkgdGaussianArea / (decimal)Math.Sqrt(2 * Math.PI * Math.Pow((double)bkgdStDev, 2));
-        }
-
-        public void compute_proteoform_statistics(List<ExperimentalProteoform> satisfactoryProteoforms, decimal bkgdAverageIntensity, decimal bkgdStDev, Dictionary<string, List<int>> conditionsBioReps, string numerator_condition, string denominator_condition, string induced_condition, decimal sKnot_minFoldChange)
-        {
-            foreach (ExperimentalProteoform eP in satisfactoryProteoforms)
-            {
-                eP.quant.determine_biorep_intensities_and_test_statistics(eP.biorepIntensityList, conditionsBioReps, numerator_condition, denominator_condition, induced_condition, bkgdAverageIntensity, bkgdStDev, sKnot_minFoldChange);
-            }
-            qVals = satisfactoryProteoforms.Where(eP => eP.accepted == true).Select(e => e.quant).ToList();
-        }
-
-
-        /// <summary>
-        /// Gets the relative differences of permuted bioreps.
-        /// In the Tusher et al. (2001) paper, they made all 36 balanced permutations of the 2 cell lines. Here, we have one control that is orthogonal to the treatment: bioreps.
-        /// Therefore, we can make 3 balanced permutations (see Example 3).
-        /// </summary>
-        /// <param name="conditionsBioReps"></param>
-        /// <returns></returns>
-        /// 
-        /// Example 1 (triples):
-        /// Normal: 1, 2, 3 | Stress: 4, 5, 6
-        /// Nine balanced permutations for normal (technically these are "nearly balanced")
-        /// *4*, 2, 3
-        /// *5*, 2, 3
-        /// *6*, 2, 3
-        /// 1, *4*, 3
-        /// 1, *5*, 3
-        /// 1, *6*, 3
-        /// 1, 2, *4*
-        /// 1, 2, *5*
-        /// 1, 2, *6*
-        /// 
-        /// Example 2 (quadruples, like in Tusher et al.):
-        /// Normal: 1, 2, 3, 4 | Stress: 5, 6, 7, 8
-        /// Thirty-six balanced permutations for normal
-        /// *5*, *6*, 3, 4 ;; 1, *5*, *6*, 4 ;; 1, 2, *5*, *6* ;; *5*, 2, *6*, 4 ;; *5*, 2, 3 *6* ;; 1, *5*, 3, *6*
-        /// *5*, *7*, 3, 4 ;; 1, *5*, *7*, 4 ;; 1, 2, *5*, *7* ;; *5*, 2, *7*, 4 ;; *5*, 2, 3 *7* ;; 1, *5*, 3, *7*
-        /// *5*, *8*, 3, 4 ;; 1, *5*, *8*, 4 ;; 1, 2, *5*, *8* ;; *5*, 2, *8*, 4 ;; *5*, 2, 3 *8* ;; 1, *5*, 3, *8*
-        /// *6*, *7*, 3, 4 ;; 1, *6*, *7*, 4 ;; 1, 2, *6*, *7* ;; *6*, 2, *7*, 4 ;; *6*, 2, 3 *7* ;; 1, *6*, 3, *7*
-        /// *6*, *8*, 3, 4 ;; 1, *6*, *8*, 4 ;; 1, 2, *6*, *8* ;; *6*, 2, *8*, 4 ;; *6*, 2, 3 *8* ;; 1, *6*, 3, *8*
-        /// *7*, *8*, 3, 4 ;; 1, *7*, *8*, 4 ;; 1, 2, *7*, *8* ;; *7*, 2, *8*, 4 ;; *7*, 2, 3 *8* ;; 1, *7*, 3, *8*
-        /// 
-        /// Example 3 (duples):
-        /// Normal: n_1, n_2, n_3 | Stress: s_1, s_2, s_3
-        /// Duple 1: n_1, s_1 ;; Duple 2: n_2, s_2 ;; Duple 3: n_3, s_3
-        /// Three balanced permutations for "normal." Balanced when 2 from the original set.
-        /// *s_1*, n_2, n_3
-        /// n_1, *s_2*, n_3
-        /// n_1, n_2, *s_3*
-        /// 
-        /// Example 4 (duples):
-        /// Normal: n_1, n_2, n_3, n_4 | Stress: s_1, s_2, s_3, s_4
-        /// Duple 1: n_1, s_1 ;; Duple 2: n_2, s_2 ;; Duple 3: n_3, s_3 ;; Duple 4: n_4, s_4
-        /// Six balanced permutations for "normal." Balanced when 2 from the original set.
-        /// *s_1*, *s_2*, n_3, n_4
-        /// *s_1*, s_2, *s_3*, n_4
-        /// *s_1*, s_2, n_3, *s_4*
-        /// n_1, *s_2*, *s_3*, n_4
-        /// n_1, *s_2*, n_3, *s_4*
-        /// n_1, n_2, *s_3*, *s_4*
-        /// 
-        public List<List<decimal>> compute_balanced_biorep_permutation_relativeDifferences(Dictionary<string, List<int>> conditionsBioReps, string induced_condition, List<ExperimentalProteoform> satisfactoryProteoforms, decimal sKnot_minFoldChange)
-        {
-            if (!conditionsBioReps.All(x => x.Value.OrderBy(y => y).SequenceEqual(conditionsBioReps.First().Value.OrderBy(z => z))))
-                throw new ArgumentException("Error: Permutation analysis doesn't currently handle unbalanced experimental designs.");
-            if (conditionsBioReps.Any(x => x.Value.Count > x.Value.Distinct().Count()))
-                throw new ArgumentException("Error: Permutation analysis doesn't currently handle experimental designs with more than one dimension of controls. It on");
-            if (conditionsBioReps.Count > 2)
-                throw new ArgumentException("Error: Permutation analysis doesn't currently handle experimental  designs with more than 2 conditions.");
-
-            List<int> bioreps = conditionsBioReps.SelectMany(kv => kv.Value).Distinct().ToList();
-            List<Tuple<string, int>> allInduced = conditionsBioReps[induced_condition].Select(v => new Tuple<string, int>(induced_condition, v)).ToList();
-            List<Tuple<string, int>> allUninduced = conditionsBioReps.Where(kv => kv.Key != induced_condition).SelectMany(kv => kv.Value.Select(v => new Tuple<string, int>(kv.Key, v))).ToList();
-            List<Tuple<string, int>> all = allInduced.Concat(allUninduced).ToList();
-            List<IEnumerable<Tuple<string, int>>> permutations = ExtensionMethods.Combinations(all, allInduced.Count).ToList();
-            List<IEnumerable<Tuple<string, int>>> balanced_permutations_induced = permutations.Where(p =>
-                !p.SequenceEqual(allInduced) // not the original set
-                && bioreps.All(rep => p.Any(x => x.Item2 == rep)) // all bioreps are represented
-                && p.Count(x => x.Item1 != induced_condition) == allInduced.Count / 2) // there should be n/2 (int division) from the uninduced set to satisfy balanced and nearly balanced permutations
-                .ToList();
-
-            List<List<decimal>> permutedRelativeDifferences = new List<List<decimal>>(); // each internal list is sorted
-            foreach (IEnumerable<Tuple<string, int>> induced in balanced_permutations_induced)
-            {
-                List<decimal> relativeDifferences = new List<decimal>();
-                foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
-                {
-                    List<BiorepIntensity> induced_intensities = induced.Select(x => pf.quant.allIntensities[x]).ToList();
-                    List<BiorepIntensity> uninduced_intensities = pf.quant.allIntensities.Values.Except(induced_intensities).ToList();
-                    relativeDifferences.Add(pf.quant.getSingleTestStatistic(induced_intensities, uninduced_intensities, pf.quant.StdDev(induced_intensities, uninduced_intensities), sKnot_minFoldChange));
-                }
-                permutedRelativeDifferences.Add(relativeDifferences);
-            }
-            return permutedRelativeDifferences;
-        }
-
-        public void computeSortedRelativeDifferences(List<ExperimentalProteoform> satisfactoryProteoforms, List<List<decimal>> permutedRelativeDifferences)
-        {
-            sortedProteoformRelativeDifferences = satisfactoryProteoforms.Select(eP => eP.quant.relative_difference).OrderBy(reldiff => reldiff).ToList();
-            sortedPermutedRelativeDifferences = permutedRelativeDifferences.Select(list => list.OrderBy(reldiff => reldiff).ToList()).ToList();
-            avgSortedPermutationRelativeDifferences = Enumerable.Range(0, sortedProteoformRelativeDifferences.Count).Select(i => sortedPermutedRelativeDifferences.Average(sorted => sorted[i])).OrderBy(x => x).ToList();
-            int ct = 0;
-            foreach (ExperimentalProteoform p in satisfactoryProteoforms.OrderBy(eP => eP.quant.relative_difference).ToList())
-            {
-                p.quant.correspondingAvgSortedRelDiff = avgSortedPermutationRelativeDifferences[ct++];
-            }
-        }
-
-        /// <summary>
-        /// Calculates the FDR and establishes significance for proteoforms with a method published by Tusher, et al. (2001)
-        /// 
-        /// First, thresholds are established on either side of the line where the test statistic is equal to the average permuted test statistic of the same rank.
-        /// Every proteoform test statistic that passes that threshold is considered significant.
-        /// 
-        /// The average number of proteoforms that pass by chance is used to calculate the FDR. 
-        /// This calculated as the proportion of all permuted tests that pass the thresholds, times the number of proteoforms quantified.
-        /// The denominator is the number of proteoforms that passed. 
-        /// Thus, the FDR is (# pfs passing by chance / # pfs passing).
-        /// </summary>
-        /// <param name="sortedAvgPermutationTestStatistics">
-        /// The averages of test statistics calculated from permuted intensities for each proteoform. These are sorted independently of the real proteoform test statistics.
-        /// </param>
-        /// <param name="sortedProteoformTestStatistics">
-        /// The test statistics calculated for each proteoform. These are sorted independently of the avg permuted test statistics.
-        /// </param>
-        /// <param name="satisfactoryProteoforms">
-        /// All proteoforms selected for quantification.
-        /// </param>
-        /// <param name="permutedTestStatistics">
-        /// All test statistics calculated from permuted proteoform intensities.
-        /// </param>
-        /// <param name="significanceTestStatOffset">
-        /// Offset from the line where the proteoform test statistsic is equal to the average permuted test statistic: d(i) = dE(i). This is used as a threshold for significance for positive or negative test statistics. 
-        /// </param>
-        /// <returns></returns>
-        public double computeRelativeDifferenceFDR(List<decimal> sortedAvgPermutationTestStatistics, List<decimal> sortedProteoformTestStatistics, List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> permutedTestStatistics, decimal significanceTestStatOffset)
-        {
-            minimumPassingNegativeTestStatistic = Decimal.MinValue;
-            minimumPassingPositiveTestStatisitic = Decimal.MaxValue;
-
-            for (int i = 0; i < satisfactoryProteoforms.Count; i++)
-            {
-                decimal lower_threshold = sortedAvgPermutationTestStatistics[i] - significanceTestStatOffset;
-                decimal higher_threshold = sortedAvgPermutationTestStatistics[i] + significanceTestStatOffset;
-                if (sortedProteoformTestStatistics[i] < lower_threshold)
-                    minimumPassingNegativeTestStatistic = sortedProteoformTestStatistics[i]; // last one below
-                if (sortedProteoformTestStatistics[i] > higher_threshold)
-                {
-                    minimumPassingPositiveTestStatisitic = sortedProteoformTestStatistics[i]; //first one above
-                    break;
-                }
-            }
-
-            double avgFalsePermutedPassingProteoforms = (double)permutedTestStatistics.Count(v => v <= minimumPassingNegativeTestStatistic && v <= 0 || minimumPassingPositiveTestStatisitic <= v && v >= 0) / (double)permutedTestStatistics.Count * (double)satisfactoryProteoforms.Count;
-
-            int totalPassingProteoforms = 0;
-            foreach (ExperimentalProteoform pf in satisfactoryProteoforms)
-            {
-                decimal test_statistic = pf.quant.relative_difference;
-                pf.quant.significant = test_statistic <= minimumPassingNegativeTestStatistic && test_statistic <= 0 || minimumPassingPositiveTestStatisitic <= test_statistic && test_statistic >= 0;
-                totalPassingProteoforms += Convert.ToInt32(pf.quant.significant);
-            }
-
-            if (totalPassingProteoforms == 0)
-                return Double.NaN;
-
-            double fdr = (double)avgFalsePermutedPassingProteoforms / (double)totalPassingProteoforms;
-            return fdr;
-        }
-
-        public void computeIndividualExperimentalProteoformFDRs(List<ExperimentalProteoform> satisfactoryProteoforms, List<decimal> permutedTestStatistics, List<decimal> sortedProteoformTestStatistics)
-        {
-            Parallel.ForEach(satisfactoryProteoforms, eP =>
-            {
-                eP.quant.roughSignificanceFDR = QuantitativeProteoformValues.computeExperimentalProteoformFDR(eP.quant.relative_difference, permutedTestStatistics, satisfactoryProteoforms.Count, sortedProteoformTestStatistics);
-            });
-        }
-
-        public void reestablishSignficance()
-        {
-            if (!useLocalFdrCutoff)
-                relativeDifferenceFDR = computeRelativeDifferenceFDR(avgSortedPermutationRelativeDifferences, sortedProteoformRelativeDifferences, satisfactoryProteoforms, flattenedPermutedRelativeDifferences, offsetTestStatistics);
-            else
-                Parallel.ForEach(satisfactoryProteoforms, eP => { eP.quant.significant = eP.quant.roughSignificanceFDR <= localFdrCutoff; });
         }
 
         public List<ProteinWithGoTerms> getProteins(IEnumerable<ExperimentalProteoform> proteoforms) // these are all observed proteins in any of the proteoform families.
@@ -1129,9 +853,18 @@ namespace ProteoformSuiteInternal
                 .ToList();
         }
 
-        public List<ProteinWithGoTerms> getInducedOrRepressedProteins(IEnumerable<ExperimentalProteoform> satisfactoryProteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
+        public IEnumerable<ExperimentalProteoform> getInterestingProteoforms(ITusherAnalysis analysis, IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
         {
-            return getInterestingProteoforms(satisfactoryProteoforms, minProteoformAbsLogFoldChange, maxProteoformFDR, minProteoformIntensity)
+            return proteoforms.Where(p =>
+                (significance_by_permutation && analysis != null && (analysis as TusherAnalysis1 != null ? p.quant.TusherValues1.significant : p.quant.TusherValues2.significant) 
+                || significance_by_log2FC && p.quant.Log2FoldChangeValues.significant)
+                && Math.Abs(p.quant.logFoldChange) > minProteoformAbsLogFoldChange
+                && p.quant.intensitySum > minProteoformIntensity);
+        }
+
+        public List<ProteinWithGoTerms> getInducedOrRepressedProteins(ITusherAnalysis analysis, IEnumerable<ExperimentalProteoform> satisfactoryProteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
+        {
+            return getInterestingProteoforms(analysis, satisfactoryProteoforms, minProteoformAbsLogFoldChange, maxProteoformFDR, minProteoformIntensity)
                 .Where(pf => pf.linked_proteoform_references != null && pf.linked_proteoform_references.FirstOrDefault() as TheoreticalProteoform != null)
                 .Select(pf => pf.linked_proteoform_references.First() as TheoreticalProteoform)
                 .SelectMany(t => t.ExpandedProteinList)
@@ -1139,9 +872,9 @@ namespace ProteoformSuiteInternal
                 .ToList();
         }
 
-        public List<ProteoformFamily> getInterestingFamilies(IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformFoldChange, decimal minProteoformFDR, decimal minProteoformIntensity)
+        public List<ProteoformFamily> getInterestingFamilies(ITusherAnalysis analysis, IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformFoldChange, decimal minProteoformFDR, decimal minProteoformIntensity)
         {
-            return getInterestingProteoforms(proteoforms, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity)
+            return getInterestingProteoforms(analysis, proteoforms, minProteoformFoldChange, minProteoformFDR, minProteoformIntensity)
                 .Select(e => e.family).ToList();
         }
 
@@ -1158,88 +891,7 @@ namespace ProteoformSuiteInternal
                  .ToList();
         }
 
-        public IEnumerable<ExperimentalProteoform> getInterestingProteoforms(IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
-        {
-            return proteoforms.Where(p => 
-                p.quant.significant
-                && Math.Abs(p.quant.logFoldChange) > minProteoformAbsLogFoldChange
-                && p.quant.intensitySum > minProteoformIntensity);
-        }
-
         #endregion QUANTIFICATION
-
-        #region GO-TERMS AND GO-TERM SIGNIFICANCE Public Fields
-
-        public List<GoTermNumber> goTermNumbers = new List<GoTermNumber>();//these are the count and enrichment values
-        public bool allTheoreticalProteins = false; // this sets the group used for background. True if all Proteins in the theoretical database are used. False if only proteins observed in the study are used.
-        public bool allDetectedProteins = false; // this sets the group used for background. True if all Proteins in the theoretical database are used. False if only proteins observed in the study are used.
-        public string backgroundProteinsList = "";
-        public decimal maxGoTermFDR = 0.05m;
-        public decimal minProteoformIntensity = 0; // 500000m;
-        public decimal minProteoformFoldChange = 0; // 1m;
-
-        #endregion GO-TERMS AND GO-TERM SIGNIFICANCE Public Fields
-
-        #region GO-TERMS AND GO-TERM SIGNIFICANCE
-
-        public void GO_analysis()
-        {
-            List<ProteinWithGoTerms> backgroundProteinsForGoAnalysis;
-            if (backgroundProteinsList != null && backgroundProteinsList != "")
-            {
-                string[] protein_accessions = File.ReadAllLines(backgroundProteinsList).Select(acc => acc.Trim()).ToArray();
-                backgroundProteinsForGoAnalysis = theoretical_database.expanded_proteins.Where(p => p.AccessionList.Any(acc => protein_accessions.Contains(acc.Split('_')[0]))).DistinctBy(pwg => pwg.Accession.Split('_')[0]).ToList();
-            }
-            else
-            {
-                backgroundProteinsForGoAnalysis = allTheoreticalProteins ?
-                    theoretical_database.expanded_proteins.DistinctBy(pwg => pwg.Accession.Split('_')[0]).ToList() : 
-                    allDetectedProteins ?  
-                        observedProteins :
-                        quantifiedProteins;
-            }
-            goTermNumbers = getGoTermNumbers(inducedOrRepressedProteins, backgroundProteinsForGoAnalysis);
-            calculateGoTermFDR(goTermNumbers);
-        }
-
-        public List<GoTermNumber> getGoTermNumbers(List<ProteinWithGoTerms> inducedOrRepressedProteins, List<ProteinWithGoTerms> backgroundProteinSet) //These are only for "interesting proteins", which is the set of proteins induced or repressed beyond a specified fold change, intensity and below FDR.
-        {
-            Dictionary<string, int> goSignificantCounts = fillGoDictionary(inducedOrRepressedProteins);
-            Dictionary<string, int> goBackgroundCounts = fillGoDictionary(backgroundProteinSet);
-            return inducedOrRepressedProteins.SelectMany(p => p.GoTerms).DistinctBy(g => g.Id).Select(g =>
-                new GoTermNumber(
-                    g,
-                    goSignificantCounts.ContainsKey(g.Id) ? goSignificantCounts[g.Id] : 0,
-                    inducedOrRepressedProteins.Count,
-                    goBackgroundCounts.ContainsKey(g.Id) ? goBackgroundCounts[g.Id] : 0,
-                    backgroundProteinSet.Count
-                )).ToList();
-        }
-
-        private Dictionary<string, int> fillGoDictionary(List<ProteinWithGoTerms> proteinSet)
-        {
-            Dictionary<string, int> goCounts = new Dictionary<string, int>();
-            foreach (ProteinWithGoTerms p in proteinSet)
-            {
-                foreach (string goId in p.GoTerms.Select(g => g.Id).Distinct())
-                {
-                    if (goCounts.ContainsKey(goId))
-                        goCounts[goId]++;
-                    else
-                        goCounts.Add(goId, 1);
-                }
-            }
-            return goCounts;
-        }
-
-        public static void calculateGoTermFDR(List<GoTermNumber> gtns)
-        {
-            List<double> pvals = gtns.Select(g => g.p_value).ToList();
-            pvals.Sort();
-            Parallel.ForEach(gtns, g => g.by = GoTermNumber.benjaminiYekutieli(gtns.Count, pvals, g.p_value));
-        }
-
-        #endregion GO-TERMS AND GO-TERM SIGNIFICANCE
 
         #region RESULTS Public Field
 
