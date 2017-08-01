@@ -34,12 +34,12 @@ namespace ProteoformSuiteInternal
             //bkgdStDev is log base 2
 
             significant = false;
-            numeratorOriginalIntensities = intensities.Where(b => b.condition == numerator_condition).ToList();
+            numeratorOriginalIntensities = intensities.Where(b => b.condition == numerator_condition).Select(x => new BiorepTechrepIntensity(x.imputed, x.biorep, x.condition, x.techrep, x.intensity_sum)).ToList(); // normalized, so create new objects
             numeratorImputedIntensities = imputedIntensities(numeratorOriginalIntensities, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification), bkgdAverageIntensity, bkgdStDev, numerator_condition, conditionBioReps[numerator_condition]);
             numeratorIntensitySum = (decimal)numeratorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)numeratorImputedIntensities.Sum(i => i.intensity_sum);
             List<BiorepTechrepIntensity> allNumeratorIntensities = numeratorOriginalIntensities.Concat(numeratorImputedIntensities).ToList();
 
-            denominatorOriginalIntensities = intensities.Where(b => b.condition == denominator_condition).ToList();
+            denominatorOriginalIntensities = intensities.Where(b => b.condition == denominator_condition).Select(x => new BiorepTechrepIntensity(x.imputed, x.biorep, x.condition, x.techrep, x.intensity_sum)).ToList(); // normalized, so create new objects
             denominatorImputedIntensities = imputedIntensities(denominatorOriginalIntensities, Sweet.lollipop.get_files(Sweet.lollipop.input_files, Purpose.Quantification), bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition]);
             denominatorIntensitySum = (decimal)denominatorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity_sum);
             List<BiorepTechrepIntensity> allDenominatorIntensities = denominatorOriginalIntensities.Concat(denominatorImputedIntensities).ToList();

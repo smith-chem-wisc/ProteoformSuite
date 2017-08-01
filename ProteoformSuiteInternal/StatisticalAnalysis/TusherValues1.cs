@@ -34,12 +34,12 @@ namespace ProteoformSuiteInternal
             //bkgdStDev is log base 2
 
             significant = false;
-            numeratorOriginalIntensities = biorepIntensityList.Where(b => b.condition == numerator_condition).ToList();
+            numeratorOriginalIntensities = biorepIntensityList.Where(b => b.condition == numerator_condition).Select(x => new BiorepIntensity(x.imputed, x.biorep, x.condition, x.intensity_sum)).ToList(); // normalized, so create new objects
             numeratorImputedIntensities = imputedIntensities(numeratorOriginalIntensities, bkgdAverageIntensity, bkgdStDev, numerator_condition, conditionBioReps[numerator_condition]);
             numeratorIntensitySum = (decimal)numeratorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)numeratorImputedIntensities.Sum(i => i.intensity_sum);
             List<BiorepIntensity> allNumeratorIntensities = numeratorOriginalIntensities.Concat(numeratorImputedIntensities).ToList();
 
-            denominatorOriginalIntensities = biorepIntensityList.Where(b => b.condition == denominator_condition).ToList();
+            denominatorOriginalIntensities = biorepIntensityList.Where(b => b.condition == denominator_condition).Select(x => new BiorepIntensity(x.imputed, x.biorep, x.condition, x.intensity_sum)).ToList(); // normalized, so create new objects
             denominatorImputedIntensities = imputedIntensities(denominatorOriginalIntensities, bkgdAverageIntensity, bkgdStDev, denominator_condition, conditionBioReps[denominator_condition]);
             denominatorIntensitySum = (decimal)denominatorOriginalIntensities.Sum(i => i.intensity_sum) + (decimal)denominatorImputedIntensities.Sum(i => i.intensity_sum);
             List<BiorepIntensity> allDenominatorIntensities = denominatorOriginalIntensities.Concat(denominatorImputedIntensities).ToList();
