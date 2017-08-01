@@ -315,8 +315,10 @@ namespace ProteoformSuiteGUI
             if (Sweet.lollipop.results_folder != "")
             {
                 string timestamp = Sweet.time_stamp();
-                ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp, resultsSummary.get_go_analysis());
+                ResultsSummaryGenerator.save_all(Sweet.lollipop.results_folder, timestamp, resultsSummary.get_go_analysis(), resultsSummary.get_tusher_analysis());
                 save_all_plots(Sweet.lollipop.results_folder, timestamp);
+                using (StreamWriter file = new StreamWriter(Path.Combine(Sweet.lollipop.results_folder, "presets_" + timestamp + ".xml")))
+                    file.WriteLine(Sweet.save_method());
             }
 
             //Program ran successfully

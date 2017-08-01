@@ -820,7 +820,7 @@ namespace ProteoformSuiteGUI
             g.GoAnalysis.maxGoTermFDR = nud_FDR.Value;
             g.GoAnalysis.minProteoformFoldChange = nud_ratio.Value;
             g.GoAnalysis.minProteoformIntensity = nud_intensity.Value;
-            g.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.satisfactoryProteoforms, g.GoAnalysis.minProteoformFoldChange, g.GoAnalysis.maxGoTermFDR, g.GoAnalysis.minProteoformIntensity);
+            g.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(get_tusher_analysis() as ITusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, g.GoAnalysis.minProteoformFoldChange, g.GoAnalysis.maxGoTermFDR, g.GoAnalysis.minProteoformIntensity);
             g.GoAnalysis.GO_analysis(g.inducedOrRepressedProteins);
             fillGoTermsTable();
         }
@@ -831,7 +831,7 @@ namespace ProteoformSuiteGUI
             g.GoAnalysis.maxGoTermFDR = nud_FDR.Value;
             g.GoAnalysis.minProteoformFoldChange = nud_ratio.Value;
             g.GoAnalysis.minProteoformIntensity = nud_intensity.Value;
-            g.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(Sweet.lollipop.satisfactoryProteoforms, g.GoAnalysis.minProteoformFoldChange, g.GoAnalysis.maxGoTermFDR, g.GoAnalysis.minProteoformIntensity);
+            g.inducedOrRepressedProteins = Sweet.lollipop.getInducedOrRepressedProteins(get_tusher_analysis() as ITusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, g.GoAnalysis.minProteoformFoldChange, g.GoAnalysis.maxGoTermFDR, g.GoAnalysis.minProteoformIntensity);
             g.GoAnalysis.GO_analysis(g.inducedOrRepressedProteins);
             fillGoTermsTable();
         }
@@ -961,7 +961,7 @@ namespace ProteoformSuiteGUI
 
         private void btn_buildFamiliesWithSignificantChange_Click(object sender, EventArgs e)
         {
-            List<ProteoformFamily> families = Sweet.lollipop.getInterestingFamilies(Sweet.lollipop.satisfactoryProteoforms, get_go_analysis().GoAnalysis.minProteoformFoldChange, get_go_analysis().GoAnalysis.maxGoTermFDR, get_go_analysis().GoAnalysis.minProteoformIntensity).Distinct().ToList();
+            List<ProteoformFamily> families = Sweet.lollipop.getInterestingFamilies(get_tusher_analysis() as ITusherAnalysis, Sweet.lollipop.satisfactoryProteoforms, get_go_analysis().GoAnalysis.minProteoformFoldChange, get_go_analysis().GoAnalysis.maxGoTermFDR, get_go_analysis().GoAnalysis.minProteoformIntensity).Distinct().ToList();
             string time_stamp = Sweet.time_stamp();
             tb_recentTimeStamp.Text = time_stamp;
             string message = CytoscapeScript.write_cytoscape_script(families, Sweet.lollipop.target_proteoform_community.families,
