@@ -132,7 +132,6 @@ namespace Test
             Assert.AreEqual(0d /*105d*/, e1.quant.TusherValues1.denominatorOriginalIntensities.Sum(i => i.intensity_sum));
             Assert.AreEqual(305d, e1.quant.intensitySum);
             Assert.AreEqual(0.929610672108602M, e1.quant.logFoldChange);
-            Assert.True(0 <= e1.quant.pValue_randomization && e1.quant.pValue_randomization <= 1);
         }
 
         [Test]
@@ -178,7 +177,6 @@ namespace Test
             Assert.AreEqual(0d /*307d*/, e2.quant.TusherValues1.denominatorOriginalIntensities.Sum(i => i.intensity_sum));
             Assert.AreEqual(605d, e2.quant.intensitySum);
             Assert.AreEqual(-0.0429263249080178M, e2.quant.logFoldChange);
-            Assert.True(0 <= e2.quant.pValue_randomization && e2.quant.pValue_randomization <= 1);
             //Assert.AreEqual(20.338m, Math.Round(e2.quant.StdDev(e2.quant.numeratorOriginalBiorepIntensities, e2.quant.denominatorOriginalBiorepIntensities), 3));
             //Assert.AreEqual(0.10544m, Math.Round(e2.quant.relative_difference, 5));
         }
