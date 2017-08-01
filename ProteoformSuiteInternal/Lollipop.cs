@@ -856,7 +856,8 @@ namespace ProteoformSuiteInternal
         public IEnumerable<ExperimentalProteoform> getInterestingProteoforms(ITusherAnalysis analysis, IEnumerable<ExperimentalProteoform> proteoforms, decimal minProteoformAbsLogFoldChange, decimal maxProteoformFDR, decimal minProteoformIntensity)
         {
             return proteoforms.Where(p =>
-                (analysis != null && analysis as TusherAnalysis1 != null ? p.quant.TusherValues1.significant : p.quant.TusherValues2.significant && significance_by_permutation || p.quant.Log2FoldChangeValues.significant && significance_by_log2FC)
+                (significance_by_permutation && analysis != null && (analysis as TusherAnalysis1 != null ? p.quant.TusherValues1.significant : p.quant.TusherValues2.significant) 
+                || significance_by_log2FC && p.quant.Log2FoldChangeValues.significant)
                 && Math.Abs(p.quant.logFoldChange) > minProteoformAbsLogFoldChange
                 && p.quant.intensitySum > minProteoformIntensity);
         }

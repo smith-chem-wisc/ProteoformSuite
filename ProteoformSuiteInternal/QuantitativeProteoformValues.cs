@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace ProteoformSuiteInternal
 {
@@ -45,7 +42,6 @@ namespace ProteoformSuiteInternal
         {
             intensitySum = TusherValues1.numeratorIntensitySum + TusherValues1.denominatorIntensitySum;
             logFoldChange = (decimal)Math.Log((double)TusherValues1.numeratorIntensitySum / (double)TusherValues1.denominatorIntensitySum, 2);
-            //pValue_randomization = Randomization_PValue(logFoldChange, TusherValues1.numeratorOriginalIntensities.Concat(TusherValues1.numeratorImputedIntensities).ToList(), TusherValues1.denominatorOriginalIntensities.Concat(TusherValues1.denominatorImputedIntensities).ToList());
         }
 
         /// <summary>
@@ -92,31 +88,6 @@ namespace ProteoformSuiteInternal
 
             decimal fdr = averagePermutedPassing / (decimal)totalRealPassing; // real passing will always be above zero because this proteoform always passes
             return fdr;
-        }
-
-        public decimal Randomization_PValue(decimal logFoldChange, List<BiorepIntensity> allNumerators, List<BiorepIntensity> allDenominators)
-        {
-            if (allNumerators.Count != allDenominators.Count)
-                throw new ArgumentException("Error: Imputation has gone awry. Each biorep should have the same number of biorep intensities for NeuCode light and heavy at this point.");
-
-            int maxRandomizations = 10000;
-            ConcurrentBag<decimal> randomizedRatios = new ConcurrentBag<decimal>();
-
-            Parallel.For(0, maxRandomizations, i =>
-            {
-                List<double> combined = allNumerators.Select(j => j.intensity_sum).Concat(allDenominators.Select(j => j.intensity_sum)).ToList();
-                combined.Shuffle();
-                double numerator = combined.Take(allNumerators.Count).Sum();
-                double denominator = combined.Skip(allNumerators.Count).Take(allDenominators.Count).Sum();
-                decimal someRatio = (decimal)Math.Log(numerator / denominator, 2);
-                randomizedRatios.Add(someRatio);
-            });
-
-            decimal pValue = logFoldChange > 0 ?
-                (decimal)(1M / maxRandomizations) + (decimal)randomizedRatios.Count(x => x > logFoldChange) / (decimal)randomizedRatios.Count : //adding a slight positive shift so that later logarithms don't produce fault
-                (decimal)(1M / maxRandomizations) + (decimal)randomizedRatios.Count(x => x < logFoldChange) / (decimal)randomizedRatios.Count; //adding a slight positive shift so that later logarithms don't produce fault
-
-            return pValue;
         }
 
         #endregion Public Methods
